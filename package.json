@@ -1,0 +1,58 @@
+{
+  "name": "chrome-extension-boilerplate-react",
+  "version": "4.0.1",
+  "description": "A chrome extension boilerplate built with React 17 and Webpack 5",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lxieyang/chrome-extension-boilerplate-react.git"
+  },
+  "scripts": {
+    "build": "node utils/build.js",
+    "start": "node utils/webserver.js",
+    "prettier": "prettier --write '**/*.{js,jsx,css,html}'",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
+  },
+  "dependencies": {
+    "@medv/finder": "^2.1.0",
+    "vue": "^3.2.11",
+    "webext-bridge": "^4.1.1",
+    "webextension-polyfill": "^0.8.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.17",
+    "@babel/eslint-parser": "^7.15.4",
+    "@babel/plugin-proposal-class-properties": "^7.12.13",
+    "@babel/preset-env": "^7.12.17",
+    "@vue/compiler-sfc": "^3.2.11",
+    "autoprefixer": "^10.3.4",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.2.2",
+    "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^7.0.0",
+    "css-loader": "^5.0.2",
+    "eslint": "^7.20.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-friendly-formatter": "^4.0.1",
+    "eslint-import-resolver-webpack": "^0.13.1",
+    "eslint-plugin-flowtype": "^5.2.2",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-vue": "^7.17.0",
+    "file-loader": "^6.2.0",
+    "fs-extra": "^9.1.0",
+    "html-loader": "^2.1.0",
+    "html-webpack-plugin": "^5.2.0",
+    "postcss": "^8.3.6",
+    "postcss-loader": "^6.1.1",
+    "prettier": "^2.4.1",
+    "source-map-loader": "^2.0.1",
+    "style-loader": "^2.0.0",
+    "tailwindcss": "^2.2.15",
+    "terser-webpack-plugin": "^5.1.1",
+    "vue-loader": "^16.5.0",
+    "webpack": "^5.23.0",
+    "webpack-cli": "^4.5.0",
+    "webpack-dev-server": "^3.11.2"
+  }
+}
