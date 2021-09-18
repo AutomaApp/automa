@@ -15,7 +15,12 @@
   },
   "dependencies": {
     "@medv/finder": "^2.1.0",
+    "tiny-emitter": "^2.1.0",
+    "tippy.js": "^6.3.1",
+    "v-remixicon": "^0.0.12",
     "vue": "^3.2.11",
+    "vue-router": "^4.0.11",
+    "vuex": "^4.0.2",
     "webext-bridge": "^4.1.1",
     "webextension-polyfill": "^0.8.0"
   },
@@ -33,6 +38,7 @@
     "css-loader": "^5.0.2",
     "eslint": "^7.20.0",
     "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-friendly-formatter": "^4.0.1",
     "eslint-import-resolver-webpack": "^0.13.1",
     "eslint-plugin-flowtype": "^5.2.2",

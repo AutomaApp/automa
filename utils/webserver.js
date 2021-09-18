@@ -3,19 +3,20 @@ process.env.BABEL_ENV = 'development';
 process.env.NODE_ENV = 'development';
 process.env.ASSET_PATH = '/';
 
-var WebpackDevServer = require('webpack-dev-server'),
-  webpack = require('webpack'),
-  config = require('../webpack.config'),
-  env = require('./env'),
-  path = require('path');
+const WebpackDevServer = require('webpack-dev-server');
+const webpack = require('webpack');
+const path = require('path');
+const config = require('../webpack.config');
+const env = require('./env');
 
-var options = config.chromeExtensionBoilerplate || {};
-var excludeEntriesToHotReload = options.notHotReload || [];
+const options = config.chromeExtensionBoilerplate || {};
+const excludeEntriesToHotReload = options.notHotReload || [];
 
-for (var entryName in config.entry) {
+/* eslint-disable-next-line */
+for (const entryName in config.entry) {
   if (excludeEntriesToHotReload.indexOf(entryName) === -1) {
     config.entry[entryName] = [
-      'webpack-dev-server/client?http://localhost:' + env.PORT,
+      `webpack-dev-server/client?http://localhost:${env.PORT}`,
       'webpack/hot/dev-server',
     ].concat(config.entry[entryName]);
   }
@@ -27,9 +28,9 @@ config.plugins = [new webpack.HotModuleReplacementPlugin()].concat(
 
 delete config.chromeExtensionBoilerplate;
 
-var compiler = webpack(config);
+const compiler = webpack(config);
 
-var server = new WebpackDevServer(compiler, {
+const server = new WebpackDevServer(compiler, {
   https: false,
   hot: true,
   injectClient: false,

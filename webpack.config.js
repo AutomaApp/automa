@@ -10,10 +10,12 @@ const env = require('./utils/env');
 
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 
-const alias = {};
+const alias = {
+  '@': path.resolve(__dirname, 'src/'),
+};
 
 // load the secrets
-const secretsPath = path.join(__dirname, 'secrets.' + env.NODE_ENV + '.js');
+const secretsPath = path.join(__dirname, `secrets.${env.NODE_ENV}.js`);
 
 const fileExtensions = [
   'jpg',
@@ -29,7 +31,7 @@ const fileExtensions = [
 ];
 
 if (fileSystem.existsSync(secretsPath)) {
-  alias['secrets'] = secretsPath;
+  alias.secrets = secretsPath;
 }
 
 const options = {
@@ -52,7 +54,7 @@ const options = {
     rules: [
       {
         test: /\.vue$/,
-        loader: 'vue-loader'
+        loader: 'vue-loader',
       },
       {
         // look for .css or .scss files
@@ -67,11 +69,11 @@ const options = {
           },
           {
             loader: 'postcss-loader',
-          },          
+          },
         ],
       },
       {
-        test: new RegExp('.(' + fileExtensions.join('|') + ')$'),
+        test: new RegExp(`.(${fileExtensions.join('|')})$`),
         loader: 'file-loader',
         options: {
           name: '[name].[ext]',
@@ -93,9 +95,9 @@ const options = {
     ],
   },
   resolve: {
-    alias: alias,
+    alias,
     extensions: fileExtensions
-      .map((extension) => '.' + extension)
+      .map((extension) => `.${extension}`)
       .concat(['.js', '.vue', '.css']),
   },
   plugins: [
@@ -114,7 +116,7 @@ const options = {
           from: 'src/manifest.json',
           to: path.join(__dirname, 'build'),
           force: true,
-          transform: function (content, path) {
+          transform(content) {
             // generates the manifest file using the package.json informations
             return Buffer.from(
               JSON.stringify({
