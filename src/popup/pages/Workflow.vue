@@ -4,9 +4,9 @@
       <router-link to="/" class="-ml-2">
         <v-remixicon name="riArrowLeftSLine" size="28" />
       </router-link>
-      <a href="/" target="_blank" title="Edit">
+      <router-link :to="`/workflow/${$route.params.id}/edit`" title="Edit">
         <v-remixicon name="riEditBoxLine" />
-      </a>
+      </router-link>
     </div>
     <h1 class="text-xl font-semibold">Workflow name</h1>
   </div>

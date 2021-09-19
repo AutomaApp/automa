@@ -5,6 +5,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const env = require('./utils/env');
 
@@ -61,9 +62,7 @@ const options = {
         test: /\.css$/,
         // in the `src` directory
         use: [
-          {
-            loader: 'style-loader',
-          },
+          MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
           },
@@ -101,6 +100,7 @@ const options = {
       .concat(['.js', '.vue', '.css']),
   },
   plugins: [
+    new MiniCssExtractPlugin(),
     new VueLoaderPlugin(),
     new webpack.ProgressPlugin(),
     // clean the build folder
@@ -140,13 +140,13 @@ const options = {
       ],
     }),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'src', 'Newtab', 'index.html'),
+      template: path.join(__dirname, 'src', 'newtab', 'index.html'),
       filename: 'newtab.html',
       chunks: ['newtab'],
       cache: false,
     }),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'src', 'Popup', 'index.html'),
+      template: path.join(__dirname, 'src', 'popup', 'index.html'),
       filename: 'popup.html',
       chunks: ['popup'],
       cache: false,
@@ -167,6 +167,18 @@ if (env.NODE_ENV === 'development') {
         extractComments: false,
       }),
     ],
+    runtimeChunk: 'single',
+    splitChunks: {
+      chunks: 'all',
+      maxInitialRequests: Infinity,
+      minSize: 0,
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendor',
+        },
+      },
+    },
   };
 }
 

@@ -9,7 +9,7 @@
       class="flex-1 search-input"
       placeholder="Search..."
     ></ui-input>
-    <ui-button icon title="dashboard" class="ml-3">
+    <ui-button icon title="dashboard" class="ml-3" @click="openDashboard">
       <v-remixicon name="riHome5Line" />
     </ui-button>
   </div>
@@ -19,4 +19,8 @@
 </template>
 <script setup>
 import HomeWorkflowCard from '@/components/popup/home/HomeWorkflowCard.vue';
+
+function openDashboard() {
+  window.open(chrome.runtime.getURL('/newtab.html'), '_blank');
+}
 </script>

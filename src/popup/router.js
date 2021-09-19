@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import Home from './pages/Home.vue';
 import Workflow from './pages/Workflow.vue';
+import WorkflowEdit from './pages/workflow/Edit.vue';
 
 const routes = [
   {
@@ -12,6 +13,11 @@ const routes = [
     path: '/workflow/:id',
     name: 'workflow',
     component: Workflow,
+  },
+  {
+    path: '/workflow/:id/edit',
+    name: 'workflow-edit',
+    component: WorkflowEdit,
   },
 ];
 

@@ -4,6 +4,8 @@
 
 body {
 	font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  @apply bg-gray-100 dark:bg-gray-900;
 }
 
 input:focus,
