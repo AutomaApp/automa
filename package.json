@@ -20,6 +20,7 @@
     "v-remixicon": "^0.0.12",
     "vue": "^3.2.11",
     "vue-router": "^4.0.11",
+    "vuedraggable": "^4.1.0",
     "vuex": "^4.0.2",
     "webext-bridge": "^4.1.1",
     "webextension-polyfill": "^0.8.0"

@@ -9,7 +9,8 @@ body {
 input:focus,
 button:focus,
 textarea:focus,
-select:focus {
+select:focus,
+[role="button"]:focus {
 	outline: none;
 	@apply ring-2 ring-accent dark:ring-gray-200;
 }
@@ -18,5 +19,8 @@ select:focus {
   @apply hover:bg-gray-800 hover:bg-opacity-5 dark:hover:bg-gray-200 dark:hover:bg-opacity-5;
 }
 .bg-input {
-  @apply bg-black bg-opacity-5 hover:bg-opacity-10 dark:bg-gray-200 dark:bg-opacity-5 dark:hover:bg-opacity-10 focus:ring-2;
+  @apply bg-black bg-opacity-5 hover:bg-opacity-10 dark:bg-gray-200 dark:bg-opacity-5 dark:hover:bg-opacity-10;
+}
+.bg-box-transparent {
+	@apply bg-black bg-opacity-5 dark:bg-gray-200 dark:bg-opacity-5;
 }

@@ -50,7 +50,8 @@ export default {
   setup() {
     const variants = {
       default: 'bg-input',
-      accent: 'bg-accent hover:bg-gray-700 text-white',
+      accent:
+        'bg-accent hover:bg-gray-700 dark:bg-gray-200 dark:text-gray-900 text-white',
       primary:
         'bg-primary text-white dark:bg-secondary dark:hover:bg-primary hover:bg-secondary',
       danger:

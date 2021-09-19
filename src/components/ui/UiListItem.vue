@@ -12,9 +12,7 @@
     "
     role="listitem"
     :class="[
-      active
-        ? 'bg-primary bg-opacity-10 text-primary dark:bg-secondary dark:bg-opacity-10 dark:text-secondary'
-        : 'hoverable',
+      active ? color : 'hoverable',
       small ? 'p-2' : 'py-2 px-4',
       { 'pointer-events-none bg-opacity-75': disabled },
     ]"
@@ -31,6 +29,11 @@ export default {
     tag: {
       type: String,
       default: 'div',
+    },
+    color: {
+      type: String,
+      default:
+        'bg-primary text-primary dark:bg-secondary dark:text-secondary bg-opacity-10 dark:bg-opacity-10',
     },
   },
 };

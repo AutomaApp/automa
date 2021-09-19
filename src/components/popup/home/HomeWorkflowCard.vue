@@ -6,8 +6,15 @@
       <p class="leading-tight">halo {{ 1 }}</p>
       <p class="leading-none text-gray-500">3 days ago</p>
     </div>
-    <ui-button icon>
+    <router-link to="/workflow/anu" icon title="Execute">
       <v-remixicon name="riPlayLine" />
-    </ui-button>
+    </router-link>
+    <ui-popover class="h-6">
+      <template #trigger>
+        <button>
+          <v-remixicon name="riMoreLine" />
+        </button>
+      </template>
+    </ui-popover>
   </ui-card>
 </template>
