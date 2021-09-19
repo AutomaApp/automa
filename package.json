@@ -13,6 +13,12 @@
     "prettier": "prettier --write '**/*.{js,jsx,css,html}'",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
   },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,ts,vue}": "eslint --cache --fix"
+  },
   "dependencies": {
     "@medv/finder": "^2.1.0",
     "@vuex-orm/core": "^0.36.4",
@@ -53,10 +59,12 @@
     "fs-extra": "^9.1.0",
     "html-loader": "^2.1.0",
     "html-webpack-plugin": "^5.2.0",
+    "lint-staged": "^11.1.2",
     "mini-css-extract-plugin": "^2.3.0",
     "postcss": "^8.3.6",
     "postcss-loader": "^6.1.1",
     "prettier": "^2.4.1",
+    "simple-git-hooks": "^2.6.1",
     "source-map-loader": "^2.0.1",
     "style-loader": "^2.0.0",
     "tailwindcss": "^2.2.15",
