@@ -1,6 +1,6 @@
 <template>
   <app-sidebar />
-  <main class="pl-20">
+  <main class="pl-16 container mx-auto pr-2 py-6">
     <router-view />
   </main>
 </template>

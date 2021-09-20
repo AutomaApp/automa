@@ -22,41 +22,12 @@
       </ui-button>
     </ui-card>
     <p class="mb-1">Tasks</p>
-    <ui-list class="space-y-1">
-      <ui-list-item
-        v-for="task in tasks"
-        :key="task.name"
-        :active="task.status === 'running'"
-        class="relative group"
-        color="bg-box-transparent"
-      >
-        <v-remixicon
-          name="mdiDrag"
-          class="
-            absolute
-            left-0
-            -ml-3
-            group-hover:visible
-            invisible
-            cursor-move
-          "
-        />
-        <ui-spinner
-          v-if="task.status === 'running'"
-          color="text-accent"
-          size="20"
-        ></ui-spinner>
-        <v-remixicon
-          v-else-if="task.status === 'success'"
-          name="riCheckboxCircleLine"
-          class="-ml-0.5"
-        />
-        <p class="ml-3 flex-1">{{ task.name }}</p>
-      </ui-list-item>
-    </ui-list>
+    <shared-task-list :tasks="tasks" />
   </div>
 </template>
 <script setup>
+import SharedTaskList from '@/components/shared/SharedTaskList.vue';
+
 const tasks = [
   { name: 'Open website', status: 'success' },
   { name: 'Get data', status: 'success' },

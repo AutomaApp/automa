@@ -16,13 +16,28 @@ select:focus,
 	outline: none;
 	@apply ring-2 ring-accent dark:ring-gray-200;
 }
+.text-overflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-.hoverable {
-  @apply hover:bg-gray-800 hover:bg-opacity-5 dark:hover:bg-gray-200 dark:hover:bg-opacity-5;
+.line-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.bg-input {
-  @apply bg-black bg-opacity-5 hover:bg-opacity-10 dark:bg-gray-200 dark:bg-opacity-5 dark:hover:bg-opacity-10;
-}
-.bg-box-transparent {
-	@apply bg-black bg-opacity-5 dark:bg-gray-200 dark:bg-opacity-5;
+
+@layer utilities {
+  .hoverable {
+    @apply hover:bg-gray-800 hover:bg-opacity-5 dark:hover:bg-gray-200 dark:hover:bg-opacity-5;
+  }
+  .bg-input {
+    @apply bg-black bg-opacity-5 hover:bg-opacity-10 dark:bg-gray-200 dark:bg-opacity-5 dark:hover:bg-opacity-10;
+  }
+  .bg-box-transparent {
+  	@apply bg-black bg-opacity-5 dark:bg-gray-200 dark:bg-opacity-5;
+  }
 }

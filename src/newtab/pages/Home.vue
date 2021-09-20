@@ -1,3 +1,95 @@
 <template>
-  <p>from home</p>
+  <h1 class="text-2xl font-semibold mb-8">Dashboard</h1>
+  <div class="flex items-start">
+    <div class="w-7/12 mr-8">
+      <div class="grid gap-3 mb-8 grid-cols-3">
+        <ui-card v-for="i in 3" :key="i" class="hover:ring-2 hover:ring-accent">
+          <div class="flex items-center mb-3">
+            <span class="p-2 rounded-full bg-accent text-white inline-block">
+              <v-remixicon name="riGlobalLine" />
+            </span>
+            <div class="flex-grow"></div>
+            <button title="Execute">
+              <v-remixicon name="riPlayLine" />
+            </button>
+          </div>
+          <router-link to="/workflow">
+            <p class="line-clamp leading-tight font-semibold">Workflow name</p>
+            <p
+              class="
+                text-gray-600
+                dark:text-gray-200
+                leading-tight
+                text-overflow
+              "
+            >
+              3 Days ago
+            </p>
+          </router-link>
+        </ui-card>
+      </div>
+      <div>
+        <div class="mb-4 flex items-center justify-between">
+          <p class="font-semibold inline-block text-lg">Logs</p>
+          <router-link to="/logs" class="text-gray-600 dark:text-gray-200">
+            See all
+          </router-link>
+        </div>
+        <table class="w-full table-fixed">
+          <tbody class="divide-y">
+            <tr v-for="i in 10" :key="i" class="hoverable">
+              <td class="p-2 w-6/12 text-overflow">
+                Lorem ipsum dolor sit amet
+              </td>
+              <td class="p-2 text-gray-600 dark:text-gray-200">
+                {{ i + 1 }} Days ago
+              </td>
+              <td class="p-2 text-right">
+                <span
+                  class="
+                    inline-block
+                    py-1
+                    px-2
+                    text-sm text-green-700
+                    bg-green-500/10
+                    rounded-lg
+                  "
+                >
+                  Success
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <ui-card class="flex-1">
+      <!-- <p class="mb-4">Running workflow</p> -->
+      <div class="flex items-center mb-4">
+        <span class="p-2 rounded-full bg-accent text-white inline-block">
+          <v-remixicon name="riGlobalLine" />
+        </span>
+        <div class="flex-grow"></div>
+        <ui-button class="mr-3">
+          <v-remixicon class="-ml-1 mr-1" name="riPauseLine" />
+          <span>Pause</span>
+        </ui-button>
+        <ui-button variant="accent">
+          <v-remixicon class="-ml-1 mr-1" name="riStopLine" />
+          <span>Stop</span>
+        </ui-button>
+      </div>
+      <p class="mb-2 text-lg font-semibold">Workflow name</p>
+      <shared-task-list class="bg-gray-100 rounded-lg p-2" :tasks="tasks" />
+    </ui-card>
+  </div>
 </template>
+<script setup>
+import SharedTaskList from '@/components/shared/SharedTaskList.vue';
+
+const tasks = [
+  { name: 'Open website', status: 'success' },
+  { name: 'Get data', status: 'success' },
+  { name: 'Close web', status: 'running' },
+];
+</script>

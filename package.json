@@ -22,6 +22,7 @@
   "dependencies": {
     "@medv/finder": "^2.1.0",
     "@vuex-orm/core": "^0.36.4",
+    "dayjs": "^1.10.7",
     "nanoid": "^3.1.25",
     "tiny-emitter": "^2.1.0",
     "tippy.js": "^6.3.1",
