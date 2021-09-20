@@ -1,6 +1,6 @@
 <template>
-  <h1 class="text-2xl font-semibold mb-5">Workflows</h1>
-  <div class="flex items-center space-x-4">
+  <h1 class="text-2xl font-semibold mb-8">Workflows</h1>
+  <div class="flex items-center mb-6 space-x-4">
     <ui-input
       prepend-icon="riSearch2Line"
       placeholder="Search..."
@@ -18,8 +18,13 @@
     </div>
     <ui-button variant="accent"> New Workflow </ui-button>
   </div>
+  <div class="grid gap-4 grid-cols-4">
+    <workflow-card v-for="i in 13" :key="i" />
+  </div>
 </template>
 <script setup>
+import WorkflowCard from '@/components/newtab/workflow/WorkflowCard.vue';
+
 const sorts = [
   { name: 'Name', id: 'name' },
   { name: 'Created date', id: 'createdAt' },

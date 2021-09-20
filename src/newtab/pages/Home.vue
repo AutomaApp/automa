@@ -3,30 +3,7 @@
   <div class="flex items-start">
     <div class="w-7/12 mr-8">
       <div class="grid gap-3 mb-8 grid-cols-3">
-        <ui-card v-for="i in 3" :key="i" class="hover:ring-2 hover:ring-accent">
-          <div class="flex items-center mb-3">
-            <span class="p-2 rounded-full bg-accent text-white inline-block">
-              <v-remixicon name="riGlobalLine" />
-            </span>
-            <div class="flex-grow"></div>
-            <button title="Execute">
-              <v-remixicon name="riPlayLine" />
-            </button>
-          </div>
-          <router-link to="/workflow">
-            <p class="line-clamp leading-tight font-semibold">Workflow name</p>
-            <p
-              class="
-                text-gray-600
-                dark:text-gray-200
-                leading-tight
-                text-overflow
-              "
-            >
-              3 Days ago
-            </p>
-          </router-link>
-        </ui-card>
+        <workflow-card v-for="i in 3" :key="i" />
       </div>
       <div>
         <div class="mb-4 flex items-center justify-between">
@@ -86,6 +63,7 @@
 </template>
 <script setup>
 import SharedTaskList from '@/components/shared/SharedTaskList.vue';
+import WorkflowCard from '@/components/newtab/workflow/WorkflowCard.vue';
 
 const tasks = [
   { name: 'Open website', status: 'success' },
