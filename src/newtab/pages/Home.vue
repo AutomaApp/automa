@@ -3,7 +3,7 @@
   <div class="flex items-start">
     <div class="w-7/12 mr-8">
       <div class="grid gap-3 mb-8 grid-cols-3">
-        <workflow-card v-for="i in 3" :key="i" />
+        <workflow-card v-for="i in 3" :key="i" :show-details="false" />
       </div>
       <div>
         <div class="mb-4 flex items-center justify-between">
