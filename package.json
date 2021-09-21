@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "node utils/build.js",
-    "start": "node utils/webserver.js",
+    "dev": "node utils/webserver.js",
     "prettier": "prettier --write '**/*.{js,jsx,css,html}'",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
   },
