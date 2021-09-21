@@ -6524,10 +6524,10 @@ uuid@^3.3.2, uuid@^3.4.0:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
 
-v-remixicon@^0.0.12:
-  version "0.0.12"
-  resolved "https://registry.yarnpkg.com/v-remixicon/-/v-remixicon-0.0.12.tgz#3483cdb6d31bada66ad71445b05af226af6c0482"
-  integrity sha512-SWC/qq0gF7AHQA5HHtAFhwkv2R2QVSRy+OEt2nkXdN6D6ZTTwf3ftzF5IouF6RIyslKKFoyicwbqQDGY1iG3+g==
+v-remixicon@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/v-remixicon/-/v-remixicon-0.1.0.tgz#3d3f4ea261138cd75d6250b30c9ae42830ee99c9"
+  integrity sha512-5tGnFPRmipEYdLY0JMRiXKE527jA3YCHfNBuHNPtPueWfMQcjqZN/AsxCONj+QlTQirQ5rfGnWKiX8sNT75PYg==
 
 v8-compile-cache@^2.0.3, v8-compile-cache@^2.2.0:
   version "2.3.0"

@@ -12,6 +12,7 @@ function componentsExtractor(app, components) {
 }
 
 export default function (app) {
+  console.log(app, 'anana');
   app.directive('autofocus', VAutofocus);
 
   componentsExtractor(app, uiComponents);
