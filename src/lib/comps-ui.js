@@ -2,6 +2,11 @@ import VAutofocus from '../directives/VAutofocus';
 import VClosePopover from '../directives/VClosePopover';
 
 const uiComponents = require.context('../components/ui', false, /\.vue$/);
+const transitionComponents = require.context(
+  '../components/transitions',
+  false,
+  /\.vue$/
+);
 
 function componentsExtractor(app, components) {
   components.keys().forEach((key) => {
@@ -17,4 +22,5 @@ export default function (app) {
   app.directive('close-popover', VClosePopover);
 
   componentsExtractor(app, uiComponents);
+  componentsExtractor(app, transitionComponents);
 }

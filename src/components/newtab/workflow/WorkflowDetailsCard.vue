@@ -1,5 +1,5 @@
 <template>
-  <ui-card class="w-80 h-full" padding="p-0">
+  <ui-card class="w-80 h-full sticky top-[10px]" padding="p-0">
     <div class="mb-4 px-4 pt-4">
       <span
         class="p-2 inline-block align-middle rounded-lg bg-box-transparent mr-2"
@@ -28,26 +28,37 @@
       class="scroll bg-scroll overflow-auto pb-4 px-4"
       style="max-height: calc(100vh - 240px); overflow: overlay"
     >
-      <ui-tab-panel value="tasks" class="grid grid-cols-2 gap-2">
-        <div
-          v-for="task in taskList"
-          :key="task.id"
-          :title="task.name"
-          class="
-            cursor-move
-            select-none
-            group
-            p-4
-            rounded-lg
-            bg-input
-            transition
-          "
+      <ui-tab-panel value="tasks">
+        <draggable
+          :list="taskList"
+          :sort="false"
+          :group="{ name: 'tasks', pull: 'clone', put: false }"
+          item-key="id"
+          ghost-class="ghost"
+          class="grid grid-cols-2 gap-2"
+          @start="$emit('dragstart')"
+          @end="$emit('dragend')"
         >
-          <v-remixicon :name="task.icon" size="24" class="mb-3" />
-          <p class="leading-tight text-overflow">
-            {{ task.name }}
-          </p>
-        </div>
+          <template #item="{ element }">
+            <div
+              :title="element.name"
+              class="
+                cursor-move
+                select-none
+                group
+                p-4
+                rounded-lg
+                bg-input
+                transition
+              "
+            >
+              <v-remixicon :name="element.icon" size="24" class="mb-3" />
+              <p class="leading-tight text-overflow">
+                {{ element.name }}
+              </p>
+            </div>
+          </template>
+        </draggable>
       </ui-tab-panel>
       <ui-tab-panel value="data-schema">
         <p>sss</p>
@@ -57,59 +68,15 @@
 </template>
 <script setup>
 import { shallowReactive } from 'vue';
+import Draggable from 'vuedraggable';
+import { tasks } from '@/utils/shared';
 
-const taskList = [
-  {
-    id: 'event-click',
-    name: 'Click element',
-    icon: 'riCursorLine',
-  },
-  {
-    id: 'get-text',
-    name: 'Get text',
-    icon: 'riParagraph',
-  },
-  {
-    id: 'save-assets',
-    name: 'Save assets',
-    icon: 'riImageLine',
-  },
-  {
-    id: 'export-data',
-    name: 'Export data',
-    icon: 'riDownloadLine',
-  },
-  {
-    id: 'element-scroll',
-    name: 'Scroll element',
-    icon: 'riMouseLine',
-  },
-  {
-    id: 'open-website',
-    name: 'Open website',
-    icon: 'riGlobalLine',
-  },
-  {
-    id: 'text-input',
-    name: 'Text input',
-    icon: 'riInputCursorMove',
-  },
-  {
-    id: 'repeat-task',
-    name: 'Repeat tasks',
-    icon: 'riRepeat2Line',
-  },
-  {
-    id: 'get-attribute',
-    name: 'Get attribute',
-    icon: 'riBracketsLine',
-  },
-  {
-    id: 'trigger-events',
-    name: 'Trigger events',
-    icon: 'riEqualizerLine',
-  },
-].sort((a, b) => (a.name > b.name ? 1 : -1));
+/* eslint-disable-next-line */
+defineEmits(['dragstart', 'dragend']);
+
+const taskList = Object.keys(tasks)
+  .map((id) => ({ id, isNewTask: true, ...tasks[id] }))
+  .sort((a, b) => (a.name > b.name ? 1 : -1));
 
 const state = shallowReactive({
   activeTab: 'tasks',

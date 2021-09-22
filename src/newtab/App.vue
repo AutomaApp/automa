@@ -1,30 +1,35 @@
 <template>
   <app-sidebar />
-  <main class="pl-16 container mx-auto pr-2 py-6">
-    <router-view />
+  <main class="pl-16 container mx-auto pr-2 pt-6 pb-4">
+    <router-view v-if="retrieved" />
   </main>
   <ui-dialog />
 </template>
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import browser from 'webextension-polyfill';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 
 const store = useStore();
 
+const retrieved = ref(false);
+
 onMounted(async () => {
-  console.log(browser, 'browser');
   try {
     const data = await browser.storage.local.get(['workflows', 'tasks']);
-
-    Object.keys(data).forEach((entity) => {
+    const promises = Object.keys(data).map((entity) =>
       store.dispatch('entities/create', {
         entity,
         data: data[entity],
-      });
-    });
+      })
+    );
+
+    console.log(await Promise.allSettled(promises));
+
+    retrieved.value = true;
   } catch (error) {
+    retrieved.value = true;
     console.error(error);
   }
 });

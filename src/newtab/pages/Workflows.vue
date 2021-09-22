@@ -34,7 +34,7 @@
       <ui-button variant="accent" @click="newWorkflow">New workflow</ui-button>
     </div>
   </div>
-  <div v-else class="grid gap-4 grid-cols-4">
+  <div v-else class="grid gap-4 grid-cols-5">
     <workflow-card
       v-for="workflow in workflows"
       :key="workflow.id"

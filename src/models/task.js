@@ -10,6 +10,8 @@ class Task extends Model {
       name: this.string(''),
       type: this.string(''),
       createdAt: this.number(),
+      data: this.attr(null),
+      order: this.number(0),
       workflowId: this.attr(null),
     };
   }
@@ -17,7 +19,7 @@ class Task extends Model {
   static async insert(payload) {
     const res = await super.insert(payload);
 
-    console.log(payload);
+    await this.store().dispatch('saveToStorage', 'tasks');
 
     return res;
   }

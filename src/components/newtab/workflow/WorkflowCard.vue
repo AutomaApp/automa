@@ -34,7 +34,7 @@
         </ui-list>
       </ui-popover>
     </div>
-    <router-link to="/workflows/anId">
+    <router-link :to="`/workflows/${workflow.id}`">
       <p class="line-clamp leading-tight font-semibold" :title="workflow.name">
         {{ workflow.name }}
       </p>
