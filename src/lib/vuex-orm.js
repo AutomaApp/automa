@@ -1,8 +1,7 @@
 import VuexORM, { Query } from '@vuex-orm/core';
 
 function callback(model, param, entity) {
-  console.log('halo?', model, param, entity);
-  // this.store.dispatch('saveToStorage', entity);
+  this.store.dispatch('saveToStorage', entity);
 }
 
 Query.on('afterUpdate', callback);

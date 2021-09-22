@@ -1,5 +1,7 @@
 <template>
-  <slot></slot>
+  <div class="ui-tab-panels">
+    <slot></slot>
+  </div>
 </template>
 <script setup>
 import { toRefs, provide } from 'vue';

@@ -1,7 +1,15 @@
 <template>
   <div
     aria-role="tablist"
-    class="ui-tabs border-b flex items-center relative"
+    class="
+      ui-tabs
+      text-gray-600
+      dark:text-gray-200
+      border-b
+      flex
+      items-center
+      relative
+    "
     @mouseleave="showHoverIndicator = false"
   >
     <div

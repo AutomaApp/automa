@@ -11,9 +11,20 @@ class Workflow extends Model {
     return {
       id: this.uid(() => nanoid()),
       name: this.string(''),
+      icon: this.string('riGlobalLine'),
       data: this.attr(null),
+      lastRunAt: this.number(),
+      createdAt: this.number(),
       tasks: this.hasMany(Task, 'workflowId'),
     };
+  }
+
+  static async insert(payload) {
+    const res = await super.insert(payload);
+
+    await this.store().dispatch('saveToStorage', 'workflows');
+
+    return res;
   }
 }
 

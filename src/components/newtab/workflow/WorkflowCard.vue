@@ -8,24 +8,58 @@
       <button>
         <v-remixicon name="riPlayLine" />
       </button>
-      <button v-if="showDetails" class="ml-3">
-        <v-remixicon name="riMoreLine" />
-      </button>
+      <ui-popover v-if="showDetails" class="ml-3 h-6">
+        <template #trigger>
+          <button>
+            <v-remixicon name="riMoreLine" />
+          </button>
+        </template>
+        <ui-list class="w-44 space-y-1">
+          <ui-list-item
+            v-close-popover
+            class="cursor-pointer"
+            @click="$emit('rename', workflow)"
+          >
+            <v-remixicon name="riPencilLine" class="mr-3 -ml-1" />
+            <span>Rename</span>
+          </ui-list-item>
+          <ui-list-item
+            v-close-popover
+            class="text-red-500 cursor-pointer"
+            @click="$emit('delete', workflow)"
+          >
+            <v-remixicon name="riDeleteBin7Line" class="mr-3 -ml-1" />
+            <span>Delete</span>
+          </ui-list-item>
+        </ui-list>
+      </ui-popover>
     </div>
     <router-link to="/workflows/anId">
-      <p class="line-clamp leading-tight font-semibold">Workflow name</p>
+      <p class="line-clamp leading-tight font-semibold" :title="workflow.name">
+        {{ workflow.name }}
+      </p>
       <p class="text-gray-600 dark:text-gray-200 leading-tight text-overflow">
-        3 Days ago
+        {{ formatDate() }}
       </p>
     </router-link>
   </ui-card>
 </template>
 <script setup>
-/* eslint-disable-next-line */
-defineProps({
+/* eslint-disable no-undef */
+
+import dayjs from '@/lib/dayjs';
+
+const props = defineProps({
+  workflow: {
+    type: Object,
+    default: () => ({}),
+  },
   showDetails: {
     type: Boolean,
     default: true,
   },
 });
+defineEmits(['delete']);
+
+const formatDate = () => dayjs(props.workflow.createdAt).fromNow();
 </script>

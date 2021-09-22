@@ -3,7 +3,7 @@
     :aria-selected="uiTabs.modelValue.value === value"
     :class="[
       uiTabs.modelValue.value === value
-        ? 'border-accent'
+        ? 'border-accent text-gray-800 dark:text-white'
         : 'border-transparent',
       { 'flex-1': uiTabs.fill.value },
     ]"

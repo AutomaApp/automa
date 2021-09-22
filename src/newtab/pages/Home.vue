@@ -3,13 +3,18 @@
   <div class="flex items-start">
     <div class="w-7/12 mr-8">
       <div class="grid gap-3 mb-8 grid-cols-3">
-        <workflow-card v-for="i in 3" :key="i" :show-details="false" />
+        <workflow-card
+          v-for="workflow in workflows"
+          :key="workflow.id"
+          v-bind="{ workflow }"
+          :show-details="false"
+        />
       </div>
       <div>
-        <div class="mb-4 flex items-center justify-between">
+        <div class="mb-2 flex items-center justify-between">
           <p class="font-semibold inline-block text-lg">Logs</p>
           <router-link to="/logs" class="text-gray-600 dark:text-gray-200">
-            See all
+            View all
           </router-link>
         </div>
         <table class="w-full table-fixed">
@@ -62,6 +67,8 @@
   </div>
 </template>
 <script setup>
+import { computed } from 'vue';
+import Workflow from '@/models/workflow';
 import SharedTaskList from '@/components/shared/SharedTaskList.vue';
 import WorkflowCard from '@/components/newtab/workflow/WorkflowCard.vue';
 
@@ -70,4 +77,8 @@ const tasks = [
   { name: 'Get data', status: 'success' },
   { name: 'Close web', status: 'running' },
 ];
+
+const workflows = computed(() =>
+  Workflow.query().orderBy('createdAt', 'desc').limit(3).get()
+);
 </script>

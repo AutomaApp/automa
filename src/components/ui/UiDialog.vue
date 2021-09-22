@@ -1,5 +1,5 @@
 <template>
-  <ui-modal :model-value="state.show" content-class="max-w-sm" persist>
+  <ui-modal :model-value="state.show" content-class="max-w-sm">
     <template #header>
       <h3 class="font-semibold text-lg">{{ state.options.title }}</h3>
     </template>
@@ -12,7 +12,7 @@
       autofocus
       :placeholder="state.options.placeholder"
       :label="state.options.label"
-      class="w-full mt-4"
+      class="w-full"
     ></ui-input>
     <div class="mt-8 flex space-x-2">
       <ui-button class="w-6/12" @click="fireCallback('onCancel')">
@@ -39,7 +39,7 @@ const defaultOptions = {
   placeholder: '',
   label: '',
   okText: 'Confirm',
-  okVariant: 'primary',
+  okVariant: 'accent',
   cancelText: 'Cancel',
   onConfirm: null,
   onCancel: null,
@@ -56,6 +56,7 @@ export default {
 
     emitter.on('show-dialog', (type, options) => {
       state.type = type;
+      state.input = options?.inputValue ?? '';
       state.options = {
         ...defaultOptions,
         ...options,

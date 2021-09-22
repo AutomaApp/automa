@@ -29,6 +29,18 @@ select:focus,
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.scroll::-webkit-scrollbar {
+  width: 7px;
+  height: 9px;
+}
+.scroll::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-700;
+  border-radius: 8px;
+}
+.scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 
 @layer utilities {
   .hoverable {

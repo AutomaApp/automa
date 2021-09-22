@@ -1,4 +1,5 @@
 import VAutofocus from '../directives/VAutofocus';
+import VClosePopover from '../directives/VClosePopover';
 
 const uiComponents = require.context('../components/ui', false, /\.vue$/);
 
@@ -12,8 +13,8 @@ function componentsExtractor(app, components) {
 }
 
 export default function (app) {
-  console.log(app, 'anana');
   app.directive('autofocus', VAutofocus);
+  app.directive('close-popover', VClosePopover);
 
   componentsExtractor(app, uiComponents);
 }

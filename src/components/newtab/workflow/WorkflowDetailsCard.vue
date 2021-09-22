@@ -19,16 +19,16 @@
         <v-remixicon name="riDeleteBin7Line" />
       </ui-button>
     </div>
-    <ui-tabs v-model="state.activeTab" fill class="mx-4 mt-5 mb-4">
+    <ui-tabs v-model="state.activeTab" fill class="m-4">
       <ui-tab value="tasks">Tasks</ui-tab>
       <ui-tab value="data-schema">Data Schema</ui-tab>
     </ui-tabs>
-    <ui-tab-panels v-model="state.activeTab">
-      <ui-tab-panel
-        value="tasks"
-        class="px-4 grid grid-cols-2 gap-2 pb-4 overflow-auto pt-1"
-        style="max-height: calc(100vh - 200px)"
-      >
+    <ui-tab-panels
+      v-model="state.activeTab"
+      class="scroll bg-scroll overflow-auto pb-4 px-4"
+      style="max-height: calc(100vh - 240px); overflow: overlay"
+    >
+      <ui-tab-panel value="tasks" class="grid grid-cols-2 gap-2">
         <div
           v-for="task in taskList"
           :key="task.id"
@@ -63,6 +63,16 @@ const taskList = [
     id: 'event-click',
     name: 'Click element',
     icon: 'riCursorLine',
+  },
+  {
+    id: 'get-text',
+    name: 'Get text',
+    icon: 'riParagraph',
+  },
+  {
+    id: 'save-assets',
+    name: 'Save assets',
+    icon: 'riImageLine',
   },
   {
     id: 'export-data',
