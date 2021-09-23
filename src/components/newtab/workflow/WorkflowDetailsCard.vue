@@ -15,13 +15,13 @@
         <v-remixicon class="-ml-1 mr-1" name="riPlayLine" />
         Execute
       </ui-button>
-      <ui-button icon class="text-red-500">
+      <ui-button icon>
         <v-remixicon name="riDeleteBin7Line" />
       </ui-button>
     </div>
     <ui-tabs v-model="state.activeTab" fill class="m-4">
       <ui-tab value="tasks">Tasks</ui-tab>
-      <ui-tab value="data-schema">Data Schema</ui-tab>
+      <ui-tab value="data-schema">Data Columns</ui-tab>
     </ui-tabs>
     <ui-tab-panels
       v-model="state.activeTab"
@@ -42,15 +42,8 @@
           <template #item="{ element }">
             <div
               :title="element.name"
-              class="
-                cursor-move
-                select-none
-                group
-                p-4
-                rounded-lg
-                bg-input
-                transition
-              "
+              style="cursor: grab"
+              class="select-none group p-4 rounded-lg bg-input transition"
             >
               <v-remixicon :name="element.icon" size="24" class="mb-3" />
               <p class="leading-tight text-overflow">
@@ -60,25 +53,71 @@
           </template>
         </draggable>
       </ui-tab-panel>
-      <ui-tab-panel value="data-schema">
-        <p>sss</p>
+      <ui-tab-panel value="data-schema" class="pt-1">
+        <div class="mb-4 space-y-2">
+          <transition-group name="list">
+            <div
+              v-for="(item, index) in state.dataSchema"
+              :key="index"
+              class="flex items-center list-item-transition"
+            >
+              <ui-input
+                v-model="state.dataSchema[index]"
+                class="mr-4"
+                placeholder="Column name"
+              />
+              <button @click="state.dataSchema.splice(index, 1)">
+                <v-remixicon name="riDeleteBin7Line" />
+              </button>
+            </div>
+          </transition-group>
+        </div>
+        <ui-button variant="accent" @click="state.dataSchema.push('')">
+          Add column
+        </ui-button>
       </ui-tab-panel>
     </ui-tab-panels>
   </ui-card>
 </template>
 <script setup>
-import { shallowReactive } from 'vue';
+/* eslint-disable no-undef */
+import { reactive, watch } from 'vue';
 import Draggable from 'vuedraggable';
 import { tasks } from '@/utils/shared';
+import { debounce } from '@/utils/helper';
 
-/* eslint-disable-next-line */
-defineEmits(['dragstart', 'dragend']);
+const props = defineProps({
+  workflow: {
+    type: Object,
+    default: () => ({}),
+  },
+});
+const emit = defineEmits(['dragstart', 'dragend', 'update-workflow']);
 
 const taskList = Object.keys(tasks)
   .map((id) => ({ id, isNewTask: true, ...tasks[id] }))
   .sort((a, b) => (a.name > b.name ? 1 : -1));
 
-const state = shallowReactive({
+const state = reactive({
+  dataSchema: [],
   activeTab: 'tasks',
 });
+
+watch(
+  () => props.workflow.id,
+  () => {
+    const data = props.workflow.dataSchema;
+
+    state.dataSchema = Array.isArray(data) ? data : Object.values(data);
+  },
+  { immediate: true }
+);
+watch(
+  () => state.dataSchema,
+  debounce((value) => {
+    const uniqueData = [...new Set(value)];
+    emit('update-workflow', uniqueData);
+  }, 500),
+  { deep: true }
+);
 </script>

@@ -29,6 +29,7 @@ module.exports = {
   },
   // add your custom rules here
   rules: {
+    'func-names': 'off',
     'import/extensions': [
       'error',
       'always',

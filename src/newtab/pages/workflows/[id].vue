@@ -2,20 +2,15 @@
   <div class="flex items-start">
     <workflow-details-card
       class="mr-6"
+      :workflow="workflow"
       @dragstart="showEmptyState = false"
       @dragend="showEmptyState = true"
+      @update-workflow="updateWorkflowSchema"
     />
     <div class="flex-1 relative">
-      <div class="flex items-center justify-between mb-6">
-        <h1 class="text-xl font-semibold">Tasks</h1>
-        <ui-input
-          v-model="query"
-          placeholder="Search..."
-          prepend-icon="riSearch2Line"
-        />
-      </div>
+      <h1 class="font-semibold text-xl mb-4">Tasks</h1>
       <div
-        v-if="workflowTasks.length === 0 && showEmptyState"
+        v-if="tasks.length === 0 && showEmptyState"
         class="text-center absolute w-full mt-20"
       >
         <div class="inline-block p-6 rounded-lg mb-4 bg-box-transparent">
@@ -38,6 +33,7 @@
               :task="element"
               class="list-item-transition"
               @delete="deleteTask"
+              @update="updateTask"
             />
           </template>
         </draggable>
@@ -57,12 +53,9 @@ import WorkflowTask from '@/components/newtab/workflow/WorkflowTask.vue';
 const route = useRoute();
 const router = useRouter();
 
-const query = ref('');
 const showEmptyState = ref(true);
 
-const workflowTasks = computed(() =>
-  Task.query().where('workflowId', route.params.id).orderBy('order').get()
-);
+const workflow = computed(() => Workflow.find(route.params.id));
 const tasks = computed({
   set(value) {
     const newTasks = value.map((item, index) => {
@@ -70,7 +63,7 @@ const tasks = computed({
 
       if (item.isNewTask) {
         task = {
-          name: item.name,
+          name: '',
           type: item.id,
           createdAt: Date.now(),
           workflowId: route.params.id,
@@ -85,14 +78,28 @@ const tasks = computed({
     Task.insertOrUpdate({ data: newTasks });
   },
   get() {
-    return workflowTasks.value.filter(({ name }) =>
-      name.toLocaleLowerCase().includes(query.value.toLocaleLowerCase())
-    );
+    return Task.query()
+      .where('workflowId', route.params.id)
+      .orderBy('order')
+      .get();
   },
 });
 
 function deleteTask({ id }) {
   Task.delete(id);
+}
+function updateTask(id, data) {
+  Task.update({
+    where: id,
+    data,
+  });
+}
+function updateWorkflowSchema(data) {
+  console.log(data, route.params.id);
+  Workflow.update({
+    where: route.params.id,
+    data: { dataSchema: data },
+  });
 }
 
 onMounted(() => {
@@ -112,24 +119,5 @@ onMounted(() => {
 }
 .ghost-task:not(.workflow-task) * {
   display: none;
-}
-
-.list-item-transition {
-  transition: all 0.4s ease;
-}
-
-.list-leave-active {
-  position: absolute;
-  width: 100%;
-}
-
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-}
-
-.list-enter-from,
-.list-enter-from {
-  transform: translateY(30px);
 }
 </style>

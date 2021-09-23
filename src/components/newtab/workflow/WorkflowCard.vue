@@ -59,7 +59,7 @@ const props = defineProps({
     default: true,
   },
 });
-defineEmits(['delete']);
+defineEmits(['delete', 'rename']);
 
 const formatDate = () => dayjs(props.workflow.createdAt).fromNow();
 </script>

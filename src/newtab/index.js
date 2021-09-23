@@ -6,6 +6,7 @@ import compsUi from '../lib/comps-ui';
 import vRemixicon, { icons } from '../lib/v-remixicon';
 import '../assets/css/tailwind.css';
 import '../assets/css/fonts.css';
+import '../assets/css/style.css';
 
 createApp(App)
   .use(router)

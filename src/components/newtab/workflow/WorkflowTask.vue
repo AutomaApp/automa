@@ -40,8 +40,13 @@
     </div>
     <transition-expand>
       <template v-if="show">
-        <div class="pb-2 px-4">
-          {{ task.type }}
+        <div class="pb-2 pr-4 pl-12 max-w-lg">
+          <ui-input
+            :model-value="task.name"
+            placeholder="Task name"
+            class="w-full"
+            @change="updateTask({ name: $event || currentTask.task })"
+          />
         </div>
       </template>
     </transition-expand>
@@ -59,8 +64,12 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-defineEmits(['delete']);
+const emit = defineEmits(['delete', 'update']);
 
 const show = ref(false);
 const currentTask = computed(() => tasks[props.task.type]);
+
+function updateTask(data) {
+  emit('update', props.task.id, data);
+}
 </script>
