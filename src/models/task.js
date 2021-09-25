@@ -8,6 +8,7 @@ class Task extends Model {
     return {
       id: this.uid(() => nanoid()),
       name: this.string(''),
+      description: this.string(''),
       type: this.string(''),
       createdAt: this.number(),
       data: this.attr(null),

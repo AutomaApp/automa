@@ -1,47 +1,53 @@
 <template>
-  <h1 class="text-2xl font-semibold mb-8">Workflows</h1>
-  <div class="flex items-center mb-6 space-x-4">
-    <ui-input
-      v-model="state.query"
-      prepend-icon="riSearch2Line"
-      placeholder="Search..."
-      class="flex-1"
-    />
-    <div class="flex items-center workflow-sort">
-      <ui-button
-        icon
-        class="rounded-r-none border-gray-300 border-r"
-        @click="state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc'"
-      >
-        <v-remixicon
-          :name="state.sortOrder === 'asc' ? 'riSortAsc' : 'riSortDesc'"
-        />
+  <div class="container pt-8 pb-4">
+    <h1 class="text-2xl font-semibold mb-8">Workflows</h1>
+    <div class="flex items-center mb-6 space-x-4">
+      <ui-input
+        v-model="state.query"
+        prepend-icon="riSearch2Line"
+        placeholder="Search..."
+        class="flex-1"
+      />
+      <div class="flex items-center workflow-sort">
+        <ui-button
+          icon
+          class="rounded-r-none border-gray-300 border-r"
+          @click="state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc'"
+        >
+          <v-remixicon
+            :name="state.sortOrder === 'asc' ? 'riSortAsc' : 'riSortDesc'"
+          />
+        </ui-button>
+        <ui-select v-model="state.sortBy" placeholder="Sort by">
+          <option v-for="sort in sorts" :key="sort.id" :value="sort.id">
+            {{ sort.name }}
+          </option>
+        </ui-select>
+      </div>
+      <ui-button variant="accent" @click="newWorkflow">
+        New workflow
       </ui-button>
-      <ui-select v-model="state.sortBy" placeholder="Sort by">
-        <option v-for="sort in sorts" :key="sort.id" :value="sort.id">
-          {{ sort.name }}
-        </option>
-      </ui-select>
     </div>
-    <ui-button variant="accent" @click="newWorkflow"> New workflow </ui-button>
-  </div>
-  <div v-if="Workflow.all().length === 0" class="py-12 flex items-center">
-    <img src="@/assets/svg/alien.svg" class="w-96" />
-    <div class="ml-4">
-      <h1 class="text-2xl font-semibold max-w-md mb-6">
-        Oppss... It's looks like you don't have any workflows.
-      </h1>
-      <ui-button variant="accent" @click="newWorkflow">New workflow</ui-button>
+    <div v-if="Workflow.all().length === 0" class="py-12 flex items-center">
+      <img src="@/assets/svg/alien.svg" class="w-96" />
+      <div class="ml-4">
+        <h1 class="text-2xl font-semibold max-w-md mb-6">
+          Oppss... It's looks like you don't have any workflows.
+        </h1>
+        <ui-button variant="accent" @click="newWorkflow"
+          >New workflow</ui-button
+        >
+      </div>
     </div>
-  </div>
-  <div v-else class="grid gap-4 grid-cols-5">
-    <workflow-card
-      v-for="workflow in workflows"
-      :key="workflow.id"
-      v-bind="{ workflow }"
-      @delete="deleteWorkflow"
-      @rename="renameWorkflow"
-    />
+    <div v-else class="grid gap-4 grid-cols-5">
+      <workflow-card
+        v-for="workflow in workflows"
+        :key="workflow.id"
+        v-bind="{ workflow }"
+        @delete="deleteWorkflow"
+        @rename="renameWorkflow"
+      />
+    </div>
   </div>
 </template>
 <script setup>

@@ -1,0 +1,173 @@
+.drawflow-node.selected .menu {
+  @apply translate-y-16;
+}
+
+.drawflow .drawflow-node.option .outputs {
+  top: 72px;
+  transform: none;
+}
+.drawflow .drawflow-node.option .output {
+  margin-bottom: 34px;
+}
+
+.drawflow,
+.drawflow .parent-node {
+  position: relative
+}
+
+.parent-drawflow {
+  display: flex;
+  overflow: hidden;
+  touch-action: none;
+  outline: 0
+}
+
+.drawflow {
+  width: 100%;
+  height: 100%;
+  user-select: none
+}
+
+.drawflow .drawflow-node {
+  position: absolute;
+  background: white;
+  min-width: 100px;
+  min-height: 40px;
+  z-index: 2;
+  cursor: move;
+  @apply rounded-lg transition ring-2 ring-transparent duration-200 shadow-lg;
+}
+
+.drawflow .drawflow-node.selected {
+  @apply ring-accent;
+}
+
+.drawflow .drawflow-node .inputs,
+.drawflow .drawflow-node .outputs {
+  z-index: 20;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.drawflow .drawflow-node .inputs {
+  left: -22px;
+}
+.drawflow .drawflow-node .outputs {
+  right: -22px;
+}
+
+.drawflow .drawflow-node .drawflow_content_node {
+  width: 100%;
+  display: block
+}
+
+.drawflow .drawflow-node .input,
+.drawflow .drawflow-node .output {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  cursor: crosshair;
+  z-index: 1;
+  margin-bottom: 5px;
+  border-color: theme('colors.accent');
+  border-width: 3px;
+}
+
+.drawflow .drawflow-node .input {
+  @apply bg-accent;
+}
+
+.drawflow .icon-ui {
+  position: relative;
+}
+
+.drawflow svg:not(.v-remixicon) {
+  z-index: 0;
+  position: absolute;
+  overflow: visible !important
+}
+
+.drawflow .connection {
+  position: absolute;
+  transform: translate(9999px, 9999px)
+}
+
+.drawflow .connection .main-path {
+  fill: none;
+  stroke-width: 5px;
+  stroke: theme('colors.accent');
+  transform: translate(-9999px, -9999px)
+}
+
+.drawflow .connection .main-path:hover {
+  stroke: theme('colors.yellow.300');
+  cursor: pointer
+}
+
+.drawflow .connection .main-path.selected {
+  stroke: theme('colors.green.300');
+}
+
+.drawflow .connection .point {
+  cursor: move;
+  stroke: #000;
+  stroke-width: 2;
+  fill: #fff;
+  transform: translate(-9999px, -9999px)
+}
+
+.drawflow .connection .point.selected,
+.drawflow .connection .point:hover {
+  fill: theme('colors.blue.600');
+}
+
+.drawflow .main-path {
+  fill: none;
+  stroke-width: 5px;
+  stroke: theme('colors.accent');
+}
+
+.drawflow .selectbox {
+  z-index: 3;
+  position: absolute;
+  transform: translate(9999px, 9999px)
+}
+
+.drawflow .selectbox rect {
+  fill: #00f;
+  opacity: .5;
+  stroke: #ff0;
+  stroke-width: 5;
+  stroke-opacity: .5;
+  transform: translate(-9999px, -9999px)
+}
+
+.drawflow-delete {
+  position: absolute;
+  display: block;
+  width: 20px;
+  height: 20px;
+  @apply bg-red-500;
+  color: #fff;
+  z-index: 4;
+  line-height: 20px;
+  font-weight: 700;
+  text-align: center;
+  border-radius: 50%;
+  font-family: monospace;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.drawflow>.drawflow-delete {
+  margin-left: -15px;
+  margin-top: 15px
+}
+
+.parent-node .drawflow-delete {
+  right: -15px;
+  top: -15px
+}

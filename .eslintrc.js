@@ -29,6 +29,7 @@ module.exports = {
   },
   // add your custom rules here
   rules: {
+    'no-undef': 'off',
     'func-names': 'off',
     'import/extensions': [
       'error',
@@ -47,6 +48,7 @@ module.exports = {
           'state', // for vuex state
           'acc', // for reduce accumulators
           'e', // for e.returnvalue
+          'arr',
         ],
       },
     ],

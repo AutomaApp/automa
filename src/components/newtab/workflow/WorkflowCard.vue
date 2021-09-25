@@ -8,7 +8,7 @@
       <button>
         <v-remixicon name="riPlayLine" />
       </button>
-      <ui-popover v-if="showDetails" class="ml-3 h-6">
+      <ui-popover v-if="showDetails" class="ml-2 h-6">
         <template #trigger>
           <button>
             <v-remixicon name="riMoreLine" />
@@ -20,7 +20,7 @@
             class="cursor-pointer"
             @click="$emit('rename', workflow)"
           >
-            <v-remixicon name="riPencilLine" class="mr-3 -ml-1" />
+            <v-remixicon name="riPencilLine" class="mr-2 -ml-1" />
             <span>Rename</span>
           </ui-list-item>
           <ui-list-item
@@ -28,7 +28,7 @@
             class="text-red-500 cursor-pointer"
             @click="$emit('delete', workflow)"
           >
-            <v-remixicon name="riDeleteBin7Line" class="mr-3 -ml-1" />
+            <v-remixicon name="riDeleteBin7Line" class="mr-2 -ml-1" />
             <span>Delete</span>
           </ui-list-item>
         </ui-list>

@@ -1,57 +1,73 @@
 <template>
-  <ui-card class="w-80 h-full sticky top-[10px]" padding="p-0">
-    <div class="mb-4 px-4 pt-4">
+  <div
+    class="w-80 bg-white py-4 relative border-l border-gray-100 flex flex-col"
+    padding="p-0"
+  >
+    <div class="px-4 mb-2">
       <span
-        class="p-2 inline-block align-middle rounded-lg bg-box-transparent mr-2"
+        class="
+          p-2
+          inline-block
+          rounded-lg
+          bg-accent
+          text-white
+          mr-2
+          align-middle
+        "
       >
-        <v-remixicon name="riGlobalLine" />
+        <v-remixicon :name="workflow.icon" />
       </span>
-      <p class="font-semibold text-lg inline-block align-middle">
-        Workflow name
+      <p class="font-semibold inline-block text-lg flex-1 mr-4 align-middle">
+        {{ workflow.name }}
       </p>
     </div>
-    <div class="flex items-center px-4">
-      <ui-button variant="accent" class="flex-1 mr-2">
-        <v-remixicon class="-ml-1 mr-1" name="riPlayLine" />
-        Execute
-      </ui-button>
-      <ui-button icon>
-        <v-remixicon name="riDeleteBin7Line" />
-      </ui-button>
-    </div>
-    <ui-tabs v-model="state.activeTab" fill class="m-4">
-      <ui-tab value="tasks">Tasks</ui-tab>
+    <ui-tabs v-model="state.activeTab" fill class="mx-4 mb-4">
+      <ui-tab value="blocks">Blocks</ui-tab>
       <ui-tab value="data-schema">Data Columns</ui-tab>
     </ui-tabs>
+    <!-- <div class="px-4 mb-2">
+      <ui-input prepend-icon="riSearch2Line" class="w-full" placeholder="Search..." />
+    </div> -->
     <ui-tab-panels
       v-model="state.activeTab"
-      class="scroll bg-scroll overflow-auto pb-4 px-4"
-      style="max-height: calc(100vh - 240px); overflow: overlay"
+      class="scroll bg-scroll overflow-auto px-4 flex-1"
+      style="overflow: overlay"
     >
-      <ui-tab-panel value="tasks">
-        <draggable
-          :list="taskList"
-          :sort="false"
-          :group="{ name: 'tasks', pull: 'clone', put: false }"
-          item-key="id"
-          ghost-class="ghost"
-          class="grid grid-cols-2 gap-2"
-          @start="$emit('dragstart')"
-          @end="$emit('dragend')"
-        >
-          <template #item="{ element }">
+      <ui-tab-panel value="blocks">
+        <template v-for="(items, catId) in taskList" :key="catId">
+          <div class="flex items-center top-0 space-x-2 mb-2">
+            <span
+              :class="categories[catId].color"
+              class="h-3 w-3 rounded-full"
+            ></span>
+            <p class="capitalize text-gray-600">{{ categories[catId].name }}</p>
+          </div>
+          <div class="grid grid-cols-2 gap-2 mb-4">
             <div
-              :title="element.name"
-              style="cursor: grab"
-              class="select-none group p-4 rounded-lg bg-input transition"
+              v-for="task in items"
+              :key="task.id"
+              :title="task.name"
+              draggable="true"
+              class="
+                select-none
+                cursor-move
+                relative
+                p-4
+                rounded-lg
+                bg-input
+                transition
+              "
+              @dragstart="
+                $event.dataTransfer.setData('block', JSON.stringify(task))
+              "
             >
-              <v-remixicon :name="element.icon" size="24" class="mb-3" />
+              <v-remixicon :name="task.icon" size="24" class="mb-2" />
               <p class="leading-tight text-overflow">
-                {{ element.name }}
+                {{ task.name }}
               </p>
             </div>
-          </template>
-        </draggable>
+          </div>
+        </template>
       </ui-tab-panel>
       <ui-tab-panel value="data-schema" class="pt-1">
         <div class="mb-4 space-y-2">
@@ -63,7 +79,7 @@
             >
               <ui-input
                 v-model="state.dataSchema[index]"
-                class="mr-4"
+                class="mr-2"
                 placeholder="Column name"
               />
               <button @click="state.dataSchema.splice(index, 1)">
@@ -77,13 +93,11 @@
         </ui-button>
       </ui-tab-panel>
     </ui-tab-panels>
-  </ui-card>
+  </div>
 </template>
 <script setup>
-/* eslint-disable no-undef */
 import { reactive, watch } from 'vue';
-import Draggable from 'vuedraggable';
-import { tasks } from '@/utils/shared';
+import { tasks, categories } from '@/utils/shared';
 import { debounce } from '@/utils/helper';
 
 const props = defineProps({
@@ -92,15 +106,20 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-const emit = defineEmits(['dragstart', 'dragend', 'update-workflow']);
+const emit = defineEmits(['update-workflow']);
 
-const taskList = Object.keys(tasks)
-  .map((id) => ({ id, isNewTask: true, ...tasks[id] }))
-  .sort((a, b) => (a.name > b.name ? 1 : -1));
+const taskList = Object.keys(tasks).reduce((arr, key) => {
+  const task = tasks[key];
+
+  (arr[task.category] = arr[task.category] || []).push({ id: key, ...task });
+
+  return arr;
+}, {});
 
 const state = reactive({
+  show: false,
   dataSchema: [],
-  activeTab: 'tasks',
+  activeTab: 'blocks',
 });
 
 watch(

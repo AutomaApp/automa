@@ -16,6 +16,13 @@ module.exports = {
         sans: ['Poppins', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
+      container: {
+        center: true,
+        padding: {
+          DEFAULT: '1rem',
+          sm: '2rem',
+        },
+      },
     },
   },
   variants: {

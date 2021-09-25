@@ -2472,6 +2472,11 @@ dot-case@^3.0.4:
     no-case "^3.0.4"
     tslib "^2.0.3"
 
+drawflow@^0.0.49:
+  version "0.0.49"
+  resolved "https://registry.yarnpkg.com/drawflow/-/drawflow-0.0.49.tgz#0dfc86d1b83757a3c6625caaa74fd4a2e399fdf0"
+  integrity sha512-oNTJ2BqUAGaM6KILWD4blpOs7q6CwFId8ZZXRqSCidyaKgDnhdkDREaPOfPaRa05TAOnGjYGde4ijZ0DpyYcIA==
+
 ee-first@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
@@ -6524,10 +6529,10 @@ uuid@^3.3.2, uuid@^3.4.0:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
 
-v-remixicon@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/v-remixicon/-/v-remixicon-0.1.0.tgz#3d3f4ea261138cd75d6250b30c9ae42830ee99c9"
-  integrity sha512-5tGnFPRmipEYdLY0JMRiXKE527jA3YCHfNBuHNPtPueWfMQcjqZN/AsxCONj+QlTQirQ5rfGnWKiX8sNT75PYg==
+v-remixicon@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/v-remixicon/-/v-remixicon-0.1.1.tgz#60f58e205991371a9386ea750aa0054b6cf43df6"
+  integrity sha512-xnIZWajndAQ1WBtIFKgLYB/BKx+Rmo9304zp67q3WQMx9LNROg/k+N9gkU7r/VdNVOTHNQcs+pxmbfugUqQrPA==
 
 v8-compile-cache@^2.0.3, v8-compile-cache@^2.2.0:
   version "2.3.0"

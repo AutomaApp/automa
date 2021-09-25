@@ -39,24 +39,42 @@
       />
     </div>
     <transition-expand>
-      <template v-if="show">
-        <div class="pb-2 pr-4 pl-12 max-w-lg">
+      <div v-if="show" class="py-2 pr-4 pl-12 max-w-xl">
+        <div class="flex items-center mb-2">
           <ui-input
             :model-value="task.name"
             placeholder="Task name"
-            class="w-full"
+            class="flex-1"
             @change="updateTask({ name: $event || currentTask.task })"
           />
+          <ui-input
+            v-if="currentTask.needWebsite"
+            placeholder="Website"
+            class="flex-1 ml-2"
+          />
         </div>
-      </template>
+        <div v-if="currentTask.needSelector" class="flex items-center">
+          <ui-button icon class="mr-2">
+            <v-remixicon name="riFocus3Line" />
+          </ui-button>
+          <ui-input placeholder="Element selector" class="mr-4 flex-1" />
+          <ui-checkbox>Multiple</ui-checkbox>
+        </div>
+        <!-- <component is="TaskClickElement" /> -->
+      </div>
     </transition-expand>
   </div>
 </template>
-<script setup>
-/* eslint-disable no-undef */
-
+<script>
 import { ref, computed } from 'vue';
+import TaskClickElement from './task/TaskClickElement.vue';
+</script>
+<script setup>
 import { tasks } from '@/utils/shared';
+
+export default {
+  components: { TaskClickElement },
+};
 
 const props = defineProps({
   task: {

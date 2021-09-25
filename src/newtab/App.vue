@@ -1,6 +1,6 @@
 <template>
   <app-sidebar />
-  <main class="pl-16 container mx-auto pr-2 pt-6 pb-4">
+  <main class="pl-16">
     <router-view v-if="retrieved" />
   </main>
   <ui-dialog />
