@@ -31,7 +31,7 @@
 .drawflow .drawflow-node {
   position: absolute;
   background: white;
-  min-width: 100px;
+  min-width: 150px;
   min-height: 40px;
   z-index: 2;
   cursor: move;

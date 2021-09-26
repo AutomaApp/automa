@@ -7,12 +7,9 @@ class Task extends Model {
   static fields() {
     return {
       id: this.uid(() => nanoid()),
-      name: this.string(''),
       description: this.string(''),
       type: this.string(''),
-      createdAt: this.number(),
       data: this.attr(null),
-      order: this.number(0),
       workflowId: this.attr(null),
     };
   }

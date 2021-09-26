@@ -21,10 +21,17 @@
         {{ workflow.name }}
       </p>
     </div>
-    <ui-tabs v-model="state.activeTab" fill class="mx-4 mb-4">
+    <div class="flex px-4 mt-2">
+      <ui-button variant="accent" class="flex-1 mr-4"> Execute </ui-button>
+      <ui-button icon class="text-red-500">
+        <v-remixicon name="riDeleteBin7Line" />
+      </ui-button>
+    </div>
+    <hr class="m-4 border-gray-100" />
+    <!-- <ui-tabs v-model="state.activeTab" fill class="mx-4 mb-4">
       <ui-tab value="blocks">Blocks</ui-tab>
       <ui-tab value="data-schema">Data Columns</ui-tab>
-    </ui-tabs>
+    </ui-tabs> -->
     <!-- <div class="px-4 mb-2">
       <ui-input prepend-icon="riSearch2Line" class="w-full" placeholder="Search..." />
     </div> -->

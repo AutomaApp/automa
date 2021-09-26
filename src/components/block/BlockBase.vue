@@ -1,5 +1,5 @@
 <template>
-  <div ref="rootRef" class="group relative">
+  <div ref="rootRef" class="group relative overflow-x-hiddenx">
     <div
       class="
         z-10
@@ -16,10 +16,12 @@
         :class="categories[state.blockData.category]?.color"
         class="inline-block p-2 mr-2 rounded-lg bg-green-200"
       >
-        <v-remixicon :path="icons[state.blockData.icon]" />
+        <v-remixicon
+          :path="icons[state.blockData.icon] || icons.riGlobalLine"
+        />
       </span>
       <div style="max-width: 220px">
-        <p class="font-semibold leading-none">
+        <p class="font-semibold leading-none whitespace-nowrap">
           {{ state.blockData.name }}
         </p>
         <p class="text-gray-600 text-overflow leading-tight">

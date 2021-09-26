@@ -42,7 +42,7 @@ export const tasks = {
   'export-data': {
     name: 'Export data',
     icon: 'riDownloadLine',
-    component: 'task-',
+    component: 'BlockBase',
     category: 'general',
     inputs: 1,
     outputs: 1,
@@ -62,7 +62,7 @@ export const tasks = {
   'get-attribute': {
     name: 'Get attribute',
     icon: 'riBracketsLine',
-    component: 'task-',
+    component: 'BlockBase',
     category: 'interaction',
     inputs: 1,
     outputs: 1,
@@ -72,7 +72,7 @@ export const tasks = {
   'open-website': {
     name: 'Open website',
     icon: 'riGlobalLine',
-    component: 'task-',
+    component: 'BlockBase',
     category: 'general',
     inputs: 1,
     outputs: 1,
@@ -82,7 +82,7 @@ export const tasks = {
   'text-input': {
     name: 'Text input',
     icon: 'riInputCursorMove',
-    component: 'task-',
+    component: 'BlockBase',
     category: 'interaction',
     inputs: 1,
     outputs: 1,
@@ -92,7 +92,7 @@ export const tasks = {
   'repeat-task': {
     name: 'Repeat tasks',
     icon: 'riRepeat2Line',
-    component: 'task-',
+    component: 'BlockBase',
     category: 'general',
     inputs: 1,
     outputs: 1,
@@ -102,7 +102,7 @@ export const tasks = {
   'trigger-element-events': {
     name: 'Trigger element events',
     icon: 'riLightbulbFlashLine',
-    component: 'task-',
+    component: 'BlockBase',
     category: 'interaction',
     inputs: 1,
     outputs: 1,

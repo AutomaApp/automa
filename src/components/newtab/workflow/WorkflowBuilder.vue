@@ -1,12 +1,11 @@
 <template>
-  <div class="relative">
-    <div
-      id="drawflow"
-      class="h-full w-full"
-      @drop="dropHandler"
-      @dragover.prevent
-    ></div>
-    <div class="absolute m-4 bottom-0 left-0">
+  <div
+    id="drawflow"
+    class="parent-drawflow relative"
+    @drop="dropHandler"
+    @dragover.prevent
+  >
+    <div class="absolute p-4 bottom-0 left-0">
       <button class="p-2 rounded-lg bg-white mr-2" @click="editor.zoom_reset()">
         <v-remixicon name="riFullscreenLine" />
       </button>
@@ -23,18 +22,24 @@
   </div>
 </template>
 <script>
-import { onMounted, shallowRef } from 'vue';
+import { onMounted, onUnmounted, shallowRef } from 'vue';
 import drawflow from '@/lib/drawflow';
 
 export default {
-  setup() {
+  props: {
+    data: {
+      type: Object,
+      default: null,
+    },
+  },
+  emits: ['addBlock', 'deleteBlock', 'saveWorkflow'],
+  setup(props, { emit }) {
     const editor = shallowRef(null);
 
     function dropHandler({ dataTransfer, clientX, clientY }) {
       const block = JSON.parse(dataTransfer.getData('block') || null);
 
       if (!block) return;
-      console.log(block);
 
       const xPosition =
         clientX *
@@ -63,24 +68,37 @@ export default {
         'vue'
       );
     }
+    function saveWorkflow() {
+      emit('saveWorkflow', editor.value.export());
+    }
 
     onMounted(() => {
+      window.addEventListener('beforeunload', saveWorkflow);
+      console.log(props, props.data.drawflow.Home.data);
       const element = document.querySelector('#drawflow');
 
       editor.value = drawflow(element);
-      console.log(editor.value);
       editor.value.start();
-      editor.value.addNode(
-        'trigger',
-        0,
-        1,
-        50,
-        300,
-        'trigger',
-        {},
-        'BlockBase',
-        'vue'
-      );
+
+      if (props.data) {
+        editor.value.import(props.data);
+      } else {
+        editor.value.addNode(
+          'trigger',
+          0,
+          1,
+          50,
+          300,
+          'trigger',
+          {},
+          'BlockBase',
+          'vue'
+        );
+      }
+    });
+    onUnmounted(() => {
+      saveWorkflow();
+      window.removeEventListener('beforeunload', saveWorkflow);
     });
 
     return {
