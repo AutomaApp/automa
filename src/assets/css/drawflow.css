@@ -25,7 +25,7 @@
 .drawflow {
   width: 100%;
   height: 100%;
-  user-select: none
+  user-select: none;
 }
 
 .drawflow .drawflow-node {
@@ -99,7 +99,8 @@
   fill: none;
   stroke-width: 5px;
   stroke: theme('colors.accent');
-  transform: translate(-9999px, -9999px)
+  transform: translate(-9999px, -9999px);
+  transition: stroke 100ms ease-in-out;
 }
 
 .drawflow .connection .main-path:hover {
@@ -116,7 +117,7 @@
   stroke: #000;
   stroke-width: 2;
   fill: #fff;
-  transform: translate(-9999px, -9999px)
+  transform: translate(-9999px, -9999px);
 }
 
 .drawflow .connection .point.selected,

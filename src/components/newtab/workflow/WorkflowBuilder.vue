@@ -1,5 +1,26 @@
 <template>
-  <div id="drawflow" @drop="dropHandler" @dragover.prevent></div>
+  <div class="relative">
+    <div
+      id="drawflow"
+      class="h-full w-full"
+      @drop="dropHandler"
+      @dragover.prevent
+    ></div>
+    <div class="absolute m-4 bottom-0 left-0">
+      <button class="p-2 rounded-lg bg-white mr-2" @click="editor.zoom_reset()">
+        <v-remixicon name="riFullscreenLine" />
+      </button>
+      <div class="rounded-lg bg-white inline-block">
+        <button class="p-2 rounded-lg relative z-10" @click="editor.zoom_out()">
+          <v-remixicon name="riSubtractLine" />
+        </button>
+        <hr class="h-6 border-r inline-block" />
+        <button class="p-2 rounded-lg" @click="editor.zoom_in()">
+          <v-remixicon name="riAddLine" />
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 <script>
 import { onMounted, shallowRef } from 'vue';
@@ -32,8 +53,8 @@ export default {
 
       editor.value.addNode(
         block.id,
-        1,
-        1,
+        block.inputs,
+        block.outputs,
         xPosition,
         yPosition,
         block.id,
@@ -47,9 +68,23 @@ export default {
       const element = document.querySelector('#drawflow');
 
       editor.value = drawflow(element);
+      console.log(editor.value);
+      editor.value.start();
+      editor.value.addNode(
+        'trigger',
+        0,
+        1,
+        50,
+        300,
+        'trigger',
+        {},
+        'BlockBase',
+        'vue'
+      );
     });
 
     return {
+      editor,
       dropHandler,
     };
   },

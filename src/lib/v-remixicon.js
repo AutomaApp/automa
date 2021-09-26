@@ -1,6 +1,7 @@
 import vRemixicon from 'v-remixicon';
 import {
   riHome5Line,
+  riSubtractLine,
   riPlayLine,
   riPauseLine,
   riSearch2Line,
@@ -17,6 +18,7 @@ import {
   riHistoryLine,
   riArrowDropDownLine,
   riAddLine,
+  riFullscreenLine,
   riSortAsc,
   riSortDesc,
   riGlobalLine,
@@ -41,6 +43,7 @@ import {
 
 export const icons = {
   riHome5Line,
+  riSubtractLine,
   riPlayLine,
   riPauseLine,
   riSearch2Line,
@@ -57,6 +60,7 @@ export const icons = {
   riHistoryLine,
   riArrowDropDownLine,
   riAddLine,
+  riFullscreenLine,
   riSortAsc,
   riSortDesc,
   riGlobalLine,
