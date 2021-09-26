@@ -23,6 +23,7 @@
 </template>
 <script>
 import { onMounted, onUnmounted, shallowRef } from 'vue';
+import emitter from 'tiny-emitter/instance';
 import drawflow from '@/lib/drawflow';
 
 export default {
@@ -71,10 +72,11 @@ export default {
     function saveWorkflow() {
       emit('saveWorkflow', editor.value.export());
     }
+    function deleteBlock(id) {
+      editor.value.removeNodeId(`node-${id}`);
+    }
 
     onMounted(() => {
-      window.addEventListener('beforeunload', saveWorkflow);
-      console.log(props, props.data.drawflow.Home.data);
       const element = document.querySelector('#drawflow');
 
       editor.value = drawflow(element);
@@ -95,9 +97,14 @@ export default {
           'vue'
         );
       }
+
+      emitter.on('block:delete', deleteBlock);
+
+      window.addEventListener('beforeunload', saveWorkflow);
     });
     onUnmounted(() => {
       saveWorkflow();
+      emitter.off('block:delete', deleteBlock);
       window.removeEventListener('beforeunload', saveWorkflow);
     });
 

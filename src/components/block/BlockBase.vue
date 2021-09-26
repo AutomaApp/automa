@@ -46,7 +46,10 @@
           <v-remixicon size="20" :path="icons.riPencilLine" />
         </button>
         <hr class="border-r border-gray-600 h-5 mx-3" />
-        <button class="-mr-1">
+        <button
+          class="-mr-1"
+          @click="emitter.emit('block:delete', state.blockId)"
+        >
           <v-remixicon size="20" :path="icons.riDeleteBin7Line" />
         </button>
       </div>
@@ -56,6 +59,7 @@
 <script setup>
 import { ref, nextTick, shallowReactive } from 'vue';
 import { VRemixIcon as VRemixicon } from 'v-remixicon';
+import emitter from 'tiny-emitter/instance';
 import { icons } from '@/lib/v-remixicon';
 import { tasks, categories } from '@/utils/shared';
 
