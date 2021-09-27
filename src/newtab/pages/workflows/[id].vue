@@ -1,43 +1,89 @@
 <template>
   <div class="flex h-screen">
-    <workflow-details-card :workflow="workflow" />
+    <div
+      class="w-80 bg-white py-4 relative border-l border-gray-100 flex flex-col"
+    >
+      <workflow-edit-block
+        v-if="state.isEditBlock"
+        :data="state.blockData"
+        @update="updateBlockData"
+        @close="(state.isEditBlock = false), (state.blockData = {})"
+      />
+      <workflow-details-card
+        v-else
+        :workflow="workflow"
+        @save="saveWorkflow"
+        @execute="executeWorkflow"
+        @update="updateWorkflow"
+      />
+    </div>
     <workflow-builder
       class="flex-1"
       :data="workflow.drawflow"
+      @load="editor = $event"
       @addBlock="addBlock"
       @deleteBlock="deleteBlock"
-      @saveWorkflow="saveWorkflow"
+      @export="updateWorkflow({ drawflow: $event })"
     />
   </div>
 </template>
 <script setup>
-import { computed, onMounted } from 'vue';
+import { computed, reactive, shallowRef, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import emitter from 'tiny-emitter/instance';
 import Task from '@/models/task';
 import Workflow from '@/models/workflow';
+import { debounce } from '@/utils/helper';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';
+import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
 
 const route = useRoute();
 const router = useRouter();
 
 const workflowId = route.params.id;
+
+const editor = shallowRef(null);
+const state = reactive({
+  isEditBlock: true,
+  blockData: {},
+});
 const workflow = computed(() => Workflow.find(workflowId) || {});
 
+const updateBlockData = debounce((data) => {
+  state.blockData.data = data;
+  editor.value.updateNodeDataFromId(state.blockData.blockId, data);
+  console.log(editor.value.export());
+}, 250);
 function addBlock(data) {
   Task.insert({
     data: { ...data, workflowId },
   });
 }
 function deleteBlock(id) {
-  Task.delete(id);
+  if (state.isEditBlock && state.blockData.blockId === id) {
+    state.isEditBlock = false;
+    state.blockData = {};
+  }
 }
-function saveWorkflow(data) {
-  console.log('saved', workflowId, data);
+function updateWorkflow(data) {
   Workflow.update({
     where: workflowId,
-    data: { drawflow: data },
+    data,
   });
+}
+function saveWorkflow() {
+  const data = editor.value.export();
+
+  updateWorkflow({ drawflow: JSON.stringify(data) });
+}
+function editBlock(data) {
+  console.log(data);
+  state.isEditBlock = true;
+  state.blockData = data;
+}
+function executeWorkflow() {
+  console.log(editor.value);
 }
 
 onMounted(() => {
@@ -46,6 +92,11 @@ onMounted(() => {
   if (!isWorkflowExists) {
     router.push('/workflows');
   }
+
+  emitter.on('editor:edit-block', editBlock);
+});
+onUnmounted(() => {
+  emitter.off('editor:edit-block', editBlock);
 });
 </script>
 <style>

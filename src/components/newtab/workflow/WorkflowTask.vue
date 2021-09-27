@@ -60,21 +60,12 @@
           <ui-input placeholder="Element selector" class="mr-4 flex-1" />
           <ui-checkbox>Multiple</ui-checkbox>
         </div>
-        <!-- <component is="TaskClickElement" /> -->
       </div>
     </transition-expand>
   </div>
 </template>
-<script>
-import { ref, computed } from 'vue';
-import TaskClickElement from './task/TaskClickElement.vue';
-</script>
 <script setup>
 import { tasks } from '@/utils/shared';
-
-export default {
-  components: { TaskClickElement },
-};
 
 const props = defineProps({
   task: {

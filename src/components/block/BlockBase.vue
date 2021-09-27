@@ -42,13 +42,13 @@
       "
     >
       <div class="bg-accent px-4 py-2 text-white rounded-lg flex items-center">
-        <button class="-ml-1">
+        <button class="-ml-1" @click="editBlock">
           <v-remixicon size="20" :path="icons.riPencilLine" />
         </button>
         <hr class="border-r border-gray-600 h-5 mx-3" />
         <button
           class="-mr-1"
-          @click="emitter.emit('block:delete', state.blockId)"
+          @click="editor.removeNodeId(`node-${state.blockId}`)"
         >
           <v-remixicon size="20" :path="icons.riDeleteBin7Line" />
         </button>
@@ -76,6 +76,15 @@ const state = shallowReactive({
   blockData: {},
 });
 
+function editBlock() {
+  const { data } = props.editor.getNodeFromId(state.blockId);
+  emitter.emit('editor:edit-block', {
+    ...state.blockData,
+    data,
+    blockId: state.blockId,
+  });
+}
+
 nextTick(() => {
   state.blockId = rootRef.value?.parentElement.parentElement.id.replace(
     'node-',
@@ -85,7 +94,7 @@ nextTick(() => {
   if (state.blockId) {
     const { name } = props.editor.getNodeFromId(state.blockId);
 
-    state.blockData = tasks[name];
+    state.blockData = { id: name, ...tasks[name] };
   }
 });
 </script>

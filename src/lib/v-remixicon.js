@@ -1,6 +1,7 @@
 import vRemixicon from 'v-remixicon';
 import {
   riHome5Line,
+  riSaveLine,
   riSubtractLine,
   riPlayLine,
   riPauseLine,
@@ -43,6 +44,7 @@ import {
 
 export const icons = {
   riHome5Line,
+  riSaveLine,
   riSubtractLine,
   riPlayLine,
   riPauseLine,

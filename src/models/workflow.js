@@ -13,7 +13,7 @@ class Workflow extends Model {
       name: this.string(''),
       icon: this.string('riGlobalLine'),
       data: this.attr(null),
-      drawflow: this.attr(null),
+      drawflow: this.string(''),
       dataSchema: this.attr([]),
       lastRunAt: this.number(),
       createdAt: this.number(),

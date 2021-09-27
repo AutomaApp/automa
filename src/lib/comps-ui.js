@@ -20,7 +20,7 @@ function componentsExtractor(app, components) {
 export default function (app) {
   app.directive('autofocus', VAutofocus);
   app.directive('close-popover', VClosePopover);
-
+  console.log(app);
   componentsExtractor(app, uiComponents);
   componentsExtractor(app, transitionComponents);
 }

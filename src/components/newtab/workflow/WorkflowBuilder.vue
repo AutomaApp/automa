@@ -5,7 +5,7 @@
     @drop="dropHandler"
     @dragover.prevent
   >
-    <div class="absolute p-4 bottom-0 left-0">
+    <div class="absolute z-10 p-4 bottom-0 left-0">
       <button class="p-2 rounded-lg bg-white mr-2" @click="editor.zoom_reset()">
         <v-remixicon name="riFullscreenLine" />
       </button>
@@ -22,18 +22,17 @@
   </div>
 </template>
 <script>
-import { onMounted, onUnmounted, shallowRef } from 'vue';
-import emitter from 'tiny-emitter/instance';
+import { onMounted, shallowRef, getCurrentInstance } from 'vue';
 import drawflow from '@/lib/drawflow';
 
 export default {
   props: {
     data: {
-      type: Object,
+      type: [Object, String],
       default: null,
     },
   },
-  emits: ['addBlock', 'deleteBlock', 'saveWorkflow'],
+  emits: ['addBlock', 'export', 'load', 'deleteBlock'],
   setup(props, { emit }) {
     const editor = shallowRef(null);
 
@@ -64,26 +63,26 @@ export default {
         xPosition,
         yPosition,
         block.id,
-        { id: block.id, name: block.name },
+        { id: block.id, name: block.name, data: block.data },
         block.component,
         'vue'
       );
     }
-    function saveWorkflow() {
-      emit('saveWorkflow', editor.value.export());
-    }
-    function deleteBlock(id) {
-      editor.value.removeNodeId(`node-${id}`);
-    }
 
     onMounted(() => {
-      const element = document.querySelector('#drawflow');
+      const element = document.querySelector('#drawflow', getCurrentInstance());
 
       editor.value = drawflow(element);
       editor.value.start();
 
+      emit('load', editor.value);
+
       if (props.data) {
-        editor.value.import(props.data);
+        console.log(props.data, 'asas');
+        const data =
+          typeof props.data === 'string' ? JSON.parse(props.data) : props.data;
+
+        editor.value.import(data);
       } else {
         editor.value.addNode(
           'trigger',
@@ -92,20 +91,15 @@ export default {
           50,
           300,
           'trigger',
-          {},
+          { type: 'manual' },
           'BlockBase',
           'vue'
         );
       }
 
-      emitter.on('block:delete', deleteBlock);
-
-      window.addEventListener('beforeunload', saveWorkflow);
-    });
-    onUnmounted(() => {
-      saveWorkflow();
-      emitter.off('block:delete', deleteBlock);
-      window.removeEventListener('beforeunload', saveWorkflow);
+      editor.value.on('nodeRemoved', (id) => {
+        emit('deleteBlock', id);
+      });
     });
 
     return {
