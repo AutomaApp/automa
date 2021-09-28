@@ -22,13 +22,15 @@
             placeholder,
             type,
             autofocus,
+            min,
+            max,
           }"
-          class="py-2 px-4 rounded-lg w-full bg-input bg-transparent transition"
           :class="{
             'opacity-75 pointer-events-none': disabled,
             'pl-10': prependIcon || $slots.prepend,
           }"
           :value="modelValue"
+          class="py-2 px-4 rounded-lg w-full bg-input bg-transparent transition"
           @keydown="$emit('keydown', $event)"
           @input="emitValue"
         />
@@ -73,6 +75,14 @@ export default {
     placeholder: {
       type: String,
       default: '',
+    },
+    max: {
+      type: [String, Number],
+      default: null,
+    },
+    min: {
+      type: [String, Number],
+      default: null,
     },
   },
   emits: ['update:modelValue', 'change', 'keydown'],

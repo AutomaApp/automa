@@ -13,20 +13,26 @@
       "
     >
       <span
-        :class="categories[state.blockData.category]?.color"
+        :class="categories[state.blockDetails.category]?.color"
         class="inline-block p-2 mr-2 rounded-lg bg-green-200"
       >
         <v-remixicon
-          :path="icons[state.blockData.icon] || icons.riGlobalLine"
+          :path="icons[state.blockDetails.icon] || icons.riGlobalLine"
         />
       </span>
-      <div style="max-width: 220px">
+      <div style="max-width: 200px">
         <p class="font-semibold leading-none whitespace-nowrap">
-          {{ state.blockData.name }}
+          {{ state.blockDetails.name }}
         </p>
         <p class="text-gray-600 text-overflow leading-tight">
           {{ state.blockData.description }}
         </p>
+        <input
+          type="text"
+          class="hidden trigger"
+          disabled="true"
+          @change="handleDataChange"
+        />
       </div>
     </div>
     <div
@@ -57,7 +63,7 @@
   </div>
 </template>
 <script setup>
-import { ref, nextTick, shallowReactive } from 'vue';
+import { ref, nextTick, reactive } from 'vue';
 import { VRemixIcon as VRemixicon } from 'v-remixicon';
 import emitter from 'tiny-emitter/instance';
 import { icons } from '@/lib/v-remixicon';
@@ -71,30 +77,39 @@ const props = defineProps({
 });
 
 const rootRef = ref(null);
-const state = shallowReactive({
+const state = reactive({
   blockId: '',
+  blockDetails: {},
   blockData: {},
 });
 
 function editBlock() {
-  const { data } = props.editor.getNodeFromId(state.blockId);
   emitter.emit('editor:edit-block', {
-    ...state.blockData,
-    data,
+    ...state.blockDetails,
+    data: state.blockData,
     blockId: state.blockId,
   });
 }
+function handleDataChange() {
+  const { data } = props.editor.getNodeFromId(state.blockId);
+
+  state.blockData = data;
+}
 
 nextTick(() => {
+  if (state.blockId) return;
+
   state.blockId = rootRef.value?.parentElement.parentElement.id.replace(
     'node-',
     ''
   );
 
   if (state.blockId) {
-    const { name } = props.editor.getNodeFromId(state.blockId);
+    const { name, data } = props.editor.getNodeFromId(state.blockId);
+    const details = tasks[name];
 
-    state.blockData = { id: name, ...tasks[name] };
+    state.blockDetails = { id: name, ...details };
+    state.blockData = data || details.data;
   }
 });
 </script>

@@ -53,7 +53,12 @@ const workflow = computed(() => Workflow.find(workflowId) || {});
 const updateBlockData = debounce((data) => {
   state.blockData.data = data;
   editor.value.updateNodeDataFromId(state.blockData.blockId, data);
-  console.log(editor.value.export());
+
+  const inputEl = document.querySelector(
+    `#node-${state.blockData.blockId} input.trigger`
+  );
+
+  if (inputEl) inputEl.dispatchEvent(new Event('change'));
 }, 250);
 function addBlock(data) {
   Task.insert({
@@ -78,7 +83,6 @@ function saveWorkflow() {
   updateWorkflow({ drawflow: JSON.stringify(data) });
 }
 function editBlock(data) {
-  console.log(data);
   state.isEditBlock = true;
   state.blockData = data;
 }

@@ -78,7 +78,6 @@ export default {
       emit('load', editor.value);
 
       if (props.data) {
-        console.log(props.data, 'asas');
         const data =
           typeof props.data === 'string' ? JSON.parse(props.data) : props.data;
 

@@ -22,12 +22,12 @@
 <script>
 import { computed } from 'vue';
 import EditTrigger from './edit/EditTrigger.vue';
-</script>
-<script setup>
+
 export default {
   components: { EditTrigger },
 };
-
+</script>
+<script setup>
 const props = defineProps({
   data: {
     type: Object,
@@ -38,7 +38,6 @@ const emit = defineEmits(['close', 'update']);
 
 const blockData = computed({
   get() {
-    console.log(props.data);
     return props.data.data || {};
   },
   set(value) {

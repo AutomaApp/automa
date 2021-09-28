@@ -6,7 +6,7 @@
   <ui-dialog />
 </template>
 <script setup>
-import { onMounted, ref, getCurrentInstance } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import browser from 'webextension-polyfill';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
@@ -14,7 +14,6 @@ import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 const store = useStore();
 
 const retrieved = ref(false);
-console.log(getCurrentInstance(), AppSidebar);
 
 onMounted(async () => {
   try {
