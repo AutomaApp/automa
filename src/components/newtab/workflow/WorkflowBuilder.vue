@@ -63,7 +63,7 @@ export default {
         xPosition,
         yPosition,
         block.id,
-        { id: block.id, name: block.name, data: block.data },
+        block.data,
         block.component,
         'vue'
       );

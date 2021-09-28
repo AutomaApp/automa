@@ -45,7 +45,7 @@ const workflowId = route.params.id;
 
 const editor = shallowRef(null);
 const state = reactive({
-  isEditBlock: true,
+  isEditBlock: false,
   blockData: {},
 });
 const workflow = computed(() => Workflow.find(workflowId) || {});
@@ -79,7 +79,7 @@ function updateWorkflow(data) {
 }
 function saveWorkflow() {
   const data = editor.value.export();
-
+  console.log(data);
   updateWorkflow({ drawflow: JSON.stringify(data) });
 }
 function editBlock(data) {

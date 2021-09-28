@@ -159,6 +159,18 @@ export const tasks = {
       for: 1,
     },
   },
+  'reload-page': {
+    name: 'Reload page',
+    icon: 'riRestartLine',
+    component: 'BlockBase',
+    category: 'interaction',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: [],
+    maxConnection: 1,
+    disableEdit: true,
+    data: {},
+  },
   'trigger-element-events': {
     name: 'Trigger element events',
     icon: 'riLightbulbFlashLine',
@@ -176,6 +188,32 @@ export const tasks = {
       events: [],
     },
   },
+  comparison: {
+    name: 'Comparison',
+    icon: 'riAB',
+    component: 'BlockComparison',
+    category: 'conditions',
+    inputs: 1,
+    outputs: 0,
+    allowedInputs: [],
+    maxConnection: false,
+    data: {
+      comparison: [],
+    },
+  },
+  'element-exists': {
+    name: 'Element exists',
+    icon: 'riFocus3Line',
+    component: 'BlockElementExists',
+    category: 'conditions',
+    inputs: 1,
+    outputs: 0,
+    allowedInputs: [],
+    maxConnection: false,
+    data: {
+      selector: '',
+    },
+  },
 };
 
 export const categories = {
@@ -187,9 +225,8 @@ export const categories = {
     name: 'General',
     color: 'bg-yellow-200',
   },
-};
-
-export const conditions = {
-  /* has attribute or attribute value/key equel to */
-  attribute: {},
+  conditions: {
+    name: 'Conditions',
+    color: 'bg-blue-200',
+  },
 };

@@ -1,5 +1,5 @@
 <template>
-  <div ref="rootRef" class="group relative overflow-x-hiddenx">
+  <div id="block-base" class="group relative">
     <div
       class="
         z-10
@@ -13,19 +13,17 @@
       "
     >
       <span
-        :class="categories[state.blockDetails.category]?.color"
+        :class="block.category.color"
         class="inline-block p-2 mr-2 rounded-lg bg-green-200"
       >
-        <v-remixicon
-          :path="icons[state.blockDetails.icon] || icons.riGlobalLine"
-        />
+        <v-remixicon :path="icons[block.details.icon] || icons.riGlobalLine" />
       </span>
       <div style="max-width: 200px">
         <p class="font-semibold leading-none whitespace-nowrap">
-          {{ state.blockDetails.name }}
+          {{ block.details.name }}
         </p>
         <p class="text-gray-600 text-overflow leading-tight">
-          {{ state.blockData.description }}
+          {{ block.data.description }}
         </p>
         <input
           type="text"
@@ -52,10 +50,7 @@
           <v-remixicon size="20" :path="icons.riPencilLine" />
         </button>
         <hr class="border-r border-gray-600 h-5 mx-3" />
-        <button
-          class="-mr-1"
-          @click="editor.removeNodeId(`node-${state.blockId}`)"
-        >
+        <button class="-mr-1" @click="editor.removeNodeId(`node-${block.id}`)">
           <v-remixicon size="20" :path="icons.riDeleteBin7Line" />
         </button>
       </div>
@@ -63,11 +58,10 @@
   </div>
 </template>
 <script setup>
-import { ref, nextTick, reactive } from 'vue';
 import { VRemixIcon as VRemixicon } from 'v-remixicon';
 import emitter from 'tiny-emitter/instance';
 import { icons } from '@/lib/v-remixicon';
-import { tasks, categories } from '@/utils/shared';
+import { useEditorBlock } from '@/composable/editorBlock';
 
 const props = defineProps({
   editor: {
@@ -76,40 +70,18 @@ const props = defineProps({
   },
 });
 
-const rootRef = ref(null);
-const state = reactive({
-  blockId: '',
-  blockDetails: {},
-  blockData: {},
-});
+const block = useEditorBlock('#block-base', props.editor);
 
 function editBlock() {
   emitter.emit('editor:edit-block', {
-    ...state.blockDetails,
-    data: state.blockData,
-    blockId: state.blockId,
+    ...block.details,
+    data: block.data,
+    blockId: block.id,
   });
 }
 function handleDataChange() {
-  const { data } = props.editor.getNodeFromId(state.blockId);
+  const { data } = props.editor.getNodeFromId(block.id);
 
-  state.blockData = data;
+  block.data = data;
 }
-
-nextTick(() => {
-  if (state.blockId) return;
-
-  state.blockId = rootRef.value?.parentElement.parentElement.id.replace(
-    'node-',
-    ''
-  );
-
-  if (state.blockId) {
-    const { name, data } = props.editor.getNodeFromId(state.blockId);
-    const details = tasks[name];
-
-    state.blockDetails = { id: name, ...details };
-    state.blockData = data || details.data;
-  }
-});
 </script>
