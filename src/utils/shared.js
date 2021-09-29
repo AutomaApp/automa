@@ -33,7 +33,7 @@ export const tasks = {
   delay: {
     name: 'Delay',
     icon: 'riTimerLine',
-    component: 'BlockBase',
+    component: 'BlockDelay',
     editComponent: 'EditTrigger',
     category: 'general',
     inputs: 1,
@@ -41,7 +41,6 @@ export const tasks = {
     allowedInputs: [],
     maxConnection: 1,
     data: {
-      description: '',
       time: 500,
     },
   },
