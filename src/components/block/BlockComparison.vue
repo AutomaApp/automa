@@ -1,5 +1,5 @@
 <template>
-  <div id="block-comparison" class="p-4">
+  <div :id="componentId" class="p-4">
     <div class="flex items-center">
       <div
         :class="block.category.color"
@@ -15,6 +15,7 @@
         @click="editor.removeNodeId(`node-${block.id}`)"
       />
       <button
+        :disabled="block.data.comparison && block.data.comparison.length >= 5"
         class="bg-accent ml-2 rounded-lg text-white text-center"
         style="height: 37px; width: 37px"
         @click="addComparison"
@@ -39,6 +40,7 @@
         <div class="flex items-center transition bg-input rounded-lg">
           <select
             v-model="block.data.comparison[index].type"
+            :title="conditions[block.data.comparison[index]?.type] || 'Equals'"
             class="
               bg-transparent
               font-mono
@@ -71,7 +73,10 @@
         v-if="block.data.comparison && block.data.comparison.length !== 0"
         class="text-right text-gray-600"
       >
-        <span title="Blabla">&#9432;</span> Fallback
+        <span title="Execute when all comparisons don't meet the requirement"
+          >&#9432;</span
+        >
+        Fallback
       </p>
     </div>
   </div>
@@ -82,6 +87,7 @@ import { VRemixIcon as VRemixicon } from 'v-remixicon';
 import { nanoid } from 'nanoid';
 import { debounce } from '@/utils/helper';
 import { icons } from '@/lib/v-remixicon';
+import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
 
 const props = defineProps({
@@ -91,7 +97,9 @@ const props = defineProps({
   },
 });
 
-const block = useEditorBlock('#block-comparison', props.editor);
+const componentId = useComponentId('block-comparison');
+const block = useEditorBlock(`#${componentId}`, props.editor);
+
 const conditions = {
   '==': 'Equals',
   '>': 'Greater than',
@@ -101,10 +109,20 @@ const conditions = {
 };
 
 function addComparison() {
+  if (block.data.comparison.length >= 5) return;
+
   block.data.comparison.push({ id: nanoid(6), type: '==', value: '' });
+
+  if (block.data.comparison.length === 1) props.editor.addNodeOutput(block.id);
+
+  props.editor.addNodeOutput(block.id);
 }
 function deleteComparison(index) {
   block.data.comparison.splice(index, 1);
+
+  props.editor.removeNodeOutput(block.id, `output_${index + 1}`);
+  if (block.data.comparison.length === 0)
+    props.editor.removeNodeOutput(block.id, `output_1`);
 }
 
 watch(
@@ -113,6 +131,8 @@ watch(
     props.editor.updateNodeDataFromId(block.id, {
       comparison: toRaw(newValue),
     });
+
+    props.editor.updateConnectionNodes(`node-${block.id}`);
   }, 250),
   { deep: true }
 );

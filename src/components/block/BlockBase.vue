@@ -1,5 +1,5 @@
 <template>
-  <div id="block-base" class="group relative">
+  <div :id="componentId" class="group relative">
     <div
       class="
         z-10
@@ -62,6 +62,7 @@ import { VRemixIcon as VRemixicon } from 'v-remixicon';
 import emitter from 'tiny-emitter/instance';
 import { icons } from '@/lib/v-remixicon';
 import { useEditorBlock } from '@/composable/editorBlock';
+import { useComponentId } from '@/composable/componentId';
 
 const props = defineProps({
   editor: {
@@ -70,7 +71,8 @@ const props = defineProps({
   },
 });
 
-const block = useEditorBlock('#block-base', props.editor);
+const componentId = useComponentId('block-base');
+const block = useEditorBlock(`#${componentId}`, props.editor);
 
 function editBlock() {
   emitter.emit('editor:edit-block', {

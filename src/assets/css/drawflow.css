@@ -2,12 +2,15 @@
   @apply translate-y-16;
 }
 
-.drawflow .drawflow-node.option .outputs {
-  top: 72px;
-  transform: none;
+.drawflow .drawflow-node.comparison .outputs {
+  top: 82px !important;
+  transform: none !important;
 }
-.drawflow .drawflow-node.option .output {
-  margin-bottom: 34px;
+.drawflow .drawflow-node.comparison .output {
+  margin-bottom: 30px;
+}
+.drawflow .drawflow-node.comparison .output:nth-last-child(2) {
+  margin-bottom: 22px;
 }
 
 .drawflow,

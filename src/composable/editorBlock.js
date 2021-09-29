@@ -24,6 +24,7 @@ export function useEditorBlock(selector, editor) {
       block.data = data || details.data;
       block.category = categories[details.category];
     }
+    editor.updateConnectionNodes(`node-${block.id}`);
   });
 
   return block;
