@@ -15,7 +15,7 @@
         @click="editor.removeNodeId(`node-${block.id}`)"
       />
       <button
-        :disabled="block.data.comparison && block.data.comparison.length >= 5"
+        :disabled="block.data.comparison && block.data.comparison.length > 4"
         class="bg-accent ml-2 rounded-lg text-white text-center"
         style="height: 37px; width: 37px"
         @click="addComparison"

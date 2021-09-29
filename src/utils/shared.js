@@ -201,6 +201,19 @@ export const tasks = {
       comparison: [],
     },
   },
+  'contains-text': {
+    name: 'Contains text',
+    icon: 'riTBoxLine',
+    component: 'BlockComparison',
+    category: 'conditions',
+    inputs: 1,
+    outputs: 0,
+    allowedInputs: [],
+    maxConnection: false,
+    data: {
+      contains: [],
+    },
+  },
   'element-exists': {
     name: 'Element exists',
     icon: 'riFocus3Line',
