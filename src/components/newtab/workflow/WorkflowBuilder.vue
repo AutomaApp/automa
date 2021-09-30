@@ -91,7 +91,7 @@ export default {
           300,
           'trigger',
           { type: 'manual' },
-          'BlockBase',
+          'BlockBasic',
           'vue'
         );
       }

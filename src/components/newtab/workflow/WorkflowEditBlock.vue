@@ -9,13 +9,6 @@
       </p>
     </div>
     <hr class="mb-4 mt-5 w-full border-gray-100" />
-    <ui-textarea
-      :model-value="blockData.description"
-      autoresize
-      placeholder="Description"
-      class="w-full mb-2"
-      @change="$emit('update', { ...blockData, description: $event })"
-    />
     <component :is="data.editComponent" v-model:data="blockData" />
   </div>
 </template>

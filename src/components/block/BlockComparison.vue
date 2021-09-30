@@ -1,5 +1,5 @@
 <template>
-  <div :id="componentId" class="p-4">
+  <div :id="componentId">
     <div class="flex items-center">
       <div
         :class="block.category.color"
@@ -73,9 +73,9 @@
         v-if="block.data.comparison && block.data.comparison.length !== 0"
         class="text-right text-gray-600"
       >
-        <span title="Execute when all comparisons don't meet the requirement"
-          >&#9432;</span
-        >
+        <span title="Execute when all comparisons don't meet the requirement">
+          &#9432;
+        </span>
         Fallback
       </p>
     </div>

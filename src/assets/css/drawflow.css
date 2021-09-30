@@ -1,5 +1,6 @@
-.drawflow-node.selected .menu {
-  @apply translate-y-16;
+.drawflow-node.selected .menu,
+.drawflow-node .block-base:hover .menu {
+  @apply translate-y-11;
 }
 
 .drawflow .drawflow-node.comparison .outputs {

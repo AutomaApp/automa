@@ -6,11 +6,11 @@
         class="inline-block text-sm mr-4 p-2 rounded-lg"
       >
         <v-remixicon
-          :path="icons.riTimerLine"
+          :path="icons.riGlobalLine"
           size="20"
           class="inline-block mr-1"
         />
-        <span>Delay</span>
+        <span>Open website</span>
       </div>
       <div class="flex-grow"></div>
       <v-remixicon
@@ -20,11 +20,10 @@
       />
     </div>
     <input
-      :value="block.data.time"
-      min="0"
-      class="px-4 py-2 rounded-lg w-36 bg-input"
-      placeholder="(millisecond)"
-      type="number"
+      :value="block.data.url"
+      class="px-4 py-2 rounded-lg w-48 bg-input"
+      placeholder="http://example.com"
+      type="url"
       required
       @input="handleInput"
     />
@@ -33,6 +32,7 @@
 <script setup>
 import { VRemixIcon as VRemixicon } from 'v-remixicon';
 import { icons } from '@/lib/v-remixicon';
+import { debounce } from '@/utils/helper';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
 
@@ -43,16 +43,19 @@ const props = defineProps({
   },
 });
 
-const componentId = useComponentId('block-delay');
+const componentId = useComponentId('open-website');
 const block = useEditorBlock(`#${componentId}`, props.editor);
 
-function handleInput({ target }) {
+const handleInput = debounce(({ target }) => {
   target.reportValidity();
 
-  const time = +target.value || 0;
+  const res = target.value.match(
+    /* eslint-disable-next-line */
+    /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
+  );
 
-  if (time < 0) return;
+  if (!res) return;
 
-  props.editor.updateNodeDataFromId(block.id, { time });
-}
+  props.editor.updateNodeDataFromId(block.id, { url: res[0] });
+}, 250);
 </script>

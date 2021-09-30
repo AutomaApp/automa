@@ -2,7 +2,7 @@ export const tasks = {
   trigger: {
     name: 'Trigger',
     icon: 'riFlashlightLine',
-    component: 'BlockBase',
+    component: 'BlockBasic',
     editComponent: 'EditTrigger',
     category: 'general',
     inputs: 0,
@@ -17,7 +17,7 @@ export const tasks = {
   'event-click': {
     name: 'Click element',
     icon: 'riCursorLine',
-    component: 'BlockBase',
+    component: 'BlockBasic',
     editComponent: 'EditTrigger',
     category: 'interaction',
     inputs: 1,
@@ -47,7 +47,7 @@ export const tasks = {
   'get-text': {
     name: 'Get text',
     icon: 'riParagraph',
-    component: 'BlockBase',
+    component: 'BlockBasic',
     editComponent: 'EditTrigger',
     category: 'interaction',
     inputs: 1,
@@ -64,7 +64,7 @@ export const tasks = {
   'export-data': {
     name: 'Export data',
     icon: 'riDownloadLine',
-    component: 'BlockBase',
+    component: 'BlockBasic',
     editComponent: 'EditTrigger',
     category: 'general',
     inputs: 1,
@@ -79,7 +79,7 @@ export const tasks = {
   'element-scroll': {
     name: 'Scroll element',
     icon: 'riMouseLine',
-    component: 'BlockBase',
+    component: 'BlockBasic',
     editComponent: 'EditTrigger',
     category: 'interaction',
     inputs: 1,
@@ -97,7 +97,7 @@ export const tasks = {
   'get-attribute': {
     name: 'Get attribute',
     icon: 'riBracketsLine',
-    component: 'BlockBase',
+    component: 'BlockBasic',
     editComponent: 'EditTrigger',
     category: 'interaction',
     inputs: 1,
@@ -113,7 +113,7 @@ export const tasks = {
   'open-website': {
     name: 'Open website',
     icon: 'riGlobalLine',
-    component: 'BlockBase',
+    component: 'BlockOpenWebsite',
     editComponent: 'EditTrigger',
     category: 'general',
     inputs: 1,
@@ -121,14 +121,13 @@ export const tasks = {
     allowedInputs: [],
     maxConnection: 1,
     data: {
-      description: '',
       url: '',
     },
   },
   'text-input': {
     name: 'Text input',
     icon: 'riInputCursorMove',
-    component: 'BlockBase',
+    component: 'BlockBasic',
     editComponent: 'EditTrigger',
     category: 'interaction',
     inputs: 1,
@@ -145,7 +144,7 @@ export const tasks = {
   'repeat-task': {
     name: 'Repeat tasks',
     icon: 'riRepeat2Line',
-    component: 'BlockBase',
+    component: 'BlockBasic',
     editComponent: 'EditTrigger',
     category: 'general',
     inputs: 1,
@@ -161,7 +160,7 @@ export const tasks = {
   'reload-page': {
     name: 'Reload page',
     icon: 'riRestartLine',
-    component: 'BlockBase',
+    component: 'BlockBasic',
     category: 'interaction',
     inputs: 1,
     outputs: 1,
@@ -173,7 +172,7 @@ export const tasks = {
   'trigger-element-events': {
     name: 'Trigger element events',
     icon: 'riLightbulbFlashLine',
-    component: 'BlockBase',
+    component: 'BlockBasic',
     editComponent: 'EditTrigger',
     category: 'interaction',
     inputs: 1,

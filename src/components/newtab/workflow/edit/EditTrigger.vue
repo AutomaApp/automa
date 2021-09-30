@@ -1,4 +1,11 @@
 <template>
+  <ui-textarea
+    :model-value="blockData.description"
+    autoresize
+    placeholder="Description"
+    class="w-full mb-2"
+    @change="updateData({ description: $event })"
+  />
   <ui-select
     :model-value="data.type || 'manual'"
     placeholder="Trigger workflow"

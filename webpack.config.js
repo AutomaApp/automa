@@ -74,6 +74,7 @@ const options = {
       {
         test: new RegExp(`.(${fileExtensions.join('|')})$`),
         loader: 'file-loader',
+        type: 'javascript/auto',
         options: {
           name: '[name].[ext]',
         },
