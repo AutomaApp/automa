@@ -142,19 +142,17 @@ export const tasks = {
     },
   },
   'repeat-task': {
-    name: 'Repeat tasks',
+    name: 'Repeat task',
     icon: 'riRepeat2Line',
-    component: 'BlockBasic',
+    component: 'BlockRepeatTask',
     editComponent: 'EditTrigger',
     category: 'general',
     inputs: 1,
-    outputs: 1,
+    outputs: 2,
     allowedInputs: [],
     maxConnection: 1,
     data: {
-      description: '',
-      from: '',
-      for: 1,
+      repeatFor: 1,
     },
   },
   'reload-page': {
