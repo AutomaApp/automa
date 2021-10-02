@@ -64,7 +64,7 @@ export const tasks = {
   'export-data': {
     name: 'Export data',
     icon: 'riDownloadLine',
-    component: 'BlockBasic',
+    component: 'BlockExportData',
     editComponent: 'EditTrigger',
     category: 'general',
     inputs: 1,
@@ -72,7 +72,6 @@ export const tasks = {
     allowedInputs: [],
     maxConnection: 1,
     data: {
-      description: '',
       type: 'JSON',
     },
   },
