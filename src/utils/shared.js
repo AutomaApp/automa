@@ -18,7 +18,7 @@ export const tasks = {
     name: 'Click element',
     icon: 'riCursorLine',
     component: 'BlockBasic',
-    editComponent: 'EditTrigger',
+    editComponent: 'EditClickElement',
     category: 'interaction',
     inputs: 1,
     outputs: 1,

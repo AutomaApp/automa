@@ -9,15 +9,20 @@
       </p>
     </div>
     <hr class="mb-4 mt-5 w-full border-gray-100" />
-    <component :is="data.editComponent" v-model:data="blockData" />
+    <component
+      :is="data.editComponent"
+      v-if="blockData"
+      v-model:data="blockData"
+    />
   </div>
 </template>
 <script>
 import { computed } from 'vue';
 import EditTrigger from './edit/EditTrigger.vue';
+import EditClickElement from './edit/EditClickElement.vue';
 
 export default {
-  components: { EditTrigger },
+  components: { EditTrigger, EditClickElement },
 };
 </script>
 <script setup>
@@ -31,6 +36,7 @@ const emit = defineEmits(['close', 'update']);
 
 const blockData = computed({
   get() {
+    console.log(props.data);
     return props.data.data || {};
   },
   set(value) {

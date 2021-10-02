@@ -1,6 +1,6 @@
 <template>
   <ui-textarea
-    :model-value="blockData.description"
+    :model-value="data.description"
     autoresize
     placeholder="Description"
     class="w-full mb-2"
