@@ -50,7 +50,7 @@ const columns = computed(() =>
 function addColumn() {
   const isColumnExists = state.columns.some(({ name }) => name === state.query);
 
-  if (isColumnExists) return;
+  if (isColumnExists || state.query.trim() === '') return;
 
   state.columns.push({ name: state.query, default: '' });
   state.query = '';

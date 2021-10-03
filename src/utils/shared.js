@@ -94,11 +94,11 @@ export const tasks = {
       scrollX: 0,
     },
   },
-  'get-attribute': {
-    name: 'Get attribute',
+  'attribute-value': {
+    name: 'Attribute value',
     icon: 'riBracketsLine',
     component: 'BlockBasic',
-    editComponent: 'EditTrigger',
+    editComponent: 'EditAttributeValue',
     category: 'interaction',
     inputs: 1,
     outputs: 1,
@@ -108,6 +108,7 @@ export const tasks = {
       description: '',
       selector: '',
       multiple: false,
+      attributeName: '',
     },
   },
   'open-website': {
@@ -128,7 +129,7 @@ export const tasks = {
     name: 'Text input',
     icon: 'riInputCursorMove',
     component: 'BlockBasic',
-    editComponent: 'EditTrigger',
+    editComponent: 'EditTextInput',
     category: 'interaction',
     inputs: 1,
     outputs: 1,
@@ -139,6 +140,11 @@ export const tasks = {
       selector: '',
       multiple: false,
       text: '',
+      delay: 0,
+      keyup: true,
+      keydown: true,
+      change: true,
+      input: true,
     },
   },
   'repeat-task': {

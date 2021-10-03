@@ -1,6 +1,6 @@
 <template>
-  <div class="px-4">
-    <div>
+  <div class="px-4 overflow-auto scroll">
+    <div class="sticky top-0 bg-white border-b border-gray-100 pb-4 mb-4">
       <button class="mr-2 align-middle" @click="$emit('close')">
         <v-remixicon name="riArrowLeftLine" />
       </button>
@@ -8,7 +8,6 @@
         {{ data.name }}
       </p>
     </div>
-    <hr class="mb-4 mt-5 w-full border-gray-100" />
     <component
       :is="data.editComponent"
       v-if="blockData"
@@ -20,14 +19,18 @@
 import { computed } from 'vue';
 import EditTrigger from './edit/EditTrigger.vue';
 import EditGetText from './edit/EditGetText.vue';
+import EditTextInput from './edit/EditTextInput.vue';
 import EditScrollElement from './edit/EditScrollElement.vue';
+import EditAttributeValue from './edit/EditAttributeValue.vue';
 import EditInteractionBase from './edit/EditInteractionBase.vue';
 
 export default {
   components: {
     EditTrigger,
     EditGetText,
+    EditTextInput,
     EditScrollElement,
+    EditAttributeValue,
     EditInteractionBase,
   },
 };

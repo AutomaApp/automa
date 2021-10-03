@@ -1,5 +1,5 @@
 <template>
-  <div :id="componentId">
+  <div :id="componentId" class="p-4">
     <div class="flex items-center">
       <div
         :class="block.category.color"
