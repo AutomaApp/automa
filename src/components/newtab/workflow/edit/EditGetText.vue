@@ -6,20 +6,29 @@
       class="mt-2 w-full"
       @change="updateData"
     />
-    <ui-input
-      :model-value="data.dataColumn"
-      list="data-columns"
-      placeholder="Data column"
-      class="mt-3 w-full"
-      @blur="updateDataColumn"
-    ></ui-input>
-    <datalist id="data-columns">
-      <option
-        v-for="column in workflow.data.dataColumns"
-        :key="column"
-        :value="column"
-      />
-    </datalist>
+    <div class="flex items-center mt-3">
+      <ui-select
+        :model-value="data.dataColumn"
+        placeholder="Data column"
+        class="mr-2 flex-1"
+        @change="updateData({ dataColumn: $event })"
+      >
+        <option
+          v-for="column in workflow.data.value.dataColumns"
+          :key="column.name"
+          :value="column.name"
+        >
+          {{ column.name }}
+        </option>
+      </ui-select>
+      <ui-button
+        icon
+        title="Data columns"
+        @click="workflow.showDataColumnsModal(true)"
+      >
+        <v-remixicon name="riKey2Line" />
+      </ui-button>
+    </div>
   </edit-interaction-base>
 </template>
 <script setup>
@@ -38,10 +47,5 @@ const workflow = inject('workflow');
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
-}
-function updateDataColumn({ target: { value } }) {
-  if (!value.trim()) return;
-
-  console.log(value, workflow.data);
 }
 </script>
