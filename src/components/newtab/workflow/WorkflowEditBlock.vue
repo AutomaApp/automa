@@ -19,10 +19,11 @@
 <script>
 import { computed } from 'vue';
 import EditTrigger from './edit/EditTrigger.vue';
-import EditClickElement from './edit/EditClickElement.vue';
+import EditGetText from './edit/EditGetText.vue';
+import EditInteractionBase from './edit/EditInteractionBase.vue';
 
 export default {
-  components: { EditTrigger, EditClickElement },
+  components: { EditTrigger, EditGetText, EditInteractionBase },
 };
 </script>
 <script setup>
@@ -36,7 +37,6 @@ const emit = defineEmits(['close', 'update']);
 
 const blockData = computed({
   get() {
-    console.log(props.data);
     return props.data.data || {};
   },
   set(value) {

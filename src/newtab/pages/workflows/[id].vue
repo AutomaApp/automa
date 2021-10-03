@@ -28,7 +28,14 @@
   </div>
 </template>
 <script setup>
-import { computed, reactive, shallowRef, onMounted, onUnmounted } from 'vue';
+import {
+  computed,
+  reactive,
+  shallowRef,
+  provide,
+  onMounted,
+  onUnmounted,
+} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import emitter from 'tiny-emitter/instance';
 import Task from '@/models/task';
@@ -89,6 +96,11 @@ function editBlock(data) {
 function executeWorkflow() {
   console.log(editor.value);
 }
+
+provide('workflow', {
+  data: workflow,
+  updateWorkflow,
+});
 
 onMounted(() => {
   const isWorkflowExists = Workflow.query().where('id', workflowId).exists();

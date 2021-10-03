@@ -33,7 +33,7 @@
       <input
         :value="block.data.repeatFor || 0"
         min="0"
-        class="pl-4 py-2 bg-transparent rounded-l-lg w-32 mr-2"
+        class="pl-4 py-2 bg-transparent rounded-l-lg w-28 mr-2"
         type="number"
         required
         @input="handleInput"

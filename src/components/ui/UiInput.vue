@@ -24,14 +24,17 @@
             autofocus,
             min,
             max,
+            list,
           }"
           :class="{
             'opacity-75 pointer-events-none': disabled,
             'pl-10': prependIcon || $slots.prepend,
+            'appearance-none': list,
           }"
           :value="modelValue"
           class="py-2 px-4 rounded-lg w-full bg-input bg-transparent transition"
           @keydown="$emit('keydown', $event)"
+          @blur="$emit('blur', $event)"
           @input="emitValue"
         />
       </div>
@@ -68,6 +71,10 @@ export default {
       type: String,
       default: '',
     },
+    list: {
+      type: String,
+      default: null,
+    },
     type: {
       type: String,
       default: 'text',
@@ -85,7 +92,7 @@ export default {
       default: null,
     },
   },
-  emits: ['update:modelValue', 'change', 'keydown'],
+  emits: ['update:modelValue', 'change', 'keydown', 'blur'],
   setup(props, { emit }) {
     function emitValue(event) {
       let { value } = event.target;

@@ -14,7 +14,7 @@ class Workflow extends Model {
       icon: this.string('riGlobalLine'),
       data: this.attr(null),
       drawflow: this.string(''),
-      dataSchema: this.attr([]),
+      dataColumns: this.attr([]),
       lastRunAt: this.number(),
       createdAt: this.number(),
       tasks: this.hasMany(Task, 'workflowId'),
