@@ -14,9 +14,12 @@
       <v-remixicon name="riSaveLine" class="mr-2 -ml-1" />
       Save
     </ui-button>
+    <ui-button icon title="Data columns" @click="$emit('showDataColumns')">
+      <v-remixicon name="riKey2Line" />
+    </ui-button>
     <ui-popover>
       <template #trigger>
-        <ui-button icon>
+        <ui-button icon title="More">
           <v-remixicon name="riMore2Line" />
         </ui-button>
       </template>
@@ -83,7 +86,7 @@ defineProps({
     default: () => ({}),
   },
 });
-defineEmits(['update', 'execute', 'save']);
+defineEmits(['update', 'execute', 'save', 'showDataColumns']);
 
 const taskList = Object.keys(tasks).reduce((arr, key) => {
   const task = tasks[key];

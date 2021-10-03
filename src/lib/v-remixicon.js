@@ -1,6 +1,7 @@
 import vRemixicon from 'v-remixicon';
 import {
   riHome5Line,
+  riKey2Line,
   riRestartLine,
   riTBoxLine,
   riAB,
@@ -48,6 +49,7 @@ import {
 
 export const icons = {
   riHome5Line,
+  riKey2Line,
   riRestartLine,
   riTBoxLine,
   riAB,

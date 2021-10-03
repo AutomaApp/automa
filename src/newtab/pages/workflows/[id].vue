@@ -15,6 +15,7 @@
         @save="saveWorkflow"
         @execute="executeWorkflow"
         @update="updateWorkflow"
+        @showDataColumns="state.showDataColumnsModal = true"
       />
     </div>
     <workflow-builder
@@ -26,6 +27,14 @@
       @export="updateWorkflow({ drawflow: $event })"
     />
   </div>
+  <ui-modal v-model="state.showDataColumnsModal">
+    <template #header>Data columns</template>
+    <workflow-data-columns
+      v-bind="{ workflow }"
+      @update="updateWorkflow"
+      @close="state.showDataColumnsModal = false"
+    />
+  </ui-modal>
 </template>
 <script setup>
 import {
@@ -44,6 +53,7 @@ import { debounce } from '@/utils/helper';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';
 import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
+import WorkflowDataColumns from '@/components/newtab/workflow/WorkflowDataColumns.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -52,8 +62,9 @@ const workflowId = route.params.id;
 
 const editor = shallowRef(null);
 const state = reactive({
-  isEditBlock: false,
   blockData: {},
+  isEditBlock: false,
+  showDataColumnsModal: false,
 });
 const workflow = computed(() => Workflow.find(workflowId) || {});
 
@@ -100,6 +111,8 @@ function executeWorkflow() {
 provide('workflow', {
   data: workflow,
   updateWorkflow,
+  /* eslint-disable-next-line */
+  showDataColumnsModal: (show = true) => (state.showDataColumnsModal = show),
 });
 
 onMounted(() => {
