@@ -20,10 +20,16 @@
 import { computed } from 'vue';
 import EditTrigger from './edit/EditTrigger.vue';
 import EditGetText from './edit/EditGetText.vue';
+import EditScrollElement from './edit/EditScrollElement.vue';
 import EditInteractionBase from './edit/EditInteractionBase.vue';
 
 export default {
-  components: { EditTrigger, EditGetText, EditInteractionBase },
+  components: {
+    EditTrigger,
+    EditGetText,
+    EditScrollElement,
+    EditInteractionBase,
+  },
 };
 </script>
 <script setup>

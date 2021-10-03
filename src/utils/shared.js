@@ -80,7 +80,7 @@ export const tasks = {
     name: 'Scroll element',
     icon: 'riMouseLine',
     component: 'BlockBasic',
-    editComponent: 'EditTrigger',
+    editComponent: 'EditScrollElement',
     category: 'interaction',
     inputs: 1,
     outputs: 1,
