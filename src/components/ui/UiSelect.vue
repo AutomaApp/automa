@@ -1,6 +1,10 @@
 <template>
   <div :class="{ 'inline-block': !block }" class="ui-select cursor-pointer">
-    <label v-if="label" :for="selectId" class="text-gray-200 text-sm ml-2">
+    <label
+      v-if="label"
+      :for="selectId"
+      class="text-gray-600 dark:text-gray-200 text-sm ml-2"
+    >
       {{ label }}
     </label>
     <div class="ui-select__content flex items-center w-full block relative">
@@ -63,6 +67,10 @@ export default {
       type: String,
       default: '',
     },
+    modelModifiers: {
+      type: Object,
+      default: () => ({}),
+    },
     block: Boolean,
     showDetail: Boolean,
   },
@@ -70,9 +78,15 @@ export default {
   setup(props, { emit }) {
     const selectId = useComponentId('select');
 
-    function emitValue({ target }) {
-      emit('update:modelValue', target.value);
-      emit('change', target.value);
+    function emitValue(event) {
+      let { value } = event.target;
+
+      if (props.modelModifiers.number) {
+        value = +value;
+      }
+
+      emit('update:modelValue', value);
+      emit('change', value);
     }
 
     return {

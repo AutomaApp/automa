@@ -1,4 +1,5 @@
 <template>
+  <slot name="prepend" />
   <ui-textarea
     :model-value="data.description"
     autoresize

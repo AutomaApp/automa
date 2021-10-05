@@ -1,3 +1,7 @@
+export function objectHasKey(obj, key) {
+  return Object.prototype.hasOwnProperty.call(obj, key);
+}
+
 export function debounce(callback, time = 200) {
   let interval;
 

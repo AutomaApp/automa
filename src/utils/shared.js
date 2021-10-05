@@ -173,11 +173,11 @@ export const tasks = {
     disableEdit: true,
     data: {},
   },
-  'trigger-element-events': {
-    name: 'Trigger element events',
+  'trigger-event': {
+    name: 'Trigger event',
     icon: 'riLightbulbFlashLine',
     component: 'BlockBasic',
-    editComponent: 'EditTrigger',
+    editComponent: 'EditTriggerEvent',
     category: 'interaction',
     inputs: 1,
     outputs: 1,
@@ -187,7 +187,9 @@ export const tasks = {
       description: '',
       selector: '',
       multiple: false,
-      events: [],
+      eventName: '',
+      eventType: '',
+      eventParams: {},
     },
   },
   comparison: {
@@ -245,3 +247,20 @@ export const categories = {
     color: 'bg-blue-200',
   },
 };
+
+export const eventList = [
+  { id: 'click', name: 'Click', type: 'mouse-event' },
+  { id: 'dblclick', name: 'Double Click', type: 'mouse-event' },
+  { id: 'mouseup', name: 'Mouseup', type: 'mouse-event' },
+  { id: 'mousedown', name: 'Mousedown', type: 'mouse-event' },
+  { id: 'focus', name: 'Focus', type: 'focus-event' },
+  { id: 'blur', name: 'Blur', type: 'focus-event' },
+  { id: 'touchstart', name: 'Touch start', type: 'touch-event' },
+  { id: 'touchend', name: 'Touch end', type: 'touch-event' },
+  { id: 'touchmove', name: 'Touch move', type: 'touch-event' },
+  { id: 'touchcancel', name: 'Touch cancel', type: 'touch-event' },
+  { id: 'keydown', name: 'Keydown', type: 'keyboard-event' },
+  { id: 'keyup', name: 'Keyup', type: 'keyboard-event' },
+  { id: 'keypress', name: 'Keypress', type: 'keyboard-event' },
+  { id: 'wheel', name: 'Wheel', type: 'wheel-event' },
+];

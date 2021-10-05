@@ -99,6 +99,8 @@ export default {
 
       if (props.modelModifiers.lowercase) {
         value = value.toLocaleLowerCase();
+      } else if (props.modelModifiers.number) {
+        value = +value;
       }
 
       emit('update:modelValue', value);
