@@ -3,17 +3,6 @@
   @apply translate-y-11;
 }
 
-.drawflow .drawflow-node.comparison .outputs {
-  top: 82px !important;
-  transform: none !important;
-}
-.drawflow .drawflow-node.comparison .output {
-  margin-bottom: 30px;
-}
-.drawflow .drawflow-node.comparison .output:nth-last-child(2) {
-  margin-bottom: 20px;
-}
-
 .drawflow,
 .drawflow .parent-node {
   position: relative

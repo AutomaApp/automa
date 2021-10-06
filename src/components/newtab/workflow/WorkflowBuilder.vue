@@ -40,8 +40,11 @@ export default {
 
     function dropHandler({ dataTransfer, clientX, clientY }) {
       const block = JSON.parse(dataTransfer.getData('block') || null);
+      const isTriggerExists =
+        block.id === 'trigger' &&
+        editor.value.getNodesFromName('trigger').length !== 0;
 
-      if (!block) return;
+      if (!block || isTriggerExists) return;
 
       const xPosition =
         clientX *
