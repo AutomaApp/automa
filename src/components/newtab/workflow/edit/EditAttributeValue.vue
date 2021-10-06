@@ -6,9 +6,33 @@
       class="mt-3 w-full"
       @change="updateData({ attributeName: $event })"
     />
+    <div class="flex items-center mt-3">
+      <ui-select
+        :model-value="data.dataColumn"
+        placeholder="Data column"
+        class="mr-2 flex-1"
+        @change="updateData({ dataColumn: $event })"
+      >
+        <option
+          v-for="column in workflow.data.value.dataColumns"
+          :key="column.name"
+          :value="column.name"
+        >
+          {{ column.name }}
+        </option>
+      </ui-select>
+      <ui-button
+        icon
+        title="Data columns"
+        @click="workflow.showDataColumnsModal(true)"
+      >
+        <v-remixicon name="riKey2Line" />
+      </ui-button>
+    </div>
   </edit-interaction-base>
 </template>
 <script setup>
+import { inject } from 'vue';
 import EditInteractionBase from './EditInteractionBase.vue';
 
 const props = defineProps({
@@ -18,6 +42,8 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update:data']);
+
+const workflow = inject('workflow');
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });

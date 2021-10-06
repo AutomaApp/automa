@@ -109,6 +109,7 @@ export const tasks = {
       selector: '',
       multiple: false,
       attributeName: '',
+      dataColumn: '',
     },
   },
   'open-website': {
@@ -192,30 +193,17 @@ export const tasks = {
       eventParams: {},
     },
   },
-  comparison: {
-    name: 'Comparison',
+  conditions: {
+    name: 'Conditions',
     icon: 'riAB',
-    component: 'BlockComparison',
+    component: 'BlockConditions',
     category: 'conditions',
     inputs: 1,
     outputs: 0,
     allowedInputs: [],
     maxConnection: false,
     data: {
-      comparison: [],
-    },
-  },
-  'contains-text': {
-    name: 'Contains text',
-    icon: 'riTBoxLine',
-    component: 'BlockComparison',
-    category: 'conditions',
-    inputs: 1,
-    outputs: 0,
-    allowedInputs: [],
-    maxConnection: false,
-    data: {
-      contains: [],
+      conditions: [],
     },
   },
   'element-exists': {
@@ -224,7 +212,7 @@ export const tasks = {
     component: 'BlockElementExists',
     category: 'conditions',
     inputs: 1,
-    outputs: 0,
+    outputs: 2,
     allowedInputs: [],
     maxConnection: false,
     data: {

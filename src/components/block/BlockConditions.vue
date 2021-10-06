@@ -106,6 +106,7 @@ const conditions = {
   '>=': 'Greater than or equal',
   '<': 'Less than',
   '<=': 'Less than or equal',
+  '()': 'Contains',
 };
 
 function addComparison() {
