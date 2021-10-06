@@ -7,7 +7,7 @@ export const tasks = {
     category: 'general',
     inputs: 0,
     outputs: 1,
-    allowedInputs: [],
+    allowedInputs: true,
     maxConnection: 1,
     data: {
       description: '',
@@ -22,7 +22,7 @@ export const tasks = {
     category: 'interaction',
     inputs: 1,
     outputs: 1,
-    allowedInputs: [],
+    allowedInputs: true,
     maxConnection: 1,
     data: {
       description: '',
@@ -38,7 +38,7 @@ export const tasks = {
     category: 'general',
     inputs: 1,
     outputs: 1,
-    allowedInputs: [],
+    allowedInputs: true,
     maxConnection: 1,
     data: {
       time: 500,
@@ -52,7 +52,7 @@ export const tasks = {
     category: 'interaction',
     inputs: 1,
     outputs: 1,
-    allowedInputs: [],
+    allowedInputs: true,
     maxConnection: 1,
     data: {
       description: '',
@@ -70,7 +70,7 @@ export const tasks = {
     category: 'general',
     inputs: 1,
     outputs: 1,
-    allowedInputs: [],
+    allowedInputs: true,
     maxConnection: 1,
     data: {
       type: 'JSON',
@@ -84,7 +84,7 @@ export const tasks = {
     category: 'interaction',
     inputs: 1,
     outputs: 1,
-    allowedInputs: [],
+    allowedInputs: true,
     maxConnection: 1,
     data: {
       description: '',
@@ -102,7 +102,7 @@ export const tasks = {
     category: 'interaction',
     inputs: 1,
     outputs: 1,
-    allowedInputs: [],
+    allowedInputs: true,
     maxConnection: 1,
     data: {
       description: '',
@@ -120,7 +120,7 @@ export const tasks = {
     category: 'general',
     inputs: 1,
     outputs: 1,
-    allowedInputs: [],
+    allowedInputs: true,
     maxConnection: 1,
     data: {
       url: '',
@@ -134,7 +134,7 @@ export const tasks = {
     category: 'interaction',
     inputs: 1,
     outputs: 1,
-    allowedInputs: [],
+    allowedInputs: true,
     maxConnection: 1,
     data: {
       description: '',
@@ -156,7 +156,7 @@ export const tasks = {
     category: 'general',
     inputs: 1,
     outputs: 2,
-    allowedInputs: [],
+    allowedInputs: true,
     maxConnection: 1,
     data: {
       repeatFor: 1,
@@ -169,7 +169,7 @@ export const tasks = {
     category: 'interaction',
     inputs: 1,
     outputs: 1,
-    allowedInputs: [],
+    allowedInputs: true,
     maxConnection: 1,
     disableEdit: true,
     data: {},
@@ -182,7 +182,7 @@ export const tasks = {
     category: 'interaction',
     inputs: 1,
     outputs: 1,
-    allowedInputs: [],
+    allowedInputs: true,
     maxConnection: 1,
     data: {
       description: '',
@@ -200,8 +200,8 @@ export const tasks = {
     category: 'conditions',
     inputs: 1,
     outputs: 0,
-    allowedInputs: [],
-    maxConnection: false,
+    allowedInputs: true,
+    maxConnection: 1,
     data: {
       conditions: [],
     },
@@ -213,8 +213,8 @@ export const tasks = {
     category: 'conditions',
     inputs: 1,
     outputs: 2,
-    allowedInputs: [],
-    maxConnection: false,
+    allowedInputs: true,
+    maxConnection: 1,
     data: {
       selector: '',
     },

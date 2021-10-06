@@ -39,6 +39,7 @@
   min-height: 40px;
   z-index: 2;
   cursor: move;
+  white-space: nowrap;
   @apply rounded-lg transition ring-2 ring-transparent duration-200 shadow-lg;
 }
 

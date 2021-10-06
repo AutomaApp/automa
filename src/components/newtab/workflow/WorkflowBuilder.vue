@@ -22,7 +22,9 @@
   </div>
 </template>
 <script>
+/* eslint-disable camelcase */
 import { onMounted, shallowRef, getCurrentInstance } from 'vue';
+import { tasks } from '@/utils/shared';
 import drawflow from '@/lib/drawflow';
 
 export default {
@@ -68,6 +70,17 @@ export default {
         'vue'
       );
     }
+    function isInputAllowed(allowedInputs, input) {
+      if (typeof allowedInputs === 'boolean') return allowedInputs;
+
+      return allowedInputs.some((item) => {
+        if (item.startsWith('#')) {
+          return tasks[input].category === item.substr(1);
+        }
+
+        return item === input;
+      });
+    }
 
     onMounted(() => {
       const element = document.querySelector('#drawflow', getCurrentInstance());
@@ -99,6 +112,26 @@ export default {
       editor.value.on('nodeRemoved', (id) => {
         emit('deleteBlock', id);
       });
+      editor.value.on(
+        'connectionCreated',
+        ({ output_id, input_id, output_class, input_class }) => {
+          const { name: outputs } = editor.value.getNodeFromId(output_id);
+          const { name: inputName } = editor.value.getNodeFromId(input_id);
+          const { allowedInputs, maxConnection } = tasks[inputName];
+          const isAllowed = isInputAllowed(allowedInputs, inputName);
+          const isMaxConnections =
+            outputs[output_class].connections.length > maxConnection;
+
+          if (!isAllowed || isMaxConnections) {
+            editor.value.removeSingleConnection(
+              output_id,
+              input_id,
+              output_class,
+              input_class
+            );
+          }
+        }
+      );
     });
 
     return {

@@ -12,7 +12,6 @@ export default function (element, ctx) {
   );
 
   editor.useuuid = true;
-  editor.reroute = true;
 
   blockComponents.keys().forEach((key) => {
     const name = key.replace(/(.\/)|\.vue$/g, '');

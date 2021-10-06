@@ -1,6 +1,8 @@
 <template>
   <block-base
     :id="componentId"
+    :hide-edit="block.details.disableEdit"
+    :hide-delete="block.details.disableDelete"
     content-class="flex items-center"
     @edit="editBlock"
     @delete="editor.removeNodeId(`node-${block.id}`)"
