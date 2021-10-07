@@ -45,6 +45,7 @@
 </template>
 <script setup>
 import { VRemixIcon as VRemixicon } from 'v-remixicon';
+import emitter from 'tiny-emitter/instance';
 import { icons } from '@/lib/v-remixicon';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
@@ -67,6 +68,7 @@ function handleInput({ target }) {
   if (repeatFor < 0) return;
 
   props.editor.updateNodeDataFromId(block.id, { repeatFor });
+  emitter.emit('editor:data-changed', block.id);
 }
 </script>
 <style>

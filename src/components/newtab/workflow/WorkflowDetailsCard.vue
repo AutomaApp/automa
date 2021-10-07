@@ -24,7 +24,7 @@
         </ui-button>
       </template>
       <ui-list class="w-36">
-        <ui-list-item>
+        <ui-list-item class="cursor-pointer" @click="$emit('execute')">
           <v-remixicon name="riPlayLine" class="mr-2 -ml-1" />
           <span>Execute</span>
         </ui-list-item>

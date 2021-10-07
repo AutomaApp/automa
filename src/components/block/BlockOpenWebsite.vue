@@ -31,6 +31,7 @@
 </template>
 <script setup>
 import { VRemixIcon as VRemixicon } from 'v-remixicon';
+import emitter from 'tiny-emitter/instance';
 import { icons } from '@/lib/v-remixicon';
 import { debounce } from '@/utils/helper';
 import { useComponentId } from '@/composable/componentId';
@@ -57,5 +58,6 @@ const handleInput = debounce(({ target }) => {
   if (!res) return;
 
   props.editor.updateNodeDataFromId(block.id, { url: res[0] });
+  emitter.emit('editor:data-changed', block.id);
 }, 250);
 </script>

@@ -85,6 +85,7 @@
 import { watch, toRaw } from 'vue';
 import { VRemixIcon as VRemixicon } from 'v-remixicon';
 import { nanoid } from 'nanoid';
+import emitter from 'tiny-emitter/instance';
 import { debounce } from '@/utils/helper';
 import { icons } from '@/lib/v-remixicon';
 import { useComponentId } from '@/composable/componentId';
@@ -128,12 +129,16 @@ function deleteComparison(index) {
 
 watch(
   () => block.data.conditions,
-  debounce((newValue) => {
+  debounce((newValue, oldValue) => {
     props.editor.updateNodeDataFromId(block.id, {
       conditions: toRaw(newValue),
     });
 
     props.editor.updateConnectionNodes(`node-${block.id}`);
+
+    if (oldValue) {
+      emitter.emit('editor:data-changed', block.id);
+    }
   }, 250),
   { deep: true }
 );

@@ -22,9 +22,7 @@
       class="flex-1"
       :data="workflow.drawflow"
       @load="editor = $event"
-      @addBlock="addBlock"
       @deleteBlock="deleteBlock"
-      @export="updateWorkflow({ drawflow: $event })"
     />
   </div>
   <ui-modal v-model="state.showDataColumnsModal">
@@ -37,6 +35,7 @@
   </ui-modal>
 </template>
 <script setup>
+/* eslint-disable consistent-return */
 import {
   computed,
   reactive,
@@ -45,9 +44,8 @@ import {
   onMounted,
   onUnmounted,
 } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import emitter from 'tiny-emitter/instance';
-import Task from '@/models/task';
 import Workflow from '@/models/workflow';
 import { debounce } from '@/utils/helper';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';
@@ -64,12 +62,14 @@ const editor = shallowRef(null);
 const state = reactive({
   blockData: {},
   isEditBlock: false,
+  isDataChanged: false,
   showDataColumnsModal: false,
 });
 const workflow = computed(() => Workflow.find(workflowId) || {});
 
 const updateBlockData = debounce((data) => {
   state.blockData.data = data;
+  state.isDataChanged = true;
   editor.value.updateNodeDataFromId(state.blockData.blockId, data);
 
   const inputEl = document.querySelector(
@@ -78,27 +78,25 @@ const updateBlockData = debounce((data) => {
 
   if (inputEl) inputEl.dispatchEvent(new Event('change'));
 }, 250);
-function addBlock(data) {
-  Task.insert({
-    data: { ...data, workflowId },
-  });
-}
 function deleteBlock(id) {
   if (state.isEditBlock && state.blockData.blockId === id) {
     state.isEditBlock = false;
     state.blockData = {};
   }
+
+  state.isDataChanged = true;
 }
 function updateWorkflow(data) {
-  Workflow.update({
+  return Workflow.update({
     where: workflowId,
     data,
   });
 }
 function saveWorkflow() {
   const data = editor.value.export();
-  console.log(data);
-  updateWorkflow({ drawflow: JSON.stringify(data) });
+  updateWorkflow({ drawflow: JSON.stringify(data) }).then(() => {
+    state.isDataChanged = false;
+  });
 }
 function editBlock(data) {
   state.isEditBlock = true;
@@ -106,6 +104,9 @@ function editBlock(data) {
 }
 function executeWorkflow() {
   console.log(editor.value);
+}
+function handleEditorDataChanged() {
+  state.isDataChanged = true;
 }
 
 provide('workflow', {
@@ -115,6 +116,15 @@ provide('workflow', {
   showDataColumnsModal: (show = true) => (state.showDataColumnsModal = show),
 });
 
+onBeforeRouteLeave(() => {
+  if (!state.isDataChanged) return;
+
+  const answer = window.confirm(
+    'Do you really want to leave? you have unsaved changes!'
+  );
+
+  if (!answer) return false;
+});
 onMounted(() => {
   const isWorkflowExists = Workflow.query().where('id', workflowId).exists();
 
@@ -122,10 +132,19 @@ onMounted(() => {
     router.push('/workflows');
   }
 
+  window.onbeforeunload = () => {
+    if (state.isDataChanged) {
+      return 'Changes you made may not be saved.';
+    }
+  };
+
   emitter.on('editor:edit-block', editBlock);
+  emitter.on('editor:data-changed', handleEditorDataChanged);
 });
 onUnmounted(() => {
+  window.onbeforeunload = null;
   emitter.off('editor:edit-block', editBlock);
+  emitter.off('editor:data-changed', handleEditorDataChanged);
 });
 </script>
 <style>
