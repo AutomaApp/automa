@@ -1,6 +1,8 @@
 import vRemixicon from 'v-remixicon';
 import {
   riHome5Line,
+  riDatabase2Line,
+  riWindowLine,
   riKey2Line,
   riRestartLine,
   riTBoxLine,
@@ -36,6 +38,7 @@ import {
   riFocusLine,
   riCursorLine,
   riDownloadLine,
+  riCommandLine,
   riParagraph,
   riImageLine,
   riCloseLine,
@@ -49,6 +52,8 @@ import {
 
 export const icons = {
   riHome5Line,
+  riDatabase2Line,
+  riWindowLine,
   riKey2Line,
   riRestartLine,
   riTBoxLine,
@@ -84,6 +89,7 @@ export const icons = {
   riFocusLine,
   riCursorLine,
   riDownloadLine,
+  riCommandLine,
   riParagraph,
   riImageLine,
   riCloseLine,

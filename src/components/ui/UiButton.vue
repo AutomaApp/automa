@@ -55,7 +55,7 @@ export default {
       primary:
         'bg-primary text-white dark:bg-secondary dark:hover:bg-primary hover:bg-secondary',
       danger:
-        'bg-red-100 text-red-500 dark:bg-red-600 dark:hover:bg-red-500 hover:bg-red-200',
+        'bg-red-500 text-white dark:bg-red-600 dark:hover:bg-red-500 hover:bg-red-400',
     };
 
     return {

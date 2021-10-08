@@ -1,10 +1,35 @@
 <template>
   <div class="px-4 mb-2">
-    <span
-      class="p-2 inline-block rounded-lg bg-accent text-white mr-2 align-middle"
-    >
-      <v-remixicon :name="workflow.icon" />
-    </span>
+    <ui-popover>
+      <template #trigger>
+        <span
+          title="Workflow icon"
+          class="
+            p-2
+            inline-block
+            rounded-lg
+            cursor-pointer
+            bg-accent
+            text-white
+            mr-2
+            align-middle
+          "
+        >
+          <v-remixicon :name="workflow.icon" />
+        </span>
+      </template>
+      <p class="mb-2">Workflow icon</p>
+      <div class="grid grid-cols-4 gap-1">
+        <span
+          v-for="icon in icons"
+          :key="icon"
+          class="cursor-pointer rounded-lg inline-block p-2 hoverable"
+          @click="$emit('update', { icon })"
+        >
+          <v-remixicon :name="icon" />
+        </span>
+      </div>
+    </ui-popover>
     <p class="font-semibold inline-block text-lg flex-1 mr-4 align-middle">
       {{ workflow.name }}
     </p>
@@ -28,11 +53,19 @@
           <v-remixicon name="riPlayLine" class="mr-2 -ml-1" />
           <span>Execute</span>
         </ui-list-item>
-        <ui-list-item>
+        <ui-list-item
+          v-close-popover
+          class="cursor-pointer"
+          @click="$emit('rename')"
+        >
           <v-remixicon name="riPencilLine" class="mr-2 -ml-1" />
           <span>Rename</span>
         </ui-list-item>
-        <ui-list-item>
+        <ui-list-item
+          v-close-popover
+          class="cursor-pointer"
+          @click="$emit('delete')"
+        >
           <v-remixicon name="riDeleteBin7Line" class="mr-2 -ml-1" />
           <span>Delete</span>
         </ui-list-item>
@@ -86,7 +119,14 @@ defineProps({
     default: () => ({}),
   },
 });
-defineEmits(['update', 'execute', 'save', 'showDataColumns']);
+defineEmits([
+  'update',
+  'execute',
+  'save',
+  'showDataColumns',
+  'rename',
+  'delete',
+]);
 
 const taskList = Object.keys(tasks).reduce((arr, key) => {
   const task = tasks[key];
@@ -95,4 +135,15 @@ const taskList = Object.keys(tasks).reduce((arr, key) => {
 
   return arr;
 }, {});
+const icons = [
+  'riGlobalLine',
+  'riEqualizerLine',
+  'riFlashlightLine',
+  'riLightbulbFlashLine',
+  'riDatabase2Line',
+  'riWindowLine',
+  'riCursorLine',
+  'riDownloadLine',
+  'riCommandLine',
+];
 </script>

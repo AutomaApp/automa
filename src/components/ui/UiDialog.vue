@@ -1,5 +1,9 @@
 <template>
-  <ui-modal :model-value="state.show" content-class="max-w-sm">
+  <ui-modal
+    :model-value="state.show"
+    content-class="max-w-sm"
+    @close="state.show = false"
+  >
     <template #header>
       <h3 class="font-semibold text-lg">{{ state.options.title }}</h3>
     </template>

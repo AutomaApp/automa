@@ -16,6 +16,8 @@
         @execute="executeWorkflow"
         @update="updateWorkflow"
         @showDataColumns="state.showDataColumnsModal = true"
+        @rename="renameWorkflow"
+        @delete="deleteWorkflow"
       />
     </div>
     <workflow-builder
@@ -46,8 +48,9 @@ import {
 } from 'vue';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import emitter from 'tiny-emitter/instance';
-import Workflow from '@/models/workflow';
 import { debounce } from '@/utils/helper';
+import { useDialog } from '@/composable/dialog';
+import Workflow from '@/models/workflow';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';
 import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
@@ -55,6 +58,7 @@ import WorkflowDataColumns from '@/components/newtab/workflow/WorkflowDataColumn
 
 const route = useRoute();
 const router = useRouter();
+const dialog = useDialog();
 
 const workflowId = route.params.id;
 
@@ -107,6 +111,34 @@ function executeWorkflow() {
 }
 function handleEditorDataChanged() {
   state.isDataChanged = true;
+}
+function deleteWorkflow() {
+  dialog.confirm({
+    title: 'Delete workflow',
+    okVariant: 'danger',
+    body: `Are you sure you want to delete "${workflow.value.name}" workflow?`,
+    onConfirm: () => {
+      Workflow.delete(route.params.id).then(() => {
+        router.replace('/workflows');
+      });
+    },
+  });
+}
+function renameWorkflow() {
+  dialog.prompt({
+    title: 'Rename workflow',
+    placeholder: 'Workflow name',
+    okText: 'Rename',
+    inputValue: workflow.value.name,
+    onConfirm: (newName) => {
+      Workflow.update({
+        where: route.params.id,
+        data: {
+          name: newName,
+        },
+      });
+    },
+  });
 }
 
 provide('workflow', {
