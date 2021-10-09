@@ -48,6 +48,7 @@ import {
 } from 'vue';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import emitter from 'tiny-emitter/instance';
+import { sendMessage } from '@/utils/message';
 import { debounce } from '@/utils/helper';
 import { useDialog } from '@/composable/dialog';
 import Workflow from '@/models/workflow';
@@ -107,7 +108,21 @@ function editBlock(data) {
   state.blockData = data;
 }
 function executeWorkflow() {
-  console.log(editor.value);
+  if (editor.value.getNodesFromName('trigger').length === 0) {
+    /* eslint-disable-next-line */
+    alert("Can't find a trigger block");
+    return;
+  }
+
+  const payload = {
+    ...workflow.value,
+    drawflow: editor.value.export(),
+    isTesting: state.isDataChanged,
+  };
+
+  sendMessage('workflow:execute', payload, 'background').then(() => {
+    console.log('the fuck');
+  });
 }
 function handleEditorDataChanged() {
   state.isDataChanged = true;

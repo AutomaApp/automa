@@ -14,6 +14,6 @@
   "icons": {
     "128": "icon-128.png"
   },
-  "permissions": ["scripting", "storage", "unlimitedStorage", "tabs"],
+  "permissions": ["storage", "unlimitedStorage", "tabs", "activeTab", "http://*/*", "https://*/*"],
   "web_accessible_resources": ["content.styles.css", "icon-128.png", "icon-34.png"]
 }

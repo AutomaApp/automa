@@ -44,7 +44,7 @@ const options = {
     contentScript: path.join(__dirname, 'src', 'content', 'index.js'),
   },
   chromeExtensionBoilerplate: {
-    notHotReload: ['contentScript', 'devtools'],
+    notHotReload: ['contentScript'],
   },
   output: {
     path: path.resolve(__dirname, 'build'),
@@ -58,11 +58,12 @@ const options = {
         loader: 'vue-loader',
       },
       {
-        // look for .css or .scss files
         test: /\.css$/,
-        // in the `src` directory
         use: [
           MiniCssExtractPlugin.loader,
+          // {
+          //   loader: 'style-loader',
+          // },
           {
             loader: 'css-loader',
           },
