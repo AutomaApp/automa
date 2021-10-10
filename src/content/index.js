@@ -7,7 +7,7 @@ browser.runtime.onConnect.addListener((port) => {
     const handler = blocksHandler[toCamelCase(data.name)];
     console.log(`${data.name}(${toCamelCase(data.name)}):`, data);
     if (handler) {
-      handler(data);
+      handler(data, port);
     } else {
       console.error(`"${data.name}" doesn't have a handler`);
     }

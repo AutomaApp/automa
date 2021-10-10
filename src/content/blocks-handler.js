@@ -12,9 +12,11 @@ function handleElement(data, callback) {
   }
 }
 
-export function eventClick({ data }) {
+export function eventClick({ data }, port) {
   handleElement(data, (element) => {
     console.log(element);
     element.click();
   });
+
+  port.postMessage({ type: 'event-click' });
 }

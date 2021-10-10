@@ -3,8 +3,14 @@ import browser from 'webextension-polyfill';
 import { toCamelCase } from '@/utils/helper';
 import * as blocksHandler from './blocks-handler';
 
-function tabMessageListener(a, b) {
-  console.log(a, b);
+function tabMessageListenerHandler({ type, data }) {
+  const listener = this.tabMessageListeners[type];
+
+  if (listener) {
+    listener.callback(data);
+
+    if (listener.once) delete this.tabMessageListeners[type];
+  }
 }
 
 class WorkflowEngine {
@@ -15,7 +21,8 @@ class WorkflowEngine {
     this.data = [];
     this.isDestroyed = false;
 
-    this.tabMessageListener = tabMessageListener.bind(this);
+    this.tabMessageListeners = {};
+    this.tabMessageListenerHandler = tabMessageListenerHandler.bind(this);
   }
 
   init() {
@@ -76,7 +83,9 @@ class WorkflowEngine {
       if (id !== tabId) return;
 
       this.destroy();
-      this.connectedTab.removeListener(this.tabMessageListener);
+      this.connectedTab.onMessage.removeListener(
+        this.tabMessageListenerHandler
+      );
       this.connectedTab.disconnect();
 
       delete this.connectedTab;
@@ -92,13 +101,27 @@ class WorkflowEngine {
     if (!this.connectedTab) {
       browser.tabs.onRemoved.addListener(tabRemovedListener);
     } else {
-      // Add connectedTab message listener
+      this.connectedTab.onMessage.removeListener(
+        this.tabMessageListenerHandler
+      );
+      this.connectedTab.disconnect();
     }
+
+    console.log('===Message Listener===');
+    connectedTab.onMessage.addListener(this.tabMessageListenerHandler);
 
     this.connectedTab = connectedTab;
     this.tabId = tabId;
 
     return connectedTab;
+  }
+
+  _listenTabMessage(name, callback, options = { once: false }) {
+    this.tabMessageListeners[name] = { callback, ...options };
+
+    return () => {
+      delete this.tabMessageListeners[name];
+    };
   }
 
   get _connectedTab() {

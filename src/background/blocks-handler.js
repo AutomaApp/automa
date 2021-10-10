@@ -52,10 +52,19 @@ export function openWebsite(block) {
 }
 
 export function eventClick(block) {
-  return new Promise(() => {
+  return new Promise((resolve) => {
     if (!this._connectedTab) return;
-    console.log(this._connectedTab);
-    /* listen tab message and then resolve */
+
     this._connectedTab.postMessage(block);
+    this._listenTabMessage(
+      'event-click',
+      () => {
+        resolve({
+          nextBlockId: getBlockConnection(block),
+          data: '',
+        });
+      },
+      { once: true }
+    );
   });
 }
