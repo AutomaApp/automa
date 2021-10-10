@@ -8,7 +8,7 @@
     />
     <ui-input
       :model-value="data.delay"
-      label="Typing delay (0 to disable)"
+      label="Typing delay (millisecond)(0 to disable)"
       placeholder="Delay"
       class="w-full"
       min="0"
@@ -20,12 +20,12 @@
       <div class="grid grid-cols-2 gap-2 mt-2">
         <ui-checkbox
           v-for="event in events"
-          :key="event"
-          :model-value="data[event]"
+          :key="event.id"
+          :model-value="data[event.id]"
           class="capitalize"
-          @change="updateData({ [event]: $event })"
+          @change="updateData({ [event.id]: $event })"
         >
-          {{ event }}
+          {{ event.name }}
         </ui-checkbox>
       </div>
     </div>
@@ -42,7 +42,12 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:data']);
 
-const events = ['change', 'input', 'keyup', 'keydown'];
+const events = [
+  { id: 'changeEvent', name: 'Change' },
+  { id: 'inputEvent', name: 'input' },
+  { id: 'keyupEvent', name: 'keyup' },
+  { id: 'keydownEvent', name: 'keydown' },
+];
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });

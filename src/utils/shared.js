@@ -143,10 +143,10 @@ export const tasks = {
       multiple: false,
       text: '',
       delay: 0,
-      keyup: true,
-      keydown: true,
-      change: true,
-      input: true,
+      keyupEvent: true,
+      keydownEvent: true,
+      changeEvent: true,
+      inputEvent: true,
     },
   },
   'repeat-task': {
@@ -252,4 +252,5 @@ export const eventList = [
   { id: 'keyup', name: 'Keyup', type: 'keyboard-event' },
   { id: 'keypress', name: 'Keypress', type: 'keyboard-event' },
   { id: 'wheel', name: 'Wheel', type: 'wheel-event' },
+  { id: 'submit', name: 'Submit', type: 'submit-event' },
 ];

@@ -59,8 +59,6 @@ export function interactionHandler(block) {
     this._listenTabMessage(
       block.name,
       (data) => {
-        console.log(block.name, data, 'data');
-
         resolve({
           data,
           nextBlockId: getBlockConnection(block),

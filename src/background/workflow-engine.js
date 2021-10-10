@@ -82,7 +82,6 @@ class WorkflowEngine {
     const handlerName = isInteraction
       ? 'interactionHandler'
       : toCamelCase(block?.name);
-    console.log(isInteraction, handlerName, tasks);
     const handler = blocksHandler[handlerName];
 
     if (handler) {

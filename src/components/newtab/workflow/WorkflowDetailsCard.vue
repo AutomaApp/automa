@@ -48,7 +48,7 @@
           <v-remixicon name="riMore2Line" />
         </ui-button>
       </template>
-      <ui-list class="w-36">
+      <ui-list>
         <ui-list-item class="cursor-pointer" @click="$emit('showDataColumns')">
           <v-remixicon name="riKey2Line" class="mr-2 -ml-1" />
           <span>Data columns</span>
