@@ -1,5 +1,5 @@
 import { MessageListener } from '@/utils/message';
-import WorkflowEngine from '@/utils/workflow-engine';
+import WorkflowEngine from './workflow-engine';
 
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {

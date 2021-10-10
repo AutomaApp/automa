@@ -1,6 +1,11 @@
 /* eslint-disable no-underscore-dangle */
-import { toCamelCase } from './helper';
+import browser from 'webextension-polyfill';
+import { toCamelCase } from '@/utils/helper';
 import * as blocksHandler from './blocks-handler';
+
+function tabMessageListener(a, b) {
+  console.log(a, b);
+}
 
 class WorkflowEngine {
   constructor(workflow) {
@@ -8,6 +13,9 @@ class WorkflowEngine {
     this.blocks = {};
     this.blocksArr = [];
     this.data = [];
+    this.isDestroyed = false;
+
+    this.tabMessageListener = tabMessageListener.bind(this);
   }
 
   init() {
@@ -33,10 +41,18 @@ class WorkflowEngine {
     this._blockHandler(triggerBlock);
   }
 
+  destroy() {
+    // Add 'destroyed' log
+
+    this.isDestroyed = true;
+  }
+
   _blockHandler(block) {
+    if (this.isDestroyed) return;
+
     console.log(`${block.name}(${toCamelCase(block.name)}):`, block);
     const handler = blocksHandler[toCamelCase(block?.name)];
-
+    /* pass data from prev block */
     if (handler) {
       handler
         .call(this, block)
@@ -53,6 +69,46 @@ class WorkflowEngine {
     } else {
       console.error(`"${block.name}" block doesn't have a handler`);
     }
+  }
+
+  _connectTab(tabId) {
+    const tabRemovedListener = (id) => {
+      if (id !== tabId) return;
+
+      this.destroy();
+      this.connectedTab.removeListener(this.tabMessageListener);
+      this.connectedTab.disconnect();
+
+      delete this.connectedTab;
+      delete this.tabId;
+
+      browser.tabs.onRemoved.removeListener(tabRemovedListener);
+    };
+
+    const connectedTab = browser.tabs.connect(tabId, {
+      name: `${this.workflow.id}--${this.workflow.name.slice(0, 10)}`,
+    });
+
+    if (!this.connectedTab) {
+      browser.tabs.onRemoved.addListener(tabRemovedListener);
+    } else {
+      // Add connectedTab message listener
+    }
+
+    this.connectedTab = connectedTab;
+    this.tabId = tabId;
+
+    return connectedTab;
+  }
+
+  get _connectedTab() {
+    if (!this.connectedTab) {
+      this.destroy();
+
+      return null;
+    }
+
+    return this.connectedTab;
   }
 }
 

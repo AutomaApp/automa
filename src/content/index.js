@@ -1,13 +1,15 @@
 import browser from 'webextension-polyfill';
-import { printLine } from './modules/print';
+import { toCamelCase } from '@/utils/helper';
+import * as blocksHandler from './blocks-handler';
 
-console.log('Content script works!');
-console.log('Must reload extension for modifications to take effect.');
-
-printLine("Using the 'printLine' function from the Print Module");
-
-(() => {
-  browser.runtime.onConnect.addListener((a, b) => {
-    console.log(a, b);
+browser.runtime.onConnect.addListener((port) => {
+  port.onMessage.addListener((data) => {
+    const handler = blocksHandler[toCamelCase(data.name)];
+    console.log(`${data.name}(${toCamelCase(data.name)}):`, data);
+    if (handler) {
+      handler(data);
+    } else {
+      console.error(`"${data.name}" doesn't have a handler`);
+    }
   });
-})();
+});

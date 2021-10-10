@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import browser from 'webextension-polyfill';
 
 function getBlockConnection(block, index = 1) {
@@ -31,13 +32,7 @@ export function openWebsite(block) {
                 file: './contentScript.bundle.js',
               })
               .then(() => {
-                this.connectedTab = browser.tabs.connect(tabId, {
-                  name: `${this.workflow.id}--${this.workflow.name.slice(
-                    0,
-                    10
-                  )}`,
-                });
-                this.tabId = tabId;
+                this._connectTab(tabId);
 
                 resolve({ nextBlockId: getBlockConnection(block) });
               });
@@ -50,5 +45,14 @@ export function openWebsite(block) {
         console.error(error, 'nnnaa');
         reject(error);
       });
+  });
+}
+
+export function eventClick(block) {
+  return new Promise(() => {
+    if (!this._connectedTab) return;
+    console.log(this._connectedTab);
+    /* listen tab message and then resolve */
+    this._connectedTab.postMessage(block);
   });
 }
