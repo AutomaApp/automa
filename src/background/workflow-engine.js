@@ -47,18 +47,18 @@ class WorkflowEngine {
     this.isDestroyed = true;
   }
 
-  _blockHandler(block) {
+  _blockHandler(block, prevBlockData) {
     if (this.isDestroyed) return;
 
     console.log(`${block.name}(${toCamelCase(block.name)}):`, block);
     const handler = blocksHandler[toCamelCase(block?.name)];
-    /* pass data from prev block */
+
     if (handler) {
       handler
-        .call(this, block)
+        .call(this, block, prevBlockData)
         .then((result) => {
           if (result.nextBlockId) {
-            this._blockHandler(this.blocks[result.nextBlockId]);
+            this._blockHandler(this.blocks[result.nextBlockId], result.data);
           } else {
             console.log('Done');
           }

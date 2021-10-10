@@ -11,7 +11,7 @@ export function trigger(block) {
   return new Promise((resolve) => {
     const nextBlockId = getBlockConnection(block);
 
-    resolve({ nextBlockId });
+    resolve({ nextBlockId, data: '' });
   });
 }
 
@@ -34,7 +34,10 @@ export function openWebsite(block) {
               .then(() => {
                 this._connectTab(tabId);
 
-                resolve({ nextBlockId: getBlockConnection(block) });
+                resolve({
+                  nextBlockId: getBlockConnection(block),
+                  data: block.data.url,
+                });
               });
           }
         };
