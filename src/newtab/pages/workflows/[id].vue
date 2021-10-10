@@ -12,6 +12,7 @@
       <workflow-details-card
         v-else
         :workflow="workflow"
+        :data-changed="state.isDataChanged"
         @save="saveWorkflow"
         @execute="executeWorkflow"
         @update="updateWorkflow"

@@ -8,7 +8,7 @@
       icon ? 'p-2' : 'py-2 px-4',
       circle ? 'rounded-full' : 'rounded-lg',
       {
-        'opacity-70 bg-opacity-70': disabled,
+        'opacity-70': disabled,
         'pointer-events-none': loading || disabled,
       },
     ]"

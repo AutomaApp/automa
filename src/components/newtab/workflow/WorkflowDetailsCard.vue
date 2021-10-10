@@ -35,7 +35,12 @@
     </p>
   </div>
   <div class="flex px-4 mt-2 space-x-2">
-    <ui-button variant="accent" class="flex-1" @click="$emit('save')">
+    <ui-button
+      :disabled="!dataChanged"
+      variant="accent"
+      class="flex-1"
+      @click="$emit('save')"
+    >
       <v-remixicon name="riSaveLine" class="mr-2 -ml-1" />
       Save
     </ui-button>
@@ -117,6 +122,10 @@ defineProps({
   workflow: {
     type: Object,
     default: () => ({}),
+  },
+  dataChanged: {
+    type: Boolean,
+    default: false,
   },
 });
 defineEmits([
