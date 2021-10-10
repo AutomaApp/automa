@@ -59,6 +59,7 @@ export const tasks = {
       selector: '',
       multiple: false,
       regex: '',
+      regexExp: ['g'],
       dataColumn: '',
     },
   },

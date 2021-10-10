@@ -12,11 +12,29 @@ function handleElement(data, callback) {
   }
 }
 
-export function eventClick({ data }, port) {
+export function eventClick({ data, name }, port) {
   handleElement(data, (element) => {
-    console.log(element);
     element.click();
   });
 
-  port.postMessage({ type: 'event-click' });
+  port.postMessage({ type: name });
+}
+
+export function getText({ data, name }, port) {
+  let regex;
+  let textResult = '';
+
+  if (data.regex) {
+    regex = new RegExp(data.regex, data.regexExp.join(''));
+  }
+
+  handleElement(data, (element) => {
+    let text = element.innerText;
+
+    if (regex) text = text.match(regex).join(' ');
+
+    textResult += `${text} `;
+  });
+
+  port.postMessage({ type: name, data: textResult });
 }

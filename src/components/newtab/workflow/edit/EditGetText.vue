@@ -1,11 +1,30 @@
 <template>
   <edit-interaction-base v-bind="{ data }" @change="updateData">
-    <ui-input
-      :model-value="data.regex"
-      placeholder="Regex"
-      class="mt-2 w-full"
-      @change="updateData"
-    />
+    <div class="flex rounded-lg bg-input px-4 items-center transition mt-2">
+      <span>/</span>
+      <input
+        :value="data.regex"
+        placeholder="Regex"
+        class="w-11/12 bg-transparent p-2 focus:ring-0"
+        @change="updateData({ regex: $event.target.value })"
+      />
+      <ui-popover>
+        <template #trigger>
+          <button>/{{ regexExp.join('') }}</button>
+        </template>
+        <p class="mb-2 text-gray-600 dark:text-gray-200">Expression flags</p>
+        <div class="space-y-1">
+          <div v-for="item in exps" :key="item.id">
+            <ui-checkbox
+              :model-value="regexExp.includes(item.id)"
+              @change="handleExpCheckbox(item.id, $event)"
+            >
+              {{ item.name }}
+            </ui-checkbox>
+          </div>
+        </div>
+      </ui-popover>
+    </div>
     <div class="flex items-center mt-3">
       <ui-select
         :model-value="data.dataColumn"
@@ -32,7 +51,7 @@
   </edit-interaction-base>
 </template>
 <script setup>
-import { inject } from 'vue';
+import { inject, ref } from 'vue';
 import EditInteractionBase from './EditInteractionBase.vue';
 
 const props = defineProps({
@@ -44,8 +63,24 @@ const props = defineProps({
 const emit = defineEmits(['update:data']);
 
 const workflow = inject('workflow');
+const regexExp = ref(props.data.regexExp);
+
+const exps = [
+  { id: 'g', name: 'global' },
+  { id: 'i', name: 'ignore case' },
+  { id: 'm', name: 'multiline' },
+];
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
+}
+function handleExpCheckbox(id, value) {
+  if (value) {
+    regexExp.value.push(id);
+  } else {
+    regexExp.value.splice(regexExp.value.indexOf(id), 1);
+  }
+
+  updateData({ regexExp: regexExp.value });
 }
 </script>

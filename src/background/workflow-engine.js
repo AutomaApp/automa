@@ -12,6 +12,15 @@ function tabMessageListenerHandler({ type, data }) {
     if (listener.once) delete this.tabMessageListeners[type];
   }
 }
+function tabRemovedListener(tabId) {
+  if (tabId !== this.tabId) return;
+
+  this.connectedTab?.onMessage.removeListener(this.tabMessageListenerHandler);
+  this.connectedTab?.disconnect();
+
+  delete this.connectedTab;
+  delete this.tabId;
+}
 
 class WorkflowEngine {
   constructor(workflow) {
@@ -20,8 +29,10 @@ class WorkflowEngine {
     this.blocksArr = [];
     this.data = [];
     this.isDestroyed = false;
+    this.logs = [];
 
     this.tabMessageListeners = {};
+    this.tabRemovedListener = tabRemovedListener.bind(this);
     this.tabMessageListenerHandler = tabMessageListenerHandler.bind(this);
   }
 
@@ -42,6 +53,8 @@ class WorkflowEngine {
       return;
     }
 
+    browser.tabs.onRemoved.addListener(this.tabRemovedListener);
+
     this.blocks = blocks;
     this.blocksArr = blocksArr;
 
@@ -49,13 +62,20 @@ class WorkflowEngine {
   }
 
   destroy() {
-    // Add 'destroyed' log
+    // save log
+    browser.tabs.onRemoved.removeListener(this.tabRemovedListener);
 
     this.isDestroyed = true;
   }
 
   _blockHandler(block, prevBlockData) {
-    if (this.isDestroyed) return;
+    if (this.isDestroyed) {
+      console.log(
+        '%cDestroyed',
+        'color: red; font-size: 24px; font-weight: bold'
+      );
+      return;
+    }
 
     console.log(`${block.name}(${toCamelCase(block.name)}):`, block);
     const handler = blocksHandler[toCamelCase(block?.name)];
@@ -79,21 +99,6 @@ class WorkflowEngine {
   }
 
   _connectTab(tabId) {
-    const tabRemovedListener = (id) => {
-      if (id !== tabId) return;
-
-      this.destroy();
-      this.connectedTab.onMessage.removeListener(
-        this.tabMessageListenerHandler
-      );
-      this.connectedTab.disconnect();
-
-      delete this.connectedTab;
-      delete this.tabId;
-
-      browser.tabs.onRemoved.removeListener(tabRemovedListener);
-    };
-
     const connectedTab = browser.tabs.connect(tabId, {
       name: `${this.workflow.id}--${this.workflow.name.slice(0, 10)}`,
     });

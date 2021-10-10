@@ -39,8 +39,8 @@
       <v-remixicon name="riSaveLine" class="mr-2 -ml-1" />
       Save
     </ui-button>
-    <ui-button icon title="Data columns" @click="$emit('showDataColumns')">
-      <v-remixicon name="riKey2Line" />
+    <ui-button icon title="Execute" @click="$emit('execute')">
+      <v-remixicon name="riPlayLine" />
     </ui-button>
     <ui-popover>
       <template #trigger>
@@ -49,9 +49,9 @@
         </ui-button>
       </template>
       <ui-list class="w-36">
-        <ui-list-item class="cursor-pointer" @click="$emit('execute')">
-          <v-remixicon name="riPlayLine" class="mr-2 -ml-1" />
-          <span>Execute</span>
+        <ui-list-item class="cursor-pointer" @click="$emit('showDataColumns')">
+          <v-remixicon name="riKey2Line" class="mr-2 -ml-1" />
+          <span>Data columns</span>
         </ui-list-item>
         <ui-list-item
           v-close-popover

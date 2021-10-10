@@ -57,7 +57,7 @@ export function eventClick(block) {
 
     this._connectedTab.postMessage(block);
     this._listenTabMessage(
-      'event-click',
+      block.name,
       () => {
         resolve({
           nextBlockId: getBlockConnection(block),
@@ -66,5 +66,35 @@ export function eventClick(block) {
       },
       { once: true }
     );
+  });
+}
+
+export function getText(block) {
+  return new Promise((resolve) => {
+    if (!this._connectedTab) return;
+
+    this._connectedTab.postMessage(block);
+    this._listenTabMessage(
+      block.name,
+      (data) => {
+        console.log('hha', data);
+        resolve({
+          nextBlockId: getBlockConnection(block),
+          data: '',
+        });
+      },
+      { once: true }
+    );
+  });
+}
+
+export function delay(block) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        nextBlockId: getBlockConnection(block),
+        data: '',
+      });
+    }, block.data.time);
   });
 }
