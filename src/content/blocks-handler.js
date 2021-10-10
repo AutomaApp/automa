@@ -12,15 +12,15 @@ function handleElement(data, callback) {
   }
 }
 
-export function eventClick({ data, name }, port) {
+export function eventClick({ data }) {
   handleElement(data, (element) => {
     element.click();
   });
 
-  port.postMessage({ type: name });
+  return '';
 }
 
-export function getText({ data, name }, port) {
+export function getText({ data }) {
   let regex;
   let textResult = '';
 
@@ -36,5 +36,25 @@ export function getText({ data, name }, port) {
     textResult += `${text} `;
   });
 
-  port.postMessage({ type: name, data: textResult });
+  return textResult;
+}
+
+export function elementScroll({ data }) {
+  handleElement(data, (element) => {
+    element.scroll(data.scrollX, data.scrollY);
+  });
+
+  return '';
+}
+
+export function attributeValue({ data }) {
+  let result = '';
+
+  handleElement(data, (element) => {
+    const value = element.getAttribute(data.attributeName);
+
+    result += `${value} `;
+  });
+
+  return result;
 }

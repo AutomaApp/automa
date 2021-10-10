@@ -51,25 +51,7 @@ export function openWebsite(block) {
   });
 }
 
-export function eventClick(block) {
-  return new Promise((resolve) => {
-    if (!this._connectedTab) return;
-
-    this._connectedTab.postMessage(block);
-    this._listenTabMessage(
-      block.name,
-      () => {
-        resolve({
-          nextBlockId: getBlockConnection(block),
-          data: '',
-        });
-      },
-      { once: true }
-    );
-  });
-}
-
-export function getText(block) {
+export function interactionHandler(block) {
   return new Promise((resolve) => {
     if (!this._connectedTab) return;
 
@@ -77,10 +59,11 @@ export function getText(block) {
     this._listenTabMessage(
       block.name,
       (data) => {
-        console.log('hha', data);
+        console.log(block.name, data, 'data');
+
         resolve({
+          data,
           nextBlockId: getBlockConnection(block),
-          data: '',
         });
       },
       { once: true }

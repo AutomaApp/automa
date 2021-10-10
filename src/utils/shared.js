@@ -89,7 +89,7 @@ export const tasks = {
     maxConnection: 1,
     data: {
       description: '',
-      selector: '',
+      selector: 'html',
       multiple: false,
       scrollY: 0,
       scrollX: 0,

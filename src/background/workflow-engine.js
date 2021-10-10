@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import browser from 'webextension-polyfill';
 import { toCamelCase } from '@/utils/helper';
+import { tasks } from '@/utils/shared';
 import * as blocksHandler from './blocks-handler';
 
 function tabMessageListenerHandler({ type, data }) {
@@ -77,8 +78,12 @@ class WorkflowEngine {
       return;
     }
 
-    console.log(`${block.name}(${toCamelCase(block.name)}):`, block);
-    const handler = blocksHandler[toCamelCase(block?.name)];
+    const isInteraction = tasks[block.name].category === 'interaction';
+    const handlerName = isInteraction
+      ? 'interactionHandler'
+      : toCamelCase(block?.name);
+    console.log(isInteraction, handlerName, tasks);
+    const handler = blocksHandler[handlerName];
 
     if (handler) {
       handler
