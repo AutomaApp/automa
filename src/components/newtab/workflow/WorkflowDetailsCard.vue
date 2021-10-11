@@ -35,12 +35,22 @@
     </p>
   </div>
   <div class="flex px-4 mt-2 space-x-2">
-    <ui-button
-      :disabled="!dataChanged"
-      variant="accent"
-      class="flex-1"
-      @click="$emit('save')"
-    >
+    <ui-button variant="accent" class="flex-1 relative" @click="$emit('save')">
+      <span
+        v-if="dataChanged"
+        class="
+          inline-block
+          absolute
+          h-3
+          w-3
+          rounded-full
+          bg-primary
+          -ml-1
+          -mt-1
+          top-0
+          left-0
+        "
+      ></span>
       <v-remixicon name="riSaveLine" class="mr-2 -ml-1" />
       Save
     </ui-button>
@@ -54,7 +64,11 @@
         </ui-button>
       </template>
       <ui-list>
-        <ui-list-item class="cursor-pointer" @click="$emit('showDataColumns')">
+        <ui-list-item
+          v-close-popover
+          class="cursor-pointer"
+          @click="$emit('showDataColumns')"
+        >
           <v-remixicon name="riKey2Line" class="mr-2 -ml-1" />
           <span>Data columns</span>
         </ui-list-item>

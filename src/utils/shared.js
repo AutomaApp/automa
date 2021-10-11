@@ -191,7 +191,7 @@ export const tasks = {
       multiple: false,
       eventName: '',
       eventType: '',
-      eventParams: {},
+      eventParams: { bubbles: true, cancelable: false },
     },
   },
   conditions: {

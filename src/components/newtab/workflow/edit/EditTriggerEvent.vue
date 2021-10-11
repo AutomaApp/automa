@@ -11,7 +11,6 @@
       </option>
     </ui-select>
     <button
-      v-if="componentName"
       class="mb-2 block w-full text-left mt-4 focus:ring-0"
       @click="showOptions = !showOptions"
     >
@@ -23,9 +22,24 @@
       <span class="align-middle">Options</span>
     </button>
     <transition-expand>
-      <div v-if="showOptions && componentName">
+      <div v-if="showOptions">
+        <div class="grid grid-cols-2 gap-2 mb-4">
+          <ui-checkbox
+            :model-value="params.bubbles"
+            @change="updateParams({ ...params, bubbles: $event })"
+          >
+            Bubbles
+          </ui-checkbox>
+          <ui-checkbox
+            :model-value="params.cancelable"
+            @change="updateParams({ ...params, cancelable: $event })"
+          >
+            Cancelable
+          </ui-checkbox>
+        </div>
         <component
           :is="componentName"
+          v-if="componentName"
           :params="params"
           @update="updateParams"
         />
@@ -88,8 +102,10 @@ function handleEventChange(value) {
   componentName.value = eventComponents[eventType];
 
   if (eventType !== props.eventType) {
-    payload.eventParams = {};
-    params.value = {};
+    const defaultParams = { bubbles: true, cancelable: true };
+
+    payload.eventParams = defaultParams;
+    params.value = defaultParams;
   }
 
   updateData(payload);
