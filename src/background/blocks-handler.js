@@ -16,33 +16,39 @@ export function trigger(block) {
 }
 
 export function openWebsite(block) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     browser.tabs
       .create({
         active: true,
         url: block.data.url,
       })
       .then((tab) => {
-        const tabListener = (tabId, changeInfo) => {
-          if (changeInfo.status === 'complete' && tabId === tab.id) {
-            browser.tabs.onUpdated.removeListener(tabListener);
-
-            browser.tabs
-              .executeScript(tabId, {
+        this._listener({
+          name: 'tab-updated',
+          id: tab.id,
+          once: true,
+          callback: async (tabId, changeInfo, deleteListener) => {
+            if (changeInfo.status !== 'complete') return;
+            console.log(changeInfo.status !== 'complete', 'clll');
+            try {
+              await browser.tabs.executeScript(tabId, {
                 file: './contentScript.bundle.js',
-              })
-              .then(() => {
-                this._connectTab(tabId);
-
-                resolve({
-                  nextBlockId: getBlockConnection(block),
-                  data: block.data.url,
-                });
               });
-          }
-        };
 
-        browser.tabs.onUpdated.addListener(tabListener);
+              this.tabId = tabId;
+              this._connectTab(tabId);
+
+              deleteListener();
+
+              resolve({
+                nextBlockId: getBlockConnection(block),
+                data: block.data.url,
+              });
+            } catch (error) {
+              console.error(error);
+            }
+          },
+        });
       })
       .catch((error) => {
         console.error(error, 'nnnaa');
@@ -56,16 +62,18 @@ export function interactionHandler(block) {
     if (!this._connectedTab) return;
 
     this._connectedTab.postMessage(block);
-    this._listenTabMessage(
-      block.name,
-      (data) => {
+    this._listener({
+      name: 'tab-message',
+      id: block.name,
+      once: true,
+      callback: (data) => {
+        this.data.push(data);
         resolve({
           data,
           nextBlockId: getBlockConnection(block),
         });
       },
-      { once: true }
-    );
+    });
   });
 }
 

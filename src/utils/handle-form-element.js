@@ -41,13 +41,11 @@ export default function (element, data, callback) {
   const textFields = ['INPUT', 'TEXTAREA'];
 
   if (data.type === 'text-field' && textFields.includes(element.tagName)) {
-    console.log('inputtt');
     inputText({ data, element, callback });
     return;
   }
 
   if (data.type === 'checkbox' || data.type === 'radio') {
-    console.log('checkbox|radio', data.selected);
     element.checked = data.selected;
     formEvent(element, { type: data.type, value: data.selected });
     callback();

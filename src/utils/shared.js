@@ -1,3 +1,5 @@
+/* link, tab loaded, and close tab block? */
+
 export const tasks = {
   trigger: {
     name: 'Trigger',
