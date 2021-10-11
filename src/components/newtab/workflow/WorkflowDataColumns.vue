@@ -19,8 +19,26 @@
       :key="column.name"
       class="flex items-center space-x-2"
     >
-      <ui-input v-model="columns[index].name" placeholder="Column name" />
-      <ui-input v-model="columns[index].default" placeholder="Default value" />
+      <ui-input
+        :model-value="columns[index].name"
+        disabled
+        class="flex-1"
+        placeholder="Column name"
+      />
+      <ui-input
+        v-model="columns[index].default"
+        class="flex-1"
+        placeholder="Default value"
+      />
+      <ui-select
+        v-model="columns[index].type"
+        class="flex-1"
+        placeholder="Data type"
+      >
+        <option v-for="type in dataTypes" :key="type.id" :value="type.id">
+          {{ type.name }}
+        </option>
+      </ui-select>
       <button @click="state.columns.splice(index, 1)">
         <v-remixicon name="riDeleteBin7Line" />
       </button>
@@ -39,6 +57,11 @@ const props = defineProps({
 });
 const emit = defineEmits(['update', 'close']);
 
+const dataTypes = [
+  { id: 'string', name: 'Text' },
+  { id: 'integer', name: 'Number' },
+];
+
 const state = reactive({
   query: '',
   columns: [],
@@ -52,7 +75,7 @@ function addColumn() {
 
   if (isColumnExists || state.query.trim() === '') return;
 
-  state.columns.push({ name: state.query, default: '' });
+  state.columns.push({ name: state.query, default: '', type: 'string' });
   state.query = '';
 }
 

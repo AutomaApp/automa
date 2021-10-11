@@ -11,8 +11,15 @@ function handleElement(data, callback) {
   if (typeof callback === 'boolean' && callback) return element;
 
   if (data.multiple) {
-    element.forEach(callback);
-  } else if (element) {
+    element.forEach((el) => {
+      if (el.hasAttribute('ext-auto')) return;
+
+      el.setAttribute('ext-auto', '');
+      callback(el);
+    });
+  } else if (element && !element.hasAttribute('ext-auto')) {
+    element.setAttribute('ext-auto', '');
+
     callback(element);
   }
 }
@@ -121,9 +128,15 @@ export function textInput({ data }) {
     if (data.multiple) {
       const promises = Array.from(elements).map((element) => {
         return new Promise((eventResolve) => {
-          if (textFields.includes(element.tagName))
+          if (
+            textFields.includes(element.tagName) ||
+            !element.hasAttribute('ext-auto')
+          ) {
             inputText({ data, element, callback: eventResolve });
-          else eventResolve();
+          } else {
+            element.setAttribute('ext-auto', '');
+            eventResolve();
+          }
         });
       });
 
@@ -131,8 +144,15 @@ export function textInput({ data }) {
         console.log('hola amigo');
         resolve('');
       });
-    } else if (textFields.includes(elements.tagName)) {
+    } else if (
+      elements &&
+      textFields.includes(elements.tagName) &&
+      !elements.hasAttribute('ext-auto')
+    ) {
+      elements.setAttribute('ext-auto', '');
+
       inputText({
+        data,
         element: elements,
         callback: () => {
           console.log('hola amigo 2');

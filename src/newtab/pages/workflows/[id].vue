@@ -28,7 +28,7 @@
       @deleteBlock="deleteBlock"
     />
   </div>
-  <ui-modal v-model="state.showDataColumnsModal">
+  <ui-modal v-model="state.showDataColumnsModal" content-class="max-w-xl">
     <template #header>Data columns</template>
     <workflow-data-columns
       v-bind="{ workflow }"

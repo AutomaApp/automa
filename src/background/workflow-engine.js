@@ -30,6 +30,7 @@ class WorkflowEngine {
     this.blocksArr = [];
     this.data = [];
     this.isDestroyed = false;
+    this.isPaused = false;
     this.logs = [];
 
     this.tabMessageListeners = {};
@@ -77,6 +78,13 @@ class WorkflowEngine {
       );
       return;
     }
+    if (this.isPaused) {
+      setTimeout(() => {
+        this._blockHandler(block, prevBlockData);
+      }, 1000);
+
+      return;
+    }
 
     const isInteraction = tasks[block.name].category === 'interaction';
     const handlerName = isInteraction
@@ -107,9 +115,7 @@ class WorkflowEngine {
       name: `${this.workflow.id}--${this.workflow.name.slice(0, 10)}`,
     });
 
-    if (!this.connectedTab) {
-      browser.tabs.onRemoved.addListener(tabRemovedListener);
-    } else {
+    if (this.connectedTab) {
       this.connectedTab.onMessage.removeListener(
         this.tabMessageListenerHandler
       );
