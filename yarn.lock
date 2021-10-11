@@ -1808,6 +1808,13 @@ caniuse-lite@^1.0.30001259, caniuse-lite@^1.0.30001260:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001261.tgz#96d89813c076ea061209a4e040d8dcf0c66a1d01"
   integrity sha512-vM8D9Uvp7bHIN0fZ2KQ4wnmYFpJo/Etb4Vwsuc+ka0tfGDHvOPrFm6S/7CCNLSOkAUjenT2HnUPESdOIL91FaA==
 
+cartesian@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/cartesian/-/cartesian-1.0.1.tgz#ae3fc8a63e2ba7e2c4989ce696207457bcae65af"
+  integrity sha1-rj/Ipj4rp+LEmJzmliB0V7yuZa8=
+  dependencies:
+    xtend "^4.0.1"
+
 chalk@^2.0.0, chalk@^2.0.1:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
@@ -2176,6 +2183,14 @@ css-select@^4.1.3:
     domhandler "^4.2.0"
     domutils "^2.6.0"
     nth-check "^2.0.0"
+
+css-selector-generator@^3.4.4:
+  version "3.4.4"
+  resolved "https://registry.yarnpkg.com/css-selector-generator/-/css-selector-generator-3.4.4.tgz#daba9fdd0d61de5efeda8cdafb57ae6f8defb44f"
+  integrity sha512-opjk54O5JZaKf8UrxUciqBdyIggH3D/TSZYI/AAJd0KNb6hBhjJtCI034rWDEHn0IIBsZEuAIuVR7N4j9n75lg==
+  dependencies:
+    cartesian "^1.0.1"
+    iselement "^1.1.4"
 
 css-unit-converter@^1.1.1:
   version "1.1.2"
@@ -3955,6 +3970,11 @@ isarray@1.0.0, isarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
   integrity sha1-u5NdSFgsuhaMBoNJV6VKPgcSTxE=
+
+iselement@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/iselement/-/iselement-1.1.4.tgz#7e55b52a8ebca50a7e2e80e5b8d2840f32353146"
+  integrity sha1-flW1Ko68pQp+LoDluNKEDzI1MUY=
 
 isexe@^2.0.0:
   version "2.0.0"
@@ -6786,7 +6806,7 @@ ws@^6.2.1:
   dependencies:
     async-limiter "~1.0.0"
 
-xtend@^4.0.2:
+xtend@^4.0.1, xtend@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.2.tgz#bb72779f5fa465186b1f438f674fa347fdb5db54"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==

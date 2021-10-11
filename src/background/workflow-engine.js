@@ -54,7 +54,7 @@ class WorkflowEngine {
       console.error('A trigger block is required');
       return;
     }
-
+    /* to do: pause if website is loading and inject content-script */
     browser.tabs.onRemoved.addListener(this.tabRemovedListener);
 
     this.blocks = blocks;
@@ -85,7 +85,7 @@ class WorkflowEngine {
 
       return;
     }
-
+    console.log(`${block.name}:`, block);
     const isInteraction = tasks[block.name].category === 'interaction';
     const handlerName = isInteraction
       ? 'interactionHandler'

@@ -1,5 +1,6 @@
 /* eslint-disable consistent-return, no-param-reassign */
 import simulateEvent from '@/utils/simulate-event';
+import handleFormElement from '@/utils/handle-form-element';
 
 function handleElement(data, callback) {
   if (!data.selector) return null;
@@ -11,15 +12,8 @@ function handleElement(data, callback) {
   if (typeof callback === 'boolean' && callback) return element;
 
   if (data.multiple) {
-    element.forEach((el) => {
-      if (el.hasAttribute('ext-auto')) return;
-
-      el.setAttribute('ext-auto', '');
-      callback(el);
-    });
-  } else if (element && !element.hasAttribute('ext-auto')) {
-    element.setAttribute('ext-auto', '');
-
+    element.forEach(callback);
+  } else if (element) {
     callback(element);
   }
 }
@@ -81,62 +75,14 @@ export function attributeValue({ data }) {
   });
 }
 
-function inputText({ data, element, index = 0, callback }) {
-  const noDelay = data.delay === 0;
-  const currentChar = data.text[index];
-
-  if (noDelay) {
-    element.value = data.text;
-  } else {
-    element.value += currentChar;
-  }
-
-  const code = /\s/.test(currentChar)
-    ? 'Space'
-    : `key${currentChar.toUpperCase()}`;
-
-  console.log(code, currentChar, element.value);
-
-  if (data.keydownEvent) {
-    simulateEvent(element, 'keydown', { code, key: currentChar });
-  }
-  if (data.keyupEvent) {
-    simulateEvent(element, 'keyup', { code, key: currentChar });
-  }
-  if (data.changeEvent) {
-    element.dispatchEvent(new Event('change'));
-  }
-  if (data.inputEvent) {
-    element.dispatchEvent(
-      new InputEvent('input', { inputType: 'insertText', data: currentChar })
-    );
-  }
-
-  if (!noDelay && index + 1 !== data.text.length) {
-    setTimeout(() => {
-      inputText({ data, element, callback, index: index + 1 });
-    }, data.delay);
-  } else {
-    callback();
-  }
-}
-export function textInput({ data }) {
+export function forms({ data }) {
   return new Promise((resolve) => {
     const elements = handleElement(data, true);
-    const textFields = ['INPUT', 'TEXTAREA'];
-
+    console.log(elements, 'form');
     if (data.multiple) {
       const promises = Array.from(elements).map((element) => {
         return new Promise((eventResolve) => {
-          if (
-            textFields.includes(element.tagName) ||
-            !element.hasAttribute('ext-auto')
-          ) {
-            inputText({ data, element, callback: eventResolve });
-          } else {
-            element.setAttribute('ext-auto', '');
-            eventResolve();
-          }
+          handleFormElement(element, data, eventResolve);
         });
       });
 
@@ -144,21 +90,10 @@ export function textInput({ data }) {
         console.log('hola amigo');
         resolve('');
       });
-    } else if (
-      elements &&
-      textFields.includes(elements.tagName) &&
-      !elements.hasAttribute('ext-auto')
-    ) {
-      elements.setAttribute('ext-auto', '');
-
-      inputText({
-        data,
-        element: elements,
-        callback: () => {
-          console.log('hola amigo 2');
-          resolve('');
-        },
-      });
+    } else if (elements) {
+      handleFormElement(elements, data, resolve);
+    } else {
+      resolve();
     }
   });
 }

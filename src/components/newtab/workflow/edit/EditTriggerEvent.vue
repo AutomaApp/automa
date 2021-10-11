@@ -3,7 +3,7 @@
     <ui-select
       :model-value="data.eventName"
       class="w-full mt-2"
-      placeholder="Select event"
+      placeholder="Select an event"
       @change="handleEventChange"
     >
       <option v-for="event in eventList" :key="event.id" :value="event.id">
