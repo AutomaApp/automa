@@ -8,7 +8,10 @@ function tabMessageHandler({ type, data }) {
   const listener = this.tabMessageListeners[type];
 
   if (listener) {
-    listener.callback(data);
+    console.log(listener.delay, 'delay....');
+    setTimeout(() => {
+      listener.callback(data);
+    }, listener.delay || 0);
 
     if (listener.once) delete this.tabMessageListeners[type];
   }
@@ -30,11 +33,11 @@ function tabUpdatedHandler(tabId, changeInfo) {
       delete this.tabUpdatedListeners[tabId];
     });
   } else {
-    if (changeInfo.status !== 'complete') return;
+    if (this.tabId !== tabId) return;
 
-    if (this.tabId === tabId) {
-      this.isPaused = true;
+    this.isInsidePaused = true;
 
+    if (changeInfo.status === 'complete') {
       browser.tabs
         .executeScript(tabId, {
           file: './contentScript.bundle.js',
@@ -43,11 +46,11 @@ function tabUpdatedHandler(tabId, changeInfo) {
           console.log(this.currentBlock);
           if (this._connectedTab) this._connectTab(this.tabId);
 
-          this.isPaused = false;
+          this.isInsidePaused = false;
         })
         .catch((error) => {
           console.error(error);
-          this.isPaused = false;
+          this.isInsidePaused = false;
         });
     }
   }
@@ -61,6 +64,7 @@ class WorkflowEngine {
     this.data = [];
     this.isDestroyed = false;
     this.isPaused = false;
+    this.isInsidePaused = false;
     this.logs = [];
     this.currentBlock = null;
 
@@ -105,6 +109,7 @@ class WorkflowEngine {
   }
 
   _blockHandler(block, prevBlockData) {
+    console.log(this.isInsidePaused, 'isInsidePaused');
     if (this.isDestroyed) {
       console.log(
         '%cDestroyed',
@@ -112,7 +117,7 @@ class WorkflowEngine {
       );
       return;
     }
-    if (this.isPaused) {
+    if (this.isPaused || this.isInsidePaused) {
       setTimeout(() => {
         this._blockHandler(block, prevBlockData);
       }, 1000);
@@ -166,12 +171,12 @@ class WorkflowEngine {
     return connectedTab;
   }
 
-  _listener({ id, name, callback, once = true }) {
+  _listener({ id, name, callback, once = true, ...options }) {
     const listenerNames = {
       'tab-updated': 'tabUpdatedListeners',
       'tab-message': 'tabMessageListeners',
     };
-    this[listenerNames[name]][id] = { callback, once };
+    this[listenerNames[name]][id] = { callback, once, ...options };
 
     return () => {
       delete this.tabMessageListeners[id];

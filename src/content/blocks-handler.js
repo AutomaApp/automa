@@ -107,3 +107,22 @@ export function triggerEvent({ data }) {
     resolve('');
   });
 }
+
+export function link({ data }) {
+  return new Promise((resolve) => {
+    const element = document.querySelector(data.selector);
+
+    if (!element) {
+      resolve('');
+      return;
+    }
+
+    const url = element.href;
+
+    if (url) window.location.href = url;
+
+    // setTimeout(() => {
+    resolve('');
+    // }, 2000);
+  });
+}

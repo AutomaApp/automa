@@ -66,8 +66,10 @@ export function interactionHandler(block) {
       name: 'tab-message',
       id: block.name,
       once: true,
+      delay: block.name === 'link' ? 5000 : 0,
       callback: (data) => {
         this.data.push(data);
+
         resolve({
           data,
           nextBlockId: getBlockConnection(block),

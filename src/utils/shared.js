@@ -97,6 +97,22 @@ export const tasks = {
       scrollX: 0,
     },
   },
+  link: {
+    name: 'Link',
+    icon: 'riLink',
+    component: 'BlockBasic',
+    editComponent: 'EditInteractionBase',
+    category: 'interaction',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      description: '',
+      selector: '',
+      disableMultiple: true,
+    },
+  },
   'attribute-value': {
     name: 'Attribute value',
     icon: 'riBracketsLine',

@@ -14,6 +14,7 @@
     @change="updateData({ selector: $event })"
   />
   <ui-checkbox
+    v-if="!data.disableMultiple"
     :model-value="data.multiple"
     @change="updateData({ multiple: $event })"
   >

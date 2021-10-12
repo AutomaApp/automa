@@ -7,13 +7,30 @@ function formEvent(element, data) {
       ? 'Space'
       : `key${data.value.toUpperCase()}`;
 
-    simulateEvent(element, 'keydown', { code, key: data.value });
-    simulateEvent(element, 'keyup', { code, key: data.value });
+    simulateEvent(element, 'keydown', {
+      code,
+      bubbles: true,
+      cancelable: true,
+      key: data.value,
+    });
+    simulateEvent(element, 'keyup', {
+      code,
+      bubbles: true,
+      cancelable: true,
+      key: data.value,
+    });
   }
 
-  element.dispatchEvent(new Event('change'));
   element.dispatchEvent(
-    new InputEvent('input', { inputType: 'insertText', data: data.value })
+    new Event('change', { bubbles: true, cancelable: true })
+  );
+  element.dispatchEvent(
+    new InputEvent('input', {
+      inputType: 'insertText',
+      data: data.value,
+      bubbles: true,
+      cancelable: true,
+    })
   );
 }
 function inputText({ data, element, index = 0, callback }) {
