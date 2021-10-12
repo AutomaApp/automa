@@ -8,13 +8,14 @@
     @change="updateData({ description: $event })"
   />
   <ui-input
+    v-if="!hideSelector"
     :model-value="data.selector"
     placeholder="Element selector"
     class="mb-1 w-full"
     @change="updateData({ selector: $event })"
   />
   <ui-checkbox
-    v-if="!data.disableMultiple"
+    v-if="!hideSelector || !data.disableMultiple"
     :model-value="data.multiple"
     @change="updateData({ multiple: $event })"
   >
@@ -27,6 +28,10 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  hideSelector: {
+    type: Boolean,
+    default: false,
   },
 });
 const emit = defineEmits(['update:data', 'change']);

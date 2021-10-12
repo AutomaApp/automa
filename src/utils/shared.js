@@ -76,7 +76,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     data: {
-      type: 'JSON',
+      type: 'json',
     },
   },
   'element-scroll': {

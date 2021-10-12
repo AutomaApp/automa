@@ -1,10 +1,27 @@
 /* eslint-disable no-underscore-dangle */
 import browser from 'webextension-polyfill';
+import { objectHasKey } from '@/utils/helper';
+import dataExporter from '@/utils/data-exporter';
 
 function getBlockConnection(block, index = 1) {
   const blockId = block.outputs[`output_${index}`].connections[0]?.node;
 
   return blockId;
+}
+function converData(data, type) {
+  let result = data;
+
+  switch (type) {
+    case 'integer':
+      result = +data.replace(/\D+/g, '');
+      break;
+    case 'boolean':
+      result = Boolean(data);
+      break;
+    default:
+  }
+
+  return result;
 }
 
 export function trigger(block) {
@@ -29,7 +46,7 @@ export function openWebsite(block) {
           once: true,
           callback: async (tabId, changeInfo, deleteListener) => {
             if (changeInfo.status !== 'complete') return;
-            console.log(changeInfo.status !== 'complete', 'clll');
+
             try {
               await browser.tabs.executeScript(tabId, {
                 file: './contentScript.bundle.js',
@@ -68,7 +85,17 @@ export function interactionHandler(block) {
       once: true,
       delay: block.name === 'link' ? 5000 : 0,
       callback: (data) => {
-        this.data.push(data);
+        if (objectHasKey(block.data, 'dataColumn')) {
+          const column =
+            Object.values(this.workflow.dataColumns).find(
+              ({ name }) => name === block.data.dataColumn
+            ) ?? {};
+          const name = column.name || 'column';
+          console.log(column, converData(data, column.type));
+          (this.data[name] = this.data[name] || []).push(
+            converData(data, column.type)
+          );
+        }
 
         resolve({
           data,
@@ -87,5 +114,16 @@ export function delay(block) {
         data: '',
       });
     }, block.data.time);
+  });
+}
+
+export function exportData(block) {
+  return new Promise((resolve) => {
+    dataExporter(this.data, block.data.type);
+
+    resolve({
+      data: '',
+      nextBlockId: getBlockConnection(block),
+    });
   });
 }

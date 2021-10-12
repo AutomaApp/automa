@@ -25,11 +25,6 @@
         class="flex-1"
         placeholder="Column name"
       />
-      <ui-input
-        v-model="columns[index].default"
-        class="flex-1"
-        placeholder="Default value"
-      />
       <ui-select
         v-model="columns[index].type"
         class="flex-1"
@@ -60,6 +55,7 @@ const emit = defineEmits(['update', 'close']);
 const dataTypes = [
   { id: 'string', name: 'Text' },
   { id: 'integer', name: 'Number' },
+  { id: 'boolean', name: 'Boolean' },
 ];
 
 const state = reactive({
@@ -75,7 +71,7 @@ function addColumn() {
 
   if (isColumnExists || state.query.trim() === '') return;
 
-  state.columns.push({ name: state.query, default: '', type: 'string' });
+  state.columns.push({ name: state.query, type: 'string' });
   state.query = '';
 }
 

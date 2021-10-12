@@ -121,8 +121,6 @@ export function link({ data }) {
 
     if (url) window.location.href = url;
 
-    // setTimeout(() => {
     resolve('');
-    // }, 2000);
   });
 }

@@ -49,9 +49,9 @@ const componentId = useComponentId('block-delay');
 const block = useEditorBlock(`#${componentId}`, props.editor);
 
 const exportTypes = [
-  { name: 'JSON', id: 'JSON' },
-  { name: 'CSV', id: 'CSV' },
-  { name: 'Plain text', id: 'plain' },
+  { name: 'JSON', id: 'json' },
+  { name: 'CSV', id: 'csv' },
+  { name: 'Plain text', id: 'plain-text' },
 ];
 
 function handleInput({ target }) {

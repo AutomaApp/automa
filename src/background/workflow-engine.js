@@ -8,7 +8,6 @@ function tabMessageHandler({ type, data }) {
   const listener = this.tabMessageListeners[type];
 
   if (listener) {
-    console.log(listener.delay, 'delay....');
     setTimeout(() => {
       listener.callback(data);
     }, listener.delay || 0);
@@ -61,7 +60,7 @@ class WorkflowEngine {
     this.workflow = workflow;
     this.blocks = {};
     this.blocksArr = [];
-    this.data = [];
+    this.data = {};
     this.isDestroyed = false;
     this.isPaused = false;
     this.isInsidePaused = false;
@@ -104,12 +103,12 @@ class WorkflowEngine {
   destroy() {
     // save log
     browser.tabs.onRemoved.removeListener(this.tabRemovedHandler);
+    browser.tabs.onUpdated.removeListener(this.tabUpdatedHandler);
 
     this.isDestroyed = true;
   }
 
   _blockHandler(block, prevBlockData) {
-    console.log(this.isInsidePaused, 'isInsidePaused');
     if (this.isDestroyed) {
       console.log(
         '%cDestroyed',
