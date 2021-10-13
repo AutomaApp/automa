@@ -4,11 +4,11 @@ import { objectHasKey } from '@/utils/helper';
 import dataExporter from '@/utils/data-exporter';
 
 function getBlockConnection(block, index = 1) {
-  const blockId = block.outputs[`output_${index}`].connections[0]?.node;
+  const blockId = block.outputs[`output_${index}`]?.connections[0]?.node;
 
   return blockId;
 }
-function converData(data, type) {
+function convertData(data, type) {
   let result = data;
 
   switch (type) {
@@ -35,10 +35,7 @@ export function trigger(block) {
 export function openWebsite(block) {
   return new Promise((resolve, reject) => {
     browser.tabs
-      .create({
-        active: true,
-        url: block.data.url,
-      })
+      .create(block.data)
       .then((tab) => {
         this._listener({
           name: 'tab-updated',
@@ -86,15 +83,22 @@ export function interactionHandler(block) {
       delay: block.name === 'link' ? 5000 : 0,
       callback: (data) => {
         if (objectHasKey(block.data, 'dataColumn')) {
+          console.log(data);
           const column =
             Object.values(this.workflow.dataColumns).find(
               ({ name }) => name === block.data.dataColumn
             ) ?? {};
           const name = column.name || 'column';
-          console.log(column, converData(data, column.type));
-          (this.data[name] = this.data[name] || []).push(
-            converData(data, column.type)
-          );
+
+          if (!objectHasKey(this.data, name)) this.data[name] = [];
+
+          if (Array.isArray(data)) {
+            data.forEach((item) => {
+              this.data[name].push(convertData(item, column.type));
+            });
+          } else {
+            this.data[name].push(convertData(data, column.type));
+          }
         }
 
         resolve({
@@ -124,6 +128,28 @@ export function exportData(block) {
     resolve({
       data: '',
       nextBlockId: getBlockConnection(block),
+    });
+  });
+}
+
+export function elementExists(block) {
+  return new Promise((resolve) => {
+    if (!this._connectedTab) return;
+
+    this._connectedTab.postMessage(block);
+    this._listener({
+      name: 'tab-message',
+      id: block.name,
+      once: true,
+      callback: (data) => {
+        console.log(data, 'element-exists');
+        console.log(block.connections, getBlockConnection(block, data ? 1 : 2));
+
+        resolve({
+          data,
+          nextBlockId: getBlockConnection(block, data ? 1 : 2),
+        });
+      },
     });
   });
 }

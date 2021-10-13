@@ -21,17 +21,21 @@
     </div>
     <input
       :value="block.data.url"
-      class="px-4 py-2 rounded-lg w-48 bg-input"
+      class="px-4 py-2 mb-1 rounded-lg block w-48 bg-input"
       placeholder="http://example.com"
       type="url"
       required
       @input="handleInput"
     />
+    <ui-checkbox :model-value="block.data.active" @change="handleCheckbox">
+      Set as active tab
+    </ui-checkbox>
   </div>
 </template>
 <script setup>
 import { VRemixIcon as VRemixicon } from 'v-remixicon';
 import emitter from 'tiny-emitter/instance';
+import UiCheckbox from '@/components/ui/UiCheckbox.vue';
 import { icons } from '@/lib/v-remixicon';
 import { debounce } from '@/utils/helper';
 import { useComponentId } from '@/composable/componentId';
@@ -57,7 +61,15 @@ const handleInput = debounce(({ target }) => {
 
   if (!res) return;
 
-  props.editor.updateNodeDataFromId(block.id, { url: res[0] });
+  const [url] = res;
+
+  props.editor.updateNodeDataFromId(block.id, { ...block.data, url });
+  block.data.url = url;
   emitter.emit('editor:data-changed', block.id);
 }, 250);
+function handleCheckbox(value) {
+  props.editor.updateNodeDataFromId(block.id, { ...block.data, active: value });
+  block.data.active = value;
+  emitter.emit('editor:data-changed', block.id);
+}
 </script>

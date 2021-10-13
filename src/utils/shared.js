@@ -144,6 +144,7 @@ export const tasks = {
     maxConnection: 1,
     data: {
       url: '',
+      active: true,
     },
   },
   forms: {

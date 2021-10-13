@@ -63,7 +63,9 @@ const exportTypes = [
 
 watch(
   () => block.data,
-  debounce((value) => {
+  debounce((value, oldValue) => {
+    if (Object.keys(oldValue).length === 0) return;
+
     props.editor.updateNodeDataFromId(block.id, value);
     emitter.emit('editor:data-changed', block.id);
   }, 250),

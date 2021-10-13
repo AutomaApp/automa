@@ -26,7 +26,10 @@
       required
       @input="handleInput"
     />
-    <p class="text-right text-gray-600">Fallback</p>
+    <p class="text-right text-gray-600">
+      <span title="Execute when element doesn't exists"> &#9432; </span>
+      Fallback
+    </p>
   </div>
 </template>
 <script setup>

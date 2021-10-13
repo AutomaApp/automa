@@ -31,7 +31,7 @@ export function eventClick({ data }) {
 export function getText({ data }) {
   return new Promise((resolve) => {
     let regex;
-    let textResult = '';
+    const textResult = [];
 
     if (data.regex) {
       regex = new RegExp(data.regex, data.regexExp.join(''));
@@ -42,7 +42,7 @@ export function getText({ data }) {
 
       if (regex) text = text.match(regex).join(' ');
 
-      textResult += `${text} `;
+      textResult.push(text);
     });
 
     resolve(textResult);
@@ -55,20 +55,20 @@ export function elementScroll({ data }) {
       element.scroll(data.scrollX, data.scrollY);
     });
 
+    window.dispatchEvent(new Event('scroll'));
+
     resolve('');
   });
 }
 
 export function attributeValue({ data }) {
   return new Promise((resolve) => {
-    let result = '';
+    const result = [];
 
     handleElement(data, (element) => {
       const value = element.getAttribute(data.attributeName);
 
-      window.dispatchEvent(new Event('scroll'));
-
-      result += `${value} `;
+      result.push(value);
     });
 
     resolve(result);
@@ -122,5 +122,13 @@ export function link({ data }) {
     if (url) window.location.href = url;
 
     resolve('');
+  });
+}
+
+export function elementExists({ data }) {
+  return new Promise((resolve) => {
+    const element = document.querySelector(data.selector);
+
+    resolve(!!element);
   });
 }
