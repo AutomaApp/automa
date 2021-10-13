@@ -119,7 +119,7 @@ export function delay(block) {
 
 export function exportData(block) {
   return new Promise((resolve) => {
-    dataExporter(this.data, block.data.type);
+    dataExporter(this.data, block.data);
 
     resolve({
       data: '',

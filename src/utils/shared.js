@@ -76,6 +76,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     data: {
+      name: '',
       type: 'json',
     },
   },

@@ -19,12 +19,17 @@
         @click="editor.removeNodeId(`node-${block.id}`)"
       />
     </div>
+    <input
+      v-model="block.data.name"
+      class="w-full bg-input rounded-lg transition mb-2 py-2 px-4 block"
+      placeholder="File name"
+    />
     <select
-      :value="block.data.type"
+      v-model="block.data.type"
       class="px-4 py-2 rounded-lg w-40 bg-input"
       required
-      @input="handleInput"
     >
+      <option value="" disabled selected>Export as</option>
       <option v-for="type in exportTypes" :key="type.id" :value="type.id">
         {{ type.name }}
       </option>
@@ -32,9 +37,11 @@
   </div>
 </template>
 <script setup>
+import { watch } from 'vue';
 import { VRemixIcon as VRemixicon } from 'v-remixicon';
 import emitter from 'tiny-emitter/instance';
 import { icons } from '@/lib/v-remixicon';
+import { debounce } from '@/utils/helper';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
 
@@ -54,8 +61,12 @@ const exportTypes = [
   { name: 'Plain text', id: 'plain-text' },
 ];
 
-function handleInput({ target }) {
-  props.editor.updateNodeDataFromId(block.id, { type: target.value });
-  emitter.emit('editor:data-changed', block.id);
-}
+watch(
+  () => block.data,
+  debounce((value) => {
+    props.editor.updateNodeDataFromId(block.id, value);
+    emitter.emit('editor:data-changed', block.id);
+  }, 250),
+  { deep: true }
+);
 </script>
