@@ -84,7 +84,6 @@
 <script setup>
 import { watch, toRaw } from 'vue';
 import { VRemixIcon as VRemixicon } from 'v-remixicon';
-import { nanoid } from 'nanoid';
 import emitter from 'tiny-emitter/instance';
 import { debounce } from '@/utils/helper';
 import { icons } from '@/lib/v-remixicon';
@@ -113,7 +112,7 @@ const conditions = {
 function addComparison() {
   if (block.data.conditions.length >= 5) return;
 
-  block.data.conditions.push({ id: nanoid(6), type: '==', value: '' });
+  block.data.conditions.push({ type: '==', value: '' });
 
   if (block.data.conditions.length === 1) props.editor.addNodeOutput(block.id);
 

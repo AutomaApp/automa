@@ -2,6 +2,7 @@
 import browser from 'webextension-polyfill';
 import { objectHasKey } from '@/utils/helper';
 import dataExporter from '@/utils/data-exporter';
+import compareBlockValue from '@/utils/compare-block-value';
 
 function getBlockConnection(block, index = 1) {
   const blockId = block.outputs[`output_${index}`]?.connections[0]?.node;
@@ -72,8 +73,11 @@ export function openWebsite(block) {
 }
 
 export function interactionHandler(block) {
-  return new Promise((resolve) => {
-    if (!this._connectedTab) return;
+  return new Promise((resolve, reject) => {
+    if (!this._connectedTab) {
+      reject(new Error("There's no website is opened"));
+      return;
+    }
 
     this._connectedTab.postMessage(block);
     this._listener({
@@ -83,21 +87,22 @@ export function interactionHandler(block) {
       delay: block.name === 'link' ? 5000 : 0,
       callback: (data) => {
         if (objectHasKey(block.data, 'dataColumn')) {
-          console.log(data);
-          const column =
-            Object.values(this.workflow.dataColumns).find(
-              ({ name }) => name === block.data.dataColumn
-            ) ?? {};
-          const name = column.name || 'column';
+          const column = Object.values(this.workflow.dataColumns).find(
+            ({ name }) => name === block.data.dataColumn
+          );
 
-          if (!objectHasKey(this.data, name)) this.data[name] = [];
+          if (column) {
+            const { name } = column;
 
-          if (Array.isArray(data)) {
-            data.forEach((item) => {
-              this.data[name].push(convertData(item, column.type));
-            });
-          } else {
-            this.data[name].push(convertData(data, column.type));
+            if (!objectHasKey(this.data, name)) this.data[name] = [];
+
+            if (Array.isArray(data)) {
+              data.forEach((item) => {
+                this.data[name].push(convertData(item, column.type));
+              });
+            } else {
+              this.data[name].push(convertData(data, column.type));
+            }
           }
         }
 
@@ -150,6 +155,35 @@ export function elementExists(block) {
           nextBlockId: getBlockConnection(block, data ? 1 : 2),
         });
       },
+    });
+  });
+}
+
+export function conditions({ data, outputs }, prevBlockData) {
+  return new Promise((resolve, reject) => {
+    if (data.conditions.length === 0) {
+      reject(new Error('Conditions is empty'));
+      return;
+    }
+
+    let outputIndex = data.conditions.length + 1;
+    let resultData = '';
+    const prevData = Array.isArray(prevBlockData)
+      ? prevBlockData[0]
+      : prevBlockData;
+
+    data.conditions.forEach(({ type, value }, index) => {
+      const result = compareBlockValue(type, prevData, value);
+
+      if (result) {
+        resultData = value;
+        outputIndex = index + 1;
+      }
+    });
+    console.log(resultData, outputIndex);
+    resolve({
+      data: resultData,
+      nextBlockId: getBlockConnection({ outputs }, outputIndex),
     });
   });
 }

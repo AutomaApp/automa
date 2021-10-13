@@ -78,7 +78,7 @@ export function attributeValue({ data }) {
 export function forms({ data }) {
   return new Promise((resolve) => {
     const elements = handleElement(data, true);
-    console.log(elements, 'form');
+
     if (data.multiple) {
       const promises = Array.from(elements).map((element) => {
         return new Promise((eventResolve) => {
@@ -87,13 +87,12 @@ export function forms({ data }) {
       });
 
       Promise.allSettled(promises).then(() => {
-        console.log('hola amigo');
         resolve('');
       });
     } else if (elements) {
       handleFormElement(elements, data, resolve);
     } else {
-      resolve();
+      resolve('');
     }
   });
 }
@@ -104,7 +103,7 @@ export function triggerEvent({ data }) {
       simulateEvent(element, data.eventName, data.eventParams);
     });
 
-    resolve('');
+    resolve(data.eventName);
   });
 }
 
@@ -121,7 +120,7 @@ export function link({ data }) {
 
     if (url) window.location.href = url;
 
-    resolve('');
+    resolve(url);
   });
 }
 

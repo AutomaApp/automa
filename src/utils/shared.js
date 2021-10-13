@@ -1,4 +1,4 @@
-/* link, tab loaded, and close tab block? */
+/* screenshot, assets, tab loaded, and close tab block? */
 
 export const tasks = {
   trigger: {

@@ -65,16 +65,16 @@ export default function (element, data, callback) {
   if (data.type === 'checkbox' || data.type === 'radio') {
     element.checked = data.selected;
     formEvent(element, { type: data.type, value: data.selected });
-    callback();
+    callback(element.checked);
     return;
   }
 
   if (data.type === 'select') {
     element.value = data.value;
     formEvent(element, data);
-    callback();
+    callback(element.value);
     return;
   }
 
-  callback();
+  callback('');
 }
