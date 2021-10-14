@@ -2,7 +2,18 @@
 import simulateEvent from '@/utils/simulate-event';
 import handleFormElement from '@/utils/handle-form-element';
 
-function handleElement(data, callback) {
+function isElementUnique(element, { data, id }) {
+  if (!data.markEl) return true;
+
+  const blockId = `block--${id}`;
+
+  if (element.hasAttribute(blockId)) return false;
+
+  element.setAttribute(blockId, '');
+
+  return true;
+}
+function handleElement({ data, id }, callback) {
   if (!data.selector) return null;
 
   const element = data.multiple
@@ -12,15 +23,17 @@ function handleElement(data, callback) {
   if (typeof callback === 'boolean' && callback) return element;
 
   if (data.multiple) {
-    element.forEach(callback);
+    element.forEach((el) => {
+      if (isElementUnique(el, { id, data })) callback(el);
+    });
   } else if (element) {
-    callback(element);
+    if (isElementUnique(element, { id, data })) callback(element);
   }
 }
 
-export function eventClick({ data }) {
+export function eventClick(block) {
   return new Promise((resolve) => {
-    handleElement(data, (element) => {
+    handleElement(block, (element) => {
       element.click();
     });
 
@@ -28,16 +41,17 @@ export function eventClick({ data }) {
   });
 }
 
-export function getText({ data }) {
+export function getText(block) {
   return new Promise((resolve) => {
     let regex;
+    const { data } = block;
     const textResult = [];
 
     if (data.regex) {
       regex = new RegExp(data.regex, data.regexExp.join(''));
     }
 
-    handleElement(data, (element) => {
+    handleElement(block, (element) => {
       let text = element.innerText;
 
       if (regex) text = text.match(regex).join(' ');
@@ -49,10 +63,10 @@ export function getText({ data }) {
   });
 }
 
-export function elementScroll({ data }) {
+export function elementScroll(block) {
   return new Promise((resolve) => {
-    handleElement(data, (element) => {
-      element.scroll(data.scrollX, data.scrollY);
+    handleElement(block, (element) => {
+      element.scroll(block.data.scrollX, block.data.scrollY);
     });
 
     window.dispatchEvent(new Event('scroll'));
@@ -61,12 +75,12 @@ export function elementScroll({ data }) {
   });
 }
 
-export function attributeValue({ data }) {
+export function attributeValue(block) {
   return new Promise((resolve) => {
     const result = [];
 
-    handleElement(data, (element) => {
-      const value = element.getAttribute(data.attributeName);
+    handleElement(block, (element) => {
+      const value = element.getAttribute(block.data.attributeName);
 
       result.push(value);
     });
@@ -75,14 +89,17 @@ export function attributeValue({ data }) {
   });
 }
 
-export function forms({ data }) {
+export function forms(block) {
   return new Promise((resolve) => {
+    const { data } = block;
     const elements = handleElement(data, true);
 
     if (data.multiple) {
       const promises = Array.from(elements).map((element) => {
         return new Promise((eventResolve) => {
-          handleFormElement(element, data, eventResolve);
+          if (isElementUnique(element, block))
+            handleFormElement(element, data, eventResolve);
+          else eventResolve('');
         });
       });
 
@@ -90,7 +107,8 @@ export function forms({ data }) {
         resolve('');
       });
     } else if (elements) {
-      handleFormElement(elements, data, resolve);
+      if (isElementUnique(element, block))
+        handleFormElement(elements, data, resolve);
     } else {
       resolve('');
     }
@@ -107,9 +125,9 @@ export function triggerEvent({ data }) {
   });
 }
 
-export function link({ data }) {
+export function link(block) {
   return new Promise((resolve) => {
-    const element = document.querySelector(data.selector);
+    const element = document.querySelector(block.data.selector);
 
     if (!element) {
       resolve('');

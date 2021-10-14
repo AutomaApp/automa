@@ -1,3 +1,4 @@
+/* to-do onError block options => continue or stop workflow */
 /* eslint-disable no-underscore-dangle */
 import browser from 'webextension-polyfill';
 import { objectHasKey } from '@/utils/helper';

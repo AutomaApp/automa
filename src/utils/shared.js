@@ -1,4 +1,4 @@
-/* screenshot, assets, tab loaded, and close tab block? */
+/* screenshot, assets, tab loaded, opened tab, and close tab block? */
 
 export const tasks = {
   trigger: {
@@ -29,6 +29,7 @@ export const tasks = {
     data: {
       description: '',
       selector: '',
+      markEl: false,
       multiple: false,
     },
   },
@@ -59,6 +60,7 @@ export const tasks = {
     data: {
       description: '',
       selector: '',
+      markEl: false,
       multiple: false,
       regex: '',
       regexExp: ['g'],
@@ -93,6 +95,7 @@ export const tasks = {
     data: {
       description: '',
       selector: 'html',
+      markEl: false,
       multiple: false,
       scrollY: 0,
       scrollX: 0,
@@ -111,6 +114,7 @@ export const tasks = {
     data: {
       description: '',
       selector: '',
+      markEl: false,
       disableMultiple: true,
     },
   },
@@ -127,6 +131,7 @@ export const tasks = {
     data: {
       description: '',
       selector: '',
+      markEl: false,
       multiple: false,
       attributeName: '',
       dataColumn: '',
@@ -160,6 +165,7 @@ export const tasks = {
     data: {
       description: '',
       selector: '',
+      markEl: false,
       multiple: false,
       selected: true,
       type: 'text-field',
@@ -207,6 +213,7 @@ export const tasks = {
     data: {
       description: '',
       selector: '',
+      markEl: false,
       multiple: false,
       eventName: '',
       eventType: '',
@@ -237,6 +244,7 @@ export const tasks = {
     maxConnection: 1,
     data: {
       selector: '',
+      markEl: false,
     },
   },
 };

@@ -14,13 +14,21 @@
     class="mb-1 w-full"
     @change="updateData({ selector: $event })"
   />
-  <ui-checkbox
-    v-if="!hideSelector || !data.disableMultiple"
-    :model-value="data.multiple"
-    @change="updateData({ multiple: $event })"
-  >
-    Multiple
-  </ui-checkbox>
+  <template v-if="!hideSelector || !data.disableMultiple">
+    <ui-checkbox
+      :model-value="data.multiple"
+      @change="updateData({ multiple: $event })"
+    >
+      Multiple
+    </ui-checkbox>
+    <ui-checkbox
+      :model-value="data.markEl"
+      class="ml-6"
+      @change="updateData({ markEl: $event })"
+    >
+      Mark element
+    </ui-checkbox>
+  </template>
   <slot></slot>
 </template>
 <script setup>
