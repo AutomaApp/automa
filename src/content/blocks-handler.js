@@ -63,10 +63,25 @@ export function getText(block) {
   });
 }
 
+function getScrollPos(element, data, vertical = true) {
+  let currentPos = vertical ? element.scrollTop : element.scrollLeft;
+
+  if (data.incY) {
+    currentPos += data.scrollY;
+  } else if (data.incX) {
+    currentPos += data.scrollX;
+  }
+
+  return currentPos;
+}
 export function elementScroll(block) {
   return new Promise((resolve) => {
     handleElement(block, (element) => {
-      element.scroll(block.data.scrollX, block.data.scrollY);
+      element.scroll({
+        top: getScrollPos(element, block.data),
+        left: getScrollPos(element, block.data, false),
+        behavior: block.data.smooth ? 'smooth' : 'auto',
+      });
     });
 
     window.dispatchEvent(new Event('scroll'));
@@ -92,7 +107,7 @@ export function attributeValue(block) {
 export function forms(block) {
   return new Promise((resolve) => {
     const { data } = block;
-    const elements = handleElement(data, true);
+    const elements = handleElement(block, true);
 
     if (data.multiple) {
       const promises = Array.from(elements).map((element) => {
@@ -107,7 +122,7 @@ export function forms(block) {
         resolve('');
       });
     } else if (elements) {
-      if (isElementUnique(element, block))
+      if (isElementUnique(elements, block))
         handleFormElement(elements, data, resolve);
     } else {
       resolve('');
@@ -145,7 +160,7 @@ export function link(block) {
 export function elementExists({ data }) {
   return new Promise((resolve) => {
     const element = document.querySelector(data.selector);
-
+    console.log('exists', element);
     resolve(!!element);
   });
 }

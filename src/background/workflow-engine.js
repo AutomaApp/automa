@@ -66,6 +66,7 @@ class WorkflowEngine {
     this.isInsidePaused = false;
     this.logs = [];
     this.currentBlock = null;
+    this.repeatedTasks = {};
 
     this.tabMessageListeners = {};
     this.tabUpdatedListeners = {};

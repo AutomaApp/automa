@@ -14,6 +14,26 @@
         @change="updateData({ scrollY: +$event })"
       />
     </div>
+    <div class="mt-3 space-y-2">
+      <ui-checkbox
+        :model-value="data.incX"
+        @change="updateData({ incX: $event })"
+      >
+        Increment horizontal scroll
+      </ui-checkbox>
+      <ui-checkbox
+        :model-value="data.incY"
+        @change="updateData({ incY: $event })"
+      >
+        Increment vertical scroll
+      </ui-checkbox>
+      <ui-checkbox
+        :model-value="data.smooth"
+        @change="updateData({ smooth: $event })"
+      >
+        Smooth scroll
+      </ui-checkbox>
+    </div>
   </edit-interaction-base>
 </template>
 <script setup>

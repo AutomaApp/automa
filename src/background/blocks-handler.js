@@ -188,3 +188,21 @@ export function conditions({ data, outputs }, prevBlockData) {
     });
   });
 }
+
+export function repeatTask({ data, id, outputs }) {
+  return new Promise((resolve) => {
+    if (this.repeatedTasks[id] === data.repeatFor) {
+      resolve({
+        data: data.repeatFor,
+        nextBlockId: getBlockConnection({ outputs }),
+      });
+    } else {
+      this.repeatedTasks[id] = (this.repeatedTasks[id] || 0) + 1;
+
+      resolve({
+        data: data.repeatFor,
+        nextBlockId: getBlockConnection({ outputs }, 2),
+      });
+    }
+  });
+}

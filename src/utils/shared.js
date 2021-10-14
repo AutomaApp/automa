@@ -1,4 +1,5 @@
-/* screenshot, assets, tab loaded, opened tab, and close tab block? */
+/* to-do screenshot, assets, tab loaded, opened tab, and close tab block? */
+/* to-do add timeout and trying to exists-element? */
 
 export const tasks = {
   trigger: {
@@ -99,6 +100,9 @@ export const tasks = {
       multiple: false,
       scrollY: 0,
       scrollX: 0,
+      incX: false,
+      incY: false,
+      smooth: false,
     },
   },
   link: {
