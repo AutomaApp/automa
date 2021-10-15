@@ -82,7 +82,10 @@ class WorkflowEngine {
         : this.workflow.drawflow;
     const blocks = drawflowData?.drawflow.Home.data;
 
-    if (!blocks) return;
+    if (!blocks) {
+      console.error('No block is found');
+      return;
+    }
 
     const blocksArr = Object.values(blocks);
     const triggerBlock = blocksArr.find(({ name }) => name === 'trigger');

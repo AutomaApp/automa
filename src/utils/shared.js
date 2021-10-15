@@ -1,5 +1,6 @@
 /* to-do screenshot, assets, tab loaded, opened tab, and close tab block? */
 /* to-do add timeout and trying to exists-element? */
+/* active-tab: execute workflow on active tab */
 
 export const tasks = {
   trigger: {
@@ -15,6 +16,12 @@ export const tasks = {
     data: {
       description: '',
       type: 'manual',
+      interval: 60,
+      delay: 5,
+      date: '',
+      time: '00:00',
+      url: '',
+      isUrlRegex: false,
     },
   },
   'event-click': {

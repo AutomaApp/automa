@@ -12,14 +12,14 @@
     class="w-full"
     @change="updateData({ type: $event })"
   >
-    <option value="manual">Manual</option>
-    <option value="interval">Interval</option>
-    <option value="date">Date</option>
+    <option v-for="trigger in triggers" :key="trigger.id" :value="trigger.id">
+      {{ trigger.name }}
+    </option>
   </ui-select>
   <transition-expand mode="out-in">
     <div v-if="data.type === 'interval'" class="flex items-center mt-1">
       <ui-input
-        :model-value="data.interval || '60'"
+        :model-value="data.interval"
         type="number"
         class="w-full mr-2"
         label="Interval (minutes)"
@@ -31,7 +31,7 @@
         "
       />
       <ui-input
-        :model-value="data.delay || '5'"
+        :model-value="data.delay"
         type="number"
         class="w-full"
         label="Delay (minutes)"
@@ -49,7 +49,7 @@
         class="w-full"
         type="date"
         placeholder="Date"
-        @change="updateDate"
+        @change="updateDate({ date: $event })"
       />
       <ui-input
         :model-value="data.time || '00:00'"
@@ -58,6 +58,21 @@
         placeholder="Time"
         @change="updateData({ time: $event || '00:00' })"
       />
+    </div>
+    <div v-else-if="data.type === 'visit-web'" class="mt-2">
+      <ui-input
+        :model-value="data.url"
+        placeholder="URL or Regex"
+        class="w-full"
+        @change="updateData({ url: $event })"
+      />
+      <ui-checkbox
+        :model-value="data.isUrlRegex"
+        class="mt-1"
+        @change="updateData({ isUrlRegex: $event })"
+      >
+        Use regex
+      </ui-checkbox>
     </div>
   </transition-expand>
 </template>
@@ -73,6 +88,12 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:data']);
 
+const triggers = [
+  { id: 'manual', name: 'Manually' },
+  { id: 'interval', name: 'Interval' },
+  { id: 'date', name: 'On spesific date' },
+  { id: 'visit-web', name: 'When visit a website' },
+];
 const maxDate = dayjs().add(30, 'day').format('YYYY-MM-DD');
 const minDate = dayjs().format('YYYY-MM-DD');
 

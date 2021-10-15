@@ -48,6 +48,7 @@ import {
   onUnmounted,
 } from 'vue';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
+import browser from 'webextension-polyfill';
 import emitter from 'tiny-emitter/instance';
 import { sendMessage } from '@/utils/message';
 import { debounce } from '@/utils/helper';
@@ -98,9 +99,72 @@ function updateWorkflow(data) {
     data,
   });
 }
+async function handleWorkflowTrigger({ data }) {
+  try {
+    const workflowAlarm = await browser.alarms.get(workflowId);
+    const visitWebTriggers =
+      (await browser.storage.local.get('visitWebTriggers')?.visitWebTriggers) ??
+      [];
+    let visitWebTriggerIndex = visitWebTriggers.findIndex(
+      (item) => item.id === workflowId
+    );
+
+    if (workflowAlarm) await browser.alarms.clear(workflowId);
+    if (visitWebTriggerIndex !== -1) {
+      visitWebTriggers.splice(visitWebTriggerIndex, 1);
+
+      visitWebTriggerIndex = -1;
+
+      await browser.storage.local.set({ visitWebTriggers });
+    }
+
+    if (['date', 'interval'].includes(data.type)) {
+      let alarmInfo;
+
+      if (data.type === 'date') {
+        alarmInfo = {
+          when: data.date ? new Date(data.date).getTime() : Date.now() + 60000,
+        };
+      } else {
+        console.log(workflowAlarm, 'workflow-alarm');
+        alarmInfo = {
+          periodInMinutes: data.interval,
+        };
+
+        if (data.delay > 0) alarmInfo.delayInMinutes = data.delay;
+      }
+
+      if (alarmInfo) await browser.alarms.create(workflowId, alarmInfo);
+    } else if (data.type === 'visit-web') {
+      const payload = {
+        id: workflowId,
+        url: data.url,
+        isRegex: data.isUrlRegex,
+      };
+
+      if (visitWebTriggerIndex === -1) {
+        visitWebTriggers.push(payload);
+      } else {
+        visitWebTriggers[visitWebTriggerIndex] = payload;
+      }
+      console.log(visitWebTriggers);
+      await browser.storage.local.set({ visitWebTriggers });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+/* to-do clear alarms and trigger storage when delete workflow */
 function saveWorkflow() {
   const data = editor.value.export();
+
   updateWorkflow({ drawflow: JSON.stringify(data) }).then(() => {
+    const [triggerBlockId] = editor.value.getNodesFromName('trigger');
+
+    if (triggerBlockId) {
+      handleWorkflowTrigger(editor.value.getNodeFromId(triggerBlockId));
+    }
+
     state.isDataChanged = false;
   });
 }

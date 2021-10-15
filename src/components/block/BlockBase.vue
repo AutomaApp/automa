@@ -7,7 +7,7 @@
       <slot></slot>
     </div>
     <div
-      class="absolute bottom-0 transition-transform duration-300 pt-4 ml-1 menu"
+      class="absolute bottom-1 transition-transform duration-300 pt-4 ml-1 menu"
     >
       <div class="bg-accent px-3 py-2 text-white rounded-lg flex items-center">
         <button v-if="!hideEdit" @click="$emit('edit')">
