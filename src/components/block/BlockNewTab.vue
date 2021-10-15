@@ -10,7 +10,7 @@
           size="20"
           class="inline-block mr-1"
         />
-        <span>Open website</span>
+        <span>{{ block.details.name }}</span>
       </div>
       <div class="flex-grow"></div>
       <v-remixicon
@@ -48,7 +48,7 @@ const props = defineProps({
   },
 });
 
-const componentId = useComponentId('open-website');
+const componentId = useComponentId('new-tab');
 const block = useEditorBlock(`#${componentId}`, props.editor);
 
 const handleInput = debounce(({ target }) => {

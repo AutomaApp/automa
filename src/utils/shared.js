@@ -5,6 +5,7 @@
 export const tasks = {
   trigger: {
     name: 'Trigger',
+    description: 'Block where workflow will start executing',
     icon: 'riFlashlightLine',
     component: 'BlockBasic',
     editComponent: 'EditTrigger',
@@ -43,6 +44,7 @@ export const tasks = {
   },
   delay: {
     name: 'Delay',
+    description: 'Add delay before executing the next block',
     icon: 'riTimerLine',
     component: 'BlockDelay',
     editComponent: 'EditTrigger',
@@ -57,6 +59,7 @@ export const tasks = {
   },
   'get-text': {
     name: 'Get text',
+    description: 'Get text from an element',
     icon: 'riParagraph',
     component: 'BlockBasic',
     editComponent: 'EditGetText',
@@ -114,6 +117,7 @@ export const tasks = {
   },
   link: {
     name: 'Link',
+    description: 'Open link element',
     icon: 'riLink',
     component: 'BlockBasic',
     editComponent: 'EditInteractionBase',
@@ -131,6 +135,7 @@ export const tasks = {
   },
   'attribute-value': {
     name: 'Attribute value',
+    description: 'Get attribute value of an element',
     icon: 'riBracketsLine',
     component: 'BlockBasic',
     editComponent: 'EditAttributeValue',
@@ -148,10 +153,11 @@ export const tasks = {
       dataColumn: '',
     },
   },
-  'open-website': {
-    name: 'Open website',
+  'new-tab': {
+    name: 'New tab',
+    description: 'Create a new tab',
     icon: 'riGlobalLine',
-    component: 'BlockOpenWebsite',
+    component: 'BlockNewTab',
     editComponent: 'EditTrigger',
     category: 'general',
     inputs: 1,
@@ -166,6 +172,7 @@ export const tasks = {
   forms: {
     name: 'Forms',
     icon: 'riInputCursorMove',
+    description: 'Manipulate form(input, select, checkbox, and radio) element',
     component: 'BlockBasic',
     editComponent: 'EditForms',
     category: 'interaction',
@@ -213,6 +220,7 @@ export const tasks = {
   // },
   'trigger-event': {
     name: 'Trigger event',
+    description: 'Trigger event',
     icon: 'riLightbulbFlashLine',
     component: 'BlockBasic',
     editComponent: 'EditTriggerEvent',
@@ -233,6 +241,7 @@ export const tasks = {
   },
   conditions: {
     name: 'Conditions',
+    description: 'Conditional block',
     icon: 'riAB',
     component: 'BlockConditions',
     category: 'conditions',
@@ -246,6 +255,7 @@ export const tasks = {
   },
   'element-exists': {
     name: 'Element exists',
+    description: 'Check if an element is exists',
     icon: 'riFocus3Line',
     component: 'BlockElementExists',
     category: 'conditions',

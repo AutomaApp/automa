@@ -39,9 +39,11 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     const visitWebTriggers =
       (await browser.storage.local.get('visitWebTriggers'))?.visitWebTriggers ??
       [];
-    const trigger = visitWebTriggers.find(({ url, isRegex }) =>
-      tab.url.match(isRegex ? new RegExp(url, 'g') : url)
-    );
+    const trigger = visitWebTriggers.find(({ url, isRegex }) => {
+      if (url.trim() === '') return false;
+
+      return tab.url.match(isRegex ? new RegExp(url, 'g') : url);
+    });
 
     if (trigger) {
       const workflow = await getWorkflow(trigger.id);

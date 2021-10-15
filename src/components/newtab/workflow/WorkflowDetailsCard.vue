@@ -103,9 +103,9 @@
       </div>
       <div class="grid grid-cols-2 gap-2 mb-4">
         <div
-          v-for="task in items"
-          :key="task.id"
-          :title="task.name"
+          v-for="block in items"
+          :key="block.id"
+          :title="block.description || block.name"
           draggable="true"
           class="
             select-none
@@ -117,12 +117,12 @@
             transition
           "
           @dragstart="
-            $event.dataTransfer.setData('block', JSON.stringify(task))
+            $event.dataTransfer.setData('block', JSON.stringify(block))
           "
         >
-          <v-remixicon :name="task.icon" size="24" class="mb-2" />
+          <v-remixicon :name="block.icon" size="24" class="mb-2" />
           <p class="leading-tight text-overflow">
-            {{ task.name }}
+            {{ block.name }}
           </p>
         </div>
       </div>

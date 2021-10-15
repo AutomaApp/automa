@@ -135,7 +135,7 @@ async function handleWorkflowTrigger({ data }) {
       }
 
       if (alarmInfo) await browser.alarms.create(workflowId, alarmInfo);
-    } else if (data.type === 'visit-web') {
+    } else if (data.type === 'visit-web' && data.url.trim() !== '') {
       const payload = {
         id: workflowId,
         url: data.url,

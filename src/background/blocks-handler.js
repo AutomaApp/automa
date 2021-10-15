@@ -34,7 +34,7 @@ export function trigger(block) {
   });
 }
 
-export function openWebsite(block) {
+export function newTab(block) {
   return new Promise((resolve, reject) => {
     browser.tabs
       .create(block.data)
