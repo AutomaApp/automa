@@ -258,6 +258,7 @@ export const tasks = {
     description: 'Check if an element is exists',
     icon: 'riFocus3Line',
     component: 'BlockElementExists',
+    editComponent: 'EditElementExists',
     category: 'conditions',
     inputs: 1,
     outputs: 2,
@@ -265,6 +266,8 @@ export const tasks = {
     maxConnection: 1,
     data: {
       selector: '',
+      tryCount: 1,
+      timeout: 500,
       markEl: false,
     },
   },

@@ -14,8 +14,10 @@
     class="mb-1 w-full"
     @change="updateData({ selector: $event })"
   />
-  <template v-if="!hideSelector || !data.disableMultiple">
+  <template v-if="!hideSelector">
     <ui-checkbox
+      v-if="!data.disableMultiple && !hideMultiple"
+      class="mr-6"
       :model-value="data.multiple"
       @change="updateData({ multiple: $event })"
     >
@@ -23,7 +25,7 @@
     </ui-checkbox>
     <ui-checkbox
       :model-value="data.markEl"
-      class="ml-6"
+      title="An element will not be selected after marked"
       @change="updateData({ markEl: $event })"
     >
       Mark element
@@ -38,6 +40,10 @@ const props = defineProps({
     default: () => ({}),
   },
   hideSelector: {
+    type: Boolean,
+    default: false,
+  },
+  hideMultiple: {
     type: Boolean,
     default: false,
   },

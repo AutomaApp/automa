@@ -37,6 +37,7 @@
           @blur="$emit('blur', $event)"
           @input="emitValue"
         />
+        <slot name="append" />
       </div>
     </label>
   </div>

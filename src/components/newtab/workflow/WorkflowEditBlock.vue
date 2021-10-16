@@ -21,6 +21,7 @@ import EditForms from './edit/EditForms.vue';
 import EditTrigger from './edit/EditTrigger.vue';
 import EditGetText from './edit/EditGetText.vue';
 import EditTriggerEvent from './edit/EditTriggerEvent.vue';
+import EditElementExists from './edit/EditElementExists.vue';
 import EditScrollElement from './edit/EditScrollElement.vue';
 import EditAttributeValue from './edit/EditAttributeValue.vue';
 import EditInteractionBase from './edit/EditInteractionBase.vue';
@@ -31,6 +32,7 @@ export default {
     EditTrigger,
     EditGetText,
     EditTriggerEvent,
+    EditElementExists,
     EditScrollElement,
     EditAttributeValue,
     EditInteractionBase,

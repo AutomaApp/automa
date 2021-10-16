@@ -159,8 +159,25 @@ export function link(block) {
 
 export function elementExists({ data }) {
   return new Promise((resolve) => {
-    const element = document.querySelector(data.selector);
-    console.log('exists', element);
-    resolve(!!element);
+    let trying = 0;
+
+    function checkElement() {
+      if (trying >= (data.tryCount || 1)) {
+        resolve(false);
+        return;
+      }
+
+      const element = document.querySelector(data.selector);
+      console.log(element, trying);
+      if (element) {
+        resolve(true);
+      } else {
+        trying += 1;
+
+        setTimeout(checkElement, data.timeout || 500);
+      }
+    }
+
+    checkElement();
   });
 }
