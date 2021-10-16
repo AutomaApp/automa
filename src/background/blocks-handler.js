@@ -73,6 +73,35 @@ export function newTab(block) {
   });
 }
 
+export async function activeTab(block) {
+  const nextBlockId = getBlockConnection(block);
+
+  try {
+    const [tab] = await browser.tabs.query({ active: true });
+    const data = {
+      nextBlockId,
+      data: tab.url,
+    };
+
+    if (tab.id === this.tabId) return data;
+
+    await browser.tabs.executeScript(tab.id, {
+      file: './contentScript.bundle.js',
+    });
+
+    this.tabId = tab.id;
+    this._connectTab(tab.id);
+
+    return data;
+  } catch (error) {
+    console.error(error);
+    return {
+      data: '',
+      nextBlockId,
+    };
+  }
+}
+
 export function interactionHandler(block) {
   return new Promise((resolve, reject) => {
     if (!this._connectedTab) {

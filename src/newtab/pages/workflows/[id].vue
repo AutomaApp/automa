@@ -102,9 +102,9 @@ function updateWorkflow(data) {
 async function handleWorkflowTrigger({ data }) {
   try {
     const workflowAlarm = await browser.alarms.get(workflowId);
-    const visitWebTriggers =
-      (await browser.storage.local.get('visitWebTriggers')?.visitWebTriggers) ??
-      [];
+    const { visitWebTriggers = [] } = await browser.storage.local.get(
+      'visitWebTriggers'
+    );
     let visitWebTriggerIndex = visitWebTriggers.findIndex(
       (item) => item.id === workflowId
     );

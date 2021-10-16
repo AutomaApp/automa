@@ -22,6 +22,7 @@
     <input
       :value="block.data.time"
       min="0"
+      title="Delay in millisecond"
       class="px-4 py-2 rounded-lg w-36 bg-input"
       placeholder="(millisecond)"
       type="number"

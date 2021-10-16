@@ -165,7 +165,6 @@ class WorkflowEngine {
       this.connectedTab.disconnect();
     }
 
-    console.log('===Message Listener===');
     connectedTab.onMessage.addListener(this.tabMessageHandler);
 
     this.connectedTab = connectedTab;

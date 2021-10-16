@@ -1,5 +1,4 @@
 /* to-do screenshot, assets, tab loaded, opened tab, and close tab block? */
-/* to-do add timeout and trying to exists-element? */
 /* active-tab: execute workflow on active tab */
 
 export const tasks = {
@@ -78,6 +77,35 @@ export const tasks = {
       dataColumn: '',
     },
   },
+  'active-tab': {
+    name: 'Active tab',
+    description: 'Execute the next block on the current active tab',
+    icon: 'riWindowLine',
+    component: 'BlockBasic',
+    category: 'general',
+    disableEdit: true,
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {},
+  },
+  'new-tab': {
+    name: 'New tab',
+    description: 'Create a new tab',
+    icon: 'riGlobalLine',
+    component: 'BlockNewTab',
+    editComponent: 'EditTrigger',
+    category: 'general',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      url: '',
+      active: true,
+    },
+  },
   'export-data': {
     name: 'Export data',
     icon: 'riDownloadLine',
@@ -151,22 +179,6 @@ export const tasks = {
       multiple: false,
       attributeName: '',
       dataColumn: '',
-    },
-  },
-  'new-tab': {
-    name: 'New tab',
-    description: 'Create a new tab',
-    icon: 'riGlobalLine',
-    component: 'BlockNewTab',
-    editComponent: 'EditTrigger',
-    category: 'general',
-    inputs: 1,
-    outputs: 1,
-    allowedInputs: true,
-    maxConnection: 1,
-    data: {
-      url: '',
-      active: true,
     },
   },
   forms: {

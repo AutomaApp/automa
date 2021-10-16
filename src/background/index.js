@@ -12,6 +12,8 @@ chrome.runtime.onInstalled.addListener((details) => {
   }
 });
 
+const executingWorkflow = {};
+
 function getWorkflow(workflowId) {
   return new Promise((resolve) => {
     browser.storage.local.get('workflows').then(({ workflows }) => {
@@ -23,9 +25,14 @@ function getWorkflow(workflowId) {
 }
 function executeWorkflow(workflow) {
   try {
+    console.log(executingWorkflow[workflow.id]);
+    if (executingWorkflow[workflow.id]) return false;
+
     const engine = new WorkflowEngine(workflow);
     console.log('execute');
     engine.init();
+
+    executingWorkflow[workflow.id] = engine;
 
     return true;
   } catch (error) {
@@ -36,9 +43,9 @@ function executeWorkflow(workflow) {
 
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete') {
-    const visitWebTriggers =
-      (await browser.storage.local.get('visitWebTriggers'))?.visitWebTriggers ??
-      [];
+    const { visitWebTriggers = [] } = await browser.storage.local.get(
+      'visitWebTriggers'
+    );
     const trigger = visitWebTriggers.find(({ url, isRegex }) => {
       if (url.trim() === '') return false;
 

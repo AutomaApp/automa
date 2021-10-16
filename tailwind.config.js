@@ -11,6 +11,7 @@ module.exports = {
         secondary: colors.blue['400'],
         accent: colors.gray['900'],
         gray: colors.gray,
+        orange: colors.orange,
       },
       fontFamily: {
         sans: ['Poppins', 'sans-serif'],
