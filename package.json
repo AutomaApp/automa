@@ -22,6 +22,7 @@
   "dependencies": {
     "@medv/finder": "^2.1.0",
     "@vuex-orm/core": "^0.36.4",
+    "@webcomponents/custom-elements": "^1.5.0",
     "css-selector-generator": "^3.4.4",
     "dayjs": "^1.10.7",
     "drawflow": "^0.0.49",

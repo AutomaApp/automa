@@ -109,7 +109,7 @@ export function interactionHandler(block) {
       return;
     }
 
-    this._connectedTab.postMessage(block);
+    this._connectedTab.postMessage({ isBlock: true, ...block });
     this._listener({
       name: 'tab-message',
       id: block.name,
@@ -171,7 +171,7 @@ export function elementExists(block) {
   return new Promise((resolve) => {
     if (!this._connectedTab) return;
 
-    this._connectedTab.postMessage(block);
+    this._connectedTab.postMessage({ isBlock: true, ...block });
     this._listener({
       name: 'tab-message',
       id: block.name,

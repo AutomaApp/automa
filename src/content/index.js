@@ -1,8 +1,7 @@
 import browser from 'webextension-polyfill';
 import { toCamelCase } from '@/utils/helper';
+import elementSelector from './element-selector';
 import * as blocksHandler from './blocks-handler';
-
-console.log('===Content Script===');
 
 function onConnectListener() {
   browser.runtime.onConnect.addListener((port) => {
@@ -20,6 +19,17 @@ function onConnectListener() {
     });
   });
 }
+
+browser.runtime.onMessage.addListener(({ type }) => {
+  return new Promise((resolve) => {
+    if (type === 'content-script-exists') {
+      resolve(true);
+    } else if (type === 'select-element') {
+      elementSelector();
+      resolve(true);
+    }
+  });
+});
 
 if (document.readyState === 'complete') onConnectListener();
 else window.addEventListener('load', onConnectListener);

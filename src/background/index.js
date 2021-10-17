@@ -25,8 +25,9 @@ function getWorkflow(workflowId) {
 }
 function executeWorkflow(workflow) {
   try {
+    /* to-do handle running workflow & validate if a tab is using by workflow */
     console.log(executingWorkflow[workflow.id]);
-    if (executingWorkflow[workflow.id]) return false;
+    if (executingWorkflow[workflow.id]) return true;
 
     const engine = new WorkflowEngine(workflow);
     console.log('execute');
