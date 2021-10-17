@@ -13,6 +13,7 @@
       transform: `translate(${element.selected.x}px, ${element.selected.y}px)`,
       height: element.selected.height + 'px',
       width: element.selected.width + 'px',
+      zIndex: 99,
     }"
     class="indicator selected"
   ></div>
@@ -24,7 +25,13 @@
         :path="riFileCopyLine"
         @click="copySelector"
       />
-      <input :value="element.selector" />
+      <input
+        type="text"
+        placeholder="Element selector"
+        title="Element selector"
+        readonly
+        :value="element.selector"
+      />
     </div>
     <template v-if="element.selector">
       <button
@@ -59,6 +66,7 @@ let targetEl = null;
 let selectedEl = null;
 let pathIndex = 0;
 let selectedPath = [];
+const root = document.querySelector('element-selector');
 
 function getElementRect(target) {
   if (!target) return {};
@@ -73,9 +81,10 @@ function getElementRect(target) {
   };
 }
 function handleMouseMove({ target }) {
-  if (targetEl === target) return;
+  if (targetEl === target || target === root) return;
 
   targetEl = target;
+
   element.hovered = getElementRect(target);
 }
 function copySelector() {
@@ -111,7 +120,6 @@ function selectChildElement() {
   element.selected = getElementRect(activeEl);
   element.selector = finder(activeEl);
   selectedEl = activeEl;
-  console.log(pathIndex, selectedPath);
 }
 function selectParentElement() {
   if (selectedEl.tagName === 'HTML' || selectedPath.length === 0) return;
@@ -122,7 +130,6 @@ function selectParentElement() {
   element.selected = getElementRect(activeEl);
   element.selector = finder(activeEl);
   selectedEl = activeEl;
-  console.log(pathIndex, selectedPath);
 }
 function handleClick(event) {
   event.preventDefault();
@@ -143,7 +150,6 @@ function handleKeyup({ code }) {
   };
 
   if (shortcuts[code]) shortcuts[code]();
-  console.log(code);
 }
 function handleScroll() {
   const { x: hoveredX, y: hoveredY } = getElementRect(targetEl);
@@ -155,8 +161,6 @@ function handleScroll() {
   element.selected.y = selectedY;
 }
 function destroy() {
-  const root = document.querySelector('element-selector');
-
   window.removeEventListener('keyup', handleKeyup);
   window.removeEventListener('scroll', handleScroll);
   document.body.removeEventListener('click', handleClick);
@@ -244,6 +248,7 @@ input:focus {
   padding: 12px;
   color: #1f2937;
   pointer-events: all;
+  z-index: 999;
 }
 
 .indicator {
