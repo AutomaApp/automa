@@ -141,6 +141,7 @@ export const tasks = {
       incX: false,
       incY: false,
       smooth: false,
+      scrollIntoView: false,
     },
   },
   link: {

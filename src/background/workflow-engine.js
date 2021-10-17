@@ -3,6 +3,7 @@ import browser from 'webextension-polyfill';
 import { toCamelCase } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
 import * as blocksHandler from './blocks-handler';
+import executingWorkflow from '@/utils/executing-workflow';
 
 function tabMessageHandler({ type, data }) {
   const listener = this.tabMessageListeners[type];
@@ -56,17 +57,19 @@ function tabUpdatedHandler(tabId, changeInfo) {
 }
 
 class WorkflowEngine {
-  constructor(workflow) {
+  constructor(id, workflow) {
+    this.id = id;
     this.workflow = workflow;
-    this.blocks = {};
-    this.blocksArr = [];
     this.data = {};
-    this.isDestroyed = false;
-    this.isPaused = false;
-    this.isInsidePaused = false;
-    this.logs = [];
-    this.currentBlock = null;
+    this.blocks = {};
+    this.eventListeners = {};
     this.repeatedTasks = {};
+    this.logs = [];
+    this.blocksArr = [];
+    this.isPaused = false;
+    this.isDestroyed = false;
+    this.isInsidePaused = false;
+    this.currentBlock = null;
 
     this.tabMessageListeners = {};
     this.tabUpdatedListeners = {};
@@ -100,16 +103,40 @@ class WorkflowEngine {
 
     this.blocks = blocks;
     this.blocksArr = blocksArr;
+    this.startedTimestamp = Date.now();
 
     this._blockHandler(triggerBlock);
   }
 
+  on(name, listener) {
+    (this.eventListeners[name] = this.eventListeners[name] || []).push(
+      listener
+    );
+  }
+
   destroy() {
     // save log
+    this._dispatchEvent('destroyed', this.workflow.id);
+
+    this.eventListeners = {};
+    this.tabMessageListeners = {};
+    this.tabUpdatedListeners = {};
+
     browser.tabs.onRemoved.removeListener(this.tabRemovedHandler);
     browser.tabs.onUpdated.removeListener(this.tabUpdatedHandler);
 
     this.isDestroyed = true;
+    this.endedTimestamp = Date.now();
+  }
+
+  _dispatchEvent(name, params) {
+    const listeners = this.eventListeners[name];
+    console.log(name, this.eventListeners);
+    if (!listeners) return;
+
+    listeners.forEach((callback) => {
+      callback(params);
+    });
   }
 
   _blockHandler(block, prevBlockData) {
@@ -120,6 +147,20 @@ class WorkflowEngine {
       );
       return;
     }
+
+    const executedWorkflowData = [
+      'data',
+      'isPaused',
+      'isDestroyed',
+      'currentBlock',
+    ].reduce((acc, key) => {
+      acc[key] = this[key];
+
+      return acc;
+    }, {});
+    console.log(executedWorkflowData);
+    executingWorkflow.update(this.id, { workflow: executedWorkflowData });
+
     if (this.isPaused || this.isInsidePaused) {
       setTimeout(() => {
         this._blockHandler(block, prevBlockData);
@@ -144,6 +185,8 @@ class WorkflowEngine {
           if (result.nextBlockId) {
             this._blockHandler(this.blocks[result.nextBlockId], result.data);
           } else {
+            this._dispatchEvent('finish');
+            this.destroy();
             console.log('Done', this);
           }
         })
@@ -175,6 +218,7 @@ class WorkflowEngine {
 
   _listener({ id, name, callback, once = true, ...options }) {
     const listenerNames = {
+      event: 'eventListener',
       'tab-updated': 'tabUpdatedListeners',
       'tab-message': 'tabMessageListeners',
     };

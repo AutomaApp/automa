@@ -1,18 +1,19 @@
 import browser from 'webextension-polyfill';
+import { nanoid } from 'nanoid';
 import { MessageListener } from '@/utils/message';
+import executingWorkflow from '@/utils/executing-workflow';
 import WorkflowEngine from './workflow-engine';
 
-chrome.runtime.onInstalled.addListener((details) => {
+browser.runtime.onInstalled.addListener((details) => {
   if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    chrome.storage.local.set({
+    browser.storage.local.set({
+      logs: [],
       workflows: [],
       visitWebTriggers: [],
-      tasks: [],
+      executingWorkflow: [],
     });
   }
 });
-
-const executingWorkflow = {};
 
 function getWorkflow(workflowId) {
   return new Promise((resolve) => {
@@ -23,17 +24,18 @@ function getWorkflow(workflowId) {
     });
   });
 }
-function executeWorkflow(workflow) {
+async function executeWorkflow(workflow) {
   try {
-    /* to-do handle running workflow & validate if a tab is using by workflow */
-    console.log(executingWorkflow[workflow.id]);
-    if (executingWorkflow[workflow.id]) return true;
+    const id = nanoid();
+    const engine = new WorkflowEngine(id, workflow);
 
-    const engine = new WorkflowEngine(workflow);
-    console.log('execute');
+    executingWorkflow.set(id, {});
+
     engine.init();
-
-    executingWorkflow[workflow.id] = engine;
+    engine.on('destroyed', () => {
+      console.log('destroyed...');
+      executingWorkflow.delete(workflow.id);
+    });
 
     return true;
   } catch (error) {
@@ -44,7 +46,7 @@ function executeWorkflow(workflow) {
 
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete') {
-    const { visitWebTriggers = [] } = await browser.storage.local.get(
+    const { visitWebTriggers } = await browser.storage.local.get(
       'visitWebTriggers'
     );
     const trigger = visitWebTriggers.find(({ url, isRegex }) => {
@@ -52,8 +54,11 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
       return tab.url.match(isRegex ? new RegExp(url, 'g') : url);
     });
-
-    if (trigger) {
+    const executedWorkflow = await executingWorkflow.find(
+      ({ workflow }) => workflow?.tabId === tabId
+    );
+    console.log(executedWorkflow, 'wo');
+    if (trigger && !executedWorkflow) {
       const workflow = await getWorkflow(trigger.id);
 
       executeWorkflow(workflow);

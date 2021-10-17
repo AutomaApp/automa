@@ -132,6 +132,8 @@ function selectParentElement() {
   selectedEl = activeEl;
 }
 function handleClick(event) {
+  if (event.target === root) return;
+
   event.preventDefault();
   event.stopPropagation();
 
@@ -163,7 +165,7 @@ function handleScroll() {
 function destroy() {
   window.removeEventListener('keyup', handleKeyup);
   window.removeEventListener('scroll', handleScroll);
-  document.body.removeEventListener('click', handleClick);
+  document.removeEventListener('click', handleClick, true);
   window.removeEventListener('mousemove', handleMouseMove);
 
   root.remove();
@@ -171,7 +173,7 @@ function destroy() {
 
 window.addEventListener('keyup', handleKeyup);
 window.addEventListener('scroll', handleScroll);
-document.body.addEventListener('click', handleClick);
+document.addEventListener('click', handleClick, true);
 window.addEventListener('mousemove', handleMouseMove);
 </script>
 <style>

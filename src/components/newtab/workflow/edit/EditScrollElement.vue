@@ -1,6 +1,6 @@
 <template>
   <edit-interaction-base v-bind="{ data }" @change="updateData">
-    <div class="flex items-center mt-3 space-x-2">
+    <div v-if="!data.scrollIntoView" class="flex items-center mt-3 space-x-2">
       <ui-input
         :model-value="data.scrollX || 0"
         type="number"
@@ -16,16 +16,11 @@
     </div>
     <div class="mt-3 space-y-2">
       <ui-checkbox
-        :model-value="data.incX"
-        @change="updateData({ incX: $event })"
+        class="w-full"
+        :model-value="data.scrollIntoView"
+        @change="updateData({ scrollIntoView: $event })"
       >
-        Increment horizontal scroll
-      </ui-checkbox>
-      <ui-checkbox
-        :model-value="data.incY"
-        @change="updateData({ incY: $event })"
-      >
-        Increment vertical scroll
+        Scroll into view
       </ui-checkbox>
       <ui-checkbox
         :model-value="data.smooth"
@@ -33,6 +28,20 @@
       >
         Smooth scroll
       </ui-checkbox>
+      <template v-if="!data.scrollIntoView">
+        <ui-checkbox
+          :model-value="data.incX"
+          @change="updateData({ incX: $event })"
+        >
+          Increment horizontal scroll
+        </ui-checkbox>
+        <ui-checkbox
+          :model-value="data.incY"
+          @change="updateData({ incY: $event })"
+        >
+          Increment vertical scroll
+        </ui-checkbox>
+      </template>
     </div>
   </edit-interaction-base>
 </template>

@@ -76,12 +76,18 @@ function getScrollPos(element, data, vertical = true) {
 }
 export function elementScroll(block) {
   return new Promise((resolve) => {
+    const behavior = block.data.smooth ? 'smooth' : 'auto';
+
     handleElement(block, (element) => {
-      element.scroll({
-        top: getScrollPos(element, block.data),
-        left: getScrollPos(element, block.data, false),
-        behavior: block.data.smooth ? 'smooth' : 'auto',
-      });
+      if (block.data.scrollIntoView) {
+        element.scrollIntoView({ behavior, block: 'center' });
+      } else {
+        element.scroll({
+          behavior,
+          top: getScrollPos(element, block.data),
+          left: getScrollPos(element, block.data, false),
+        });
+      }
     });
 
     window.dispatchEvent(new Event('scroll'));
