@@ -17,6 +17,9 @@ class Workflow extends Model {
       dataColumns: this.attr([]),
       lastRunAt: this.number(),
       createdAt: this.number(),
+      settings: this.attr({
+        onError: 'keep-running',
+      }),
       tasks: this.hasMany(Task, 'workflowId'),
     };
   }

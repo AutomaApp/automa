@@ -105,7 +105,10 @@ export async function activeTab(block) {
 export function interactionHandler(block) {
   return new Promise((resolve, reject) => {
     if (!this.connectedTab) {
-      reject(new Error("Can't connect to a tab"));
+      const error = new Error("Can't connect to a tab");
+      error.nextBlockId = getBlockConnection(block);
+      reject(error);
+
       return;
     }
 
@@ -170,7 +173,9 @@ export function exportData(block) {
 export function elementExists(block) {
   return new Promise((resolve, reject) => {
     if (!this.connectedTab) {
-      reject(new Error("Can't connect to a tab"));
+      const error = new Error("Can't connect to a tab");
+      error.nextBlockId = getBlockConnection(block);
+      reject(error);
 
       return;
     }

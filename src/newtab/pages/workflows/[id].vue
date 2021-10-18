@@ -17,6 +17,7 @@
         @execute="executeWorkflow"
         @update="updateWorkflow"
         @showDataColumns="state.showDataColumnsModal = true"
+        @showSettings="state.showSettings = true"
         @rename="renameWorkflow"
         @delete="deleteWorkflow"
       />
@@ -35,6 +36,10 @@
       @update="updateWorkflow"
       @close="state.showDataColumnsModal = false"
     />
+  </ui-modal>
+  <ui-modal v-model="state.showSettings">
+    <template #header>Workflow settings</template>
+    <workflow-settings v-bind="{ workflow }" @update="updateWorkflow" />
   </ui-modal>
 </template>
 <script setup>
@@ -55,6 +60,7 @@ import { debounce } from '@/utils/helper';
 import { useDialog } from '@/composable/dialog';
 import Workflow from '@/models/workflow';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';
+import WorkflowSettings from '@/components/newtab/workflow/WorkflowSettings.vue';
 import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
 import WorkflowDataColumns from '@/components/newtab/workflow/WorkflowDataColumns.vue';
@@ -69,6 +75,7 @@ const editor = shallowRef(null);
 const state = reactive({
   blockData: {},
   isEditBlock: false,
+  showSettings: false,
   isDataChanged: false,
   showDataColumnsModal: false,
 });

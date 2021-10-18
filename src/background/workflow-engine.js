@@ -133,6 +133,12 @@ class WorkflowEngine {
     workflowState.update(this.tabId, this.state);
   }
 
+  stop() {
+    /* to-do add stop log */
+    console.log('stoppp');
+    this.destroy();
+  }
+
   destroy() {
     // save log
     this.dispatchEvent('destroyed', this.workflow.id);
@@ -206,12 +212,25 @@ class WorkflowEngine {
             this._blockHandler(this.blocks[result.nextBlockId], result.data);
           } else {
             this.dispatchEvent('finish');
-            this.destroy();
+            this.stop();
             console.log('Done', this);
           }
         })
         .catch((error) => {
-          workflowState.console.error(error, 'new');
+          if (
+            this.workflow.settings.onError === 'keep-running' &&
+            error.nextBlockId
+          ) {
+            this._blockHandler(
+              this.blocks[error.nextBlockId],
+              error.data || ''
+            );
+          } else {
+            this.stop();
+          }
+
+          console.dir(error);
+          console.error(error, 'new');
         });
     } else {
       console.error(`"${block.name}" block doesn't have a handler`);

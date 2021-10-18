@@ -67,6 +67,14 @@
         <ui-list-item
           v-close-popover
           class="cursor-pointer"
+          @click="$emit('rename')"
+        >
+          <v-remixicon name="riPencilLine" class="mr-2 -ml-1" />
+          <span>Rename</span>
+        </ui-list-item>
+        <ui-list-item
+          v-close-popover
+          class="cursor-pointer"
           @click="$emit('showDataColumns')"
         >
           <v-remixicon name="riKey2Line" class="mr-2 -ml-1" />
@@ -75,10 +83,10 @@
         <ui-list-item
           v-close-popover
           class="cursor-pointer"
-          @click="$emit('rename')"
+          @click="$emit('showSettings')"
         >
-          <v-remixicon name="riPencilLine" class="mr-2 -ml-1" />
-          <span>Rename</span>
+          <v-remixicon name="riSettings3Line" class="mr-2 -ml-1" />
+          <span>Settings</span>
         </ui-list-item>
         <ui-list-item
           v-close-popover
@@ -143,12 +151,13 @@ defineProps({
   },
 });
 defineEmits([
-  'update',
-  'execute',
   'save',
-  'showDataColumns',
+  'update',
   'rename',
   'delete',
+  'execute',
+  'showSettings',
+  'showDataColumns',
 ]);
 
 const taskList = Object.keys(tasks).reduce((arr, key) => {

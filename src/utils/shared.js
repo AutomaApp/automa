@@ -1,5 +1,5 @@
 /* to-do screenshot, assets, tab loaded, opened tab, and close tab block? */
-/* active-tab: execute workflow on active tab */
+/* prev and next page block? */
 
 export const tasks = {
   trigger: {
