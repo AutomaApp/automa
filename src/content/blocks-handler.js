@@ -63,7 +63,7 @@ export function getText(block) {
   });
 }
 
-function getScrollPos(element, data, vertical = true) {
+function incScrollPos(element, data, vertical = true) {
   let currentPos = vertical ? element.scrollTop : element.scrollLeft;
 
   if (data.incY) {
@@ -76,16 +76,17 @@ function getScrollPos(element, data, vertical = true) {
 }
 export function elementScroll(block) {
   return new Promise((resolve) => {
-    const behavior = block.data.smooth ? 'smooth' : 'auto';
+    const { data } = block;
+    const behavior = data.smooth ? 'smooth' : 'auto';
 
     handleElement(block, (element) => {
-      if (block.data.scrollIntoView) {
+      if (data.scrollIntoView) {
         element.scrollIntoView({ behavior, block: 'center' });
       } else {
         element.scroll({
           behavior,
-          top: getScrollPos(element, block.data),
-          left: getScrollPos(element, block.data, false),
+          top: data.incY ? incScrollPos(element, data) : data.scrollY,
+          left: data.incX ? incScrollPos(element, data, false) : data.scrollX,
         });
       }
     });

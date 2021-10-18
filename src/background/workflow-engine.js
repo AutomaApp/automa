@@ -6,7 +6,7 @@ import { tasks } from '@/utils/shared';
 import * as blocksHandler from './blocks-handler';
 import workflowState from './workflow-state';
 
-// let reloadTimeout;
+let reloadTimeout;
 
 function tabMessageHandler({ type, data }) {
   const listener = this.tabMessageListeners[type];
@@ -35,12 +35,21 @@ function tabUpdatedHandler(tabId, changeInfo) {
     listener.callback(tabId, changeInfo, () => {
       delete this.tabUpdatedListeners[tabId];
     });
-  } else {
-    if (this.tabId !== tabId) return;
+  } else if (this.tabId === tabId) {
+    if (!reloadTimeout) {
+      console.log('===Register Timeout===');
+      reloadTimeout = setTimeout(() => {
+        this.isPaused = false;
+      }, 15000);
+    }
 
-    this.isInsidePaused = true;
+    this.isPaused = true;
 
     if (changeInfo.status === 'complete') {
+      console.log('clearTimeout');
+      clearTimeout(reloadTimeout);
+      reloadTimeout = null;
+
       browser.tabs
         .executeScript(tabId, {
           file: './contentScript.bundle.js',
@@ -49,11 +58,11 @@ function tabUpdatedHandler(tabId, changeInfo) {
           console.log(this.currentBlock);
           if (this.connectedTab) this._connectTab(this.tabId);
 
-          this.isInsidePaused = false;
+          this.isPaused = false;
         })
         .catch((error) => {
           console.error(error);
-          this.isInsidePaused = false;
+          this.isPaused = false;
         });
     }
   }
@@ -71,7 +80,6 @@ class WorkflowEngine {
     this.blocksArr = [];
     this.isPaused = false;
     this.isDestroyed = false;
-    this.isInsidePaused = false;
     this.currentBlock = null;
 
     this.tabMessageListeners = {};
@@ -170,16 +178,16 @@ class WorkflowEngine {
       );
       return;
     }
-
-    workflowState.update(this.id, this.state);
-
-    if (this.isPaused || this.isInsidePaused) {
+    if (this.isPaused) {
+      console.log(this.isPaused, 'pause');
       setTimeout(() => {
         this._blockHandler(block, prevBlockData);
       }, 1000);
 
       return;
     }
+
+    workflowState.update(this.id, this.state);
     console.log(`${block.name}:`, block);
 
     this.currentBlock = block;
@@ -203,7 +211,7 @@ class WorkflowEngine {
           }
         })
         .catch((error) => {
-          console.error(error, 'new');
+          workflowState.console.error(error, 'new');
         });
     } else {
       console.error(`"${block.name}" block doesn't have a handler`);
