@@ -1,9 +1,12 @@
 /* eslint-disable no-underscore-dangle */
 import browser from 'webextension-polyfill';
+import { nanoid } from 'nanoid';
 import { toCamelCase } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
 import * as blocksHandler from './blocks-handler';
-import executingWorkflow from '@/utils/executing-workflow';
+import workflowState from './workflow-state';
+
+// let reloadTimeout;
 
 function tabMessageHandler({ type, data }) {
   const listener = this.tabMessageListeners[type];
@@ -44,7 +47,7 @@ function tabUpdatedHandler(tabId, changeInfo) {
         })
         .then(() => {
           console.log(this.currentBlock);
-          if (this._connectedTab) this._connectTab(this.tabId);
+          if (this.connectedTab) this._connectTab(this.tabId);
 
           this.isInsidePaused = false;
         })
@@ -57,8 +60,8 @@ function tabUpdatedHandler(tabId, changeInfo) {
 }
 
 class WorkflowEngine {
-  constructor(id, workflow) {
-    this.id = id;
+  constructor(workflow) {
+    this.id = nanoid();
     this.workflow = workflow;
     this.data = {};
     this.blocks = {};
@@ -105,7 +108,9 @@ class WorkflowEngine {
     this.blocksArr = blocksArr;
     this.startedTimestamp = Date.now();
 
-    this._blockHandler(triggerBlock);
+    workflowState.add(this.id, this.state).then(() => {
+      this._blockHandler(triggerBlock);
+    });
   }
 
   on(name, listener) {
@@ -114,9 +119,15 @@ class WorkflowEngine {
     );
   }
 
+  pause(pause = true) {
+    this.isPaused = pause;
+
+    workflowState.update(this.tabId, this.state);
+  }
+
   destroy() {
     // save log
-    this._dispatchEvent('destroyed', this.workflow.id);
+    this.dispatchEvent('destroyed', this.workflow.id);
 
     this.eventListeners = {};
     this.tabMessageListeners = {};
@@ -125,11 +136,13 @@ class WorkflowEngine {
     browser.tabs.onRemoved.removeListener(this.tabRemovedHandler);
     browser.tabs.onUpdated.removeListener(this.tabUpdatedHandler);
 
+    workflowState.delete(this.id);
+
     this.isDestroyed = true;
     this.endedTimestamp = Date.now();
   }
 
-  _dispatchEvent(name, params) {
+  dispatchEvent(name, params) {
     const listeners = this.eventListeners[name];
     console.log(name, this.eventListeners);
     if (!listeners) return;
@@ -137,6 +150,16 @@ class WorkflowEngine {
     listeners.forEach((callback) => {
       callback(params);
     });
+  }
+
+  get state() {
+    const keys = ['tabId', 'isPaused', 'isDestroyed', 'currentBlock'];
+
+    return keys.reduce((acc, key) => {
+      acc[key] = this[key];
+
+      return acc;
+    }, {});
   }
 
   _blockHandler(block, prevBlockData) {
@@ -148,18 +171,7 @@ class WorkflowEngine {
       return;
     }
 
-    const executedWorkflowData = [
-      'data',
-      'isPaused',
-      'isDestroyed',
-      'currentBlock',
-    ].reduce((acc, key) => {
-      acc[key] = this[key];
-
-      return acc;
-    }, {});
-    console.log(executedWorkflowData);
-    executingWorkflow.update(this.id, { workflow: executedWorkflowData });
+    workflowState.update(this.id, this.state);
 
     if (this.isPaused || this.isInsidePaused) {
       setTimeout(() => {
@@ -185,7 +197,7 @@ class WorkflowEngine {
           if (result.nextBlockId) {
             this._blockHandler(this.blocks[result.nextBlockId], result.data);
           } else {
-            this._dispatchEvent('finish');
+            this.dispatchEvent('finish');
             this.destroy();
             console.log('Done', this);
           }
@@ -227,16 +239,6 @@ class WorkflowEngine {
     return () => {
       delete this.tabMessageListeners[id];
     };
-  }
-
-  get _connectedTab() {
-    if (!this.connectedTab) {
-      this.destroy();
-
-      return null;
-    }
-
-    return this.connectedTab;
   }
 }
 

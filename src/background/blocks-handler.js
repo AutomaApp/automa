@@ -104,12 +104,12 @@ export async function activeTab(block) {
 
 export function interactionHandler(block) {
   return new Promise((resolve, reject) => {
-    if (!this._connectedTab) {
-      reject(new Error("There's no website is opened"));
+    if (!this.connectedTab) {
+      reject(new Error("Can't connect to a tab"));
       return;
     }
 
-    this._connectedTab.postMessage({ isBlock: true, ...block });
+    this.connectedTab.postMessage({ isBlock: true, ...block });
     this._listener({
       name: 'tab-message',
       id: block.name,
@@ -168,10 +168,14 @@ export function exportData(block) {
 }
 
 export function elementExists(block) {
-  return new Promise((resolve) => {
-    if (!this._connectedTab) return;
+  return new Promise((resolve, reject) => {
+    if (!this.connectedTab) {
+      reject(new Error("Can't connect to a tab"));
 
-    this._connectedTab.postMessage({ isBlock: true, ...block });
+      return;
+    }
+
+    this.connectedTab.postMessage({ isBlock: true, ...block });
     this._listener({
       name: 'tab-message',
       id: block.name,

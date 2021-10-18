@@ -1,19 +1,7 @@
 import browser from 'webextension-polyfill';
-import { nanoid } from 'nanoid';
 import { MessageListener } from '@/utils/message';
-import executingWorkflow from '@/utils/executing-workflow';
+import workflowState from './workflow-state';
 import WorkflowEngine from './workflow-engine';
-
-browser.runtime.onInstalled.addListener((details) => {
-  if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    browser.storage.local.set({
-      logs: [],
-      workflows: [],
-      visitWebTriggers: [],
-      executingWorkflow: [],
-    });
-  }
-});
 
 function getWorkflow(workflowId) {
   return new Promise((resolve) => {
@@ -26,15 +14,11 @@ function getWorkflow(workflowId) {
 }
 async function executeWorkflow(workflow) {
   try {
-    const id = nanoid();
-    const engine = new WorkflowEngine(id, workflow);
-
-    executingWorkflow.set(id, {});
+    const engine = new WorkflowEngine(workflow);
 
     engine.init();
     engine.on('destroyed', () => {
       console.log('destroyed...');
-      executingWorkflow.delete(workflow.id);
     });
 
     return true;
@@ -54,11 +38,11 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
       return tab.url.match(isRegex ? new RegExp(url, 'g') : url);
     });
-    const executedWorkflow = await executingWorkflow.find(
-      ({ workflow }) => workflow?.tabId === tabId
+    const runningWorkflow = (await workflowState.get()).find(
+      (item) => item.state.tabId === tabId
     );
-    console.log(executedWorkflow, 'wo');
-    if (trigger && !executedWorkflow) {
+
+    if (trigger && !runningWorkflow) {
       const workflow = await getWorkflow(trigger.id);
 
       executeWorkflow(workflow);
@@ -71,6 +55,17 @@ browser.alarms.onAlarm.addListener(({ name }) => {
     console.log(workflow, 'alarm');
     executeWorkflow(workflow);
   });
+});
+
+browser.runtime.onInstalled.addListener((details) => {
+  if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
+    browser.storage.local.set({
+      logs: [],
+      workflows: [],
+      visitWebTriggers: [],
+      runningWorkflows: [],
+    });
+  }
 });
 
 const message = new MessageListener('background');
