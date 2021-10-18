@@ -98,13 +98,7 @@ export default {
       if (props.data) {
         /* to-do delete replace method */
         const data =
-          typeof props.data === 'string'
-            ? JSON.parse(
-                props.data
-                  .replace(/open-website/g, 'new-tab')
-                  .replace(/BlockOpenWebsite/g, 'BlockNewTab')
-              )
-            : props.data;
+          typeof props.data === 'string' ? JSON.parse(props.data) : props.data;
 
         editor.value.import(data);
       } else {

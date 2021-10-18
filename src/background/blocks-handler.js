@@ -1,4 +1,3 @@
-/* to-do onError block options => continue or stop workflow */
 /* eslint-disable no-underscore-dangle */
 import browser from 'webextension-polyfill';
 import { objectHasKey } from '@/utils/helper';
@@ -31,6 +30,60 @@ export function trigger(block) {
     const nextBlockId = getBlockConnection(block);
 
     resolve({ nextBlockId, data: '' });
+  });
+}
+
+export function goBack(block) {
+  return new Promise((resolve, reject) => {
+    const nextBlockId = getBlockConnection(block);
+
+    if (!this.tabId) {
+      const error = new Error("Can't connect to a tab");
+      error.nextBlockId = nextBlockId;
+      reject(error);
+
+      return;
+    }
+
+    browser.tabs
+      .goBack(this.tabId)
+      .then(() => {
+        resolve({
+          nextBlockId,
+          data: '',
+        });
+      })
+      .catch((error) => {
+        error.nextBlockId = nextBlockId;
+        reject(error);
+      });
+  });
+}
+
+export function forwardPage(block) {
+  return new Promise((resolve, reject) => {
+    const nextBlockId = getBlockConnection(block);
+
+    if (!this.tabId) {
+      const error = new Error("Can't connect to a tab");
+      error.nextBlockId = nextBlockId;
+      reject(error);
+
+      return;
+    }
+
+    browser.tabs
+      .goForward(this.tabId)
+      .then(() => {
+        resolve({
+          nextBlockId,
+          data: '',
+        });
+      })
+      .catch((error) => {
+        error.nextBlockId = nextBlockId;
+        reject(error);
+      });
   });
 }
 

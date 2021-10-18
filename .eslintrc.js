@@ -40,18 +40,7 @@ module.exports = {
     ],
     // disallow reassignment of function parameters
     // disallow parameter object manipulation except for specific exclusions
-    'no-param-reassign': [
-      'error',
-      {
-        props: true,
-        ignorePropertyModificationsFor: [
-          'state', // for vuex state
-          'acc', // for reduce accumulators
-          'e', // for e.returnvalue
-          'arr',
-        ],
-      },
-    ],
+    'no-param-reassign': 'off',
     'import/no-extraneous-dependencies': 'off',
     // disallow default export over named export
     'import/prefer-default-export': 'off',
