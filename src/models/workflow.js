@@ -18,7 +18,8 @@ class Workflow extends Model {
       lastRunAt: this.number(),
       createdAt: this.number(),
       settings: this.attr({
-        onError: 'keep-running',
+        timeout: 120000,
+        onError: 'stop-workflow',
       }),
       tasks: this.hasMany(Task, 'workflowId'),
     };

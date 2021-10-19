@@ -44,7 +44,6 @@ class WorkflowState {
     return updater.call(
       this,
       (items, index) => {
-        console.log(items, index, items[index]);
         if (typeof index === 'number' && index !== -1) {
           items[index].state = { ...items[index].state, ...data };
         }

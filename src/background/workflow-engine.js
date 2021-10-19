@@ -3,8 +3,9 @@ import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
 import { toCamelCase } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
-import * as blocksHandler from './blocks-handler';
+import errorMessage from './error-message';
 import workflowState from './workflow-state';
+import * as blocksHandler from './blocks-handler';
 
 let reloadTimeout;
 
@@ -81,6 +82,7 @@ class WorkflowEngine {
     this.isPaused = false;
     this.isDestroyed = false;
     this.currentBlock = null;
+    this.workflowTimeout = null;
 
     this.tabMessageListeners = {};
     this.tabUpdatedListeners = {};
@@ -97,7 +99,7 @@ class WorkflowEngine {
     const blocks = drawflowData?.drawflow.Home.data;
 
     if (!blocks) {
-      console.error('No block is found');
+      console.error(errorMessage('no-block', this.workflow));
       return;
     }
 
@@ -105,7 +107,7 @@ class WorkflowEngine {
     const triggerBlock = blocksArr.find(({ name }) => name === 'trigger');
 
     if (!triggerBlock) {
-      console.error('A trigger block is required');
+      console.error(errorMessage('no-trigger-block', this.workflow));
       return;
     }
 
@@ -192,6 +194,11 @@ class WorkflowEngine {
 
       return;
     }
+    console.log(this.workflow);
+    this.workflowTimeout = setTimeout(
+      () => this.stop(),
+      this.workflow.settings.timeout || 120000
+    );
 
     workflowState.update(this.id, this.state);
     console.log(`${block.name}:`, block);
@@ -215,6 +222,9 @@ class WorkflowEngine {
             this.stop();
             console.log('Done', this);
           }
+
+          clearTimeout(this.workflowTimeout);
+          this.workflowTimeout = null;
         })
         .catch((error) => {
           if (
@@ -229,6 +239,8 @@ class WorkflowEngine {
             this.stop();
           }
 
+          clearTimeout(this.workflowTimeout);
+          this.workflowTimeout = null;
           console.dir(error);
           console.error(error, 'new');
         });

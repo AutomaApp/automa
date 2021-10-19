@@ -1,8 +1,10 @@
 /* eslint-disable no-underscore-dangle */
 import browser from 'webextension-polyfill';
 import { objectHasKey } from '@/utils/helper';
+import { tasks } from '@/utils/shared';
 import dataExporter from '@/utils/data-exporter';
 import compareBlockValue from '@/utils/compare-block-value';
+import errorMessage from './error-message';
 
 function getBlockConnection(block, index = 1) {
   const blockId = block.outputs[`output_${index}`]?.connections[0]?.node;
@@ -24,6 +26,13 @@ function convertData(data, type) {
 
   return result;
 }
+function generateBlockError(block) {
+  const message = errorMessage('no-tab', tasks[block.name]);
+  const error = new Error(message);
+  error.nextBlockId = getBlockConnection(block);
+
+  return error;
+}
 
 export function trigger(block) {
   return new Promise((resolve) => {
@@ -38,9 +47,7 @@ export function goBack(block) {
     const nextBlockId = getBlockConnection(block);
 
     if (!this.tabId) {
-      const error = new Error("Can't connect to a tab");
-      error.nextBlockId = nextBlockId;
-      reject(error);
+      reject(generateBlockError(block));
 
       return;
     }
@@ -65,9 +72,7 @@ export function forwardPage(block) {
     const nextBlockId = getBlockConnection(block);
 
     if (!this.tabId) {
-      const error = new Error("Can't connect to a tab");
-      error.nextBlockId = nextBlockId;
-      reject(error);
+      reject(generateBlockError(block));
 
       return;
     }
@@ -157,10 +162,10 @@ export async function activeTab(block) {
 
 export function interactionHandler(block) {
   return new Promise((resolve, reject) => {
+    const nextBlockId = getBlockConnection(block);
+
     if (!this.connectedTab) {
-      const error = new Error("Can't connect to a tab");
-      error.nextBlockId = getBlockConnection(block);
-      reject(error);
+      reject(generateBlockError(block));
 
       return;
     }
@@ -194,7 +199,7 @@ export function interactionHandler(block) {
 
         resolve({
           data,
-          nextBlockId: getBlockConnection(block),
+          nextBlockId,
         });
       },
     });
@@ -226,9 +231,7 @@ export function exportData(block) {
 export function elementExists(block) {
   return new Promise((resolve, reject) => {
     if (!this.connectedTab) {
-      const error = new Error("Can't connect to a tab");
-      error.nextBlockId = getBlockConnection(block);
-      reject(error);
+      reject(generateBlockError(block));
 
       return;
     }
