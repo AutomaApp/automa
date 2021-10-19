@@ -62,8 +62,8 @@ browser.runtime.onInstalled.addListener((details) => {
     browser.storage.local.set({
       logs: [],
       workflows: [],
+      workflowState: [],
       visitWebTriggers: [],
-      runningWorkflows: [],
     });
   }
 });

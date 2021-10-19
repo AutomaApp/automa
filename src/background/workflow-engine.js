@@ -78,7 +78,6 @@ class WorkflowEngine {
     this.eventListeners = {};
     this.repeatedTasks = {};
     this.logs = [];
-    this.blocksArr = [];
     this.isPaused = false;
     this.isDestroyed = false;
     this.currentBlock = null;
@@ -115,7 +114,6 @@ class WorkflowEngine {
     browser.tabs.onRemoved.addListener(this.tabRemovedHandler);
 
     this.blocks = blocks;
-    this.blocksArr = blocksArr;
     this.startedTimestamp = Date.now();
 
     workflowState.add(this.id, this.state).then(() => {
@@ -135,27 +133,48 @@ class WorkflowEngine {
     workflowState.update(this.tabId, this.state);
   }
 
-  stop() {
-    /* to-do add stop log */
-    console.log('stoppp');
+  stop(message) {
+    this.logs.push({
+      message,
+      type: 'stop',
+      name: 'Workflow is stopped',
+    });
     this.destroy();
   }
 
-  destroy() {
-    // save log
-    this.dispatchEvent('destroyed', this.workflow.id);
+  async destroy() {
+    try {
+      this.eventListeners = {};
+      this.tabMessageListeners = {};
+      this.tabUpdatedListeners = {};
 
-    this.eventListeners = {};
-    this.tabMessageListeners = {};
-    this.tabUpdatedListeners = {};
+      await browser.tabs.onRemoved.removeListener(this.tabRemovedHandler);
+      await browser.tabs.onUpdated.removeListener(this.tabUpdatedHandler);
 
-    browser.tabs.onRemoved.removeListener(this.tabRemovedHandler);
-    browser.tabs.onUpdated.removeListener(this.tabUpdatedHandler);
+      await workflowState.delete(this.id);
 
-    workflowState.delete(this.id);
+      clearTimeout(this.workflowTimeout);
+      this.isDestroyed = true;
+      this.endedTimestamp = Date.now();
 
-    this.isDestroyed = true;
-    this.endedTimestamp = Date.now();
+      if (!this.workflow.isTesting) {
+        const { logs = [] } = browser.storage.local.get('logs');
+
+        logs.push({
+          data: this.data,
+          history: this.logs,
+          name: this.workflow.name,
+          endedAt: this.endedTimestamp,
+          startedAt: this.startedTimestamp,
+        });
+
+        await browser.storage.local.set({ logs });
+      }
+
+      this.dispatchEvent('destroyed', this.workflow.id);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   dispatchEvent(name, params) {
@@ -194,13 +213,14 @@ class WorkflowEngine {
 
       return;
     }
-    console.log(this.workflow);
+
     this.workflowTimeout = setTimeout(
-      () => this.stop(),
+      () => this.stop('Workflow stopped because of timeout'),
       this.workflow.settings.timeout || 120000
     );
 
     workflowState.update(this.id, this.state);
+    console.log(this.logs);
     console.log(`${block.name}:`, block);
 
     this.currentBlock = block;
@@ -216,10 +236,21 @@ class WorkflowEngine {
         .call(this, block, prevBlockData)
         .then((result) => {
           if (result.nextBlockId) {
+            this.logs.push({
+              type: 'success',
+              name: tasks[block.name].name,
+              data: result.data,
+            });
+
             this._blockHandler(this.blocks[result.nextBlockId], result.data);
           } else {
+            this.logs.push({
+              type: 'finish',
+              message: 'Workflow finished running',
+              name: 'Finish',
+            });
             this.dispatchEvent('finish');
-            this.stop();
+            this.destroy();
             console.log('Done', this);
           }
 
@@ -227,6 +258,12 @@ class WorkflowEngine {
           this.workflowTimeout = null;
         })
         .catch((error) => {
+          this.logs.push({
+            type: 'error',
+            message: error.message,
+            name: tasks[block.name].name,
+          });
+
           if (
             this.workflow.settings.onError === 'keep-running' &&
             error.nextBlockId
@@ -241,8 +278,8 @@ class WorkflowEngine {
 
           clearTimeout(this.workflowTimeout);
           this.workflowTimeout = null;
-          console.dir(error);
-          console.error(error, 'new');
+
+          console.error(error);
         });
     } else {
       console.error(`"${block.name}" block doesn't have a handler`);

@@ -4,7 +4,7 @@ const messages = {
   'no-trigger-block': '"{{name}}"" workflow doesn\'t have a trigger block.',
   'no-block': '"{{name}}" workflow doesn\'t have any blocks.',
   'no-tab':
-    'Can\'t connect to a tab, use "New tab" or "Active tab" block before using "{{name}}" block.',
+    'Can\'t connect to a tab, use "New tab" or "Active tab" block before using the "{{name}}" block.',
 };
 
 export default function (errorId, data) {
