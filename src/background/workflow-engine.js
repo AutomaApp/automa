@@ -139,10 +139,10 @@ class WorkflowEngine {
       type: 'stop',
       name: 'Workflow is stopped',
     });
-    this.destroy();
+    this.destroy('stopped');
   }
 
-  async destroy() {
+  async destroy(status) {
     try {
       this.eventListeners = {};
       this.tabMessageListeners = {};
@@ -158,12 +158,17 @@ class WorkflowEngine {
       this.endedTimestamp = Date.now();
 
       if (!this.workflow.isTesting) {
-        const { logs = [] } = browser.storage.local.get('logs');
+        const { logs } = browser.storage.local.get('logs');
+        const { name, icon, id } = this.workflow;
 
         logs.push({
+          name,
+          icon,
+          status,
+          id: this.id,
+          workflowId: id,
           data: this.data,
           history: this.logs,
-          name: this.workflow.name,
           endedAt: this.endedTimestamp,
           startedAt: this.startedTimestamp,
         });

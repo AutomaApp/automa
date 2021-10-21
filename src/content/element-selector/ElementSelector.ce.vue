@@ -91,7 +91,7 @@ function copySelector() {
   navigator.clipboard
     .writeText(element.selector)
     .then(() => {
-      console.log('Selector copied');
+      root.shadowRoot.querySelector('input')?.select();
     })
     .catch((error) => {
       console.error(error);

@@ -58,7 +58,7 @@ browser.alarms.onAlarm.addListener(({ name }) => {
 });
 
 browser.runtime.onInstalled.addListener((details) => {
-  if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
+  if (details.reason === 'install') {
     browser.storage.local.set({
       logs: [],
       workflows: [],

@@ -6,6 +6,21 @@ import * as models from '@/models';
 const store = createStore({
   plugins: [vuexORM(models)],
   actions: {
+    async retrieve({ dispatch }, keys = 'workflows') {
+      try {
+        const data = await browser.storage.local.get(keys);
+        const promises = Object.keys(data).map((entity) =>
+          dispatch('entities/create', {
+            entity,
+            data: data[entity],
+          })
+        );
+
+        await Promise.allSettled(promises);
+      } catch (error) {
+        console.error(error);
+      }
+    },
     saveToStorage({ getters }, key) {
       return new Promise((resolve, reject) => {
         if (!key) {

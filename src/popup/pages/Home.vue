@@ -4,6 +4,7 @@
     class="flex dark placeholder-black text-white px-5 pt-8 mb-6 items-center"
   >
     <ui-input
+      v-model="query"
       autofocus
       prepend-icon="riSearch2Line"
       class="flex-1 search-input"
@@ -22,20 +23,92 @@
     </ui-button>
   </div>
   <div class="px-5 pb-5 space-y-2">
-    <home-workflow-card v-for="i in 10" :key="i" />
+    <ui-card v-if="Workflow.all().length === 0" class="text-center">
+      <img src="@/assets/svg/alien.svg" />
+      <p class="font-semibold">It looks like you don't have any workflows</p>
+      <ui-button variant="accent" class="mt-6" @click="openDashboard">
+        New workflow
+      </ui-button>
+    </ui-card>
+    <home-workflow-card
+      v-for="workflow in workflows"
+      :key="workflow.id"
+      :workflow="workflow"
+      @details="openDashboard(`/workflows/${$event.id}`)"
+      @execute="executeWorkflow"
+      @rename="renameWorkflow"
+      @delete="deleteWorkflow"
+    />
   </div>
 </template>
 <script setup>
+import { ref, computed } from 'vue';
 import browser from 'webextension-polyfill';
+import { useDialog } from '@/composable/dialog';
+import { sendMessage } from '@/utils/message';
+import Workflow from '@/models/workflow';
 import HomeWorkflowCard from '@/components/popup/home/HomeWorkflowCard.vue';
 
-function openDashboard() {
-  const newTabURL = chrome.runtime.getURL('/newtab.html');
+const dialog = useDialog();
 
-  browser.tabs.query({ url: newTabURL }).then(([tab]) => {
-    if (tab) browser.tabs.update(tab.id, { active: true });
-    else browser.tabs.create({ url: newTabURL, active: true });
+const query = ref('');
+const workflows = computed(() =>
+  Workflow.query()
+    .where(({ name }) =>
+      name.toLocaleLowerCase().includes(query.value.toLocaleLowerCase())
+    )
+    .orderBy('createdAt', 'asc')
+    .get()
+);
+
+function executeWorkflow(workflow) {
+  sendMessage('workflow:execute', workflow, 'background');
+}
+function renameWorkflow({ id, name }) {
+  dialog.prompt({
+    title: 'Rename workflow',
+    placeholder: 'Workflow name',
+    okText: 'Rename',
+    inputValue: name,
+    onConfirm: (newName) => {
+      Workflow.update({
+        where: id,
+        data: {
+          name: newName,
+        },
+      });
+    },
   });
+}
+function deleteWorkflow({ id, name }) {
+  dialog.confirm({
+    title: 'Delete workflow',
+    okVariant: 'danger',
+    body: `Are you sure you want to delete "${name}" workflow?`,
+    onConfirm: () => {
+      Workflow.delete(id);
+    },
+  });
+}
+function openDashboard(url) {
+  const tabOptions = {
+    active: true,
+    url: browser.runtime.getURL(
+      `/newtab.html#${typeof url === 'string' ? url : ''}`
+    ),
+  };
+
+  browser.tabs
+    .query({ url: browser.runtime.getURL('/newtab.html') })
+    .then(([tab]) => {
+      if (tab) {
+        browser.tabs.update(tab.id, tabOptions).then(() => {
+          browser.tabs.reload(tab.id);
+        });
+      } else {
+        browser.tabs.create(tabOptions);
+      }
+    });
 }
 async function selectElement() {
   const [tab] = await browser.tabs.query({ active: true });
