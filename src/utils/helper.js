@@ -1,3 +1,13 @@
+export function countDuration(started, ended) {
+  const duration = Math.round((ended - started) / 1000);
+  const minutes = parseInt((duration / 60) % 60, 10);
+  const seconds = parseInt(duration % 60, 10);
+
+  const getText = (num, suffix) => (num > 0 ? `${num}${suffix}` : '');
+
+  return `${getText(minutes, 'm')} ${seconds}s`;
+}
+
 export function toCamelCase(str) {
   const result = str.replace(/(?:^\w|[A-Z]|\b\w)/g, (letter, index) => {
     return index === 0 ? letter.toLowerCase() : letter.toUpperCase();

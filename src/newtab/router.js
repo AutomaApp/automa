@@ -3,6 +3,7 @@ import Home from './pages/Home.vue';
 import Workflows from './pages/Workflows.vue';
 import WorkflowDetails from './pages/workflows/[id].vue';
 import Logs from './pages/Logs.vue';
+import LogsDetails from './pages/logs/[id].vue';
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     name: 'logs',
     path: '/logs',
     component: Logs,
+  },
+  {
+    name: 'logs-details',
+    path: '/logs/:id',
+    component: LogsDetails,
   },
 ];
 

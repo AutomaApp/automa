@@ -130,6 +130,7 @@ export const tasks = {
       regex: '',
       regexExp: ['g'],
       dataColumn: '',
+      saveData: true,
     },
   },
   'export-data': {
@@ -206,6 +207,7 @@ export const tasks = {
       multiple: false,
       attributeName: '',
       dataColumn: '',
+      saveData: true,
     },
   },
   forms: {

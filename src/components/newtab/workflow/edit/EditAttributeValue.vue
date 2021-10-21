@@ -6,7 +6,14 @@
       class="mt-3 w-full"
       @change="updateData({ attributeName: $event })"
     />
-    <div class="flex items-center mt-3">
+    <ui-checkbox
+      :model-value="data.saveData"
+      class="mt-3"
+      @change="updateData({ saveData: $event })"
+    >
+      Save data
+    </ui-checkbox>
+    <div v-if="data.saveData" class="flex items-center mt-1">
       <ui-select
         :model-value="data.dataColumn"
         placeholder="Data column"

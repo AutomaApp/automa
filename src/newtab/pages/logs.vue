@@ -1,5 +1,5 @@
 <template>
-  <div class="container pt-8 pb-4">
+  <div class="container pt-8 pb-4 logs-list">
     <h1 class="text-2xl font-semibold mb-6">Logs</h1>
     <div class="flex items-center mb-6 space-x-4">
       <ui-input
@@ -34,7 +34,12 @@
       <tbody>
         <tr v-for="log in logs" :key="log.id" class="hoverable border-b">
           <td style="min-width: 150px">
-            {{ log.name }}
+            <router-link
+              :to="`/logs/${log.id}`"
+              class="block w-full h-full text-overflow"
+            >
+              {{ log.name }}
+            </router-link>
           </td>
           <td>
             <span
@@ -55,7 +60,7 @@
           </td>
           <td class="log-time" title="Duration">
             <v-remixicon name="riTimerLine"></v-remixicon>
-            <span>{{ getDuration(log.startedAt, log.endedAt) }}</span>
+            <span>{{ countDuration(log.startedAt, log.endedAt) }}</span>
           </td>
           <td>
             <div
@@ -84,7 +89,10 @@
     </table>
     <ui-modal v-model="exportDataModal.show">
       <template #header> Data </template>
-      <logs-export-data :log="exportDataModal.log" />
+      <logs-data-viewer
+        :log="exportDataModal.log"
+        editor-class="logs-list-data"
+      />
     </ui-modal>
   </div>
 </template>
@@ -93,7 +101,8 @@ import { shallowReactive, computed } from 'vue';
 import { useStore } from 'vuex';
 import dayjs from '@/lib/dayjs';
 import Log from '@/models/log';
-import LogsExportData from '@/components/newtab/logs/LogsExportData.vue';
+import { countDuration } from '@/utils/helper';
+import LogsDataViewer from '@/components/newtab/logs/LogsDataViewer.vue';
 
 const filters = ['all', 'success', 'stopped', 'error'];
 const sorts = [
@@ -141,26 +150,18 @@ function formatDate(date, format) {
 
   return dayjs(date).format(format);
 }
-function getDuration(started, ended) {
-  const duration = dayjs(ended).diff(started, 'second');
-  const minutes = parseInt((duration / 60) % 60, 10);
-  const seconds = parseInt(duration % 60, 10);
-
-  const getText = (num, suffix) => (num > 0 ? `${num}${suffix}` : '');
-
-  return `${getText(minutes, 'm')} ${getText(seconds, 's')}`;
-}
 function deleteLog(id) {
   Log.delete(id).then(() => {
     store.dispatch('saveToStorage', 'logs');
   });
 }
 </script>
-<style scoped>
-.logs-table td {
-  @apply p-2;
+<style>
+.logs-list-data {
+  max-height: calc(100vh - 12rem);
 }
-
+</style>
+<style scoped>
 .log-time {
   @apply text-gray-600 dark:text-gray-200;
 }

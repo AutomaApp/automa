@@ -178,13 +178,11 @@ export function interactionHandler(block) {
       delay: block.name === 'link' ? 5000 : 0,
       callback: (data) => {
         if (objectHasKey(block.data, 'dataColumn')) {
-          const column = Object.values(this.workflow.dataColumns).find(
+          const { name, type } = Object.values(this.workflow.dataColumns).find(
             (item) => item.name === block.data.dataColumn
-          );
+          ) || { name: 'column', type: 'text' };
 
-          if (column) {
-            const { name, type } = column;
-
+          if (block.data.saveData) {
             if (!objectHasKey(this.data, name)) this.data[name] = [];
 
             if (Array.isArray(data)) {

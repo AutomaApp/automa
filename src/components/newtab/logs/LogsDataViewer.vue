@@ -25,9 +25,9 @@
   <prism-editor
     :model-value="dataStr"
     :highlight="highlighter"
+    :class="editorClass"
     readonly
     class="my-editor p-4 bg-gray-900 rounded-lg mt-4"
-    style="max-height: calc(100vh - 12rem)"
   ></prism-editor>
 </template>
 <script setup>
@@ -44,6 +44,10 @@ const props = defineProps({
   log: {
     type: Object,
     default: () => ({}),
+  },
+  editorClass: {
+    type: String,
+    default: '',
   },
 });
 

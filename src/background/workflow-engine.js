@@ -233,11 +233,11 @@ class WorkflowEngine {
     }, this.workflow.settings.timeout || 120000);
 
     workflowState.update(this.id, this.state);
-    console.log(this.logs);
     console.log(`${block.name}:`, block);
 
     this.currentBlock = block;
 
+    const started = Date.now();
     const isInteraction = tasks[block.name].category === 'interaction';
     const handlerName = isInteraction
       ? 'interactionHandler'
@@ -253,6 +253,7 @@ class WorkflowEngine {
               type: 'success',
               name: tasks[block.name].name,
               data: result.data,
+              duration: Math.round(Date.now() - started),
             });
 
             this._blockHandler(this.blocks[result.nextBlockId], result.data);

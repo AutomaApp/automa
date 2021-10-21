@@ -1,5 +1,6 @@
 <template>
   <edit-interaction-base v-bind="{ data }" @change="updateData">
+    {{ data }}
     <div class="flex rounded-lg bg-input px-4 items-center transition mt-2">
       <span>/</span>
       <input
@@ -25,7 +26,14 @@
         </div>
       </ui-popover>
     </div>
-    <div class="flex items-center mt-3">
+    <ui-checkbox
+      :model-value="data.saveData"
+      class="mt-3"
+      @change="updateData({ saveData: $event })"
+    >
+      Save data
+    </ui-checkbox>
+    <div v-if="data.saveData" class="flex items-center mt-1">
       <ui-select
         :model-value="data.dataColumn"
         placeholder="Data column"

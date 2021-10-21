@@ -7,7 +7,10 @@ body {
   font-size: 16px;
   @apply bg-gray-50 dark:bg-gray-900;
 }
-
+table td,
+table tr {
+  @apply p-2;
+}
 input:focus,
 button:focus,
 textarea:focus,
@@ -16,12 +19,13 @@ select:focus,
 	outline: none;
 	@apply ring-2 ring-accent dark:ring-gray-200;
 }
+
+
 .text-overflow {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .line-clamp {
   display: -webkit-box;
   -webkit-line-clamp: 2;
