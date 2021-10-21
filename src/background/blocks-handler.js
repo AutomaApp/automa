@@ -178,18 +178,22 @@ export function interactionHandler(block) {
       delay: block.name === 'link' ? 5000 : 0,
       callback: (data) => {
         if (objectHasKey(block.data, 'dataColumn')) {
-          const { name, type } = Object.values(this.workflow.dataColumns).find(
+          const column = Object.values(this.workflow.dataColumns).find(
             (item) => item.name === block.data.dataColumn
-          ) || { name: 'column', type: 'text' };
+          );
 
-          if (!objectHasKey(this.data, name)) this.data[name] = [];
+          if (column) {
+            const { name, type } = column;
 
-          if (Array.isArray(data)) {
-            data.forEach((item) => {
-              this.data[name].push(convertData(item, type));
-            });
-          } else {
-            this.data[name].push(convertData(data, type));
+            if (!objectHasKey(this.data, name)) this.data[name] = [];
+
+            if (Array.isArray(data)) {
+              data.forEach((item) => {
+                this.data[name].push(convertData(item, type));
+              });
+            } else {
+              this.data[name].push(convertData(data, type));
+            }
           }
         }
 

@@ -1,6 +1,21 @@
 import Papa from 'papaparse';
 
-function generateJSON(keys, data) {
+const files = {
+  'plain-text': {
+    mime: 'text/plain',
+    ext: '.txt',
+  },
+  json: {
+    mime: 'application/json',
+    ext: '.json',
+  },
+  csv: {
+    mime: 'text/csv',
+    ext: '.csv',
+  },
+};
+
+export function generateJSON(keys, data) {
   const result = [];
 
   keys.forEach((key) => {
@@ -18,31 +33,16 @@ function generateJSON(keys, data) {
   return result;
 }
 
-const files = {
-  'plain-text': {
-    mime: 'text/plain',
-    ext: '.txt',
-  },
-  json: {
-    mime: 'application/json',
-    ext: '.json',
-  },
-  csv: {
-    mime: 'text/csv',
-    ext: '.csv',
-  },
-};
-
-export default function (data, { name, type }) {
+export default function (data, { name, type }, converted) {
   let result = data;
 
   if (type === 'csv' || type === 'json') {
-    const jsonData = generateJSON(Object.keys(data), data);
+    const jsonData = converted ? data : generateJSON(Object.keys(data), data);
 
     result =
       type === 'csv'
         ? `data:text/csv;charset=utf-8,${Papa.unparse(jsonData)}`
-        : JSON.stringify(jsonData);
+        : JSON.stringify(jsonData, null, 2);
   } else if (type === 'plain-text') {
     result = Object.values(data).join(' ');
   }

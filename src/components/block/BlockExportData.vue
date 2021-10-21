@@ -30,7 +30,7 @@
       required
     >
       <option value="" disabled selected>Export as</option>
-      <option v-for="type in exportTypes" :key="type.id" :value="type.id">
+      <option v-for="type in dataExportTypes" :key="type.id" :value="type.id">
         {{ type.name }}
       </option>
     </select>
@@ -40,6 +40,7 @@
 import { watch } from 'vue';
 import { VRemixIcon as VRemixicon } from 'v-remixicon';
 import emitter from 'tiny-emitter/instance';
+import { dataExportTypes } from '@/utils/shared';
 import { icons } from '@/lib/v-remixicon';
 import { debounce } from '@/utils/helper';
 import { useComponentId } from '@/composable/componentId';
@@ -54,12 +55,6 @@ const props = defineProps({
 
 const componentId = useComponentId('block-delay');
 const block = useEditorBlock(`#${componentId}`, props.editor);
-
-const exportTypes = [
-  { name: 'JSON', id: 'json' },
-  { name: 'CSV', id: 'csv' },
-  { name: 'Plain text', id: 'plain-text' },
-];
 
 watch(
   () => block.data,

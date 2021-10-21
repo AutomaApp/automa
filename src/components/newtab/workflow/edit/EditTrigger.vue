@@ -24,10 +24,10 @@
         class="w-full mr-2"
         label="Interval (minutes)"
         placeholder="5-120"
-        min="5"
+        min="10"
         max="120"
         @change="
-          updateIntervalInput($event, { key: 'interval', min: 5, max: 120 })
+          updateIntervalInput($event, { key: 'interval', min: 10, max: 120 })
         "
       />
       <ui-input

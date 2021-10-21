@@ -169,7 +169,10 @@ const taskList = Object.keys(tasks).reduce((arr, key) => {
 }, {});
 const icons = [
   'riGlobalLine',
+  'riFileTextLine',
   'riEqualizerLine',
+  'riTimerLine',
+  'riCalendarLine',
   'riFlashlightLine',
   'riLightbulbFlashLine',
   'riDatabase2Line',

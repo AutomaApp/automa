@@ -348,3 +348,9 @@ export const eventList = [
   { id: 'submit', name: 'Submit', type: 'submit-event' },
   { id: 'wheel', name: 'Wheel', type: 'wheel-event' },
 ];
+
+export const dataExportTypes = [
+  { name: 'JSON', id: 'json' },
+  { name: 'CSV', id: 'csv' },
+  { name: 'Plain text', id: 'plain-text' },
+];

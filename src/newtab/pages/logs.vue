@@ -66,6 +66,10 @@
                 v-if="Object.keys(log.data).length !== 0"
                 name="riFileTextLine"
                 class="cursor-pointer"
+                @click="
+                  exportDataModal.show = true;
+                  exportDataModal.log = log;
+                "
               />
               <v-remixicon
                 name="riDeleteBin7Line"
@@ -78,6 +82,10 @@
         </tr>
       </tbody>
     </table>
+    <ui-modal v-model="exportDataModal.show">
+      <template #header> Data </template>
+      <logs-export-data :log="exportDataModal.log" />
+    </ui-modal>
   </div>
 </template>
 <script setup>
@@ -85,6 +93,7 @@ import { shallowReactive, computed } from 'vue';
 import { useStore } from 'vuex';
 import dayjs from '@/lib/dayjs';
 import Log from '@/models/log';
+import LogsExportData from '@/components/newtab/logs/LogsExportData.vue';
 
 const filters = ['all', 'success', 'stopped', 'error'];
 const sorts = [
@@ -104,6 +113,10 @@ const state = shallowReactive({
   filterBy: 'all',
   sortOrder: 'desc',
   sortBy: 'startedAt',
+});
+const exportDataModal = shallowReactive({
+  show: false,
+  log: {},
 });
 
 const logs = computed(() =>
@@ -134,8 +147,7 @@ function getDuration(started, ended) {
   const seconds = parseInt(duration % 60, 10);
 
   const getText = (num, suffix) => (num > 0 ? `${num}${suffix}` : '');
-  console.log(duration, minutes, seconds);
-  console.log(started, ended);
+
   return `${getText(minutes, 'm')} ${getText(seconds, 's')}`;
 }
 function deleteLog(id) {
