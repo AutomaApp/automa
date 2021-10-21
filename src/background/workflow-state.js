@@ -18,13 +18,15 @@ async function updater(callback, id) {
 }
 
 class WorkflowState {
-  static async get() {
+  static async get(filter) {
     try {
-      const { workflowState } = await browser.storage.local.get(
-        'workflowState'
-      );
+      let { workflowState } = await browser.storage.local.get('workflowState');
 
-      return workflowState || [];
+      if (filter) {
+        workflowState = workflowState.filter(filter);
+      }
+
+      return workflowState;
     } catch (error) {
       console.error(error);
 
@@ -32,9 +34,9 @@ class WorkflowState {
     }
   }
 
-  static add(id, state) {
+  static add(id, data) {
     return updater.call(this, (items) => {
-      items.push({ id, state });
+      items.push({ id, ...data });
 
       return items;
     });
@@ -58,7 +60,7 @@ class WorkflowState {
     return updater.call(
       this,
       (items, index) => {
-        if (index === -1) items.splice(index, 1);
+        if (index !== -1) items.splice(index, 1);
 
         return items;
       },

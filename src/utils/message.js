@@ -22,50 +22,33 @@ export class MessageListener {
     return this.listen.bind(this);
   }
 
-  listen(message, sender, sendResponse) {
+  listen(message, sender) {
     try {
       const listener = this.listeners[message.name];
-
+      console.log(listener, this.listeners);
       const response =
         listener && listener.call({ message, sender }, message.data, sender);
 
       if (!response) {
-        // Do nothing
-      } else if (!(response instanceof Promise)) {
-        sendResponse(response);
-      } else {
-        response
-          .then((res) => {
-            sendResponse(res);
-          })
-          .catch((res) => {
-            sendResponse(res);
-          });
+        return Promise.resolve();
       }
+      if (!(response instanceof Promise)) {
+        return Promise.resolve(response);
+      }
+      return response;
     } catch (err) {
-      sendResponse({
-        error: true,
-        message: `Unhandled Background Error: ${String(err)}`,
-      });
+      return Promise.reject(
+        new Error(`Unhandled Background Error: ${String(err)}`)
+      );
     }
   }
 }
 
 export function sendMessage(name = '', data = {}, prefix = '') {
-  return new Promise((resolve, reject) => {
-    const payload = {
-      name: nameBuilder(prefix, name),
-      data,
-    };
+  const payload = {
+    name: nameBuilder(prefix, name),
+    data,
+  };
 
-    browser.runtime
-      .sendMessage(payload)
-      .then((response) => {
-        if (response.error) reject(new Error(response.message));
-        else resolve(response);
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
+  return browser.runtime.sendMessage(payload);
 }

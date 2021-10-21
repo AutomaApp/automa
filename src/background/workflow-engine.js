@@ -28,6 +28,10 @@ function tabRemovedHandler(tabId) {
 
   delete this.connectedTab;
   delete this.tabId;
+
+  if (tasks[this.currentBlock.name].category === 'interaction') {
+    this.destroy('error');
+  }
 }
 function tabUpdatedHandler(tabId, changeInfo) {
   const listener = this.tabUpdatedListeners[tabId];
@@ -116,9 +120,14 @@ class WorkflowEngine {
     this.blocks = blocks;
     this.startedTimestamp = Date.now();
 
-    workflowState.add(this.id, this.state).then(() => {
-      this._blockHandler(triggerBlock);
-    });
+    workflowState
+      .add(this.id, {
+        workflowId: this.workflow.id,
+        state: this.state,
+      })
+      .then(() => {
+        this._blockHandler(triggerBlock);
+      });
   }
 
   on(name, listener) {
@@ -130,7 +139,7 @@ class WorkflowEngine {
   pause(pause = true) {
     this.isPaused = pause;
 
-    workflowState.update(this.tabId, this.state);
+    workflowState.update(this.id, this.state);
   }
 
   stop(message) {
@@ -158,7 +167,7 @@ class WorkflowEngine {
       this.endedTimestamp = Date.now();
 
       if (!this.workflow.isTesting) {
-        const { logs } = browser.storage.local.get('logs');
+        const { logs } = await browser.storage.local.get('logs');
         const { name, icon, id } = this.workflow;
 
         logs.push({
@@ -219,10 +228,9 @@ class WorkflowEngine {
       return;
     }
 
-    this.workflowTimeout = setTimeout(
-      () => this.stop('Workflow stopped because of timeout'),
-      this.workflow.settings.timeout || 120000
-    );
+    this.workflowTimeout = setTimeout(() => {
+      if (!this.isDestroyed) this.stop('Workflow stopped because of timeout');
+    }, this.workflow.settings.timeout || 120000);
 
     workflowState.update(this.id, this.state);
     console.log(this.logs);
@@ -255,7 +263,7 @@ class WorkflowEngine {
               name: 'Finish',
             });
             this.dispatchEvent('finish');
-            this.destroy();
+            this.destroy('success');
             console.log('Done', this);
           }
 
@@ -278,7 +286,7 @@ class WorkflowEngine {
               error.data || ''
             );
           } else {
-            this.stop();
+            this.destroy('error');
           }
 
           clearTimeout(this.workflowTimeout);

@@ -14,6 +14,10 @@ function getWorkflow(workflowId) {
 }
 async function executeWorkflow(workflow) {
   try {
+    const state = await workflowState.get(({ id }) => id === workflow.id);
+
+    if (state.length !== 0) return false;
+
     const engine = new WorkflowEngine(workflow);
 
     engine.init();
@@ -38,11 +42,11 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
       return tab.url.match(isRegex ? new RegExp(url, 'g') : url);
     });
-    const runningWorkflow = (await workflowState.get()).find(
+    const runningWorkflow = await workflowState.get(
       (item) => item.state.tabId === tabId
     );
 
-    if (trigger && !runningWorkflow) {
+    if (trigger && runningWorkflow.length === 0) {
       const workflow = await getWorkflow(trigger.id);
 
       executeWorkflow(workflow);
@@ -72,4 +76,4 @@ const message = new MessageListener('background');
 
 message.on('workflow:execute', executeWorkflow);
 
-chrome.runtime.onMessage.addListener(message.listener());
+browser.runtime.onMessage.addListener(message.listener());

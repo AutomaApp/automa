@@ -15,10 +15,12 @@ const store = createStore({
             data: data[entity],
           })
         );
+        const result = await Promise.allSettled(promises);
 
-        await Promise.allSettled(promises);
+        return result;
       } catch (error) {
         console.error(error);
+        return [];
       }
     },
     saveToStorage({ getters }, key) {

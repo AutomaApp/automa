@@ -1,11 +1,13 @@
 import { Model } from '@vuex-orm/core';
 import { nanoid } from 'nanoid';
-import Task from './task';
+import Log from './log';
 
 class Workflow extends Model {
   static entity = 'workflows';
 
   static primaryKey = 'id';
+
+  static autoSave = true;
 
   static fields() {
     return {
@@ -21,7 +23,7 @@ class Workflow extends Model {
         timeout: 120000,
         onError: 'stop-workflow',
       }),
-      tasks: this.hasMany(Task, 'workflowId'),
+      logs: this.hasMany(Log, 'workflowId'),
     };
   }
 

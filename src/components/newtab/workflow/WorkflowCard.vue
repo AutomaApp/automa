@@ -5,7 +5,7 @@
         <v-remixicon name="riGlobalLine" />
       </span>
       <div class="flex-grow"></div>
-      <button>
+      <button @click="$emit('execute', workflow)">
         <v-remixicon name="riPlayLine" />
       </button>
       <ui-popover v-if="showDetails" class="ml-2 h-6">
@@ -59,7 +59,7 @@ const props = defineProps({
     default: true,
   },
 });
-defineEmits(['delete', 'rename']);
+defineEmits(['delete', 'rename', 'execute']);
 
 const formatDate = () => dayjs(props.workflow.createdAt).fromNow();
 </script>

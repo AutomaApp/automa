@@ -1,6 +1,6 @@
 <template>
   <div class="container pt-8 pb-4">
-    <h1 class="text-2xl font-semibold mb-8">Workflows</h1>
+    <h1 class="text-2xl font-semibold mb-6">Workflows</h1>
     <div class="flex items-center mb-6 space-x-4">
       <ui-input
         v-model="state.query"
@@ -46,6 +46,7 @@
         v-bind="{ workflow }"
         @delete="deleteWorkflow"
         @rename="renameWorkflow"
+        @execute="executeWorkflow"
       />
     </div>
   </div>
@@ -53,6 +54,7 @@
 <script setup>
 import { computed, shallowReactive } from 'vue';
 import { useDialog } from '@/composable/dialog';
+import { sendMessage } from '@/utils/message';
 import WorkflowCard from '@/components/newtab/workflow/WorkflowCard.vue';
 import Workflow from '@/models/workflow';
 
@@ -78,6 +80,9 @@ const workflows = computed(() =>
     .get()
 );
 
+function executeWorkflow(workflow) {
+  sendMessage('workflow:execute', workflow, 'background');
+}
 function newWorkflow() {
   dialog.prompt({
     title: 'New workflow',

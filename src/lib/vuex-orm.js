@@ -1,7 +1,9 @@
 import VuexORM, { Query } from '@vuex-orm/core';
 
 function callback(model, param, entity) {
-  this.store.dispatch('saveToStorage', entity);
+  if (this.baseModel.autoSave) {
+    this.store.dispatch('saveToStorage', entity);
+  }
 }
 
 Query.on('afterUpdate', callback);
