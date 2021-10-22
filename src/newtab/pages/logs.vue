@@ -33,6 +33,13 @@
     <table class="w-full logs-table">
       <tbody>
         <tr v-for="log in logs" :key="log.id" class="hoverable border-b">
+          <td class="w-8">
+            <ui-checkbox
+              :model-value="state.selectedLogs.includes(log.id)"
+              class="align-text-bottom"
+              @change="toggleSelectedLog($event, log.id)"
+            />
+          </td>
           <td style="min-width: 150px">
             <router-link
               :to="`/logs/${log.id}`"
@@ -87,6 +94,18 @@
         </tr>
       </tbody>
     </table>
+    <ui-card
+      v-if="state.selectedLogs.length > 1"
+      class="fixed right-0 bottom-0 m-5 shadow-xl space-x-2"
+    >
+      <ui-button @click="selectAllLogs">
+        {{ state.selectedLogs.length >= logs.length ? 'Deselect' : 'Select' }}
+        all
+      </ui-button>
+      <ui-button variant="danger" @click="deleteSelectedLogs">
+        Delete selected logs ({{ state.selectedLogs.length }})
+      </ui-button>
+    </ui-card>
     <ui-modal v-model="exportDataModal.show">
       <template #header> Data </template>
       <logs-data-viewer
@@ -97,12 +116,13 @@
   </div>
 </template>
 <script setup>
-import { shallowReactive, computed } from 'vue';
+import { shallowReactive, reactive, computed } from 'vue';
 import { useStore } from 'vuex';
-import dayjs from '@/lib/dayjs';
-import Log from '@/models/log';
+import { useDialog } from '@/composable/dialog';
 import { countDuration } from '@/utils/helper';
 import { statusColors } from '@/utils/shared';
+import Log from '@/models/log';
+import dayjs from '@/lib/dayjs';
 import LogsDataViewer from '@/components/newtab/logs/LogsDataViewer.vue';
 
 const filters = ['all', 'success', 'stopped', 'error'];
@@ -112,10 +132,12 @@ const sorts = [
 ];
 
 const store = useStore();
+const dialog = useDialog();
 
-const state = shallowReactive({
+const state = reactive({
   query: '',
   filterBy: 'all',
+  selectedLogs: [],
   sortOrder: 'desc',
   sortBy: 'startedAt',
 });
@@ -150,6 +172,41 @@ function deleteLog(id) {
   Log.delete(id).then(() => {
     store.dispatch('saveToStorage', 'logs');
   });
+}
+function toggleSelectedLog(selected, logId) {
+  if (selected) {
+    state.selectedLogs.push(logId);
+    return;
+  }
+
+  const index = state.selectedLogs.indexOf(logId);
+
+  if (index !== -1) state.selectedLogs.splice(index, 1);
+}
+function deleteSelectedLogs() {
+  dialog.confirm({
+    title: 'Delete logs',
+    okVariant: 'danger',
+    body: `Are you sure want to delete all the selected logs?`,
+    onConfirm: () => {
+      const promises = state.selectedLogs.map((logId) => Log.delete(logId));
+
+      Promise.allSettled(promises).then(() => {
+        state.selectedLogs = [];
+        store.dispatch('saveToStorage', 'logs');
+      });
+    },
+  });
+}
+function selectAllLogs() {
+  if (state.selectedLogs.length >= logs.value.length) {
+    state.selectedLogs = [];
+    return;
+  }
+
+  const logIds = logs.value.map(({ id }) => id);
+
+  state.selectedLogs = logIds;
 }
 </script>
 <style>

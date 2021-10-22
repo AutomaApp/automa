@@ -27,7 +27,7 @@
       max="100"
       @change="updateQuality"
     />
-    <span class="w-8 text-right">{{ data.quality }}</span>
+    <span class="w-12 text-right">{{ data.quality }}%</span>
   </div>
   <ui-checkbox
     v-if="false"
