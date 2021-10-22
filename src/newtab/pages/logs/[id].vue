@@ -23,7 +23,7 @@
       <ui-input prepend-icon="riSearch2Line" placeholder="Search..." />
     </div>
     <div class="flex items-start">
-      <ui-list class="w-7/12 mr-6" style="height: 900px">
+      <ui-list class="w-7/12 mr-6">
         <ui-list-item v-for="(item, index) in activeLog.history" :key="index">
           <span
             :title="item.message || item.type"

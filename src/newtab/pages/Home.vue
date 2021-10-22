@@ -23,25 +23,30 @@
           </div>
           <table class="w-full table-fixed">
             <tbody class="divide-y">
-              <tr v-for="i in 10" :key="i" class="hoverable">
+              <tr v-for="log in logs" :key="log.id" class="hoverable">
                 <td class="p-2 w-6/12 text-overflow">
-                  Lorem ipsum dolor sit amet
+                  <router-link
+                    :to="`/logs/${log.id}`"
+                    class="block w-full h-full"
+                  >
+                    {{ log.name }}
+                  </router-link>
                 </td>
                 <td class="p-2 text-gray-600 dark:text-gray-200">
-                  {{ i + 1 }} Days ago
+                  {{ dayjs(log.startedAt).fromNow() }}
                 </td>
                 <td class="p-2 text-right">
                   <span
+                    :class="statusColors[log.status]"
                     class="
                       inline-block
                       py-1
-                      px-2
-                      text-sm text-green-700
-                      bg-green-500/10
+                      w-16
+                      text-center text-sm
                       rounded-lg
                     "
                   >
-                    Success
+                    {{ log.status }}
                   </span>
                 </td>
               </tr>
@@ -73,7 +78,10 @@
 </template>
 <script setup>
 import { computed } from 'vue';
+import { statusColors } from '@/utils/shared';
 import Workflow from '@/models/workflow';
+import Log from '@/models/log';
+import dayjs from '@/lib/dayjs';
 import SharedTaskList from '@/components/shared/SharedTaskList.vue';
 import WorkflowCard from '@/components/newtab/workflow/WorkflowCard.vue';
 
@@ -85,5 +93,8 @@ const tasks = [
 
 const workflows = computed(() =>
   Workflow.query().orderBy('createdAt', 'desc').limit(3).get()
+);
+const logs = computed(() =>
+  Log.query().orderBy('startedAt', 'desc').limit(10).get()
 );
 </script>

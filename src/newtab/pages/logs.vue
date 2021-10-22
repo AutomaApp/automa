@@ -102,6 +102,7 @@ import { useStore } from 'vuex';
 import dayjs from '@/lib/dayjs';
 import Log from '@/models/log';
 import { countDuration } from '@/utils/helper';
+import { statusColors } from '@/utils/shared';
 import LogsDataViewer from '@/components/newtab/logs/LogsDataViewer.vue';
 
 const filters = ['all', 'success', 'stopped', 'error'];
@@ -109,11 +110,6 @@ const sorts = [
   { id: 'name', name: 'Alphabetical' },
   { id: 'startedAt', name: 'Created date' },
 ];
-const statusColors = {
-  error: 'bg-red-200',
-  success: 'bg-green-200',
-  stopped: 'bg-yellow-200',
-};
 
 const store = useStore();
 

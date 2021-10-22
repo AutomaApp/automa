@@ -2,7 +2,7 @@
   <ui-card class="hover:ring-accent hover:ring-2">
     <div class="mb-4 flex items-center">
       <span class="p-2 rounded-lg bg-box-transparent inline-block">
-        <v-remixicon name="riGlobalLine" />
+        <v-remixicon :name="workflow.icon" />
       </span>
       <div class="flex-grow"></div>
       <button @click="$emit('execute', workflow)">
