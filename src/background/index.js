@@ -12,13 +12,9 @@ function getWorkflow(workflowId) {
     });
   });
 }
-async function executeWorkflow(workflow) {
+async function executeWorkflow(workflow, tabId) {
   try {
-    const state = await workflowState.get(({ id }) => id === workflow.id);
-
-    if (state.length !== 0) return false;
-
-    const engine = new WorkflowEngine(workflow);
+    const engine = new WorkflowEngine(workflow, tabId);
 
     engine.init();
     engine.on('destroyed', () => {
@@ -45,11 +41,11 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     const runningWorkflow = await workflowState.get(
       (item) => item.state.tabId === tabId
     );
-
+    console.log(runningWorkflow.length, runningWorkflow);
     if (trigger && runningWorkflow.length === 0) {
       const workflow = await getWorkflow(trigger.id);
 
-      executeWorkflow(workflow);
+      executeWorkflow(workflow, tabId);
     }
   }
 });
@@ -74,6 +70,6 @@ browser.runtime.onInstalled.addListener((details) => {
 
 const message = new MessageListener('background');
 
-message.on('workflow:execute', executeWorkflow);
+message.on('workflow:execute', (workflow) => executeWorkflow(workflow));
 
 browser.runtime.onMessage.addListener(message.listener());

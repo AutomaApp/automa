@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import browser from 'webextension-polyfill';
-import { objectHasKey } from '@/utils/helper';
+import { objectHasKey, fileSaver } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
 import dataExporter from '@/utils/data-exporter';
 import compareBlockValue from '@/utils/compare-block-value';
@@ -34,12 +34,25 @@ function generateBlockError(block) {
   return error;
 }
 
-export function trigger(block) {
-  return new Promise((resolve) => {
-    const nextBlockId = getBlockConnection(block);
+export async function trigger(block) {
+  const nextBlockId = getBlockConnection(block);
+  try {
+    console.log(this.tabId);
+    if (block.data.type === 'visit-web' && this.tabId) {
+      await browser.tabs.executeScript(this.tabId, {
+        file: './contentScript.bundle.js',
+      });
 
-    resolve({ nextBlockId, data: '' });
-  });
+      this._connectTab(this.tabId);
+    }
+
+    return { nextBlockId, data: '' };
+  } catch (error) {
+    const errorInstance = new Error(error);
+    errorInstance.nextBlockId = nextBlockId;
+
+    throw errorInstance;
+  }
 }
 
 export function goBack(block) {
@@ -135,13 +148,18 @@ export async function activeTab(block) {
   const nextBlockId = getBlockConnection(block);
 
   try {
-    const [tab] = await browser.tabs.query({ active: true });
     const data = {
       nextBlockId,
-      data: tab.url,
+      data: '',
     };
 
-    if (tab.id === this.tabId) return data;
+    if (this.tabId) {
+      await browser.tabs.update(this.tabId, { active: true });
+
+      return data;
+    }
+
+    const [tab] = await browser.tabs.query({ active: true });
 
     await browser.tabs.executeScript(tab.id, {
       file: './contentScript.bundle.js',
@@ -157,6 +175,63 @@ export async function activeTab(block) {
       data: '',
       nextBlockId,
     };
+  }
+}
+
+export async function takeScreenshot(block) {
+  const nextBlockId = getBlockConnection(block);
+  const { ext, quality, captureActiveTab, fileName } = block.data;
+
+  function saveImage(uri) {
+    const image = new Image();
+
+    image.onload = () => {
+      const name = `${fileName || 'Screenshot'}.${ext || 'png'}`;
+      const canvas = document.createElement('canvas');
+      canvas.width = image.width;
+      canvas.height = image.height;
+
+      const context = canvas.getContext('2d');
+      context.drawImage(image, 0, 0);
+
+      fileSaver(name, canvas.toDataURL());
+    };
+
+    image.src = uri;
+  }
+
+  try {
+    const options = {
+      quality,
+      format: ext || 'png',
+    };
+
+    if (captureActiveTab) {
+      if (!this.tabId) {
+        throw new Error(errorMessage('no-tab', block));
+      }
+
+      const [tab] = await browser.tabs.query({ active: true });
+
+      await browser.tabs.update(this.tabId, { active: true });
+
+      setTimeout(() => {
+        browser.tabs.captureVisibleTab(options).then((uri) => {
+          browser.tabs.update(tab.id, { active: true });
+          saveImage(uri);
+        });
+      }, 500);
+    } else {
+      const uri = await browser.tabs.captureVisibleTab(options);
+
+      saveImage(uri);
+    }
+
+    return { data: '', nextBlockId };
+  } catch (error) {
+    error.nextBlockId = nextBlockId;
+
+    throw error;
   }
 }
 

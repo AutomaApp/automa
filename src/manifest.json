@@ -19,8 +19,7 @@
     "alarms",
     "storage",
     "unlimitedStorage",
-    "http://*/*",
-    "https://*/*"
+    "<all_urls>"
   ],
   "web_accessible_resources": ["content.styles.css", "icon-128.png", "icon-34.png"]
 }

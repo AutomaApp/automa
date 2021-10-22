@@ -1,3 +1,12 @@
+export function fileSaver(fileName, data) {
+  const anchor = document.createElement('a');
+  anchor.download = fileName;
+  anchor.href = data;
+
+  anchor.dispatchEvent(new MouseEvent('click'));
+  anchor.remove();
+}
+
 export function countDuration(started, ended) {
   const duration = Math.round((ended - started) / 1000);
   const minutes = parseInt((duration / 60) % 60, 10);

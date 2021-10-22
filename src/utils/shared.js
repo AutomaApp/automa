@@ -26,7 +26,7 @@ export const tasks = {
   },
   'active-tab': {
     name: 'Active tab',
-    description: 'Execute the next block on the current active tab',
+    description: 'Set as active tab',
     icon: 'riWindowLine',
     component: 'BlockBasic',
     category: 'browser',
@@ -78,6 +78,24 @@ export const tasks = {
     disableEdit: true,
     allowedInputs: true,
     data: {},
+  },
+  'take-screenshot': {
+    name: 'Take screenshot',
+    description: 'Take a screenshot of current active tab',
+    icon: 'riImageLine',
+    component: 'BlockBasic',
+    category: 'browser',
+    editComponent: 'EditTakeScreenshot',
+    inputs: 1,
+    outputs: 1,
+    maxConnection: 1,
+    allowedInputs: true,
+    data: {
+      fileName: '',
+      ext: 'png',
+      quality: 100,
+      captureActiveTab: true,
+    },
   },
   'event-click': {
     name: 'Click element',

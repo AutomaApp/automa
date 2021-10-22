@@ -25,7 +25,6 @@ export class MessageListener {
   listen(message, sender) {
     try {
       const listener = this.listeners[message.name];
-      console.log(listener, this.listeners);
       const response =
         listener && listener.call({ message, sender }, message.data, sender);
 

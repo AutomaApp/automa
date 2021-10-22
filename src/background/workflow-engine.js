@@ -74,8 +74,9 @@ function tabUpdatedHandler(tabId, changeInfo) {
 }
 
 class WorkflowEngine {
-  constructor(workflow) {
+  constructor(workflow, tabId = null) {
     this.id = nanoid();
+    this.tabId = tabId;
     this.workflow = workflow;
     this.data = {};
     this.blocks = {};
@@ -277,7 +278,7 @@ class WorkflowEngine {
             message: error.message,
             name: tasks[block.name].name,
           });
-
+          console.dir(error);
           if (
             this.workflow.settings.onError === 'keep-running' &&
             error.nextBlockId

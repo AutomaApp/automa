@@ -1,4 +1,5 @@
 import Papa from 'papaparse';
+import { fileSaver } from './helper';
 
 const files = {
   'plain-text': {
@@ -52,9 +53,5 @@ export default function (data, { name, type }, converted) {
     type: mime,
   });
 
-  const anchor = document.createElement('a');
-  anchor.download = `${name || 'unnamed'}${ext}`;
-  anchor.href = URL.createObjectURL(blob);
-
-  anchor.dispatchEvent(new MouseEvent('click'));
+  fileSaver(`${name || 'unnamed'}${ext}`, URL.createObjectURL(blob));
 }

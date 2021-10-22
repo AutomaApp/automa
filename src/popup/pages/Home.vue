@@ -57,7 +57,7 @@ const workflows = computed(() =>
     .where(({ name }) =>
       name.toLocaleLowerCase().includes(query.value.toLocaleLowerCase())
     )
-    .orderBy('createdAt', 'asc')
+    .orderBy('createdAt', 'desc')
     .get()
 );
 

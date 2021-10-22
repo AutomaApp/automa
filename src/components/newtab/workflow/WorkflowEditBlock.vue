@@ -24,6 +24,7 @@ import EditTriggerEvent from './edit/EditTriggerEvent.vue';
 import EditElementExists from './edit/EditElementExists.vue';
 import EditScrollElement from './edit/EditScrollElement.vue';
 import EditAttributeValue from './edit/EditAttributeValue.vue';
+import EditTakeScreenshot from './edit/EditTakeScreenshot.vue';
 import EditInteractionBase from './edit/EditInteractionBase.vue';
 
 export default {
@@ -35,6 +36,7 @@ export default {
     EditElementExists,
     EditScrollElement,
     EditAttributeValue,
+    EditTakeScreenshot,
     EditInteractionBase,
   },
 };
