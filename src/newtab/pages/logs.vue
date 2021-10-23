@@ -1,41 +1,18 @@
 <template>
   <div class="container pt-8 pb-4 logs-list">
     <h1 class="text-2xl font-semibold mb-6">Logs</h1>
-    <div class="flex items-center mb-6 space-x-4">
-      <ui-input
-        v-model="state.query"
-        prepend-icon="riSearch2Line"
-        placeholder="Search..."
-        class="flex-1"
-      />
-      <div class="flex items-center workflow-sort">
-        <ui-button
-          icon
-          class="rounded-r-none border-gray-300 border-r"
-          @click="state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc'"
-        >
-          <v-remixicon
-            :name="state.sortOrder === 'asc' ? 'riSortAsc' : 'riSortDesc'"
-          />
-        </ui-button>
-        <ui-select v-model="state.sortBy" placeholder="Sort by">
-          <option v-for="sort in sorts" :key="sort.id" :value="sort.id">
-            {{ sort.name }}
-          </option>
-        </ui-select>
-      </div>
-      <ui-select v-model="state.filterBy" placeholder="Filter by status">
-        <option v-for="filter in filters" :key="filter" :value="filter">
-          {{ filter }}
-        </option>
-      </ui-select>
-    </div>
+    <logs-filters
+      :sorts="sortsBuilder"
+      :filters="filtersBuilder"
+      @updateSorts="sortsBuilder[$event.key] = $event.value"
+      @updateFilters="filtersBuilder[$event.key] = $event.value"
+    />
     <table class="w-full logs-table">
       <tbody>
         <tr v-for="log in logs" :key="log.id" class="hoverable border-b">
           <td class="w-8">
             <ui-checkbox
-              :model-value="state.selectedLogs.includes(log.id)"
+              :model-value="selectedLogs.includes(log.id)"
               class="align-text-bottom"
               @change="toggleSelectedLog($event, log.id)"
             />
@@ -95,15 +72,15 @@
       </tbody>
     </table>
     <ui-card
-      v-if="state.selectedLogs.length > 1"
+      v-if="selectedLogs.length !== 0"
       class="fixed right-0 bottom-0 m-5 shadow-xl space-x-2"
     >
       <ui-button @click="selectAllLogs">
-        {{ state.selectedLogs.length >= logs.length ? 'Deselect' : 'Select' }}
+        {{ selectedLogs.length >= logs.length ? 'Deselect' : 'Select' }}
         all
       </ui-button>
       <ui-button variant="danger" @click="deleteSelectedLogs">
-        Delete selected logs ({{ state.selectedLogs.length }})
+        Delete selected logs ({{ selectedLogs.length }})
       </ui-button>
     </ui-card>
     <ui-modal v-model="exportDataModal.show">
@@ -116,30 +93,28 @@
   </div>
 </template>
 <script setup>
-import { shallowReactive, reactive, computed } from 'vue';
+import { shallowReactive, ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useDialog } from '@/composable/dialog';
 import { countDuration } from '@/utils/helper';
 import { statusColors } from '@/utils/shared';
 import Log from '@/models/log';
 import dayjs from '@/lib/dayjs';
+import LogsFilters from '@/components/newtab/logs/LogsFilters.vue';
 import LogsDataViewer from '@/components/newtab/logs/LogsDataViewer.vue';
-
-const filters = ['all', 'success', 'stopped', 'error'];
-const sorts = [
-  { id: 'name', name: 'Alphabetical' },
-  { id: 'startedAt', name: 'Created date' },
-];
 
 const store = useStore();
 const dialog = useDialog();
 
-const state = reactive({
+const selectedLogs = ref([]);
+const filtersBuilder = shallowReactive({
   query: '',
-  filterBy: 'all',
-  selectedLogs: [],
-  sortOrder: 'desc',
-  sortBy: 'startedAt',
+  byDate: 0,
+  byStatus: 'all',
+});
+const sortsBuilder = shallowReactive({
+  order: 'desc',
+  by: 'startedAt',
 });
 const exportDataModal = shallowReactive({
   show: false,
@@ -148,18 +123,26 @@ const exportDataModal = shallowReactive({
 
 const logs = computed(() =>
   Log.query()
-    .where(({ name, status }) => {
+    .where(({ name, status, startedAt }) => {
+      let statusFilter = true;
+      let dateFilter = true;
       const searchFilter = name
         .toLocaleLowerCase()
-        .includes(state.query.toLocaleLowerCase());
+        .includes(filtersBuilder.query.toLocaleLowerCase());
 
-      if (state.filterBy !== 'all') {
-        return searchFilter && status === state.filterBy;
+      if (filtersBuilder.byStatus !== 'all') {
+        statusFilter = status === filtersBuilder.byStatus;
       }
 
-      return searchFilter;
+      if (filtersBuilder.byDate > 0) {
+        const date = Date.now() - filtersBuilder.byDate * 24 * 60 * 60 * 1000;
+
+        dateFilter = date <= startedAt;
+      }
+
+      return searchFilter && statusFilter && dateFilter;
     })
-    .orderBy(state.sortBy, state.sortOrder)
+    .orderBy(sortsBuilder.by, sortsBuilder.order)
     .get()
 );
 
@@ -175,13 +158,13 @@ function deleteLog(id) {
 }
 function toggleSelectedLog(selected, logId) {
   if (selected) {
-    state.selectedLogs.push(logId);
+    selectedLogs.value.push(logId);
     return;
   }
 
-  const index = state.selectedLogs.indexOf(logId);
+  const index = selectedLogs.value.indexOf(logId);
 
-  if (index !== -1) state.selectedLogs.splice(index, 1);
+  if (index !== -1) selectedLogs.value.splice(index, 1);
 }
 function deleteSelectedLogs() {
   dialog.confirm({
@@ -189,24 +172,24 @@ function deleteSelectedLogs() {
     okVariant: 'danger',
     body: `Are you sure want to delete all the selected logs?`,
     onConfirm: () => {
-      const promises = state.selectedLogs.map((logId) => Log.delete(logId));
+      const promises = selectedLogs.value.map((logId) => Log.delete(logId));
 
       Promise.allSettled(promises).then(() => {
-        state.selectedLogs = [];
+        selectedLogs.value = [];
         store.dispatch('saveToStorage', 'logs');
       });
     },
   });
 }
 function selectAllLogs() {
-  if (state.selectedLogs.length >= logs.value.length) {
-    state.selectedLogs = [];
+  if (selectedLogs.value.length >= logs.value.length) {
+    selectedLogs.value = [];
     return;
   }
 
   const logIds = logs.value.map(({ id }) => id);
 
-  state.selectedLogs = logIds;
+  selectedLogs.value = logIds;
 }
 </script>
 <style>
