@@ -25,7 +25,6 @@ store
   });
 
 function handleStorageChanged(change) {
-  console.log('testing', change);
   if (change.logs) {
     store.dispatch('entities/create', {
       entity: 'logs',

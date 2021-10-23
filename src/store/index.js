@@ -6,21 +6,24 @@ import * as models from '@/models';
 const store = createStore({
   plugins: [vuexORM(models)],
   actions: {
-    async retrieve({ dispatch }, keys = 'workflows') {
+    async retrieve({ dispatch, getters }, keys = 'workflows') {
       try {
         const data = await browser.storage.local.get(keys);
-        const promises = Object.keys(data).map((entity) =>
-          dispatch('entities/create', {
+        const promises = Object.keys(data).map((entity) => {
+          const entityData = getters[`entities/${entity}/all`]();
+
+          if (entityData.length > 0) return entityData;
+
+          return dispatch('entities/create', {
             entity,
             data: data[entity],
-          })
-        );
-        const result = await Promise.allSettled(promises);
+          });
+        });
 
-        return result;
+        return await Promise.allSettled(promises);
       } catch (error) {
         console.error(error);
-        return [];
+        throw error;
       }
     },
     saveToStorage({ getters }, key) {
