@@ -6,7 +6,7 @@
         class="inline-block text-sm mr-4 p-2 rounded-lg"
       >
         <v-remixicon
-          :path="icons.riDownloadLine"
+          name="riDownloadLine"
           size="20"
           class="inline-block mr-1"
         />
@@ -14,7 +14,7 @@
       </div>
       <div class="flex-grow"></div>
       <v-remixicon
-        :path="icons.riDeleteBin7Line"
+        name="riDeleteBin7Line"
         class="cursor-pointer"
         @click="editor.removeNodeId(`node-${block.id}`)"
       />
@@ -24,24 +24,21 @@
       class="w-full bg-input rounded-lg transition mb-2 py-2 px-4 block"
       placeholder="File name"
     />
-    <select
+    <ui-select
       v-model="block.data.type"
       class="px-4 py-2 rounded-lg w-40 bg-input"
-      required
+      placeholder="Export as"
     >
-      <option value="" disabled selected>Export as</option>
       <option v-for="type in dataExportTypes" :key="type.id" :value="type.id">
         {{ type.name }}
       </option>
-    </select>
+    </ui-select>
   </div>
 </template>
 <script setup>
 import { watch } from 'vue';
-import { VRemixIcon as VRemixicon } from 'v-remixicon';
 import emitter from 'tiny-emitter/instance';
 import { dataExportTypes } from '@/utils/shared';
-import { icons } from '@/lib/v-remixicon';
 import { debounce } from '@/utils/helper';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';

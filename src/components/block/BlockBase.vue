@@ -11,14 +11,14 @@
     >
       <div class="bg-accent px-3 py-2 text-white rounded-lg flex items-center">
         <button v-if="!hideEdit" @click="$emit('edit')">
-          <v-remixicon size="20" :path="icons.riPencilLine" />
+          <v-remixicon size="20" name="riPencilLine" />
         </button>
         <hr
           v-if="!hideDelete && !hideEdit"
           class="border-r border-gray-600 h-5 mx-3"
         />
         <button v-if="!hideDelete" @click="$emit('delete')">
-          <v-remixicon size="20" :path="icons.riDeleteBin7Line" />
+          <v-remixicon size="20" name="riDeleteBin7Line" />
         </button>
         <slot name="action" />
       </div>
@@ -26,9 +26,6 @@
   </div>
 </template>
 <script setup>
-import { VRemixIcon as VRemixicon } from 'v-remixicon';
-import { icons } from '@/lib/v-remixicon';
-
 defineProps({
   hideDelete: {
     type: Boolean,

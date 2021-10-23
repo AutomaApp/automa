@@ -9,11 +9,7 @@
       :class="block.category.color"
       class="inline-block text-sm mb-2 p-2 rounded-lg"
     >
-      <v-remixicon
-        :path="icons.riFocus3Line"
-        size="20"
-        class="inline-block mr-1"
-      />
+      <v-remixicon name="riFocus3Line" size="20" class="inline-block mr-1" />
       <span>Element exists</span>
     </div>
     <p
@@ -45,10 +41,8 @@
   </block-base>
 </template>
 <script setup>
-import { VRemixIcon as VRemixicon } from 'v-remixicon';
 import emitter from 'tiny-emitter/instance';
 import BlockBase from './BlockBase.vue';
-import { icons } from '@/lib/v-remixicon';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
 

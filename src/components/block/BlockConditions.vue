@@ -5,23 +5,24 @@
         :class="block.category.color"
         class="inline-block text-sm mr-4 p-2 rounded-lg"
       >
-        <v-remixicon :path="icons.riAB" size="20" class="inline-block mr-1" />
+        <v-remixicon name="riAB" size="20" class="inline-block mr-1" />
         <span>conditions</span>
       </div>
       <div class="flex-grow"></div>
       <v-remixicon
-        :path="icons.riDeleteBin7Line"
-        class="cursor-pointer"
+        name="riDeleteBin7Line"
+        class="cursor-pointer mr-2"
         @click="editor.removeNodeId(`node-${block.id}`)"
       />
-      <button
+      <ui-button
         :disabled="block.data.conditions && block.data.conditions.length > 4"
-        class="bg-accent ml-2 rounded-lg text-white text-center"
+        icon
+        variant="accent"
         style="height: 37px; width: 37px"
         @click="addComparison"
       >
-        <v-remixicon :path="icons.riAddLine" class="inline-block" />
-      </button>
+        <v-remixicon name="riAddLine" class="inline-block" />
+      </ui-button>
     </div>
     <div
       v-if="block.data.conditions && block.data.conditions.length !== 0"
@@ -33,7 +34,7 @@
         class="flex items-center group justify-end"
       >
         <v-remixicon
-          :path="icons.riDeleteBin7Line"
+          name="riDeleteBin7Line"
           class="mr-2 invisible group-hover:visible cursor-pointer"
           @click="deleteComparison(index)"
         />
@@ -83,10 +84,8 @@
 </template>
 <script setup>
 import { watch, toRaw } from 'vue';
-import { VRemixIcon as VRemixicon } from 'v-remixicon';
 import emitter from 'tiny-emitter/instance';
 import { debounce } from '@/utils/helper';
-import { icons } from '@/lib/v-remixicon';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
 
@@ -148,7 +147,7 @@ watch(
   transform: none !important;
 }
 .drawflow .drawflow-node.conditions .output {
-  margin-bottom: 30px;
+  margin-bottom: 32px;
 }
 .drawflow .drawflow-node.conditions .output:nth-last-child(2) {
   margin-bottom: 20px;

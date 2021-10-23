@@ -11,7 +11,7 @@
       :class="block.category.color"
       class="inline-block p-2 mr-2 rounded-lg bg-green-200"
     >
-      <v-remixicon :path="icons[block.details.icon] || icons.riGlobalLine" />
+      <v-remixicon :name="block.details.icon || 'riGlobalLine'" />
     </span>
     <div style="max-width: 200px">
       <p class="font-semibold leading-none whitespace-nowrap">
@@ -30,9 +30,7 @@
   </block-base>
 </template>
 <script setup>
-import { VRemixIcon as VRemixicon } from 'v-remixicon';
 import emitter from 'tiny-emitter/instance';
-import { icons } from '@/lib/v-remixicon';
 import { useEditorBlock } from '@/composable/editorBlock';
 import { useComponentId } from '@/composable/componentId';
 import BlockBase from './BlockBase.vue';

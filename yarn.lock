@@ -2445,10 +2445,10 @@ dot-case@^3.0.4:
     no-case "^3.0.4"
     tslib "^2.0.3"
 
-drawflow@^0.0.49:
-  version "0.0.49"
-  resolved "https://registry.yarnpkg.com/drawflow/-/drawflow-0.0.49.tgz#0dfc86d1b83757a3c6625caaa74fd4a2e399fdf0"
-  integrity sha512-oNTJ2BqUAGaM6KILWD4blpOs7q6CwFId8ZZXRqSCidyaKgDnhdkDREaPOfPaRa05TAOnGjYGde4ijZ0DpyYcIA==
+drawflow@^0.0.51:
+  version "0.0.51"
+  resolved "https://registry.yarnpkg.com/drawflow/-/drawflow-0.0.51.tgz#094b2b679a6d7487cec1d3b404bbbcc65e5049bb"
+  integrity sha512-1MjueSSy3fYKYJVKO/lc6BJCfAMS8E3ul44QrCzw1onl2MmfgCu528mHYfAmz6gEp5FMvwBNMjOyjTXgrTT2aw==
 
 ee-first@1.1.1:
   version "1.1.1"

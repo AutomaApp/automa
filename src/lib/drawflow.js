@@ -1,15 +1,11 @@
-import { createApp, h, defineComponent } from 'vue';
+import { h, render } from 'vue';
 import Drawflow from 'drawflow';
 import '@/assets/css/drawflow.css';
 
 const blockComponents = require.context('../components/block', false, /\.vue$/);
 
 export default function (element, ctx) {
-  const editor = new Drawflow(
-    element,
-    { defineComponent, createApp, version: 3, h },
-    ctx
-  );
+  const editor = new Drawflow(element, { render, version: 3, h }, ctx);
 
   editor.useuuid = true;
   editor.reroute = true;

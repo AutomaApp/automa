@@ -30,7 +30,7 @@
         "
       >
         <v-remixicon
-          :path="icons.riCheckLine"
+          name="riCheckLine"
           size="20"
           class="text-white"
         ></v-remixicon>
@@ -42,11 +42,7 @@
   </label>
 </template>
 <script>
-import { VRemixIcon as VRemixicon } from 'v-remixicon';
-import { icons } from '@/lib/v-remixicon';
-
 export default {
-  components: { VRemixicon },
   props: {
     modelValue: {
       type: Boolean,
@@ -61,7 +57,6 @@ export default {
     }
 
     return {
-      icons,
       changeHandler,
     };
   },

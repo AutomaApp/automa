@@ -5,16 +5,12 @@
         :class="block.category.color"
         class="inline-block text-sm mr-4 p-2 rounded-lg"
       >
-        <v-remixicon
-          :path="icons.riGlobalLine"
-          size="20"
-          class="inline-block mr-1"
-        />
+        <v-remixicon name="riGlobalLine" size="20" class="inline-block mr-1" />
         <span>{{ block.details.name }}</span>
       </div>
       <div class="flex-grow"></div>
       <v-remixicon
-        :path="icons.riDeleteBin7Line"
+        name="riDeleteBin7Line"
         class="cursor-pointer"
         @click="editor.removeNodeId(`node-${block.id}`)"
       />
@@ -33,10 +29,7 @@
   </div>
 </template>
 <script setup>
-import { VRemixIcon as VRemixicon } from 'v-remixicon';
 import emitter from 'tiny-emitter/instance';
-import UiCheckbox from '@/components/ui/UiCheckbox.vue';
-import { icons } from '@/lib/v-remixicon';
 import { debounce } from '@/utils/helper';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';

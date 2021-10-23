@@ -88,9 +88,11 @@ export default {
     }
 
     onMounted(() => {
-      const element = document.querySelector('#drawflow', getCurrentInstance());
+      /* eslint-disable-next-line */
+      const context = getCurrentInstance().appContext.app._context;
+      const element = document.querySelector('#drawflow');
 
-      editor.value = drawflow(element);
+      editor.value = drawflow(element, context);
       editor.value.start();
 
       emit('load', editor.value);
