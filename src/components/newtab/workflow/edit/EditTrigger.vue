@@ -43,7 +43,7 @@
     </div>
     <div v-else-if="data.type === 'date'" class="mt-2">
       <ui-input
-        :model-value="data.date || minDate"
+        :model-value="data.date"
         :max="maxDate"
         :min="minDate"
         class="w-full"
@@ -52,7 +52,7 @@
         @change="updateDate({ date: $event })"
       />
       <ui-input
-        :model-value="data.time || '00:00'"
+        :model-value="data.time"
         type="time"
         class="w-full mt-2"
         placeholder="Time"
@@ -110,10 +110,10 @@ function updateIntervalInput(value, { key, min, max }) {
 function updateDate(value) {
   if (!value) return;
 
-  let date = value;
+  let date = value?.date ?? minDate;
 
-  if (dayjs(minDate).isAfter(value)) date = minDate;
-  else if (dayjs(maxDate).isBefore(value)) date = maxDate;
+  if (dayjs(minDate).isAfter(date)) date = minDate;
+  else if (dayjs(maxDate).isBefore(date)) date = maxDate;
 
   updateData({ date });
 }

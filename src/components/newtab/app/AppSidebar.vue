@@ -23,10 +23,11 @@
         v-for="tab in tabs"
         v-slot="{ href, navigate, isActive }"
         :key="tab.name"
-        custom
         :to="tab.path"
+        custom
       >
         <a
+          v-tooltip:right.group="tab.name"
           :class="{ 'is-active': isActive }"
           :href="href"
           class="
@@ -52,6 +53,9 @@
 </template>
 <script setup>
 import { ref } from 'vue';
+import { useGroupTooltip } from '@/composable/groupTooltip';
+
+useGroupTooltip();
 
 const tabs = [
   {

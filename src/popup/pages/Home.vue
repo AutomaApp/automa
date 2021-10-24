@@ -26,7 +26,11 @@
     <ui-card v-if="Workflow.all().length === 0" class="text-center">
       <img src="@/assets/svg/alien.svg" />
       <p class="font-semibold">It looks like you don't have any workflows</p>
-      <ui-button variant="accent" class="mt-6" @click="openDashboard">
+      <ui-button
+        variant="accent"
+        class="mt-6"
+        @click="openDashboard('/workflows')"
+      >
         New workflow
       </ui-button>
     </ui-card>

@@ -60,7 +60,17 @@
           v-if="activeTab === 'logs'"
           :logs="logs"
           class="w-full"
-        />
+        >
+          <template #item-append="{ log: itemLog }">
+            <td class="text-right">
+              <v-remixicon
+                name="riDeleteBin7Line"
+                class="inline-block text-red-500 cursor-pointer"
+                @click="deleteLog(itemLog.id)"
+              />
+            </td>
+          </template>
+        </shared-logs-table>
         <div v-else-if="activeTab === 'running'" class="grid grid-cols-2 gap-4">
           <shared-workflow-state
             v-for="item in workflowState"
@@ -148,6 +158,11 @@ const updateBlockData = debounce((data) => {
 
   if (inputEl) inputEl.dispatchEvent(new Event('change'));
 }, 250);
+function deleteLog(logId) {
+  Log.delete(logId).then(() => {
+    store.dispatch('saveToStorage', 'logs');
+  });
+}
 function deleteBlock(id) {
   if (state.isEditBlock && state.blockData.blockId === id) {
     state.isEditBlock = false;

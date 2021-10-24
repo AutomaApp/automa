@@ -3,8 +3,11 @@
     <tbody class="divide-y">
       <tr v-for="log in logs" :key="log.id" class="hoverable">
         <slot name="item-prepend" :log="log" />
-        <td class="p-2 w-6/12 text-overflow">
-          <router-link :to="`/logs/${log.id}`" class="block w-full h-full">
+        <td class="text-overflow" style="min-width: 140px; max-width: 330px">
+          <router-link
+            :to="`/logs/${log.id}`"
+            class="inline-block text-overflow w-full align-middle"
+          >
             {{ log.name }}
           </router-link>
         </td>
@@ -22,7 +25,7 @@
           <v-remixicon name="riTimerLine"></v-remixicon>
           <span>{{ countDuration(log.startedAt, log.endedAt) }}</span>
         </td>
-        <td class="p-2 text-right">
+        <td class="text-right">
           <span
             :class="statusColors[log.status]"
             class="inline-block py-1 w-16 text-center text-sm rounded-lg"

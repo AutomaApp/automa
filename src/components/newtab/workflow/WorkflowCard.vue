@@ -14,7 +14,7 @@
             <v-remixicon name="riMoreLine" />
           </button>
         </template>
-        <ui-list class="w-44 space-y-1">
+        <ui-list class="w-40 space-y-1">
           <ui-list-item
             v-close-popover
             class="cursor-pointer"

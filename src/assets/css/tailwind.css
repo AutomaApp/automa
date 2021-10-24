@@ -9,7 +9,7 @@ body {
 }
 table th,
 table td {
-  @apply p-2;
+  @apply py-2 px-4;
 }
 input:focus,
 button:focus,
@@ -44,7 +44,9 @@ select:focus,
 .scroll::-webkit-scrollbar-track {
   background: transparent;
 }
-
+.tippy-box[data-theme~='tooltip-theme'] {
+  @apply px-2 py-1 bg-gray-900 text-sm text-gray-200 rounded-md;
+}
 
 @layer utilities {
   .hoverable {

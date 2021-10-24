@@ -15,7 +15,7 @@ const store = createStore({
   },
   getters: {
     getWorkflowState: (state) => (id) =>
-      state.workflowState.filter(({ workflowId }) => workflowId === id),
+      (state.workflowState || []).filter(({ workflowId }) => workflowId === id),
   },
   actions: {
     async retrieve({ dispatch, getters }, keys = 'workflows') {
@@ -44,7 +44,10 @@ const store = createStore({
           'workflowState'
         );
 
-        commit('updateState', { key: 'workflowState', value: workflowState });
+        commit('updateState', {
+          key: 'workflowState',
+          value: workflowState || [],
+        });
       } catch (error) {
         console.error(error);
       }
