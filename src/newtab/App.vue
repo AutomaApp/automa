@@ -14,6 +14,7 @@ import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 const store = useStore();
 const retrieved = ref(false);
 
+store.dispatch('retrieveWorkflowState');
 store
   .dispatch('retrieve', ['workflows', 'logs'])
   .then((res) => {
@@ -29,6 +30,14 @@ function handleStorageChanged(change) {
     store.dispatch('entities/create', {
       entity: 'logs',
       data: change.logs.newValue,
+    });
+  }
+
+  if (change.workflowState) {
+    console.log(change.workflowState.newValue);
+    store.commit('updateState', {
+      key: 'workflowState',
+      value: change.workflowState.newValue,
     });
   }
 }

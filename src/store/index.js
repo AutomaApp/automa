@@ -5,6 +5,18 @@ import * as models from '@/models';
 
 const store = createStore({
   plugins: [vuexORM(models)],
+  state: () => ({
+    workflowState: [],
+  }),
+  mutations: {
+    updateState(state, { key, value }) {
+      state[key] = value;
+    },
+  },
+  getters: {
+    getWorkflowState: (state) => (id) =>
+      state.workflowState.filter(({ workflowId }) => workflowId === id),
+  },
   actions: {
     async retrieve({ dispatch, getters }, keys = 'workflows') {
       try {
@@ -24,6 +36,17 @@ const store = createStore({
       } catch (error) {
         console.error(error);
         throw error;
+      }
+    },
+    async retrieveWorkflowState({ commit }) {
+      try {
+        const { workflowState } = await browser.storage.local.get(
+          'workflowState'
+        );
+
+        commit('updateState', { key: 'workflowState', value: workflowState });
+      } catch (error) {
+        console.error(error);
       }
     },
     saveToStorage({ getters }, key) {

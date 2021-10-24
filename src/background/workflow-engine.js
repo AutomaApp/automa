@@ -32,6 +32,8 @@ function tabRemovedHandler(tabId) {
   if (tasks[this.currentBlock.name].category === 'interaction') {
     this.destroy('error');
   }
+
+  workflowState.update(this.id, this.state);
 }
 function tabUpdatedHandler(tabId, changeInfo) {
   const listener = this.tabUpdatedListeners[tabId];
@@ -203,13 +205,22 @@ class WorkflowEngine {
   }
 
   get state() {
-    const keys = ['tabId', 'isPaused', 'isDestroyed', 'currentBlock'];
-
-    return keys.reduce((acc, key) => {
+    const keys = [
+      'tabId',
+      'isPaused',
+      'isDestroyed',
+      'currentBlock',
+      'startedTimestamp',
+    ];
+    const state = keys.reduce((acc, key) => {
       acc[key] = this[key];
 
       return acc;
     }, {});
+
+    state.name = this.workflow.name;
+
+    return state;
   }
 
   _blockHandler(block, prevBlockData) {

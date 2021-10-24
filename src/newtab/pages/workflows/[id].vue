@@ -22,12 +22,30 @@
         @delete="deleteWorkflow"
       />
     </div>
-    <div class="flex-1 relative">
+    <div class="flex-1 relative overflow-auto">
       <div class="absolute px-3 rounded-lg bg-white z-10 left-0 m-4 top-0">
-        <ui-tabs v-model="activeTab" class="border-none space-x-1">
+        <ui-tabs v-model="activeTab" class="border-none h-full space-x-1">
           <ui-tab value="editor">Editor</ui-tab>
           <ui-tab value="logs">Logs</ui-tab>
-          <ui-tab value="running">Running</ui-tab>
+          <ui-tab value="running" class="flex items-center">
+            Running
+            <span
+              v-if="workflowState.length > 0"
+              class="
+                ml-2
+                p-1
+                text-center
+                inline-block
+                text-xs
+                rounded-full
+                bg-black
+                text-white
+              "
+              style="min-width: 25px"
+            >
+              {{ workflowState.length }}
+            </span>
+          </ui-tab>
         </ui-tabs>
       </div>
       <workflow-builder
@@ -37,8 +55,12 @@
         @load="editor = $event"
         @deleteBlock="deleteBlock"
       />
-      <div v-else-if="activeTab === 'logs'" class="container mt-24 px-4">
-        <logs-table :logs="logs" class="w-full" />
+      <div v-else class="container pb-4 mt-24 px-4">
+        <logs-table v-if="activeTab === 'logs'" :logs="logs" class="w-full" />
+        <workflow-running
+          v-else-if="activeTab === 'running'"
+          :data="workflowState"
+        />
       </div>
     </div>
   </div>
@@ -65,6 +87,7 @@ import {
   onMounted,
   onUnmounted,
 } from 'vue';
+import { useStore } from 'vuex';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import browser from 'webextension-polyfill';
 import emitter from 'tiny-emitter/instance';
@@ -73,6 +96,7 @@ import { debounce } from '@/utils/helper';
 import { useDialog } from '@/composable/dialog';
 import Log from '@/models/log';
 import Workflow from '@/models/workflow';
+import WorkflowRunning from '@/components/newtab/workflow/WorkflowRunning.vue';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';
 import WorkflowSettings from '@/components/newtab/workflow/WorkflowSettings.vue';
 import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
@@ -80,6 +104,7 @@ import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCar
 import WorkflowDataColumns from '@/components/newtab/workflow/WorkflowDataColumns.vue';
 import LogsTable from '@/components/newtab/LogsTable.vue';
 
+const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const dialog = useDialog();
@@ -95,6 +120,10 @@ const state = reactive({
   isDataChanged: false,
   showDataColumnsModal: false,
 });
+
+const workflowState = computed(() =>
+  store.getters.getWorkflowState(workflowId)
+);
 const workflow = computed(() => Workflow.find(workflowId) || {});
 const logs = computed(() =>
   Log.query().where('workflowId', workflowId).orderBy('startedAt', 'desc').get()

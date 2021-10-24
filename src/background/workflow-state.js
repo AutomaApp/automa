@@ -4,8 +4,8 @@ import browser from 'webextension-polyfill';
 async function updater(callback, id) {
   try {
     const state = await this.get();
-    const index = id ? state.find((item) => item.id === id) : -1;
-    const items = callback(state, index || -1);
+    const index = id ? state.findIndex((item) => item.id === id) : -1;
+    const items = callback(state, index);
 
     await browser.storage.local.set({ workflowState: items });
 
@@ -36,7 +36,7 @@ class WorkflowState {
 
   static add(id, data) {
     return updater.call(this, (items) => {
-      items.push({ id, ...data });
+      items.unshift({ id, ...data });
 
       return items;
     });
@@ -60,6 +60,7 @@ class WorkflowState {
     return updater.call(
       this,
       (items, index) => {
+        console.log('state index', index, id);
         if (index !== -1) items.splice(index, 1);
 
         return items;
