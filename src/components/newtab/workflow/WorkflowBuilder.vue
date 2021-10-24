@@ -99,7 +99,6 @@ export default {
       emit('load', editor.value);
 
       if (props.data) {
-        /* to-do delete replace method */
         const data =
           typeof props.data === 'string' ? JSON.parse(props.data) : props.data;
 

@@ -77,7 +77,6 @@
   </transition-expand>
 </template>
 <script setup>
-/* to-do add visit website trigger */
 import dayjs from 'dayjs';
 
 const props = defineProps({

@@ -209,7 +209,6 @@ async function handleWorkflowTrigger({ data }) {
     console.error(error);
   }
 }
-/* to-do clear alarms and trigger storage when delete workflow */
 function saveWorkflow() {
   const data = editor.value.export();
 

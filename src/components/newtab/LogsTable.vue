@@ -59,9 +59,6 @@ function formatDate(date, format) {
 }
 </script>
 <style scoped>
-.log-time {
-  @apply text-gray-600 dark:text-gray-200;
-}
 .log-time svg {
   @apply mr-2;
 }
