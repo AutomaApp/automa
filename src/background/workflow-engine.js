@@ -219,6 +219,7 @@ class WorkflowEngine {
     }, {});
 
     state.name = this.workflow.name;
+    state.icon = this.workflow.icon;
 
     return state;
   }

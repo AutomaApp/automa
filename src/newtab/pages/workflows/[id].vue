@@ -56,11 +56,19 @@
         @deleteBlock="deleteBlock"
       />
       <div v-else class="container pb-4 mt-24 px-4">
-        <logs-table v-if="activeTab === 'logs'" :logs="logs" class="w-full" />
-        <workflow-running
-          v-else-if="activeTab === 'running'"
-          :data="workflowState"
+        <shared-logs-table
+          v-if="activeTab === 'logs'"
+          :logs="logs"
+          class="w-full"
         />
+        <div v-else-if="activeTab === 'running'" class="grid grid-cols-2 gap-4">
+          <shared-workflow-state
+            v-for="item in workflowState"
+            :id="item.id"
+            :key="item.id"
+            :state="item.state"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -96,13 +104,13 @@ import { debounce } from '@/utils/helper';
 import { useDialog } from '@/composable/dialog';
 import Log from '@/models/log';
 import Workflow from '@/models/workflow';
-import WorkflowRunning from '@/components/newtab/workflow/WorkflowRunning.vue';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';
 import WorkflowSettings from '@/components/newtab/workflow/WorkflowSettings.vue';
 import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
 import WorkflowDataColumns from '@/components/newtab/workflow/WorkflowDataColumns.vue';
-import LogsTable from '@/components/newtab/LogsTable.vue';
+import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
+import SharedWorkflowState from '@/components/newtab/shared/SharedWorkflowState.vue';
 
 const store = useStore();
 const route = useRoute();

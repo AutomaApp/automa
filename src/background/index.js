@@ -74,11 +74,11 @@ browser.runtime.onInstalled.addListener((details) => {
 const message = new MessageListener('background');
 
 message.on('workflow:execute', (workflow) => executeWorkflow(workflow));
-message.on('workflow:stop', (item) => {
-  const workflow = runningWorkflows[item.id];
-  console.log(workflow, item, 'stop workflow');
+message.on('workflow:stop', (id) => {
+  const workflow = runningWorkflows[id];
+  console.log(runningWorkflows, id);
   if (!workflow) {
-    workflowState.delete(item.id);
+    workflowState.delete(id);
     return;
   }
 

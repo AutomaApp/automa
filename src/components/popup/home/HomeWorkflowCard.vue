@@ -2,12 +2,16 @@
   <ui-card
     class="w-full flex items-center space-x-2 hover:ring-2 hover:ring-gray-900"
   >
-    <router-link to="/workflow/anu/edit" class="flex-1">
+    <div
+      to="/workflow/anu/edit"
+      class="flex-1 cursor-pointer"
+      @click="$emit('details', workflow)"
+    >
       <p class="leading-tight">{{ workflow.name }}</p>
       <p class="leading-none text-gray-500">
         {{ dayjs(workflow.createdAt).fromNow() }}
       </p>
-    </router-link>
+    </div>
     <button title="Execute" @click="$emit('execute', workflow)">
       <v-remixicon name="riPlayLine" />
     </button>
@@ -44,7 +48,6 @@ defineProps({
 defineEmits(['execute', 'rename', 'details', 'delete']);
 
 const menu = [
-  { name: 'details', icon: 'riExternalLinkLine' },
   { name: 'rename', icon: 'riPencilLine' },
   { name: 'delete', icon: 'riDeleteBin7Line' },
 ];

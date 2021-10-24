@@ -60,7 +60,7 @@ class WorkflowState {
     return updater.call(
       this,
       (items, index) => {
-        console.log('state index', index, id);
+        console.log('state index', index, id, items);
         if (index !== -1) items.splice(index, 1);
 
         return items;

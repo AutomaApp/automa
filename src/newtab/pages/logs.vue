@@ -7,7 +7,7 @@
       @updateSorts="sortsBuilder[$event.key] = $event.value"
       @updateFilters="filtersBuilder[$event.key] = $event.value"
     />
-    <logs-table :logs="logs" class="w-full">
+    <shared-logs-table :logs="logs" class="w-full">
       <template #item-prepend="{ log }">
         <td class="w-8">
           <ui-checkbox
@@ -38,7 +38,7 @@
           </div>
         </td>
       </template>
-    </logs-table>
+    </shared-logs-table>
     <ui-card
       v-if="selectedLogs.length !== 0"
       class="fixed right-0 bottom-0 m-5 shadow-xl space-x-2"
@@ -65,9 +65,9 @@ import { shallowReactive, ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useDialog } from '@/composable/dialog';
 import Log from '@/models/log';
-import LogsTable from '@/components/newtab/LogsTable.vue';
 import LogsFilters from '@/components/newtab/logs/LogsFilters.vue';
 import LogsDataViewer from '@/components/newtab/logs/LogsDataViewer.vue';
+import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
 
 const store = useStore();
 const dialog = useDialog();
