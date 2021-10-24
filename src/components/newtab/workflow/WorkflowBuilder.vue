@@ -5,6 +5,7 @@
     @drop="dropHandler"
     @dragover.prevent
   >
+    <slot></slot>
     <div class="absolute z-10 p-4 bottom-0 left-0">
       <button class="p-2 rounded-lg bg-white mr-2" @click="editor.zoom_reset()">
         <v-remixicon name="riFullscreenLine" />
@@ -92,7 +93,7 @@ export default {
       const context = getCurrentInstance().appContext.app._context;
       const element = document.querySelector('#drawflow');
 
-      editor.value = drawflow(element, context);
+      editor.value = drawflow(element, { context, options: { reroute: true } });
       editor.value.start();
 
       emit('load', editor.value);

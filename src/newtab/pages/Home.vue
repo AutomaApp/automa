@@ -21,37 +21,7 @@
               View all
             </router-link>
           </div>
-          <table class="w-full table-fixed">
-            <tbody class="divide-y">
-              <tr v-for="log in logs" :key="log.id" class="hoverable">
-                <td class="p-2 w-6/12 text-overflow">
-                  <router-link
-                    :to="`/logs/${log.id}`"
-                    class="block w-full h-full"
-                  >
-                    {{ log.name }}
-                  </router-link>
-                </td>
-                <td class="p-2 text-gray-600 dark:text-gray-200">
-                  {{ dayjs(log.startedAt).fromNow() }}
-                </td>
-                <td class="p-2 text-right">
-                  <span
-                    :class="statusColors[log.status]"
-                    class="
-                      inline-block
-                      py-1
-                      w-16
-                      text-center text-sm
-                      rounded-lg
-                    "
-                  >
-                    {{ log.status }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <logs-table :logs="logs" class="w-full" />
         </div>
       </div>
       <ui-card class="flex-1">
@@ -78,10 +48,9 @@
 </template>
 <script setup>
 import { computed } from 'vue';
-import { statusColors } from '@/utils/shared';
 import Workflow from '@/models/workflow';
 import Log from '@/models/log';
-import dayjs from '@/lib/dayjs';
+import LogsTable from '@/components/newtab/LogsTable.vue';
 import SharedTaskList from '@/components/shared/SharedTaskList.vue';
 import WorkflowCard from '@/components/newtab/workflow/WorkflowCard.vue';
 

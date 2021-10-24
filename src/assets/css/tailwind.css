@@ -7,8 +7,8 @@ body {
   font-size: 16px;
   @apply bg-gray-50 dark:bg-gray-900;
 }
-table td,
-table tr {
+table th,
+table td {
   @apply p-2;
 }
 input:focus,

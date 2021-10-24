@@ -37,6 +37,7 @@ export default {
       type: [String, Number],
       default: '',
     },
+    small: Boolean,
     fill: Boolean,
   },
   emits: ['update:modelValue'],
@@ -48,10 +49,11 @@ export default {
       emit('update:modelValue', id);
     }
     function hoverHandler({ target }) {
+      const { height, width } = target.getBoundingClientRect();
+
       showHoverIndicator.value = true;
-      hoverIndicator.value.style.width = `${
-        target.getBoundingClientRect().width
-      }px`;
+      hoverIndicator.value.style.width = `${width}px`;
+      hoverIndicator.value.style.height = `${height - 11}px`;
       hoverIndicator.value.style.transform = `translateX(${target.offsetLeft}px)`;
     }
 
@@ -70,7 +72,7 @@ export default {
 </script>
 <style>
 .ui-tabs__indicator {
-  min-height: 38px;
+  min-height: 24px;
   min-width: 50px;
   transition-duration: 200ms;
   transition-property: transform, width;

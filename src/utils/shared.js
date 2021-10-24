@@ -374,9 +374,3 @@ export const dataExportTypes = [
   { name: 'CSV', id: 'csv' },
   { name: 'Plain text', id: 'plain-text' },
 ];
-
-export const statusColors = {
-  error: 'bg-red-200',
-  success: 'bg-green-200',
-  stopped: 'bg-yellow-200',
-};

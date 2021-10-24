@@ -20,7 +20,7 @@
         </p>
       </div>
       <div class="flex-grow"></div>
-      <ui-input prepend-icon="riSearch2Line" placeholder="Search..." />
+      <ui-button class="text-red-500" @click="deleteLog"> Delete </ui-button>
     </div>
     <div class="flex items-start">
       <ui-list class="w-7/12 mr-6">
@@ -47,8 +47,8 @@
   </div>
 </template>
 <script setup>
-import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import Log from '@/models/log';
 import dayjs from '@/lib/dayjs';
 import { countDuration } from '@/utils/helper';
@@ -74,12 +74,19 @@ const logsType = {
 };
 
 const route = useRoute();
+const router = useRouter();
 
 const activeLog = computed(() => Log.find(route.params.id));
 
-setTimeout(() => {
-  console.log(activeLog.value);
-}, 2000);
+function deleteLog() {
+  Log.delete(route.params.id).then(() => {
+    router.replace('/logs');
+  });
+}
+
+onMounted(() => {
+  if (!activeLog.value) router.replace('/logs');
+});
 </script>
 <style>
 .logs-details .my-editor {

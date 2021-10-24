@@ -12,13 +12,18 @@ function getWorkflow(workflowId) {
     });
   });
 }
+
+const runningWorkflows = {};
+
 async function executeWorkflow(workflow, tabId) {
   try {
     const engine = new WorkflowEngine(workflow, tabId);
 
+    runningWorkflows[engine.id] = engine;
+
     engine.init();
-    engine.on('destroyed', () => {
-      console.log('destroyed...');
+    engine.on('destroyed', (id) => {
+      delete runningWorkflows[id];
     });
 
     return true;
@@ -38,14 +43,12 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
       return tab.url.match(isRegex ? new RegExp(url, 'g') : url);
     });
-    const runningWorkflow = await workflowState.get(
-      (item) => item.state.tabId === tabId
-    );
-    console.log(runningWorkflow.length, runningWorkflow);
-    if (trigger && runningWorkflow.length === 0) {
+    const state = await workflowState.get((item) => item.state.tabId === tabId);
+    console.log(state.length, state);
+    if (trigger && state.length === 0) {
       const workflow = await getWorkflow(trigger.id);
 
-      executeWorkflow(workflow, tabId);
+      if (workflow) executeWorkflow(workflow, tabId);
     }
   }
 });

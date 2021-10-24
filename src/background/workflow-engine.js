@@ -186,7 +186,7 @@ class WorkflowEngine {
         await browser.storage.local.set({ logs });
       }
 
-      this.dispatchEvent('destroyed', this.workflow.id);
+      this.dispatchEvent('destroyed', this.id);
     } catch (error) {
       console.error(error);
     }

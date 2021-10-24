@@ -22,12 +22,25 @@
         @delete="deleteWorkflow"
       />
     </div>
-    <workflow-builder
-      class="flex-1"
-      :data="workflow.drawflow"
-      @load="editor = $event"
-      @deleteBlock="deleteBlock"
-    />
+    <div class="flex-1 relative">
+      <div class="absolute px-3 rounded-lg bg-white z-10 left-0 m-4 top-0">
+        <ui-tabs v-model="activeTab" class="border-none space-x-1">
+          <ui-tab value="editor">Editor</ui-tab>
+          <ui-tab value="logs">Logs</ui-tab>
+          <ui-tab value="running">Running</ui-tab>
+        </ui-tabs>
+      </div>
+      <workflow-builder
+        v-if="activeTab === 'editor'"
+        class="h-full w-full"
+        :data="workflow.drawflow"
+        @load="editor = $event"
+        @deleteBlock="deleteBlock"
+      />
+      <div v-else-if="activeTab === 'logs'" class="container mt-24 px-4">
+        <logs-table :logs="logs" class="w-full" />
+      </div>
+    </div>
   </div>
   <ui-modal v-model="state.showDataColumnsModal" content-class="max-w-xl">
     <template #header>Data columns</template>
@@ -58,12 +71,14 @@ import emitter from 'tiny-emitter/instance';
 import { sendMessage } from '@/utils/message';
 import { debounce } from '@/utils/helper';
 import { useDialog } from '@/composable/dialog';
+import Log from '@/models/log';
 import Workflow from '@/models/workflow';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';
 import WorkflowSettings from '@/components/newtab/workflow/WorkflowSettings.vue';
 import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
 import WorkflowDataColumns from '@/components/newtab/workflow/WorkflowDataColumns.vue';
+import LogsTable from '@/components/newtab/LogsTable.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -72,6 +87,7 @@ const dialog = useDialog();
 const workflowId = route.params.id;
 
 const editor = shallowRef(null);
+const activeTab = shallowRef('editor');
 const state = reactive({
   blockData: {},
   isEditBlock: false,
@@ -80,6 +96,9 @@ const state = reactive({
   showDataColumnsModal: false,
 });
 const workflow = computed(() => Workflow.find(workflowId) || {});
+const logs = computed(() =>
+  Log.query().where('workflowId', workflowId).orderBy('startedAt', 'desc').get()
+);
 
 const updateBlockData = debounce((data) => {
   state.blockData.data = data;
@@ -109,7 +128,7 @@ function updateWorkflow(data) {
 async function handleWorkflowTrigger({ data }) {
   try {
     const workflowAlarm = await browser.alarms.get(workflowId);
-    const { visitWebTriggers = [] } = await browser.storage.local.get(
+    const { visitWebTriggers } = await browser.storage.local.get(
       'visitWebTriggers'
     );
     let visitWebTriggerIndex = visitWebTriggers.findIndex(
@@ -150,7 +169,7 @@ async function handleWorkflowTrigger({ data }) {
       };
 
       if (visitWebTriggerIndex === -1) {
-        visitWebTriggers.push(payload);
+        visitWebTriggers.unshift(payload);
       } else {
         visitWebTriggers[visitWebTriggerIndex] = payload;
       }

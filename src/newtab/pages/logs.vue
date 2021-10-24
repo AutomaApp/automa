@@ -7,70 +7,38 @@
       @updateSorts="sortsBuilder[$event.key] = $event.value"
       @updateFilters="filtersBuilder[$event.key] = $event.value"
     />
-    <table class="w-full logs-table">
-      <tbody>
-        <tr v-for="log in logs" :key="log.id" class="hoverable border-b">
-          <td class="w-8">
-            <ui-checkbox
-              :model-value="selectedLogs.includes(log.id)"
-              class="align-text-bottom"
-              @change="toggleSelectedLog($event, log.id)"
-            />
-          </td>
-          <td style="min-width: 150px">
-            <router-link
-              :to="`/logs/${log.id}`"
-              class="block w-full h-full text-overflow"
-            >
-              {{ log.name }}
-            </router-link>
-          </td>
-          <td>
-            <span
-              :class="statusColors[log.status]"
-              class="p-1 text-sm rounded-lg w-16 inline-block text-center"
-            >
-              {{ log.status }}
-            </span>
-          </td>
-          <td class="log-time">
+    <logs-table :logs="logs" class="w-full">
+      <template #item-prepend="{ log }">
+        <td class="w-8">
+          <ui-checkbox
+            :model-value="selectedLogs.includes(log.id)"
+            class="align-text-bottom"
+            @change="toggleSelectedLog($event, log.id)"
+          />
+        </td>
+      </template>
+      <template #item-append="{ log }">
+        <td class="ml-4">
+          <div class="flex items-center justify-end space-x-4">
             <v-remixicon
-              name="riCalendarLine"
-              title="Started date"
-            ></v-remixicon>
-            <span :title="formatDate(log.startedAt, 'DD MMM YYYY, hh:mm A')">
-              {{ formatDate(log.startedAt, 'relative') }}
-            </span>
-          </td>
-          <td class="log-time" title="Duration">
-            <v-remixicon name="riTimerLine"></v-remixicon>
-            <span>{{ countDuration(log.startedAt, log.endedAt) }}</span>
-          </td>
-          <td>
-            <div
-              v-if="log.data"
-              class="flex items-center justify-end space-x-4"
-            >
-              <v-remixicon
-                v-if="Object.keys(log.data).length !== 0"
-                name="riFileTextLine"
-                class="cursor-pointer"
-                @click="
-                  exportDataModal.show = true;
-                  exportDataModal.log = log;
-                "
-              />
-              <v-remixicon
-                name="riDeleteBin7Line"
-                class="text-red-500 cursor-pointer"
-                title="Delete log"
-                @click="deleteLog(log.id)"
-              />
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+              v-if="Object.keys(log.data).length !== 0"
+              name="riFileTextLine"
+              class="cursor-pointer"
+              @click="
+                exportDataModal.show = true;
+                exportDataModal.log = log;
+              "
+            />
+            <v-remixicon
+              name="riDeleteBin7Line"
+              class="text-red-500 cursor-pointer"
+              title="Delete log"
+              @click="deleteLog(log.id)"
+            />
+          </div>
+        </td>
+      </template>
+    </logs-table>
     <ui-card
       v-if="selectedLogs.length !== 0"
       class="fixed right-0 bottom-0 m-5 shadow-xl space-x-2"
@@ -96,10 +64,8 @@
 import { shallowReactive, ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useDialog } from '@/composable/dialog';
-import { countDuration } from '@/utils/helper';
-import { statusColors } from '@/utils/shared';
 import Log from '@/models/log';
-import dayjs from '@/lib/dayjs';
+import LogsTable from '@/components/newtab/LogsTable.vue';
 import LogsFilters from '@/components/newtab/logs/LogsFilters.vue';
 import LogsDataViewer from '@/components/newtab/logs/LogsDataViewer.vue';
 
@@ -146,11 +112,6 @@ const logs = computed(() =>
     .get()
 );
 
-function formatDate(date, format) {
-  if (format === 'relative') return dayjs(date).fromNow();
-
-  return dayjs(date).format(format);
-}
 function deleteLog(id) {
   Log.delete(id).then(() => {
     store.dispatch('saveToStorage', 'logs');
@@ -195,18 +156,5 @@ function selectAllLogs() {
 <style>
 .logs-list-data {
   max-height: calc(100vh - 12rem);
-}
-</style>
-<style scoped>
-.log-time {
-  @apply text-gray-600 dark:text-gray-200;
-}
-.log-time svg {
-  @apply mr-2;
-}
-.log-time svg,
-.log-time span {
-  display: inline-block;
-  vertical-align: middle;
 }
 </style>
