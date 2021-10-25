@@ -2,6 +2,7 @@ import { createStore } from 'vuex';
 import browser from 'webextension-polyfill';
 import vuexORM from '@/lib/vuex-orm';
 import * as models from '@/models';
+import { firstWorkflows } from '@/utils/shared';
 
 const store = createStore({
   plugins: [vuexORM(models)],
@@ -31,6 +32,15 @@ const store = createStore({
             data: data[entity],
           });
         });
+        const isFirstTime =
+          (await browser.storage.local.get('isFirstTime')?.isFirstTime) ?? true;
+
+        if (isFirstTime) {
+          await dispatch('entities/insert', {
+            entity: 'workflows',
+            data: firstWorkflows,
+          });
+        }
 
         return await Promise.allSettled(promises);
       } catch (error) {

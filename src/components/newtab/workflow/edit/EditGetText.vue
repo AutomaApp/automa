@@ -1,6 +1,5 @@
 <template>
   <edit-interaction-base v-bind="{ data }" @change="updateData">
-    {{ data }}
     <div class="flex rounded-lg bg-input px-4 items-center transition mt-2">
       <span>/</span>
       <input

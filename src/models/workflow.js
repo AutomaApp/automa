@@ -22,7 +22,7 @@ class Workflow extends Model {
       createdAt: this.number(),
       settings: this.attr({
         timeout: 120000,
-        onError: 'keep-running',
+        onError: 'stop-workflow',
       }),
       logs: this.hasMany(Log, 'workflowId'),
     };

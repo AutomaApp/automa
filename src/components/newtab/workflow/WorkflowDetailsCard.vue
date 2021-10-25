@@ -1,5 +1,5 @@
 <template>
-  <div class="px-4 mb-2">
+  <div class="px-4 flex items-center mb-2">
     <ui-popover>
       <template #trigger>
         <span
@@ -30,7 +30,17 @@
         </span>
       </div>
     </ui-popover>
-    <p class="font-semibold inline-block text-lg flex-1 mr-4 align-middle">
+    <p
+      class="
+        font-semibold
+        text-overflow
+        inline-block
+        text-lg
+        flex-1
+        mr-4
+        align-middle
+      "
+    >
       {{ workflow.name }}
     </p>
   </div>

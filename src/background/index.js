@@ -62,12 +62,19 @@ browser.alarms.onAlarm.addListener(({ name }) => {
 
 browser.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
-    browser.storage.local.set({
-      logs: [],
-      workflows: [],
-      workflowState: [],
-      visitWebTriggers: [],
-    });
+    browser.storage.local
+      .set({
+        logs: [],
+        workflows: [],
+        workflowState: [],
+        visitWebTriggers: [],
+      })
+      .then(() => {
+        browser.tabs.create({
+          active: true,
+          url: browser.runtime.getURL('newtab.html#/workflows'),
+        });
+      });
   }
 });
 

@@ -130,12 +130,7 @@ const options = {
           },
         },
         {
-          from: 'src/assets/img/icon-128.png',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
-          from: 'src/assets/img/icon-34.png',
+          from: 'src/assets/images/icon-128.png',
           to: path.join(__dirname, 'build'),
           force: true,
         },

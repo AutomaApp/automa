@@ -24,11 +24,7 @@
       class="w-full bg-input rounded-lg transition mb-2 py-2 px-4 block"
       placeholder="File name"
     />
-    <ui-select
-      v-model="block.data.type"
-      class="px-4 py-2 rounded-lg w-40 bg-input"
-      placeholder="Export as"
-    >
+    <ui-select v-model="block.data.type" class="w-40" placeholder="Export as">
       <option v-for="type in dataExportTypes" :key="type.id" :value="type.id">
         {{ type.name }}
       </option>

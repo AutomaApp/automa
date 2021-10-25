@@ -3,11 +3,10 @@
     class="w-full flex items-center space-x-2 hover:ring-2 hover:ring-gray-900"
   >
     <div
-      to="/workflow/anu/edit"
-      class="flex-1 cursor-pointer"
+      class="flex-1 text-overflow cursor-pointer"
       @click="$emit('details', workflow)"
     >
-      <p class="leading-tight">{{ workflow.name }}</p>
+      <p class="leading-tight text-overflow">{{ workflow.name }}</p>
       <p class="leading-none text-gray-500">
         {{ dayjs(workflow.createdAt).fromNow() }}
       </p>

@@ -48,52 +48,54 @@
           </ui-tab>
         </ui-tabs>
       </div>
-      <workflow-builder
-        v-if="activeTab === 'editor'"
-        class="h-full w-full"
-        :data="workflow.drawflow"
-        @load="editor = $event"
-        @deleteBlock="deleteBlock"
-      />
-      <div v-else class="container pb-4 mt-24 px-4">
-        <template v-if="activeTab === 'logs'">
-          <div v-if="logs.length === 0" class="text-center">
-            <img
-              src="@/assets/svg/files-and-folder.svg"
-              class="mx-auto max-w-sm"
-            />
-            <p class="text-xl font-semibold">No data to show</p>
-          </div>
-          <shared-logs-table :logs="logs" class="w-full">
-            <template #item-append="{ log: itemLog }">
-              <td class="text-right">
-                <v-remixicon
-                  name="riDeleteBin7Line"
-                  class="inline-block text-red-500 cursor-pointer"
-                  @click="deleteLog(itemLog.id)"
-                />
-              </td>
-            </template>
-          </shared-logs-table>
-        </template>
-        <template v-else-if="activeTab === 'running'">
-          <div v-if="workflowState.length === 0" class="text-center">
-            <img
-              src="@/assets/svg/files-and-folder.svg"
-              class="mx-auto max-w-sm"
-            />
-            <p class="text-xl font-semibold">No data to show</p>
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <shared-workflow-state
-              v-for="item in workflowState"
-              :id="item.id"
-              :key="item.id"
-              :state="item.state"
-            />
-          </div>
-        </template>
-      </div>
+      <keep-alive>
+        <workflow-builder
+          v-if="activeTab === 'editor'"
+          class="h-full w-full"
+          :data="workflow.drawflow"
+          @load="editor = $event"
+          @deleteBlock="deleteBlock"
+        />
+        <div v-else class="container pb-4 mt-24 px-4">
+          <template v-if="activeTab === 'logs'">
+            <div v-if="logs.length === 0" class="text-center">
+              <img
+                src="@/assets/svg/files-and-folder.svg"
+                class="mx-auto max-w-sm"
+              />
+              <p class="text-xl font-semibold">No data to show</p>
+            </div>
+            <shared-logs-table :logs="logs" class="w-full">
+              <template #item-append="{ log: itemLog }">
+                <td class="text-right">
+                  <v-remixicon
+                    name="riDeleteBin7Line"
+                    class="inline-block text-red-500 cursor-pointer"
+                    @click="deleteLog(itemLog.id)"
+                  />
+                </td>
+              </template>
+            </shared-logs-table>
+          </template>
+          <template v-else-if="activeTab === 'running'">
+            <div v-if="workflowState.length === 0" class="text-center">
+              <img
+                src="@/assets/svg/files-and-folder.svg"
+                class="mx-auto max-w-sm"
+              />
+              <p class="text-xl font-semibold">No data to show</p>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <shared-workflow-state
+                v-for="item in workflowState"
+                :id="item.id"
+                :key="item.id"
+                :state="item.state"
+              />
+            </div>
+          </template>
+        </div>
+      </keep-alive>
     </div>
   </div>
   <ui-modal v-model="state.showDataColumnsModal" content-class="max-w-xl">
