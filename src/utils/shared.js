@@ -79,6 +79,21 @@ export const tasks = {
     allowedInputs: true,
     data: {},
   },
+  'close-tab': {
+    name: 'Close tab',
+    icon: 'riCloseCircleLine',
+    component: 'BlockBasic',
+    category: 'browser',
+    editComponent: 'EditCloseTab',
+    inputs: 1,
+    outputs: 1,
+    maxConnection: 1,
+    allowedInputs: true,
+    data: {
+      url: '',
+      activeTab: true,
+    },
+  },
   'take-screenshot': {
     name: 'Take screenshot',
     description: 'Take a screenshot of current active tab',

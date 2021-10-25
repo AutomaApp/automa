@@ -2,10 +2,10 @@
   <div class="inline-block input-ui">
     <label class="relative">
       <span
-        v-if="label"
+        v-if="label || $slots.label"
         class="text-sm dark:text-gray-200 text-gray-600 mb-1 ml-1"
       >
-        {{ label }}
+        <slot name="label">{{ label }}</slot>
       </span>
       <div class="flex items-center">
         <slot name="prepend">

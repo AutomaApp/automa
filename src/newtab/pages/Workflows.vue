@@ -63,7 +63,6 @@ const dialog = useDialog();
 const sorts = [
   { name: 'Name', id: 'name' },
   { name: 'Created date', id: 'createdAt' },
-  { name: 'Running date', id: 'lastRunAt' },
 ];
 const state = shallowReactive({
   query: '',

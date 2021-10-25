@@ -6,7 +6,7 @@
   <ui-dialog />
 </template>
 <script setup>
-/* to-do add tooltip */
+/* to-do add empty-state */
 import { ref } from 'vue';
 import { useStore } from 'vuex';
 import browser from 'webextension-polyfill';

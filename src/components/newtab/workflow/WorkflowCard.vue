@@ -25,7 +25,7 @@
           </ui-list-item>
           <ui-list-item
             v-close-popover
-            class="text-red-500 cursor-pointer"
+            class="cursor-pointer"
             @click="$emit('delete', workflow)"
           >
             <v-remixicon name="riDeleteBin7Line" class="mr-2 -ml-1" />

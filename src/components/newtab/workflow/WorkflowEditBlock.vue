@@ -20,6 +20,7 @@ import { computed } from 'vue';
 import EditForms from './edit/EditForms.vue';
 import EditTrigger from './edit/EditTrigger.vue';
 import EditGetText from './edit/EditGetText.vue';
+import EditCloseTab from './edit/EditCloseTab.vue';
 import EditTriggerEvent from './edit/EditTriggerEvent.vue';
 import EditElementExists from './edit/EditElementExists.vue';
 import EditScrollElement from './edit/EditScrollElement.vue';
@@ -32,6 +33,7 @@ export default {
     EditForms,
     EditTrigger,
     EditGetText,
+    EditCloseTab,
     EditTriggerEvent,
     EditElementExists,
     EditScrollElement,
