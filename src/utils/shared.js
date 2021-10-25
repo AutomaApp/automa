@@ -1,4 +1,4 @@
-/* to-do screenshot, cookies, assets, tab loaded, opened tab, and close tab block? */
+/* to-do screenshot, looping, cookies, assets, tab loaded, opened tab, and close tab block? */
 /* prev and next page block? */
 
 export const tasks = {

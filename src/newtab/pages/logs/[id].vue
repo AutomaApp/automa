@@ -24,9 +24,12 @@
     </div>
     <div class="flex items-start">
       <ui-list class="w-7/12 mr-6">
-        <ui-list-item v-for="(item, index) in activeLog.history" :key="index">
+        <ui-list-item
+          v-for="(item, index) in activeLog.history"
+          :key="index"
+          :title="item.message || item.type"
+        >
           <span
-            :title="item.message || item.type"
             :class="logsType[item.type].color"
             class="p-1 rounded-lg align-middle inline-block mr-2"
           >

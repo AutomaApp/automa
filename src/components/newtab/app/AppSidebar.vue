@@ -1,5 +1,6 @@
 <template>
-  <aside class="fixed h-screen left-0 top-0 w-16 py-5 bg-white z-50">
+  <aside class="fixed h-screen left-0 top-0 w-16 py-6 bg-white z-50">
+    <img src="@/assets/svg/logo.svg" class="w-10 mb-4 mx-auto" />
     <div
       class="space-y-2 relative text-center"
       @mouseleave="showHoverIndicator = false"
