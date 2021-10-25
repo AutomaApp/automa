@@ -4,6 +4,9 @@
     <div class="flex items-start">
       <div class="w-8/12 mr-8">
         <div class="grid gap-4 mb-8 grid-cols-3">
+          <p v-if="workflows.length === 0" class="text-center text-gray-600">
+            No data
+          </p>
           <workflow-card
             v-for="workflow in workflows"
             v-bind="{ workflow }"
@@ -22,10 +25,16 @@
               View all
             </router-link>
           </div>
+          <p v-if="logs.length === 0" class="text-center text-gray-600">
+            No data
+          </p>
           <shared-logs-table :logs="logs" class="w-full" />
         </div>
       </div>
       <div class="w-4/12 space-y-4">
+        <p v-if="workflowState.length === 0" class="text-center text-gray-600">
+          No data
+        </p>
         <shared-workflow-state
           v-for="item in workflowState"
           :id="item.id"

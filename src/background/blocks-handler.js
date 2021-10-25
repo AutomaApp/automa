@@ -49,7 +49,6 @@ export async function closeTab(block) {
       );
     }
 
-    console.log(tabIds);
     if (tabIds) await browser.tabs.remove(tabIds);
 
     return {
