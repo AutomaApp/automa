@@ -1,11 +1,11 @@
 {
-  "name": "chrome-extension-boilerplate-react",
-  "version": "4.0.1",
-  "description": "A chrome extension boilerplate built with React 17 and Webpack 5",
+  "name": "automa",
+  "version": "0.1.0",
+  "description": "Automate your browser by dragging and dropping a block",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lxieyang/chrome-extension-boilerplate-react.git"
+    "url": "https://github.com/kholid060/automa.git"
   },
   "scripts": {
     "build": "node utils/build.js",
@@ -23,7 +23,6 @@
     "@medv/finder": "^2.1.0",
     "@vuex-orm/core": "^0.36.4",
     "@webcomponents/custom-elements": "^1.5.0",
-    "css-selector-generator": "^3.4.4",
     "dayjs": "^1.10.7",
     "drawflow": "^0.0.51",
     "nanoid": "3.1.28",
@@ -35,9 +34,7 @@
     "vue": "3.2.19",
     "vue-prism-editor": "^2.0.0-alpha.2",
     "vue-router": "^4.0.11",
-    "vuedraggable": "^4.1.0",
     "vuex": "^4.0.2",
-    "webext-bridge": "5.0.0",
     "webextension-polyfill": "^0.8.0"
   },
   "devDependencies": {

@@ -1008,11 +1008,6 @@
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
   integrity sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==
 
-"@types/webextension-polyfill@^0.8.0":
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/@types/webextension-polyfill/-/webextension-polyfill-0.8.0.tgz#6c40740eec531de412f6ceba27bb2cad4a24907c"
-  integrity sha512-usmQx2snpNkVl2VoOGZCdrPnfHL+CjuSFy84ZdTwQ2b2cvyygF/zGW5YI6Zywk+bfq9zmYpORO9lmdN7DknpRw==
-
 "@vue/compiler-core@3.2.19":
   version "3.2.19"
   resolved "https://registry.yarnpkg.com/@vue/compiler-core/-/compiler-core-3.2.19.tgz#b537dd377ce51fdb64e9b30ebfbff7cd70a64cb9"
@@ -1813,13 +1808,6 @@ caniuse-lite@^1.0.30001259, caniuse-lite@^1.0.30001260:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001261.tgz#96d89813c076ea061209a4e040d8dcf0c66a1d01"
   integrity sha512-vM8D9Uvp7bHIN0fZ2KQ4wnmYFpJo/Etb4Vwsuc+ka0tfGDHvOPrFm6S/7CCNLSOkAUjenT2HnUPESdOIL91FaA==
 
-cartesian@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/cartesian/-/cartesian-1.0.1.tgz#ae3fc8a63e2ba7e2c4989ce696207457bcae65af"
-  integrity sha1-rj/Ipj4rp+LEmJzmliB0V7yuZa8=
-  dependencies:
-    xtend "^4.0.1"
-
 chalk@^2.0.0, chalk@^2.0.1:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
@@ -2188,14 +2176,6 @@ css-select@^4.1.3:
     domhandler "^4.2.0"
     domutils "^2.6.0"
     nth-check "^2.0.0"
-
-css-selector-generator@^3.4.4:
-  version "3.4.4"
-  resolved "https://registry.yarnpkg.com/css-selector-generator/-/css-selector-generator-3.4.4.tgz#daba9fdd0d61de5efeda8cdafb57ae6f8defb44f"
-  integrity sha512-opjk54O5JZaKf8UrxUciqBdyIggH3D/TSZYI/AAJd0KNb6hBhjJtCI034rWDEHn0IIBsZEuAIuVR7N4j9n75lg==
-  dependencies:
-    cartesian "^1.0.1"
-    iselement "^1.1.4"
 
 css-unit-converter@^1.1.1:
   version "1.1.2"
@@ -3976,11 +3956,6 @@ isarray@1.0.0, isarray@~1.0.0:
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
   integrity sha1-u5NdSFgsuhaMBoNJV6VKPgcSTxE=
 
-iselement@^1.1.4:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/iselement/-/iselement-1.1.4.tgz#7e55b52a8ebca50a7e2e80e5b8d2840f32353146"
-  integrity sha1-flW1Ko68pQp+LoDluNKEDzI1MUY=
-
 isexe@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
@@ -4505,11 +4480,6 @@ nanocolors@^0.2.2, nanocolors@^0.2.8:
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/nanocolors/-/nanocolors-0.2.12.tgz#4d05932e70116078673ea4cc6699a1c56cc77777"
   integrity sha512-SFNdALvzW+rVlzqexid6epYdt8H9Zol7xDoQarioEFcFN0JHo4CYNztAxmtfgGTVRCmFlEOqqhBpoFGKqSAMug==
-
-nanoevents@^6.0.0:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/nanoevents/-/nanoevents-6.0.1.tgz#4e49e895953d15a7ba06187d7a5fcd148abde990"
-  integrity sha512-pV++eMfEBTnNQgtzW93LfVezbA1BPaPSgIgyK+ZskLSEEKjHThs4Pp2UqfOjI+EFD3UkVYbwmpxf1WSSX0ALzA==
 
 nanoid@3.1.28, nanoid@^3.1.25:
   version "3.1.28"
@@ -5682,13 +5652,6 @@ send@0.17.1:
     range-parser "~1.2.1"
     statuses "~1.5.0"
 
-serialize-error@^8.1.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/serialize-error/-/serialize-error-8.1.0.tgz#3a069970c712f78634942ddd50fbbc0eaebe2f67"
-  integrity sha512-3NnuWfM6vBYoy5gZFvHiYsVbafvI9vZv/+jlIigFn4oP4zjNPK3LhcY0xSCgeb1a5L8jO71Mit9LlNoi2UfDDQ==
-  dependencies:
-    type-fest "^0.20.2"
-
 serialize-javascript@^6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/serialize-javascript/-/serialize-javascript-6.0.0.tgz#efae5d88f45d7924141da8b5c3a7a7e663fefeb8"
@@ -5879,11 +5842,6 @@ sockjs@^0.3.21:
     faye-websocket "^0.11.3"
     uuid "^3.4.0"
     websocket-driver "^0.7.4"
-
-sortablejs@1.14.0:
-  version "1.14.0"
-  resolved "https://registry.yarnpkg.com/sortablejs/-/sortablejs-1.14.0.tgz#6d2e17ccbdb25f464734df621d4f35d4ab35b3d8"
-  integrity sha512-pBXvQCs5/33fdN1/39pPL0NZF20LeRbLQ5jtnheIPN9JQAaufGjKdWduZn4U7wCtVuzKhmRkI0DFYHYRbB2H1w==
 
 source-map-js@^0.6.2:
   version "0.6.2"
@@ -6275,11 +6233,6 @@ tiny-emitter@^2.1.0:
   resolved "https://registry.yarnpkg.com/tiny-emitter/-/tiny-emitter-2.1.0.tgz#1d1a56edfc51c43e863cbb5382a72330e3555423"
   integrity sha512-NB6Dk1A9xgQPMoGqC5CVXn123gWyte215ONT5Pp5a0yt4nlEoO1ZWeCwpncaekPHXO60i47ihFnZPiRPjRMq4Q==
 
-tiny-uid@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/tiny-uid/-/tiny-uid-1.1.1.tgz#e7b547a638bc336704d7cd6f7eb6ec52f352c6dc"
-  integrity sha512-YRtEXpxokCLMMR46Ml/gen6jDFjZpyo9BMlEGmEpElA+zbCKtoTTikvvDTKR4Gro6tNij3ZA+60i9UiCYKKVyw==
-
 tippy.js@^6.3.1:
   version "6.3.1"
   resolved "https://registry.yarnpkg.com/tippy.js/-/tippy.js-6.3.1.tgz#3788a007be7015eee0fd589a66b98fb3f8f10181"
@@ -6568,13 +6521,6 @@ vue@3.2.19:
     "@vue/server-renderer" "3.2.19"
     "@vue/shared" "3.2.19"
 
-vuedraggable@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/vuedraggable/-/vuedraggable-4.1.0.tgz#edece68adb8a4d9e06accff9dfc9040e66852270"
-  integrity sha512-FU5HCWBmsf20GpP3eudURW3WdWTKIbEIQxh9/8GE806hydR9qZqRRxRE3RjqX7PkuLuMQG/A7n3cfj9rCEchww==
-  dependencies:
-    sortablejs "1.14.0"
-
 vuex@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/vuex/-/vuex-4.0.2.tgz#f896dbd5bf2a0e963f00c67e9b610de749ccacc9"
@@ -6596,17 +6542,6 @@ wbuf@^1.1.0, wbuf@^1.7.3:
   integrity sha512-O84QOnr0icsbFGLS0O3bI5FswxzRr8/gHwWkDlQFskhSPryQXvrTMxjxGP4+iWYoauLoBvfDpkrOauZ+0iZpDA==
   dependencies:
     minimalistic-assert "^1.0.0"
-
-webext-bridge@5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/webext-bridge/-/webext-bridge-5.0.0.tgz#d6c588ea249ab6d4b4772599dc62d7b46809a3bf"
-  integrity sha512-kTwgJCCi/92dqFa3LpZAiWd3yodUetoyxgQf6be2eh/FadEDWbzsKnM6UDnFB+xM0aj/P/cQCTEQ8j6yVwQDtQ==
-  dependencies:
-    "@types/webextension-polyfill" "^0.8.0"
-    nanoevents "^6.0.0"
-    serialize-error "^8.1.0"
-    tiny-uid "^1.1.1"
-    webextension-polyfill "^0.8.0"
 
 webextension-polyfill@^0.8.0:
   version "0.8.0"
@@ -6826,7 +6761,7 @@ ws@^6.2.1:
   dependencies:
     async-limiter "~1.0.0"
 
-xtend@^4.0.1, xtend@^4.0.2:
+xtend@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.2.tgz#bb72779f5fa465186b1f438f674fa347fdb5db54"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==
