@@ -65,7 +65,6 @@ export async function closeTab(block) {
 export async function trigger(block) {
   const nextBlockId = getBlockConnection(block);
   try {
-    console.log(this.tabId);
     if (block.data.type === 'visit-web' && this.tabId) {
       await browser.tabs.executeScript(this.tabId, {
         file: './contentScript.bundle.js',
@@ -166,7 +165,7 @@ export function newTab(block) {
         });
       })
       .catch((error) => {
-        console.error(error, 'nnnaa');
+        console.error(error);
         reject(error);
       });
   });
@@ -343,9 +342,6 @@ export function elementExists(block) {
       id: block.name,
       once: true,
       callback: (data) => {
-        console.log(data, 'element-exists');
-        console.log(block.connections, getBlockConnection(block, data ? 1 : 2));
-
         resolve({
           data,
           nextBlockId: getBlockConnection(block, data ? 1 : 2),
@@ -376,7 +372,7 @@ export function conditions({ data, outputs }, prevBlockData) {
         outputIndex = index + 1;
       }
     });
-    console.log(resultData, outputIndex);
+
     resolve({
       data: resultData,
       nextBlockId: getBlockConnection({ outputs }, outputIndex),

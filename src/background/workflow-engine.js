@@ -44,7 +44,6 @@ function tabUpdatedHandler(tabId, changeInfo) {
     });
   } else if (this.tabId === tabId) {
     if (!reloadTimeout) {
-      console.log('===Register Timeout===');
       reloadTimeout = setTimeout(() => {
         this.isPaused = false;
       }, 15000);
@@ -53,7 +52,6 @@ function tabUpdatedHandler(tabId, changeInfo) {
     this.isPaused = true;
 
     if (changeInfo.status === 'complete') {
-      console.log('clearTimeout');
       clearTimeout(reloadTimeout);
       reloadTimeout = null;
 
@@ -62,7 +60,6 @@ function tabUpdatedHandler(tabId, changeInfo) {
           file: './contentScript.bundle.js',
         })
         .then(() => {
-          console.log(this.currentBlock);
           if (this.connectedTab) this._connectTab(this.tabId);
 
           this.isPaused = false;
@@ -196,7 +193,7 @@ class WorkflowEngine {
 
   dispatchEvent(name, params) {
     const listeners = this.eventListeners[name];
-    console.log(name, this.eventListeners);
+
     if (!listeners) return;
 
     listeners.forEach((callback) => {
@@ -225,15 +222,8 @@ class WorkflowEngine {
   }
 
   _blockHandler(block, prevBlockData) {
-    if (this.isDestroyed) {
-      console.log(
-        '%cDestroyed',
-        'color: red; font-size: 24px; font-weight: bold'
-      );
-      return;
-    }
+    if (this.isDestroyed) return;
     if (this.isPaused) {
-      console.log(this.isPaused, 'pause');
       setTimeout(() => {
         this._blockHandler(block, prevBlockData);
       }, 1000);
@@ -246,7 +236,6 @@ class WorkflowEngine {
     }, this.workflow.settings.timeout || 120000);
 
     workflowState.update(this.id, this.state);
-    console.log(`${block.name}:`, block);
 
     this.currentBlock = block;
 
@@ -278,7 +267,6 @@ class WorkflowEngine {
             });
             this.dispatchEvent('finish');
             this.destroy('success');
-            console.log('Done', this);
           }
 
           clearTimeout(this.workflowTimeout);

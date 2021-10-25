@@ -17,8 +17,7 @@ const retrieved = ref(false);
 store.dispatch('retrieveWorkflowState');
 store
   .dispatch('retrieve', ['workflows', 'logs'])
-  .then((res) => {
-    console.log(res);
+  .then(() => {
     retrieved.value = true;
   })
   .catch(() => {
@@ -34,7 +33,6 @@ function handleStorageChanged(change) {
   }
 
   if (change.workflowState) {
-    console.log(change.workflowState.newValue);
     store.commit('updateState', {
       key: 'workflowState',
       value: change.workflowState.newValue,

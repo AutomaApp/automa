@@ -220,7 +220,6 @@ async function handleWorkflowTrigger({ data }) {
           when: data.date ? new Date(data.date).getTime() : Date.now() + 60000,
         };
       } else {
-        console.log(workflowAlarm, 'workflow-alarm');
         alarmInfo = {
           periodInMinutes: data.interval,
         };
@@ -241,7 +240,7 @@ async function handleWorkflowTrigger({ data }) {
       } else {
         visitWebTriggers[visitWebTriggerIndex] = payload;
       }
-      console.log(visitWebTriggers);
+
       await browser.storage.local.set({ visitWebTriggers });
     }
   } catch (error) {
@@ -278,9 +277,7 @@ function executeWorkflow() {
     isTesting: state.isDataChanged,
   };
 
-  sendMessage('workflow:execute', payload, 'background').then(() => {
-    console.log('the fuck');
-  });
+  sendMessage('workflow:execute', payload, 'background');
 }
 function handleEditorDataChanged() {
   state.isDataChanged = true;

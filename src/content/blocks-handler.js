@@ -175,7 +175,7 @@ export function elementExists({ data }) {
       }
 
       const element = document.querySelector(data.selector);
-      console.log(element, trying);
+
       if (element) {
         resolve(true);
       } else {

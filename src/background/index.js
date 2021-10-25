@@ -44,7 +44,7 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       return tab.url.match(isRegex ? new RegExp(url, 'g') : url);
     });
     const state = await workflowState.get((item) => item.state.tabId === tabId);
-    console.log(state.length, state);
+
     if (trigger && state.length === 0) {
       const workflow = await getWorkflow(trigger.id);
 
@@ -55,7 +55,7 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 browser.alarms.onAlarm.addListener(({ name }) => {
   getWorkflow(name).then((workflow) => {
     if (!workflow) return;
-    console.log(workflow, 'alarm');
+
     executeWorkflow(workflow);
   });
 });
@@ -83,7 +83,7 @@ const message = new MessageListener('background');
 message.on('workflow:execute', (workflow) => executeWorkflow(workflow));
 message.on('workflow:stop', (id) => {
   const workflow = runningWorkflows[id];
-  console.log(runningWorkflows, id);
+
   if (!workflow) {
     workflowState.delete(id);
     return;

@@ -53,7 +53,6 @@ defineProps({
 });
 
 function getBlock(item) {
-  console.log(item.state.currentBlock);
   if (!item.state.currentBlock) return {};
 
   return tasks[item.state.currentBlock.name];
