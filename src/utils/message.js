@@ -12,10 +12,12 @@ export class MessageListener {
   on(name, listener) {
     if (objectHasKey(this.listeners, 'name')) {
       console.error(`You already added ${name}`);
-      return;
+      return this.on;
     }
 
     this.listeners[nameBuilder(this.prefix, name)] = listener;
+
+    return this.on;
   }
 
   listener() {

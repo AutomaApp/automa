@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "node utils/build.js",
+    "build:zip": "node utils/build-zip.js",
     "dev": "node utils/webserver.js",
     "prettier": "prettier --write '**/*.{js,jsx,css,html}'",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
@@ -43,6 +44,7 @@
     "@babel/plugin-proposal-class-properties": "7.14.5",
     "@babel/preset-env": "7.15.6",
     "@vue/compiler-sfc": "3.2.19",
+    "archiver": "^5.3.0",
     "autoprefixer": "10.3.6",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.2",
