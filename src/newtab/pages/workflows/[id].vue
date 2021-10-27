@@ -14,6 +14,7 @@
         :workflow="workflow"
         :data-changed="state.isDataChanged"
         @save="saveWorkflow"
+        @export="exportWorkflow"
         @execute="executeWorkflow"
         @update="updateWorkflow"
         @showDataColumns="state.showDataColumnsModal = true"
@@ -128,6 +129,7 @@ import emitter from 'tiny-emitter/instance';
 import { sendMessage } from '@/utils/message';
 import { debounce } from '@/utils/helper';
 import { useDialog } from '@/composable/dialog';
+import { exportWorkflow } from '@/utils/workflow-data';
 import Log from '@/models/log';
 import Workflow from '@/models/workflow';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';

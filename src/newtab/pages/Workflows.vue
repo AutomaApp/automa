@@ -24,6 +24,10 @@
           </option>
         </ui-select>
       </div>
+      <ui-button @click="importWorkflow">
+        <v-remixicon name="riUploadLine" class="mr-2 -ml-1" />
+        Import workflow
+      </ui-button>
       <ui-button variant="accent" @click="newWorkflow">
         New workflow
       </ui-button>
@@ -44,6 +48,7 @@
         v-for="workflow in workflows"
         :key="workflow.id"
         v-bind="{ workflow }"
+        @export="exportWorkflow"
         @delete="deleteWorkflow"
         @rename="renameWorkflow"
         @execute="executeWorkflow"
@@ -55,6 +60,7 @@
 import { computed, shallowReactive } from 'vue';
 import { useDialog } from '@/composable/dialog';
 import { sendMessage } from '@/utils/message';
+import { exportWorkflow, importWorkflow } from '@/utils/workflow-data';
 import WorkflowCard from '@/components/newtab/workflow/WorkflowCard.vue';
 import Workflow from '@/models/workflow';
 

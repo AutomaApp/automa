@@ -14,22 +14,16 @@
             <v-remixicon name="riMoreLine" />
           </button>
         </template>
-        <ui-list class="w-40 space-y-1">
+        <ui-list class="w-36 space-y-1">
           <ui-list-item
+            v-for="item in menu"
+            :key="item.name"
             v-close-popover
             class="cursor-pointer"
-            @click="$emit('rename', workflow)"
+            @click="$emit(item.name, workflow)"
           >
-            <v-remixicon name="riPencilLine" class="mr-2 -ml-1" />
-            <span>Rename</span>
-          </ui-list-item>
-          <ui-list-item
-            v-close-popover
-            class="cursor-pointer"
-            @click="$emit('delete', workflow)"
-          >
-            <v-remixicon name="riDeleteBin7Line" class="mr-2 -ml-1" />
-            <span>Delete</span>
+            <v-remixicon :name="item.icon" class="mr-2 -ml-1" />
+            <span class="capitalize">{{ item.name }}</span>
           </ui-list-item>
         </ui-list>
       </ui-popover>
@@ -45,8 +39,6 @@
   </ui-card>
 </template>
 <script setup>
-/* eslint-disable no-undef */
-
 import dayjs from '@/lib/dayjs';
 
 const props = defineProps({
@@ -59,7 +51,12 @@ const props = defineProps({
     default: true,
   },
 });
-defineEmits(['delete', 'rename', 'execute']);
+defineEmits(['delete', 'export', 'rename', 'execute']);
 
 const formatDate = () => dayjs(props.workflow.createdAt).fromNow();
+const menu = [
+  { name: 'export', icon: 'riDownloadLine' },
+  { name: 'rename', icon: 'riPencilLine' },
+  { name: 'delete', icon: 'riDeleteBin7Line' },
+];
 </script>

@@ -85,6 +85,14 @@
         <ui-list-item
           v-close-popover
           class="cursor-pointer"
+          @click="$emit('export', workflow)"
+        >
+          <v-remixicon name="riDownloadLine" class="mr-2 -ml-1" />
+          <span>Export</span>
+        </ui-list-item>
+        <ui-list-item
+          v-close-popover
+          class="cursor-pointer"
           @click="$emit('showDataColumns')"
         >
           <v-remixicon name="riKey2Line" class="mr-2 -ml-1" />
@@ -162,6 +170,7 @@ defineProps({
 });
 defineEmits([
   'save',
+  'export',
   'update',
   'rename',
   'delete',

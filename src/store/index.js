@@ -32,14 +32,18 @@ const store = createStore({
             data: data[entity],
           });
         });
-        const isFirstTime =
-          (await browser.storage.local.get('isFirstTime')?.isFirstTime) ?? true;
+        const { isFirstTime } = await browser.storage.local.get('isFirstTime');
 
+        console.log(
+          await browser.storage.local.get('isFirstTime'),
+          isFirstTime
+        );
         if (isFirstTime) {
           await dispatch('entities/insert', {
             entity: 'workflows',
             data: firstWorkflows,
           });
+          await browser.storage.local.set({ isFirstTime: false });
         }
 
         return await Promise.allSettled(promises);

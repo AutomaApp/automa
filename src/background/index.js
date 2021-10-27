@@ -67,6 +67,7 @@ browser.runtime.onInstalled.addListener((details) => {
         logs: [],
         workflows: [],
         workflowState: [],
+        isFirstTime: true,
         visitWebTriggers: [],
       })
       .then(() => {
