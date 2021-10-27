@@ -60,7 +60,7 @@ browser.alarms.onAlarm.addListener(({ name }) => {
   });
 });
 
-browser.runtime.onInstalled.addListener((details) => {
+chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
     browser.storage.local
       .set({
@@ -71,10 +71,14 @@ browser.runtime.onInstalled.addListener((details) => {
         visitWebTriggers: [],
       })
       .then(() => {
-        browser.tabs.create({
-          active: true,
-          url: browser.runtime.getURL('newtab.html#/workflows'),
-        });
+        browser.tabs
+          .create({
+            active: true,
+            url: browser.runtime.getURL('newtab.html#/workflows'),
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       });
   }
 });

@@ -34,10 +34,6 @@ const store = createStore({
         });
         const { isFirstTime } = await browser.storage.local.get('isFirstTime');
 
-        console.log(
-          await browser.storage.local.get('isFirstTime'),
-          isFirstTime
-        );
         if (isFirstTime) {
           await dispatch('entities/insert', {
             entity: 'workflows',
