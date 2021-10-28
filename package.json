@@ -1,7 +1,7 @@
 {
   "name": "automa",
   "version": "0.1.0",
-  "description": "Automate your browser by dragging and dropping a block",
+  "description": "An extension for automating your browser by connecting blocks",
   "license": "MIT",
   "repository": {
     "type": "git",

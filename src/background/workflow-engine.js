@@ -234,10 +234,9 @@ class WorkflowEngine {
     this.workflowTimeout = setTimeout(() => {
       if (!this.isDestroyed) this.stop('Workflow stopped because of timeout');
     }, this.workflow.settings.timeout || 120000);
+    this.currentBlock = block;
 
     workflowState.update(this.id, this.state);
-
-    this.currentBlock = block;
 
     const started = Date.now();
     const isInteraction = tasks[block.name].category === 'interaction';
