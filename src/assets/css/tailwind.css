@@ -3,8 +3,9 @@
 @tailwind utilities;
 
 body {
-	font-family: 'Inter', sans-serif;
+	font-family: 'Inter var';
   font-size: 16px;
+  font-feature-settings: "cv02","cv03","cv04","cv11";
   @apply bg-gray-50 dark:bg-gray-900;
 }
 table th,

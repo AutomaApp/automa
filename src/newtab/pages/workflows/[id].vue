@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-screen">
     <div
-      class="w-80 bg-white py-4 relative border-l border-gray-100 flex flex-col"
+      class="w-80 bg-white py-6 relative border-l border-gray-100 flex flex-col"
     >
       <workflow-edit-block
         v-if="state.isEditBlock"

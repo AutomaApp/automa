@@ -47,20 +47,25 @@
   <div class="flex px-4 mt-2 space-x-2">
     <ui-button variant="accent" class="flex-1 relative" @click="$emit('save')">
       <span
-        v-if="dataChanged"
-        class="
-          inline-block
-          absolute
-          h-3
-          w-3
-          rounded-full
-          bg-primary
-          -ml-1
-          -mt-1
-          top-0
-          left-0
-        "
-      ></span>
+        v-if="true || dataChanged"
+        class="flex h-3 w-3 absolute top-0 left-0 -ml-1 -mt-1"
+      >
+        <span
+          class="
+            animate-ping
+            absolute
+            inline-flex
+            h-full
+            w-full
+            rounded-full
+            bg-primary
+            opacity-75
+          "
+        ></span>
+        <span
+          class="relative inline-flex rounded-full h-3 w-3 bg-blue-600"
+        ></span>
+      </span>
       <v-remixicon name="riSaveLine" class="mr-2 -ml-1" />
       Save
     </ui-button>
