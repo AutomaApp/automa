@@ -47,7 +47,7 @@
   <div class="flex px-4 mt-2 space-x-2">
     <ui-button variant="accent" class="flex-1 relative" @click="$emit('save')">
       <span
-        v-if="true || dataChanged"
+        v-if="dataChanged"
         class="flex h-3 w-3 absolute top-0 left-0 -ml-1 -mt-1"
       >
         <span
