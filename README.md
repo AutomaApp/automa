@@ -1,8 +1,9 @@
-<img src="src/assets/img/icon-128.png" width="64"/>
+<img src="src/assets/images/icon-128.png" width="64"/>
 
 # Automa
+![version](https://img.shields.io/github/package-json/v/kholid060/automa)
 
-An extension for automating your browser by connecting blocks. 
+An extension for automating your browser by connecting blocks. <br />
 From auto-fill forms, doing a repetitive task, taking a screenshot, to scraping data of the website, it's up to you what you want to do with this extension. And you also can schedule when the automation will execute.
 
 ## Project setup
