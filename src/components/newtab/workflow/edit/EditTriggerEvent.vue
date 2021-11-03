@@ -4,7 +4,7 @@
       :model-value="data.eventName"
       class="w-full mt-2"
       placeholder="Select an event"
-      @change="handleEventChange"
+      @change="handleSelectChange"
     >
       <option v-for="event in eventList" :key="event.id" :value="event.id">
         {{ event.name }}
@@ -41,7 +41,7 @@
           :is="componentName"
           v-if="componentName"
           :params="params"
-          @update="updateParams"
+          @update="updateParams({ ...params, ...$event })"
         />
       </div>
     </transition-expand>
@@ -95,7 +95,7 @@ function updateParams(value) {
   params.value = value;
   updateData({ eventParams: value });
 }
-function handleEventChange(value) {
+function handleSelectChange(value) {
   const eventType = eventList.find(({ id }) => id === value).type;
   const payload = { eventName: value, eventType };
 
