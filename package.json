@@ -18,7 +18,7 @@
     "pre-commit": "npx lint-staged"
   },
   "lint-staged": {
-    "*.{js,ts,vue}": "eslint --cache --fix"
+    "*.{js,ts,vue}": "eslint --fix"
   },
   "dependencies": {
     "@medv/finder": "^2.1.0",
