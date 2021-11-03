@@ -90,7 +90,7 @@ const emit = defineEmits(['update:data']);
 const triggers = [
   { id: 'manual', name: 'Manually' },
   { id: 'interval', name: 'Interval' },
-  { id: 'date', name: 'On spesific date' },
+  { id: 'date', name: 'On specific date' },
   { id: 'visit-web', name: 'When visit a website' },
 ];
 const maxDate = dayjs().add(30, 'day').format('YYYY-MM-DD');
