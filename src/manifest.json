@@ -14,6 +14,18 @@
   "icons": {
     "128": "icon-128.png"
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "shortcut.bundle.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": false
+    }
+  ],
   "permissions": [
     "tabs",
     "alarms",

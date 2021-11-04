@@ -20,7 +20,7 @@ export function importWorkflow() {
       try {
         const workflow = JSON.parse(target.result);
 
-        Workflow.insert({ data: workflow });
+        Workflow.insert({ data: workflow, createdAt: Date.now() });
       } catch (error) {
         console.error(error);
       }

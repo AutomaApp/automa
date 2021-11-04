@@ -21,6 +21,8 @@ export const tasks = {
       date: '',
       time: '00:00',
       url: '',
+      shortcut: '',
+      activeInInput: false,
       isUrlRegex: false,
     },
   },

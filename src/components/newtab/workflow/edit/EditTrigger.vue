@@ -10,7 +10,7 @@
     :model-value="data.type || 'manual'"
     placeholder="Trigger workflow"
     class="w-full"
-    @change="updateData({ type: $event })"
+    @change="handleSelectChange"
   >
     <option v-for="trigger in triggers" :key="trigger.id" :value="trigger.id">
       {{ trigger.name }}
@@ -74,9 +74,36 @@
         Use regex
       </ui-checkbox>
     </div>
+    <div v-else-if="data.type === 'keyboard-shortcut'" class="mt-2">
+      <div class="flex items-center mb-2">
+        <ui-input
+          :model-value="recordKeys.keys"
+          readonly
+          class="flex-1 mr-2"
+          placeholder="Shortcut"
+        />
+        <ui-button v-tooltip="'Record keys'" icon @click="toggleRecordKeys">
+          <v-remixicon
+            :name="recordKeys.isRecording ? 'riStopLine' : 'riRecordCircleLine'"
+          />
+        </ui-button>
+      </div>
+      <ui-checkbox
+        :model-value="data.activeInInput"
+        class="mb-1"
+        title="Execute shortcut even in an input element"
+        @change="updateData({ activeInInput: $event })"
+      >
+        Active while in input
+      </ui-checkbox>
+      <p class="mt-4 leading-tight text-gray-600 dark:text-gray-200">
+        Note: keyboard shortcut only executed when you're on a webpage
+      </p>
+    </div>
   </transition-expand>
 </template>
 <script setup>
+import { shallowReactive, onUnmounted } from 'vue';
 import dayjs from 'dayjs';
 
 const props = defineProps({
@@ -92,12 +119,68 @@ const triggers = [
   { id: 'interval', name: 'Interval' },
   { id: 'date', name: 'On specific date' },
   { id: 'visit-web', name: 'When visit a website' },
+  { id: 'keyboard-shortcut', name: 'Keyboard shortcut' },
 ];
 const maxDate = dayjs().add(30, 'day').format('YYYY-MM-DD');
 const minDate = dayjs().format('YYYY-MM-DD');
+const allowedKeys = {
+  '+': 'plus',
+  Delete: 'del',
+  Insert: 'ins',
+  ArrowDown: 'down',
+  ArrowLeft: 'left',
+  ArrowUp: 'up',
+  ArrowRight: 'right',
+  Escape: 'escape',
+  Enter: 'enter',
+};
+
+const recordKeys = shallowReactive({
+  isRecording: false,
+  keys: props.data.shortcut,
+});
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
+}
+function handleKeydownEvent(event) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (event.repeat) return;
+
+  const keys = [];
+  const { ctrlKey, altKey, metaKey, shiftKey, key } = event;
+
+  if (ctrlKey || metaKey) keys.push('mod');
+  if (altKey) keys.push('alt');
+  if (shiftKey) keys.push('shift');
+
+  const isValidKey = !!allowedKeys[key] || /^[a-z0-9,./;'[\]\-=`]$/i.test(key);
+
+  if (isValidKey) {
+    keys.push(allowedKeys[key] || key.toLowerCase());
+
+    recordKeys.keys = keys.join('+');
+    updateData({ shortcut: recordKeys.keys });
+  }
+}
+function toggleRecordKeys() {
+  if (recordKeys.isRecording) {
+    window.removeEventListener('keydown', handleKeydownEvent);
+  } else {
+    window.addEventListener('keydown', handleKeydownEvent);
+  }
+
+  recordKeys.isRecording = !recordKeys.isRecording;
+}
+function handleSelectChange(type) {
+  if (recordKeys.isRecording) {
+    window.removeEventListener('keydown', handleKeydownEvent);
+    recordKeys.isRecording = false;
+  }
+
+  updateData({ type });
 }
 function updateIntervalInput(value, { key, min, max }) {
   let num = +value;
@@ -117,4 +200,8 @@ function updateDate(value) {
 
   updateData({ date });
 }
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydownEvent);
+});
 </script>
