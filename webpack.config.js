@@ -42,9 +42,10 @@ const options = {
     popup: path.join(__dirname, 'src', 'popup', 'index.js'),
     background: path.join(__dirname, 'src', 'background', 'index.js'),
     contentScript: path.join(__dirname, 'src', 'content', 'index.js'),
+    shortcut: path.join(__dirname, 'src', 'content', 'shortcut.js'),
   },
   chromeExtensionBoilerplate: {
-    notHotReload: ['contentScript'],
+    notHotReload: ['contentScript', 'shortcut'],
   },
   output: {
     path: path.resolve(__dirname, 'build'),

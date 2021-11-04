@@ -14,7 +14,7 @@ function isElementUnique(element, { data, id }) {
   return true;
 }
 function handleElement({ data, id }, callback) {
-  if (!data.selector) return null;
+  if (!data || !data.selector) return null;
 
   const element = data.multiple
     ? document.querySelectorAll(data.selector)
@@ -137,9 +137,11 @@ export function forms(block) {
   });
 }
 
-export function triggerEvent({ data }) {
+export function triggerEvent(block) {
   return new Promise((resolve) => {
-    handleElement(data, (element) => {
+    const { data } = block;
+
+    handleElement(block, (element) => {
       simulateEvent(element, data.eventName, data.eventParams);
     });
 

@@ -66,6 +66,7 @@ chrome.runtime.onInstalled.addListener((details) => {
       .set({
         logs: [],
         workflows: [],
+        shortcuts: [],
         workflowState: [],
         isFirstTime: true,
         visitWebTriggers: [],

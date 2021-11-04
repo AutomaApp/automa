@@ -2,6 +2,8 @@ import '@webcomponents/custom-elements';
 import { defineCustomElement } from 'vue';
 import ElementSelector from './ElementSelector.ce.vue';
 
+/* to-do attribute list */
+
 export default function () {
   const isElementExists = document.querySelector('element-selector');
 

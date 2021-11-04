@@ -9,8 +9,8 @@
           </p>
           <workflow-card
             v-for="workflow in workflows"
-            v-bind="{ workflow }"
             :key="workflow.id"
+            :workflow="workflow"
             :show-details="false"
             @execute="executeWorkflow"
           />

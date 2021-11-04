@@ -42,7 +42,7 @@ export default function (data, { name, type }, converted) {
 
     result =
       type === 'csv'
-        ? `data:text/csv;charset=utf-8,${Papa.unparse(jsonData)}`
+        ? Papa.unparse(jsonData)
         : JSON.stringify(jsonData, null, 2);
   } else if (type === 'plain-text') {
     result = Object.values(data).join(' ');

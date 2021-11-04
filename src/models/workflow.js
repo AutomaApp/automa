@@ -38,17 +38,24 @@ class Workflow extends Model {
 
   static async afterDelete({ id }) {
     try {
-      const { visitWebTriggers } = await browser.storage.local.get(
-        'visitWebTriggers'
-      );
+      const { visitWebTriggers, shortcuts } = await browser.storage.local.get([
+        'visitWebTriggers',
+        'shortcuts',
+      ]);
       const index = visitWebTriggers.findIndex((item) => item.id === id);
 
+      if (index !== -1) {
+        visitWebTriggers.splice(index, 1);
+      }
+
+      const keyboardShortcuts = shortcuts || {};
+      delete keyboardShortcuts[id];
+
+      await browser.storage.local.set({
+        visitWebTriggers,
+        shortcuts: keyboardShortcuts,
+      });
       await browser.alarms.clear(id);
-
-      if (index === -1) return;
-
-      visitWebTriggers.splice(index, 1);
-      await browser.storage.local.set({ visitWebTriggers });
     } catch (error) {
       console.error(error);
     }

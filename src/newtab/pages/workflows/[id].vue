@@ -198,21 +198,27 @@ function updateWorkflow(data) {
 async function handleWorkflowTrigger({ data }) {
   try {
     const workflowAlarm = await browser.alarms.get(workflowId);
-    const { visitWebTriggers } = await browser.storage.local.get(
-      'visitWebTriggers'
-    );
+    const { visitWebTriggers, shortcuts } = await browser.storage.local.get([
+      'visitWebTriggers',
+      'shortcuts',
+    ]);
     let visitWebTriggerIndex = visitWebTriggers.findIndex(
       (item) => item.id === workflowId
     );
+    const keyboardShortcuts = shortcuts || {};
+    delete keyboardShortcuts[workflowId];
 
     if (workflowAlarm) await browser.alarms.clear(workflowId);
     if (visitWebTriggerIndex !== -1) {
       visitWebTriggers.splice(visitWebTriggerIndex, 1);
 
       visitWebTriggerIndex = -1;
-
-      await browser.storage.local.set({ visitWebTriggers });
     }
+
+    await browser.storage.local.set({
+      visitWebTriggers,
+      shortcuts: keyboardShortcuts,
+    });
 
     if (['date', 'interval'].includes(data.type)) {
       let alarmInfo;
@@ -244,6 +250,10 @@ async function handleWorkflowTrigger({ data }) {
       }
 
       await browser.storage.local.set({ visitWebTriggers });
+    } else if (data.type === 'keyboard-shortcut') {
+      keyboardShortcuts[workflowId] = data.shortcut;
+
+      await browser.storage.local.set({ shortcuts: keyboardShortcuts });
     }
   } catch (error) {
     console.error(error);
