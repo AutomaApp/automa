@@ -82,7 +82,7 @@
           class="flex-1 mr-2"
           placeholder="Shortcut"
         />
-        <ui-button v-tooltip="'Record keys'" icon @click="toggleRecordKeys">
+        <ui-button v-tooltip="'Record shortcut'" icon @click="toggleRecordKeys">
           <v-remixicon
             :name="recordKeys.isRecording ? 'riStopLine' : 'riRecordCircleLine'"
           />
