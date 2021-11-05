@@ -28,6 +28,7 @@
         <td class="text-right">
           <span
             :class="statusColors[log.status]"
+            :title="log.status === 'error' ? getErrorMessage(log) : null"
             class="inline-block py-1 w-16 text-center text-sm rounded-lg"
           >
             {{ log.status }}
@@ -59,6 +60,13 @@ function formatDate(date, format) {
   if (format === 'relative') return dayjs(date).fromNow();
 
   return dayjs(date).format(format);
+}
+function getErrorMessage({ history }) {
+  const lastHistory = history[history.length - 1];
+
+  return lastHistory && lastHistory.type === 'error'
+    ? lastHistory.message
+    : null;
 }
 </script>
 <style scoped>

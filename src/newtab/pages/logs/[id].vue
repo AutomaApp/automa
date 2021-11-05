@@ -24,20 +24,31 @@
     </div>
     <div class="flex items-start">
       <ui-list class="w-7/12 mr-6">
-        <ui-list-item
-          v-for="(item, index) in activeLog.history"
-          :key="index"
-          :title="item.message || item.type"
-        >
+        <ui-list-item v-for="(item, index) in activeLog.history" :key="index">
           <span
             :class="logsType[item.type].color"
             class="p-1 rounded-lg align-middle inline-block mr-2"
           >
             <v-remixicon :name="logsType[item.type].icon" size="20" />
           </span>
-          <p class="flex-1 text-overflow">
-            {{ item.name }}
-          </p>
+          <div class="flex-1">
+            <p class="w-full text-overflow leading-tight">
+              {{ item.name }}
+            </p>
+            <p
+              v-if="item.type === 'error'"
+              :title="item.message"
+              class="
+                text-sm
+                leading-tight
+                line-clamp
+                text-gray-600
+                dark:text-gray-200
+              "
+            >
+              {{ item.message }}
+            </p>
+          </div>
           <p class="text-gray-600">
             {{ countDuration(0, item.duration || 0) }}
           </p>
