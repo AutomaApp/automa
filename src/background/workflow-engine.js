@@ -3,6 +3,7 @@ import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
 import { toCamelCase } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
+import referenceData from '@/utils/reference-data';
 import errorMessage from './error-message';
 import workflowState from './workflow-state';
 import * as blocksHandler from './blocks-handler';
@@ -246,6 +247,8 @@ class WorkflowEngine {
     const handler = blocksHandler[handlerName];
 
     if (handler) {
+      referenceData(block, { data: this.data, prevBlockData });
+
       handler
         .call(this, block, prevBlockData)
         .then((result) => {

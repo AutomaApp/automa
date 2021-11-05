@@ -56,6 +56,8 @@ import { finder } from '@medv/finder';
 import { VRemixIcon } from 'v-remixicon';
 import { riFileCopyLine, riArrowDownLine } from 'v-remixicon/icons';
 
+/* to-do get list of attribute value */
+
 const element = reactive({
   hovered: {},
   selected: {},
