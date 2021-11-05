@@ -50,7 +50,7 @@ function getTriggerBlock(workflow) {
         sendMessage('workflow:execute', item.workflow, 'background');
       });
 
-      return false;
+      return true;
     });
   } catch (error) {
     console.error(error);

@@ -205,7 +205,7 @@ async function handleWorkflowTrigger({ data }) {
     let visitWebTriggerIndex = visitWebTriggers.findIndex(
       (item) => item.id === workflowId
     );
-    const keyboardShortcuts = shortcuts || {};
+    const keyboardShortcuts = Array.isArray(shortcuts) ? {} : shortcuts || {};
     delete keyboardShortcuts[workflowId];
 
     if (workflowAlarm) await browser.alarms.clear(workflowId);
