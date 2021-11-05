@@ -21,6 +21,7 @@
       placeholder="http://example.com"
       type="url"
       required
+      @blur="checkInputValue"
       @input="handleInput"
     />
     <ui-checkbox :model-value="block.data.active" @change="handleCheckbox">
@@ -44,25 +45,26 @@ const props = defineProps({
 const componentId = useComponentId('new-tab');
 const block = useEditorBlock(`#${componentId}`, props.editor);
 
+const isValidURL = (url) => /^(https?):\/\//i.test(url);
 const handleInput = debounce(({ target }) => {
   target.reportValidity();
 
-  const res = target.value.match(
-    /* eslint-disable-next-line */
-    /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
-  );
+  block.data.url = isValidURL(target.value) ? target.value : '';
 
-  if (!res) return;
-
-  const [url] = res;
-
-  props.editor.updateNodeDataFromId(block.id, { ...block.data, url });
-  block.data.url = url;
+  props.editor.updateNodeDataFromId(block.id, {
+    ...block.data,
+    url: block.data.url,
+  });
   emitter.emit('editor:data-changed', block.id);
 }, 250);
 function handleCheckbox(value) {
   props.editor.updateNodeDataFromId(block.id, { ...block.data, active: value });
   block.data.active = value;
   emitter.emit('editor:data-changed', block.id);
+}
+function checkInputValue({ target }) {
+  if (!isValidURL(target.value)) {
+    target.value = '';
+  }
 }
 </script>

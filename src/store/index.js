@@ -39,7 +39,10 @@ const store = createStore({
             entity: 'workflows',
             data: firstWorkflows,
           });
-          await browser.storage.local.set({ isFirstTime: false });
+          await browser.storage.local.set({
+            isFirstTime: false,
+            workflows: firstWorkflows,
+          });
         }
 
         return await Promise.allSettled(promises);
