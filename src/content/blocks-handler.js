@@ -74,6 +74,48 @@ function incScrollPos(element, data, vertical = true) {
 
   return currentPos;
 }
+
+const automaScript = `
+function automaNextBlock(data) {
+  window.dispatchEvent(new CustomEvent('__automa-next-block__', { detail: data }));
+}
+function automaResetTimeout() {
+ window.dispatchEvent(new CustomEvent('__automa-reset-timeout__'));
+}
+`;
+
+export function javascriptCode(block) {
+  return new Promise((resolve) => {
+    const isScriptExists = document.getElementById('automa-custom-js');
+
+    if (isScriptExists) isScriptExists.remove();
+
+    const script = document.createElement('script');
+    let timeout;
+
+    script.id = 'automa-custom-js';
+    script.innerHTML = `${automaScript} ${block.data.code}`;
+
+    window.addEventListener('__automa-next-block__', ({ detail }) => {
+      clearTimeout(timeout);
+      resolve(detail || {});
+    });
+    window.addEventListener('__automa-reset-timeout__', () => {
+      clearTimeout(timeout);
+
+      timeout = setTimeout(() => {
+        resolve('');
+      }, block.data.timeout);
+    });
+
+    document.body.appendChild(script);
+
+    timeout = setTimeout(() => {
+      resolve('');
+    }, block.data.timeout);
+  });
+}
+
 export function elementScroll(block) {
   return new Promise((resolve) => {
     const { data } = block;

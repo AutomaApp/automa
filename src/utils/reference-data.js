@@ -1,5 +1,5 @@
 import objectPath from 'object-path';
-import { isObject } from '@/utils/helper';
+import { isObject, objectHasKey } from '@/utils/helper';
 
 function parseKey(key) {
   const [dataKey, path] = key.split('@');
@@ -31,24 +31,25 @@ export default function (block, data) {
   const replaceKeys = ['url', 'fileName', 'name', 'value'];
 
   replaceKeys.forEach((blockDataKey) => {
-    const blockDataValue = objectPath.get(block, `data.${blockDataKey}`);
+    if (!objectHasKey(block.data, blockDataKey)) return;
 
-    if (!blockDataValue) return;
+    const newDataValue = block.data[blockDataKey].replace(
+      /\[(.+?)]/g,
+      (match) => {
+        const key = match.replace(/\[|]/g, '');
+        const { dataKey, path } = parseKey(key);
 
-    const newDataValue = blockDataValue.replace(/\[(.+?)]/g, (match) => {
-      const key = match.replace(/\[|]/g, '');
-      const { dataKey, path } = parseKey(key);
+        if (
+          dataKey === 'prevBlockData' &&
+          (!isObject(data.prevBlockData) || !Array.isArray(data.prevBlockData))
+        ) {
+          return data.prevBlockData;
+        }
 
-      if (
-        dataKey === 'prevBlockData' &&
-        (!isObject(data.prevBlockData) || !Array.isArray(data.prevBlockData))
-      ) {
-        return data.prevBlockData;
+        return objectPath.get(data, `${dataKey}.${path}`) || match;
       }
+    );
 
-      return objectPath.get(data, `${dataKey}.${path}`) || match;
-    });
-
-    objectPath.set(block, `data.${blockDataKey}`, newDataValue);
+    block.data[blockDataKey] = newDataValue;
   });
 }

@@ -24,7 +24,7 @@
   </div>
   <prism-editor
     :model-value="dataStr"
-    :highlight="highlighter"
+    :highlight="highlighter('json')"
     :class="editorClass"
     readonly
     class="my-editor p-4 bg-gray-900 rounded-lg mt-4"
@@ -33,12 +33,9 @@
 <script setup>
 import { ref } from 'vue';
 import { PrismEditor } from 'vue-prism-editor';
-import { highlight, languages } from 'prismjs/components/prism-core';
+import { highlighter } from '@/lib/prism';
 import { dataExportTypes } from '@/utils/shared';
 import dataExporter, { generateJSON } from '@/utils/data-exporter';
-import 'vue-prism-editor/dist/prismeditor.min.css';
-import 'prismjs/components/prism-json';
-import 'prismjs/themes/prism-tomorrow.css';
 
 const props = defineProps({
   log: {
@@ -55,22 +52,8 @@ const data = generateJSON(Object.keys(props.log.data), props.log.data);
 const dataStr = JSON.stringify(data, null, 2);
 
 const fileName = ref(props.log.name);
-const highlighter = (code) => highlight(code, languages.json);
 
 function exportData(type) {
   dataExporter(data, { name: fileName.value, type }, true);
 }
 </script>
-<style scoped>
-.my-editor {
-  color: #ccc;
-  font-family: JetBrains Mono, Fira code, Fira Mono, Consolas, Menlo, Courier,
-    monospace;
-  font-size: 14px;
-  line-height: 1.5;
-  padding: 5px;
-}
-.prism-editor__textarea:focus {
-  outline: none;
-}
-</style>

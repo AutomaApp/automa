@@ -293,6 +293,23 @@ export const tasks = {
   //   disableEdit: true,
   //   data: {},
   // },
+  'javascript-code': {
+    name: 'JavaScript code',
+    description: 'Execute your custom javascript code in a webpage',
+    icon: 'riCodeSSlashLine',
+    component: 'BlockBasic',
+    editComponent: 'EditJavascriptCode',
+    category: 'interaction',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      description: '',
+      timeout: 10000,
+      code: 'console.log("Hello world!")',
+    },
+  },
   'trigger-event': {
     name: 'Trigger event',
     description: 'Trigger event',

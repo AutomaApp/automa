@@ -31,7 +31,7 @@
             <div class="mb-4">
               <div class="flex items-center justify-between">
                 <span class="content-header">
-                  <slot name="header"></slot>
+                  <slot name="header">{{ title }}</slot>
                 </span>
                 <v-remixicon
                   v-show="!persist"
@@ -65,6 +65,10 @@ export default {
     contentClass: {
       type: String,
       default: 'max-w-lg',
+    },
+    title: {
+      type: String,
+      default: '',
     },
     customContent: Boolean,
     persist: Boolean,

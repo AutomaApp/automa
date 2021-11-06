@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import browser from 'webextension-polyfill';
-import { objectHasKey, fileSaver } from '@/utils/helper';
+import { objectHasKey, fileSaver, isObject } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
 import dataExporter from '@/utils/data-exporter';
 import compareBlockValue from '@/utils/compare-block-value';
@@ -26,8 +26,8 @@ function convertData(data, type) {
 
   return result;
 }
-function generateBlockError(block) {
-  const message = errorMessage('no-tab', tasks[block.name]);
+function generateBlockError(block, code) {
+  const message = errorMessage(code || 'no-tab', tasks[block.name]);
   const error = new Error(message);
   error.nextBlockId = getBlockConnection(block);
 
@@ -279,21 +279,60 @@ export function interactionHandler(block) {
       once: true,
       delay: block.name === 'link' ? 5000 : 0,
       callback: (data) => {
+        if (data?.isError) {
+          const error = new Error(data.message);
+          error.nextBlockId = nextBlockId;
+
+          reject(error);
+          return;
+        }
+
+        const getColumn = (name) =>
+          this.workflow.dataColumns.find((item) => item.name === name) || {
+            name: 'column',
+            type: 'text',
+          };
+        const pushData = (column, value) => {
+          this.data[column.name]?.push(convertData(value, column.type));
+        };
+
         if (objectHasKey(block.data, 'dataColumn')) {
-          const { name, type } = Object.values(this.workflow.dataColumns).find(
-            (item) => item.name === block.data.dataColumn
-          ) || { name: 'column', type: 'text' };
+          const column = getColumn(block.data.dataColumn);
 
           if (block.data.saveData) {
-            if (!objectHasKey(this.data, name)) this.data[name] = [];
-
             if (Array.isArray(data)) {
               data.forEach((item) => {
-                this.data[name].push(convertData(item, type));
+                pushData(column, item);
               });
             } else {
-              this.data[name].push(convertData(data, type));
+              pushData(column, data);
             }
+          }
+        } else if (block.name === 'javascript-code') {
+          const memoColumn = {};
+          const pushObjectData = (obj) => {
+            Object.entries(obj).forEach(([key, value]) => {
+              let column;
+
+              if (memoColumn[key]) {
+                column = memoColumn[key];
+              } else {
+                const currentColumn = getColumn(key);
+
+                column = currentColumn;
+                memoColumn[key] = currentColumn;
+              }
+
+              pushData(column, value);
+            });
+          };
+
+          if (Array.isArray(data)) {
+            data.forEach((obj) => {
+              if (isObject(obj)) pushObjectData(obj);
+            });
+          } else if (isObject(data)) {
+            pushObjectData(data);
           }
         }
 

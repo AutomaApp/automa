@@ -118,8 +118,21 @@ class WorkflowEngine {
     browser.tabs.onUpdated.addListener(this.tabUpdatedHandler);
     browser.tabs.onRemoved.addListener(this.tabRemovedHandler);
 
+    const dataColumns = Array.isArray(this.workflow.dataColumns)
+      ? this.workflow.dataColumns
+      : Object.values(this.workflow.dataColumns);
+
     this.blocks = blocks;
     this.startedTimestamp = Date.now();
+    this.workflow.dataColumns = dataColumns;
+    this.data = dataColumns.reduce(
+      (acc, column) => {
+        acc[column.name] = [];
+
+        return acc;
+      },
+      { column: [] }
+    );
 
     workflowState
       .add(this.id, {
