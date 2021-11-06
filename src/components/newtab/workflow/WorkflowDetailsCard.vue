@@ -139,6 +139,7 @@
           :title="block.description || block.name"
           draggable="true"
           class="
+            transform
             select-none
             cursor-move
             relative
