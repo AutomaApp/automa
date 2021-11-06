@@ -37,7 +37,7 @@
       />
       <div>
         Note:
-        <ol class="list-decimal pl-5">
+        <ul class="list-disc pl-5">
           <li>
             To execute the next block, you can call the
             <code>automaNextBlock</code> function. This function accepts one
@@ -55,7 +55,7 @@
             To reset the execution timeout of the code, you can call the
             <code>automaResetTimeout</code> function.
           </li>
-        </ol>
+        </ul>
       </div>
     </ui-modal>
   </div>
