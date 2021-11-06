@@ -6,6 +6,7 @@
   <ui-dialog />
 </template>
 <script setup>
+/* to-do add documentation of the extension */
 import { ref } from 'vue';
 import { useStore } from 'vuex';
 import browser from 'webextension-polyfill';

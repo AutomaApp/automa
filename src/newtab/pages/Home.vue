@@ -3,7 +3,7 @@
     <h1 class="text-2xl font-semibold mb-8">Dashboard</h1>
     <div class="flex items-start">
       <div class="w-8/12 mr-8">
-        <div class="grid gap-4 mb-8 grid-cols-3">
+        <div class="grid gap-4 mb-8 2xl:grid-cols-4 grid-cols-3">
           <p v-if="workflows.length === 0" class="text-center text-gray-600">
             No data
           </p>
@@ -12,6 +12,7 @@
             :key="workflow.id"
             :workflow="workflow"
             :show-details="false"
+            style="max-width: 250px"
             @execute="executeWorkflow"
           />
         </div>

@@ -3,6 +3,7 @@ import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
 import { toCamelCase } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
+import referenceData from '@/utils/reference-data';
 import errorMessage from './error-message';
 import workflowState from './workflow-state';
 import * as blocksHandler from './blocks-handler';
@@ -117,8 +118,21 @@ class WorkflowEngine {
     browser.tabs.onUpdated.addListener(this.tabUpdatedHandler);
     browser.tabs.onRemoved.addListener(this.tabRemovedHandler);
 
+    const dataColumns = Array.isArray(this.workflow.dataColumns)
+      ? this.workflow.dataColumns
+      : Object.values(this.workflow.dataColumns);
+
     this.blocks = blocks;
     this.startedTimestamp = Date.now();
+    this.workflow.dataColumns = dataColumns;
+    this.data = dataColumns.reduce(
+      (acc, column) => {
+        acc[column.name] = [];
+
+        return acc;
+      },
+      { column: [] }
+    );
 
     workflowState
       .add(this.id, {
@@ -246,6 +260,8 @@ class WorkflowEngine {
     const handler = blocksHandler[handlerName];
 
     if (handler) {
+      referenceData(block, { data: this.data, prevBlockData });
+
       handler
         .call(this, block, prevBlockData)
         .then((result) => {

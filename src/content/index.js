@@ -9,9 +9,16 @@ function onConnectListener() {
       const handler = blocksHandler[toCamelCase(data.name)];
 
       if (handler) {
-        handler(data).then((result) => {
-          port.postMessage({ type: data.name, data: result });
-        });
+        handler(data)
+          .then((result) => {
+            port.postMessage({ type: data.name, data: result });
+          })
+          .catch((error) => {
+            port.postMessage({
+              isError: true,
+              message: error?.message || error,
+            });
+          });
       } else {
         console.error(`"${data.name}" doesn't have a handler`);
       }

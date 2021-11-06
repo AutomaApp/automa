@@ -145,6 +145,10 @@ export default {
       editor.value.on('connectionRemoved', () => {
         emitter.emit('editor:data-changed');
       });
+
+      setTimeout(() => {
+        editor.value.zoom_refresh();
+      }, 500);
     });
 
     return {
