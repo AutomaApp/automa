@@ -137,6 +137,9 @@ export function newTab(block) {
     browser.tabs
       .create(block.data)
       .then((tab) => {
+        this.tabId = tab.id;
+        this.windowId = tab.windowId;
+
         this._listener({
           name: 'tab-updated',
           id: tab.id,
@@ -149,7 +152,6 @@ export function newTab(block) {
                 file: './contentScript.bundle.js',
               });
 
-              this.tabId = tabId;
               this._connectTab(tabId);
 
               deleteListener();
@@ -160,6 +162,7 @@ export function newTab(block) {
               });
             } catch (error) {
               console.error(error);
+              reject(error);
             }
           },
         });
@@ -186,13 +189,17 @@ export async function activeTab(block) {
       return data;
     }
 
-    const [tab] = await browser.tabs.query({ active: true });
+    const [tab] = await browser.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
 
     await browser.tabs.executeScript(tab.id, {
       file: './contentScript.bundle.js',
     });
 
     this.tabId = tab.id;
+    this.windowId = tab.windowId;
     this._connectTab(tab.id);
 
     return data;
@@ -200,6 +207,7 @@ export async function activeTab(block) {
     console.error(error);
     return {
       data: '',
+      message: error.message || error,
       nextBlockId,
     };
   }
@@ -238,16 +246,22 @@ export async function takeScreenshot(block) {
         throw new Error(errorMessage('no-tab', block));
       }
 
-      const [tab] = await browser.tabs.query({ active: true });
+      const [tab] = await browser.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
 
+      await browser.windows.update(this.windowId, { focused: true });
       await browser.tabs.update(this.tabId, { active: true });
 
-      setTimeout(() => {
-        browser.tabs.captureVisibleTab(options).then((uri) => {
-          browser.tabs.update(tab.id, { active: true });
-          saveImage(uri);
-        });
-      }, 500);
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const uri = await browser.tabs.captureVisibleTab(options);
+
+      await browser.windows.update(tab.windowId, { focused: true });
+      await browser.tabs.update(tab.id, { active: true });
+
+      saveImage(uri);
     } else {
       const uri = await browser.tabs.captureVisibleTab(options);
 

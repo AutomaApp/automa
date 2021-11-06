@@ -87,6 +87,7 @@ class WorkflowEngine {
     this.isDestroyed = false;
     this.currentBlock = null;
     this.workflowTimeout = null;
+    this.windowId = null;
 
     this.tabMessageListeners = {};
     this.tabUpdatedListeners = {};
@@ -293,7 +294,7 @@ class WorkflowEngine {
             message: error.message,
             name: tasks[block.name].name,
           });
-          console.dir(error);
+
           if (
             this.workflow.settings.onError === 'keep-running' &&
             error.nextBlockId

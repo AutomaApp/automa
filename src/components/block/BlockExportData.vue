@@ -21,7 +21,7 @@
     </div>
     <input
       v-model="block.data.name"
-      class="w-full bg-input rounded-lg transition mb-2 py-2 px-4 block"
+      class="bg-input rounded-lg transition w-40 mb-2 py-2 px-4 block"
       placeholder="File name"
     />
     <ui-select v-model="block.data.type" class="w-40" placeholder="Export as">
