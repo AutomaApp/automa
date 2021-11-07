@@ -122,7 +122,12 @@
       </ui-list>
     </ui-popover>
   </div>
-  <hr class="m-4 border-gray-100" />
+  <ui-input
+    v-model="query"
+    prepend-icon="riSearch2Line"
+    class="px-4 mt-4 mb-2"
+    placeholder="Search blocks"
+  />
   <div class="scroll bg-scroll overflow-auto px-4 flex-1 overflow-auto">
     <template v-for="(items, catId) in taskList" :key="catId">
       <div class="flex items-center top-0 space-x-2 mb-2">
@@ -161,6 +166,7 @@
   </div>
 </template>
 <script setup>
+import { computed, ref } from 'vue';
 import { tasks, categories } from '@/utils/shared';
 
 defineProps({
@@ -184,13 +190,6 @@ defineEmits([
   'showDataColumns',
 ]);
 
-const taskList = Object.keys(tasks).reduce((arr, key) => {
-  const task = tasks[key];
-
-  (arr[task.category] = arr[task.category] || []).push({ id: key, ...task });
-
-  return arr;
-}, {});
 const icons = [
   'riGlobalLine',
   'riFileTextLine',
@@ -205,4 +204,20 @@ const icons = [
   'riDownloadLine',
   'riCommandLine',
 ];
+
+const query = ref('');
+const taskList = computed(() =>
+  Object.keys(tasks).reduce((arr, key) => {
+    const task = tasks[key];
+
+    if (tasks[key].name.toLowerCase().includes(query.value.toLowerCase())) {
+      (arr[task.category] = arr[task.category] || []).push({
+        id: key,
+        ...task,
+      });
+    }
+
+    return arr;
+  }, {})
+);
 </script>

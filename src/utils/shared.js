@@ -1,4 +1,4 @@
-/* to-do screenshot, looping, cookies, assets, tab loaded, opened tab, and close tab block? */
+/* to-do screenshot, looping, cookies, assets, tab loaded, opened tab, and run workflow block? */
 
 export const tasks = {
   trigger: {
