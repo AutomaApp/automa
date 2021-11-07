@@ -7,15 +7,27 @@
   >
     <slot></slot>
     <div class="absolute z-10 p-4 bottom-0 left-0">
-      <button class="p-2 rounded-lg bg-white mr-2" @click="editor.zoom_reset()">
+      <button
+        v-tooltip.group="'Reset zoom'"
+        class="p-2 rounded-lg bg-white mr-2"
+        @click="editor.zoom_reset()"
+      >
         <v-remixicon name="riFullscreenLine" />
       </button>
       <div class="rounded-lg bg-white inline-block">
-        <button class="p-2 rounded-lg relative z-10" @click="editor.zoom_out()">
+        <button
+          v-tooltip.group="'Zoom out'"
+          class="p-2 rounded-lg relative z-10"
+          @click="editor.zoom_out()"
+        >
           <v-remixicon name="riSubtractLine" />
         </button>
         <hr class="h-6 border-r inline-block" />
-        <button class="p-2 rounded-lg" @click="editor.zoom_in()">
+        <button
+          v-tooltip.group="'Zoom in'"
+          class="p-2 rounded-lg"
+          @click="editor.zoom_in()"
+        >
           <v-remixicon name="riAddLine" />
         </button>
       </div>
@@ -27,6 +39,7 @@
 import { onMounted, shallowRef, getCurrentInstance } from 'vue';
 import emitter from 'tiny-emitter/instance';
 import { tasks } from '@/utils/shared';
+import { useGroupTooltip } from '@/composable/groupTooltip';
 import drawflow from '@/lib/drawflow';
 
 export default {
@@ -38,6 +51,8 @@ export default {
   },
   emits: ['load', 'deleteBlock'],
   setup(props, { emit }) {
+    useGroupTooltip();
+
     const editor = shallowRef(null);
 
     function dropHandler({ dataTransfer, clientX, clientY }) {
