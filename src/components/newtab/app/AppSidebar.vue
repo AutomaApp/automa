@@ -87,7 +87,7 @@ const tabs = [
     path: '/',
   },
   {
-    name: 'Worfklows',
+    name: 'Workflows',
     icon: 'riFlowChart',
     path: '/workflows',
   },
