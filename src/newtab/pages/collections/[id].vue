@@ -84,7 +84,25 @@
           </ui-tabs>
         </div>
         <ui-tab-panels v-model="state.activeTab">
-          <ui-tab-panel value="flow">
+          <ui-tab-panel class="relative" value="flow">
+            <div
+              v-if="collection.flow.length === 0"
+              class="
+                border
+                text-gray-600
+                absolute
+                top-0
+                w-full
+                z-0
+                dark:text-gray-200
+                rounded-lg
+                border-dashed
+                text-center
+                p-4
+              "
+            >
+              Drop a workflow or block in here
+            </div>
             <draggable
               :model-value="collectionFlow"
               item-key="id"
@@ -114,6 +132,13 @@
             </draggable>
           </ui-tab-panel>
           <ui-tab-panel value="logs">
+            <div v-if="logs.length === 0" class="text-center">
+              <img
+                src="@/assets/svg/files-and-folder.svg"
+                class="mx-auto max-w-sm"
+              />
+              <p class="text-xl font-semibold">No data to show</p>
+            </div>
             <shared-logs-table :logs="logs" class="w-full">
               <template #item-append="{ log }">
                 <td class="text-right">
@@ -127,6 +152,13 @@
             </shared-logs-table>
           </ui-tab-panel>
           <ui-tab-panel value="running">
+            <div v-if="runningCollection.length === 0" class="text-center">
+              <img
+                src="@/assets/svg/files-and-folder.svg"
+                class="mx-auto max-w-sm"
+              />
+              <p class="text-xl font-semibold">No data to show</p>
+            </div>
             <div class="grid grid-cols-2 gap-4">
               <shared-workflow-state
                 v-for="item in runningCollection"
@@ -136,24 +168,6 @@
             </div>
           </ui-tab-panel>
         </ui-tab-panels>
-        <div
-          v-if="collection.flow.length === 0"
-          class="
-            border
-            text-gray-600
-            absolute
-            top-16
-            w-full
-            z-0
-            dark:text-gray-200
-            rounded-lg
-            border-dashed
-            text-center
-            p-4
-          "
-        >
-          Drop a workflow or block in here
-        </div>
       </div>
     </div>
   </div>

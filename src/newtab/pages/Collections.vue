@@ -15,6 +15,20 @@
         New collection
       </ui-button>
     </div>
+    <div
+      v-if="Collection.query().count() === 0"
+      class="py-12 flex items-center"
+    >
+      <img src="@/assets/svg/alien.svg" class="w-96" />
+      <div class="ml-4">
+        <h1 class="text-2xl font-semibold max-w-md mb-6">
+          Oppss... It's looks like you don't have any collections.
+        </h1>
+        <ui-button variant="accent" @click="newCollection">
+          New collection
+        </ui-button>
+      </div>
+    </div>
     <div class="grid gap-4 grid-cols-5 2xl:grid-cols-6">
       <shared-card
         v-for="collection in collections"
