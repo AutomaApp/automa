@@ -89,9 +89,8 @@
             <div class="grid grid-cols-2 gap-4">
               <shared-workflow-state
                 v-for="item in workflowState"
-                :id="item.id"
                 :key="item.id"
-                :state="item.state"
+                :data="item"
               />
             </div>
           </template>
@@ -162,7 +161,10 @@ const workflowState = computed(() =>
 );
 const workflow = computed(() => Workflow.find(workflowId) || {});
 const logs = computed(() =>
-  Log.query().where('workflowId', workflowId).orderBy('startedAt', 'desc').get()
+  Log.query()
+    .where((item) => item.workflowId === workflowId && !item.isInCollection)
+    .orderBy('startedAt', 'desc')
+    .get()
 );
 
 const updateBlockData = debounce((data) => {

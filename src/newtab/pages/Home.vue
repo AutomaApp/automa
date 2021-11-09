@@ -7,13 +7,14 @@
           <p v-if="workflows.length === 0" class="text-center text-gray-600">
             No data
           </p>
-          <workflow-card
+          <shared-card
             v-for="workflow in workflows"
             :key="workflow.id"
-            :workflow="workflow"
+            :data="workflow"
             :show-details="false"
             style="max-width: 250px"
             @execute="executeWorkflow"
+            @click="$router.push(`/workflows/${$event.id}`)"
           />
         </div>
         <div>
@@ -38,9 +39,8 @@
         </p>
         <shared-workflow-state
           v-for="item in workflowState"
-          :id="item.id"
+          v-bind="{ data: item }"
           :key="item.id"
-          :state="item.state"
           class="w-full"
         />
       </div>
@@ -53,7 +53,7 @@ import { useStore } from 'vuex';
 import { sendMessage } from '@/utils/message';
 import Log from '@/models/log';
 import Workflow from '@/models/workflow';
-import WorkflowCard from '@/components/newtab/workflow/WorkflowCard.vue';
+import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
 import SharedWorkflowState from '@/components/newtab/shared/SharedWorkflowState.vue';
 
@@ -63,9 +63,15 @@ const workflows = computed(() =>
   Workflow.query().orderBy('createdAt', 'desc').limit(3).get()
 );
 const logs = computed(() =>
-  Log.query().orderBy('startedAt', 'desc').limit(10).get()
+  Log.query()
+    .where('isInCollection', false)
+    .orderBy('startedAt', 'desc')
+    .limit(10)
+    .get()
 );
-const workflowState = computed(() => store.state.workflowState);
+const workflowState = computed(() =>
+  store.state.workflowState.filter(({ isInCollection }) => !isInCollection)
+);
 
 function executeWorkflow(workflow) {
   sendMessage('workflow:execute', workflow, 'background');

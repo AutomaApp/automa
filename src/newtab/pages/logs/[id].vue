@@ -24,14 +24,23 @@
     </div>
     <div class="flex items-start">
       <ui-list class="w-7/12 mr-6">
+        <router-link
+          v-if="collectionLog"
+          :to="activeLog.collectionLogId"
+          class="mb-4 flex block"
+        >
+          <v-remixicon name="riArrowLeftLine" class="mr-2" />
+          Go back
+          <span class="font-semibold mx-1">{{ collectionLog.name }}</span> log
+        </router-link>
         <ui-list-item v-for="(item, index) in activeLog.history" :key="index">
           <span
-            :class="logsType[item.type].color"
+            :class="logsType[item.type]?.color"
             class="p-1 rounded-lg align-middle inline-block mr-2"
           >
-            <v-remixicon :name="logsType[item.type].icon" size="20" />
+            <v-remixicon :name="logsType[item.type]?.icon" size="20" />
           </span>
-          <div class="flex-1">
+          <div class="flex-1 text-overflow pr-2">
             <p class="w-full text-overflow leading-tight">
               {{ item.name }}
             </p>
@@ -41,14 +50,21 @@
               class="
                 text-sm
                 leading-tight
-                line-clamp
-                text-gray-600
+                text-overflow text-gray-600
                 dark:text-gray-200
               "
             >
               {{ item.message }}
             </p>
           </div>
+          <router-link
+            v-if="item.logId"
+            :to="'/logs/' + item.logId"
+            class="mr-4"
+            title="Open log detail"
+          >
+            <v-remixicon name="riExternalLinkLine" />
+          </router-link>
           <p class="text-gray-600">
             {{ countDuration(0, item.duration || 0) }}
           </p>
@@ -77,6 +93,10 @@ const logsType = {
     color: 'bg-yellow-200',
     icon: 'riStopLine',
   },
+  stopped: {
+    color: 'bg-yellow-200',
+    icon: 'riStopLine',
+  },
   error: {
     color: 'bg-red-200',
     icon: 'riErrorWarningLine',
@@ -91,6 +111,7 @@ const route = useRoute();
 const router = useRouter();
 
 const activeLog = computed(() => Log.find(route.params.id));
+const collectionLog = computed(() => Log.find(activeLog.value.collectionLogId));
 
 function deleteLog() {
   Log.delete(route.params.id).then(() => {

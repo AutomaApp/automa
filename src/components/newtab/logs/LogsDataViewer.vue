@@ -48,7 +48,9 @@ const props = defineProps({
   },
 });
 
-const data = generateJSON(Object.keys(props.log.data), props.log.data);
+const data = Array.isArray(props.log.data)
+  ? props.log.data
+  : generateJSON(Object.keys(props.log.data), props.log.data);
 const dataStr = JSON.stringify(data, null, 2);
 
 const fileName = ref(props.log.name);

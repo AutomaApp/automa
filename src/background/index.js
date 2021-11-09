@@ -2,6 +2,7 @@ import browser from 'webextension-polyfill';
 import { MessageListener } from '@/utils/message';
 import workflowState from './workflow-state';
 import WorkflowEngine from './workflow-engine';
+import CollectionEngine from './collection-engine';
 
 function getWorkflow(workflowId) {
   return new Promise((resolve) => {
@@ -14,15 +15,16 @@ function getWorkflow(workflowId) {
 }
 
 const runningWorkflows = {};
+const runningCollections = {};
 
 async function executeWorkflow(workflow, tabId) {
   try {
-    const engine = new WorkflowEngine(workflow, tabId);
+    const engine = new WorkflowEngine(workflow, { tabId });
 
     runningWorkflows[engine.id] = engine;
 
     engine.init();
-    engine.on('destroyed', (id) => {
+    engine.on('destroyed', ({ id }) => {
       delete runningWorkflows[id];
     });
 
@@ -31,6 +33,18 @@ async function executeWorkflow(workflow, tabId) {
     console.error(error);
     return error;
   }
+}
+function executeCollection(collection) {
+  const engine = new CollectionEngine(collection);
+
+  runningCollections[engine.id] = engine;
+
+  engine.init();
+  engine.on('destroyed', (id) => {
+    delete runningWorkflows[id];
+  });
+
+  return true;
 }
 
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
@@ -66,6 +80,7 @@ chrome.runtime.onInstalled.addListener((details) => {
       .set({
         logs: [],
         workflows: [],
+        collections: [],
         shortcuts: {},
         workflowState: [],
         isFirstTime: true,
@@ -85,6 +100,17 @@ chrome.runtime.onInstalled.addListener((details) => {
 });
 
 const message = new MessageListener('background');
+
+message.on('collection:execute', executeCollection);
+message.on('collection:stop', (id) => {
+  const collection = runningCollections[id];
+  if (!collection) {
+    workflowState.delete(id);
+    return;
+  }
+
+  collection.stop();
+});
 
 message.on('workflow:execute', (workflow) => executeWorkflow(workflow));
 message.on('workflow:stop', (id) => {

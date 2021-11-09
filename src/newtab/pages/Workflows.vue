@@ -43,15 +43,14 @@
         >
       </div>
     </div>
-    <div v-else class="grid gap-4 grid-cols-5">
-      <workflow-card
+    <div v-else class="grid gap-4 grid-cols-5 2xl:grid-cols-6">
+      <shared-card
         v-for="workflow in workflows"
+        v-bind="{ data: workflow, menu }"
         :key="workflow.id"
-        v-bind="{ workflow }"
-        @export="exportWorkflow"
-        @delete="deleteWorkflow"
-        @rename="renameWorkflow"
+        @click="$router.push(`/workflows/${$event.id}`)"
         @execute="executeWorkflow"
+        @menuSelected="menuHandlers[$event.name]($event.data)"
       />
     </div>
   </div>
@@ -61,7 +60,7 @@ import { computed, shallowReactive } from 'vue';
 import { useDialog } from '@/composable/dialog';
 import { sendMessage } from '@/utils/message';
 import { exportWorkflow, importWorkflow } from '@/utils/workflow-data';
-import WorkflowCard from '@/components/newtab/workflow/WorkflowCard.vue';
+import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 import Workflow from '@/models/workflow';
 
 const dialog = useDialog();
@@ -70,6 +69,12 @@ const sorts = [
   { name: 'Name', id: 'name' },
   { name: 'Created date', id: 'createdAt' },
 ];
+const menu = [
+  { name: 'export', icon: 'riDownloadLine' },
+  { name: 'rename', icon: 'riPencilLine' },
+  { name: 'delete', icon: 'riDeleteBin7Line' },
+];
+
 const state = shallowReactive({
   query: '',
   sortBy: 'createdAt',
@@ -96,7 +101,7 @@ function newWorkflow() {
     onConfirm: (name) => {
       Workflow.insert({
         data: {
-          name,
+          name: name || 'Unnamed',
           createdAt: Date.now(),
         },
       });
@@ -129,6 +134,12 @@ function renameWorkflow({ id, name }) {
     },
   });
 }
+
+const menuHandlers = {
+  export: exportWorkflow,
+  rename: renameWorkflow,
+  delete: deleteWorkflow,
+};
 </script>
 <style>
 .workflow-sort select {

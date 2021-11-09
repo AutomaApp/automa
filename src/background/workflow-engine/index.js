@@ -5,7 +5,7 @@ import { toCamelCase } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
 import referenceData from '@/utils/reference-data';
 import errorMessage from './error-message';
-import workflowState from './workflow-state';
+import workflowState from '../workflow-state';
 import * as blocksHandler from './blocks-handler';
 
 let reloadTimeout;
@@ -31,7 +31,7 @@ function tabRemovedHandler(tabId) {
   delete this.tabId;
 
   if (tasks[this.currentBlock.name].category === 'interaction') {
-    this.destroy('error');
+    this.destroy('error', 'Current active tab is removed');
   }
 
   workflowState.update(this.id, this.state);
@@ -74,10 +74,12 @@ function tabUpdatedHandler(tabId, changeInfo) {
 }
 
 class WorkflowEngine {
-  constructor(workflow, tabId = null) {
+  constructor(workflow, { tabId = null, isInCollection, collectionLogId }) {
     this.id = nanoid();
     this.tabId = tabId;
     this.workflow = workflow;
+    this.isInCollection = isInCollection;
+    this.collectionLogId = collectionLogId;
     this.data = {};
     this.blocks = {};
     this.eventListeners = {};
@@ -137,8 +139,9 @@ class WorkflowEngine {
 
     workflowState
       .add(this.id, {
-        workflowId: this.workflow.id,
         state: this.state,
+        workflowId: this.workflow.id,
+        isInCollection: this.isInCollection,
       })
       .then(() => {
         this._blockHandler(triggerBlock);
@@ -166,8 +169,10 @@ class WorkflowEngine {
     this.destroy('stopped');
   }
 
-  async destroy(status) {
+  async destroy(status, message) {
     try {
+      this.dispatchEvent('destroyed', { id: this.id, status, message });
+
       this.eventListeners = {};
       this.tabMessageListeners = {};
       this.tabUpdatedListeners = {};
@@ -195,12 +200,12 @@ class WorkflowEngine {
           history: this.logs,
           endedAt: this.endedTimestamp,
           startedAt: this.startedTimestamp,
+          isInCollection: this.isInCollection,
+          collectionLogId: this.collectionLogId,
         });
 
         await browser.storage.local.set({ logs });
       }
-
-      this.dispatchEvent('destroyed', this.id);
     } catch (error) {
       console.error(error);
     }
@@ -222,6 +227,7 @@ class WorkflowEngine {
       'isPaused',
       'isDestroyed',
       'currentBlock',
+      'isInCollection',
       'startedTimestamp',
     ];
     const state = keys.reduce((acc, key) => {
@@ -252,6 +258,7 @@ class WorkflowEngine {
     this.currentBlock = block;
 
     workflowState.update(this.id, this.state);
+    this.dispatchEvent('update', this.state);
 
     const started = Date.now();
     const isInteraction = tasks[block.name].category === 'interaction';
@@ -304,7 +311,7 @@ class WorkflowEngine {
               error.data || ''
             );
           } else {
-            this.destroy('error');
+            this.destroy('error', error.message);
           }
 
           clearTimeout(this.workflowTimeout);

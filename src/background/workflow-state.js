@@ -22,11 +22,11 @@ class WorkflowState {
     try {
       let { workflowState } = await browser.storage.local.get('workflowState');
 
-      if (filter) {
+      if (workflowState && filter) {
         workflowState = workflowState.filter(filter);
       }
 
-      return workflowState;
+      return workflowState || [];
     } catch (error) {
       console.error(error);
 

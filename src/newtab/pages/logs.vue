@@ -109,7 +109,7 @@ const exportDataModal = shallowReactive({
 
 const filteredLogs = computed(() =>
   Log.query()
-    .where(({ name, status, startedAt }) => {
+    .where(({ name, status, startedAt, isInCollection }) => {
       let statusFilter = true;
       let dateFilter = true;
       const searchFilter = name
@@ -126,7 +126,7 @@ const filteredLogs = computed(() =>
         dateFilter = date <= startedAt;
       }
 
-      return searchFilter && statusFilter && dateFilter;
+      return !isInCollection && searchFilter && statusFilter && dateFilter;
     })
     .orderBy(sortsBuilder.by, sortsBuilder.order)
     .get()

@@ -92,6 +92,11 @@ const tabs = [
     path: '/workflows',
   },
   {
+    name: 'Collections',
+    icon: 'riFolderLine',
+    path: '/collections',
+  },
+  {
     name: 'Logs',
     icon: 'riHistoryLine',
     path: '/logs',

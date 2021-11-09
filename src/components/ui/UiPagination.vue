@@ -2,6 +2,7 @@
   <div class="flex items-center">
     <ui-button
       v-tooltip="'Previous page'"
+      :disabled="modelValue <= 1"
       icon
       @click="updatePage(modelValue - 1)"
     >
@@ -30,7 +31,12 @@
       of
       {{ maxPage }}
     </div>
-    <ui-button v-tooltip="'Next page'" icon @click="updatePage(modelValue + 1)">
+    <ui-button
+      v-tooltip="'Next page'"
+      :disabled="modelValue >= maxPage"
+      icon
+      @click="updatePage(modelValue + 1)"
+    >
       <v-remixicon rotate="180" name="riArrowLeftSLine" />
     </ui-button>
   </div>

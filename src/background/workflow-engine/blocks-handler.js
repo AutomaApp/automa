@@ -258,8 +258,10 @@ export async function takeScreenshot(block) {
 
       const uri = await browser.tabs.captureVisibleTab(options);
 
-      await browser.windows.update(tab.windowId, { focused: true });
-      await browser.tabs.update(tab.id, { active: true });
+      if (tab) {
+        await browser.windows.update(tab.windowId, { focused: true });
+        await browser.tabs.update(tab.id, { active: true });
+      }
 
       saveImage(uri);
     } else {
