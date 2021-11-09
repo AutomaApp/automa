@@ -5,6 +5,7 @@ import { tasks } from '@/utils/shared';
 import dataExporter from '@/utils/data-exporter';
 import compareBlockValue from '@/utils/compare-block-value';
 import errorMessage from './error-message';
+import { executeWebhook } from '@/utils/webhookUtil';
 
 function getBlockConnection(block, index = 1) {
   const blockId = block.outputs[`output_${index}`]?.connections[0]?.node;
@@ -449,6 +450,30 @@ export function repeatTask({ data, id, outputs }) {
         data: data.repeatFor,
         nextBlockId: getBlockConnection({ outputs }, 2),
       });
+    }
+  });
+}
+
+export function webhook({ data, outputs }) {
+  return new Promise((resolve, reject) => {
+    if (!data.url) {
+      reject(new Error('URL is empty'));
+      return;
+    }
+    try {
+      const url = new URL(data.url);
+
+      if (!url.protocol.startsWith('http')) {
+        reject(new Error('URL is not valid'));
+        return;
+      }
+      executeWebhook({ ...data, workflowData: this.data });
+      resolve({
+        data: '',
+        nextBlockId: getBlockConnection({ outputs }),
+      });
+    } catch (error) {
+      reject(error);
     }
   });
 }
