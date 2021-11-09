@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 body {
-	font-family: 'Inter var';
+  font-family: 'Inter var';
   font-size: 16px;
-  font-feature-settings: "cv02","cv03","cv04","cv11";
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   @apply bg-gray-50 dark:bg-gray-900;
 }
 table th,
@@ -16,11 +16,10 @@ input:focus,
 button:focus,
 textarea:focus,
 select:focus,
-[role="button"]:focus {
-	outline: none;
-	@apply ring-2 ring-accent dark:ring-gray-200;
+[role='button']:focus {
+  outline: none;
+  @apply ring-2 ring-accent dark:ring-gray-200;
 }
-
 
 .text-overflow {
   overflow: hidden;
@@ -57,6 +56,6 @@ select:focus,
     @apply bg-black bg-opacity-5 hover:bg-opacity-10 dark:bg-gray-200 dark:bg-opacity-5 dark:hover:bg-opacity-10;
   }
   .bg-box-transparent {
-  	@apply bg-black bg-opacity-5 dark:bg-gray-200 dark:bg-opacity-5;
+    @apply bg-black bg-opacity-5 dark:bg-gray-200 dark:bg-opacity-5;
   }
 }
