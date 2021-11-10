@@ -252,9 +252,14 @@ class WorkflowEngine {
       return;
     }
 
-    this.workflowTimeout = setTimeout(() => {
-      if (!this.isDestroyed) this.stop('Workflow stopped because of timeout');
-    }, this.workflow.settings.timeout || 120000);
+    const disableTimeoutKeys = ['delay', 'javascript-code'];
+
+    if (!disableTimeoutKeys.includes(block.name)) {
+      this.workflowTimeout = setTimeout(() => {
+        if (!this.isDestroyed) this.stop('Workflow stopped because of timeout');
+      }, this.workflow.settings.timeout || 120000);
+    }
+
     this.currentBlock = block;
 
     workflowState.update(this.id, this.state);
@@ -273,6 +278,9 @@ class WorkflowEngine {
       handler
         .call(this, block, prevBlockData)
         .then((result) => {
+          clearTimeout(this.workflowTimeout);
+          this.workflowTimeout = null;
+
           if (result.nextBlockId) {
             this.logs.push({
               type: 'success',
@@ -291,9 +299,6 @@ class WorkflowEngine {
             this.dispatchEvent('finish');
             this.destroy('success');
           }
-
-          clearTimeout(this.workflowTimeout);
-          this.workflowTimeout = null;
         })
         .catch((error) => {
           this.logs.push({
