@@ -18,3 +18,12 @@ A clear and concise description of any alternative solutions or features you've 
 
 **Additional context**
 Add any other context or screenshots about the feature request here.
+
+---
+name: Multiple inputs in one Form
+about: When I put data to register form. I want to create one form but I can put more inputs for email, password, full name ....
+title: ''
+labels: ''
+assignees: ''
+
+---
