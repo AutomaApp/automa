@@ -1,10 +1,13 @@
-import objectPath from 'object-path';
+import { get, set } from 'object-path-immutable';
 import { isObject, objectHasKey } from '@/utils/helper';
+
+const objectPath = { get, set };
 
 function parseKey(key) {
   const [dataKey, path] = key.split('@');
 
-  if (dataKey === 'prevBlockData') return { dataKey, path: path || '0' };
+  if (['prevBlockData', 'loopData'].includes(dataKey))
+    return { dataKey, path: path || '0' };
 
   const pathArr = path.split('.');
   let dataPath = '';
@@ -29,11 +32,12 @@ function parseKey(key) {
 
 export default function (block, data) {
   const replaceKeys = ['url', 'fileName', 'name', 'value'];
+  let replacedBlock = block;
 
   replaceKeys.forEach((blockDataKey) => {
     if (!objectHasKey(block.data, blockDataKey)) return;
 
-    const newDataValue = block.data[blockDataKey].replace(
+    const newDataValue = replacedBlock.data[blockDataKey].replace(
       /\[(.+?)]/g,
       (match) => {
         const key = match.replace(/\[|]/g, '');
@@ -46,10 +50,16 @@ export default function (block, data) {
           return data.prevBlockData;
         }
 
-        return objectPath.get(data, `${dataKey}.${path}`) || match;
+        return objectPath.get(data[dataKey], path) ?? match;
       }
     );
 
-    block.data[blockDataKey] = newDataValue;
+    replacedBlock = objectPath.set(
+      replacedBlock,
+      `data.${blockDataKey}`,
+      newDataValue
+    );
   });
+
+  return replacedBlock;
 }

@@ -12,10 +12,12 @@
       :is="data.editComponent"
       v-if="blockData"
       v-model:data="blockData"
+      :block-id="data.blockId"
     />
   </div>
 </template>
-<script>
+<script></script>
+<script setup>
 import { computed } from 'vue';
 
 const editComponents = require.context(
@@ -23,6 +25,7 @@ const editComponents = require.context(
   false,
   /^(?:.*\/)?Edit[^/]*\.vue$/
 );
+/* eslint-disable-next-line */
 const components = editComponents.keys().reduce((acc, key) => {
   const name = key.replace(/(.\/)|\.vue$/g, '');
   const componentObj = editComponents(key)?.default ?? {};
@@ -35,8 +38,7 @@ const components = editComponents.keys().reduce((acc, key) => {
 export default {
   components,
 };
-</script>
-<script setup>
+
 const props = defineProps({
   data: {
     type: Object,

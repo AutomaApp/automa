@@ -382,6 +382,40 @@ export const tasks = {
       content: '{\n "key": "{%data[0].key%}" \n}',
     },
   },
+  'loop-data': {
+    name: 'Loop data',
+    icon: 'riRefreshLine',
+    component: 'BlockBasic',
+    editComponent: 'EditLoopData',
+    category: 'general',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      name: '',
+      loopId: '',
+      maxLoop: 0,
+      loopData: '[]',
+      description: '',
+      loopThrough: 'data-columns',
+    },
+  },
+  'loop-breakpoint': {
+    name: 'Loop breakpoint',
+    description: 'To tell where loop data must stop',
+    icon: 'riStopLine',
+    component: 'BlockLoopBreakpoint',
+    category: 'general',
+    disableEdit: true,
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      loopId: '',
+    },
+  },
 };
 
 export const categories = {

@@ -1,3 +1,28 @@
+export function openFilePicker(acceptedFileTypes = [], attrs = {}) {
+  return new Promise((resolve, reject) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = acceptedFileTypes.join(',');
+
+    Object.entries(attrs).forEach(([key, value]) => {
+      input[key] = value;
+    });
+
+    input.onchange = (event) => {
+      const file = event.target.files[0];
+
+      if (!file || !acceptedFileTypes.includes(file.type)) {
+        reject(new Error(`Invalid ${file.type} file type`));
+        return;
+      }
+
+      resolve(file);
+    };
+
+    input.click();
+  });
+}
+
 export function fileSaver(fileName, data) {
   const anchor = document.createElement('a');
   anchor.download = fileName;

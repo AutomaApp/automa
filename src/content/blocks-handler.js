@@ -158,6 +158,11 @@ export function forms(block) {
     const { data } = block;
     const elements = handleElement(block, true);
 
+    if (block.data.value.trim().length === 0) {
+      resolve('');
+      return;
+    }
+
     if (data.multiple) {
       const promises = Array.from(elements).map((element) => {
         return new Promise((eventResolve) => {

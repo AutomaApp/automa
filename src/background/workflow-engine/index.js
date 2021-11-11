@@ -84,6 +84,8 @@ class WorkflowEngine {
     this.blocks = {};
     this.eventListeners = {};
     this.repeatedTasks = {};
+    this.loopList = {};
+    this.loopData = {};
     this.logs = [];
     this.isPaused = false;
     this.isDestroyed = false;
@@ -273,10 +275,14 @@ class WorkflowEngine {
     const handler = blocksHandler[handlerName];
 
     if (handler) {
-      referenceData(block, { data: this.data, prevBlockData });
+      const replacedBlock = referenceData(block, {
+        prevBlockData,
+        data: this.data,
+        loopData: this.loopData,
+      });
 
       handler
-        .call(this, block, prevBlockData)
+        .call(this, replacedBlock, prevBlockData)
         .then((result) => {
           clearTimeout(this.workflowTimeout);
           this.workflowTimeout = null;

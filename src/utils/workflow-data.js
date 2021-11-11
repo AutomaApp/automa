@@ -1,35 +1,23 @@
-import { fileSaver } from './helper';
+import { fileSaver, openFilePicker } from './helper';
 import Workflow from '@/models/workflow';
 
 export function importWorkflow() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'application/json';
+  openFilePicker(['application/json'])
+    .then((file) => {
+      const reader = new FileReader();
 
-  input.onchange = (event) => {
-    const file = event.target.files[0];
-
-    if (!file || file.type !== 'application/json') {
-      alert('Invalid file');
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = ({ target }) => {
-      try {
+      reader.onload = ({ target }) => {
         const workflow = JSON.parse(target.result);
 
         Workflow.insert({ data: { ...workflow, createdAt: Date.now() } });
-      } catch (error) {
-        console.error(error);
-      }
-    };
+      };
 
-    reader.readAsText(file);
-  };
-
-  input.click();
+      reader.readAsText(file);
+    })
+    .catch((error) => {
+      alert(error.message);
+      console.error(error);
+    });
 }
 
 export function exportWorkflow(workflow) {

@@ -2,7 +2,7 @@
 import browser from 'webextension-polyfill';
 import { objectHasKey, fileSaver, isObject } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
-import dataExporter from '@/utils/data-exporter';
+import dataExporter, { generateJSON } from '@/utils/data-exporter';
 import compareBlockValue from '@/utils/compare-block-value';
 import errorMessage from './error-message';
 import { executeWebhook } from '@/utils/webhookUtil';
@@ -81,6 +81,60 @@ export async function trigger(block) {
 
     throw errorInstance;
   }
+}
+
+export function loopBreakpoint(block, prevBlockData) {
+  return new Promise((resolve) => {
+    const currentLoop = this.loopList[block.data.loopId];
+
+    if (
+      currentLoop &&
+      currentLoop.index < currentLoop.maxLoop - 1 &&
+      currentLoop.index <= currentLoop.data.length - 1
+    ) {
+      resolve({
+        data: '',
+        nextBlockId: currentLoop.blockId,
+      });
+    } else {
+      resolve({
+        data: prevBlockData,
+        nextBlockId: getBlockConnection(block),
+      });
+    }
+  });
+}
+
+export function loopData(block) {
+  return new Promise((resolve) => {
+    const { data } = block;
+
+    if (this.loopList[data.loopId]) {
+      this.loopList[data.loopId].index += 1;
+      this.loopData[data.loopId] =
+        this.loopList[data.loopId].data[this.loopList[data.loopId].index];
+    } else {
+      const currLoopData =
+        data.loopThrough === 'data-columns'
+          ? generateJSON(Object.keys(this.data), this.data)
+          : JSON.parse(data.loopData);
+
+      this.loopList[data.loopId] = {
+        index: 0,
+        data: currLoopData,
+        id: data.loopId,
+        blockId: block.id,
+        maxLoop: data.maxLoop || currLoopData.length,
+      };
+      /* eslint-disable-next-line */
+      this.loopData[data.loopId] = currLoopData[0];
+    }
+
+    resolve({
+      data: this.loopData[data.loopId],
+      nextBlockId: getBlockConnection(block),
+    });
+  });
 }
 
 export function goBack(block) {

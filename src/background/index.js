@@ -79,9 +79,9 @@ chrome.runtime.onInstalled.addListener((details) => {
     browser.storage.local
       .set({
         logs: [],
+        shortcuts: {},
         workflows: [],
         collections: [],
-        shortcuts: {},
         workflowState: [],
         isFirstTime: true,
         visitWebTriggers: [],
