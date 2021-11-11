@@ -25,6 +25,7 @@ const editComponents = require.context(
   false,
   /^(?:.*\/)?Edit[^/]*\.vue$/
 );
+
 /* eslint-disable-next-line */
 const components = editComponents.keys().reduce((acc, key) => {
   const name = key.replace(/(.\/)|\.vue$/g, '');

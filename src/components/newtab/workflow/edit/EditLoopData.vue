@@ -63,17 +63,23 @@
         >
           <v-remixicon name="riSettings3Line" />
         </ui-button>
-        <p class="ml-4 flex-1 text-overflow">{{ file.name }}</p>
-        <p>Max file size: 1MB</p>
+        <p class="flex-1 text-overflow mx-4">{{ file.name }}</p>
+        <template v-if="data.loopData.length > maxStrLength">
+          <p class="mr-2">File too large to edit</p>
+          <ui-button @click="updateData({ loopData: '[]' })"
+            >Clear data</ui-button
+          >
+        </template>
       </div>
       <div style="height: calc(100vh - 11rem)">
-        <!-- <prism-editor
-          v-model="data"
+        <prism-editor
           v-show="!state.showOptions"
-          class="py-4"
+          v-model="state.tempLoopData"
           :highlight="highlighter('json')"
-          line-numbers
-        /> -->
+          :readonly="data.loopData.length > maxStrLength"
+          class="py-4"
+          @input="updateData({ loopData: $event.target.value })"
+        />
         <div v-show="state.showOptions">
           <p class="font-semibold mb-2">CSV</p>
           <ui-checkbox v-model="options.header">
@@ -87,7 +93,9 @@
 <script setup>
 import { onMounted, shallowReactive } from 'vue';
 import { nanoid } from 'nanoid';
+import { PrismEditor } from 'vue-prism-editor';
 import Papa from 'papaparse';
+import { highlighter } from '@/lib/prism';
 import { openFilePicker } from '@/utils/helper';
 
 const props = defineProps({
@@ -102,13 +110,19 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:data']);
 
+const maxStrLength = 5e4;
 const maxFileSize = 1024 * 1024;
 const loopTypes = [
   { id: 'data-columns', name: 'Data columns' },
   { id: 'custom-data', name: 'Custom data' },
 ];
+const tempLoopData =
+  props.data.loopData.length > maxStrLength
+    ? props.data.loopData.slice(0, maxStrLength)
+    : props.data.loopData;
 
 const state = shallowReactive({
+  tempLoopData,
   showOptions: false,
   showDataModal: false,
   workflowLoopData: {},
@@ -117,6 +131,7 @@ const options = shallowReactive({
   header: true,
 });
 const file = shallowReactive({
+  size: 0,
   name: '',
   type: '',
 });
@@ -159,7 +174,13 @@ function importFile() {
         }
 
         if (Array.isArray(loopData)) {
-          updateData({ loopData: JSON.stringify(loopData) });
+          const loopDataStr = JSON.stringify(loopData);
+
+          state.tempLoopData =
+            loopDataStr.length > maxStrLength
+              ? loopDataStr.slice(0, maxStrLength)
+              : loopDataStr;
+          updateData({ loopData: loopDataStr });
         }
       };
 

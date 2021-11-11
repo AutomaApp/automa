@@ -21,6 +21,14 @@
     "*.{js,ts,vue}": "eslint --fix"
   },
   "dependencies": {
+    "@codemirror/basic-setup": "^0.19.0",
+    "@codemirror/commands": "^0.19.5",
+    "@codemirror/lang-javascript": "^0.19.2",
+    "@codemirror/lang-json": "^0.19.1",
+    "@codemirror/state": "^0.19.5",
+    "@codemirror/text": "^0.19.5",
+    "@codemirror/theme-one-dark": "^0.19.1",
+    "@codemirror/view": "^0.19.15",
     "@medv/finder": "^2.1.0",
     "@vuex-orm/core": "^0.36.4",
     "@webcomponents/custom-elements": "^1.5.0",
@@ -38,6 +46,7 @@
     "vue": "3.2.19",
     "vue-prism-editor": "^2.0.0-alpha.2",
     "vue-router": "^4.0.11",
+    "vue-virtual-scroller": "^2.0.0-alpha.1",
     "vuedraggable": "^4.1.0",
     "vuex": "^4.0.2",
     "webextension-polyfill": "^0.8.0"
