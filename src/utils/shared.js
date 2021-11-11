@@ -371,15 +371,16 @@ export const tasks = {
     editComponent: 'EditWebhook',
     category: 'general',
     inputs: 1,
-    outputs: 0,
+    outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
     data: {
+      description: '',
       url: '',
       contentType: 'json',
       timeout: 10000,
       headers: [{ name: '', value: '' }],
-      content: '{\n "key": "{%data[0].key%}" \n}',
+      body: '{\n "key": {{ dataColumns@0.key }} \n}',
     },
   },
   'loop-data': {

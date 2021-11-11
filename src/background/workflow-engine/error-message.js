@@ -1,4 +1,4 @@
-import { objectHasKey } from '@/utils/helper';
+import { objectHasKey, replaceMustache } from '@/utils/helper';
 
 const messages = {
   'no-trigger-block': '"{{name}}"" workflow doesn\'t have a trigger block.',
@@ -13,8 +13,8 @@ export default function (errorId, data) {
   if (!message) return `Can't find message for this error (${errorId})`;
 
   /* eslint-disable-next-line */
-  const resultMessage = message.replace(/{{\s*[\w\.]+\s*}}/g, (match) => {
-    const key = match.replace(/{|}/g, '');
+  const resultMessage = replaceMustache(message, (match) => {
+    const key = match.slice(2, -2);
 
     return objectHasKey(data, key) ? data[key] : key;
   });

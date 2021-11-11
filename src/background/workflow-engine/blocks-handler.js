@@ -514,20 +514,21 @@ export function webhook({ data, outputs }) {
       reject(new Error('URL is empty'));
       return;
     }
-    try {
-      const url = new URL(data.url);
 
-      if (!url.protocol.startsWith('http')) {
-        reject(new Error('URL is not valid'));
-        return;
-      }
-      executeWebhook({ ...data, workflowData: this.data });
-      resolve({
-        data: '',
-        nextBlockId: getBlockConnection({ outputs }),
-      });
-    } catch (error) {
-      reject(error);
+    if (!data.url.startsWith('http')) {
+      reject(new Error('URL is not valid'));
+      return;
     }
+
+    executeWebhook(data)
+      .then(() => {
+        resolve({
+          data: '',
+          nextBlockId: getBlockConnection({ outputs }),
+        });
+      })
+      .catch((error) => {
+        reject(error);
+      });
   });
 }

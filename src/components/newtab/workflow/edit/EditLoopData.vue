@@ -66,10 +66,11 @@
         <p class="flex-1 text-overflow mx-4">{{ file.name }}</p>
         <template v-if="data.loopData.length > maxStrLength">
           <p class="mr-2">File too large to edit</p>
-          <ui-button @click="updateData({ loopData: '[]' })"
-            >Clear data</ui-button
-          >
+          <ui-button @click="updateData({ loopData: '[]' })">
+            Clear data
+          </ui-button>
         </template>
+        <p v-else>Max file size is 1MB</p>
       </div>
       <div style="height: calc(100vh - 11rem)">
         <prism-editor

@@ -16,8 +16,7 @@
     />
   </div>
 </template>
-<script></script>
-<script setup>
+<script>
 import { computed } from 'vue';
 
 const editComponents = require.context(
@@ -38,22 +37,26 @@ const components = editComponents.keys().reduce((acc, key) => {
 
 export default {
   components,
+  props: {
+    data: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
+  emits: ['close', 'update'],
+  setup(props, { emit }) {
+    const blockData = computed({
+      get() {
+        return props.data.data || {};
+      },
+      set(value) {
+        emit('update', value);
+      },
+    });
+
+    return {
+      blockData,
+    };
+  },
 };
-
-const props = defineProps({
-  data: {
-    type: Object,
-    default: () => ({}),
-  },
-});
-const emit = defineEmits(['close', 'update']);
-
-const blockData = computed({
-  get() {
-    return props.data.data || {};
-  },
-  set(value) {
-    emit('update', value);
-  },
-});
 </script>

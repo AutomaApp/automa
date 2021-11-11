@@ -65,6 +65,15 @@
     </div>
     <div class="flex-grow"></div>
     <a
+      v-tooltip:right="'Documentation'"
+      href="https://github.com/kholid060/automa/wiki"
+      rel="noopener"
+      class="mb-8"
+      target="_blank"
+    >
+      <v-remixicon name="riBookOpenLine" />
+    </a>
+    <a
       v-tooltip:right="'Github'"
       href="https://github.com/kholid060/automa"
       rel="noopener"

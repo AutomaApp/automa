@@ -1,22 +1,24 @@
-/* eslint-disable no-console */
-import Mustache from 'mustache';
+import { isObject } from './helper';
 
-const customTags = ['{%', '%}'];
-const renderContent = (content, workflowData, contentType) => {
-  console.log('renderContent', content, workflowData);
+const renderContent = (content, contentType) => {
   // 1. render the content
   // 2. if the content type is json then parse the json
   // 3. else parse to form data
-  const renderedJson = JSON.parse(
-    Mustache.render(content, workflowData, {}, customTags)
-  );
+  const renderedJson = JSON.parse(content);
+
   if (contentType === 'form') {
     return Object.keys(renderedJson)
-      .map((key) => {
-        return `${key}=${renderedJson[key]}`;
-      })
+      .map(
+        (key) =>
+          `${key}=${
+            isObject(renderedJson[key])
+              ? JSON.stringify(renderedJson[key])
+              : renderedJson[key]
+          }`
+      )
       .join('&');
   }
+
   return JSON.stringify(renderedJson);
 };
 
@@ -36,44 +38,35 @@ const convertContentType = (contentType) => {
     : 'application/x-www-form-urlencoded';
 };
 
-export function executeWebhook({
+export async function executeWebhook({
   url,
   contentType,
   headers,
   timeout,
-  content,
-  workflowData,
+  body,
 }) {
-  const finalContent = renderContent(content, workflowData, contentType);
-  const finalHeaders = filterHeaders(headers);
-  console.log(
-    'executeWebhook',
-    url,
-    contentType,
-    finalHeaders,
-    timeout,
-    finalContent,
-    workflowData
-  );
   const controller = new AbortController();
   const id = setTimeout(() => {
     controller.abort();
   }, timeout);
 
-  return fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': convertContentType(contentType),
-      ...finalHeaders,
-    },
-    body: finalContent,
-    signal: controller.signal,
-  })
-    .then(() => {
-      clearTimeout(id);
-    })
-    .catch((err) => {
-      clearTimeout(id);
-      throw err;
+  try {
+    const finalHeaders = filterHeaders(headers);
+    const finalContent = renderContent(body, contentType);
+
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': convertContentType(contentType),
+        ...finalHeaders,
+      },
+      body: finalContent,
+      signal: controller.signal,
     });
+
+    clearTimeout(id);
+  } catch (error) {
+    clearTimeout(id);
+    throw error;
+  }
 }
