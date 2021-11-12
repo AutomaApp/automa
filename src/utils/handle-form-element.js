@@ -35,7 +35,7 @@ function formEvent(element, data) {
 }
 function inputText({ data, element, index = 0, callback }) {
   const noDelay = data.delay === 0;
-  const currentChar = data.value[index];
+  const currentChar = data.value[index] ?? '';
 
   if (noDelay) {
     element.value += data.value;
