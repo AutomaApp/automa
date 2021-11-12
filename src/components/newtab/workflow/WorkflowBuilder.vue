@@ -115,7 +115,9 @@ export default {
 
       if (props.data) {
         const data =
-          typeof props.data === 'string' ? JSON.parse(props.data) : props.data;
+          typeof props.data === 'string'
+            ? JSON.parse(props.data.replace(/BlockNewTab/g, 'BlockBasic'))
+            : props.data;
 
         editor.value.import(data);
       } else {
