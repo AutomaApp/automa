@@ -19,6 +19,7 @@
       <ui-checkbox
         v-if="!data.disableMultiple && !hideMultiple"
         class="mr-6"
+        title="Select multiple elements"
         :model-value="data.multiple"
         @change="updateData({ multiple: $event })"
       >
