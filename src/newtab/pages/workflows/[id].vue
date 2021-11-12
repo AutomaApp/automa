@@ -197,6 +197,21 @@ function updateWorkflow(data) {
     data,
   });
 }
+function convertToTimestamp(date, hourMinutes) {
+  let timestamp = Date.now() + 60000;
+  if (date) {
+    const dateObj = new Date(date);
+    if (hourMinutes) {
+      const arr = hourMinutes.split(':');
+      dateObj.setHours(arr[0]);
+      dateObj.setMinutes(arr[1]);
+    }
+
+    timestamp = dateObj.getTime();
+  }
+
+  return timestamp;
+}
 async function handleWorkflowTrigger({ data }) {
   try {
     const workflowAlarm = await browser.alarms.get(workflowId);
@@ -227,7 +242,7 @@ async function handleWorkflowTrigger({ data }) {
 
       if (data.type === 'date') {
         alarmInfo = {
-          when: data.date ? new Date(data.date).getTime() : Date.now() + 60000,
+          when: convertToTimestamp(data.date, data.time),
         };
       } else {
         alarmInfo = {
