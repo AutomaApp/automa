@@ -50,7 +50,9 @@ export default function (block, data) {
           return data.prevBlockData;
         }
 
-        return JSON.stringify(objectPath.get(data[dataKey], path) ?? match);
+        const result = objectPath.get(data[dataKey], path) ?? match;
+
+        return isObject(result) ? JSON.stringify(result) : result;
       }
     );
 
