@@ -157,7 +157,7 @@ export function forms(block) {
   return new Promise((resolve) => {
     const { data } = block;
     const elements = handleElement(block, true);
-    console.log('halo', block.name, data);
+
     if (data.multiple) {
       const promises = Array.from(elements).map((element) => {
         return new Promise((eventResolve) => {

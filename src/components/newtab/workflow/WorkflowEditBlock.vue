@@ -11,6 +11,7 @@
     <component
       :is="data.editComponent"
       v-if="blockData"
+      :key="data.blockId"
       v-model:data="blockData"
       :block-id="data.blockId"
     />
