@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "0.3.0",
+  "version": "0.4.4",
   "description": "An extension for automating your browser by connecting blocks",
   "license": "MIT",
   "repository": {
@@ -28,7 +28,7 @@
     "drawflow": "^0.0.51",
     "mousetrap": "^1.6.5",
     "nanoid": "3.1.28",
-    "object-path": "^0.11.8",
+    "object-path-immutable": "^4.1.2",
     "papaparse": "^5.3.1",
     "prismjs": "^1.25.0",
     "tiny-emitter": "^2.1.0",
@@ -37,6 +37,8 @@
     "vue": "3.2.19",
     "vue-prism-editor": "^2.0.0-alpha.2",
     "vue-router": "^4.0.11",
+    "vue-virtual-scroller": "^2.0.0-alpha.1",
+    "vuedraggable": "^4.1.0",
     "vuex": "^4.0.2",
     "webextension-polyfill": "^0.8.0"
   },

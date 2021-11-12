@@ -174,6 +174,7 @@ export function forms(block) {
       if (isElementUnique(elements, block))
         handleFormElement(elements, data, resolve);
     } else {
+      alert('else?');
       resolve('');
     }
   });

@@ -27,7 +27,7 @@
         min="10"
         max="120"
         @change="
-          updateIntervalInput($event, { key: 'interval', min: 10, max: 120 })
+          updateIntervalInput($event, { key: 'interval', min: 1, max: 120 })
         "
       />
       <ui-input

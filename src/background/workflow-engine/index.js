@@ -5,7 +5,7 @@ import { toCamelCase } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
 import referenceData from '@/utils/reference-data';
 import errorMessage from './error-message';
-import workflowState from './workflow-state';
+import workflowState from '../workflow-state';
 import * as blocksHandler from './blocks-handler';
 
 let reloadTimeout;
@@ -31,7 +31,7 @@ function tabRemovedHandler(tabId) {
   delete this.tabId;
 
   if (tasks[this.currentBlock.name].category === 'interaction') {
-    this.destroy('error');
+    this.destroy('error', 'Current active tab is removed');
   }
 
   workflowState.update(this.id, this.state);
@@ -74,19 +74,24 @@ function tabUpdatedHandler(tabId, changeInfo) {
 }
 
 class WorkflowEngine {
-  constructor(workflow, tabId = null) {
+  constructor(workflow, { tabId = null, isInCollection, collectionLogId }) {
     this.id = nanoid();
     this.tabId = tabId;
     this.workflow = workflow;
+    this.isInCollection = isInCollection;
+    this.collectionLogId = collectionLogId;
     this.data = {};
     this.blocks = {};
     this.eventListeners = {};
     this.repeatedTasks = {};
+    this.loopList = {};
+    this.loopData = {};
     this.logs = [];
     this.isPaused = false;
     this.isDestroyed = false;
     this.currentBlock = null;
     this.workflowTimeout = null;
+    this.windowId = null;
 
     this.tabMessageListeners = {};
     this.tabUpdatedListeners = {};
@@ -136,8 +141,9 @@ class WorkflowEngine {
 
     workflowState
       .add(this.id, {
-        workflowId: this.workflow.id,
         state: this.state,
+        workflowId: this.workflow.id,
+        isInCollection: this.isInCollection,
       })
       .then(() => {
         this._blockHandler(triggerBlock);
@@ -165,8 +171,10 @@ class WorkflowEngine {
     this.destroy('stopped');
   }
 
-  async destroy(status) {
+  async destroy(status, message) {
     try {
+      this.dispatchEvent('destroyed', { id: this.id, status, message });
+
       this.eventListeners = {};
       this.tabMessageListeners = {};
       this.tabUpdatedListeners = {};
@@ -194,12 +202,12 @@ class WorkflowEngine {
           history: this.logs,
           endedAt: this.endedTimestamp,
           startedAt: this.startedTimestamp,
+          isInCollection: this.isInCollection,
+          collectionLogId: this.collectionLogId,
         });
 
         await browser.storage.local.set({ logs });
       }
-
-      this.dispatchEvent('destroyed', this.id);
     } catch (error) {
       console.error(error);
     }
@@ -221,6 +229,7 @@ class WorkflowEngine {
       'isPaused',
       'isDestroyed',
       'currentBlock',
+      'isInCollection',
       'startedTimestamp',
     ];
     const state = keys.reduce((acc, key) => {
@@ -245,12 +254,18 @@ class WorkflowEngine {
       return;
     }
 
-    this.workflowTimeout = setTimeout(() => {
-      if (!this.isDestroyed) this.stop('Workflow stopped because of timeout');
-    }, this.workflow.settings.timeout || 120000);
+    const disableTimeoutKeys = ['delay', 'javascript-code'];
+
+    if (!disableTimeoutKeys.includes(block.name)) {
+      this.workflowTimeout = setTimeout(() => {
+        if (!this.isDestroyed) this.stop('Workflow stopped because of timeout');
+      }, this.workflow.settings.timeout || 120000);
+    }
+
     this.currentBlock = block;
 
     workflowState.update(this.id, this.state);
+    this.dispatchEvent('update', this.state);
 
     const started = Date.now();
     const isInteraction = tasks[block.name].category === 'interaction';
@@ -260,11 +275,18 @@ class WorkflowEngine {
     const handler = blocksHandler[handlerName];
 
     if (handler) {
-      referenceData(block, { data: this.data, prevBlockData });
+      const replacedBlock = referenceData(block, {
+        prevBlockData,
+        data: this.data,
+        loopData: this.loopData,
+      });
 
       handler
-        .call(this, block, prevBlockData)
+        .call(this, replacedBlock, prevBlockData)
         .then((result) => {
+          clearTimeout(this.workflowTimeout);
+          this.workflowTimeout = null;
+
           if (result.nextBlockId) {
             this.logs.push({
               type: 'success',
@@ -283,9 +305,6 @@ class WorkflowEngine {
             this.dispatchEvent('finish');
             this.destroy('success');
           }
-
-          clearTimeout(this.workflowTimeout);
-          this.workflowTimeout = null;
         })
         .catch((error) => {
           this.logs.push({
@@ -293,7 +312,7 @@ class WorkflowEngine {
             message: error.message,
             name: tasks[block.name].name,
           });
-          console.dir(error);
+
           if (
             this.workflow.settings.onError === 'keep-running' &&
             error.nextBlockId
@@ -303,7 +322,7 @@ class WorkflowEngine {
               error.data || ''
             );
           } else {
-            this.destroy('error');
+            this.destroy('error', error.message);
           }
 
           clearTimeout(this.workflowTimeout);

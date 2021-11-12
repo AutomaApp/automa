@@ -17,7 +17,7 @@ const retrieved = ref(false);
 
 store.dispatch('retrieveWorkflowState');
 store
-  .dispatch('retrieve', ['workflows', 'logs'])
+  .dispatch('retrieve', ['workflows', 'logs', 'collections'])
   .then(() => {
     retrieved.value = true;
   })

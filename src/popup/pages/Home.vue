@@ -115,7 +115,7 @@ function openDashboard(url) {
     });
 }
 async function selectElement() {
-  const [tab] = await browser.tabs.query({ active: true });
+  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
 
   try {
     await browser.tabs.sendMessage(tab.id, {

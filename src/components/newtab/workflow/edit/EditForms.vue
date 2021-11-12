@@ -1,40 +1,50 @@
 <template>
-  <edit-interaction-base v-model:data="state">
+  <edit-interaction-base v-bind="{ data }" @change="updateData">
     <ui-select
-      v-model="state.type"
+      :model-value="data.type"
       class="block w-full mt-4 mb-3"
       placeholder="Form type"
+      @change="updateData({ type: $event })"
     >
       <option v-for="form in forms" :key="form.id" :value="form.id">
         {{ form.name }}
       </option>
     </ui-select>
     <ui-checkbox
-      v-if="state.type === 'checkbox' || state.type === 'radio'"
-      v-model="state.selected"
+      v-if="data.type === 'checkbox' || data.type === 'radio'"
+      :model-value="data.selected"
+      @change="updateData({ selected: $event })"
     >
       Selected
     </ui-checkbox>
-    <ui-textarea
-      v-if="state.type === 'text-field' || state.type === 'select'"
-      v-model="state.value"
-      placeholder="Value"
-      class="w-full"
-    />
+    <template v-if="data.type === 'text-field' || data.type === 'select'">
+      <ui-textarea
+        :model-value="data.value"
+        placeholder="Value"
+        class="w-full"
+        @change="updateData({ value: $event })"
+      />
+      <ui-checkbox
+        :model-value="data.clearValue"
+        class="mb-1 ml-1"
+        @change="updateData({ clearValue: $event })"
+      >
+        Clear form value
+      </ui-checkbox>
+    </template>
     <ui-input
-      v-if="state.type === 'text-field'"
-      v-model="state.delay"
+      v-if="data.type === 'text-field'"
+      :model-value="data.delay"
       label="Typing delay (millisecond)(0 to disable)"
       placeholder="Delay"
       class="w-full"
       min="0"
       type="number"
+      @change="updateData({ delay: +$event })"
     />
   </edit-interaction-base>
 </template>
 <script setup>
-import { ref, watch } from 'vue';
-import { debounce } from '@/utils/helper';
 import EditInteractionBase from './EditInteractionBase.vue';
 
 const props = defineProps({
@@ -52,13 +62,7 @@ const forms = [
   { id: 'radio', name: 'Radio' },
 ];
 
-const state = ref(props.data);
-
-watch(
-  state,
-  debounce((value) => {
-    emit('update:data', value);
-  }, 250),
-  { deep: true }
-);
+function updateData(value) {
+  emit('update:data', { ...props.data, ...value });
+}
 </script>

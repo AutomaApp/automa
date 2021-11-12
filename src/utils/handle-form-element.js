@@ -35,10 +35,10 @@ function formEvent(element, data) {
 }
 function inputText({ data, element, index = 0, callback }) {
   const noDelay = data.delay === 0;
-  const currentChar = data.value[index];
+  const currentChar = data.value[index] ?? '';
 
   if (noDelay) {
-    element.value = data.value;
+    element.value += data.value;
   } else {
     element.value += currentChar;
   }
@@ -58,6 +58,8 @@ export default function (element, data, callback) {
   const textFields = ['INPUT', 'TEXTAREA'];
 
   if (data.type === 'text-field' && textFields.includes(element.tagName)) {
+    if (data.clearValue) element.value = '';
+
     inputText({ data, element, callback });
     return;
   }

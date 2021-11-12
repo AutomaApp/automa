@@ -7,6 +7,7 @@
       dark:text-gray-200
       border-b
       flex
+      space-x-1
       items-center
       relative
     "

@@ -11,7 +11,9 @@
     <component
       :is="data.editComponent"
       v-if="blockData"
+      :key="data.blockId"
       v-model:data="blockData"
+      :block-id="data.blockId"
     />
   </div>
 </template>
@@ -23,6 +25,8 @@ const editComponents = require.context(
   false,
   /^(?:.*\/)?Edit[^/]*\.vue$/
 );
+
+/* eslint-disable-next-line */
 const components = editComponents.keys().reduce((acc, key) => {
   const name = key.replace(/(.\/)|\.vue$/g, '');
   const componentObj = editComponents(key)?.default ?? {};
@@ -34,23 +38,26 @@ const components = editComponents.keys().reduce((acc, key) => {
 
 export default {
   components,
-};
-</script>
-<script setup>
-const props = defineProps({
-  data: {
-    type: Object,
-    default: () => ({}),
+  props: {
+    data: {
+      type: Object,
+      default: () => ({}),
+    },
   },
-});
-const emit = defineEmits(['close', 'update']);
+  emits: ['close', 'update'],
+  setup(props, { emit }) {
+    const blockData = computed({
+      get() {
+        return props.data.data || {};
+      },
+      set(value) {
+        emit('update', value);
+      },
+    });
 
-const blockData = computed({
-  get() {
-    return props.data.data || {};
+    return {
+      blockData,
+    };
   },
-  set(value) {
-    emit('update', value);
-  },
-});
+};
 </script>

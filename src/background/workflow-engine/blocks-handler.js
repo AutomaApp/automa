@@ -2,9 +2,10 @@
 import browser from 'webextension-polyfill';
 import { objectHasKey, fileSaver, isObject } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
-import dataExporter from '@/utils/data-exporter';
+import dataExporter, { generateJSON } from '@/utils/data-exporter';
 import compareBlockValue from '@/utils/compare-block-value';
 import errorMessage from './error-message';
+import { executeWebhook } from '@/utils/webhookUtil';
 
 function getBlockConnection(block, index = 1) {
   const blockId = block.outputs[`output_${index}`]?.connections[0]?.node;
@@ -82,6 +83,60 @@ export async function trigger(block) {
   }
 }
 
+export function loopBreakpoint(block, prevBlockData) {
+  return new Promise((resolve) => {
+    const currentLoop = this.loopList[block.data.loopId];
+
+    if (
+      currentLoop &&
+      currentLoop.index < currentLoop.maxLoop - 1 &&
+      currentLoop.index <= currentLoop.data.length - 1
+    ) {
+      resolve({
+        data: '',
+        nextBlockId: currentLoop.blockId,
+      });
+    } else {
+      resolve({
+        data: prevBlockData,
+        nextBlockId: getBlockConnection(block),
+      });
+    }
+  });
+}
+
+export function loopData(block) {
+  return new Promise((resolve) => {
+    const { data } = block;
+
+    if (this.loopList[data.loopId]) {
+      this.loopList[data.loopId].index += 1;
+      this.loopData[data.loopId] =
+        this.loopList[data.loopId].data[this.loopList[data.loopId].index];
+    } else {
+      const currLoopData =
+        data.loopThrough === 'data-columns'
+          ? generateJSON(Object.keys(this.data), this.data)
+          : JSON.parse(data.loopData);
+
+      this.loopList[data.loopId] = {
+        index: 0,
+        data: currLoopData,
+        id: data.loopId,
+        blockId: block.id,
+        maxLoop: data.maxLoop || currLoopData.length,
+      };
+      /* eslint-disable-next-line */
+      this.loopData[data.loopId] = currLoopData[0];
+    }
+
+    resolve({
+      data: this.loopData[data.loopId],
+      nextBlockId: getBlockConnection(block),
+    });
+  });
+}
+
 export function goBack(block) {
   return new Promise((resolve, reject) => {
     const nextBlockId = getBlockConnection(block);
@@ -132,43 +187,55 @@ export function forwardPage(block) {
   });
 }
 
-export function newTab(block) {
+function tabUpdatedListener(tab) {
   return new Promise((resolve, reject) => {
-    browser.tabs
-      .create(block.data)
-      .then((tab) => {
-        this._listener({
-          name: 'tab-updated',
-          id: tab.id,
-          once: true,
-          callback: async (tabId, changeInfo, deleteListener) => {
-            if (changeInfo.status !== 'complete') return;
+    this._listener({
+      name: 'tab-updated',
+      id: tab.id,
+      once: true,
+      callback: async (tabId, changeInfo, deleteListener) => {
+        if (changeInfo.status !== 'complete') return;
 
-            try {
-              await browser.tabs.executeScript(tabId, {
-                file: './contentScript.bundle.js',
-              });
+        try {
+          await browser.tabs.executeScript(tabId, {
+            file: './contentScript.bundle.js',
+          });
 
-              this.tabId = tabId;
-              this._connectTab(tabId);
+          deleteListener();
+          this._connectTab(tabId);
 
-              deleteListener();
-
-              resolve({
-                nextBlockId: getBlockConnection(block),
-                data: block.data.url,
-              });
-            } catch (error) {
-              console.error(error);
-            }
-          },
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-        reject(error);
-      });
+          resolve();
+        } catch (error) {
+          console.error(error);
+          reject(error);
+        }
+      },
+    });
   });
+}
+export async function newTab(block) {
+  try {
+    const { updatePrevTab, url, active } = block.data;
+
+    if (updatePrevTab && this.tabId) {
+      await browser.tabs.update(this.tabId, { url, active });
+    } else {
+      const { id, windowId } = await browser.tabs.create({ url, active });
+
+      this.tabId = id;
+      this.windowId = windowId;
+    }
+
+    await tabUpdatedListener.call(this, { id: this.tabId });
+
+    return {
+      data: url,
+      nextBlockId: getBlockConnection(block),
+    };
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 export async function activeTab(block) {
@@ -186,13 +253,17 @@ export async function activeTab(block) {
       return data;
     }
 
-    const [tab] = await browser.tabs.query({ active: true });
+    const [tab] = await browser.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
 
     await browser.tabs.executeScript(tab.id, {
       file: './contentScript.bundle.js',
     });
 
     this.tabId = tab.id;
+    this.windowId = tab.windowId;
     this._connectTab(tab.id);
 
     return data;
@@ -200,6 +271,7 @@ export async function activeTab(block) {
     console.error(error);
     return {
       data: '',
+      message: error.message || error,
       nextBlockId,
     };
   }
@@ -238,16 +310,24 @@ export async function takeScreenshot(block) {
         throw new Error(errorMessage('no-tab', block));
       }
 
-      const [tab] = await browser.tabs.query({ active: true });
+      const [tab] = await browser.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
 
+      await browser.windows.update(this.windowId, { focused: true });
       await browser.tabs.update(this.tabId, { active: true });
 
-      setTimeout(() => {
-        browser.tabs.captureVisibleTab(options).then((uri) => {
-          browser.tabs.update(tab.id, { active: true });
-          saveImage(uri);
-        });
-      }, 500);
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const uri = await browser.tabs.captureVisibleTab(options);
+
+      if (tab) {
+        await browser.windows.update(tab.windowId, { focused: true });
+        await browser.tabs.update(tab.id, { active: true });
+      }
+
+      saveImage(uri);
     } else {
       const uri = await browser.tabs.captureVisibleTab(options);
 
@@ -434,5 +514,30 @@ export function repeatTask({ data, id, outputs }) {
         nextBlockId: getBlockConnection({ outputs }, 2),
       });
     }
+  });
+}
+
+export function webhook({ data, outputs }) {
+  return new Promise((resolve, reject) => {
+    if (!data.url) {
+      reject(new Error('URL is empty'));
+      return;
+    }
+
+    if (!data.url.startsWith('http')) {
+      reject(new Error('URL is not valid'));
+      return;
+    }
+
+    executeWebhook(data)
+      .then(() => {
+        resolve({
+          data: '',
+          nextBlockId: getBlockConnection({ outputs }),
+        });
+      })
+      .catch((error) => {
+        reject(error);
+      });
   });
 }

@@ -39,6 +39,22 @@
         </td>
       </template>
     </shared-logs-table>
+    <div class="flex items-center justify-between mt-4">
+      <div>
+        Showing
+        <select v-model="pagination.perPage" class="p-1 rounded-md bg-input">
+          <option v-for="num in [10, 15, 25, 50, 100]" :key="num" :value="num">
+            {{ num }}
+          </option>
+        </select>
+        items out of {{ filteredLogs.length }}
+      </div>
+      <ui-pagination
+        v-model="pagination.currentPage"
+        :per-page="pagination.perPage"
+        :records="filteredLogs.length"
+      />
+    </div>
     <ui-card
       v-if="selectedLogs.length !== 0"
       class="fixed right-0 bottom-0 m-5 shadow-xl space-x-2"
@@ -73,6 +89,10 @@ const store = useStore();
 const dialog = useDialog();
 
 const selectedLogs = ref([]);
+const pagination = shallowReactive({
+  perPage: 10,
+  currentPage: 1,
+});
 const filtersBuilder = shallowReactive({
   query: '',
   byDate: 0,
@@ -87,9 +107,9 @@ const exportDataModal = shallowReactive({
   log: {},
 });
 
-const logs = computed(() =>
+const filteredLogs = computed(() =>
   Log.query()
-    .where(({ name, status, startedAt }) => {
+    .where(({ name, status, startedAt, isInCollection }) => {
       let statusFilter = true;
       let dateFilter = true;
       const searchFilter = name
@@ -106,10 +126,16 @@ const logs = computed(() =>
         dateFilter = date <= startedAt;
       }
 
-      return searchFilter && statusFilter && dateFilter;
+      return !isInCollection && searchFilter && statusFilter && dateFilter;
     })
     .orderBy(sortsBuilder.by, sortsBuilder.order)
     .get()
+);
+const logs = computed(() =>
+  filteredLogs.value.slice(
+    (pagination.currentPage - 1) * pagination.perPage,
+    pagination.currentPage * pagination.perPage
+  )
 );
 
 function deleteLog(id) {

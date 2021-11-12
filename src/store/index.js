@@ -16,7 +16,9 @@ const store = createStore({
   },
   getters: {
     getWorkflowState: (state) => (id) =>
-      (state.workflowState || []).filter(({ workflowId }) => workflowId === id),
+      (state.workflowState || []).filter(
+        ({ workflowId, isInCollection }) => workflowId === id && !isInCollection
+      ),
   },
   actions: {
     async retrieve({ dispatch, getters }, keys = 'workflows') {
@@ -41,8 +43,8 @@ const store = createStore({
           });
           await browser.storage.local.set({
             isFirstTime: false,
-            workflows: firstWorkflows,
           });
+          await dispatch('saveToStorage', 'workflows');
         }
 
         return await Promise.allSettled(promises);
@@ -73,9 +75,11 @@ const store = createStore({
         }
         const data = getters[`entities/${key}/all`]();
 
-        browser.storage.local.set({ [key]: data }).then(() => {
-          resolve();
-        });
+        browser.storage.local
+          .set({ [key]: JSON.parse(JSON.stringify(data)) })
+          .then(() => {
+            resolve();
+          });
       });
     },
   },
