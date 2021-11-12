@@ -1,6 +1,6 @@
 export function replaceMustache(str, replacer) {
   /* eslint-disable-next-line */
-  return str.replace(/{{\s*[\w\.@]+\s*}}/g, replacer);
+  return str.replace(/{{(.*)}}/g, replacer);
 }
 
 export function openFilePicker(acceptedFileTypes = [], attrs = {}) {

@@ -15,12 +15,12 @@
     >
       Selected
     </ui-checkbox>
-    <ui-textarea
-      v-if="state.type === 'text-field' || state.type === 'select'"
-      v-model="state.value"
-      placeholder="Value"
-      class="w-full"
-    />
+    <template v-if="state.type === 'text-field' || state.type === 'select'">
+      <ui-textarea v-model="state.value" placeholder="Value" class="w-full" />
+      <ui-checkbox v-model="state.clearValue" class="mb-1 ml-1">
+        Clear form value
+      </ui-checkbox>
+    </template>
     <ui-input
       v-if="state.type === 'text-field'"
       v-model="state.delay"

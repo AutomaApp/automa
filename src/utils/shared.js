@@ -263,6 +263,7 @@ export const tasks = {
       markEl: false,
       multiple: false,
       selected: true,
+      clearValue: true,
       type: 'text-field',
       value: '',
       delay: 0,
@@ -397,7 +398,6 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     data: {
-      name: '',
       loopId: '',
       maxLoop: 0,
       loopData: '[]',
