@@ -11,8 +11,10 @@
       placeholder="Search..."
     ></ui-input>
     <ui-button
+      v-tooltip="
+        haveAccess ? 'Element selector' : 'Don\'t have access to this site'
+      "
       icon
-      title="Element selector"
       class="ml-3"
       @click="selectElement"
     >
@@ -46,7 +48,7 @@
   </div>
 </template>
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import browser from 'webextension-polyfill';
 import { useDialog } from '@/composable/dialog';
 import { sendMessage } from '@/utils/message';
@@ -56,6 +58,8 @@ import HomeWorkflowCard from '@/components/popup/home/HomeWorkflowCard.vue';
 const dialog = useDialog();
 
 const query = ref('');
+const haveAccess = ref(true);
+
 const workflows = computed(() =>
   Workflow.query()
     .where(({ name }) =>
@@ -137,4 +141,10 @@ async function selectElement() {
     console.error(error);
   }
 }
+
+onMounted(async () => {
+  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+
+  haveAccess.value = /^(https?)/.test(tab.url);
+});
 </script>
