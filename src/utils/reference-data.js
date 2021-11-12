@@ -31,7 +31,7 @@ function parseKey(key) {
 }
 
 export default function (block, data) {
-  const replaceKeys = ['url', 'fileName', 'name', 'value', 'body'];
+  const replaceKeys = ['url', 'fileName', 'name', 'value', 'body', 'selector'];
   let replacedBlock = block;
 
   replaceKeys.forEach((blockDataKey) => {

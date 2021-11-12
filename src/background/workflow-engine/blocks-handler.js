@@ -187,46 +187,55 @@ export function forwardPage(block) {
   });
 }
 
-export function newTab(block) {
+function tabUpdatedListener(tab) {
   return new Promise((resolve, reject) => {
-    browser.tabs
-      .create(block.data)
-      .then((tab) => {
-        this.tabId = tab.id;
-        this.windowId = tab.windowId;
+    this._listener({
+      name: 'tab-updated',
+      id: tab.id,
+      once: true,
+      callback: async (tabId, changeInfo, deleteListener) => {
+        if (changeInfo.status !== 'complete') return;
 
-        this._listener({
-          name: 'tab-updated',
-          id: tab.id,
-          once: true,
-          callback: async (tabId, changeInfo, deleteListener) => {
-            if (changeInfo.status !== 'complete') return;
+        try {
+          await browser.tabs.executeScript(tabId, {
+            file: './contentScript.bundle.js',
+          });
 
-            try {
-              await browser.tabs.executeScript(tabId, {
-                file: './contentScript.bundle.js',
-              });
+          deleteListener();
+          this._connectTab(tabId);
 
-              this._connectTab(tabId);
-
-              deleteListener();
-
-              resolve({
-                nextBlockId: getBlockConnection(block),
-                data: block.data.url,
-              });
-            } catch (error) {
-              console.error(error);
-              reject(error);
-            }
-          },
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-        reject(error);
-      });
+          resolve();
+        } catch (error) {
+          console.error(error);
+          reject(error);
+        }
+      },
+    });
   });
+}
+export async function newTab(block) {
+  try {
+    const { updatePrevTab, url, active } = block.data;
+
+    if (updatePrevTab && this.tabId) {
+      await browser.tabs.update(this.tabId, { url, active });
+    } else {
+      const { id, windowId } = await browser.tabs.create({ url, active });
+
+      this.tabId = id;
+      this.windowId = windowId;
+    }
+
+    await tabUpdatedListener.call(this, { id: this.tabId });
+
+    return {
+      data: url,
+      nextBlockId: getBlockConnection(block),
+    };
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 export async function activeTab(block) {

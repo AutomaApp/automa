@@ -157,6 +157,16 @@
             $event.dataTransfer.setData('block', JSON.stringify(block))
           "
         >
+          <a
+            v-if="block.docs"
+            :href="`https://github.com/Kholid060/automa/wiki/Blocks#${block.id}`"
+            target="_blank"
+            title="Documentation"
+            rel="noopener"
+            class="absolute top-px right-2"
+          >
+            &#128712;
+          </a>
           <v-remixicon :name="block.icon" size="24" class="mb-2" />
           <p class="leading-tight text-overflow">
             {{ block.name }}
