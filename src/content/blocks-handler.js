@@ -92,8 +92,9 @@ function automaResetTimeout() {
 export function javascriptCode(block) {
   return new Promise((resolve) => {
     const isScriptExists = document.getElementById('automa-custom-js');
+    const scriptAttr = `block--${block.id}`;
 
-    if (isScriptExists) {
+    if (isScriptExists && isScriptExists.hasAttribute(scriptAttr)) {
       resolve('');
       return;
     }
@@ -101,6 +102,7 @@ export function javascriptCode(block) {
     const script = document.createElement('script');
     let timeout;
 
+    script.setAttribute(scriptAttr, '');
     script.id = 'automa-custom-js';
     script.innerHTML = `${automaScript} ${block.data.code}`;
 
