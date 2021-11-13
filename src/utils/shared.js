@@ -455,7 +455,6 @@ export const eventList = [
   { id: 'touchcancel', name: 'Touch cancel', type: 'touch-event' },
   { id: 'keydown', name: 'Keydown', type: 'keyboard-event' },
   { id: 'keyup', name: 'Keyup', type: 'keyboard-event' },
-  { id: 'keypress', name: 'Keypress', type: 'keyboard-event' },
   { id: 'submit', name: 'Submit', type: 'submit-event' },
   { id: 'wheel', name: 'Wheel', type: 'wheel-event' },
 ];
