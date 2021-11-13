@@ -93,7 +93,10 @@ export function javascriptCode(block) {
   return new Promise((resolve) => {
     const isScriptExists = document.getElementById('automa-custom-js');
 
-    if (isScriptExists) isScriptExists.remove();
+    if (isScriptExists) {
+      resolve('');
+      return;
+    }
 
     const script = document.createElement('script');
     let timeout;
@@ -103,12 +106,14 @@ export function javascriptCode(block) {
 
     window.addEventListener('__automa-next-block__', ({ detail }) => {
       clearTimeout(timeout);
+      script.remove();
       resolve(detail || {});
     });
     window.addEventListener('__automa-reset-timeout__', () => {
       clearTimeout(timeout);
 
       timeout = setTimeout(() => {
+        script.remove();
         resolve('');
       }, block.data.timeout);
     });
@@ -116,6 +121,7 @@ export function javascriptCode(block) {
     document.body.appendChild(script);
 
     timeout = setTimeout(() => {
+      script.remove();
       resolve('');
     }, block.data.timeout);
   });

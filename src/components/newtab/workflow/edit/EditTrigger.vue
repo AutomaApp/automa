@@ -23,8 +23,8 @@
         type="number"
         class="w-full mr-2"
         label="Interval (minutes)"
-        placeholder="5-120"
-        min="10"
+        placeholder="1-120"
+        min="1"
         max="120"
         @change="
           updateIntervalInput($event, { key: 'interval', min: 1, max: 120 })
@@ -97,7 +97,7 @@
         Active while in input
       </ui-checkbox>
       <p class="mt-4 leading-tight text-gray-600 dark:text-gray-200">
-        Note: keyboard shortcut only executed when you're on a webpage
+        Note: keyboard shortcut only working when you're on a webpage
       </p>
     </div>
   </transition-expand>
