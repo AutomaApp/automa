@@ -15,7 +15,6 @@ export function importWorkflow() {
       reader.readAsText(file);
     })
     .catch((error) => {
-      alert(error.message);
       console.error(error);
     });
 }

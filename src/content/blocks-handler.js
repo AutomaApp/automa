@@ -2,32 +2,37 @@
 import simulateEvent from '@/utils/simulate-event';
 import handleFormElement from '@/utils/handle-form-element';
 
-function isElementUnique(element, { data, id }) {
-  if (!data.markEl) return true;
-
-  const blockId = `block--${id}`;
-
-  if (element.hasAttribute(blockId)) return false;
-
-  element.setAttribute(blockId, '');
-
-  return true;
+function markElement(el, { id, data }) {
+  if (data.markEl) {
+    el.setAttribute(`block--${id}`, '');
+  }
 }
 function handleElement({ data, id }, callback) {
   if (!data || !data.selector) return null;
 
-  const element = data.multiple
-    ? document.querySelectorAll(data.selector)
-    : document.querySelector(data.selector);
+  try {
+    const blockIdAttr = `block--${id}`;
+    const selector = data.markEl
+      ? `${data.selector.trim()}:not([${blockIdAttr}])`
+      : data.selector;
 
-  if (typeof callback === 'boolean' && callback) return element;
+    const element = data.multiple
+      ? document.querySelectorAll(selector)
+      : document.querySelector(selector);
 
-  if (data.multiple) {
-    element.forEach((el) => {
-      if (isElementUnique(el, { id, data })) callback(el);
-    });
-  } else if (element) {
-    if (isElementUnique(element, { id, data })) callback(element);
+    if (typeof callback === 'boolean' && callback) return element;
+
+    if (data.multiple) {
+      element.forEach((el) => {
+        markElement(el, { id, data });
+        callback(el);
+      });
+    } else if (element) {
+      markElement(element, { id, data });
+      callback(element);
+    }
+  } catch (error) {
+    console.error(error);
   }
 }
 
@@ -87,23 +92,30 @@ function automaResetTimeout() {
 export function javascriptCode(block) {
   return new Promise((resolve) => {
     const isScriptExists = document.getElementById('automa-custom-js');
+    const scriptAttr = `block--${block.id}`;
 
-    if (isScriptExists) isScriptExists.remove();
+    if (isScriptExists && isScriptExists.hasAttribute(scriptAttr)) {
+      resolve('');
+      return;
+    }
 
     const script = document.createElement('script');
     let timeout;
 
+    script.setAttribute(scriptAttr, '');
     script.id = 'automa-custom-js';
     script.innerHTML = `${automaScript} ${block.data.code}`;
 
     window.addEventListener('__automa-next-block__', ({ detail }) => {
       clearTimeout(timeout);
+      script.remove();
       resolve(detail || {});
     });
     window.addEventListener('__automa-reset-timeout__', () => {
       clearTimeout(timeout);
 
       timeout = setTimeout(() => {
+        script.remove();
         resolve('');
       }, block.data.timeout);
     });
@@ -111,6 +123,7 @@ export function javascriptCode(block) {
     document.body.appendChild(script);
 
     timeout = setTimeout(() => {
+      script.remove();
       resolve('');
     }, block.data.timeout);
   });
@@ -161,9 +174,8 @@ export function forms(block) {
     if (data.multiple) {
       const promises = Array.from(elements).map((element) => {
         return new Promise((eventResolve) => {
-          if (isElementUnique(element, block))
-            handleFormElement(element, data, eventResolve);
-          else eventResolve('');
+          markElement(element, block);
+          handleFormElement(element, data, eventResolve);
         });
       });
 
@@ -171,10 +183,9 @@ export function forms(block) {
         resolve('');
       });
     } else if (elements) {
-      if (isElementUnique(elements, block))
-        handleFormElement(elements, data, resolve);
+      markElement(element, block);
+      handleFormElement(elements, data, resolve);
     } else {
-      alert('else?');
       resolve('');
     }
   });

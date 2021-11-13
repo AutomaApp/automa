@@ -87,14 +87,12 @@
 
 .drawflow .connection {
   position: absolute;
-  transform: translate(9999px, 9999px)
 }
 
 .drawflow .connection .main-path {
   fill: none;
   stroke-width: 5px;
   stroke: theme('colors.accent');
-  transform: translate(-9999px, -9999px);
   transition: stroke 100ms ease-in-out;
 }
 
