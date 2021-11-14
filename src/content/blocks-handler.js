@@ -183,7 +183,7 @@ export function forms(block) {
         resolve('');
       });
     } else if (elements) {
-      markElement(element, block);
+      markElement(elements, block);
       handleFormElement(elements, data, resolve);
     } else {
       resolve('');
