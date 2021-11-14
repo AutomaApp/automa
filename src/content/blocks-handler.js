@@ -36,6 +36,13 @@ function handleElement({ data, id }, callback) {
   }
 }
 
+export function switchTo(block) {
+  return new Promise((resolve) => {
+    console.log(block);
+    resolve('');
+  });
+}
+
 export function eventClick(block) {
   return new Promise((resolve) => {
     handleElement(block, (element) => {
@@ -183,7 +190,7 @@ export function forms(block) {
         resolve('');
       });
     } else if (elements) {
-      markElement(element, block);
+      markElement(elements, block);
       handleFormElement(elements, data, resolve);
     } else {
       resolve('');

@@ -17,6 +17,8 @@ function getTriggerBlock(workflow) {
   return trigger;
 }
 
+window.__halo = 'halo';
+
 (async () => {
   try {
     const { shortcuts, workflows } = await browser.storage.local.get([

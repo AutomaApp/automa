@@ -70,8 +70,6 @@ export async function trigger(block) {
       await browser.tabs.executeScript(this.tabId, {
         file: './contentScript.bundle.js',
       });
-
-      this._connectTab(this.tabId);
     }
 
     return { nextBlockId, data: '' };
@@ -202,7 +200,6 @@ function tabUpdatedListener(tab) {
           });
 
           deleteListener();
-          this._connectTab(tabId);
 
           resolve();
         } catch (error) {
@@ -264,7 +261,6 @@ export async function activeTab(block) {
 
     this.tabId = tab.id;
     this.windowId = tab.windowId;
-    this._connectTab(tab.id);
 
     return data;
   } catch (error) {
@@ -342,87 +338,80 @@ export async function takeScreenshot(block) {
   }
 }
 
-export function interactionHandler(block) {
-  return new Promise((resolve, reject) => {
-    const nextBlockId = getBlockConnection(block);
+export async function interactionHandler(block) {
+  const nextBlockId = getBlockConnection(block);
 
-    if (!this.connectedTab) {
-      reject(generateBlockError(block));
+  try {
+    const data = await this._sendMessageToTab(block);
 
-      return;
+    if (block.name === 'link')
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    if (data?.isError) {
+      const error = new Error(data.message);
+      error.nextBlockId = nextBlockId;
+
+      throw error;
     }
 
-    this.connectedTab.postMessage({ isBlock: true, ...block });
-    this._listener({
-      name: 'tab-message',
-      id: block.name,
-      once: true,
-      delay: block.name === 'link' ? 5000 : 0,
-      callback: (data) => {
-        if (data?.isError) {
-          const error = new Error(data.message);
-          error.nextBlockId = nextBlockId;
+    const getColumn = (name) =>
+      this.workflow.dataColumns.find((item) => item.name === name) || {
+        name: 'column',
+        type: 'text',
+      };
+    const pushData = (column, value) => {
+      this.data[column.name]?.push(convertData(value, column.type));
+    };
 
-          reject(error);
-          return;
+    if (objectHasKey(block.data, 'dataColumn')) {
+      const column = getColumn(block.data.dataColumn);
+
+      if (block.data.saveData) {
+        if (Array.isArray(data)) {
+          data.forEach((item) => {
+            pushData(column, item);
+          });
+        } else {
+          pushData(column, data);
         }
+      }
+    } else if (block.name === 'javascript-code') {
+      const memoColumn = {};
+      const pushObjectData = (obj) => {
+        Object.entries(obj).forEach(([key, value]) => {
+          let column;
 
-        const getColumn = (name) =>
-          this.workflow.dataColumns.find((item) => item.name === name) || {
-            name: 'column',
-            type: 'text',
-          };
-        const pushData = (column, value) => {
-          this.data[column.name]?.push(convertData(value, column.type));
-        };
+          if (memoColumn[key]) {
+            column = memoColumn[key];
+          } else {
+            const currentColumn = getColumn(key);
 
-        if (objectHasKey(block.data, 'dataColumn')) {
-          const column = getColumn(block.data.dataColumn);
-
-          if (block.data.saveData) {
-            if (Array.isArray(data)) {
-              data.forEach((item) => {
-                pushData(column, item);
-              });
-            } else {
-              pushData(column, data);
-            }
+            column = currentColumn;
+            memoColumn[key] = currentColumn;
           }
-        } else if (block.name === 'javascript-code') {
-          const memoColumn = {};
-          const pushObjectData = (obj) => {
-            Object.entries(obj).forEach(([key, value]) => {
-              let column;
 
-              if (memoColumn[key]) {
-                column = memoColumn[key];
-              } else {
-                const currentColumn = getColumn(key);
-
-                column = currentColumn;
-                memoColumn[key] = currentColumn;
-              }
-
-              pushData(column, value);
-            });
-          };
-
-          if (Array.isArray(data)) {
-            data.forEach((obj) => {
-              if (isObject(obj)) pushObjectData(obj);
-            });
-          } else if (isObject(data)) {
-            pushObjectData(data);
-          }
-        }
-
-        resolve({
-          data,
-          nextBlockId,
+          pushData(column, value);
         });
-      },
-    });
-  });
+      };
+
+      if (Array.isArray(data)) {
+        data.forEach((obj) => {
+          if (isObject(obj)) pushObjectData(obj);
+        });
+      } else if (isObject(data)) {
+        pushObjectData(data);
+      }
+    }
+
+    return {
+      data,
+      nextBlockId,
+    };
+  } catch (error) {
+    error.nextBlockId = nextBlockId;
+
+    throw error;
+  }
 }
 
 export function delay(block) {
@@ -449,24 +438,18 @@ export function exportData(block) {
 
 export function elementExists(block) {
   return new Promise((resolve, reject) => {
-    if (!this.connectedTab) {
-      reject(generateBlockError(block));
-
-      return;
-    }
-
-    this.connectedTab.postMessage({ isBlock: true, ...block });
-    this._listener({
-      name: 'tab-message',
-      id: block.name,
-      once: true,
-      callback: (data) => {
+    this._sendMessageToTab(block)
+      .then((data) => {
         resolve({
           data,
           nextBlockId: getBlockConnection(block, data ? 1 : 2),
         });
-      },
-    });
+      })
+      .catch((error) => {
+        error.nextBlockId = getBlockConnection(block);
+
+        reject(error);
+      });
   });
 }
 

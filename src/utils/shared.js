@@ -421,6 +421,22 @@ export const tasks = {
       loopId: '',
     },
   },
+  'switch-to': {
+    name: 'Switch to',
+    description: 'Switch between main window and iframe',
+    icon: 'riArrowUpDownLine',
+    component: 'BlockBasic',
+    editComponent: 'EditSwitchTo',
+    category: 'interaction',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      selector: '',
+      windowType: 'main-window',
+    },
+  },
 };
 
 export const categories = {
