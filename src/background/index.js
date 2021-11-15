@@ -98,7 +98,7 @@ chrome.runtime.onInstalled.addListener((details) => {
       });
   }
 });
-console.log(browser.tabs);
+
 const message = new MessageListener('background');
 
 message.on('get:sender', (_, sender) => {

@@ -1,6 +1,7 @@
 <template>
   <label class="checkbox-ui inline-flex items-center">
     <div
+      :class="{ 'pointer-events-none opacity-75': disabled }"
       class="
         relative
         h-5
@@ -14,7 +15,7 @@
         type="checkbox"
         class="opacity-0 checkbox-ui__input"
         :value="modelValue"
-        v-bind="{ checked: modelValue }"
+        v-bind="{ checked: modelValue, disabled }"
         @change="changeHandler"
       />
       <div
@@ -47,6 +48,10 @@ export default {
     modelValue: {
       type: Boolean,
       default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: null,
     },
   },
   emits: ['update:modelValue', 'change'],

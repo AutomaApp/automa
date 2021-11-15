@@ -222,6 +222,29 @@ export function forwardPage(block) {
   });
 }
 
+export async function newWindow(block) {
+  const nextBlockId = getBlockConnection(block);
+
+  try {
+    const { incognito, windowState } = block.data;
+    const { id } = await browser.windows.create({
+      incognito,
+      state: windowState,
+    });
+    console.log('windowId', id);
+    this.windowId = id;
+
+    return {
+      data: id,
+      nextBlockId,
+    };
+  } catch (error) {
+    error.nextBlockId = nextBlockId;
+
+    throw error;
+  }
+}
+
 function tabUpdatedListener(tab) {
   return new Promise((resolve, reject) => {
     this._listener({
@@ -238,16 +261,28 @@ function tabUpdatedListener(tab) {
   });
 }
 export async function newTab(block) {
+  if (this.windowId) {
+    try {
+      await browser.windows.get(this.windowId);
+    } catch (error) {
+      this.windowId = null;
+    }
+  }
+
   try {
     const { updatePrevTab, url, active } = block.data;
 
     if (updatePrevTab && this.tabId) {
       await browser.tabs.update(this.tabId, { url, active });
     } else {
-      const { id, windowId } = await browser.tabs.create({ url, active });
+      const tab = await browser.tabs.create({
+        url,
+        active,
+        windowId: this.windowId,
+      });
 
-      this.tabId = id;
-      this.windowId = windowId;
+      this.tabId = tab.id;
+      this.windowId = tab.windowId;
     }
 
     this.frameId = 0;
