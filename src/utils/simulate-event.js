@@ -20,6 +20,9 @@ export function getEventObj(name, params) {
     case 'wheel-event':
       event = new WheelEvent(name, params);
       break;
+    case 'input':
+      event = new InputEvent(name, params);
+      break;
     default:
       event = new Event(name, params);
   }

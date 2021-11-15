@@ -34,6 +34,45 @@ function generateBlockError(block, code) {
 
   return error;
 }
+function executeContentScript(tabId) {
+  return new Promise((resolve, reject) => {
+    let frameTimeout;
+    let timeout;
+    const frames = {};
+
+    const onMessageListener = (_, sender) => {
+      if (sender.frameId !== 0) frames[sender.url] = sender.frameId;
+
+      clearTimeout(frameTimeout);
+      frameTimeout = setTimeout(() => {
+        clearTimeout(timeout);
+        browser.runtime.onMessage.removeListener(onMessageListener);
+        resolve(frames);
+      }, 250);
+    };
+
+    browser.tabs
+      .executeScript(tabId, {
+        file: './contentScript.bundle.js',
+        allFrames: true,
+      })
+      .then(() => {
+        browser.tabs.sendMessage(tabId, {
+          type: 'give-me-the-frame-id',
+        });
+        browser.runtime.onMessage.addListener(onMessageListener);
+
+        timeout = setTimeout(() => {
+          clearTimeout(frameTimeout);
+          resolve(frames);
+        }, 5000);
+      })
+      .catch((error) => {
+        console.error(error);
+        reject(error);
+      });
+  });
+}
 
 export async function closeTab(block) {
   const nextBlockId = getBlockConnection(block);
@@ -67,9 +106,7 @@ export async function trigger(block) {
   const nextBlockId = getBlockConnection(block);
   try {
     if (block.data.type === 'visit-web' && this.tabId) {
-      await browser.tabs.executeScript(this.tabId, {
-        file: './contentScript.bundle.js',
-      });
+      this.frames = executeContentScript(this.tabId);
     }
 
     return { nextBlockId, data: '' };
@@ -190,22 +227,12 @@ function tabUpdatedListener(tab) {
     this._listener({
       name: 'tab-updated',
       id: tab.id,
-      once: true,
-      callback: async (tabId, changeInfo, deleteListener) => {
+      callback: (tabId, changeInfo, deleteListener) => {
         if (changeInfo.status !== 'complete') return;
 
-        try {
-          await browser.tabs.executeScript(tabId, {
-            file: './contentScript.bundle.js',
-          });
+        deleteListener();
 
-          deleteListener();
-
-          resolve();
-        } catch (error) {
-          console.error(error);
-          reject(error);
-        }
+        executeContentScript(tabId).then(resolve, reject);
       },
     });
   });
@@ -223,7 +250,8 @@ export async function newTab(block) {
       this.windowId = windowId;
     }
 
-    await tabUpdatedListener.call(this, { id: this.tabId });
+    this.frameId = 0;
+    this.frames = await tabUpdatedListener.call(this, { id: this.tabId });
 
     return {
       data: url,
@@ -255,10 +283,9 @@ export async function activeTab(block) {
       currentWindow: true,
     });
 
-    await browser.tabs.executeScript(tab.id, {
-      file: './contentScript.bundle.js',
-    });
+    this.frames = await executeContentScript(tab.id);
 
+    this.frameId = 0;
     this.tabId = tab.id;
     this.windowId = tab.windowId;
 
@@ -338,11 +365,44 @@ export async function takeScreenshot(block) {
   }
 }
 
+export async function switchTo(block) {
+  const nextBlockId = getBlockConnection(block);
+
+  try {
+    if (block.data.windowType === 'main-window') {
+      this.frameId = 0;
+
+      return {
+        data: '',
+        nextBlockId,
+      };
+    }
+
+    const { url } = await this._sendMessageToTab(block, { frameId: 0 });
+
+    if (objectHasKey(this.frames, url)) {
+      this.frameId = this.frames[url];
+
+      return {
+        data: this.frameId,
+        nextBlockId,
+      };
+    }
+    throw new Error(errorMessage('no-iframe-id', block.data));
+  } catch (error) {
+    error.nextBlockId = nextBlockId;
+
+    throw error;
+  }
+}
+
 export async function interactionHandler(block) {
   const nextBlockId = getBlockConnection(block);
 
   try {
-    const data = await this._sendMessageToTab(block);
+    const data = await this._sendMessageToTab(block, {
+      frameId: this.frameId || 0,
+    });
 
     if (block.name === 'link')
       await new Promise((resolve) => setTimeout(resolve, 5000));

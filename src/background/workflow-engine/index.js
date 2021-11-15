@@ -66,18 +66,19 @@ class WorkflowEngine {
     this.isInCollection = isInCollection;
     this.collectionLogId = collectionLogId;
     this.data = {};
+    this.logs = [];
     this.blocks = {};
     this.frames = {};
-    this.eventListeners = {};
-    this.repeatedTasks = {};
     this.loopList = {};
     this.loopData = {};
-    this.logs = [];
+    this.repeatedTasks = {};
+    this.eventListeners = {};
     this.isPaused = false;
     this.isDestroyed = false;
+    this.frameId = null;
+    this.windowId = null;
     this.currentBlock = null;
     this.workflowTimeout = null;
-    this.windowId = null;
 
     this.tabUpdatedListeners = {};
     this.tabUpdatedHandler = tabUpdatedHandler.bind(this);
@@ -251,11 +252,11 @@ class WorkflowEngine {
     this.dispatchEvent('update', this.state);
 
     const started = Date.now();
-    const isInteraction = tasks[block.name].category === 'interaction';
-    const handlerName = isInteraction
-      ? 'interactionHandler'
-      : toCamelCase(block?.name);
-    const handler = blocksHandler[handlerName];
+    const blockHandler = blocksHandler[toCamelCase(block?.name)];
+    const handler =
+      !blockHandler && tasks[block.name].category === 'interaction'
+        ? blocksHandler.interactionHandler
+        : blockHandler;
 
     if (handler) {
       const replacedBlock = referenceData(block, {
@@ -339,10 +340,6 @@ class WorkflowEngine {
       'tab-updated': 'tabUpdatedListeners',
     };
     this[listenerNames[name]][id] = { callback, once, ...options };
-
-    return () => {
-      delete this.tabMessageListeners[id];
-    };
   }
 }
 

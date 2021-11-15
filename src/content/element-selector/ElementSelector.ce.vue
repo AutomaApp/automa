@@ -157,8 +157,10 @@ function selectParentElement() {
 function handleClick(event) {
   if (event.target === root || element.hide) return;
 
-  event.preventDefault();
-  event.stopPropagation();
+  if (!element.hide) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
 
   selectedPath = event.path;
   element.selected = getElementRect(targetEl);
@@ -198,12 +200,6 @@ window.addEventListener('keyup', handleKeyup);
 window.addEventListener('scroll', handleScroll);
 document.addEventListener('click', handleClick, true);
 window.addEventListener('mousemove', handleMouseMove);
-
-// chrome.runtime.sendMessage({
-//   name: 'background--get:sender',
-// }, (result) => {
-//   console.log(result, 'exe');
-// });
 </script>
 <style>
 :host {

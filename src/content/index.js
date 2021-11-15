@@ -21,6 +21,10 @@ browser.runtime.onMessage.addListener((data) => {
     } else if (data.type === 'select-element') {
       elementSelector();
       resolve(true);
+    } else if (data.type === 'give-me-the-frame-id') {
+      browser.runtime.sendMessage({
+        type: 'this-is-the-frame-id',
+      });
     }
   });
 });

@@ -7,7 +7,7 @@ function markElement(el, { id, data }) {
     el.setAttribute(`block--${id}`, '');
   }
 }
-function handleElement({ data, id }, callback) {
+function handleElement({ data, id }, callback, errCallback) {
   if (!data || !data.selector) return null;
 
   try {
@@ -30,6 +30,8 @@ function handleElement({ data, id }, callback) {
     } else if (element) {
       markElement(element, { id, data });
       callback(element);
+    } else if (errCallback) {
+      errCallback();
     }
   } catch (error) {
     console.error(error);
@@ -38,8 +40,20 @@ function handleElement({ data, id }, callback) {
 
 export function switchTo(block) {
   return new Promise((resolve) => {
-    console.log(block);
-    resolve('');
+    handleElement(
+      block,
+      (element) => {
+        if (element.tagName !== 'IFRAME') {
+          resolve('');
+          return;
+        }
+
+        resolve({ url: element.src });
+      },
+      () => {
+        resolve('');
+      }
+    );
   });
 }
 
