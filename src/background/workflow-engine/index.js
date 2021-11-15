@@ -77,6 +77,7 @@ class WorkflowEngine {
     this.isDestroyed = false;
     this.frameId = null;
     this.windowId = null;
+    this.tabGroupId = null;
     this.currentBlock = null;
     this.workflowTimeout = null;
 

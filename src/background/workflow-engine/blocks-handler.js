@@ -231,7 +231,7 @@ export async function newWindow(block) {
       incognito,
       state: windowState,
     });
-    console.log('windowId', id);
+
     this.windowId = id;
 
     return {
@@ -270,7 +270,7 @@ export async function newTab(block) {
   }
 
   try {
-    const { updatePrevTab, url, active } = block.data;
+    const { updatePrevTab, url, active, inGroup } = block.data;
 
     if (updatePrevTab && this.tabId) {
       await browser.tabs.update(this.tabId, { url, active });
@@ -283,6 +283,23 @@ export async function newTab(block) {
 
       this.tabId = tab.id;
       this.windowId = tab.windowId;
+    }
+
+    if (inGroup && !updatePrevTab) {
+      const options = {
+        groupId: this.tabGroupId,
+        tabIds: this.tabId,
+      };
+
+      if (!this.tabGroupId) {
+        options.createProperties = {
+          windowId: this.windowId,
+        };
+      }
+
+      chrome.tabs.group(options, (tabGroupId) => {
+        this.tabGroupId = tabGroupId;
+      });
     }
 
     this.frameId = 0;
