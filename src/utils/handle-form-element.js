@@ -21,16 +21,14 @@ function formEvent(element, data) {
     });
   }
 
+  simulateEvent(element, 'input', {
+    inputType: 'insertText',
+    data: data.value,
+    bubbles: true,
+    cancelable: true,
+  });
   element.dispatchEvent(
     new Event('change', { bubbles: true, cancelable: true })
-  );
-  element.dispatchEvent(
-    new InputEvent('input', {
-      inputType: 'insertText',
-      data: data.value,
-      bubbles: true,
-      cancelable: true,
-    })
   );
 }
 function inputText({ data, element, index = 0, callback }) {

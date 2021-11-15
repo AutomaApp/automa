@@ -465,6 +465,8 @@ export const eventList = [
   { id: 'mousedown', name: 'Mousedown', type: 'mouse-event' },
   { id: 'focus', name: 'Focus', type: 'focus-event' },
   { id: 'blur', name: 'Blur', type: 'focus-event' },
+  { id: 'input', name: 'Input', type: 'input-event' },
+  { id: 'change', name: 'Change', type: 'event' },
   { id: 'touchstart', name: 'Touch start', type: 'touch-event' },
   { id: 'touchend', name: 'Touch end', type: 'touch-event' },
   { id: 'touchmove', name: 'Touch move', type: 'touch-event' },
