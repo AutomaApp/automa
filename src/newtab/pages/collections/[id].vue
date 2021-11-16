@@ -81,6 +81,7 @@
                 {{ runningCollection.length }}
               </span>
             </ui-tab>
+            <ui-tab value="options">Options</ui-tab>
           </ui-tabs>
         </div>
         <ui-tab-panels v-model="state.activeTab">
@@ -111,7 +112,25 @@
               @update:modelValue="updateCollectionFlow"
             >
               <template #item="{ element, index }">
-                <ui-card class="group flex cursor-move mb-2 items-center">
+                <ui-card
+                  class="
+                    group
+                    flex
+                    cursor-move
+                    mb-2
+                    items-center
+                    relative
+                    overflow-hidden
+                  "
+                >
+                  <span
+                    :class="[
+                      element.type === 'block'
+                        ? 'bg-yellow-200'
+                        : 'bg-green-200',
+                    ]"
+                    class="absolute w-2 left-0 top-0 h-full"
+                  ></span>
                   <v-remixicon :name="element.icon" class="mr-4" />
                   <p class="flex-1 text-overflow">{{ element.name }}</p>
                   <router-link
@@ -167,13 +186,23 @@
               />
             </div>
           </ui-tab-panel>
+          <ui-tab-panel value="options">
+            <ui-checkbox v-model="collectionOptions.atOnce">
+              <p class="leading-tight">
+                Execute all workflows in the collection at once
+              </p>
+              <p class="text-sm text-gray-600 leading-tight">
+                Block not gonna executed when using this option
+              </p>
+            </ui-checkbox>
+          </ui-tab-panel>
         </ui-tab-panels>
       </div>
     </div>
   </div>
 </template>
 <script setup>
-import { computed, shallowReactive, onMounted } from 'vue';
+import { computed, shallowReactive, onMounted, watch } from 'vue';
 import { nanoid } from 'nanoid';
 import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';
@@ -212,6 +241,9 @@ const state = shallowReactive({
   query: '',
   activeTab: 'flow',
   sidebarTab: 'workflows',
+});
+const collectionOptions = shallowReactive({
+  atOnce: false,
 });
 
 const runningCollection = computed(() =>
@@ -293,7 +325,22 @@ function deleteCollection() {
   });
 }
 
+watch(
+  () => collectionOptions,
+  (value) => {
+    Collection.update({
+      where: route.params.id,
+      data: {
+        options: value,
+      },
+    });
+  },
+  { deep: true }
+);
+
 onMounted(() => {
+  Object.assign(collectionOptions, collection.value.options);
+
   collectionFlow.value.forEach((item, index) => {
     if (!item.itemId && item.type === 'workflow') {
       deleteCollectionFlow(index);

@@ -578,13 +578,21 @@ export function repeatTask({ data, id, outputs }) {
 
 export function webhook({ data, outputs }) {
   return new Promise((resolve, reject) => {
+    const nextBlockId = getBlockConnection({ outputs });
+
     if (!data.url) {
-      reject(new Error('URL is empty'));
+      const error = new Error('URL is empty');
+      error.nextBlockId = nextBlockId;
+
+      reject(error);
       return;
     }
 
     if (!data.url.startsWith('http')) {
-      reject(new Error('URL is not valid'));
+      const error = new Error('URL is not valid');
+      error.nextBlockId = nextBlockId;
+
+      reject(error);
       return;
     }
 

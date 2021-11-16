@@ -14,6 +14,9 @@ class Collection extends Model {
       name: this.string(''),
       flow: this.attr([]),
       createdAt: this.number(),
+      options: this.attr({
+        atOnce: false,
+      }),
     };
   }
 
