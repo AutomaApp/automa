@@ -2,10 +2,11 @@
 import browser from 'webextension-polyfill';
 import { objectHasKey, fileSaver, isObject } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
+import { executeWebhook } from '@/utils/webhookUtil';
+import executeContentScript from '@/utils/execute-content-script';
 import dataExporter, { generateJSON } from '@/utils/data-exporter';
 import compareBlockValue from '@/utils/compare-block-value';
 import errorMessage from './error-message';
-import { executeWebhook } from '@/utils/webhookUtil';
 
 function getBlockConnection(block, index = 1) {
   const blockId = block.outputs[`output_${index}`]?.connections[0]?.node;
@@ -33,45 +34,6 @@ function generateBlockError(block, code) {
   error.nextBlockId = getBlockConnection(block);
 
   return error;
-}
-function executeContentScript(tabId) {
-  return new Promise((resolve, reject) => {
-    let frameTimeout;
-    let timeout;
-    const frames = {};
-
-    const onMessageListener = (_, sender) => {
-      if (sender.frameId !== 0) frames[sender.url] = sender.frameId;
-
-      clearTimeout(frameTimeout);
-      frameTimeout = setTimeout(() => {
-        clearTimeout(timeout);
-        browser.runtime.onMessage.removeListener(onMessageListener);
-        resolve(frames);
-      }, 250);
-    };
-
-    browser.tabs
-      .executeScript(tabId, {
-        file: './contentScript.bundle.js',
-        allFrames: true,
-      })
-      .then(() => {
-        browser.tabs.sendMessage(tabId, {
-          type: 'give-me-the-frame-id',
-        });
-        browser.runtime.onMessage.addListener(onMessageListener);
-
-        timeout = setTimeout(() => {
-          clearTimeout(frameTimeout);
-          resolve(frames);
-        }, 5000);
-      })
-      .catch((error) => {
-        console.error(error);
-        reject(error);
-      });
-  });
 }
 
 export async function closeTab(block) {
@@ -106,7 +68,7 @@ export async function trigger(block) {
   const nextBlockId = getBlockConnection(block);
   try {
     if (block.data.type === 'visit-web' && this.tabId) {
-      this.frames = executeContentScript(this.tabId);
+      this.frames = executeContentScript(this.tabId, 'trigger');
     }
 
     return { nextBlockId, data: '' };
@@ -246,16 +208,18 @@ export async function newWindow(block) {
 }
 
 function tabUpdatedListener(tab) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     this._listener({
       name: 'tab-updated',
       id: tab.id,
-      callback: (tabId, changeInfo, deleteListener) => {
+      callback: async (tabId, changeInfo, deleteListener) => {
         if (changeInfo.status !== 'complete') return;
+
+        const frames = await executeContentScript(tabId, 'newtab');
 
         deleteListener();
 
-        executeContentScript(tabId).then(resolve, reject);
+        resolve(frames);
       },
     });
   });
@@ -335,7 +299,7 @@ export async function activeTab(block) {
       currentWindow: true,
     });
 
-    this.frames = await executeContentScript(tab.id);
+    this.frames = await executeContentScript(tab.id, 'activetab');
 
     this.frameId = 0;
     this.tabId = tab.id;

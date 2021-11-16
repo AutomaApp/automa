@@ -7,6 +7,7 @@ import errorMessage from './error-message';
 import referenceData from '@/utils/reference-data';
 import workflowState from '../workflow-state';
 import * as blocksHandler from './blocks-handler';
+import executeContentScript from '@/utils/execute-content-script';
 
 let reloadTimeout;
 
@@ -41,13 +42,10 @@ function tabUpdatedHandler(tabId, changeInfo) {
       clearTimeout(reloadTimeout);
       reloadTimeout = null;
 
-      browser.tabs
-        .executeScript(tabId, {
-          file: './contentScript.bundle.js',
-        })
-        .then(() => {
+      executeContentScript(tabId, 'update tab')
+        .then((frames) => {
           this.tabId = tabId;
-
+          this.frames = frames;
           this.isPaused = false;
         })
         .catch((error) => {

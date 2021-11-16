@@ -41,6 +41,9 @@ export default function (block, data) {
       replacedBlock.data[blockDataKey],
       (match) => {
         const key = match.slice(2, -2).replace(/\s/g, '');
+
+        if (!key) return '';
+
         const { dataKey, path } = parseKey(key);
 
         if (

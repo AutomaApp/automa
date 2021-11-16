@@ -233,6 +233,8 @@ export function link(block) {
       return;
     }
 
+    markElement(element, block);
+
     const url = element.href;
 
     if (url) window.location.href = url;
