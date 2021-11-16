@@ -2,10 +2,11 @@
 import browser from 'webextension-polyfill';
 import { objectHasKey, fileSaver, isObject } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
+import { executeWebhook } from '@/utils/webhookUtil';
+import executeContentScript from '@/utils/execute-content-script';
 import dataExporter, { generateJSON } from '@/utils/data-exporter';
 import compareBlockValue from '@/utils/compare-block-value';
 import errorMessage from './error-message';
-import { executeWebhook } from '@/utils/webhookUtil';
 
 function getBlockConnection(block, index = 1) {
   const blockId = block.outputs[`output_${index}`]?.connections[0]?.node;
@@ -67,11 +68,7 @@ export async function trigger(block) {
   const nextBlockId = getBlockConnection(block);
   try {
     if (block.data.type === 'visit-web' && this.tabId) {
-      await browser.tabs.executeScript(this.tabId, {
-        file: './contentScript.bundle.js',
-      });
-
-      this._connectTab(this.tabId);
+      this.frames = executeContentScript(this.tabId, 'trigger');
     }
 
     return { nextBlockId, data: '' };
@@ -187,46 +184,90 @@ export function forwardPage(block) {
   });
 }
 
+export async function newWindow(block) {
+  const nextBlockId = getBlockConnection(block);
+
+  try {
+    const { incognito, windowState } = block.data;
+    const { id } = await browser.windows.create({
+      incognito,
+      state: windowState,
+    });
+
+    this.windowId = id;
+
+    return {
+      data: id,
+      nextBlockId,
+    };
+  } catch (error) {
+    error.nextBlockId = nextBlockId;
+
+    throw error;
+  }
+}
+
 function tabUpdatedListener(tab) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     this._listener({
       name: 'tab-updated',
       id: tab.id,
-      once: true,
       callback: async (tabId, changeInfo, deleteListener) => {
         if (changeInfo.status !== 'complete') return;
 
-        try {
-          await browser.tabs.executeScript(tabId, {
-            file: './contentScript.bundle.js',
-          });
+        const frames = await executeContentScript(tabId, 'newtab');
 
-          deleteListener();
-          this._connectTab(tabId);
+        deleteListener();
 
-          resolve();
-        } catch (error) {
-          console.error(error);
-          reject(error);
-        }
+        resolve(frames);
       },
     });
   });
 }
 export async function newTab(block) {
+  if (this.windowId) {
+    try {
+      await browser.windows.get(this.windowId);
+    } catch (error) {
+      this.windowId = null;
+    }
+  }
+
   try {
-    const { updatePrevTab, url, active } = block.data;
+    const { updatePrevTab, url, active, inGroup } = block.data;
 
     if (updatePrevTab && this.tabId) {
       await browser.tabs.update(this.tabId, { url, active });
     } else {
-      const { id, windowId } = await browser.tabs.create({ url, active });
+      const tab = await browser.tabs.create({
+        url,
+        active,
+        windowId: this.windowId,
+      });
 
-      this.tabId = id;
-      this.windowId = windowId;
+      this.tabId = tab.id;
+      this.windowId = tab.windowId;
     }
 
-    await tabUpdatedListener.call(this, { id: this.tabId });
+    if (inGroup && !updatePrevTab) {
+      const options = {
+        groupId: this.tabGroupId,
+        tabIds: this.tabId,
+      };
+
+      if (!this.tabGroupId) {
+        options.createProperties = {
+          windowId: this.windowId,
+        };
+      }
+
+      chrome.tabs.group(options, (tabGroupId) => {
+        this.tabGroupId = tabGroupId;
+      });
+    }
+
+    this.frameId = 0;
+    this.frames = await tabUpdatedListener.call(this, { id: this.tabId });
 
     return {
       data: url,
@@ -258,13 +299,11 @@ export async function activeTab(block) {
       currentWindow: true,
     });
 
-    await browser.tabs.executeScript(tab.id, {
-      file: './contentScript.bundle.js',
-    });
+    this.frames = await executeContentScript(tab.id, 'activetab');
 
+    this.frameId = 0;
     this.tabId = tab.id;
     this.windowId = tab.windowId;
-    this._connectTab(tab.id);
 
     return data;
   } catch (error) {
@@ -342,87 +381,113 @@ export async function takeScreenshot(block) {
   }
 }
 
-export function interactionHandler(block) {
-  return new Promise((resolve, reject) => {
-    const nextBlockId = getBlockConnection(block);
+export async function switchTo(block) {
+  const nextBlockId = getBlockConnection(block);
 
-    if (!this.connectedTab) {
-      reject(generateBlockError(block));
+  try {
+    if (block.data.windowType === 'main-window') {
+      this.frameId = 0;
 
-      return;
+      return {
+        data: '',
+        nextBlockId,
+      };
     }
 
-    this.connectedTab.postMessage({ isBlock: true, ...block });
-    this._listener({
-      name: 'tab-message',
-      id: block.name,
-      once: true,
-      delay: block.name === 'link' ? 5000 : 0,
-      callback: (data) => {
-        if (data?.isError) {
-          const error = new Error(data.message);
-          error.nextBlockId = nextBlockId;
+    const { url } = await this._sendMessageToTab(block, { frameId: 0 });
 
-          reject(error);
-          return;
-        }
+    if (objectHasKey(this.frames, url)) {
+      this.frameId = this.frames[url];
 
-        const getColumn = (name) =>
-          this.workflow.dataColumns.find((item) => item.name === name) || {
-            name: 'column',
-            type: 'text',
-          };
-        const pushData = (column, value) => {
-          this.data[column.name]?.push(convertData(value, column.type));
-        };
+      return {
+        data: this.frameId,
+        nextBlockId,
+      };
+    }
+    throw new Error(errorMessage('no-iframe-id', block.data));
+  } catch (error) {
+    error.nextBlockId = nextBlockId;
 
-        if (objectHasKey(block.data, 'dataColumn')) {
-          const column = getColumn(block.data.dataColumn);
+    throw error;
+  }
+}
 
-          if (block.data.saveData) {
-            if (Array.isArray(data)) {
-              data.forEach((item) => {
-                pushData(column, item);
-              });
-            } else {
-              pushData(column, data);
-            }
-          }
-        } else if (block.name === 'javascript-code') {
-          const memoColumn = {};
-          const pushObjectData = (obj) => {
-            Object.entries(obj).forEach(([key, value]) => {
-              let column;
+export async function interactionHandler(block) {
+  const nextBlockId = getBlockConnection(block);
 
-              if (memoColumn[key]) {
-                column = memoColumn[key];
-              } else {
-                const currentColumn = getColumn(key);
-
-                column = currentColumn;
-                memoColumn[key] = currentColumn;
-              }
-
-              pushData(column, value);
-            });
-          };
-
-          if (Array.isArray(data)) {
-            data.forEach((obj) => {
-              if (isObject(obj)) pushObjectData(obj);
-            });
-          } else if (isObject(data)) {
-            pushObjectData(data);
-          }
-        }
-
-        resolve({
-          data,
-          nextBlockId,
-        });
-      },
+  try {
+    const data = await this._sendMessageToTab(block, {
+      frameId: this.frameId || 0,
     });
-  });
+
+    if (block.name === 'link')
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    if (data?.isError) {
+      const error = new Error(data.message);
+      error.nextBlockId = nextBlockId;
+
+      throw error;
+    }
+
+    const getColumn = (name) =>
+      this.workflow.dataColumns.find((item) => item.name === name) || {
+        name: 'column',
+        type: 'text',
+      };
+    const pushData = (column, value) => {
+      this.data[column.name]?.push(convertData(value, column.type));
+    };
+
+    if (objectHasKey(block.data, 'dataColumn')) {
+      const column = getColumn(block.data.dataColumn);
+
+      if (block.data.saveData) {
+        if (Array.isArray(data)) {
+          data.forEach((item) => {
+            pushData(column, item);
+          });
+        } else {
+          pushData(column, data);
+        }
+      }
+    } else if (block.name === 'javascript-code') {
+      const memoColumn = {};
+      const pushObjectData = (obj) => {
+        Object.entries(obj).forEach(([key, value]) => {
+          let column;
+
+          if (memoColumn[key]) {
+            column = memoColumn[key];
+          } else {
+            const currentColumn = getColumn(key);
+
+            column = currentColumn;
+            memoColumn[key] = currentColumn;
+          }
+
+          pushData(column, value);
+        });
+      };
+
+      if (Array.isArray(data)) {
+        data.forEach((obj) => {
+          if (isObject(obj)) pushObjectData(obj);
+        });
+      } else if (isObject(data)) {
+        pushObjectData(data);
+      }
+    }
+
+    return {
+      data,
+      nextBlockId,
+    };
+  } catch (error) {
+    error.nextBlockId = nextBlockId;
+
+    throw error;
+  }
 }
 
 export function delay(block) {
@@ -449,24 +514,18 @@ export function exportData(block) {
 
 export function elementExists(block) {
   return new Promise((resolve, reject) => {
-    if (!this.connectedTab) {
-      reject(generateBlockError(block));
-
-      return;
-    }
-
-    this.connectedTab.postMessage({ isBlock: true, ...block });
-    this._listener({
-      name: 'tab-message',
-      id: block.name,
-      once: true,
-      callback: (data) => {
+    this._sendMessageToTab(block)
+      .then((data) => {
         resolve({
           data,
           nextBlockId: getBlockConnection(block, data ? 1 : 2),
         });
-      },
-    });
+      })
+      .catch((error) => {
+        error.nextBlockId = getBlockConnection(block);
+
+        reject(error);
+      });
   });
 }
 
@@ -519,13 +578,21 @@ export function repeatTask({ data, id, outputs }) {
 
 export function webhook({ data, outputs }) {
   return new Promise((resolve, reject) => {
+    const nextBlockId = getBlockConnection({ outputs });
+
     if (!data.url) {
-      reject(new Error('URL is empty'));
+      const error = new Error('URL is empty');
+      error.nextBlockId = nextBlockId;
+
+      reject(error);
       return;
     }
 
     if (!data.url.startsWith('http')) {
-      reject(new Error('URL is not valid'));
+      const error = new Error('URL is not valid');
+      error.nextBlockId = nextBlockId;
+
+      reject(error);
       return;
     }
 

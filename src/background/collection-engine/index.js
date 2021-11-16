@@ -3,6 +3,7 @@ import browser from 'webextension-polyfill';
 import { toCamelCase } from '@/utils/helper';
 import * as flowHandler from './flow-handler';
 import workflowState from '../workflow-state';
+import WorkflowEngine from '../workflow-engine';
 
 class CollectionEngine {
   constructor(collection) {
@@ -24,17 +25,31 @@ class CollectionEngine {
     try {
       if (this.collection.flow.length === 0) return;
 
-      await workflowState.add(this.id, {
-        state: this.state,
-        isCollection: true,
-        collectionId: this.collection.id,
-      });
-
       const { workflows } = await browser.storage.local.get('workflows');
 
       this.workflows = workflows;
       this.startedTimestamp = Date.now();
-      this._flowHandler(this.collection.flow[0]);
+
+      if (this.collection?.options.atOnce) {
+        this.collection.flow.forEach(({ itemId, type }) => {
+          if (type !== 'workflow') return;
+
+          const currentWorkflow = workflows.find(({ id }) => id === itemId);
+
+          if (currentWorkflow) {
+            const engine = new WorkflowEngine(currentWorkflow, {});
+
+            engine.init();
+          }
+        });
+      } else {
+        await workflowState.add(this.id, {
+          state: this.state,
+          isCollection: true,
+          collectionId: this.collection.id,
+        });
+        this._flowHandler(this.collection.flow[0]);
+      }
     } catch (error) {
       console.error(error);
     }

@@ -8,14 +8,13 @@ const renderContent = (content, contentType) => {
 
   if (contentType === 'form') {
     return Object.keys(renderedJson)
-      .map(
-        (key) =>
-          `${key}=${
-            isObject(renderedJson[key])
-              ? JSON.stringify(renderedJson[key])
-              : renderedJson[key]
-          }`
-      )
+      .map((key) => {
+        const value = isObject(renderedJson[key])
+          ? JSON.stringify(renderedJson[key])
+          : renderedJson[key];
+
+        return `${key}=${value}`;
+      })
       .join('&');
   }
 

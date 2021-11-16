@@ -27,7 +27,7 @@ export const tasks = {
   },
   'active-tab': {
     name: 'Active tab',
-    description: 'Set as active tab',
+    description: "Set current tab that you're in as a active tab",
     icon: 'riWindowLine',
     component: 'BlockBasic',
     category: 'browser',
@@ -53,7 +53,25 @@ export const tasks = {
       description: '',
       url: '',
       active: true,
+      inGroup: false,
       updatePrevTab: false,
+    },
+  },
+  'new-window': {
+    name: 'New window',
+    description: 'Create a new window',
+    icon: 'riWindow2Line',
+    component: 'BlockBasic',
+    editComponent: 'EditNewWindow',
+    category: 'browser',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      description: '',
+      incognito: false,
+      windowState: 'normal',
     },
   },
   'go-back': {
@@ -421,6 +439,22 @@ export const tasks = {
       loopId: '',
     },
   },
+  'switch-to': {
+    name: 'Switch frame',
+    description: 'Switch between main window and iframe',
+    icon: 'riArrowUpDownLine',
+    component: 'BlockBasic',
+    editComponent: 'EditSwitchTo',
+    category: 'interaction',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      selector: '',
+      windowType: 'main-window',
+    },
+  },
 };
 
 export const categories = {
@@ -449,6 +483,8 @@ export const eventList = [
   { id: 'mousedown', name: 'Mousedown', type: 'mouse-event' },
   { id: 'focus', name: 'Focus', type: 'focus-event' },
   { id: 'blur', name: 'Blur', type: 'focus-event' },
+  { id: 'input', name: 'Input', type: 'input-event' },
+  { id: 'change', name: 'Change', type: 'event' },
   { id: 'touchstart', name: 'Touch start', type: 'touch-event' },
   { id: 'touchend', name: 'Touch end', type: 'touch-event' },
   { id: 'touchmove', name: 'Touch move', type: 'touch-event' },

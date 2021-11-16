@@ -11,15 +11,23 @@
       </option>
     </ui-select>
     <button
-      class="mb-2 block w-full text-left mt-4 focus:ring-0"
+      class="mb-2 block flex items-center w-full text-left mt-4 focus:ring-0"
       @click="showOptions = !showOptions"
     >
       <v-remixicon
         name="riArrowLeftSLine"
-        class="mr-1 transition-transform align-middle inline-block -ml-1"
+        class="mr-1 transition-transform -ml-1"
         :rotate="showOptions ? 270 : 180"
       />
-      <span class="align-middle">Options</span>
+      <span class="flex-1">Options</span>
+      <a
+        :href="getEventDetailsUrl()"
+        rel="noopener"
+        target="_blank"
+        @click.stop
+      >
+        <v-remixicon name="riInformationLine" size="20" />
+      </a>
     </button>
     <transition-expand>
       <div v-if="showOptions">
@@ -51,6 +59,7 @@
 import TriggerEventMouse from './TriggerEventMouse.vue';
 import TriggerEventTouch from './TriggerEventTouch.vue';
 import TriggerEventWheel from './TriggerEventWheel.vue';
+import TriggerEventInput from './TriggerEventInput.vue';
 import TriggerEventKeyboard from './TriggerEventKeyboard.vue';
 
 export default {
@@ -58,6 +67,7 @@ export default {
     TriggerEventMouse,
     TriggerEventWheel,
     TriggerEventTouch,
+    TriggerEventInput,
     TriggerEventKeyboard,
   },
 };
@@ -66,6 +76,7 @@ export default {
 /* eslint-disable */
 import { ref } from 'vue';
 import { eventList } from '@/utils/shared';
+import { toCamelCase } from '@/utils/helper';
 import EditInteractionBase from './EditInteractionBase.vue';
 
 const props = defineProps({
@@ -79,15 +90,22 @@ const emit = defineEmits(['update:data']);
 const eventComponents = {
   'mouse-event': 'TriggerEventMouse',
   'focus-event': '',
+  'event': '',
   'touch-event': 'TriggerEventTouch',
   'keyboard-event': 'TriggerEventKeyboard',
   'wheel-event': 'TriggerEventWheel',
+  'input-event': 'TriggerEventInput',
 };
 
 const componentName = ref(eventComponents[props.data.eventType]);
 const params = ref(props.data.eventParams);
 const showOptions = ref(false);
 
+function getEventDetailsUrl() {
+  const eventType = toCamelCase(props.data.eventType);
+
+  return `https://developer.mozilla.org/en-US/docs/Web/API/${eventType}/${eventType}`;
+}
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }

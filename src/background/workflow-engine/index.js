@@ -3,31 +3,17 @@ import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
 import { toCamelCase } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
-import referenceData from '@/utils/reference-data';
 import errorMessage from './error-message';
+import referenceData from '@/utils/reference-data';
 import workflowState from '../workflow-state';
 import * as blocksHandler from './blocks-handler';
+import executeContentScript from '@/utils/execute-content-script';
 
 let reloadTimeout;
 
-function tabMessageHandler({ type, data }) {
-  const listener = this.tabMessageListeners[type];
-
-  if (listener) {
-    setTimeout(() => {
-      listener.callback(data);
-    }, listener.delay || 0);
-
-    if (listener.once) delete this.tabMessageListeners[type];
-  }
-}
 function tabRemovedHandler(tabId) {
   if (tabId !== this.tabId) return;
 
-  this.connectedTab?.onMessage.removeListener(this.tabMessageHandler);
-  this.connectedTab?.disconnect();
-
-  delete this.connectedTab;
   delete this.tabId;
 
   if (tasks[this.currentBlock.name].category === 'interaction') {
@@ -56,13 +42,10 @@ function tabUpdatedHandler(tabId, changeInfo) {
       clearTimeout(reloadTimeout);
       reloadTimeout = null;
 
-      browser.tabs
-        .executeScript(tabId, {
-          file: './contentScript.bundle.js',
-        })
-        .then(() => {
-          if (this.connectedTab) this._connectTab(this.tabId);
-
+      executeContentScript(tabId, 'update tab')
+        .then((frames) => {
+          this.tabId = tabId;
+          this.frames = frames;
           this.isPaused = false;
         })
         .catch((error) => {
@@ -81,21 +64,22 @@ class WorkflowEngine {
     this.isInCollection = isInCollection;
     this.collectionLogId = collectionLogId;
     this.data = {};
+    this.logs = [];
     this.blocks = {};
-    this.eventListeners = {};
-    this.repeatedTasks = {};
+    this.frames = {};
     this.loopList = {};
     this.loopData = {};
-    this.logs = [];
+    this.repeatedTasks = {};
+    this.eventListeners = {};
     this.isPaused = false;
     this.isDestroyed = false;
+    this.frameId = null;
+    this.windowId = null;
+    this.tabGroupId = null;
     this.currentBlock = null;
     this.workflowTimeout = null;
-    this.windowId = null;
 
-    this.tabMessageListeners = {};
     this.tabUpdatedListeners = {};
-    this.tabMessageHandler = tabMessageHandler.bind(this);
     this.tabUpdatedHandler = tabUpdatedHandler.bind(this);
     this.tabRemovedHandler = tabRemovedHandler.bind(this);
   }
@@ -176,7 +160,6 @@ class WorkflowEngine {
       this.dispatchEvent('destroyed', { id: this.id, status, message });
 
       this.eventListeners = {};
-      this.tabMessageListeners = {};
       this.tabUpdatedListeners = {};
 
       await browser.tabs.onRemoved.removeListener(this.tabRemovedHandler);
@@ -268,11 +251,11 @@ class WorkflowEngine {
     this.dispatchEvent('update', this.state);
 
     const started = Date.now();
-    const isInteraction = tasks[block.name].category === 'interaction';
-    const handlerName = isInteraction
-      ? 'interactionHandler'
-      : toCamelCase(block?.name);
-    const handler = blocksHandler[handlerName];
+    const blockHandler = blocksHandler[toCamelCase(block?.name)];
+    const handler =
+      !blockHandler && tasks[block.name].category === 'interaction'
+        ? blocksHandler.interactionHandler
+        : blockHandler;
 
     if (handler) {
       const replacedBlock = referenceData(block, {
@@ -335,35 +318,27 @@ class WorkflowEngine {
     }
   }
 
-  _connectTab(tabId) {
-    const connectedTab = browser.tabs.connect(tabId, {
-      name: `${this.workflow.id}--${this.workflow.name.slice(0, 10)}`,
+  _sendMessageToTab(block, options = {}) {
+    return new Promise((resolve, reject) => {
+      if (!this.tabId) {
+        const message = errorMessage('no-tab', tasks[block.name]);
+
+        reject(new Error(message));
+      }
+
+      browser.tabs
+        .sendMessage(this.tabId, { isBlock: true, ...block }, options)
+        .then(resolve)
+        .catch(reject);
     });
-
-    if (this.connectedTab) {
-      this.connectedTab.onMessage.removeListener(this.tabMessageHandler);
-      this.connectedTab.disconnect();
-    }
-
-    connectedTab.onMessage.addListener(this.tabMessageHandler);
-
-    this.connectedTab = connectedTab;
-    this.tabId = tabId;
-
-    return connectedTab;
   }
 
   _listener({ id, name, callback, once = true, ...options }) {
     const listenerNames = {
       event: 'eventListener',
       'tab-updated': 'tabUpdatedListeners',
-      'tab-message': 'tabMessageListeners',
     };
     this[listenerNames[name]][id] = { callback, once, ...options };
-
-    return () => {
-      delete this.tabMessageListeners[id];
-    };
   }
 }
 

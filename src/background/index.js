@@ -101,6 +101,10 @@ chrome.runtime.onInstalled.addListener((details) => {
 
 const message = new MessageListener('background');
 
+message.on('get:sender', (_, sender) => {
+  return sender;
+});
+
 message.on('collection:execute', executeCollection);
 message.on('collection:stop', (id) => {
   const collection = runningCollections[id];

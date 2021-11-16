@@ -12,7 +12,7 @@
   display: flex;
   overflow: hidden;
   touch-action: none;
-  outline: 0
+  outline: none;
 }
 
 .drawflow {
@@ -24,6 +24,7 @@
 
 .drawflow .drawflow-node {
   position: absolute;
+  align-items: center;
   background: white;
   min-width: 150px;
   min-height: 40px;
@@ -110,7 +111,6 @@
   stroke: #000;
   stroke-width: 2;
   fill: #fff;
-  transform: translate(-9999px, -9999px);
 }
 
 .drawflow .connection .point.selected,
@@ -122,21 +122,6 @@
   fill: none;
   stroke-width: 5px;
   stroke: theme('colors.accent');
-}
-
-.drawflow .selectbox {
-  z-index: 3;
-  position: absolute;
-  transform: translate(9999px, 9999px)
-}
-
-.drawflow .selectbox rect {
-  fill: #00f;
-  opacity: .5;
-  stroke: #ff0;
-  stroke-width: 5;
-  stroke-opacity: .5;
-  transform: translate(-9999px, -9999px)
 }
 
 .drawflow-delete {

@@ -1,23 +1,33 @@
 <template>
-  <div
-    :style="{
-      transform: `translate(${element.hovered.x}px, ${element.hovered.y}px)`,
-      height: element.hovered.height + 'px',
-      width: element.hovered.width + 'px',
-    }"
-    class="indicator pointer-events-auto"
-  ></div>
-  <div
-    v-if="element.selector"
-    :style="{
-      transform: `translate(${element.selected.x}px, ${element.selected.y}px)`,
-      height: element.selected.height + 'px',
-      width: element.selected.width + 'px',
-      zIndex: 99,
-    }"
-    class="indicator selected"
-  ></div>
+  <template v-if="!element.hide">
+    <div class="overlay"></div>
+    <div
+      :style="{
+        transform: `translate(${element.hovered.x}px, ${element.hovered.y}px)`,
+        height: element.hovered.height + 'px',
+        width: element.hovered.width + 'px',
+      }"
+      class="indicator pointer-events-auto"
+    ></div>
+    <div
+      v-if="element.selector"
+      :style="{
+        transform: `translate(${element.selected.x}px, ${element.selected.y}px)`,
+        height: element.selected.height + 'px',
+        width: element.selected.width + 'px',
+        zIndex: 99,
+      }"
+      class="indicator selected"
+    ></div>
+  </template>
   <div class="card">
+    <button
+      title="Toggle hide"
+      class="mr-2"
+      @click="element.hide = !element.hide"
+    >
+      <v-remix-icon :path="element.hide ? riEyeLine : riEyeOffLine" />
+    </button>
     <div class="selector">
       <v-remix-icon
         style="cursor: pointer"
@@ -33,32 +43,40 @@
         :value="element.selector"
       />
     </div>
-    <template v-if="element.selector">
+    <template v-if="element.selector && !element.hide">
       <button
         title="Select parent element (press P)"
+        class="ml-2"
         @click="selectParentElement"
       >
         <v-remix-icon :path="riArrowDownLine" rotate="180" />
       </button>
       <button
         title="Select parent element (press C)"
+        class="ml-2"
         @click="selectChildElement"
       >
         <v-remix-icon :path="riArrowDownLine" />
       </button>
     </template>
-    <button class="primary" @click="destroy">Close</button>
+    <button class="primary ml-2" @click="destroy">Close</button>
   </div>
 </template>
 <script setup>
 import { reactive } from 'vue';
 import { finder } from '@medv/finder';
 import { VRemixIcon } from 'v-remixicon';
-import { riFileCopyLine, riArrowDownLine } from 'v-remixicon/icons';
+import {
+  riFileCopyLine,
+  riArrowDownLine,
+  riEyeLine,
+  riEyeOffLine,
+} from 'v-remixicon/icons';
 
 /* to-do get list of attribute value */
 
 const element = reactive({
+  hide: window.self !== window.top,
   hovered: {},
   selected: {},
   selector: '',
@@ -83,24 +101,22 @@ function getElementRect(target) {
   };
 }
 function handleMouseMove({ target }) {
-  if (targetEl === target || target === root) return;
+  if (element.hide || targetEl === target || target === root) return;
 
   targetEl = target;
 
   element.hovered = getElementRect(target);
 }
 function copySelector() {
-  navigator.clipboard
-    .writeText(element.selector)
-    .then(() => {
-      root.shadowRoot.querySelector('input')?.select();
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+  root.shadowRoot.querySelector('input')?.select();
+
+  navigator.clipboard.writeText(element.selector).catch((error) => {
+    document.execCommand('copy');
+    console.error(error);
+  });
 }
 function selectChildElement() {
-  if (selectedPath.length === 0) return;
+  if (selectedPath.length === 0 || element.hide) return;
 
   const currentEl = selectedPath[pathIndex];
   let activeEl = currentEl;
@@ -124,7 +140,12 @@ function selectChildElement() {
   selectedEl = activeEl;
 }
 function selectParentElement() {
-  if (selectedEl.tagName === 'HTML' || selectedPath.length === 0) return;
+  if (
+    selectedEl.tagName === 'HTML' ||
+    selectedPath.length === 0 ||
+    element.hide
+  )
+    return;
 
   pathIndex += 1;
   const activeEl = selectedPath[pathIndex];
@@ -134,10 +155,12 @@ function selectParentElement() {
   selectedEl = activeEl;
 }
 function handleClick(event) {
-  if (event.target === root) return;
+  if (event.target === root || element.hide) return;
 
-  event.preventDefault();
-  event.stopPropagation();
+  if (!element.hide) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
 
   selectedPath = event.path;
   element.selected = getElementRect(targetEl);
@@ -185,7 +208,6 @@ window.addEventListener('mousemove', handleMouseMove);
   width: 100%;
   top: 0;
   left: 0;
-  background-color: rgba(0, 0, 0, 0.2);
   pointer-events: none;
   z-index: 99999;
   color: #18181b;
@@ -215,7 +237,6 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 6px;
   cursor: pointer;
 }
 button.primary {
@@ -230,6 +251,25 @@ button.primary {
   padding-left: 12px;
   background-color: #e4e4e7;
 }
+
+.ml-2 {
+  margin-left: 6px;
+}
+
+.mr-2 {
+  margin-right: 6px;
+}
+
+.overlay {
+  background-color: rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
 input {
   border: none;
   color: inherit;
@@ -251,6 +291,7 @@ input:focus {
   border-radius: 8px;
   padding: 12px;
   color: #1f2937;
+  border: 1px solid #e4e4e7;
   pointer-events: all;
   z-index: 999;
 }

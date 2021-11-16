@@ -132,6 +132,7 @@ async function selectElement() {
   } catch (error) {
     if (error.message.includes('Could not establish connection.')) {
       await browser.tabs.executeScript(tab.id, {
+        allFrames: true,
         file: './contentScript.bundle.js',
       });
 
