@@ -36,7 +36,7 @@ export function workflow(flow) {
         workflowId: currentWorkflow.id,
         workflowName: currentWorkflow.name,
       });
-      console.log(engine);
+
       resolve({
         id,
         message,

@@ -41,6 +41,10 @@ export default {
       type: [String, Object, HTMLElement],
       default: '',
     },
+    options: {
+      type: Object,
+      default: () => ({}),
+    },
     disabled: {
       type: Boolean,
       default: false,
@@ -50,13 +54,20 @@ export default {
       default: false,
     },
   },
-  emits: ['show', 'trigger', 'close'],
+  emits: ['show', 'trigger', 'close', 'update:modelValue'],
   setup(props, { emit }) {
     const targetEl = ref(null);
     const content = ref(null);
     const isShow = ref(false);
     const instance = shallowRef(null);
 
+    watch(
+      () => props.options,
+      (value) => {
+        instance.value.setProps(value);
+      },
+      { deep: true }
+    );
     watch(
       () => props.disabled,
       (value) => {
@@ -102,9 +113,11 @@ export default {
         },
         onHide: () => {
           emit('close');
+          emit('update:modelValue', false);
           isShow.value = false;
         },
         onTrigger: () => emit('trigger'),
+        ...props.options,
       });
     });
     onUnmounted(() => {

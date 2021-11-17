@@ -32,11 +32,29 @@
         </button>
       </div>
     </div>
+    <ui-popover
+      v-model="contextMenu.show"
+      :options="contextMenu.position"
+      padding="p-3"
+    >
+      <ui-list class="w-36 space-y-1">
+        <ui-list-item
+          v-for="item in contextMenu.items"
+          :key="item.id"
+          v-close-popover
+          class="cursor-pointer"
+          @click="contextMenuHandler[item.event]"
+        >
+          <v-remixicon :name="item.icon" class="mr-2 -ml-1" />
+          <span>{{ item.name }}</span>
+        </ui-list-item>
+      </ui-list>
+    </ui-popover>
   </div>
 </template>
 <script>
 /* eslint-disable camelcase */
-import { onMounted, shallowRef, getCurrentInstance } from 'vue';
+import { onMounted, shallowRef, reactive, getCurrentInstance } from 'vue';
 import emitter from 'tiny-emitter/instance';
 import { tasks } from '@/utils/shared';
 import { useGroupTooltip } from '@/composable/groupTooltip';
@@ -53,7 +71,30 @@ export default {
   setup(props, { emit }) {
     useGroupTooltip();
 
+    const contextMenuItems = {
+      block: [
+        {
+          id: 'duplicate',
+          name: 'Duplicate',
+          icon: 'riFileCopyLine',
+          event: 'duplicateBlock',
+        },
+        {
+          id: 'delete',
+          name: 'Delete',
+          icon: 'riDeleteBin7Line',
+          event: 'deleteBlock',
+        },
+      ],
+    };
+
     const editor = shallowRef(null);
+    const contextMenu = reactive({
+      items: [],
+      data: null,
+      show: false,
+      position: {},
+    });
 
     function dropHandler({ dataTransfer, clientX, clientY }) {
       const block = JSON.parse(dataTransfer.getData('block') || null);
@@ -102,9 +143,32 @@ export default {
         return item === input;
       });
     }
+    function deleteBlock() {
+      editor.value.removeNodeId(contextMenu.data);
+    }
+    function duplicateBlock() {
+      const { name, pos_x, pos_y, data, html } = editor.value.getNodeFromId(
+        contextMenu.data.substr(5)
+      );
+
+      if (name === 'trigger') return;
+
+      const { outputs, inputs } = tasks[name];
+
+      editor.value.addNode(
+        name,
+        inputs,
+        outputs,
+        pos_x + 50,
+        pos_y + 100,
+        name,
+        data,
+        html,
+        'vue'
+      );
+    }
 
     onMounted(() => {
-      /* eslint-disable-next-line */
       const context = getCurrentInstance().appContext.app._context;
       const element = document.querySelector('#drawflow');
 
@@ -162,8 +226,26 @@ export default {
       editor.value.on('connectionRemoved', () => {
         emitter.emit('editor:data-changed');
       });
-      editor.value.on('contextmenu', (event) => {
-        console.log(event);
+      editor.value.on('contextmenu', ({ clientY, clientX, target }) => {
+        const isBlock = target.closest('.drawflow .drawflow-node');
+
+        if (isBlock) {
+          const virtualEl = {
+            getReferenceClientRect: () => ({
+              width: 0,
+              height: 0,
+              top: clientY,
+              right: clientX,
+              bottom: clientY,
+              left: clientX,
+            }),
+          };
+
+          contextMenu.data = isBlock.id;
+          contextMenu.position = virtualEl;
+          contextMenu.items = contextMenuItems.block;
+          contextMenu.show = true;
+        }
       });
 
       setTimeout(() => {
@@ -173,7 +255,12 @@ export default {
 
     return {
       editor,
+      contextMenu,
       dropHandler,
+      contextMenuHandler: {
+        deleteBlock,
+        duplicateBlock,
+      },
     };
   },
 };
