@@ -129,7 +129,7 @@
                         ? 'bg-yellow-200'
                         : 'bg-green-200',
                     ]"
-                    class="absolute w-2 left-0 top-0 h-full"
+                    class="absolute w-1 left-0 top-0 h-full"
                   ></span>
                   <v-remixicon :name="element.icon" class="mr-4" />
                   <p class="flex-1 text-overflow">{{ element.name }}</p>

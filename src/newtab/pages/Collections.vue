@@ -2,7 +2,7 @@
   <div class="container pt-8 pb-4">
     <h1 class="text-2xl font-semibold">Collections</h1>
     <p class="text-gray-600 dark:text-gray-200">
-      Execute your workflows continuously
+      Execute your workflows in sequence
     </p>
     <div class="flex items-center my-6 space-x-4">
       <ui-input

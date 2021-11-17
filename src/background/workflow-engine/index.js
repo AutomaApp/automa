@@ -269,15 +269,14 @@ class WorkflowEngine {
         .then((result) => {
           clearTimeout(this.workflowTimeout);
           this.workflowTimeout = null;
+          this.logs.push({
+            type: 'success',
+            name: tasks[block.name].name,
+            data: result.data,
+            duration: Math.round(Date.now() - started),
+          });
 
           if (result.nextBlockId) {
-            this.logs.push({
-              type: 'success',
-              name: tasks[block.name].name,
-              data: result.data,
-              duration: Math.round(Date.now() - started),
-            });
-
             this._blockHandler(this.blocks[result.nextBlockId], result.data);
           } else {
             this.logs.push({
