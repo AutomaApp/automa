@@ -1,8 +1,9 @@
 /* eslint-disable no-underscore-dangle */
 import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
-import { toCamelCase } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
+import { toCamelCase } from '@/utils/helper';
+import { generateJSON } from '@/utils/data-exporter';
 import errorMessage from './error-message';
 import referenceData from '@/utils/reference-data';
 import workflowState from '../workflow-state';
@@ -174,6 +175,7 @@ class WorkflowEngine {
       if (!this.workflow.isTesting) {
         const { logs } = await browser.storage.local.get('logs');
         const { name, icon, id } = this.workflow;
+        const jsonData = generateJSON(Object.keys(this.data), this.data);
 
         logs.push({
           name,
@@ -181,7 +183,7 @@ class WorkflowEngine {
           status,
           id: this.id,
           workflowId: id,
-          data: this.data,
+          data: jsonData,
           history: this.logs,
           endedAt: this.endedTimestamp,
           startedAt: this.startedTimestamp,
