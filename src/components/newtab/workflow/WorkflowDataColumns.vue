@@ -56,6 +56,7 @@ const dataTypes = [
   { id: 'string', name: 'Text' },
   { id: 'integer', name: 'Number' },
   { id: 'boolean', name: 'Boolean' },
+  { id: 'array', name: 'Array' },
 ];
 
 const state = reactive({

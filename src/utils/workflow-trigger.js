@@ -121,7 +121,8 @@ export async function registerWorkflowTrigger(workflowId, { data }) {
       'keyboard-shortcut': registerKeyboardShortcut,
     };
 
-    await triggersHandler[data.type](workflowId, data);
+    if (triggersHandler[data.type])
+      await triggersHandler[data.type](workflowId, data);
   } catch (error) {
     console.error(error);
   }

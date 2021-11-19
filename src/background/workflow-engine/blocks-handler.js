@@ -23,6 +23,9 @@ function convertData(data, type) {
     case 'boolean':
       result = Boolean(data);
       break;
+    case 'array':
+      result = Array.from(data);
+      break;
     default:
   }
 
@@ -443,7 +446,7 @@ export async function interactionHandler(block) {
       const column = getColumn(block.data.dataColumn);
 
       if (block.data.saveData) {
-        if (Array.isArray(data)) {
+        if (Array.isArray(data) && column.type !== 'array') {
           data.forEach((item) => {
             pushData(column, item);
           });

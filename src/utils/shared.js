@@ -28,7 +28,7 @@ export const tasks = {
   },
   'active-tab': {
     name: 'Active tab',
-    description: "Set current tab that you're in as a active tab",
+    description: "Set current tab that you're in as an active tab",
     icon: 'riWindowLine',
     component: 'BlockBasic',
     category: 'browser',

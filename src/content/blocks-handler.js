@@ -89,18 +89,6 @@ export function getText(block) {
   });
 }
 
-function incScrollPos(element, data, vertical = true) {
-  let currentPos = vertical ? element.scrollTop : element.scrollLeft;
-
-  if (data.incY) {
-    currentPos += data.scrollY;
-  } else if (data.incX) {
-    currentPos += data.scrollX;
-  }
-
-  return currentPos;
-}
-
 const automaScript = `
 function automaNextBlock(data) {
   window.dispatchEvent(new CustomEvent('__automa-next-block__', { detail: data }));
@@ -151,6 +139,18 @@ export function javascriptCode(block) {
 }
 
 export function elementScroll(block) {
+  function incScrollPos(element, data, vertical = true) {
+    let currentPos = vertical ? element.scrollTop : element.scrollLeft;
+
+    if (data.incY) {
+      currentPos += data.scrollY;
+    } else if (data.incX) {
+      currentPos += data.scrollX;
+    }
+
+    return currentPos;
+  }
+
   return new Promise((resolve) => {
     const { data } = block;
     const behavior = data.smooth ? 'smooth' : 'auto';
