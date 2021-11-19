@@ -175,12 +175,22 @@ export function elementScroll(block) {
 
 export function attributeValue(block) {
   return new Promise((resolve) => {
-    const result = [];
+    let result = [];
+    const { attributeName, multiple } = block.data;
+    const isCheckboxOrRadio = (element) => {
+      if (element.tagName !== 'INPUT') return false;
+
+      return ['checkbox', 'radio'].includes(element.getAttribute('type'));
+    };
 
     handleElement(block, (element) => {
-      const value = element.getAttribute(block.data.attributeName);
+      const value =
+        attributeName === 'checked' && isCheckboxOrRadio(element)
+          ? element.checked
+          : element.getAttribute(attributeName);
 
-      result.push(value);
+      if (multiple) result.push(value);
+      else result = value;
     });
 
     resolve(result);
