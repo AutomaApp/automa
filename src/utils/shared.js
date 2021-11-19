@@ -23,6 +23,7 @@ export const tasks = {
       shortcut: '',
       activeInInput: false,
       isUrlRegex: false,
+      days: [],
     },
   },
   'active-tab': {

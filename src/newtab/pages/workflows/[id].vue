@@ -123,7 +123,6 @@ import {
 } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
-import browser from 'webextension-polyfill';
 import emitter from 'tiny-emitter/instance';
 import { sendMessage } from '@/utils/message';
 import { debounce } from '@/utils/helper';
@@ -131,6 +130,7 @@ import { useDialog } from '@/composable/dialog';
 import { exportWorkflow } from '@/utils/workflow-data';
 import Log from '@/models/log';
 import Workflow from '@/models/workflow';
+import workflowTrigger from '@/utils/workflow-trigger';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';
 import WorkflowSettings from '@/components/newtab/workflow/WorkflowSettings.vue';
 import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
@@ -197,85 +197,6 @@ function updateWorkflow(data) {
     data,
   });
 }
-function convertToTimestamp(date, hourMinutes) {
-  let timestamp = Date.now() + 60000;
-  if (date) {
-    const dateObj = new Date(date);
-    if (hourMinutes) {
-      const arr = hourMinutes.split(':');
-      dateObj.setHours(arr[0]);
-      dateObj.setMinutes(arr[1]);
-    }
-
-    timestamp = dateObj.getTime();
-  }
-
-  return timestamp;
-}
-async function handleWorkflowTrigger({ data }) {
-  try {
-    const workflowAlarm = await browser.alarms.get(workflowId);
-    const { visitWebTriggers, shortcuts } = await browser.storage.local.get([
-      'visitWebTriggers',
-      'shortcuts',
-    ]);
-    let visitWebTriggerIndex = visitWebTriggers.findIndex(
-      (item) => item.id === workflowId
-    );
-    const keyboardShortcuts = Array.isArray(shortcuts) ? {} : shortcuts || {};
-    delete keyboardShortcuts[workflowId];
-
-    if (workflowAlarm) await browser.alarms.clear(workflowId);
-    if (visitWebTriggerIndex !== -1) {
-      visitWebTriggers.splice(visitWebTriggerIndex, 1);
-
-      visitWebTriggerIndex = -1;
-    }
-
-    await browser.storage.local.set({
-      visitWebTriggers,
-      shortcuts: keyboardShortcuts,
-    });
-
-    if (['date', 'interval'].includes(data.type)) {
-      let alarmInfo;
-
-      if (data.type === 'date') {
-        alarmInfo = {
-          when: convertToTimestamp(data.date, data.time),
-        };
-      } else {
-        alarmInfo = {
-          periodInMinutes: data.interval,
-        };
-
-        if (data.delay > 0) alarmInfo.delayInMinutes = data.delay;
-      }
-
-      if (alarmInfo) await browser.alarms.create(workflowId, alarmInfo);
-    } else if (data.type === 'visit-web' && data.url.trim() !== '') {
-      const payload = {
-        id: workflowId,
-        url: data.url,
-        isRegex: data.isUrlRegex,
-      };
-
-      if (visitWebTriggerIndex === -1) {
-        visitWebTriggers.unshift(payload);
-      } else {
-        visitWebTriggers[visitWebTriggerIndex] = payload;
-      }
-
-      await browser.storage.local.set({ visitWebTriggers });
-    } else if (data.type === 'keyboard-shortcut') {
-      keyboardShortcuts[workflowId] = data.shortcut;
-
-      await browser.storage.local.set({ shortcuts: keyboardShortcuts });
-    }
-  } catch (error) {
-    console.error(error);
-  }
-}
 function saveWorkflow() {
   const data = editor.value.export();
 
@@ -283,7 +204,10 @@ function saveWorkflow() {
     const [triggerBlockId] = editor.value.getNodesFromName('trigger');
 
     if (triggerBlockId) {
-      handleWorkflowTrigger(editor.value.getNodeFromId(triggerBlockId));
+      workflowTrigger.register(
+        workflowId,
+        editor.value.getNodeFromId(triggerBlockId)
+      );
     }
 
     state.isDataChanged = false;

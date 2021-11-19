@@ -3,6 +3,7 @@ import { MessageListener } from '@/utils/message';
 import workflowState from './workflow-state';
 import WorkflowEngine from './workflow-engine';
 import CollectionEngine from './collection-engine';
+import { registerSpecificDay } from '../utils/workflow-trigger';
 
 function getWorkflow(workflowId) {
   return new Promise((resolve) => {
@@ -71,6 +72,14 @@ browser.alarms.onAlarm.addListener(({ name }) => {
     if (!workflow) return;
 
     executeWorkflow(workflow);
+
+    const triggerBlock = Object.values(
+      JSON.parse(workflow.drawflow).drawflow.Home.data
+    ).find((block) => block.name === 'trigger');
+
+    if (triggerBlock?.data.type === 'specific-day') {
+      registerSpecificDay(workflow.id, triggerBlock.data);
+    }
   });
 });
 

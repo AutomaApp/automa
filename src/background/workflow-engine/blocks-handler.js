@@ -68,7 +68,7 @@ export async function trigger(block) {
   const nextBlockId = getBlockConnection(block);
   try {
     if (block.data.type === 'visit-web' && this.tabId) {
-      this.frames = executeContentScript(this.tabId, 'trigger');
+      this.frames = await executeContentScript(this.tabId, 'trigger');
     }
 
     return { nextBlockId, data: '' };

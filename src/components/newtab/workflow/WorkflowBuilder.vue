@@ -192,7 +192,7 @@ export default {
           50,
           300,
           'trigger',
-          { type: 'manual' },
+          tasks.trigger.data,
           'BlockBasic',
           'vue'
         );
