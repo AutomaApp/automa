@@ -6,10 +6,10 @@ const objectPath = { get, set };
 function parseKey(key) {
   const [dataKey, path] = key.split('@');
 
-  if (['prevBlockData', 'loopData'].includes(dataKey))
+  if (['prevBlockData', 'loopData', 'globalData'].includes(dataKey))
     return { dataKey, path: path || '' };
 
-  const pathArr = path.split('.');
+  const pathArr = path?.split('.') ?? '';
   let dataPath = '';
 
   if (pathArr.length === 1) {

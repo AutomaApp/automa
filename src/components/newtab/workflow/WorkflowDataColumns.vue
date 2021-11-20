@@ -12,7 +12,7 @@
   </div>
   <ul
     class="space-y-2 overflow-y-auto scroll py-1"
-    style="max-height: calc(100vh - 10rem)"
+    style="max-height: calc(100vh - 11rem)"
   >
     <li
       v-for="(column, index) in columns"

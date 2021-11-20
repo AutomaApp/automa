@@ -18,6 +18,7 @@ class Workflow extends Model {
       data: this.attr(null),
       drawflow: this.string(''),
       dataColumns: this.attr([]),
+      globalData: this.string('[{ "key": "value" }]'),
       lastRunAt: this.number(),
       createdAt: this.number(),
       settings: this.attr({

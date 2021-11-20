@@ -22,7 +22,7 @@
     </div>
     <div class="flex items-start">
       <div
-        class="w-80 border-r pr-6 mr-6 p-1 scroll overflow-auto"
+        class="w-80 border-r sticky top-11 pr-6 mr-6 p-1 scroll overflow-auto"
         style="max-height: calc(100vh - 8rem)"
       >
         <ui-input

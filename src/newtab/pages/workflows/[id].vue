@@ -12,20 +12,15 @@
       <workflow-details-card
         v-else
         :workflow="workflow"
-        :data-changed="state.isDataChanged"
-        @save="saveWorkflow"
-        @export="exportWorkflow"
-        @execute="executeWorkflow"
         @update="updateWorkflow"
-        @showDataColumns="state.showDataColumnsModal = true"
-        @showSettings="state.showSettings = true"
-        @rename="renameWorkflow"
-        @delete="deleteWorkflow"
       />
     </div>
     <div class="flex-1 relative overflow-auto">
-      <div class="absolute px-3 rounded-lg bg-white z-10 left-0 m-4 top-0">
-        <ui-tabs v-model="activeTab" class="border-none h-full space-x-1">
+      <div class="absolute w-full flex items-center z-10 left-0 p-4 top-0">
+        <ui-tabs
+          v-model="activeTab"
+          class="border-none px-2 rounded-lg h-full space-x-1 bg-white"
+        >
           <ui-tab value="editor">Editor</ui-tab>
           <ui-tab value="logs">Logs</ui-tab>
           <ui-tab value="running" class="flex items-center">
@@ -48,6 +43,16 @@
             </span>
           </ui-tab>
         </ui-tabs>
+        <div class="flex-grow"></div>
+        <workflow-actions
+          :is-data-changed="state.isDataChanged"
+          @showModal="(state.modalName = $event), (state.showModal = true)"
+          @save="saveWorkflow"
+          @export="exportWorkflow(workflow)"
+          @execute="executeWorkflow"
+          @rename="renameWorkflow"
+          @delete="deleteWorkflow"
+        />
       </div>
       <keep-alive>
         <workflow-builder
@@ -98,17 +103,14 @@
       </keep-alive>
     </div>
   </div>
-  <ui-modal v-model="state.showDataColumnsModal" content-class="max-w-xl">
-    <template #header>Data columns</template>
-    <workflow-data-columns
+  <ui-modal v-model="state.showModal" content-class="max-w-xl">
+    <template #header>{{ workflowModals[state.modalName].title }}</template>
+    <component
+      :is="workflowModals[state.modalName].component"
       v-bind="{ workflow }"
       @update="updateWorkflow"
-      @close="state.showDataColumnsModal = false"
+      @close="state.showModal = false"
     />
-  </ui-modal>
-  <ui-modal v-model="state.showSettings">
-    <template #header>Workflow settings</template>
-    <workflow-settings v-bind="{ workflow }" @update="updateWorkflow" />
   </ui-modal>
 </template>
 <script setup>
@@ -131,10 +133,12 @@ import { exportWorkflow } from '@/utils/workflow-data';
 import Log from '@/models/log';
 import Workflow from '@/models/workflow';
 import workflowTrigger from '@/utils/workflow-trigger';
+import WorkflowActions from '@/components/newtab/workflow/WorkflowActions.vue';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';
 import WorkflowSettings from '@/components/newtab/workflow/WorkflowSettings.vue';
 import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
+import WorkflowGlobalData from '@/components/newtab/workflow/WorkflowGlobalData.vue';
 import WorkflowDataColumns from '@/components/newtab/workflow/WorkflowDataColumns.vue';
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
 import SharedWorkflowState from '@/components/newtab/shared/SharedWorkflowState.vue';
@@ -145,15 +149,32 @@ const router = useRouter();
 const dialog = useDialog();
 
 const workflowId = route.params.id;
+const workflowModals = {
+  'data-columns': {
+    icon: 'riKey2Line',
+    title: 'Data columns',
+    component: WorkflowDataColumns,
+  },
+  'global-data': {
+    title: 'Global data',
+    icon: 'riDatabase2Line',
+    component: WorkflowGlobalData,
+  },
+  settings: {
+    icon: 'riSettings3Line',
+    title: 'Settings',
+    component: WorkflowSettings,
+  },
+};
 
 const editor = shallowRef(null);
 const activeTab = shallowRef('editor');
 const state = reactive({
   blockData: {},
+  modalName: '',
+  showModal: false,
   isEditBlock: false,
-  showSettings: false,
   isDataChanged: false,
-  showDataColumnsModal: false,
 });
 
 const workflowState = computed(() =>
@@ -274,6 +295,7 @@ provide('workflow', {
 onBeforeRouteLeave(() => {
   if (!state.isDataChanged) return;
 
+  // eslint-disable-next-line no-alert
   const answer = window.confirm(
     'Do you really want to leave? you have unsaved changes!'
   );

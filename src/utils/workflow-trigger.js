@@ -39,7 +39,7 @@ export function registerSpecificDay(workflowId, data) {
   const findDate =
     dates.find((date) => date.valueOf() > Date.now()) || dates[0].add(7, 'day');
 
-  console.log(finDate.valueOf(), new Date(finDate.valueOf()));
+  console.log(findDate.valueOf(), new Date(findDate.valueOf()));
 
   return browser.alarms.create(workflowId, {
     when: findDate.valueOf(),

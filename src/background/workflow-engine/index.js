@@ -2,7 +2,7 @@
 import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
 import { tasks } from '@/utils/shared';
-import { toCamelCase } from '@/utils/helper';
+import { toCamelCase, parseJSON } from '@/utils/helper';
 import { generateJSON } from '@/utils/data-exporter';
 import errorMessage from './error-message';
 import referenceData from '@/utils/reference-data';
@@ -17,7 +17,10 @@ function tabRemovedHandler(tabId) {
 
   delete this.tabId;
 
-  if (tasks[this.currentBlock.name].category === 'interaction') {
+  if (
+    this.currentBlock.name === 'new-tab' ||
+    tasks[this.currentBlock.name].category === 'interaction'
+  ) {
     this.destroy('error', 'Current active tab is removed');
   }
 
@@ -58,12 +61,18 @@ function tabUpdatedHandler(tabId, changeInfo) {
 }
 
 class WorkflowEngine {
-  constructor(workflow, { tabId = null, isInCollection, collectionLogId }) {
+  constructor(
+    workflow,
+    { globalData, tabId = null, isInCollection, collectionLogId }
+  ) {
+    const globalDataVal = globalData ?? workflow.globalData;
+
     this.id = nanoid();
     this.tabId = tabId;
     this.workflow = workflow;
     this.isInCollection = isInCollection;
     this.collectionLogId = collectionLogId;
+    this.globalData = parseJSON(globalDataVal, globalDataVal);
     this.data = {};
     this.logs = [];
     this.blocks = {};
@@ -264,6 +273,7 @@ class WorkflowEngine {
         prevBlockData,
         data: this.data,
         loopData: this.loopData,
+        globalData: this.globalData,
       });
 
       handler
