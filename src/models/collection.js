@@ -11,9 +11,10 @@ class Collection extends Model {
   static fields() {
     return {
       id: this.uid(() => nanoid()),
-      name: this.string(''),
       flow: this.attr([]),
+      name: this.string(''),
       createdAt: this.number(),
+      globalData: this.string(''),
       options: this.attr({
         atOnce: false,
       }),

@@ -65,7 +65,7 @@ class WorkflowEngine {
     workflow,
     { globalData, tabId = null, isInCollection, collectionLogId }
   ) {
-    const globalDataVal = globalData ?? workflow.globalData;
+    const globalDataVal = globalData || workflow.globalData;
 
     this.id = nanoid();
     this.tabId = tabId;

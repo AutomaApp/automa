@@ -1,6 +1,6 @@
 import WorkflowEngine from '../workflow-engine';
 import dataExporter from '@/utils/data-exporter';
-/* to-do pass prev workflow tab id into the next one */
+
 export function workflow(flow) {
   return new Promise((resolve, reject) => {
     const currentWorkflow = this.workflows.find(({ id }) => id === flow.itemId);
@@ -13,12 +13,14 @@ export function workflow(flow) {
       return;
     }
 
+    const { globalData } = this.collection;
     this.currentWorkflow = currentWorkflow;
 
     const engine = new WorkflowEngine(currentWorkflow, {
       isInCollection: true,
       collectionLogId: this.id,
       collectionId: this.collection.id,
+      globalData: globalData.trim() === '' ? null : globalData,
     });
 
     this.workflowEngine = engine;

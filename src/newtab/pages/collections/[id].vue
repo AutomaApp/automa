@@ -55,34 +55,44 @@
         </draggable>
       </div>
       <div class="flex-1 relative">
-        <div class="px-1 mb-4 inline-block rounded-lg bg-white">
-          <ui-tabs
-            v-model="state.activeTab"
-            class="border-none h-full space-x-1"
+        <div class="flex items-center mb-4">
+          <div class="px-1 inline-block rounded-lg bg-white">
+            <ui-tabs
+              v-model="state.activeTab"
+              class="border-none h-full space-x-1"
+            >
+              <ui-tab value="flow">Flow</ui-tab>
+              <ui-tab value="logs">Logs</ui-tab>
+              <ui-tab value="running">
+                Running
+                <span
+                  v-if="runningCollection.length > 0"
+                  class="
+                    ml-2
+                    p-1
+                    text-center
+                    inline-block
+                    text-xs
+                    rounded-full
+                    bg-black
+                    text-white
+                  "
+                  style="min-width: 25px"
+                >
+                  {{ runningCollection.length }}
+                </span>
+              </ui-tab>
+              <ui-tab value="options">Options</ui-tab>
+            </ui-tabs>
+          </div>
+          <div class="flex-grow"></div>
+          <ui-button
+            v-tooltip="'Global data'"
+            icon
+            @click="state.showGlobalData = !state.showGlobalData"
           >
-            <ui-tab value="flow">Flow</ui-tab>
-            <ui-tab value="logs">Logs</ui-tab>
-            <ui-tab value="running">
-              Running
-              <span
-                v-if="runningCollection.length > 0"
-                class="
-                  ml-2
-                  p-1
-                  text-center
-                  inline-block
-                  text-xs
-                  rounded-full
-                  bg-black
-                  text-white
-                "
-                style="min-width: 25px"
-              >
-                {{ runningCollection.length }}
-              </span>
-            </ui-tab>
-            <ui-tab value="options">Options</ui-tab>
-          </ui-tabs>
+            <v-remixicon name="riDatabase2Line" />
+          </ui-button>
         </div>
         <ui-tab-panels v-model="state.activeTab">
           <ui-tab-panel class="relative" value="flow">
@@ -200,13 +210,31 @@
       </div>
     </div>
   </div>
+  <ui-modal v-model="state.showGlobalData" content-class="max-w-xl">
+    <template #header>Global data</template>
+    <p class="inline-block">
+      This will overwrite the global data of the workflow
+    </p>
+    <p class="float-right clear-both" title="Characters limit">
+      {{ collection.globalData.length }}/{{ (1e4).toLocaleString() }}
+    </p>
+    <prism-editor
+      :model-value="collection.globalData"
+      :highlight="highlighter('json')"
+      class="h-full scroll mt-2"
+      style="height: calc(100vh - 10rem)"
+      @update:modelValue="updateGlobalData"
+    />
+  </ui-modal>
 </template>
 <script setup>
 import { computed, shallowReactive, onMounted, watch } from 'vue';
 import { nanoid } from 'nanoid';
 import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';
+import { PrismEditor } from 'vue-prism-editor';
 import Draggable from 'vuedraggable';
+import { highlighter } from '@/lib/prism';
 import { useDialog } from '@/composable/dialog';
 import { sendMessage } from '@/utils/message';
 import Log from '@/models/log';
@@ -240,6 +268,7 @@ const dialog = useDialog();
 const state = shallowReactive({
   query: '',
   activeTab: 'flow',
+  showGlobalData: false,
   sidebarTab: 'workflows',
 });
 const collectionOptions = shallowReactive({
@@ -293,6 +322,15 @@ function updateCollection(data) {
     where: route.params.id,
     data,
   });
+}
+function updateGlobalData(str) {
+  let value = str;
+
+  if (value.length > 1e4) {
+    value = value.slice(0, 1e4);
+  }
+
+  updateCollection({ globalData: value });
 }
 function updateCollectionFlow(event) {
   const flow = event.map(({ type, id, flowId, data }) => {
