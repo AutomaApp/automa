@@ -124,6 +124,10 @@
   stroke: theme('colors.accent');
 }
 
+.drawflow-node .drawflow-delete {
+  display: none !important;
+}
+
 .drawflow-delete {
   position: absolute;
   display: block;

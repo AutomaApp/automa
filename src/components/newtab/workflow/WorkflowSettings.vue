@@ -1,26 +1,28 @@
 <template>
-  <div class="mb-4">
-    <p class="mb-1">On workflow error</p>
-    <div class="space-x-4">
-      <ui-radio
-        v-for="item in onError"
-        :key="item.id"
-        :model-value="workflow.settings.onError"
-        :value="item.id"
-        class="mr-4"
-        @change="updateWorkflow({ onError: $event })"
-      >
-        {{ item.name }}
-      </ui-radio>
+  <div class="workflow-settings">
+    <div class="mb-4">
+      <p class="mb-1">On workflow error</p>
+      <div class="space-x-4">
+        <ui-radio
+          v-for="item in onError"
+          :key="item.id"
+          :model-value="workflow.settings.onError"
+          :value="item.id"
+          class="mr-4"
+          @change="updateWorkflow({ onError: $event })"
+        >
+          {{ item.name }}
+        </ui-radio>
+      </div>
     </div>
-  </div>
-  <div>
-    <p class="mb-1">Workflow timeout (milliseconds)</p>
-    <ui-input
-      :model-value="workflow.settings.timeout"
-      type="number"
-      @change="updateWorkflow({ timeout: +$event })"
-    />
+    <div>
+      <p class="mb-1">Workflow timeout (milliseconds)</p>
+      <ui-input
+        :model-value="workflow.settings.timeout"
+        type="number"
+        @change="updateWorkflow({ timeout: +$event })"
+      />
+    </div>
   </div>
 </template>
 <script setup>

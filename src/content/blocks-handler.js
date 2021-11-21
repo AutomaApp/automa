@@ -89,18 +89,6 @@ export function getText(block) {
   });
 }
 
-function incScrollPos(element, data, vertical = true) {
-  let currentPos = vertical ? element.scrollTop : element.scrollLeft;
-
-  if (data.incY) {
-    currentPos += data.scrollY;
-  } else if (data.incX) {
-    currentPos += data.scrollX;
-  }
-
-  return currentPos;
-}
-
 const automaScript = `
 function automaNextBlock(data) {
   window.dispatchEvent(new CustomEvent('__automa-next-block__', { detail: data }));
@@ -151,6 +139,18 @@ export function javascriptCode(block) {
 }
 
 export function elementScroll(block) {
+  function incScrollPos(element, data, vertical = true) {
+    let currentPos = vertical ? element.scrollTop : element.scrollLeft;
+
+    if (data.incY) {
+      currentPos += data.scrollY;
+    } else if (data.incX) {
+      currentPos += data.scrollX;
+    }
+
+    return currentPos;
+  }
+
   return new Promise((resolve) => {
     const { data } = block;
     const behavior = data.smooth ? 'smooth' : 'auto';
@@ -175,12 +175,22 @@ export function elementScroll(block) {
 
 export function attributeValue(block) {
   return new Promise((resolve) => {
-    const result = [];
+    let result = [];
+    const { attributeName, multiple } = block.data;
+    const isCheckboxOrRadio = (element) => {
+      if (element.tagName !== 'INPUT') return false;
+
+      return ['checkbox', 'radio'].includes(element.getAttribute('type'));
+    };
 
     handleElement(block, (element) => {
-      const value = element.getAttribute(block.data.attributeName);
+      const value =
+        attributeName === 'checked' && isCheckboxOrRadio(element)
+          ? element.checked
+          : element.getAttribute(attributeName);
 
-      result.push(value);
+      if (multiple) result.push(value);
+      else result = value;
     });
 
     resolve(result);

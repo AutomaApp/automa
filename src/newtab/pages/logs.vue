@@ -7,7 +7,7 @@
       @updateSorts="sortsBuilder[$event.key] = $event.value"
       @updateFilters="filtersBuilder[$event.key] = $event.value"
     />
-    <shared-logs-table :logs="logs" class="w-full">
+    <shared-logs-table :logs="logs" class="w-full" style="min-height: 320px">
       <template #item-prepend="{ log }">
         <td class="w-8">
           <ui-checkbox

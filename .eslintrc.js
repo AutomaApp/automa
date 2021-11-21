@@ -30,6 +30,7 @@ module.exports = {
   // add your custom rules here
   rules: {
     'no-undef': 'off',
+    'no-console': ['warn', { allow: ['warn', 'error'] }],
     'no-underscore-dangle': 'off',
     'func-names': 'off',
     'import/extensions': [

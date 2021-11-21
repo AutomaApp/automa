@@ -1,8 +1,9 @@
 /* eslint-disable no-underscore-dangle */
 import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
-import { toCamelCase } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
+import { toCamelCase, parseJSON } from '@/utils/helper';
+import { generateJSON } from '@/utils/data-exporter';
 import errorMessage from './error-message';
 import referenceData from '@/utils/reference-data';
 import workflowState from '../workflow-state';
@@ -16,7 +17,10 @@ function tabRemovedHandler(tabId) {
 
   delete this.tabId;
 
-  if (tasks[this.currentBlock.name].category === 'interaction') {
+  if (
+    this.currentBlock.name === 'new-tab' ||
+    tasks[this.currentBlock.name].category === 'interaction'
+  ) {
     this.destroy('error', 'Current active tab is removed');
   }
 
@@ -57,12 +61,18 @@ function tabUpdatedHandler(tabId, changeInfo) {
 }
 
 class WorkflowEngine {
-  constructor(workflow, { tabId = null, isInCollection, collectionLogId }) {
+  constructor(
+    workflow,
+    { globalData, tabId = null, isInCollection, collectionLogId }
+  ) {
+    const globalDataVal = globalData || workflow.globalData;
+
     this.id = nanoid();
     this.tabId = tabId;
     this.workflow = workflow;
     this.isInCollection = isInCollection;
     this.collectionLogId = collectionLogId;
+    this.globalData = parseJSON(globalDataVal, globalDataVal);
     this.data = {};
     this.logs = [];
     this.blocks = {};
@@ -174,6 +184,7 @@ class WorkflowEngine {
       if (!this.workflow.isTesting) {
         const { logs } = await browser.storage.local.get('logs');
         const { name, icon, id } = this.workflow;
+        const jsonData = generateJSON(Object.keys(this.data), this.data);
 
         logs.push({
           name,
@@ -181,7 +192,7 @@ class WorkflowEngine {
           status,
           id: this.id,
           workflowId: id,
-          data: this.data,
+          data: jsonData,
           history: this.logs,
           endedAt: this.endedTimestamp,
           startedAt: this.startedTimestamp,
@@ -262,6 +273,7 @@ class WorkflowEngine {
         prevBlockData,
         data: this.data,
         loopData: this.loopData,
+        globalData: this.globalData,
       });
 
       handler
@@ -269,15 +281,14 @@ class WorkflowEngine {
         .then((result) => {
           clearTimeout(this.workflowTimeout);
           this.workflowTimeout = null;
+          this.logs.push({
+            type: 'success',
+            name: tasks[block.name].name,
+            data: result.data,
+            duration: Math.round(Date.now() - started),
+          });
 
           if (result.nextBlockId) {
-            this.logs.push({
-              type: 'success',
-              name: tasks[block.name].name,
-              data: result.data,
-              duration: Math.round(Date.now() - started),
-            });
-
             this._blockHandler(this.blocks[result.nextBlockId], result.data);
           } else {
             this.logs.push({

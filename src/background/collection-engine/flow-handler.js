@@ -13,12 +13,14 @@ export function workflow(flow) {
       return;
     }
 
+    const { globalData } = this.collection;
     this.currentWorkflow = currentWorkflow;
 
     const engine = new WorkflowEngine(currentWorkflow, {
       isInCollection: true,
       collectionLogId: this.id,
       collectionId: this.collection.id,
+      globalData: globalData.trim() === '' ? null : globalData,
     });
 
     this.workflowEngine = engine;
@@ -37,7 +39,12 @@ export function workflow(flow) {
         workflowName: currentWorkflow.name,
       });
 
-      resolve({ id, name: currentWorkflow.name, type: status, message });
+      resolve({
+        id,
+        message,
+        type: status,
+        name: currentWorkflow.name,
+      });
     });
   });
 }

@@ -12,20 +12,15 @@
       <workflow-details-card
         v-else
         :workflow="workflow"
-        :data-changed="state.isDataChanged"
-        @save="saveWorkflow"
-        @export="exportWorkflow"
-        @execute="executeWorkflow"
         @update="updateWorkflow"
-        @showDataColumns="state.showDataColumnsModal = true"
-        @showSettings="state.showSettings = true"
-        @rename="renameWorkflow"
-        @delete="deleteWorkflow"
       />
     </div>
     <div class="flex-1 relative overflow-auto">
-      <div class="absolute px-3 rounded-lg bg-white z-10 left-0 m-4 top-0">
-        <ui-tabs v-model="activeTab" class="border-none h-full space-x-1">
+      <div class="absolute w-full flex items-center z-10 left-0 p-4 top-0">
+        <ui-tabs
+          v-model="activeTab"
+          class="border-none px-2 rounded-lg h-full space-x-1 bg-white"
+        >
           <ui-tab value="editor">Editor</ui-tab>
           <ui-tab value="logs">Logs</ui-tab>
           <ui-tab value="running" class="flex items-center">
@@ -48,6 +43,16 @@
             </span>
           </ui-tab>
         </ui-tabs>
+        <div class="flex-grow"></div>
+        <workflow-actions
+          :is-data-changed="state.isDataChanged"
+          @showModal="(state.modalName = $event), (state.showModal = true)"
+          @save="saveWorkflow"
+          @export="exportWorkflow(workflow)"
+          @execute="executeWorkflow"
+          @rename="renameWorkflow"
+          @delete="deleteWorkflow"
+        />
       </div>
       <keep-alive>
         <workflow-builder
@@ -98,17 +103,14 @@
       </keep-alive>
     </div>
   </div>
-  <ui-modal v-model="state.showDataColumnsModal" content-class="max-w-xl">
-    <template #header>Data columns</template>
-    <workflow-data-columns
+  <ui-modal v-model="state.showModal" content-class="max-w-xl">
+    <template #header>{{ workflowModals[state.modalName].title }}</template>
+    <component
+      :is="workflowModals[state.modalName].component"
       v-bind="{ workflow }"
       @update="updateWorkflow"
-      @close="state.showDataColumnsModal = false"
+      @close="state.showModal = false"
     />
-  </ui-modal>
-  <ui-modal v-model="state.showSettings">
-    <template #header>Workflow settings</template>
-    <workflow-settings v-bind="{ workflow }" @update="updateWorkflow" />
   </ui-modal>
 </template>
 <script setup>
@@ -123,7 +125,6 @@ import {
 } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
-import browser from 'webextension-polyfill';
 import emitter from 'tiny-emitter/instance';
 import { sendMessage } from '@/utils/message';
 import { debounce } from '@/utils/helper';
@@ -131,10 +132,13 @@ import { useDialog } from '@/composable/dialog';
 import { exportWorkflow } from '@/utils/workflow-data';
 import Log from '@/models/log';
 import Workflow from '@/models/workflow';
+import workflowTrigger from '@/utils/workflow-trigger';
+import WorkflowActions from '@/components/newtab/workflow/WorkflowActions.vue';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';
 import WorkflowSettings from '@/components/newtab/workflow/WorkflowSettings.vue';
 import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
+import WorkflowGlobalData from '@/components/newtab/workflow/WorkflowGlobalData.vue';
 import WorkflowDataColumns from '@/components/newtab/workflow/WorkflowDataColumns.vue';
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
 import SharedWorkflowState from '@/components/newtab/shared/SharedWorkflowState.vue';
@@ -145,15 +149,32 @@ const router = useRouter();
 const dialog = useDialog();
 
 const workflowId = route.params.id;
+const workflowModals = {
+  'data-columns': {
+    icon: 'riKey2Line',
+    title: 'Data columns',
+    component: WorkflowDataColumns,
+  },
+  'global-data': {
+    title: 'Global data',
+    icon: 'riDatabase2Line',
+    component: WorkflowGlobalData,
+  },
+  settings: {
+    icon: 'riSettings3Line',
+    title: 'Settings',
+    component: WorkflowSettings,
+  },
+};
 
 const editor = shallowRef(null);
 const activeTab = shallowRef('editor');
 const state = reactive({
   blockData: {},
+  modalName: '',
+  showModal: false,
   isEditBlock: false,
-  showSettings: false,
   isDataChanged: false,
-  showDataColumnsModal: false,
 });
 
 const workflowState = computed(() =>
@@ -197,85 +218,6 @@ function updateWorkflow(data) {
     data,
   });
 }
-function convertToTimestamp(date, hourMinutes) {
-  let timestamp = Date.now() + 60000;
-  if (date) {
-    const dateObj = new Date(date);
-    if (hourMinutes) {
-      const arr = hourMinutes.split(':');
-      dateObj.setHours(arr[0]);
-      dateObj.setMinutes(arr[1]);
-    }
-
-    timestamp = dateObj.getTime();
-  }
-
-  return timestamp;
-}
-async function handleWorkflowTrigger({ data }) {
-  try {
-    const workflowAlarm = await browser.alarms.get(workflowId);
-    const { visitWebTriggers, shortcuts } = await browser.storage.local.get([
-      'visitWebTriggers',
-      'shortcuts',
-    ]);
-    let visitWebTriggerIndex = visitWebTriggers.findIndex(
-      (item) => item.id === workflowId
-    );
-    const keyboardShortcuts = Array.isArray(shortcuts) ? {} : shortcuts || {};
-    delete keyboardShortcuts[workflowId];
-
-    if (workflowAlarm) await browser.alarms.clear(workflowId);
-    if (visitWebTriggerIndex !== -1) {
-      visitWebTriggers.splice(visitWebTriggerIndex, 1);
-
-      visitWebTriggerIndex = -1;
-    }
-
-    await browser.storage.local.set({
-      visitWebTriggers,
-      shortcuts: keyboardShortcuts,
-    });
-
-    if (['date', 'interval'].includes(data.type)) {
-      let alarmInfo;
-
-      if (data.type === 'date') {
-        alarmInfo = {
-          when: convertToTimestamp(data.date, data.time),
-        };
-      } else {
-        alarmInfo = {
-          periodInMinutes: data.interval,
-        };
-
-        if (data.delay > 0) alarmInfo.delayInMinutes = data.delay;
-      }
-
-      if (alarmInfo) await browser.alarms.create(workflowId, alarmInfo);
-    } else if (data.type === 'visit-web' && data.url.trim() !== '') {
-      const payload = {
-        id: workflowId,
-        url: data.url,
-        isRegex: data.isUrlRegex,
-      };
-
-      if (visitWebTriggerIndex === -1) {
-        visitWebTriggers.unshift(payload);
-      } else {
-        visitWebTriggers[visitWebTriggerIndex] = payload;
-      }
-
-      await browser.storage.local.set({ visitWebTriggers });
-    } else if (data.type === 'keyboard-shortcut') {
-      keyboardShortcuts[workflowId] = data.shortcut;
-
-      await browser.storage.local.set({ shortcuts: keyboardShortcuts });
-    }
-  } catch (error) {
-    console.error(error);
-  }
-}
 function saveWorkflow() {
   const data = editor.value.export();
 
@@ -283,7 +225,10 @@ function saveWorkflow() {
     const [triggerBlockId] = editor.value.getNodesFromName('trigger');
 
     if (triggerBlockId) {
-      handleWorkflowTrigger(editor.value.getNodeFromId(triggerBlockId));
+      workflowTrigger.register(
+        workflowId,
+        editor.value.getNodeFromId(triggerBlockId)
+      );
     }
 
     state.isDataChanged = false;
@@ -350,6 +295,7 @@ provide('workflow', {
 onBeforeRouteLeave(() => {
   if (!state.isDataChanged) return;
 
+  // eslint-disable-next-line no-alert
   const answer = window.confirm(
     'Do you really want to leave? you have unsaved changes!'
   );

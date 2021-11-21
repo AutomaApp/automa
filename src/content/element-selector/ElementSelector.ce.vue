@@ -73,7 +73,7 @@ import {
   riEyeOffLine,
 } from 'v-remixicon/icons';
 
-/* to-do get list of attribute value */
+/* to-do get list of attribute value, add test for each of the web interation block */
 
 const element = reactive({
   hide: window.self !== window.top,

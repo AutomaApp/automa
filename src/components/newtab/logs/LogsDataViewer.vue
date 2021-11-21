@@ -23,7 +23,7 @@
     </ui-popover>
   </div>
   <prism-editor
-    :model-value="dataStr"
+    :model-value="jsonData"
     :highlight="highlighter('json')"
     :class="editorClass"
     readonly
@@ -52,6 +52,8 @@ const data = Array.isArray(props.log.data)
   ? props.log.data
   : generateJSON(Object.keys(props.log.data), props.log.data);
 const dataStr = JSON.stringify(data, null, 2);
+const jsonData =
+  dataStr.length >= 5e4 ? `${dataStr.slice(0, 5e4)}\n...` : dataStr;
 
 const fileName = ref(props.log.name);
 
