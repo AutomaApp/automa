@@ -62,6 +62,7 @@ import { sendMessage } from '@/utils/message';
 import { exportWorkflow, importWorkflow } from '@/utils/workflow-data';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 import Workflow from '@/models/workflow';
+import { isWhiteSpace } from '@/utils/helper';
 
 const dialog = useDialog();
 
@@ -145,7 +146,7 @@ function setIconWorkflow({ id }) {
     inputValue: '',
     onConfirm: (iconUrl) => {
       let isIconFromURL = true;
-      if (!iconUrl) {
+      if (!iconUrl || isWhiteSpace(iconUrl)) {
         iconUrl = String('riGlobalLine');
         isIconFromURL = false;
       }
