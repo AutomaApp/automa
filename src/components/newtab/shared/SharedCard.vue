@@ -1,7 +1,14 @@
 <template>
   <ui-card class="hover:ring-2 group hover:ring-accent">
-    <div class="flex items-center mb-4">
-      <span class="p-2 rounded-lg bg-box-transparent">
+    <div id="workflowCard" class="flex items-center mb-4">
+      <span v-if="data.isIconFromURL" class="p-2 rounded-lg bg-box-transparent">
+        <img
+          alt="Can not display"
+          :src="getIcon"
+          style="max-width: 60px; max-height: 20px"
+        />
+      </span>
+      <span v-else class="p-2 rounded-lg bg-box-transparent">
         <v-remixicon :name="data.icon || icon" />
       </span>
       <div class="flex-grow"></div>
@@ -40,6 +47,7 @@
   </ui-card>
 </template>
 <script setup>
+import { computed } from 'vue';
 import dayjs from '@/lib/dayjs';
 
 const props = defineProps({
@@ -60,6 +68,11 @@ const props = defineProps({
     default: () => [],
   },
 });
+
+const getIcon = computed(() => {
+  return props.data.icon;
+});
+
 defineEmits(['execute', 'click', 'menuSelected']);
 
 let formattedDate = null;

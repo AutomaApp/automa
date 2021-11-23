@@ -73,6 +73,7 @@ const menu = [
   { name: 'export', icon: 'riDownloadLine' },
   { name: 'rename', icon: 'riPencilLine' },
   { name: 'delete', icon: 'riDeleteBin7Line' },
+  { name: 'setIcon', icon: 'riImageLine' },
 ];
 
 const state = shallowReactive({
@@ -131,14 +132,39 @@ function renameWorkflow({ id, name }) {
           name: newName,
         },
       });
+      console.log(Workflow.data);
     },
   });
 }
 
+function setIconWorkflow({ id }) {
+  dialog.prompt({
+    title: 'Set icon workflow',
+    placeholder: 'URL of the new icon',
+    okText: 'Set Icon',
+    inputValue: '',
+    onConfirm: (iconUrl) => {
+      let isIconFromURL = true;
+      if (!iconUrl) {
+        iconUrl = String('riGlobalLine');
+        isIconFromURL = false;
+      }
+
+      Workflow.update({
+        where: id,
+        data: {
+          icon: String(iconUrl),
+          isIconFromURL,
+        },
+      });
+    },
+  });
+}
 const menuHandlers = {
   export: exportWorkflow,
   rename: renameWorkflow,
   delete: deleteWorkflow,
+  setIcon: setIconWorkflow,
 };
 </script>
 <style>
