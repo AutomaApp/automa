@@ -1,12 +1,10 @@
 /* eslint-disable no-underscore-dangle */
 import browser from 'webextension-polyfill';
 import { objectHasKey, fileSaver, isObject } from '@/utils/helper';
-import { tasks } from '@/utils/shared';
 import { executeWebhook } from '@/utils/webhookUtil';
 import executeContentScript from '@/utils/execute-content-script';
 import dataExporter, { generateJSON } from '@/utils/data-exporter';
 import compareBlockValue from '@/utils/compare-block-value';
-import errorMessage from './error-message';
 
 function getBlockConnection(block, index = 1) {
   const blockId = block.outputs[`output_${index}`]?.connections[0]?.node;
@@ -30,13 +28,6 @@ function convertData(data, type) {
   }
 
   return result;
-}
-function generateBlockError(block, code) {
-  const message = errorMessage(code || 'no-tab', tasks[block.name]);
-  const error = new Error(message);
-  error.nextBlockId = getBlockConnection(block);
-
-  return error;
 }
 
 export async function closeTab(block) {
@@ -142,7 +133,10 @@ export function goBack(block) {
     const nextBlockId = getBlockConnection(block);
 
     if (!this.tabId) {
-      reject(generateBlockError(block));
+      const error = new Error('no-tab');
+      error.nextBlockId = nextBlockId;
+
+      reject(error);
 
       return;
     }
@@ -167,7 +161,10 @@ export function forwardPage(block) {
     const nextBlockId = getBlockConnection(block);
 
     if (!this.tabId) {
-      reject(generateBlockError(block));
+      const error = new Error('no-tab');
+      error.nextBlockId = nextBlockId;
+
+      reject(nextBlockId);
 
       return;
     }
@@ -349,7 +346,7 @@ export async function takeScreenshot(block) {
 
     if (captureActiveTab) {
       if (!this.tabId) {
-        throw new Error(errorMessage('no-tab', block));
+        throw new Error('no-tab');
       }
 
       const [tab] = await browser.tabs.query({
@@ -407,7 +404,11 @@ export async function switchTo(block) {
         nextBlockId,
       };
     }
-    throw new Error(errorMessage('no-iframe-id', block.data));
+
+    const error = new Error('no-iframe-id');
+    error.data = { selector: block.selector };
+
+    throw error;
   } catch (error) {
     error.nextBlockId = nextBlockId;
 

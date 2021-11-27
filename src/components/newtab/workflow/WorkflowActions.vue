@@ -12,7 +12,7 @@
   </ui-card>
   <ui-card padding="p-1 ml-4">
     <button
-      v-tooltip.group="'Execute'"
+      v-tooltip.group="t('common.execute')"
       icon
       class="hoverable p-2 rounded-lg"
       @click="$emit('execute')"
@@ -62,11 +62,12 @@
         ></span>
       </span>
       <v-remixicon name="riSaveLine" class="mr-2 -ml-1 my-1" />
-      Save
+      {{ t('common.save') }}
     </ui-button>
   </ui-card>
 </template>
 <script setup>
+import { useI18n } from 'vue-i18n';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 
 defineProps({
@@ -78,38 +79,39 @@ defineProps({
 defineEmits(['showModal', 'execute', 'rename', 'delete', 'save', 'export']);
 
 useGroupTooltip();
+const { t } = useI18n();
 
 const modalActions = [
   {
     id: 'data-columns',
-    name: 'Data columns',
+    name: t('workflow.dataColumns.title'),
     icon: 'riKey2Line',
   },
   {
     id: 'global-data',
-    name: 'Global data',
+    name: t('common.globalData'),
     icon: 'riDatabase2Line',
   },
   {
     id: 'settings',
-    name: 'Settings',
+    name: t('common.settings'),
     icon: 'riSettings3Line',
   },
 ];
 const moreActions = [
   {
     id: 'export',
-    name: 'Export',
+    name: t('common.export'),
     icon: 'riDownloadLine',
   },
   {
     id: 'rename',
-    name: 'Rename',
+    name: t('common.rename'),
     icon: 'riPencilLine',
   },
   {
     id: 'delete',
-    name: 'Delete',
+    name: t('common.delete'),
     icon: 'riDeleteBin7Line',
   },
 ];

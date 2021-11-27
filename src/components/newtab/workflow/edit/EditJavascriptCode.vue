@@ -3,7 +3,7 @@
     <ui-textarea
       :model-value="data.description"
       autoresize
-      placeholder="Description"
+      :placeholder="t('common.description')"
       class="w-full mb-2"
       @change="updateData({ description: $event })"
     />
@@ -11,8 +11,8 @@
       type="number"
       :model-value="data.timeout"
       class="mb-2 w-full"
-      placeholder="Timeout"
-      title="Javascript code execution timeout"
+      :placeholder="t('workflow.blocks.javascript-code.timeout.placeholder')"
+      :title="t('workflow.blocks.javascript-code.timeout.title')"
       @change="updateData({ timeout: +$event })"
     />
     <prism-editor
@@ -25,7 +25,7 @@
     />
     <ui-modal
       v-model="showCodeModal"
-      title="Javascript code"
+      :title="t('workflow.blocks.javascript-code.modal')"
       content-class="max-w-3xl"
     >
       <prism-editor
@@ -33,36 +33,15 @@
         class="py-4"
         :highlight="highlighter('javascript')"
         line-numbers
-        style="height: calc(100vh - 18rem)"
+        style="height: calc(100vh - 12rem)"
       />
-      <div>
-        Note:
-        <ul class="list-disc pl-5">
-          <li>
-            To execute the next block, you can call the
-            <code>automaNextBlock</code> function. This function accepts one
-            parameter, which you can use to save data to the workflow. Data
-            format:
-            <ul class="list-disc space-y-2 mt-2 text-sm pl-5">
-              <li><code>{ key: value }</code></li>
-              <li>
-                <code>[{ key: value }, { key: value }]</code>
-              </li>
-            </ul>
-            You must use the column that you added as a key.
-          </li>
-          <li>
-            To reset the execution timeout of the code, you can call the
-            <code>automaResetTimeout</code> function.
-          </li>
-        </ul>
-      </div>
     </ui-modal>
   </div>
 </template>
 <script setup>
 import { ref, watch } from 'vue';
 import { PrismEditor } from 'vue-prism-editor';
+import { useI18n } from 'vue-i18n';
 import { highlighter } from '@/lib/prism';
 
 const props = defineProps({
@@ -72,6 +51,8 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update:data']);
+
+const { t } = useI18n();
 
 const code = ref(props.data.code);
 const showCodeModal = ref(false);

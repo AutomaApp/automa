@@ -3,14 +3,14 @@
     <div v-if="!data.scrollIntoView" class="flex items-center mt-3 space-x-2">
       <ui-input
         :model-value="data.scrollX || 0"
+        :label="t('workflow.blocks.element-scroll.scrollX')"
         type="number"
-        label="Scroll horizontal"
         @change="updateData({ scrollX: +$event })"
       />
       <ui-input
         :model-value="data.scrollY || 0"
+        :label="t('workflow.blocks.element-scroll.scrollY')"
         type="number"
-        label="Scroll vertical"
         @change="updateData({ scrollY: +$event })"
       />
     </div>
@@ -20,32 +20,33 @@
         :model-value="data.scrollIntoView"
         @change="updateData({ scrollIntoView: $event })"
       >
-        Scroll into view
+        {{ t('workflow.blocks.element-scroll.intoView') }}
       </ui-checkbox>
       <ui-checkbox
         :model-value="data.smooth"
         @change="updateData({ smooth: $event })"
       >
-        Smooth scroll
+        {{ t('workflow.blocks.element-scroll.smooth') }}
       </ui-checkbox>
       <template v-if="!data.scrollIntoView">
         <ui-checkbox
           :model-value="data.incX"
           @change="updateData({ incX: $event })"
         >
-          Increment horizontal scroll
+          {{ t('workflow.blocks.element-scroll.incScrollX') }}
         </ui-checkbox>
         <ui-checkbox
           :model-value="data.incY"
           @change="updateData({ incY: $event })"
         >
-          Increment vertical scroll
+          {{ t('workflow.blocks.element-scroll.incScrollY') }}
         </ui-checkbox>
       </template>
     </div>
   </edit-interaction-base>
 </template>
 <script setup>
+import { useI18n } from 'vue-i18n';
 import EditInteractionBase from './EditInteractionBase.vue';
 
 const props = defineProps({
@@ -55,6 +56,8 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update:data']);
+
+const { t } = useI18n();
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });

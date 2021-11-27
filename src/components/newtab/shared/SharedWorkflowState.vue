@@ -24,7 +24,7 @@
       </ui-button>
       <ui-button variant="accent" @click="stopWorkflow">
         <v-remixicon name="riStopLine" class="mr-2 -ml-1" />
-        <span>Stop</span>
+        <span>{{ t('common.stop') }}</span>
       </ui-button>
     </div>
     <div class="divide-y bg-box-transparent divide-y px-4 rounded-lg">
@@ -42,6 +42,7 @@
 </template>
 <script setup>
 import browser from 'webextension-polyfill';
+import { useI18n } from 'vue-i18n';
 import { sendMessage } from '@/utils/message';
 import { tasks } from '@/utils/shared';
 import dayjs from '@/lib/dayjs';
@@ -53,12 +54,14 @@ const props = defineProps({
   },
 });
 
+const { t } = useI18n();
+
 function getBlock() {
   if (!props.data.state.currentBlock) return [];
 
   if (Array.isArray(props.data.state.currentBlock)) {
     return props.data.state.currentBlock.map((item) => {
-      if (tasks[item.name]) return tasks[item.name];
+      if (tasks[item.name]) return t(`workflow.blocks.${item.name}.name`);
 
       return item;
     });

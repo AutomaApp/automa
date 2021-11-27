@@ -160,7 +160,7 @@ class WorkflowEngine {
     this.logs.push({
       message,
       type: 'stop',
-      name: 'Workflow is stopped',
+      name: 'stop',
     });
     this.destroy('stopped');
   }
@@ -252,7 +252,7 @@ class WorkflowEngine {
 
     if (!disableTimeoutKeys.includes(block.name)) {
       this.workflowTimeout = setTimeout(() => {
-        if (!this.isDestroyed) this.stop('Workflow stopped because of timeout');
+        if (!this.isDestroyed) this.stop('stop-timeout');
       }, this.workflow.settings.timeout || 120000);
     }
 
@@ -283,8 +283,7 @@ class WorkflowEngine {
           this.workflowTimeout = null;
           this.logs.push({
             type: 'success',
-            name: tasks[block.name].name,
-            data: result.data,
+            name: block.name,
             duration: Math.round(Date.now() - started),
           });
 
@@ -293,8 +292,7 @@ class WorkflowEngine {
           } else {
             this.logs.push({
               type: 'finish',
-              message: 'Workflow finished running',
-              name: 'Finish',
+              name: 'finish',
             });
             this.dispatchEvent('finish');
             this.destroy('success');
@@ -304,7 +302,7 @@ class WorkflowEngine {
           this.logs.push({
             type: 'error',
             message: error.message,
-            name: tasks[block.name].name,
+            name: block.name,
           });
 
           if (
@@ -332,9 +330,9 @@ class WorkflowEngine {
   _sendMessageToTab(block, options = {}) {
     return new Promise((resolve, reject) => {
       if (!this.tabId) {
-        const message = errorMessage('no-tab', tasks[block.name]);
-
-        reject(new Error(message));
+        /* eslint-disable-next-line */
+        reject('no-tab');
+        return;
       }
 
       browser.tabs

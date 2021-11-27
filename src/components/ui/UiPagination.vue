@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center">
     <ui-button
-      v-tooltip="'Previous page'"
+      v-tooltip="t('components.pagination.prevPage')"
       :disabled="modelValue <= 1"
       icon
       @click="updatePage(modelValue - 1)"
@@ -11,7 +11,7 @@
     <div class="mx-4">
       <input
         ref="inputEl"
-        v-tooltip="'Current page'"
+        v-tooltip="t('components.pagination.currentPage')"
         :value="modelValue"
         :max="maxPage"
         min="0"
@@ -28,11 +28,10 @@
         @click="$event.target.select()"
         @input="updatePage(+$event.target.value, $event.target)"
       />
-      of
-      {{ maxPage }}
+      {{ t('components.pagination.of', { page: maxPage }) }}
     </div>
     <ui-button
-      v-tooltip="'Next page'"
+      v-tooltip="t('components.pagination.nextPage')"
       :disabled="modelValue >= maxPage"
       icon
       @click="updatePage(modelValue + 1)"
@@ -43,6 +42,7 @@
 </template>
 <script setup>
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps({
   modelValue: {
@@ -60,8 +60,9 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:modelValue', 'paginate']);
 
-const inputEl = ref(null);
+const { t } = useI18n();
 
+const inputEl = ref(null);
 const maxPage = computed(() => Math.round(props.records / props.perPage));
 
 function emitEvent(page) {

@@ -2,8 +2,8 @@
   <div class="mb-2 mt-4 space-y-2">
     <ui-textarea
       :model-value="data.description"
+      :placeholder="t('common.description')"
       class="w-full"
-      placeholder="Description"
       @change="updateData({ description: $event })"
     />
     <ui-input
@@ -21,31 +21,33 @@
       target="_blank"
       style="margin-top: 0"
     >
-      Learn how to add dynamic data
+      {{ t('message.useDynamicData') }}
     </a>
     <ui-checkbox
       :model-value="data.updatePrevTab"
       class="leading-tight"
-      title="Use the previously opened new tab instead of creating a new one"
+      :title="t('workflow.blocks.new-tab.updatePrevTab.title')"
       @change="updateData({ updatePrevTab: $event })"
     >
-      Update previously opened tab
+      {{ t('workflow.blocks.new-tab.updatePrevTab.text') }}
     </ui-checkbox>
     <ui-checkbox
       :model-value="data.active"
       @change="updateData({ active: $event })"
     >
-      Set as active tab
+      {{ t('workflow.blocks.new-tab.activeTab') }}
     </ui-checkbox>
     <ui-checkbox
       :model-value="data.inGroup"
       @change="updateData({ inGroup: $event })"
     >
-      Add tab to group
+      {{ t('workflow.blocks.new-tab.tabToGroup') }}
     </ui-checkbox>
   </div>
 </template>
 <script setup>
+import { useI18n } from 'vue-i18n';
+
 const props = defineProps({
   data: {
     type: Object,
@@ -53,6 +55,8 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update:data']);
+
+const { t } = useI18n();
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });

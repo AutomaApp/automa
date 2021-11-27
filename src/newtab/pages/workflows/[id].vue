@@ -21,10 +21,10 @@
           v-model="activeTab"
           class="border-none px-2 rounded-lg h-full space-x-1 bg-white"
         >
-          <ui-tab value="editor">Editor</ui-tab>
-          <ui-tab value="logs">Logs</ui-tab>
+          <ui-tab value="editor">{{ t('common.editor') }}</ui-tab>
+          <ui-tab value="logs">{{ t('common.log', 2) }}</ui-tab>
           <ui-tab value="running" class="flex items-center">
-            Running
+            {{ t('common.running') }}
             <span
               v-if="workflowState.length > 0"
               class="
@@ -69,7 +69,7 @@
                 src="@/assets/svg/files-and-folder.svg"
                 class="mx-auto max-w-sm"
               />
-              <p class="text-xl font-semibold">No data to show</p>
+              <p class="text-xl font-semibold">{{ t('message.noData') }}</p>
             </div>
             <shared-logs-table :logs="logs" class="w-full">
               <template #item-append="{ log: itemLog }">
@@ -89,7 +89,7 @@
                 src="@/assets/svg/files-and-folder.svg"
                 class="mx-auto max-w-sm"
               />
-              <p class="text-xl font-semibold">No data to show</p>
+              <p class="text-xl font-semibold">{{ t('message.noData') }}</p>
             </div>
             <div class="grid grid-cols-2 gap-4">
               <shared-workflow-state
@@ -125,6 +125,7 @@ import {
 } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import emitter from 'tiny-emitter/instance';
 import { sendMessage } from '@/utils/message';
 import { debounce } from '@/utils/helper';
@@ -143,6 +144,7 @@ import WorkflowDataColumns from '@/components/newtab/workflow/WorkflowDataColumn
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
 import SharedWorkflowState from '@/components/newtab/shared/SharedWorkflowState.vue';
 
+const { t } = useI18n();
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
@@ -152,18 +154,18 @@ const workflowId = route.params.id;
 const workflowModals = {
   'data-columns': {
     icon: 'riKey2Line',
-    title: 'Data columns',
     component: WorkflowDataColumns,
+    title: t('workflow.dataColumns.title'),
   },
   'global-data': {
-    title: 'Global data',
     icon: 'riDatabase2Line',
     component: WorkflowGlobalData,
+    title: t('common.globalData'),
   },
   settings: {
     icon: 'riSettings3Line',
-    title: 'Settings',
     component: WorkflowSettings,
+    title: t('common.settings'),
   },
 };
 
@@ -241,7 +243,7 @@ function editBlock(data) {
 function executeWorkflow() {
   if (editor.value.getNodesFromName('trigger').length === 0) {
     /* eslint-disable-next-line */
-    alert("Can't find a trigger block");
+    alert(t('message.noTriggerBlock'));
     return;
   }
 
@@ -258,9 +260,9 @@ function handleEditorDataChanged() {
 }
 function deleteWorkflow() {
   dialog.confirm({
-    title: 'Delete workflow',
+    title: t('workflow.delete'),
     okVariant: 'danger',
-    body: `Are you sure you want to delete "${workflow.value.name}" workflow?`,
+    body: t('message.delete', { name: workflow.value.name }),
     onConfirm: () => {
       Workflow.delete(route.params.id).then(() => {
         router.replace('/workflows');
@@ -270,9 +272,9 @@ function deleteWorkflow() {
 }
 function renameWorkflow() {
   dialog.prompt({
-    title: 'Rename workflow',
-    placeholder: 'Workflow name',
-    okText: 'Rename',
+    title: t('workflow.rename'),
+    placeholder: t('common.name'),
+    okText: t('common.rename'),
     inputValue: workflow.value.name,
     onConfirm: (newName) => {
       Workflow.update({
@@ -295,10 +297,7 @@ provide('workflow', {
 onBeforeRouteLeave(() => {
   if (!state.isDataChanged) return;
 
-  // eslint-disable-next-line no-alert
-  const answer = window.confirm(
-    'Do you really want to leave? you have unsaved changes!'
-  );
+  const answer = window.confirm(t('common.notSaved'));
 
   if (!answer) return false;
 });
@@ -311,7 +310,7 @@ onMounted(() => {
 
   window.onbeforeunload = () => {
     if (state.isDataChanged) {
-      return 'Changes you made may not be saved.';
+      return t('common.notSaved');
     }
   };
 

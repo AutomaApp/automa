@@ -8,6 +8,9 @@ const store = createStore({
   plugins: [vuexORM(models)],
   state: () => ({
     workflowState: [],
+    settings: {
+      locale: 'en',
+    },
   }),
   mutations: {
     updateState(state, { key, value }) {
@@ -21,7 +24,18 @@ const store = createStore({
       ),
   },
   actions: {
-    async retrieve({ dispatch, getters }, keys = 'workflows') {
+    updateSettings({ state, commit }, data) {
+      commit('updateState', {
+        key: 'settings',
+        value: {
+          ...state.settings,
+          ...data,
+        },
+      });
+
+      browser.storage.local.set({ settings: state.settings });
+    },
+    async retrieve({ dispatch, getters, commit, state }, keys = 'workflows') {
       try {
         const data = await browser.storage.local.get(keys);
         const promises = Object.keys(data).map((entity) => {
@@ -34,7 +48,16 @@ const store = createStore({
             data: data[entity],
           });
         });
-        const { isFirstTime } = await browser.storage.local.get('isFirstTime');
+
+        const { isFirstTime, settings } = await browser.storage.local.get([
+          'isFirstTime',
+          'settings',
+        ]);
+
+        commit('updateState', {
+          key: 'settings',
+          value: { ...state.settings, ...(settings || {}) },
+        });
 
         if (isFirstTime) {
           await dispatch('entities/insert', {

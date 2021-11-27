@@ -1,11 +1,13 @@
 <template>
   <div class="container pt-8 pb-4">
-    <h1 class="text-2xl font-semibold mb-6">Workflows</h1>
+    <h1 class="text-2xl font-semibold mb-6 capitalize">
+      {{ t('common.workflow', 2) }}
+    </h1>
     <div class="flex items-center mb-6 space-x-4">
       <ui-input
         v-model="state.query"
         prepend-icon="riSearch2Line"
-        placeholder="Search..."
+        :placeholder="`${t(`common.search`)}...`"
         class="flex-1"
       />
       <div class="flex items-center workflow-sort">
@@ -18,29 +20,29 @@
             :name="state.sortOrder === 'asc' ? 'riSortAsc' : 'riSortDesc'"
           />
         </ui-button>
-        <ui-select v-model="state.sortBy" placeholder="Sort by">
-          <option v-for="sort in sorts" :key="sort.id" :value="sort.id">
-            {{ sort.name }}
+        <ui-select v-model="state.sortBy" :placeholder="t('sort.sortBy')">
+          <option v-for="sort in sorts" :key="sort" :value="sort">
+            {{ t(`sort.${sort}`) }}
           </option>
         </ui-select>
       </div>
       <ui-button @click="importWorkflow">
         <v-remixicon name="riUploadLine" class="mr-2 -ml-1" />
-        Import workflow
+        {{ t('workflow.import') }}
       </ui-button>
       <ui-button variant="accent" @click="newWorkflow">
-        New workflow
+        {{ t('workflow.new') }}
       </ui-button>
     </div>
     <div v-if="Workflow.all().length === 0" class="py-12 flex items-center">
       <img src="@/assets/svg/alien.svg" class="w-96" />
       <div class="ml-4">
         <h1 class="text-2xl font-semibold max-w-md mb-6">
-          Oppss... It's looks like you don't have any workflows.
+          {{ t('message.empty') }}
         </h1>
-        <ui-button variant="accent" @click="newWorkflow"
-          >New workflow</ui-button
-        >
+        <ui-button variant="accent" @click="newWorkflow">
+          {{ t('workflow.new') }}
+        </ui-button>
       </div>
     </div>
     <div v-else class="grid gap-4 grid-cols-5 2xl:grid-cols-6">
@@ -50,13 +52,14 @@
         :key="workflow.id"
         @click="$router.push(`/workflows/${$event.id}`)"
         @execute="executeWorkflow"
-        @menuSelected="menuHandlers[$event.name]($event.data)"
+        @menuSelected="menuHandlers[$event.id]($event.data)"
       />
     </div>
   </div>
 </template>
 <script setup>
 import { computed, shallowReactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useDialog } from '@/composable/dialog';
 import { sendMessage } from '@/utils/message';
 import { exportWorkflow, importWorkflow } from '@/utils/workflow-data';
@@ -64,15 +67,13 @@ import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 import Workflow from '@/models/workflow';
 
 const dialog = useDialog();
+const { t } = useI18n();
 
-const sorts = [
-  { name: 'Name', id: 'name' },
-  { name: 'Created date', id: 'createdAt' },
-];
+const sorts = ['name', 'createdAt'];
 const menu = [
-  { name: 'export', icon: 'riDownloadLine' },
-  { name: 'rename', icon: 'riPencilLine' },
-  { name: 'delete', icon: 'riDeleteBin7Line' },
+  { id: 'export', name: t('common.export'), icon: 'riDownloadLine' },
+  { id: 'rename', name: t('common.rename'), icon: 'riPencilLine' },
+  { id: 'delete', name: t('common.delete'), icon: 'riDeleteBin7Line' },
 ];
 
 const state = shallowReactive({
@@ -95,9 +96,9 @@ function executeWorkflow(workflow) {
 }
 function newWorkflow() {
   dialog.prompt({
-    title: 'New workflow',
-    placeholder: 'Workflow name',
-    okText: 'Add workflow',
+    title: t('workflow.new'),
+    placeholder: t('common.name'),
+    okText: t('workflow.add'),
     onConfirm: (name) => {
       Workflow.insert({
         data: {
@@ -110,9 +111,9 @@ function newWorkflow() {
 }
 function deleteWorkflow({ name, id }) {
   dialog.confirm({
-    title: 'Delete workflow',
+    title: t('workflow.delete'),
     okVariant: 'danger',
-    body: `Are you sure you want to delete "${name}" workflow?`,
+    body: t('message.delete', { name }),
     onConfirm: () => {
       Workflow.delete(id);
     },
@@ -120,9 +121,9 @@ function deleteWorkflow({ name, id }) {
 }
 function renameWorkflow({ id, name }) {
   dialog.prompt({
-    title: 'Rename workflow',
-    placeholder: 'Workflow name',
-    okText: 'Rename',
+    title: t('workflow.rename'),
+    placeholder: t('common.name'),
+    okText: t('common.rename'),
     inputValue: name,
     onConfirm: (newName) => {
       Workflow.update({

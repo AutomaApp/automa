@@ -2,25 +2,23 @@
   <div class="container pt-8 pb-4">
     <div class="flex items-center mb-8">
       <div>
-        <h1 class="text-2xl max-w-sm text-overflow font-semibold">
+        <h1 class="text-2xl max-w-md text-overflow font-semibold">
           {{ activeLog.name }}
         </h1>
         <p class="text-gray-600">
-          <span class="capitalize">
-            {{
-              activeLog.status === 'success' ? 'succeeded' : activeLog.status
-            }}
-          </span>
-          <span
-            :title="dayjs(activeLog.startedAt).format('DD MMM YYYY, hh:mm A')"
-          >
-            on {{ dayjs(activeLog.startedAt).format('DD MMM') }}
-          </span>
-          in {{ countDuration(activeLog.startedAt, activeLog.endedAt) }}
+          {{
+            t(`log.description.text`, {
+              status: t(`log.description.status.${activeLog.status}`),
+              date: dayjs(activeLog.startedAt).format('DD MMM'),
+              duration: countDuration(activeLog.startedAt, activeLog.endedAt),
+            })
+          }}
         </p>
       </div>
       <div class="flex-grow"></div>
-      <ui-button class="text-red-500" @click="deleteLog"> Delete </ui-button>
+      <ui-button class="text-red-500" @click="deleteLog">
+        {{ t('common.delete') }}
+      </ui-button>
     </div>
     <div class="flex items-start">
       <div class="w-7/12 mr-6">
@@ -31,8 +29,7 @@
             class="mb-4 flex"
           >
             <v-remixicon name="riArrowLeftLine" class="mr-2" />
-            Go back
-            <span class="font-semibold mx-1">{{ collectionLog.name }}</span> log
+            {{ t('log.goBack', { name: collectionLog.name }) }}
           </router-link>
           <ui-list-item v-for="(item, index) in history" :key="index">
             <span
@@ -46,7 +43,7 @@
                 {{ item.name }}
               </p>
               <p
-                v-if="item.type === 'error'"
+                v-if="item.message"
                 :title="item.message"
                 class="
                   text-sm
@@ -76,7 +73,7 @@
           class="flex items-center justify-between mt-4"
         >
           <div>
-            Showing
+            {{ t('components.pagination.text1') }}
             <select
               v-model="pagination.perPage"
               class="p-1 rounded-md bg-input"
@@ -89,7 +86,11 @@
                 {{ num }}
               </option>
             </select>
-            items out of {{ activeLog.history.length }}
+            {{
+              t('components.pagination.text2', {
+                count: activeLog.history.length,
+              })
+            }}
           </div>
           <ui-pagination
             v-model="pagination.currentPage"
@@ -107,6 +108,7 @@
 <script setup>
 import { computed, onMounted, shallowReactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import Log from '@/models/log';
 import dayjs from '@/lib/dayjs';
 import { countDuration } from '@/utils/helper';
@@ -135,6 +137,7 @@ const logsType = {
   },
 };
 
+const { t, te } = useI18n();
 const route = useRoute();
 const router = useRouter();
 
@@ -143,12 +146,29 @@ const pagination = shallowReactive({
   currentPage: 1,
 });
 
+function translateLog(log) {
+  const { name, message, type } = log;
+  const getTranslatation = (path, def) => (te(path) ? t(path) : def);
+
+  if (['finish', 'stop'].includes(type)) {
+    log.name = t(`log.types.${type}`);
+  } else {
+    log.name = getTranslatation(`workflow.blocks.${name}.name`, name);
+  }
+
+  log.message = getTranslatation(`log.messages.${message}`, message);
+
+  return log;
+}
+
 const activeLog = computed(() => Log.find(route.params.id));
 const history = computed(() =>
-  activeLog.value.history.slice(
-    (pagination.currentPage - 1) * pagination.perPage,
-    pagination.currentPage * pagination.perPage
-  )
+  activeLog.value.history
+    .slice(
+      (pagination.currentPage - 1) * pagination.perPage,
+      pagination.currentPage * pagination.perPage
+    )
+    .map(translateLog)
 );
 const collectionLog = computed(() => Log.find(activeLog.value.collectionLogId));
 

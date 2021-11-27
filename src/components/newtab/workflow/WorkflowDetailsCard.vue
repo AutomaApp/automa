@@ -2,11 +2,14 @@
   <div class="px-4 flex items-center mb-2 mt-1">
     <ui-popover class="mr-2 h-6">
       <template #trigger>
-        <span title="Workflow icon" class="cursor-pointer">
+        <span
+          :title="t('workflow.sidebar.workflowIcon')"
+          class="cursor-pointer"
+        >
           <v-remixicon :name="workflow.icon" size="26" />
         </span>
       </template>
-      <p class="mb-2">Workflow icon</p>
+      <p class="mb-2">{{ t('workflow.sidebar.workflowIcon') }}</p>
       <div class="grid grid-cols-4 gap-1">
         <span
           v-for="icon in icons"
@@ -24,9 +27,9 @@
   </div>
   <ui-input
     v-model="query"
+    :placeholder="`${t('common.search')}...`"
     prepend-icon="riSearch2Line"
     class="px-4 mt-4 mb-2"
-    placeholder="Search blocks"
   />
   <div class="scroll bg-scroll overflow-auto px-4 flex-1 overflow-auto">
     <template v-for="(items, catId) in taskList" :key="catId">
@@ -41,7 +44,13 @@
         <div
           v-for="block in items"
           :key="block.id"
-          :title="block.description || block.name"
+          :title="
+            t(
+              `workflow.blocks.${block.id}.${
+                block.description ? 'description' : 'name'
+              }`
+            )
+          "
           draggable="true"
           class="
             transform
@@ -61,7 +70,7 @@
             v-if="block.docs"
             :href="`https://github.com/Kholid060/automa/wiki/Blocks#${block.id}`"
             target="_blank"
-            title="Documentation"
+            :title="t('common.docs')"
             rel="noopener"
             class="absolute top-px right-2"
           >
@@ -69,7 +78,7 @@
           </a>
           <v-remixicon :name="block.icon" size="24" class="mb-2" />
           <p class="leading-tight text-overflow">
-            {{ block.name }}
+            {{ t(`workflow.blocks.${block.id}.name`) }}
           </p>
         </div>
       </div>
@@ -78,6 +87,7 @@
 </template>
 <script setup>
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { tasks, categories } from '@/utils/shared';
 
 defineProps({
@@ -91,6 +101,8 @@ defineProps({
   },
 });
 defineEmits(['update']);
+
+const { t } = useI18n();
 
 const icons = [
   'riGlobalLine',

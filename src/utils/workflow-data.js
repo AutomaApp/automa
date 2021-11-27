@@ -20,7 +20,14 @@ export function importWorkflow() {
 }
 
 export function exportWorkflow(workflow) {
-  const keys = ['dataColumns', 'drawflow', 'icon', 'name', 'settings'];
+  const keys = [
+    'dataColumns',
+    'drawflow',
+    'icon',
+    'name',
+    'settings',
+    'globalData',
+  ];
   const content = {};
 
   keys.forEach((key) => {

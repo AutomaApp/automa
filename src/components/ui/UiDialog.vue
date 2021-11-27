@@ -5,7 +5,7 @@
     @close="state.show = false"
   >
     <template #header>
-      <h3 class="font-semibold text-lg">{{ state.options.title }}</h3>
+      <h3 class="font-semibold">{{ state.options.title }}</h3>
     </template>
     <p class="text-gray-600 dark:text-gray-200 leading-tight">
       {{ state.options.body }}
@@ -34,23 +34,25 @@
 </template>
 <script>
 import { reactive, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import emitter from 'tiny-emitter/instance';
-
-const defaultOptions = {
-  html: false,
-  body: '',
-  title: '',
-  placeholder: '',
-  label: '',
-  okText: 'Confirm',
-  okVariant: 'accent',
-  cancelText: 'Cancel',
-  onConfirm: null,
-  onCancel: null,
-};
 
 export default {
   setup() {
+    const { t } = useI18n();
+
+    const defaultOptions = {
+      html: false,
+      body: '',
+      title: '',
+      placeholder: '',
+      label: '',
+      okText: t('common.confirm'),
+      okVariant: 'accent',
+      cancelText: t('common.cancel'),
+      onConfirm: null,
+      onCancel: null,
+    };
     const state = reactive({
       show: false,
       type: '',

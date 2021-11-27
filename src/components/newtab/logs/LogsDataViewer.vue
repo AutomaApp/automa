@@ -1,11 +1,15 @@
 <template>
   <div class="flex items-center">
-    <ui-input v-model="fileName" placeholder="File name" title="File name" />
+    <ui-input
+      v-model="fileName"
+      :placeholder="t('common.fileName')"
+      :title="t('common.fileName')"
+    />
     <div class="flex-grow"></div>
     <ui-popover>
       <template #trigger>
         <ui-button variant="accent">
-          <span>Export data</span>
+          <span>{{ t('log.exportData.title') }}</span>
           <v-remixicon name="riArrowDropDownLine" class="ml-2 -mr-1" />
         </ui-button>
       </template>
@@ -17,7 +21,7 @@
           class="cursor-pointer"
           @click="exportData(type.id)"
         >
-          as {{ type.name }}
+          {{ t(`log.exportData.types.${type.id}`) }}
         </ui-list-item>
       </ui-list>
     </ui-popover>
@@ -32,6 +36,7 @@
 </template>
 <script setup>
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { PrismEditor } from 'vue-prism-editor';
 import { highlighter } from '@/lib/prism';
 import { dataExportTypes } from '@/utils/shared';
@@ -47,6 +52,8 @@ const props = defineProps({
     default: '',
   },
 });
+
+const { t } = useI18n();
 
 const data = Array.isArray(props.log.data)
   ? props.log.data

@@ -20,10 +20,10 @@
         <ui-list class="w-36 space-y-1">
           <ui-list-item
             v-for="item in menu"
-            :key="item.name"
+            :key="item.id"
             v-close-popover
             class="cursor-pointer"
-            @click="$emit('menuSelected', { name: item.name, data })"
+            @click="$emit('menuSelected', { id: item.id, data })"
           >
             <v-remixicon :name="item.icon" class="mr-2 -ml-1" />
             <span class="capitalize">{{ item.name }}</span>

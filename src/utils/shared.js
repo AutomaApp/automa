@@ -9,6 +9,7 @@ export const tasks = {
     editComponent: 'EditTrigger',
     category: 'general',
     inputs: 0,
+    docs: true,
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
@@ -324,6 +325,7 @@ export const tasks = {
     category: 'interaction',
     inputs: 1,
     outputs: 1,
+    docs: true,
     allowedInputs: true,
     maxConnection: 1,
     data: {
@@ -522,3 +524,5 @@ export const contentTypes = [
   { name: 'application/json', value: 'json' },
   { name: 'application/x-www-form-urlencoded', value: 'form' },
 ];
+
+export const supportLocales = [{ id: 'en', name: 'English' }];

@@ -13,7 +13,7 @@
         </td>
         <td class="log-time">
           <v-remixicon
-            title="Started date"
+            :title="t('log.startedDate')"
             name="riCalendarLine"
             class="mr-2 inline-block align-middle"
           />
@@ -21,7 +21,7 @@
             {{ formatDate(log.startedAt, 'relative') }}
           </span>
         </td>
-        <td class="log-time" title="Duration">
+        <td class="log-time" :title="t('log.duration')">
           <v-remixicon name="riTimerLine"></v-remixicon>
           <span>{{ countDuration(log.startedAt, log.endedAt) }}</span>
         </td>
@@ -31,7 +31,7 @@
             :title="log.status === 'error' ? getErrorMessage(log) : null"
             class="inline-block py-1 w-16 text-center text-sm rounded-lg"
           >
-            {{ log.status }}
+            {{ t(`logStatus.${log.status}`) }}
           </span>
         </td>
         <slot name="item-append" :log="log" />
@@ -40,6 +40,7 @@
   </table>
 </template>
 <script setup>
+import { useI18n } from 'vue-i18n';
 import { countDuration } from '@/utils/helper';
 import dayjs from '@/lib/dayjs';
 
@@ -49,6 +50,8 @@ defineProps({
     default: () => [],
   },
 });
+
+const { t } = useI18n();
 
 const statusColors = {
   error: 'bg-red-200',

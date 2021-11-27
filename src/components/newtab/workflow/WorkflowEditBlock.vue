@@ -19,6 +19,7 @@
 </template>
 <script>
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const editComponents = require.context(
   './edit',
@@ -46,6 +47,8 @@ export default {
   },
   emits: ['close', 'update'],
   setup(props, { emit }) {
+    const { t } = useI18n();
+
     const blockData = computed({
       get() {
         return props.data.data || {};
@@ -56,6 +59,7 @@ export default {
     });
 
     return {
+      t,
       blockData,
     };
   },
