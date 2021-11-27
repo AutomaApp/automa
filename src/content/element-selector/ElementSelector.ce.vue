@@ -209,7 +209,7 @@ window.addEventListener('mousemove', handleMouseMove);
   top: 0;
   left: 0;
   pointer-events: none;
-  z-index: 99999;
+  z-index: 999999999;
   color: #18181b;
   font-size: 16px;
   box-sizing: border-box;
