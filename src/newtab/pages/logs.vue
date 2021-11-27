@@ -83,7 +83,7 @@
   </div>
 </template>
 <script setup>
-import { shallowReactive, ref, computed } from 'vue';
+import { shallowReactive, ref, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { useDialog } from '@/composable/dialog';
@@ -96,6 +96,8 @@ const { t } = useI18n();
 const store = useStore();
 const dialog = useDialog();
 
+const savedSorts = JSON.parse(localStorage.getItem('logs-sorts') || '{}');
+
 const selectedLogs = ref([]);
 const pagination = shallowReactive({
   perPage: 10,
@@ -107,8 +109,8 @@ const filtersBuilder = shallowReactive({
   byStatus: 'all',
 });
 const sortsBuilder = shallowReactive({
-  order: 'desc',
-  by: 'startedAt',
+  order: savedSorts.order || 'desc',
+  by: savedSorts.by || 'startedAt',
 });
 const exportDataModal = shallowReactive({
   show: false,
@@ -186,6 +188,14 @@ function selectAllLogs() {
 
   selectedLogs.value = logIds;
 }
+
+watch(
+  () => sortsBuilder,
+  (value) => {
+    localStorage.setItem('logs-sorts', JSON.stringify(value));
+  },
+  { deep: true }
+);
 </script>
 <style>
 .logs-list-data {

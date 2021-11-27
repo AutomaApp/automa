@@ -58,7 +58,7 @@
   </div>
 </template>
 <script setup>
-import { computed, shallowReactive } from 'vue';
+import { computed, shallowReactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDialog } from '@/composable/dialog';
 import { sendMessage } from '@/utils/message';
@@ -76,10 +76,11 @@ const menu = [
   { id: 'delete', name: t('common.delete'), icon: 'riDeleteBin7Line' },
 ];
 
+const savedSorts = JSON.parse(localStorage.getItem('workflow-sorts') || '{}');
 const state = shallowReactive({
   query: '',
-  sortBy: 'createdAt',
-  sortOrder: 'desc',
+  sortBy: savedSorts.sortBy || 'createdAt',
+  sortOrder: savedSorts.sortOrder || 'desc',
 });
 
 const workflows = computed(() =>
@@ -141,6 +142,16 @@ const menuHandlers = {
   rename: renameWorkflow,
   delete: deleteWorkflow,
 };
+
+watch(
+  () => [state.sortOrder, state.sortBy],
+  ([sortOrder, sortBy]) => {
+    localStorage.setItem(
+      'workflow-sorts',
+      JSON.stringify({ sortOrder, sortBy })
+    );
+  }
+);
 </script>
 <style>
 .workflow-sort select {
