@@ -44,6 +44,7 @@
       :key="workflow.id"
       :workflow="workflow"
       @details="openDashboard(`/workflows/${$event.id}`)"
+      @update="updateWorkflow(workflow.id, $event)"
       @execute="executeWorkflow"
       @rename="renameWorkflow"
       @delete="deleteWorkflow"
@@ -77,6 +78,12 @@ const workflows = computed(() =>
 function executeWorkflow(workflow) {
   sendMessage('workflow:execute', workflow, 'background');
 }
+function updateWorkflow(id, data) {
+  return Workflow.update({
+    where: id,
+    data,
+  });
+}
 function renameWorkflow({ id, name }) {
   dialog.prompt({
     title: t('home.workflow.rename'),
@@ -84,12 +91,7 @@ function renameWorkflow({ id, name }) {
     okText: t('common.rename'),
     inputValue: name,
     onConfirm: (newName) => {
-      Workflow.update({
-        where: id,
-        data: {
-          name: newName,
-        },
-      });
+      updateWorkflow(id, { name: newName });
     },
   });
 }

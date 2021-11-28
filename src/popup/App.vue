@@ -15,8 +15,8 @@ const retrieved = ref(false);
 onMounted(async () => {
   try {
     await store.dispatch('retrieve');
-    await loadLocaleMessages(store.state.locale, 'popup');
-    await setI18nLanguage(store.state.locale);
+    await loadLocaleMessages(store.state.settings.locale, 'popup');
+    await setI18nLanguage(store.state.settings.locale);
 
     retrieved.value = true;
   } catch (error) {

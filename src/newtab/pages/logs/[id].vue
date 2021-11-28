@@ -26,6 +26,7 @@
           <router-link
             v-if="collectionLog"
             :to="activeLog.collectionLogId"
+            replace
             class="mb-4 flex"
           >
             <v-remixicon name="riArrowLeftLine" class="mr-2" />
@@ -148,7 +149,11 @@ const pagination = shallowReactive({
 
 function translateLog(log) {
   const { name, message, type } = log;
-  const getTranslatation = (path, def) => (te(path) ? t(path) : def);
+  const getTranslatation = (path, def) => {
+    const params = typeof path === 'string' ? { path } : path;
+
+    return te(params.path) ? t(params.path, params.params) : def;
+  };
 
   if (['finish', 'stop'].includes(type)) {
     log.name = t(`log.types.${type}`);
@@ -156,7 +161,10 @@ function translateLog(log) {
     log.name = getTranslatation(`workflow.blocks.${name}.name`, name);
   }
 
-  log.message = getTranslatation(`log.messages.${message}`, message);
+  log.message = getTranslatation(
+    { path: `log.messages.${message}`, params: log },
+    ''
+  );
 
   return log;
 }

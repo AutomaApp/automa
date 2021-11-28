@@ -95,6 +95,8 @@ class WorkflowEngine {
   }
 
   init() {
+    if (this.workflow.isDisabled) return;
+
     const drawflowData =
       typeof this.workflow.drawflow === 'string'
         ? JSON.parse(this.workflow.drawflow || '{}')
@@ -330,8 +332,7 @@ class WorkflowEngine {
   _sendMessageToTab(block, options = {}) {
     return new Promise((resolve, reject) => {
       if (!this.tabId) {
-        /* eslint-disable-next-line */
-        reject('no-tab');
+        reject(new Error('no-tab'));
         return;
       }
 

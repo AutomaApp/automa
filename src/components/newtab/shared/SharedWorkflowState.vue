@@ -34,7 +34,7 @@
         class="flex items-center py-2"
       >
         <v-remixicon :name="block.icon" />
-        <p class="flex-1 ml-2 mr-4">{{ block.name }}</p>
+        <p class="flex-1 ml-2 mr-4 text-overflow">{{ block.name }}</p>
         <ui-spinner color="text-accnet" size="20" />
       </div>
     </div>
@@ -61,7 +61,11 @@ function getBlock() {
 
   if (Array.isArray(props.data.state.currentBlock)) {
     return props.data.state.currentBlock.map((item) => {
-      if (tasks[item.name]) return t(`workflow.blocks.${item.name}.name`);
+      if (tasks[item.name])
+        return {
+          ...tasks[item.name],
+          name: t(`workflow.blocks.${item.name}.name`),
+        };
 
       return item;
     });

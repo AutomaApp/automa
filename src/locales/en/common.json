@@ -27,6 +27,9 @@
     "globalData": "Global data",
     "fileName": "File name",
     "description": "Description",
+    "disable": "Disable",
+    "disabled": "Disabled",
+    "enable": "Enable",
   },
   "message": {
     "noBlock": "No block",

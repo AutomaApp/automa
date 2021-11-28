@@ -11,7 +11,8 @@
         {{ dayjs(workflow.createdAt).fromNow() }}
       </p>
     </div>
-    <button title="Execute" @click="$emit('execute', workflow)">
+    <p v-if="workflow.isDisabled">Disabled</p>
+    <button v-else title="Execute" @click="$emit('execute', workflow)">
       <v-remixicon name="riPlayLine" />
     </button>
     <ui-popover class="h-6">
@@ -21,6 +22,15 @@
         </button>
       </template>
       <ui-list class="w-40 space-y-1">
+        <ui-list-item
+          class="capitalize cursor-pointer"
+          @click="$emit('update', { isDisabled: !workflow.isDisabled })"
+        >
+          <v-remixicon name="riToggleLine" class="mr-2 -ml-1" />
+          <span>{{
+            t(`common.${workflow.isDisabled ? 'enable' : 'disable'}`)
+          }}</span>
+        </ui-list-item>
         <ui-list-item
           v-for="item in menu"
           :key="item.name"
@@ -36,6 +46,7 @@
   </ui-card>
 </template>
 <script setup>
+import { useI18n } from 'vue-i18n';
 import dayjs from '@/lib/dayjs';
 
 defineProps({
@@ -44,7 +55,9 @@ defineProps({
     default: () => ({}),
   },
 });
-defineEmits(['execute', 'rename', 'details', 'delete']);
+defineEmits(['execute', 'rename', 'details', 'delete', 'update']);
+
+const { t } = useI18n();
 
 const menu = [
   { name: 'rename', icon: 'riPencilLine' },

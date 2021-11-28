@@ -48,12 +48,62 @@
     <div v-else class="grid gap-4 grid-cols-5 2xl:grid-cols-6">
       <shared-card
         v-for="workflow in workflows"
-        v-bind="{ data: workflow, menu }"
         :key="workflow.id"
+        :data="workflow"
         @click="$router.push(`/workflows/${$event.id}`)"
-        @execute="executeWorkflow"
-        @menuSelected="menuHandlers[$event.id]($event.data)"
-      />
+      >
+        <template #header>
+          <div class="flex items-center mb-4">
+            <span
+              v-if="!workflow.isDisabled"
+              class="p-2 rounded-lg bg-box-transparent"
+            >
+              <v-remixicon :name="workflow.icon || icon" />
+            </span>
+            <p v-else class="py-2">{{ t('common.disabled') }}</p>
+            <div class="flex-grow"></div>
+            <button
+              v-if="!workflow.isDisabled"
+              class="invisible group-hover:visible"
+              @click="executeWorkflow(workflow)"
+            >
+              <v-remixicon name="riPlayLine" />
+            </button>
+            <ui-popover class="h-6 ml-2">
+              <template #trigger>
+                <button>
+                  <v-remixicon name="riMoreLine" />
+                </button>
+              </template>
+              <ui-list class="space-y-1" style="min-width: 150px">
+                <ui-list-item
+                  class="cursor-pointer"
+                  @click="
+                    updateWorkflow(workflow.id, {
+                      isDisabled: !workflow.isDisabled,
+                    })
+                  "
+                >
+                  <v-remixicon name="riToggleLine" class="mr-2 -ml-1" />
+                  <span class="capitalize">{{
+                    t(`common.${workflow.isDisabled ? 'enable' : 'disable'}`)
+                  }}</span>
+                </ui-list-item>
+                <ui-list-item
+                  v-for="item in menu"
+                  :key="item.id"
+                  v-close-popover
+                  class="cursor-pointer"
+                  @click="menuHandlers[item.id](workflow)"
+                >
+                  <v-remixicon :name="item.icon" class="mr-2 -ml-1" />
+                  <span class="capitalize">{{ item.name }}</span>
+                </ui-list-item>
+              </ui-list>
+            </ui-popover>
+          </div>
+        </template>
+      </shared-card>
     </div>
   </div>
 </template>
@@ -94,6 +144,12 @@ const workflows = computed(() =>
 
 function executeWorkflow(workflow) {
   sendMessage('workflow:execute', workflow, 'background');
+}
+function updateWorkflow(id, data) {
+  Workflow.update({
+    where: id,
+    data,
+  });
 }
 function newWorkflow() {
   dialog.prompt({

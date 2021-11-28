@@ -45,12 +45,14 @@
         </ui-tabs>
         <div class="flex-grow"></div>
         <workflow-actions
+          :workflow="workflow"
           :is-data-changed="state.isDataChanged"
           @showModal="(state.modalName = $event), (state.showModal = true)"
           @save="saveWorkflow"
           @export="exportWorkflow(workflow)"
           @execute="executeWorkflow"
           @rename="renameWorkflow"
+          @update="updateWorkflow"
           @delete="deleteWorkflow"
         />
       </div>

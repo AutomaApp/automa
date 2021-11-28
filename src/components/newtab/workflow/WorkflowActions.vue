@@ -12,12 +12,21 @@
   </ui-card>
   <ui-card padding="p-1 ml-4">
     <button
+      v-if="!workflow.isDisabled"
       v-tooltip.group="t('common.execute')"
       icon
       class="hoverable p-2 rounded-lg"
       @click="$emit('execute')"
     >
       <v-remixicon name="riPlayLine" />
+    </button>
+    <button
+      v-else
+      v-tooltip="t('workflow.clickToEnable')"
+      class="p-2"
+      @click="$emit('update', { isDisabled: false })"
+    >
+      {{ t('common.disabled') }}
     </button>
   </ui-card>
   <ui-card padding="p-1 ml-4 space-x-1">
@@ -28,6 +37,13 @@
         </button>
       </template>
       <ui-list class="w-36">
+        <ui-list-item
+          class="cursor-pointer"
+          @click="$emit('update', { isDisabled: !workflow.isDisabled })"
+        >
+          <v-remixicon name="riToggleLine" class="mr-2 -ml-1" />
+          {{ t(`common.${workflow.isDisabled ? 'enable' : 'disable'}`) }}
+        </ui-list-item>
         <ui-list-item
           v-for="item in moreActions"
           :key="item.id"
@@ -75,8 +91,20 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  workflow: {
+    type: Object,
+    default: () => ({}),
+  },
 });
-defineEmits(['showModal', 'execute', 'rename', 'delete', 'save', 'export']);
+defineEmits([
+  'showModal',
+  'execute',
+  'rename',
+  'delete',
+  'save',
+  'export',
+  'update',
+]);
 
 useGroupTooltip();
 const { t } = useI18n();

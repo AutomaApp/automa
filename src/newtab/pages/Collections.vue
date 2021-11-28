@@ -55,8 +55,8 @@ const dialog = useDialog();
 const { t } = useI18n();
 
 const collectionCardMenu = [
-  { id: 'rename', name: t('collection.rename'), icon: 'riPencilLine' },
-  { id: 'delete', name: t('collection.delete'), icon: 'riDeleteBin7Line' },
+  { id: 'rename', name: t('common.rename'), icon: 'riPencilLine' },
+  { id: 'delete', name: t('common.delete'), icon: 'riDeleteBin7Line' },
 ];
 
 const query = ref('');

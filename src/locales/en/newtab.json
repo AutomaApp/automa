@@ -16,6 +16,7 @@
     "name": "Workflow name",
     "rename": "Rename workflow",
     "add": "Add workflow",
+    "clickToEnable": "Click to enable",
     "dataColumns": {
       "title": "Data columns",
       "placeholder": "Search or add column",
@@ -76,6 +77,7 @@
       "finish": "Finish"
     },
     "messages": {
+      "workflow-disabled": "Workflow is disabled",
       "stop-timeout": "Workflow is stopped because of timeout",
       "no-iframe-id": "Can't find Frame ID for the frame element with \"{selector}\" selector",
       "no-tab": "Can't connect to a tab, use \"New tab\" or \"Active tab\" block before using the \"{name}\" block."

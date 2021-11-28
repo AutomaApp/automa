@@ -166,6 +166,7 @@ class CollectionEngine {
             type: data.type || 'success',
             name: data.name,
             logId: data.id,
+            message: data.message,
             duration: Math.round(Date.now() - started),
           });
 
