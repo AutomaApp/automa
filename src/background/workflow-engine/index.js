@@ -26,7 +26,7 @@ function tabRemovedHandler(tabId) {
 
   workflowState.update(this.id, this.state);
 }
-function tabUpdatedHandler(tabId, changeInfo) {
+function tabUpdatedHandler(tabId, changeInfo, tab) {
   const listener = this.tabUpdatedListeners[tabId];
 
   if (listener) {
@@ -51,6 +51,7 @@ function tabUpdatedHandler(tabId, changeInfo) {
           this.tabId = tabId;
           this.frames = frames;
           this.isPaused = false;
+          this.activeTabUrl = tab?.url || '';
         })
         .catch((error) => {
           console.error(error);
@@ -73,6 +74,7 @@ class WorkflowEngine {
     this.isInCollection = isInCollection;
     this.collectionLogId = collectionLogId;
     this.globalData = parseJSON(globalDataVal, globalDataVal);
+    this.activeTabUrl = '';
     this.data = {};
     this.logs = [];
     this.blocks = {};
@@ -276,6 +278,7 @@ class WorkflowEngine {
         data: this.data,
         loopData: this.loopData,
         globalData: this.globalData,
+        activeTabUrl: this.activeTabUrl,
       });
 
       handler

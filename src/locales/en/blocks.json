@@ -94,7 +94,15 @@
       },
       "get-text": {
         "name": "Get text",
-        "description": "Get text from an element"
+        "description": "Get text from an element",
+        "prefixText": {
+          "placeholder": "Text prefix",
+          "title": "Add prefix to the text"
+        },
+        "suffixText": {
+          "placeholder": "Text suffix",
+          "title": "Add suffix to the text"
+        }
       },
       "export-data": {
         "name": "Export data",

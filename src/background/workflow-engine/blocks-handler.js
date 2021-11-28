@@ -246,6 +246,7 @@ export async function newTab(block) {
       });
 
       this.tabId = tab.id;
+      this.activeTabUrl = url;
       this.windowId = tab.windowId;
     }
 
@@ -303,6 +304,7 @@ export async function activeTab(block) {
 
     this.frameId = 0;
     this.tabId = tab.id;
+    this.activeTabUrl = tab.url;
     this.windowId = tab.windowId;
 
     return data;

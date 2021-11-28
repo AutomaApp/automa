@@ -184,6 +184,8 @@ export const tasks = {
       markEl: false,
       multiple: false,
       regex: '',
+      prefixText: '',
+      suffixText: '',
       regexExp: ['g'],
       dataColumn: '',
       saveData: true,
