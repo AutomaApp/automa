@@ -35,6 +35,23 @@
         line-numbers
         style="height: calc(100vh - 12rem)"
       />
+      <p class="mt-1">
+        {{ t('workflow.blocks.javascript-code.availabeFuns') }}
+      </p>
+      <p class="space-x-1">
+        <a
+          v-for="func in availableFuncs"
+          :key="func.id"
+          :href="`https://github.com/Kholid060/automa/wiki/Blocks#${func.id}`"
+          target="_blank"
+          rel="noopener"
+          class="inline-block"
+        >
+          <code>
+            {{ func.name }}
+          </code>
+        </a>
+      </p>
     </ui-modal>
   </div>
 </template>
@@ -53,6 +70,12 @@ const props = defineProps({
 const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
+
+const availableFuncs = [
+  { name: 'automaNextBlock(data)', id: 'automanextblockdata' },
+  { name: 'automaRefData(keyword, path)', id: 'automarefdatakeyword-path' },
+  { name: 'automaResetTimeout', id: 'automaresettimeout' },
+];
 
 const code = ref(props.data.code);
 const showCodeModal = ref(false);

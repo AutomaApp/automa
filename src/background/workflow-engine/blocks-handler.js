@@ -418,13 +418,23 @@ export async function switchTo(block) {
   }
 }
 
-export async function interactionHandler(block) {
+export async function interactionHandler(block, prevBlockData) {
   const nextBlockId = getBlockConnection(block);
 
   try {
-    const data = await this._sendMessageToTab(block, {
-      frameId: this.frameId || 0,
-    });
+    const refData = {
+      prevBlockData,
+      dataColumns: this.data,
+      loopData: this.loopData,
+      globalData: this.globalData,
+      activeTabUrl: this.activeTabUrl,
+    };
+    const data = await this._sendMessageToTab(
+      { ...block, refData },
+      {
+        frameId: this.frameId || 0,
+      }
+    );
 
     if (block.name === 'link')
       await new Promise((resolve) => setTimeout(resolve, 5000));

@@ -166,11 +166,12 @@
       "javascript-code": {
         "name": "JavaScript code",
         "description": "Execute your javascript code in the web page",
+        "modal": "JavaScript code",
+        "availabeFuns": "Available functions:",
         "timeout": {
           "placeholder": "Timeout",
           "title": "Javascript code execution timeout"
-        },
-        "modal": "JavaScript code"
+        }
       },
       "trigger-event": {
         "name": "Trigger event",

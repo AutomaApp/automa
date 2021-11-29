@@ -3,7 +3,7 @@ import { isObject, objectHasKey, replaceMustache } from '@/utils/helper';
 
 const objectPath = { get, set };
 
-function parseKey(key) {
+export function parseKey(key) {
   const [dataKey, path] = key.split('@');
 
   if (
@@ -13,7 +13,7 @@ function parseKey(key) {
   )
     return { dataKey, path: path || '' };
 
-  const pathArr = path?.split('.') ?? '';
+  const pathArr = path?.split('.') ?? [];
   let dataPath = '';
 
   if (pathArr.length === 1) {
@@ -37,10 +37,10 @@ function parseKey(key) {
 export default function (block, data) {
   const replaceKeys = [
     'url',
-    'fileName',
     'name',
-    'value',
     'body',
+    'value',
+    'fileName',
     'selector',
     'prefixText',
     'suffixText',

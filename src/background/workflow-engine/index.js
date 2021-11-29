@@ -332,7 +332,7 @@ class WorkflowEngine {
     }
   }
 
-  _sendMessageToTab(block, options = {}) {
+  _sendMessageToTab(payload, options = {}) {
     return new Promise((resolve, reject) => {
       if (!this.tabId) {
         reject(new Error('no-tab'));
@@ -340,7 +340,7 @@ class WorkflowEngine {
       }
 
       browser.tabs
-        .sendMessage(this.tabId, { isBlock: true, ...block }, options)
+        .sendMessage(this.tabId, { isBlock: true, ...payload }, options)
         .then(resolve)
         .catch(reject);
     });

@@ -1,6 +1,7 @@
 /* eslint-disable consistent-return, no-param-reassign */
 import simulateEvent from '@/utils/simulate-event';
 import handleFormElement from '@/utils/handle-form-element';
+import { generateJSON } from '@/utils/data-exporter';
 
 function markElement(el, { id, data }) {
   if (data.markEl) {
@@ -91,16 +92,47 @@ export function getText(block) {
   });
 }
 
-const automaScript = `
+export function javascriptCode(block) {
+  block.refData.dataColumns = generateJSON(
+    Object.keys(block.refData.dataColumns),
+    block.refData.dataColumns
+  );
+
+  sessionStorage.setItem(`automa--${block.id}`, JSON.stringify(block.refData));
+  const automaScript = `
 function automaNextBlock(data) {
   window.dispatchEvent(new CustomEvent('__automa-next-block__', { detail: data }));
 }
 function automaResetTimeout() {
  window.dispatchEvent(new CustomEvent('__automa-reset-timeout__'));
 }
+function findData(obj, path) {
+  const paths = path.split('.');
+  const isWhitespace = paths.length === 1 && !/\\S/.test(paths[0]);
+
+  if (paths.length === 0 || isWhitespace) return obj;
+
+  let current = obj;
+
+  for (let i = 0; i < paths.length; i++) {
+    if (current[paths[i]] == undefined) {
+      return undefined;
+    } else {
+      current = current[paths[i]];
+    }
+  }
+
+  return current;
+}
+function automaRefData(keyword, path = '') {
+  const data = JSON.parse(sessionStorage.getItem('automa--${block.id}')) || null;
+
+  if (data === null) return null;
+
+  return findData(data[keyword], path);
+}
 `;
 
-export function javascriptCode(block) {
   return new Promise((resolve) => {
     const isScriptExists = document.getElementById('automa-custom-js');
     const scriptAttr = `block--${block.id}`;
@@ -115,28 +147,27 @@ export function javascriptCode(block) {
 
     script.setAttribute(scriptAttr, '');
     script.id = 'automa-custom-js';
-    script.innerHTML = `${automaScript} ${block.data.code}`;
+    script.innerHTML = `(() => {\n${automaScript} ${block.data.code}\n})()`;
+
+    const cleanUp = (data = '') => {
+      script.remove();
+      sessionStorage.removeItem(`automa--${block.id}`);
+      resolve(data);
+    };
 
     window.addEventListener('__automa-next-block__', ({ detail }) => {
       clearTimeout(timeout);
-      script.remove();
-      resolve(detail || {});
+      cleanUp(detail || {});
     });
     window.addEventListener('__automa-reset-timeout__', () => {
       clearTimeout(timeout);
 
-      timeout = setTimeout(() => {
-        script.remove();
-        resolve('');
-      }, block.data.timeout);
+      timeout = setTimeout(cleanUp, block.data.timeout);
     });
 
     document.body.appendChild(script);
 
-    timeout = setTimeout(() => {
-      script.remove();
-      resolve('');
-    }, block.data.timeout);
+    timeout = setTimeout(cleanUp, block.data.timeout);
   });
 }
 
