@@ -1,128 +1,128 @@
 {
   "home": {
-    "viewAll": "View all"
+    "viewAll": "查看全部"
   },
   "settings": {
     "language": {
-      "label": "Language",
-      "helpTranslate": "Can't find your language? Help translate.",
-      "reloadPage": "Reload the page to take effect"
-    },
+      "label": "语言",
+      "helpTranslate": "找不到你的语言？ 帮忙翻译。",
+      "reloadPage": "重新加载页面生效"
+    }
   },
   "workflow": {
-    "import": "Import workflow",
-    "new": "New workflow",
-    "delete": "Delete workflow",
-    "name": "Workflow name",
-    "rename": "Rename workflow",
-    "add": "Add workflow",
-    "clickToEnable": "Click to enable",
+    "import": "导入工作流",
+    "new": "新建工作流",
+    "delete": "删除工作流",
+    "name": "工作流名称",
+    "rename": "重命名工作流",
+    "add": "添加工作流",
+    "clickToEnable": "点击启用",
     "dataColumns": {
-      "title": "Data columns",
-      "placeholder": "Search or add column",
+      "title": "数据列",
+      "placeholder": "搜索或者添加数据列",
       "column": {
-        "name": "Column name",
-        "type": "Data type"
+        "name": "列名称",
+        "type": "数据类型"
       }
     },
     "sidebar": {
-      "workflowIcon": "Workflow icon"
+      "workflowIcon": "工作流图标"
     },
     "editor": {
-      "zoomIn": "Zoom in",
-      "zoomOut": "Zoom out",
-      "resetZoom": "Reset zoom",
-      "duplicate": "Duplicate"
+      "zoomIn": "缩小",
+      "zoomOut": "放大",
+      "resetZoom": "重置缩放",
+      "duplicate": "创建副本"
     },
     "settings": {
       "onError": {
-        "title": "On workflow error",
+        "title": "工作流出错",
         "items": {
-          "keepRunning": "Keep running",
-          "stopWorkflow": "Stop workflow"
+          "keepRunning": "继续运行",
+          "stopWorkflow": "停止工作流"
         }
       },
       "timeout": {
-        "title": "Workflow timeout (milliseconds)"
+        "title": "工作流超时 (毫秒)"
       }
     }
   },
   "collection": {
-    "description": "Execute your workflows in sequence",
-    "new": "New collection",
-    "delete": "Delete collection",
-    "add": "Add collection",
-    "rename": "Rename collection",
-    "flow": "Flow",
-    "dragDropText": "Drop a workflow or block in here",
+    "description": "按顺序执行工作流",
+    "new": "新建集合",
+    "delete": "删除集合",
+    "add": "添加集合",
+    "rename": "重命名集合",
+    "flow": "流程",
+    "dragDropText": "拖放工作流或者单元到这里",
     "options": {
       "atOnce": {
-        "title": "Execute all workflows in the collection at once",
-        "description": "Block not gonna executed when using this option"
+        "title": "一次执行集合中的所有工作流",
+        "description": "使用此选项时不会执行单元下的项目"
       }
     },
     "globalData": {
-      "note": "This will overwrite the global data of the workflow"
+      "note": "这将覆盖工作流的全局数据"
     }
   },
   "log": {
-    "goBack": "Go back to \"{name}\" log",
-    "startedDate": "Started date",
-    "duration": "Duration",
-    "selectAll": "Select all",
-    "deselectAll": "Deselect all",
-    "deleteSelected": "Delete selected logs",
+    "goBack": "返回到\"{name}\"的日志",
+    "startedDate": "开始日期",
+    "duration": "持续时间",
+    "selectAll": "全选",
+    "deselectAll": "取消全选",
+    "deleteSelected": "删除选定的日志",
     "types": {
-      "stop": "Workflow is stopped",
-      "finish": "Finish"
+      "stop": "工作流已停止",
+      "finish": "完成"
     },
     "messages": {
-      "workflow-disabled": "Workflow is disabled",
-      "stop-timeout": "Workflow is stopped because of timeout",
-      "no-iframe-id": "Can't find Frame ID for the frame element with \"{selector}\" selector",
-      "no-tab": "Can't connect to a tab, use \"New tab\" or \"Active tab\" block before using the \"{name}\" block."
+      "workflow-disabled": "工作流被禁用",
+      "stop-timeout": "工作流因超时而停止",
+      "no-iframe-id": "找不到\"{selector}\"选择的iframe",
+      "no-tab": "无法连接到选项卡，请在使用 \"{name}\" 单元之前使用 \"新建选项卡\" 或 \"活动选项卡\" 单元。"
     },
     "description": {
-      "text": "{status} on {date} in {duration}",
+      "text": "在{date}用了{duration}执行{status} ",
       "status": {
-        "success": "Succeeded",
-        "error": "Failed",
-        "stopped": "Stopped"
+        "success": "成功",
+        "error": "失败",
+        "stopped": "停止"
       }
     },
     "delete": {
-      "title": "Delete log",
-      "description": "Are you sure want to delete all the selected logs?"
+      "title": "删除日志",
+      "description": "你确定要删除选定的日志吗？"
     },
     "exportData": {
-      "title": "Export data",
+      "title": "导出数据",
       "types": {
         "json": "JSON",
         "csv": "CSV",
         "plain-text": "Plain text"
-      },
+      }
     },
     "filter": {
-      "title": "Filter",
-      "byStatus": "By status",
+      "title": "筛选",
+      "byStatus": "按状态",
       "byDate": {
-        "title": "By date",
+        "title": "按日期",
         "items": {
-          "lastDay": "Last day",
-          "last7Days": "Last seven days",
-          "last30Days": "Last thirty days",
+          "lastDay": "最近一天",
+          "last7Days": "最近7天",
+          "last30Days": "最近30天"
         }
-      },
-    },
+      }
+    }
   },
   "components": {
     "pagination": {
-      "text1": "Showing",
-      "text2": "items out of {count}",
-      "nextPage": "Next page",
-      "currentPage": "Current page",
-      "prevPage": "Previous page",
-      "of": "of {page}"
+      "text1": "显示中",
+      "text2": "项目数超过{count}",
+      "nextPage": "下一页",
+      "currentPage": "当前页",
+      "prevPage": "上一页",
+      "of": "共{page}页"
     }
-  },
+  }
 }

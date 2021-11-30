@@ -23,13 +23,21 @@
       "trigger": {
         "name": "Trigger",
         "description": "Block where the workflow will start executing",
-        "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "days": [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday"
+        ],
         "useRegex": "Use regex",
         "shortcut": {
           "tootlip": "Record shortcut",
           "checkboxTitle": "Execute shortcut even when you're in an input element",
           "checkbox": "Active while in input",
-          "note": "Note: keyboard shortcut only working when you're on a webpage",
+          "note": "Note: keyboard shortcut only working when you're on a webpage"
         },
         "forms": {
           "triggerWorkflow": "Trigger workflow",
@@ -47,7 +55,7 @@
           "specific-day": "On a specific day",
           "visit-web": "When visit a website",
           "keyboard-shortcut": "Keyboard shortcut"
-        },
+        }
       },
       "active-tab": {
         "name": "Active tab",
@@ -68,7 +76,7 @@
         "incognito": {
           "text": "Set as incognito window",
           "note": "You must enable 'Allow in incognito' for this extension to use the option"
-        },
+        }
       },
       "go-back": {
         "name": "Go back",
@@ -116,7 +124,7 @@
         "intoView": "Scroll into view",
         "smooth": "Smooth scroll",
         "incScrollX": "Increment horizontal scroll",
-        "incScrollY": "Increment vertical scroll",
+        "incScrollY": "Increment vertical scroll"
       },
       "new-tab": {
         "name": "New tab",
@@ -161,7 +169,7 @@
       },
       "repeat-task": {
         "name": "Repeat task",
-        "description": "",
+        "description": ""
       },
       "javascript-code": {
         "name": "JavaScript code",
@@ -221,12 +229,12 @@
           "maxFile": "Max file size is 1MB",
           "options": {
             "firstRow": "Use the first row as keys"
-          },
+          }
         },
         "buttons": {
           "clear": "Clear data",
           "insert": "Insert data",
-          "import": "Import file",
+          "import": "Import file"
         },
         "maxLoop": {
           "title": "Max numbers of data to loop",
@@ -237,7 +245,7 @@
           "options": {
             "data-columns": "Data columns",
             "custom-data": "Custom data"
-          },
+          }
         }
       },
       "loop-breakpoint": {
@@ -256,7 +264,7 @@
         "windowTypes": {
           "main": "Main window",
           "iframe": "Iframe"
-        },
+        }
       }
     }
   }

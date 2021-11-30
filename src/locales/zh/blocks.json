@@ -3,7 +3,7 @@
     "blocks": {
       "export-result": {
         "name": "导出结果",
-        "description": "将结果导出为JSON"
+        "description": "将集合结果导出为JSON"
       }
     }
   },
@@ -37,7 +37,7 @@
           "tootlip": "录制快捷键",
           "checkboxTitle": "即使在输入框中也执行快捷键",
           "checkbox": "在输入框中执行快捷键",
-          "note": "提示: 键盘快捷键仅在您访问网页时有效"
+          "note": "提示: 键盘快捷键仅在你访问网页时有效"
         },
         "forms": {
           "triggerWorkflow": "触发工作流",
@@ -45,7 +45,7 @@
           "delay": "延迟 (分钟)",
           "date": "日期",
           "time": "时间",
-          "url": "网址 或 正则表达式",
+          "url": "网址或正则表达式",
           "shortcut": "快捷键"
         },
         "items": {
@@ -75,12 +75,12 @@
         },
         "incognito": {
           "text": "设为无痕窗口",
-          "note": "您必须为此扩展程序启用“允许隐身”才能使用该选项"
+          "note": "您必须为此扩展程序启用“在无痕模式下启用”才能使用该选项"
         }
       },
       "go-back": {
         "name": "返回",
-        "description": "返回上一个页面"
+        "description": "返回到上一页"
       },
       "forward-page": {
         "name": "前进",
@@ -90,7 +90,7 @@
         "name": "关闭选项卡",
         "description": "",
         "activeTab": "关闭活动选项卡",
-        "url": "网址 或 匹配模式"
+        "url": "网址或匹配模式"
       },
       "event-click": {
         "name": "点击元素",
@@ -152,7 +152,7 @@
       "forms": {
         "name": "表单",
         "description": "",
-        "selected": "Selected",
+        "selected": "选中",
         "type": "表单类型",
         "text-field": {
           "name": "文本框",
@@ -199,7 +199,7 @@
           "label": "检查"
         },
         "timeout": {
-          "label": "超时 (ms)",
+          "label": "超时 (毫秒)",
           "title": "每次检查元素的超时时间"
         }
       },
@@ -241,29 +241,29 @@
           "label": "循环数据的最大值(0为禁用)"
         },
         "loopThrough": {
-          "placeholder": "Loop through",
+          "placeholder": "循环数据源",
           "options": {
-            "data-columns": "Data columns",
-            "custom-data": "Custom data"
+            "data-columns": "数据列",
+            "custom-data": "自定义数据"
           }
         }
       },
       "loop-breakpoint": {
-        "name": "Loop breakpoint",
-        "description": "To tell where loop data block must stop"
+        "name": "循环断点",
+        "description": "告诉循环数据单元在哪里停止"
       },
       "take-screenshot": {
-        "name": "Take screenshot",
-        "description": "Take a screenshot of current active tab",
-        "imageQuality": "Image quality"
+        "name": "截屏",
+        "description": "对当前活动选项卡截屏",
+        "imageQuality": "图像质量"
       },
       "switch-to": {
-        "name": "Switch frame",
-        "description": "Switch between main window and iframe",
-        "iframeSelector": "Iframe element selector",
+        "name": "切换到",
+        "description": "在主窗口和iframe之间切换",
+        "iframeSelector": "iframe元素选择器",
         "windowTypes": {
-          "main": "Main window",
-          "iframe": "Iframe"
+          "main": "主窗口",
+          "iframe": "iframe"
         }
       }
     }
