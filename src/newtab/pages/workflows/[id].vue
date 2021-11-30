@@ -293,7 +293,10 @@ provide('workflow', {
   data: workflow,
   updateWorkflow,
   /* eslint-disable-next-line */
-  showDataColumnsModal: (show = true) => (state.showDataColumnsModal = show),
+  showDataColumnsModal: (show = true) => {
+    state.showModal = show;
+    state.modalName = 'data-columns';
+  },
 });
 
 onBeforeRouteLeave(() => {

@@ -19,7 +19,9 @@
         </ui-select>
         <a
           class="block text-sm text-gray-600 dark:text-gray-200 ml-1"
+          href="https://github.com/Kholid060/automa/wiki/Help-Translate"
           target="_blank"
+          rel="noopener"
         >
           {{ t('settings.language.helpTranslate') }}
         </a>
