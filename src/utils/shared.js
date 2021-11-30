@@ -527,4 +527,7 @@ export const contentTypes = [
   { name: 'application/x-www-form-urlencoded', value: 'form' },
 ];
 
-export const supportLocales = [{ id: 'en', name: 'English' }];
+export const supportLocales = [
+  { id: 'en', name: 'English' },
+  { id: 'zh', name: '简体中文' },
+];
