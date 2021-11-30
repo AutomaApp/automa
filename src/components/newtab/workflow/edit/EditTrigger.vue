@@ -3,27 +3,27 @@
     <ui-textarea
       :model-value="data.description"
       autoresize
-      placeholder="Description"
+      :placeholder="t('common.description')"
       class="w-full mb-2"
       @change="updateData({ description: $event })"
     />
     <ui-select
       :model-value="data.type || 'manual'"
-      placeholder="Trigger workflow"
+      :placeholder="t('workflow.blocks.trigger.forms.triggerWorkflow')"
       class="w-full"
       @change="handleSelectChange"
     >
-      <option v-for="trigger in triggers" :key="trigger.id" :value="trigger.id">
-        {{ trigger.name }}
+      <option v-for="trigger in triggers" :key="trigger" :value="trigger">
+        {{ t(`workflow.blocks.trigger.items.${trigger}`) }}
       </option>
     </ui-select>
     <transition-expand mode="out-in">
       <div v-if="data.type === 'interval'" class="flex items-center mt-1">
         <ui-input
           :model-value="data.interval"
+          :label="t('workflow.blocks.trigger.forms.interval')"
           type="number"
           class="w-full mr-2"
-          label="Interval (minutes)"
           placeholder="1-120"
           min="1"
           max="120"
@@ -35,7 +35,7 @@
           :model-value="data.delay"
           type="number"
           class="w-full"
-          label="Delay (minutes)"
+          :label="t('workflow.blocks.trigger.forms.delay')"
           min="0"
           max="20"
           placeholder="0-20"
@@ -49,16 +49,16 @@
           :model-value="data.date"
           :max="maxDate"
           :min="minDate"
+          :placeholder="t('workflow.blocks.trigger.forms.date')"
           class="w-full"
           type="date"
-          placeholder="Date"
           @change="updateDate({ date: $event })"
         />
         <ui-input
           :model-value="data.time"
+          :placeholder="t('workflow.blocks.trigger.forms.time')"
           type="time"
           class="w-full mt-2"
-          placeholder="Time"
           @change="updateData({ time: $event || '00:00' })"
         />
       </div>
@@ -74,17 +74,17 @@
           <ui-checkbox
             v-for="day in days"
             :key="day.id"
-            :model-value="data.days.includes(day.id)"
+            :model-value="data.days?.includes(day.id)"
             @change="onDayChange($event, day.id)"
           >
-            {{ day.name }}
+            {{ t(`workflow.blocks.trigger.days.${day.id}`) }}
           </ui-checkbox>
         </div>
       </div>
       <div v-else-if="data.type === 'visit-web'" class="mt-2">
         <ui-input
           :model-value="data.url"
-          placeholder="URL or Regex"
+          :placeholder="t('workflow.blocks.trigger.forms.url')"
           class="w-full"
           @change="updateData({ url: $event })"
         />
@@ -93,7 +93,7 @@
           class="mt-1"
           @change="updateData({ isUrlRegex: $event })"
         >
-          Use regex
+          {{ t('workflow.blocks.trigger.useRegex') }}
         </ui-checkbox>
       </div>
       <div v-else-if="data.type === 'keyboard-shortcut'" class="mt-2">
@@ -102,10 +102,10 @@
             :model-value="recordKeys.keys"
             readonly
             class="flex-1 mr-2"
-            placeholder="Shortcut"
+            :placeholder="t('workflow.blocks.trigger.forms.shortcut')"
           />
           <ui-button
-            v-tooltip="'Record shortcut'"
+            v-tooltip="t('workflow.blocks.trigger.shortcut.tooltip')"
             icon
             @click="toggleRecordKeys"
           >
@@ -119,13 +119,13 @@
         <ui-checkbox
           :model-value="data.activeInInput"
           class="mb-1"
-          title="Execute shortcut even when you're in an input element"
+          :title="t('workflow.blocks.trigger.shortcut.checkboxTitle')"
           @change="updateData({ activeInInput: $event })"
         >
-          Active while in input
+          {{ t('workflow.blocks.trigger.shortcut.checkbox') }}
         </ui-checkbox>
         <p class="mt-4 leading-tight text-gray-600 dark:text-gray-200">
-          Note: keyboard shortcut only working when you're on a webpage
+          {{ t('workflow.blocks.trigger.shortcut.note') }}
         </p>
       </div>
     </transition-expand>
@@ -133,6 +133,7 @@
 </template>
 <script setup>
 import { shallowReactive, onUnmounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import dayjs from 'dayjs';
 
 const props = defineProps({
@@ -143,13 +144,15 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:data']);
 
+const { t } = useI18n();
+
 const triggers = [
-  { id: 'manual', name: 'Manually' },
-  { id: 'interval', name: 'Interval' },
-  { id: 'date', name: 'On specific date' },
-  { id: 'specific-day', name: 'On specific day' },
-  { id: 'visit-web', name: 'When visit a website' },
-  { id: 'keyboard-shortcut', name: 'Keyboard shortcut' },
+  'manual',
+  'interval',
+  'date',
+  'specific-day',
+  'visit-web',
+  'keyboard-shortcut',
 ];
 const days = [
   { id: 0, name: 'Sunday' },
@@ -183,7 +186,7 @@ function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }
 function onDayChange(value, id) {
-  const dataDays = [...props.data.days];
+  const dataDays = [...(props.data?.days || [])];
 
   if (value) dataDays.push(id);
   else dataDays.splice(dataDays.indexOf(id), 1);

@@ -1,0 +1,13 @@
+{
+  "home": {
+    "elementSelector": {
+      "name": "Element selector",
+      "noAccess": "Don't have access to this site"
+    },
+    "workflow": {
+      "new": "New workflow",
+      "rename": "Rename workflow",
+      "delete": "Delete workflow"
+    },
+  }
+}

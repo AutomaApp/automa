@@ -2,7 +2,7 @@
   <div class="flex items-center mb-2 mt-8">
     <ui-input
       :model-value="data.fileName"
-      placeholder="File name"
+      :placeholder="t('common.fileName')"
       class="flex-1 mr-2"
       title="File name"
       @change="updateData({ fileName: $event })"
@@ -20,7 +20,7 @@
   <div class="bg-box-transparent px-4 mb-4 py-2 rounded-lg flex items-center">
     <input
       :value="data.quality"
-      title="Image quality"
+      :title="t('workflow.blocks.loop.take-screenshot.imageQuality')"
       class="focus:outline-none flex-1"
       type="range"
       min="0"
@@ -38,6 +38,8 @@
   </ui-checkbox>
 </template>
 <script setup>
+import { useI18n } from 'vue-i18n';
+
 const props = defineProps({
   data: {
     type: Object,
@@ -45,6 +47,8 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update:data']);
+
+const { t } = useI18n();
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });

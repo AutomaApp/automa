@@ -2,8 +2,8 @@
   <edit-interaction-base v-bind="{ data }" @change="updateData">
     <ui-select
       :model-value="data.eventName"
+      :placeholder="t('workflow.blocks.trigger-event.selectEvent')"
       class="w-full mt-2"
-      placeholder="Select an event"
       @change="handleSelectChange"
     >
       <option v-for="event in eventList" :key="event.id" :value="event.id">
@@ -19,7 +19,7 @@
         class="mr-1 transition-transform -ml-1"
         :rotate="showOptions ? 270 : 180"
       />
-      <span class="flex-1">Options</span>
+      <span class="flex-1">{{ t('common.options') }}</span>
       <a
         :href="getEventDetailsUrl()"
         rel="noopener"
@@ -75,6 +75,7 @@ export default {
 <script setup>
 /* eslint-disable */
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { eventList } from '@/utils/shared';
 import { toCamelCase } from '@/utils/helper';
 import EditInteractionBase from './EditInteractionBase.vue';
@@ -86,6 +87,8 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update:data']);
+
+const { t } = useI18n();
 
 const eventComponents = {
   'mouse-event': 'TriggerEventMouse',

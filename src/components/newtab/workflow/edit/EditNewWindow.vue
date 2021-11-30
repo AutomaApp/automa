@@ -3,17 +3,17 @@
     <ui-textarea
       :model-value="data.description"
       class="w-full"
-      placeholder="Description"
+      :placeholder="t('common.description')"
       @change="updateData({ description: $event })"
     />
     <ui-select
       :model-value="data.windowState"
       class="w-full"
-      placeholder="Window state"
+      :placeholder="t('workflow.blocks.new-window.windowState.placeholder')"
       @change="updateData({ windowState: $event })"
     >
       <option v-for="state in windowStates" :key="state" :value="state">
-        {{ state }}
+        {{ t(`workflow.blocks.new-window.windowState.options.${state}`) }}
       </option>
     </ui-select>
     <ui-checkbox
@@ -21,10 +21,8 @@
       :disabled="!allowInIncognito"
       @change="updateData({ incognito: $event })"
     >
-      Set as incognito window
-      <span
-        title="You must enable 'Allow in incognito' for this extension to use the option"
-      >
+      {{ t('workflow.blocks.new-window.incognito.text') }}
+      <span :title="t('workflow.blocks.new-window.incognito.note')">
         &#128712;
       </span>
     </ui-checkbox>
@@ -32,6 +30,7 @@
 </template>
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import browser from 'webextension-polyfill';
 
 const props = defineProps({
@@ -41,6 +40,8 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update:data']);
+
+const { t } = useI18n();
 
 const windowStates = ['normal', 'minimized', 'maximized', 'fullscreen'];
 const allowInIncognito = ref(false);

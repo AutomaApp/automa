@@ -13,6 +13,16 @@ export function workflow(flow) {
       return;
     }
 
+    if (currentWorkflow.isDisabled) {
+      resolve({
+        type: 'stopped',
+        name: currentWorkflow.name,
+        message: 'workflow-disabled',
+      });
+
+      return;
+    }
+
     const { globalData } = this.collection;
     this.currentWorkflow = currentWorkflow;
 

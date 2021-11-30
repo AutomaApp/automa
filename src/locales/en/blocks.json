@@ -1,0 +1,263 @@
+{
+  "collection": {
+    "blocks": {
+      "export-result": {
+        "name": "Export result",
+        "description": "Export the collection result as JSON"
+      }
+    }
+  },
+  "workflow": {
+    "blocks": {
+      "base": {
+        "selector": "Element selector",
+        "markElement": {
+          "title": "An element will not be selected if have been selected before",
+          "text": "Mark element"
+        },
+        "multiple": {
+          "title": "Select multiple element",
+          "text": "Multiple"
+        }
+      },
+      "trigger": {
+        "name": "Trigger",
+        "description": "Block where the workflow will start executing",
+        "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "useRegex": "Use regex",
+        "shortcut": {
+          "tootlip": "Record shortcut",
+          "checkboxTitle": "Execute shortcut even when you're in an input element",
+          "checkbox": "Active while in input",
+          "note": "Note: keyboard shortcut only working when you're on a webpage",
+        },
+        "forms": {
+          "triggerWorkflow": "Trigger workflow",
+          "interval": "Interval (minutes)",
+          "delay": "Delay (minutes)",
+          "date": "Date",
+          "time": "Time",
+          "url": "URL or Regex",
+          "shortcut": "Shortcut"
+        },
+        "items": {
+          "manual": "Manually",
+          "interval": "Interval",
+          "date": "On a specific date",
+          "specific-day": "On a specific day",
+          "visit-web": "When visit a website",
+          "keyboard-shortcut": "Keyboard shortcut"
+        },
+      },
+      "active-tab": {
+        "name": "Active tab",
+        "description": "Set current tab that you're in as an active tab"
+      },
+      "new-window": {
+        "name": "New window",
+        "description": "Create a new window",
+        "windowState": {
+          "placeholder": "Window state",
+          "options": {
+            "normal": "Normal",
+            "minimized": "Minimized",
+            "maximized": "Maximized",
+            "fullscreen": "Fullscreen"
+          }
+        },
+        "incognito": {
+          "text": "Set as incognito window",
+          "note": "You must enable 'Allow in incognito' for this extension to use the option"
+        },
+      },
+      "go-back": {
+        "name": "Go back",
+        "description": "Go back to the previous page"
+      },
+      "forward-page": {
+        "name": "Go forward",
+        "description": "Go forward to the next page"
+      },
+      "close-tab": {
+        "name": "Close tab",
+        "description": "",
+        "activeTab": "Close activeTab",
+        "url": "URL or match pattern"
+      },
+      "event-click": {
+        "name": "Click element",
+        "description": ""
+      },
+      "delay": {
+        "name": "Delay",
+        "description": "Add delay before executing the next block"
+      },
+      "get-text": {
+        "name": "Get text",
+        "description": "Get text from an element",
+        "prefixText": {
+          "placeholder": "Text prefix",
+          "title": "Add prefix to the text"
+        },
+        "suffixText": {
+          "placeholder": "Text suffix",
+          "title": "Add suffix to the text"
+        }
+      },
+      "export-data": {
+        "name": "Export data",
+        "description": "Export workflow data columns"
+      },
+      "element-scroll": {
+        "name": "Scroll element",
+        "description": "",
+        "scrollY": "Scroll vertical",
+        "scrollX": "Scroll horizontal",
+        "intoView": "Scroll into view",
+        "smooth": "Smooth scroll",
+        "incScrollX": "Increment horizontal scroll",
+        "incScrollY": "Increment vertical scroll",
+      },
+      "new-tab": {
+        "name": "New tab",
+        "description": "",
+        "activeTab": "Set as active tab",
+        "tabToGroup": "Add tab to group",
+        "updatePrevTab": {
+          "title": "Use the previously opened new tab instead of creating a new one",
+          "text": "Update previously opened tab"
+        }
+      },
+      "link": {
+        "name": "Link",
+        "description": "Open link element"
+      },
+      "attribute-value": {
+        "name": "Attribute value",
+        "description": "Get value of an element attribute",
+        "forms": {
+          "name": "Attribute name",
+          "checkbox": "Save data",
+          "column": "Select column"
+        }
+      },
+      "forms": {
+        "name": "Forms",
+        "description": "",
+        "selected": "Selected",
+        "type": "Form type",
+        "text-field": {
+          "name": "Text field",
+          "value": "Value",
+          "clearValue": "Clear form value",
+          "delay": {
+            "placeholder": "Delay",
+            "label": "Typing delay (millisecond)(0 to disable)"
+          }
+        },
+        "select": { "name": "Select" },
+        "radio": { "name": "Radio" },
+        "checkbox": { "name": "Checkbox" }
+      },
+      "repeat-task": {
+        "name": "Repeat task",
+        "description": "",
+      },
+      "javascript-code": {
+        "name": "JavaScript code",
+        "description": "Execute your javascript code in the web page",
+        "modal": "JavaScript code",
+        "availabeFuns": "Available functions:",
+        "timeout": {
+          "placeholder": "Timeout",
+          "title": "Javascript code execution timeout"
+        }
+      },
+      "trigger-event": {
+        "name": "Trigger event",
+        "description": "",
+        "selectEvent": "Select event"
+      },
+      "conditions": {
+        "name": "Conditions",
+        "description": "Conditional block"
+      },
+      "element-exists": {
+        "name": "Element exists",
+        "description": "Check if an element is exists",
+        "selector": "Element selector",
+        "tryFor": {
+          "title": "Try to check if element exist",
+          "label": "Try for"
+        },
+        "timeout": {
+          "label": "Timeout (milliseconds)",
+          "title": "Timeout for each try"
+        }
+      },
+      "webhook": {
+        "name": "Webhook",
+        "description": "Webhook allow external service to be notified",
+        "url": "The Post receive URL",
+        "contentType": "Select a content type",
+        "buttons": {
+          "header": "Add header"
+        },
+        "timeout": {
+          "placeholder": "Timeout",
+          "title": "Http request execution timeout(ms)"
+        },
+        "tabs": {
+          "headers": "Headers",
+          "body": "Content body"
+        }
+      },
+      "loop-data": {
+        "name": "Loop data",
+        "description": "Iterate through data columns or your custom data",
+        "loopId": "Loop ID",
+        "modal": {
+          "fileTooLarge": "File too large to edit",
+          "maxFile": "Max file size is 1MB",
+          "options": {
+            "firstRow": "Use the first row as keys"
+          },
+        },
+        "buttons": {
+          "clear": "Clear data",
+          "insert": "Insert data",
+          "import": "Import file",
+        },
+        "maxLoop": {
+          "title": "Max numbers of data to loop",
+          "label": "Max data to loop (0 to disable)"
+        },
+        "loopThrough": {
+          "placeholder": "Loop through",
+          "options": {
+            "data-columns": "Data columns",
+            "custom-data": "Custom data"
+          },
+        }
+      },
+      "loop-breakpoint": {
+        "name": "Loop breakpoint",
+        "description": "To tell where loop data block must stop"
+      },
+      "take-screenshot": {
+        "name": "Take screenshot",
+        "description": "Take a screenshot of current active tab",
+        "imageQuality": "Image quality"
+      },
+      "switch-to": {
+        "name": "Switch frame",
+        "description": "Switch between main window and iframe",
+        "iframeSelector": "Iframe element selector",
+        "windowTypes": {
+          "main": "Main window",
+          "iframe": "Iframe"
+        },
+      }
+    }
+  }
+}

@@ -1,12 +1,10 @@
 /* eslint-disable no-underscore-dangle */
 import browser from 'webextension-polyfill';
 import { objectHasKey, fileSaver, isObject } from '@/utils/helper';
-import { tasks } from '@/utils/shared';
 import { executeWebhook } from '@/utils/webhookUtil';
 import executeContentScript from '@/utils/execute-content-script';
 import dataExporter, { generateJSON } from '@/utils/data-exporter';
 import compareBlockValue from '@/utils/compare-block-value';
-import errorMessage from './error-message';
 
 function getBlockConnection(block, index = 1) {
   const blockId = block.outputs[`output_${index}`]?.connections[0]?.node;
@@ -30,13 +28,6 @@ function convertData(data, type) {
   }
 
   return result;
-}
-function generateBlockError(block, code) {
-  const message = errorMessage(code || 'no-tab', tasks[block.name]);
-  const error = new Error(message);
-  error.nextBlockId = getBlockConnection(block);
-
-  return error;
 }
 
 export async function closeTab(block) {
@@ -142,7 +133,10 @@ export function goBack(block) {
     const nextBlockId = getBlockConnection(block);
 
     if (!this.tabId) {
-      reject(generateBlockError(block));
+      const error = new Error('no-tab');
+      error.nextBlockId = nextBlockId;
+
+      reject(error);
 
       return;
     }
@@ -167,7 +161,10 @@ export function forwardPage(block) {
     const nextBlockId = getBlockConnection(block);
 
     if (!this.tabId) {
-      reject(generateBlockError(block));
+      const error = new Error('no-tab');
+      error.nextBlockId = nextBlockId;
+
+      reject(nextBlockId);
 
       return;
     }
@@ -249,6 +246,7 @@ export async function newTab(block) {
       });
 
       this.tabId = tab.id;
+      this.activeTabUrl = url;
       this.windowId = tab.windowId;
     }
 
@@ -306,6 +304,7 @@ export async function activeTab(block) {
 
     this.frameId = 0;
     this.tabId = tab.id;
+    this.activeTabUrl = tab.url;
     this.windowId = tab.windowId;
 
     return data;
@@ -349,7 +348,7 @@ export async function takeScreenshot(block) {
 
     if (captureActiveTab) {
       if (!this.tabId) {
-        throw new Error(errorMessage('no-tab', block));
+        throw new Error('no-tab');
       }
 
       const [tab] = await browser.tabs.query({
@@ -407,7 +406,11 @@ export async function switchTo(block) {
         nextBlockId,
       };
     }
-    throw new Error(errorMessage('no-iframe-id', block.data));
+
+    const error = new Error('no-iframe-id');
+    error.data = { selector: block.selector };
+
+    throw error;
   } catch (error) {
     error.nextBlockId = nextBlockId;
 
@@ -415,13 +418,23 @@ export async function switchTo(block) {
   }
 }
 
-export async function interactionHandler(block) {
+export async function interactionHandler(block, prevBlockData) {
   const nextBlockId = getBlockConnection(block);
 
   try {
-    const data = await this._sendMessageToTab(block, {
-      frameId: this.frameId || 0,
-    });
+    const refData = {
+      prevBlockData,
+      dataColumns: this.data,
+      loopData: this.loopData,
+      globalData: this.globalData,
+      activeTabUrl: this.activeTabUrl,
+    };
+    const data = await this._sendMessageToTab(
+      { ...block, refData },
+      {
+        frameId: this.frameId || 0,
+      }
+    );
 
     if (block.name === 'link')
       await new Promise((resolve) => setTimeout(resolve, 5000));

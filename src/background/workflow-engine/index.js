@@ -26,7 +26,7 @@ function tabRemovedHandler(tabId) {
 
   workflowState.update(this.id, this.state);
 }
-function tabUpdatedHandler(tabId, changeInfo) {
+function tabUpdatedHandler(tabId, changeInfo, tab) {
   const listener = this.tabUpdatedListeners[tabId];
 
   if (listener) {
@@ -51,6 +51,7 @@ function tabUpdatedHandler(tabId, changeInfo) {
           this.tabId = tabId;
           this.frames = frames;
           this.isPaused = false;
+          this.activeTabUrl = tab?.url || '';
         })
         .catch((error) => {
           console.error(error);
@@ -73,6 +74,7 @@ class WorkflowEngine {
     this.isInCollection = isInCollection;
     this.collectionLogId = collectionLogId;
     this.globalData = parseJSON(globalDataVal, globalDataVal);
+    this.activeTabUrl = '';
     this.data = {};
     this.logs = [];
     this.blocks = {};
@@ -95,6 +97,8 @@ class WorkflowEngine {
   }
 
   init() {
+    if (this.workflow.isDisabled) return;
+
     const drawflowData =
       typeof this.workflow.drawflow === 'string'
         ? JSON.parse(this.workflow.drawflow || '{}')
@@ -160,7 +164,7 @@ class WorkflowEngine {
     this.logs.push({
       message,
       type: 'stop',
-      name: 'Workflow is stopped',
+      name: 'stop',
     });
     this.destroy('stopped');
   }
@@ -252,7 +256,7 @@ class WorkflowEngine {
 
     if (!disableTimeoutKeys.includes(block.name)) {
       this.workflowTimeout = setTimeout(() => {
-        if (!this.isDestroyed) this.stop('Workflow stopped because of timeout');
+        if (!this.isDestroyed) this.stop('stop-timeout');
       }, this.workflow.settings.timeout || 120000);
     }
 
@@ -274,6 +278,7 @@ class WorkflowEngine {
         data: this.data,
         loopData: this.loopData,
         globalData: this.globalData,
+        activeTabUrl: this.activeTabUrl,
       });
 
       handler
@@ -283,8 +288,7 @@ class WorkflowEngine {
           this.workflowTimeout = null;
           this.logs.push({
             type: 'success',
-            name: tasks[block.name].name,
-            data: result.data,
+            name: block.name,
             duration: Math.round(Date.now() - started),
           });
 
@@ -293,8 +297,7 @@ class WorkflowEngine {
           } else {
             this.logs.push({
               type: 'finish',
-              message: 'Workflow finished running',
-              name: 'Finish',
+              name: 'finish',
             });
             this.dispatchEvent('finish');
             this.destroy('success');
@@ -304,7 +307,7 @@ class WorkflowEngine {
           this.logs.push({
             type: 'error',
             message: error.message,
-            name: tasks[block.name].name,
+            name: block.name,
           });
 
           if (
@@ -329,16 +332,15 @@ class WorkflowEngine {
     }
   }
 
-  _sendMessageToTab(block, options = {}) {
+  _sendMessageToTab(payload, options = {}) {
     return new Promise((resolve, reject) => {
       if (!this.tabId) {
-        const message = errorMessage('no-tab', tasks[block.name]);
-
-        reject(new Error(message));
+        reject(new Error('no-tab'));
+        return;
       }
 
       browser.tabs
-        .sendMessage(this.tabId, { isBlock: true, ...block }, options)
+        .sendMessage(this.tabId, { isBlock: true, ...payload }, options)
         .then(resolve)
         .catch(reject);
     });

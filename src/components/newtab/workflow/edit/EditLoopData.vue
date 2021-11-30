@@ -2,20 +2,20 @@
   <div>
     <ui-textarea
       :model-value="data.description"
-      placeholder="Description"
+      :placeholder="t('common.description')"
       class="w-full"
       @change="updateData({ description: $event })"
     />
     <ui-input
       :model-value="data.loopId"
       class="w-full mb-3"
-      label="Loop ID"
-      placeholder="Loop ID"
+      :label="t('workflow.blocks.loop-data.loopId')"
+      :placeholder="t('workflow.blocks.loop-data.loopId')"
       @change="updateLoopID"
     />
     <ui-select
       :model-value="data.loopThrough"
-      placeholder="Loop through"
+      :placeholder="t('workflow.blocks.loop-data.loopThrough.placeholder')"
       class="w-full mb-2"
       @change="
         updateData({
@@ -24,17 +24,17 @@
         })
       "
     >
-      <option v-for="type in loopTypes" :key="type.id" :value="type.id">
-        {{ type.name }}
+      <option v-for="type in loopTypes" :key="type" :value="type">
+        {{ t(`workflow.blocks.loop-data.loopThrough.options.${type}`) }}
       </option>
     </ui-select>
     <ui-input
       :model-value="data.maxLoop"
+      :label="t('workflow.blocks.loop-data.maxLoop.label')"
+      :title="t('workflow.blocks.loop-data.maxLoop.title')"
       class="w-full mb-4"
       min="0"
       type="number"
-      label="Max data to loop (0 to disable)"
-      title="Max numbers of data to loop"
       @change="updateData({ maxLoop: +$event || 0 })"
     />
     <ui-button
@@ -43,7 +43,7 @@
       variant="accent"
       @click="state.showDataModal = true"
     >
-      Insert data
+      {{ t('workflow.blocks.loop-data.buttons.insert') }}
     </ui-button>
     <ui-modal
       v-model="state.showDataModal"
@@ -52,10 +52,10 @@
     >
       <div class="flex mb-4 items-center">
         <ui-button variant="accent" @click="importFile">
-          Import file
+          {{ t('workflow.blocks.loop-data.buttons.import') }}
         </ui-button>
         <ui-button
-          v-tooltip="'Options'"
+          v-tooltip="t('commons.options')"
           :class="{ 'text-primary': state.showOptions }"
           icon
           class="ml-2"
@@ -65,12 +65,14 @@
         </ui-button>
         <p class="flex-1 text-overflow mx-4">{{ file.name }}</p>
         <template v-if="data.loopData.length > maxStrLength">
-          <p class="mr-2">File too large to edit</p>
+          <p class="mr-2">
+            {{ t('workflow.blocks.loop-data.modal.fileTooLarge') }}
+          </p>
           <ui-button @click="updateData({ loopData: '[]' })">
-            Clear data
+            {{ t('workflow.blocks.loop-data.buttons.clear') }}
           </ui-button>
         </template>
-        <p v-else>Max file size is 1MB</p>
+        <p v-else>{{ t('workflow.blocks.loop-data.modal.maxFile') }}</p>
       </div>
       <div style="height: calc(100vh - 11rem)">
         <prism-editor
@@ -84,7 +86,7 @@
         <div v-show="state.showOptions">
           <p class="font-semibold mb-2">CSV</p>
           <ui-checkbox v-model="options.header">
-            Use the first row as keys
+            {{ t('workflow.blocks.loop-data.modal.options.firstRow') }}
           </ui-checkbox>
         </div>
       </div>
@@ -95,6 +97,7 @@
 import { onMounted, shallowReactive } from 'vue';
 import { nanoid } from 'nanoid';
 import { PrismEditor } from 'vue-prism-editor';
+import { useI18n } from 'vue-i18n';
 import Papa from 'papaparse';
 import { highlighter } from '@/lib/prism';
 import { openFilePicker } from '@/utils/helper';
@@ -111,12 +114,11 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:data']);
 
+const { t } = useI18n();
+
 const maxStrLength = 5e4;
 const maxFileSize = 1024 * 1024;
-const loopTypes = [
-  { id: 'data-columns', name: 'Data columns' },
-  { id: 'custom-data', name: 'Custom data' },
-];
+const loopTypes = ['data-columns', 'custom-data'];
 const tempLoopData =
   props.data.loopData.length > maxStrLength
     ? props.data.loopData.slice(0, maxStrLength)
@@ -153,7 +155,7 @@ function importFile() {
   openFilePicker(['application/json', 'text/csv', 'application/vnd.ms-excel'])
     .then(async (fileObj) => {
       if (fileObj.size > maxFileSize) {
-        alert('The file size is the exceeded maximum allowed');
+        alert(t('message.maxSizeExceeded'));
         return;
       }
 

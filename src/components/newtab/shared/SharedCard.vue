@@ -1,36 +1,38 @@
 <template>
   <ui-card class="hover:ring-2 group hover:ring-accent">
-    <div class="flex items-center mb-4">
-      <span class="p-2 rounded-lg bg-box-transparent">
-        <v-remixicon :name="data.icon || icon" />
-      </span>
-      <div class="flex-grow"></div>
-      <button
-        class="invisible group-hover:visible"
-        @click="$emit('execute', data)"
-      >
-        <v-remixicon name="riPlayLine" />
-      </button>
-      <ui-popover v-if="showDetails" class="h-6 ml-2">
-        <template #trigger>
-          <button>
-            <v-remixicon name="riMoreLine" />
-          </button>
-        </template>
-        <ui-list class="w-36 space-y-1">
-          <ui-list-item
-            v-for="item in menu"
-            :key="item.name"
-            v-close-popover
-            class="cursor-pointer"
-            @click="$emit('menuSelected', { name: item.name, data })"
-          >
-            <v-remixicon :name="item.icon" class="mr-2 -ml-1" />
-            <span class="capitalize">{{ item.name }}</span>
-          </ui-list-item>
-        </ui-list>
-      </ui-popover>
-    </div>
+    <slot name="header">
+      <div class="flex items-center mb-4">
+        <span class="p-2 rounded-lg bg-box-transparent">
+          <v-remixicon :name="data.icon || icon" />
+        </span>
+        <div class="flex-grow"></div>
+        <button
+          class="invisible group-hover:visible"
+          @click="$emit('execute', data)"
+        >
+          <v-remixicon name="riPlayLine" />
+        </button>
+        <ui-popover v-if="showDetails" class="h-6 ml-2">
+          <template #trigger>
+            <button>
+              <v-remixicon name="riMoreLine" />
+            </button>
+          </template>
+          <ui-list class="space-y-1" style="min-width: 150px">
+            <ui-list-item
+              v-for="item in menu"
+              :key="item.id"
+              v-close-popover
+              class="cursor-pointer"
+              @click="$emit('menuSelected', { id: item.id, data })"
+            >
+              <v-remixicon :name="item.icon" class="mr-2 -ml-1" />
+              <span class="capitalize">{{ item.name }}</span>
+            </ui-list-item>
+          </ui-list>
+        </ui-popover>
+      </div>
+    </slot>
     <div class="cursor-pointer" @click="$emit('click', data)">
       <p class="line-clamp font-semibold leading-tight">
         {{ data.name }}
