@@ -1,0 +1,271 @@
+{
+  "collection": {
+    "blocks": {
+      "export-result": {
+        "name": "导出结果",
+        "description": "将结果导出为JSON"
+      }
+    }
+  },
+  "workflow": {
+    "blocks": {
+      "base": {
+        "selector": "元素选择器",
+        "markElement": {
+          "title": "一个元素如果之前被标记过，则不再标记",
+          "text": "标记元素"
+        },
+        "multiple": {
+          "title": "选择多个元素",
+          "text": "选择多个元素"
+        }
+      },
+      "trigger": {
+        "name": "触发器",
+        "description": "工作流从这里开始执行",
+        "days": [
+          "星期日",
+          "星期一",
+          "星期二",
+          "星期三",
+          "星期四",
+          "星期五",
+          "星期六"
+        ],
+        "useRegex": "使用正则表达式",
+        "shortcut": {
+          "tootlip": "录制快捷键",
+          "checkboxTitle": "即使在输入框中也执行快捷键",
+          "checkbox": "在输入框中执行快捷键",
+          "note": "提示: 键盘快捷键仅在您访问网页时有效"
+        },
+        "forms": {
+          "triggerWorkflow": "触发工作流",
+          "interval": "间隔 (分钟)",
+          "delay": "延迟 (分钟)",
+          "date": "日期",
+          "time": "时间",
+          "url": "网址 或 正则表达式",
+          "shortcut": "快捷键"
+        },
+        "items": {
+          "manual": "手动",
+          "interval": "一定时间间隔",
+          "date": "在特定日期",
+          "specific-day": "在特定的星期几",
+          "visit-web": "当你访问一个网页",
+          "keyboard-shortcut": "键盘快捷键"
+        }
+      },
+      "active-tab": {
+        "name": "活动选项卡",
+        "description": "将您所在的当前选项卡设置为活动选项卡"
+      },
+      "new-window": {
+        "name": "新窗口",
+        "description": "创建一个新窗口",
+        "windowState": {
+          "placeholder": "窗口状态",
+          "options": {
+            "normal": "标准",
+            "minimized": "最小化",
+            "maximized": "最大化",
+            "fullscreen": "全屏"
+          }
+        },
+        "incognito": {
+          "text": "设为无痕窗口",
+          "note": "您必须为此扩展程序启用“允许隐身”才能使用该选项"
+        }
+      },
+      "go-back": {
+        "name": "返回",
+        "description": "返回上一个页面"
+      },
+      "forward-page": {
+        "name": "前进",
+        "description": "前进到下一页"
+      },
+      "close-tab": {
+        "name": "关闭选项卡",
+        "description": "",
+        "activeTab": "关闭活动选项卡",
+        "url": "网址 或 匹配模式"
+      },
+      "event-click": {
+        "name": "点击元素",
+        "description": ""
+      },
+      "delay": {
+        "name": "延迟",
+        "description": "在执行下一个块之前添加延迟"
+      },
+      "get-text": {
+        "name": "获取文本",
+        "description": "从元素中获取文本",
+        "prefixText": {
+          "placeholder": "文本前缀",
+          "title": "为文本添加前缀"
+        },
+        "suffixText": {
+          "placeholder": "文本后缀",
+          "title": "为文本添加后缀"
+        }
+      },
+      "export-data": {
+        "name": "导出数据",
+        "description": "导出工作流数据列"
+      },
+      "element-scroll": {
+        "name": "滚动元素",
+        "description": "",
+        "scrollY": "垂直滚动",
+        "scrollX": "水平滚动",
+        "intoView": "滚动到视图中",
+        "smooth": "平滑滚动",
+        "incScrollX": "递增水平滚动",
+        "incScrollY": "递增垂直滚动"
+      },
+      "new-tab": {
+        "name": "新建选项卡",
+        "description": "",
+        "activeTab": "设置为活动选项卡",
+        "tabToGroup": "添加到选项卡组",
+        "updatePrevTab": {
+          "title": "使用之前打开的新选项卡而不是创建一个选项卡",
+          "text": "更新之前打开的选项卡"
+        }
+      },
+      "link": {
+        "name": "链接",
+        "description": "打开链接元素"
+      },
+      "attribute-value": {
+        "name": "属性值",
+        "description": "获取一个元素属性的值",
+        "forms": {
+          "name": "属性名称",
+          "checkbox": "保存数据",
+          "column": "选择列"
+        }
+      },
+      "forms": {
+        "name": "表单",
+        "description": "",
+        "selected": "Selected",
+        "type": "表单类型",
+        "text-field": {
+          "name": "文本框",
+          "value": "值",
+          "clearValue": "清除表单值",
+          "delay": {
+            "placeholder": "延迟",
+            "label": "输入延迟（ms）（0为禁用）"
+          }
+        },
+        "select": { "name": "下拉列表" },
+        "radio": { "name": "单选框" },
+        "checkbox": { "name": "复选框" }
+      },
+      "repeat-task": {
+        "name": "重复任务",
+        "description": ""
+      },
+      "javascript-code": {
+        "name": "JavaScript 代码",
+        "description": "在网页中执行你的 javascript 代码",
+        "modal": "JavaScript 代码",
+        "availabeFuns": "可用的函数:",
+        "timeout": {
+          "placeholder": "超时",
+          "title": "Javascript代码执行超时"
+        }
+      },
+      "trigger-event": {
+        "name": "触发事件",
+        "description": "",
+        "selectEvent": "选择事件"
+      },
+      "conditions": {
+        "name": "条件",
+        "description": "条件单元"
+      },
+      "element-exists": {
+        "name": "元素存在",
+        "description": "检查元素是否存在",
+        "selector": "元素选择器",
+        "tryFor": {
+          "title": "检查元素是否存在",
+          "label": "检查"
+        },
+        "timeout": {
+          "label": "超时 (ms)",
+          "title": "每次检查元素的超时时间"
+        }
+      },
+      "webhook": {
+        "name": "Webhook",
+        "description": "Webhook 允许通知外部服务",
+        "url": "接收POST请求的URL",
+        "contentType": "选择content type",
+        "buttons": {
+          "header": "添加请求头"
+        },
+        "timeout": {
+          "placeholder": "超时",
+          "title": "Http请求执行超时(ms)"
+        },
+        "tabs": {
+          "headers": "Headers",
+          "body": "Content body"
+        }
+      },
+      "loop-data": {
+        "name": "循环数据",
+        "description": "遍历数据列或你的自定义数据",
+        "loopId": "循环 ID",
+        "modal": {
+          "fileTooLarge": "文件太大无法编辑",
+          "maxFile": "最大文件大小为 1MB",
+          "options": {
+            "firstRow": "使用第一个 row 作为 keys"
+          }
+        },
+        "buttons": {
+          "clear": "清除数据",
+          "insert": "插入数据",
+          "import": "导出文件"
+        },
+        "maxLoop": {
+          "title": "循环数据的最大值",
+          "label": "循环数据的最大值(0为禁用)"
+        },
+        "loopThrough": {
+          "placeholder": "Loop through",
+          "options": {
+            "data-columns": "Data columns",
+            "custom-data": "Custom data"
+          }
+        }
+      },
+      "loop-breakpoint": {
+        "name": "Loop breakpoint",
+        "description": "To tell where loop data block must stop"
+      },
+      "take-screenshot": {
+        "name": "Take screenshot",
+        "description": "Take a screenshot of current active tab",
+        "imageQuality": "Image quality"
+      },
+      "switch-to": {
+        "name": "Switch frame",
+        "description": "Switch between main window and iframe",
+        "iframeSelector": "Iframe element selector",
+        "windowTypes": {
+          "main": "Main window",
+          "iframe": "Iframe"
+        }
+      }
+    }
+  }
+}
