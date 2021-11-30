@@ -117,8 +117,8 @@
   },
   "components": {
     "pagination": {
-      "text1": "显示中",
-      "text2": "项目数超过{count}",
+      "text1": "显示",
+      "text2": "条 共{count}条",
       "nextPage": "下一页",
       "currentPage": "当前页",
       "prevPage": "上一页",
