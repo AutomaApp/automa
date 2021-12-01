@@ -180,8 +180,14 @@
       "javascript-code": {
         "name": "JavaScript code",
         "description": "Execute your javascript code in the web page",
-        "modal": "JavaScript code",
-        "availabeFuns": "Available functions:",
+        "availabeFuncs": "Available functions:",
+        "removeAfterExec": "Remove after block executed",
+        "modal": {
+          "tabs": {
+            "code": "JavaScript code",
+            "preloadScript": "Preload script"
+          }
+        },
         "timeout": {
           "placeholder": "Timeout",
           "title": "Javascript code execution timeout"

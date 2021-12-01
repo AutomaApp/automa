@@ -334,6 +334,7 @@ export const tasks = {
       description: '',
       timeout: 10000,
       code: 'console.log("Hello world!")',
+      preloadScripts: [],
     },
   },
   'trigger-event': {

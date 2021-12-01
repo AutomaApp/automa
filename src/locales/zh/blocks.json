@@ -174,8 +174,13 @@
       "javascript-code": {
         "name": "JavaScript 代码",
         "description": "在网页中执行你的 javascript 代码",
-        "modal": "JavaScript 代码",
-        "availabeFuns": "可用的函数:",
+        "modal": {
+          "tabs": {
+            "code": "JavaScript 代码",
+            "preloadScript": "Preload script"
+          }
+        },
+        "availabeFuncs": "可用的函数:",
         "timeout": {
           "placeholder": "超时",
           "title": "Javascript代码执行超时"

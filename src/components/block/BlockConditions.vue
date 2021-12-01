@@ -112,7 +112,7 @@ const conditions = {
 
 function getTitle(index) {
   const type = conditions[block.data.conditions[index]?.type] || 'equals';
-  console.log(type, block.data.conditions);
+
   return t(`workflow.blocks.conditions.${type}`);
 }
 function addComparison() {

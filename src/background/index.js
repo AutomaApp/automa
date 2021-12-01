@@ -110,6 +110,10 @@ chrome.runtime.onInstalled.addListener((details) => {
 
 const message = new MessageListener('background');
 
+message.on('fetch:text', (url) => {
+  return fetch(url).then((response) => response.text());
+});
+
 message.on('get:sender', (_, sender) => {
   return sender;
 });
