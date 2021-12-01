@@ -30,6 +30,7 @@
     "disable": "Disable",
     "disabled": "Disabled",
     "enable": "Enable",
+    "fallback": "Fallback"
   },
   "message": {
     "noBlock": "No block",

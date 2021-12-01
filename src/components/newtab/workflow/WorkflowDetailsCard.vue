@@ -32,7 +32,7 @@
     class="px-4 mt-4 mb-2"
   />
   <div class="scroll bg-scroll overflow-auto px-4 flex-1 overflow-auto">
-    <template v-for="(items, catId) in taskList" :key="catId">
+    <template v-for="(items, catId) in blocks" :key="catId">
       <div class="flex items-center top-0 space-x-2 mb-2">
         <span
           :class="categories[catId].color"
@@ -78,7 +78,7 @@
           </a>
           <v-remixicon :name="block.icon" size="24" class="mb-2" />
           <p class="leading-tight text-overflow">
-            {{ t(`workflow.blocks.${block.id}.name`) }}
+            {{ block.name }}
           </p>
         </div>
       </div>
@@ -119,16 +119,19 @@ const icons = [
   'riCommandLine',
 ];
 
-const query = ref('');
-const taskList = computed(() =>
-  Object.keys(tasks).reduce((arr, key) => {
-    const task = tasks[key];
+const blocksArr = Object.entries(tasks).map(([key, block]) => ({
+  ...block,
+  id: key,
+  name: t(`workflow.blocks.${key}.name`),
+}));
 
-    if (tasks[key].name.toLowerCase().includes(query.value.toLowerCase())) {
-      (arr[task.category] = arr[task.category] || []).push({
-        id: key,
-        ...task,
-      });
+const query = ref('');
+const blocks = computed(() =>
+  blocksArr.reduce((arr, block) => {
+    if (
+      block.name.toLocaleLowerCase().includes(query.value.toLocaleLowerCase())
+    ) {
+      (arr[block.category] = arr[block.category] || []).push(block);
     }
 
     return arr;

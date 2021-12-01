@@ -98,7 +98,11 @@
       },
       "delay": {
         "name": "Delay",
-        "description": "Add delay before executing the next block"
+        "description": "Add delay before executing the next block",
+        "input": {
+          "title": "Delay in millisecond",
+          "placeholder": "(millisecond)"
+        }
       },
       "get-text": {
         "name": "Get text",
@@ -169,7 +173,9 @@
       },
       "repeat-task": {
         "name": "Repeat task",
-        "description": ""
+        "description": "",
+        "times": "times",
+        "repeatFrom": "Repeat from"
       },
       "javascript-code": {
         "name": "JavaScript code",
@@ -188,12 +194,20 @@
       },
       "conditions": {
         "name": "Conditions",
-        "description": "Conditional block"
+        "description": "Conditional block",
+        "fallbackTitle": "Execute when all comparisons don't meet the requirement",
+        "equals": "Equals",
+        "gt": "Greater than",
+        "gte": "Greater than or equal",
+        "lt": "Less than",
+        "lte": "Less than or equal",
+        "contains": "Contains"
       },
       "element-exists": {
         "name": "Element exists",
         "description": "Check if an element is exists",
         "selector": "Element selector",
+        "fallbackTitle": "Execute when element doesn't exists",
         "tryFor": {
           "title": "Try to check if element exist",
           "label": "Try for"

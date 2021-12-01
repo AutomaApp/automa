@@ -302,7 +302,7 @@ provide('workflow', {
 onBeforeRouteLeave(() => {
   if (!state.isDataChanged) return;
 
-  const answer = window.confirm(t('common.notSaved'));
+  const answer = window.confirm(t('message.notSaved'));
 
   if (!answer) return false;
 });
@@ -315,7 +315,7 @@ onMounted(() => {
 
   window.onbeforeunload = () => {
     if (state.isDataChanged) {
-      return t('common.notSaved');
+      return t('message.notSaved');
     }
   };
 

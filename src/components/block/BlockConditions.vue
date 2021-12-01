@@ -6,7 +6,7 @@
         class="inline-block text-sm mr-4 p-2 rounded-lg"
       >
         <v-remixicon name="riAB" size="20" class="inline-block mr-1" />
-        <span>conditions</span>
+        <span>{{ t('workflow.blocks.conditions.name') }}</span>
       </div>
       <div class="flex-grow"></div>
       <v-remixicon
@@ -41,7 +41,7 @@
         <div class="flex items-center transition bg-input rounded-lg">
           <select
             v-model="block.data.conditions[index].type"
-            :title="conditions[block.data.conditions[index]?.type] || 'Equals'"
+            :title="getTitle(index)"
             class="
               bg-transparent
               font-mono
@@ -74,16 +74,17 @@
         v-if="block.data.conditions && block.data.conditions.length !== 0"
         class="text-right text-gray-600"
       >
-        <span title="Execute when all comparisons don't meet the requirement">
+        <span :title="t('workflow.blocks.conditions.fallbackTitle')">
           &#9432;
         </span>
-        Fallback
+        {{ t('common.fallback') }}
       </p>
     </div>
   </div>
 </template>
 <script setup>
 import { watch, toRaw } from 'vue';
+import { useI18n } from 'vue-i18n';
 import emitter from 'tiny-emitter/instance';
 import { debounce } from '@/utils/helper';
 import { useComponentId } from '@/composable/componentId';
@@ -96,20 +97,26 @@ const props = defineProps({
   },
 });
 
+const { t } = useI18n();
 const componentId = useComponentId('block-conditions');
 const block = useEditorBlock(`#${componentId}`, props.editor);
 
 const conditions = {
-  '==': 'Equals',
-  '>': 'Greater than',
-  '>=': 'Greater than or equal',
-  '<': 'Less than',
-  '<=': 'Less than or equal',
-  '()': 'Contains',
+  '==': 'equals',
+  '>': 'gt',
+  '>=': 'gte',
+  '<': 'lt',
+  '<=': 'lte',
+  '()': 'contains',
 };
 
+function getTitle(index) {
+  const type = conditions[block.data.conditions[index]?.type] || 'equals';
+  console.log(type, block.data.conditions);
+  return t(`workflow.blocks.conditions.${type}`);
+}
 function addComparison() {
-  if (block.data.conditions.length >= 5) return;
+  if (block.data.conditions.length >= 10) return;
 
   block.data.conditions.push({ type: '==', value: '' });
 
