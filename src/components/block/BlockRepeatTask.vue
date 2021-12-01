@@ -6,7 +6,7 @@
         class="inline-block text-sm mr-4 p-2 rounded-lg"
       >
         <v-remixicon name="riRepeat2Line" size="20" class="inline-block mr-1" />
-        <span>Repeat task</span>
+        <span>{{ t('workflow.blocks.repeat-task.name') }}</span>
       </div>
       <div class="flex-grow"></div>
       <v-remixicon
@@ -34,16 +34,22 @@
         required
         @input="handleInput"
       />
-      <span class="text-gray-600">Times</span>
+      <span class="text-gray-600">{{
+        t('workflow.blocks.repeat-task.times')
+      }}</span>
     </label>
-    <p class="text-right text-gray-600">Repeat from</p>
+    <p class="text-right text-gray-600">
+      {{ t('workflow.blocks.repeat-task.repeatFrom') }}
+    </p>
   </div>
 </template>
 <script setup>
+import { useI18n } from 'vue-i18n';
 import emitter from 'tiny-emitter/instance';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
 
+const { t } = useI18n();
 const props = defineProps({
   editor: {
     type: Object,

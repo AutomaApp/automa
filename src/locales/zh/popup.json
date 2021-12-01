@@ -1,0 +1,13 @@
+{
+  "home": {
+    "elementSelector": {
+      "name": "元素选择器",
+      "noAccess": "您没有权限访问此站点"
+    },
+    "workflow": {
+      "new": "新建工作流",
+      "rename": "重命名工作流",
+      "delete": "删除工作流"
+    }
+  }
+}

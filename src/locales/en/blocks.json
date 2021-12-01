@@ -23,13 +23,21 @@
       "trigger": {
         "name": "Trigger",
         "description": "Block where the workflow will start executing",
-        "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "days": [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday"
+        ],
         "useRegex": "Use regex",
         "shortcut": {
           "tootlip": "Record shortcut",
           "checkboxTitle": "Execute shortcut even when you're in an input element",
           "checkbox": "Active while in input",
-          "note": "Note: keyboard shortcut only working when you're on a webpage",
+          "note": "Note: keyboard shortcut only working when you're on a webpage"
         },
         "forms": {
           "triggerWorkflow": "Trigger workflow",
@@ -47,7 +55,7 @@
           "specific-day": "On a specific day",
           "visit-web": "When visit a website",
           "keyboard-shortcut": "Keyboard shortcut"
-        },
+        }
       },
       "active-tab": {
         "name": "Active tab",
@@ -68,7 +76,7 @@
         "incognito": {
           "text": "Set as incognito window",
           "note": "You must enable 'Allow in incognito' for this extension to use the option"
-        },
+        }
       },
       "go-back": {
         "name": "Go back",
@@ -90,7 +98,11 @@
       },
       "delay": {
         "name": "Delay",
-        "description": "Add delay before executing the next block"
+        "description": "Add delay before executing the next block",
+        "input": {
+          "title": "Delay in millisecond",
+          "placeholder": "(millisecond)"
+        }
       },
       "get-text": {
         "name": "Get text",
@@ -116,7 +128,7 @@
         "intoView": "Scroll into view",
         "smooth": "Smooth scroll",
         "incScrollX": "Increment horizontal scroll",
-        "incScrollY": "Increment vertical scroll",
+        "incScrollY": "Increment vertical scroll"
       },
       "new-tab": {
         "name": "New tab",
@@ -162,12 +174,20 @@
       "repeat-task": {
         "name": "Repeat task",
         "description": "",
+        "times": "times",
+        "repeatFrom": "Repeat from"
       },
       "javascript-code": {
         "name": "JavaScript code",
         "description": "Execute your javascript code in the web page",
-        "modal": "JavaScript code",
-        "availabeFuns": "Available functions:",
+        "availabeFuncs": "Available functions:",
+        "removeAfterExec": "Remove after block executed",
+        "modal": {
+          "tabs": {
+            "code": "JavaScript code",
+            "preloadScript": "Preload script"
+          }
+        },
         "timeout": {
           "placeholder": "Timeout",
           "title": "Javascript code execution timeout"
@@ -180,12 +200,20 @@
       },
       "conditions": {
         "name": "Conditions",
-        "description": "Conditional block"
+        "description": "Conditional block",
+        "fallbackTitle": "Execute when all comparisons don't meet the requirement",
+        "equals": "Equals",
+        "gt": "Greater than",
+        "gte": "Greater than or equal",
+        "lt": "Less than",
+        "lte": "Less than or equal",
+        "contains": "Contains"
       },
       "element-exists": {
         "name": "Element exists",
         "description": "Check if an element is exists",
         "selector": "Element selector",
+        "fallbackTitle": "Execute when element doesn't exists",
         "tryFor": {
           "title": "Try to check if element exist",
           "label": "Try for"
@@ -221,12 +249,12 @@
           "maxFile": "Max file size is 1MB",
           "options": {
             "firstRow": "Use the first row as keys"
-          },
+          }
         },
         "buttons": {
           "clear": "Clear data",
           "insert": "Insert data",
-          "import": "Import file",
+          "import": "Import file"
         },
         "maxLoop": {
           "title": "Max numbers of data to loop",
@@ -237,7 +265,7 @@
           "options": {
             "data-columns": "Data columns",
             "custom-data": "Custom data"
-          },
+          }
         }
       },
       "loop-breakpoint": {
@@ -256,7 +284,7 @@
         "windowTypes": {
           "main": "Main window",
           "iframe": "Iframe"
-        },
+        }
       }
     }
   }

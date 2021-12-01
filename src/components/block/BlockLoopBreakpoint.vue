@@ -6,7 +6,7 @@
         class="inline-block text-sm mr-4 p-2 rounded-lg"
       >
         <v-remixicon name="riStopLine" size="20" class="inline-block mr-1" />
-        <span>Loop breakpoint</span>
+        <span>{{ t('workflow.blocks.loop-breakpoint.name') }}</span>
       </div>
       <div class="flex-grow"></div>
       <v-remixicon
@@ -26,6 +26,7 @@
   </div>
 </template>
 <script setup>
+import { useI18n } from 'vue-i18n';
 import emitter from 'tiny-emitter/instance';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
@@ -37,6 +38,7 @@ const props = defineProps({
   },
 });
 
+const { t } = useI18n();
 const componentId = useComponentId('block-delay');
 const block = useEditorBlock(`#${componentId}`, props.editor);
 

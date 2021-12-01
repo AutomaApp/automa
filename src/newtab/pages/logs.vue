@@ -7,37 +7,39 @@
       @updateSorts="sortsBuilder[$event.key] = $event.value"
       @updateFilters="filtersBuilder[$event.key] = $event.value"
     />
-    <shared-logs-table :logs="logs" class="w-full" style="min-height: 320px">
-      <template #item-prepend="{ log }">
-        <td class="w-8">
-          <ui-checkbox
-            :model-value="selectedLogs.includes(log.id)"
-            class="align-text-bottom"
-            @change="toggleSelectedLog($event, log.id)"
-          />
-        </td>
-      </template>
-      <template #item-append="{ log }">
-        <td class="ml-4">
-          <div class="flex items-center justify-end space-x-4">
-            <v-remixicon
-              v-if="Object.keys(log.data).length !== 0"
-              name="riFileTextLine"
-              class="cursor-pointer"
-              @click="
-                exportDataModal.show = true;
-                exportDataModal.log = log;
-              "
+    <div style="min-height: 320px">
+      <shared-logs-table :logs="logs" class="w-full">
+        <template #item-prepend="{ log }">
+          <td class="w-8">
+            <ui-checkbox
+              :model-value="selectedLogs.includes(log.id)"
+              class="align-text-bottom"
+              @change="toggleSelectedLog($event, log.id)"
             />
-            <v-remixicon
-              name="riDeleteBin7Line"
-              class="text-red-500 cursor-pointer"
-              @click="deleteLog(log.id)"
-            />
-          </div>
-        </td>
-      </template>
-    </shared-logs-table>
+          </td>
+        </template>
+        <template #item-append="{ log }">
+          <td class="ml-4">
+            <div class="flex items-center justify-end space-x-4">
+              <v-remixicon
+                v-if="Object.keys(log.data).length !== 0"
+                name="riFileTextLine"
+                class="cursor-pointer"
+                @click="
+                  exportDataModal.show = true;
+                  exportDataModal.log = log;
+                "
+              />
+              <v-remixicon
+                name="riDeleteBin7Line"
+                class="text-red-500 cursor-pointer"
+                @click="deleteLog(log.id)"
+              />
+            </div>
+          </td>
+        </template>
+      </shared-logs-table>
+    </div>
     <div class="flex items-center justify-between mt-4">
       <div>
         {{ t('components.pagination.text1') }}

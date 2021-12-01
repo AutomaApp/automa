@@ -10,7 +10,7 @@
           size="20"
           class="inline-block mr-1"
         />
-        <span>Export data</span>
+        <span>{{ t('workflow.blocks.export-data.name') }}</span>
       </div>
       <div class="flex-grow"></div>
       <v-remixicon
@@ -21,8 +21,8 @@
     </div>
     <input
       v-model="block.data.name"
+      :placeholder="t('common.fileName')"
       class="bg-input rounded-lg transition w-40 mb-2 py-2 px-4 block"
-      placeholder="File name"
     />
     <ui-select v-model="block.data.type" class="w-40" placeholder="Export as">
       <option v-for="type in dataExportTypes" :key="type.id" :value="type.id">
@@ -32,6 +32,7 @@
   </div>
 </template>
 <script setup>
+import { useI18n } from 'vue-i18n';
 import { watch } from 'vue';
 import emitter from 'tiny-emitter/instance';
 import { dataExportTypes } from '@/utils/shared';
@@ -46,6 +47,7 @@ const props = defineProps({
   },
 });
 
+const { t } = useI18n();
 const componentId = useComponentId('block-delay');
 const block = useEditorBlock(`#${componentId}`, props.editor);
 

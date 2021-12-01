@@ -1,0 +1,128 @@
+{
+  "home": {
+    "viewAll": "查看全部"
+  },
+  "settings": {
+    "language": {
+      "label": "语言",
+      "helpTranslate": "找不到你的语言？ 帮忙翻译。",
+      "reloadPage": "重新加载页面生效"
+    }
+  },
+  "workflow": {
+    "import": "导入工作流",
+    "new": "新建工作流",
+    "delete": "删除工作流",
+    "name": "工作流名称",
+    "rename": "重命名工作流",
+    "add": "添加工作流",
+    "clickToEnable": "点击启用",
+    "dataColumns": {
+      "title": "数据列",
+      "placeholder": "搜索或者添加数据列",
+      "column": {
+        "name": "列名称",
+        "type": "数据类型"
+      }
+    },
+    "sidebar": {
+      "workflowIcon": "工作流图标"
+    },
+    "editor": {
+      "zoomIn": "缩小",
+      "zoomOut": "放大",
+      "resetZoom": "重置缩放",
+      "duplicate": "创建副本"
+    },
+    "settings": {
+      "onError": {
+        "title": "工作流出错",
+        "items": {
+          "keepRunning": "继续运行",
+          "stopWorkflow": "停止工作流"
+        }
+      },
+      "timeout": {
+        "title": "工作流超时 (毫秒)"
+      }
+    }
+  },
+  "collection": {
+    "description": "按顺序执行工作流",
+    "new": "新建集合",
+    "delete": "删除集合",
+    "add": "添加集合",
+    "rename": "重命名集合",
+    "flow": "流程",
+    "dragDropText": "拖放工作流或者单元到这里",
+    "options": {
+      "atOnce": {
+        "title": "一次执行集合中的所有工作流",
+        "description": "使用此选项时不会执行单元下的项目"
+      }
+    },
+    "globalData": {
+      "note": "这将覆盖工作流的全局数据"
+    }
+  },
+  "log": {
+    "goBack": "返回到\"{name}\"的日志",
+    "startedDate": "开始日期",
+    "duration": "持续时间",
+    "selectAll": "全选",
+    "deselectAll": "取消全选",
+    "deleteSelected": "删除选定的日志",
+    "types": {
+      "stop": "工作流已停止",
+      "finish": "完成"
+    },
+    "messages": {
+      "workflow-disabled": "工作流被禁用",
+      "stop-timeout": "工作流因超时而停止",
+      "no-iframe-id": "找不到\"{selector}\"选择的iframe",
+      "no-tab": "无法连接到选项卡，请在使用 \"{name}\" 单元之前使用 \"新建选项卡\" 或 \"活动选项卡\" 单元。"
+    },
+    "description": {
+      "text": "在{date}用了{duration}执行{status} ",
+      "status": {
+        "success": "成功",
+        "error": "失败",
+        "stopped": "停止"
+      }
+    },
+    "delete": {
+      "title": "删除日志",
+      "description": "你确定要删除选定的日志吗？"
+    },
+    "exportData": {
+      "title": "导出数据",
+      "types": {
+        "json": "JSON",
+        "csv": "CSV",
+        "plain-text": "Plain text"
+      }
+    },
+    "filter": {
+      "title": "筛选",
+      "byStatus": "按状态",
+      "byDate": {
+        "title": "按日期",
+        "items": {
+          "lastDay": "最近一天",
+          "last7Days": "最近7天",
+          "last30Days": "最近30天"
+        }
+      }
+    }
+  },
+  "components": {
+    "pagination": {
+      "text1": "显示",
+      "text2": "条 共{count}条",
+      "nextPage": "下一页",
+      "currentPage": "当前页",
+      "prevPage": "上一页",
+      "of": "共{page}页"
+    }
+  }
+}

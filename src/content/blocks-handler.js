@@ -2,6 +2,7 @@
 import simulateEvent from '@/utils/simulate-event';
 import handleFormElement from '@/utils/handle-form-element';
 import { generateJSON } from '@/utils/data-exporter';
+import { sendMessage } from '@/utils/message';
 
 function markElement(el, { id, data }) {
   if (data.markEl) {
@@ -142,32 +143,73 @@ function automaRefData(keyword, path = '') {
       return;
     }
 
-    const script = document.createElement('script');
-    let timeout;
+    const promisePreloadScripts =
+      block.data?.preloadScripts.map(async (item) => {
+        try {
+          const { protocol, pathname } = new URL(item.src);
+          const isValidUrl = /https?/.test(protocol) && /\.js$/.test(pathname);
 
-    script.setAttribute(scriptAttr, '');
-    script.id = 'automa-custom-js';
-    script.innerHTML = `(() => {\n${automaScript} ${block.data.code}\n})()`;
+          if (!isValidUrl) return null;
 
-    const cleanUp = (data = '') => {
-      script.remove();
-      sessionStorage.removeItem(`automa--${block.id}`);
-      resolve(data);
-    };
+          const script = await sendMessage(
+            'fetch:text',
+            item.src,
+            'background'
+          );
+          const scriptEl = document.createElement('script');
 
-    window.addEventListener('__automa-next-block__', ({ detail }) => {
-      clearTimeout(timeout);
-      cleanUp(detail || {});
-    });
-    window.addEventListener('__automa-reset-timeout__', () => {
-      clearTimeout(timeout);
+          scriptEl.type = 'text/javascript';
+          scriptEl.innerHTML = script;
+
+          return {
+            ...item,
+            script: scriptEl,
+          };
+        } catch (error) {
+          return null;
+        }
+      }, []) || [];
+
+    Promise.allSettled(promisePreloadScripts).then((result) => {
+      const preloadScripts = result.reduce((acc, { status, value }) => {
+        if (status !== 'fulfilled' || !value) return acc;
+
+        acc.push(value);
+        document.body.appendChild(value.script);
+
+        return acc;
+      }, []);
+
+      const script = document.createElement('script');
+      let timeout;
+
+      script.setAttribute(scriptAttr, '');
+      script.id = 'automa-custom-js';
+      script.innerHTML = `(() => {\n${automaScript} ${block.data.code}\n})()`;
+
+      const cleanUp = (data = '') => {
+        script.remove();
+        preloadScripts.forEach((item) => {
+          if (item.removeAfterExec) item.script.remove();
+        });
+        sessionStorage.removeItem(`automa--${block.id}`);
+        resolve(data);
+      };
+
+      window.addEventListener('__automa-next-block__', ({ detail }) => {
+        clearTimeout(timeout);
+        cleanUp(detail || {});
+      });
+      window.addEventListener('__automa-reset-timeout__', () => {
+        clearTimeout(timeout);
+
+        timeout = setTimeout(cleanUp, block.data.timeout);
+      });
+
+      document.body.appendChild(script);
 
       timeout = setTimeout(cleanUp, block.data.timeout);
     });
-
-    document.body.appendChild(script);
-
-    timeout = setTimeout(cleanUp, block.data.timeout);
   });
 }
 

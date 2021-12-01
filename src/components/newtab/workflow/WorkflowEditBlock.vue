@@ -5,7 +5,7 @@
         <v-remixicon name="riArrowLeftLine" />
       </button>
       <p class="font-semibold inline-block align-middle">
-        {{ data.name }}
+        {{ t(`workflow.blocks.${data.id}.name`) }}
       </p>
     </div>
     <component

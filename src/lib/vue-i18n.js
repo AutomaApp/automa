@@ -4,7 +4,6 @@ import { supportLocales } from '@/utils/shared';
 import dayjs from './dayjs';
 
 const i18n = createI18n({
-  locale: 'en',
   legacy: false,
   fallbackLocale: 'en',
 });
@@ -41,6 +40,10 @@ export async function loadLocaleMessages(locale, location) {
   };
 
   dayjs.locale(locale);
+
+  if (locale !== 'en' && !i18n.global.availableLocales.includes('en')) {
+    await loadLocaleMessages('en', location);
+  }
 
   await importLocale('common.json');
   await importLocale(`${location}.json`, true);
