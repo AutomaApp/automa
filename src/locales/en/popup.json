@@ -1,13 +1,13 @@
 {
   "home": {
     "elementSelector": {
-      "name": "Element selector",
-      "noAccess": "Don't have access to this site"
+      "name": "元素選擇器",
+      "noAccess": "無權訪問這個網站"
     },
     "workflow": {
-      "new": "New workflow",
-      "rename": "Rename workflow",
-      "delete": "Delete workflow"
-    },
+      "new": "新增工作流",
+      "rename": "重新命名工作流",
+      "delete": "刪除工作流"
+    }
   }
 }
