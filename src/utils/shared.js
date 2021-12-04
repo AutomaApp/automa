@@ -531,4 +531,5 @@ export const contentTypes = [
 export const supportLocales = [
   { id: 'en', name: 'English' },
   { id: 'zh', name: '简体中文' },
+  { id: 'zh-TW', name: '繁體中文'}
 ];
