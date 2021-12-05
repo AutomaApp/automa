@@ -1,5 +1,5 @@
 <template>
-  <edit-interaction-base v-bind="{ data }" @change="updateData">
+  <edit-interaction-base v-bind="{ data, hide: hideBase }" @change="updateData">
     <ui-select
       :model-value="data.eventName"
       :placeholder="t('workflow.blocks.trigger-event.selectEvent')"
@@ -46,8 +46,8 @@
           </ui-checkbox>
         </div>
         <component
-          :is="componentName"
-          v-if="componentName"
+          :is="eventComponents[data.eventType]"
+          v-if="eventComponents[data.eventType]"
           :params="params"
           @update="updateParams({ ...params, ...$event })"
         />
@@ -55,35 +55,26 @@
     </transition-expand>
   </edit-interaction-base>
 </template>
-<script>
+<script setup>
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { eventList } from '@/utils/shared';
+import { toCamelCase } from '@/utils/helper';
+import EditInteractionBase from './EditInteractionBase.vue';
 import TriggerEventMouse from './TriggerEventMouse.vue';
 import TriggerEventTouch from './TriggerEventTouch.vue';
 import TriggerEventWheel from './TriggerEventWheel.vue';
 import TriggerEventInput from './TriggerEventInput.vue';
 import TriggerEventKeyboard from './TriggerEventKeyboard.vue';
 
-export default {
-  components: {
-    TriggerEventMouse,
-    TriggerEventWheel,
-    TriggerEventTouch,
-    TriggerEventInput,
-    TriggerEventKeyboard,
-  },
-};
-</script>
-<script setup>
-/* eslint-disable */
-import { ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { eventList } from '@/utils/shared';
-import { toCamelCase } from '@/utils/helper';
-import EditInteractionBase from './EditInteractionBase.vue';
-
 const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  hideBase: {
+    type: Boolean,
+    default: false,
   },
 });
 const emit = defineEmits(['update:data']);
@@ -91,16 +82,15 @@ const emit = defineEmits(['update:data']);
 const { t } = useI18n();
 
 const eventComponents = {
-  'mouse-event': 'TriggerEventMouse',
+  'mouse-event': TriggerEventMouse,
   'focus-event': '',
-  'event': '',
-  'touch-event': 'TriggerEventTouch',
-  'keyboard-event': 'TriggerEventKeyboard',
-  'wheel-event': 'TriggerEventWheel',
-  'input-event': 'TriggerEventInput',
+  event: '',
+  'touch-event': TriggerEventTouch,
+  'keyboard-event': TriggerEventKeyboard,
+  'wheel-event': TriggerEventWheel,
+  'input-event': TriggerEventInput,
 };
 
-const componentName = ref(eventComponents[props.data.eventType]);
 const params = ref(props.data.eventParams);
 const showOptions = ref(false);
 
@@ -119,8 +109,6 @@ function updateParams(value) {
 function handleSelectChange(value) {
   const eventType = eventList.find(({ id }) => id === value).type;
   const payload = { eventName: value, eventType };
-
-  componentName.value = eventComponents[eventType];
 
   if (eventType !== props.eventType) {
     const defaultParams = { bubbles: true, cancelable: true };

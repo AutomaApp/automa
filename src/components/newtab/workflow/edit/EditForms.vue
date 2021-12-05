@@ -1,5 +1,5 @@
 <template>
-  <edit-interaction-base v-bind="{ data }" @change="updateData">
+  <edit-interaction-base v-bind="{ data, hide: hideBase }" @change="updateData">
     <ui-select
       :model-value="data.type"
       class="block w-full mt-4 mb-3"
@@ -52,6 +52,10 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  hideBase: {
+    type: Boolean,
+    default: false,
   },
 });
 const emit = defineEmits(['update:data']);

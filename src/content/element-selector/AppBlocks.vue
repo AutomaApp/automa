@@ -1,0 +1,97 @@
+<template>
+  <div class="events mt-4">
+    <div class="flex items-center">
+      <ui-select
+        v-model="state.selectedBlock"
+        class="flex-1 mr-4"
+        placeholder="Select block"
+        @change="onSelectChanged"
+      >
+        <option v-for="(block, id) in blocks" :key="id" :value="id">
+          {{ block.name }}
+        </option>
+      </ui-select>
+      <ui-button
+        :disabled="!state.selectedBlock"
+        variant="accent"
+        @click="executeBlock"
+      >
+        Execute
+      </ui-button>
+    </div>
+    <component
+      :is="blocks[state.selectedBlock].component"
+      v-if="state.selectedBlock && blocks[state.selectedBlock].component"
+      :data="state.params"
+      :hide-base="true"
+      @update:data="updateParams"
+    />
+  </div>
+</template>
+<script setup>
+import { shallowReactive } from 'vue';
+import { tasks } from '@/utils/shared';
+import {
+  forms,
+  getText,
+  eventClick,
+  triggerEvent,
+  elementScroll,
+} from '../blocks-handler';
+import EditForms from '@/components/newtab/workflow/edit/EditForms.vue';
+import EditTriggerEvent from '@/components/newtab/workflow/edit/EditTriggerEvent.vue';
+import EditScrollElement from '@/components/newtab/workflow/edit/EditScrollElement.vue';
+
+const props = defineProps({
+  elements: {
+    type: Array,
+    default: () => [],
+  },
+});
+const emit = defineEmits(['update']);
+
+const blocks = {
+  forms: {
+    ...tasks.forms,
+    component: EditForms,
+    handler: forms,
+  },
+  'get-text': {
+    ...tasks['get-text'],
+    component: '',
+    handler: getText,
+  },
+  'event-click': {
+    ...tasks['event-click'],
+    component: '',
+    handler: eventClick,
+  },
+  'trigger-event': {
+    ...tasks['trigger-event'],
+    component: EditTriggerEvent,
+    handler: triggerEvent,
+  },
+  'element-scroll': {
+    ...tasks['element-scroll'],
+    component: EditScrollElement,
+    handler: elementScroll,
+  },
+};
+
+const state = shallowReactive({
+  params: {},
+  selectedBlock: '',
+});
+
+function updateParams(data = {}) {
+  state.params = data;
+  emit('update');
+}
+function onSelectChanged(value) {
+  state.params = tasks[value].data;
+  emit('update');
+}
+function executeBlock() {
+  console.log(blocks[state.selectedBlock], props.elements);
+}
+</script>

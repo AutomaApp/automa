@@ -50,6 +50,12 @@ function executeCollection(collection) {
 
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete') {
+    if (tab.url.includes('http://localhost')) {
+      browser.tabs.executeScript(tabId, {
+        file: 'contentScript.bundle.js',
+      });
+    }
+
     const { visitWebTriggers } = await browser.storage.local.get(
       'visitWebTriggers'
     );

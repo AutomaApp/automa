@@ -10,7 +10,7 @@ const i18n = createI18n({
 
 export function setI18nLanguage(locale) {
   i18n.global.locale.value = locale;
-
+  console.log(i18n.global);
   document.querySelector('html').setAttribute('lang', locale);
 }
 
@@ -26,7 +26,7 @@ export async function loadLocaleMessages(locale, location) {
   const importLocale = async (path, merge = false) => {
     try {
       const messages = await import(
-        /* webpackChunkName: "locale-[request]" */ `../locales/${locale}/${path}`
+        /* webpackChunkName: "locales/locale-[request]" */ `../locales/${locale}/${path}`
       );
 
       if (merge) {
@@ -39,11 +39,11 @@ export async function loadLocaleMessages(locale, location) {
     }
   };
 
-  dayjs.locale(locale);
-
   if (locale !== 'en' && !i18n.global.availableLocales.includes('en')) {
     await loadLocaleMessages('en', location);
   }
+
+  dayjs.locale(locale);
 
   await importLocale('common.json');
   await importLocale(`${location}.json`, true);

@@ -1,128 +1,128 @@
 {
   "home": {
-    "viewAll": "檢視全部"
+    "viewAll": "View all"
   },
   "settings": {
     "language": {
-      "label": "語言",
-      "helpTranslate": "找不到你的語言嗎? 請協助我們翻譯。",
-      "reloadPage": "重整頁面使其生效"
-    }
+      "label": "Language",
+      "helpTranslate": "Can't find your language? Help translate.",
+      "reloadPage": "Reload the page to take effect"
+    },
   },
   "workflow": {
-    "import": "匯入工作流",
-    "new": "新增工作流",
-    "delete": "刪除工作流",
-    "name": "工作流名稱",
-    "rename": "重新命名工作流",
-    "add": "建立工作流",
-    "clickToEnable": "點擊啟用",
+    "import": "Import workflow",
+    "new": "New workflow",
+    "delete": "Delete workflow",
+    "name": "Workflow name",
+    "rename": "Rename workflow",
+    "add": "Add workflow",
+    "clickToEnable": "Click to enable",
     "dataColumns": {
-      "title": "資料欄位",
-      "placeholder": "搜尋或建立欄位",
+      "title": "Data columns",
+      "placeholder": "Search or add column",
       "column": {
-        "name": "欄位名稱",
-        "type": "資料型別"
+        "name": "Column name",
+        "type": "Data type"
       }
     },
     "sidebar": {
-      "workflowIcon": "工作流圖示"
+      "workflowIcon": "Workflow icon"
     },
     "editor": {
-      "zoomIn": "放大",
-      "zoomOut": "縮小",
-      "resetZoom": "重設縮放",
-      "duplicate": "複製"
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "resetZoom": "Reset zoom",
+      "duplicate": "Duplicate"
     },
     "settings": {
       "onError": {
-        "title": "工作流發生錯誤",
+        "title": "On workflow error",
         "items": {
-          "keepRunning": "繼續執行",
-          "stopWorkflow": "停止工作流"
+          "keepRunning": "Keep running",
+          "stopWorkflow": "Stop workflow"
         }
       },
       "timeout": {
-        "title": "工作流超時 (毫秒)"
+        "title": "Workflow timeout (milliseconds)"
       }
     }
   },
   "collection": {
-    "description": "依序執行工作流",
-    "new": "新增集合",
-    "delete": "刪除集合",
-    "add": "建立集合",
-    "rename": "重新命名集合",
-    "flow": "工作流",
-    "dragDropText": "拖曳工作流或區塊至此",
+    "description": "Execute your workflows in sequence",
+    "new": "New collection",
+    "delete": "Delete collection",
+    "add": "Add collection",
+    "rename": "Rename collection",
+    "flow": "Flow",
+    "dragDropText": "Drop a workflow or block in here",
     "options": {
       "atOnce": {
-        "title": "立即執行集合中的所有工作流",
-        "description": "使用此選項不會執行區塊"
+        "title": "Execute all workflows in the collection at once",
+        "description": "Block not gonna executed when using this option"
       }
     },
     "globalData": {
-      "note": "這將覆蓋工作流的全域資料"
+      "note": "This will overwrite the global data of the workflow"
     }
   },
   "log": {
-    "goBack": "返回 \"{name}\" 紀錄",
-    "startedDate": "開始日期",
-    "duration": "期間",
-    "selectAll": "全選",
-    "deselectAll": "取消全選",
-    "deleteSelected": "刪除選取的紀錄",
+    "goBack": "Go back to \"{name}\" log",
+    "startedDate": "Started date",
+    "duration": "Duration",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "deleteSelected": "Delete selected logs",
     "types": {
-      "stop": "工作流停止",
-      "finish": "工作流完成"
+      "stop": "Workflow is stopped",
+      "finish": "Finish"
     },
     "messages": {
-      "workflow-disabled": "工作流已禁用",
-      "stop-timeout": "工作流因逾時而停止",
-      "no-iframe-id": "Can't find Frame ID for the frame element with \"{selector}\" selector",
+      "workflow-disabled": "Workflow is disabled",
+      "stop-timeout": "Workflow is stopped because of timeout",
+      "no-iframe-id": "Can't find Frame ID for the iframe element with \"{selector}\" selector",
       "no-tab": "Can't connect to a tab, use \"New tab\" or \"Active tab\" block before using the \"{name}\" block."
     },
     "description": {
       "text": "{status} on {date} in {duration}",
       "status": {
-        "success": "成功",
-        "error": "失敗",
-        "stopped": "停止"
+        "success": "Succeeded",
+        "error": "Failed",
+        "stopped": "Stopped"
       }
     },
     "delete": {
-      "title": "刪除紀錄",
-      "description": "確定要刪除所有選取的紀錄嗎?"
+      "title": "Delete log",
+      "description": "Are you sure want to delete all the selected logs?"
     },
     "exportData": {
-      "title": "匯出資料",
+      "title": "Export data",
       "types": {
         "json": "JSON",
         "csv": "CSV",
-        "plain-text": "純文字"
-      }
+        "plain-text": "Plain text"
+      },
     },
     "filter": {
-      "title": "篩選",
-      "byStatus": "依 status",
+      "title": "Filter",
+      "byStatus": "By status",
       "byDate": {
-        "title": "依 date",
+        "title": "By date",
         "items": {
-          "lastDay": "最後1天",
-          "last7Days": "最後7天",
-          "last30Days": "最後30天"
+          "lastDay": "Last day",
+          "last7Days": "Last seven days",
+          "last30Days": "Last thirty days",
         }
-      }
-    }
+      },
+    },
   },
   "components": {
     "pagination": {
-      "text1": "顯示",
-      "text2": "項， 總共 {count} 項",
-      "nextPage": "下一頁",
-      "currentPage": "目前頁數",
-      "prevPage": "上一頁",
+      "text1": "Showing",
+      "text2": "items out of {count}",
+      "nextPage": "Next page",
+      "currentPage": "Current page",
+      "prevPage": "Previous page",
       "of": "of {page}"
     }
-  }
+  },
 }

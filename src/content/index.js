@@ -29,4 +29,5 @@ import * as blocksHandler from './blocks-handler';
       }
     });
   });
+  elementSelector();
 })();
