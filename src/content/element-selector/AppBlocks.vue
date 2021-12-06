@@ -26,11 +26,19 @@
       :hide-base="true"
       @update:data="updateParams"
     />
+    <prism-editor
+      v-if="state.blockResult"
+      v-model="state.blockResult"
+      :highlight="highlighter('json')"
+      class="h-full scroll mt-2"
+    />
   </div>
 </template>
 <script setup>
 import { shallowReactive } from 'vue';
+import { PrismEditor } from 'vue-prism-editor';
 import { tasks } from '@/utils/shared';
+import { highlighter } from '@/lib/prism';
 import handleForms from '../blocks-handler/handler-forms';
 import handleGetText from '../blocks-handler/handler-get-text';
 import handleEventClick from '../blocks-handler/handler-event-click';
@@ -41,12 +49,16 @@ import EditTriggerEvent from '@/components/newtab/workflow/edit/EditTriggerEvent
 import EditScrollElement from '@/components/newtab/workflow/edit/EditScrollElement.vue';
 
 const props = defineProps({
+  selector: {
+    type: String,
+    default: '',
+  },
   elements: {
     type: Array,
     default: () => [],
   },
 });
-const emit = defineEmits(['update']);
+const emit = defineEmits(['update', 'execute']);
 
 const blocks = {
   forms: {
@@ -78,6 +90,7 @@ const blocks = {
 
 const state = shallowReactive({
   params: {},
+  blockResult: '',
   selectedBlock: '',
 });
 
@@ -87,9 +100,22 @@ function updateParams(data = {}) {
 }
 function onSelectChanged(value) {
   state.params = tasks[value].data;
+  state.blockResult = '';
   emit('update');
 }
 function executeBlock() {
-  console.log(blocks[state.selectedBlock], props.elements);
+  const params = {
+    ...state.params,
+    selector: props.selector,
+    multiple: props.elements.length > 1,
+  };
+
+  emit('execute', true);
+
+  blocks[state.selectedBlock].handler({ data: params }).then((result) => {
+    state.blockResult = JSON.stringify(result, null, 2);
+    emit('update');
+    emit('execute', false);
+  });
 }
 </script>

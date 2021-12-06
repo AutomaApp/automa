@@ -79,6 +79,8 @@
           <ui-tab-panel value="blocks">
             <app-blocks
               :elements="state.selectedElements"
+              :selector="state.elSelector"
+              @execute="state.isExecuting = $event"
               @update="updateCardSize"
             />
           </ui-tab-panel>
@@ -130,6 +132,7 @@ const state = reactive({
   hide: false,
   elSelector: '',
   isDragging: false,
+  isExecuting: false,
   activeTab: 'blocks',
   selectedElements: [],
 });
@@ -203,7 +206,7 @@ function handleMouseMove({ clientX, clientY, target }) {
   Object.assign(hoverElementRect, getElementRect(target));
 }
 function handleClick(event) {
-  if (event.target === rootElement || state.hide) return;
+  if (event.target === rootElement || state.hide || state.isExecuting) return;
 
   event.preventDefault();
   event.stopPropagation();
