@@ -5,6 +5,19 @@ function forms(block) {
   return new Promise((resolve) => {
     const { data } = block;
     const elements = handleElement(block, true);
+    console.log(data);
+    if (data.getValue) {
+      let result = '';
+
+      if (data.multiple) {
+        result = elements.map((element) => element.value || '');
+      } else {
+        result = elements.value || '';
+      }
+      console.log(result);
+      resolve(result);
+      return;
+    }
 
     if (data.multiple) {
       const promises = Array.from(elements).map((element) => {

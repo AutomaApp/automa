@@ -94,6 +94,7 @@
   </div>
 </template>
 <script setup>
+/* eslint-disable no-alert */
 import { onMounted, shallowReactive } from 'vue';
 import { nanoid } from 'nanoid';
 import { PrismEditor } from 'vue-prism-editor';

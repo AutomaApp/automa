@@ -158,6 +158,7 @@
         "description": "",
         "selected": "Selected",
         "type": "Form type",
+        "getValue": "Get form value",
         "text-field": {
           "name": "Text field",
           "value": "Value",

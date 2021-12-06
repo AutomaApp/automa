@@ -269,7 +269,7 @@ class WorkflowEngine {
     const blockHandler = this.blocksHandler[toCamelCase(block?.name)];
     const handler =
       !blockHandler && tasks[block.name].category === 'interaction'
-        ? this.blocksHandler.interactionHandler
+        ? this.blocksHandler.interactionBlock
         : blockHandler;
 
     if (handler) {
