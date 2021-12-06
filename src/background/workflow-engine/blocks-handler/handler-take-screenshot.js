@@ -2,7 +2,7 @@ import browser from 'webextension-polyfill';
 import { getBlockConnection } from '../helper';
 import { fileSaver } from '@/utils/helper';
 
-function saveImage(filename, fileName, uri) {
+function saveImage({ fileName, uri, ext }) {
   const image = new Image();
 
   image.onload = () => {
@@ -52,11 +52,11 @@ async function takeScreenshot(block) {
         await browser.tabs.update(tab.id, { active: true });
       }
 
-      saveImage(fileName, uri);
+      saveImage({ fileName, uri, ext });
     } else {
       const uri = await browser.tabs.captureVisibleTab(options);
 
-      saveImage(fileName, uri);
+      saveImage({ fileName, uri, ext });
     }
 
     return { data: '', nextBlockId };

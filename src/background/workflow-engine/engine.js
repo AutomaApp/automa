@@ -63,7 +63,14 @@ function tabUpdatedHandler(tabId, changeInfo, tab) {
 class WorkflowEngine {
   constructor(
     workflow,
-    { globalData, tabId = null, isInCollection, collectionLogId, blocksHandler }
+    {
+      globalData,
+      tabId = null,
+      isInCollection,
+      collectionLogId,
+      blocksHandler,
+      parentWorkflow,
+    }
   ) {
     const globalDataVal = globalData || workflow.globalData;
 
@@ -72,6 +79,7 @@ class WorkflowEngine {
     this.workflow = workflow;
     this.blocksHandler = blocksHandler;
     this.isInCollection = isInCollection;
+    this.parentWorkflow = parentWorkflow;
     this.collectionLogId = collectionLogId;
     this.globalData = parseJSON(globalDataVal, globalDataVal);
     this.activeTabUrl = '';
@@ -89,6 +97,7 @@ class WorkflowEngine {
     this.windowId = null;
     this.tabGroupId = null;
     this.currentBlock = null;
+    this.childWorkflow = null;
     this.workflowTimeout = null;
 
     this.tabUpdatedListeners = {};
@@ -160,22 +169,27 @@ class WorkflowEngine {
     workflowState.update(this.id, this.state);
   }
 
-  stop(message) {
-    this.logs.push({
-      message,
-      type: 'stop',
-      name: 'stop',
-    });
-    this.destroy('stopped');
+  async stop(message) {
+    try {
+      if (this.childWorkflow) {
+        console.log('setop', this.childWorkflow);
+        await this.childWorkflow.stop();
+      }
+
+      this.logs.push({
+        message,
+        type: 'stop',
+        name: 'stop',
+      });
+
+      await this.destroy('stopped');
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async destroy(status, message) {
     try {
-      this.dispatchEvent('destroyed', { id: this.id, status, message });
-
-      this.eventListeners = {};
-      this.tabUpdatedListeners = {};
-
       await browser.tabs.onRemoved.removeListener(this.tabRemovedHandler);
       await browser.tabs.onUpdated.removeListener(this.tabUpdatedHandler);
 
@@ -200,12 +214,23 @@ class WorkflowEngine {
           history: this.logs,
           endedAt: this.endedTimestamp,
           startedAt: this.startedTimestamp,
+          isChildLog: !!this.parentWorkflow,
           isInCollection: this.isInCollection,
           collectionLogId: this.collectionLogId,
         });
 
         await browser.storage.local.set({ logs });
       }
+
+      this.dispatchEvent('destroyed', {
+        id: this.id,
+        status,
+        message,
+        currentBlock: this.currentBlock,
+      });
+
+      this.eventListeners = {};
+      this.tabUpdatedListeners = {};
     } catch (error) {
       console.error(error);
     }
@@ -239,6 +264,8 @@ class WorkflowEngine {
     state.name = this.workflow.name;
     state.icon = this.workflow.icon;
 
+    if (this.parentWorkflow) state.parentState = this.parentWorkflow;
+
     return state;
   }
 
@@ -256,6 +283,7 @@ class WorkflowEngine {
 
     if (!disableTimeoutKeys.includes(block.name)) {
       this.workflowTimeout = setTimeout(() => {
+        alert('timeout');
         if (!this.isDestroyed) this.stop('stop-timeout');
       }, this.workflow.settings.timeout || 120000);
     }
@@ -289,6 +317,7 @@ class WorkflowEngine {
           this.logs.push({
             type: 'success',
             name: block.name,
+            logId: result.logId,
             duration: Math.round(Date.now() - started),
           });
 
@@ -308,6 +337,7 @@ class WorkflowEngine {
             type: 'error',
             message: error.message,
             name: block.name,
+            ...(error.data || {}),
           });
 
           if (
@@ -335,7 +365,10 @@ class WorkflowEngine {
   _sendMessageToTab(payload, options = {}) {
     return new Promise((resolve, reject) => {
       if (!this.tabId) {
-        reject(new Error('no-tab'));
+        const error = new Error('no-tab');
+        error.workflowId = this.id;
+
+        reject(error);
         return;
       }
 

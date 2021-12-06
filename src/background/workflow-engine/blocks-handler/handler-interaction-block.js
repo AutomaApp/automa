@@ -1,4 +1,4 @@
-import { objectHasKey } from '@/utils/helper';
+import { objectHasKey, isObject } from '@/utils/helper';
 import { getBlockConnection, convertData } from '../helper';
 
 async function interactionHandler(block, prevBlockData) {

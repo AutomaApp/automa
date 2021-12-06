@@ -15,6 +15,7 @@ class Log extends Model {
       workflowId: this.attr(null),
       collectionId: this.attr(null),
       status: this.string('success'),
+      isChildLog: this.boolean(false),
       collectionLogId: this.attr(null),
       icon: this.string('riGlobalLine'),
       isInCollection: this.boolean(false),

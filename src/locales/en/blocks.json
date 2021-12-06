@@ -57,6 +57,12 @@
           "keyboard-shortcut": "Keyboard shortcut"
         }
       },
+      "execute-workflow": {
+        "name": "Execute workflow",
+        "overwriteNote": "This will overwrite the global data of the selected workflow",
+        "select": "Select workflow",
+        "description": ""
+      },
       "active-tab": {
         "name": "Active tab",
         "description": "Set current tab that you're in as an active tab"

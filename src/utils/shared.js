@@ -27,6 +27,22 @@ export const tasks = {
       days: [],
     },
   },
+  'execute-workflow': {
+    name: 'Execute workflow',
+    description: '',
+    icon: 'riFlowChart',
+    component: 'BlockBasic',
+    category: 'general',
+    editComponent: 'EditExecuteWorkflow',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      workflowId: '',
+      globalData: '',
+    },
+  },
   'active-tab': {
     name: 'Active tab',
     description: "Set current tab that you're in as an active tab",

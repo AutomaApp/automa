@@ -148,25 +148,28 @@ const pagination = shallowReactive({
 });
 
 function translateLog(log) {
-  const { name, message, type } = log;
+  const copyLog = { ...log };
   const getTranslatation = (path, def) => {
     const params = typeof path === 'string' ? { path } : path;
 
     return te(params.path) ? t(params.path, params.params) : def;
   };
 
-  if (['finish', 'stop'].includes(type)) {
-    log.name = t(`log.types.${type}`);
+  if (['finish', 'stop'].includes(log.type)) {
+    copyLog.name = t(`log.types.${log.type}`);
   } else {
-    log.name = getTranslatation(`workflow.blocks.${name}.name`, name);
+    copyLog.name = getTranslatation(
+      `workflow.blocks.${log.name}.name`,
+      log.name
+    );
   }
 
-  log.message = getTranslatation(
-    { path: `log.messages.${message}`, params: log },
+  copyLog.message = getTranslatation(
+    { path: `log.messages.${log.message}`, params: log },
     ''
   );
 
-  return log;
+  return copyLog;
 }
 
 const activeLog = computed(() => Log.find(route.params.id));
