@@ -1,6 +1,7 @@
 import vRemixicon from 'v-remixicon';
 import {
   riHome5Line,
+  riHandHeartLine,
   riFileCopyLine,
   riToggleLine,
   riFolderLine,
@@ -75,6 +76,7 @@ import {
 
 export const icons = {
   riHome5Line,
+  riHandHeartLine,
   riFileCopyLine,
   riToggleLine,
   riFolderLine,

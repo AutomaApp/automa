@@ -31,13 +31,11 @@
 <script setup>
 import { shallowReactive } from 'vue';
 import { tasks } from '@/utils/shared';
-import {
-  forms,
-  getText,
-  eventClick,
-  triggerEvent,
-  elementScroll,
-} from '../blocks-handler';
+import handleForms from '../blocks-handler/handler-forms';
+import handleGetText from '../blocks-handler/handler-get-text';
+import handleEventClick from '../blocks-handler/handler-event-click';
+import handelTriggerEvent from '../blocks-handler/handler-trigger-event';
+import handleElementScroll from '../blocks-handler/handler-element-scroll';
 import EditForms from '@/components/newtab/workflow/edit/EditForms.vue';
 import EditTriggerEvent from '@/components/newtab/workflow/edit/EditTriggerEvent.vue';
 import EditScrollElement from '@/components/newtab/workflow/edit/EditScrollElement.vue';
@@ -54,27 +52,27 @@ const blocks = {
   forms: {
     ...tasks.forms,
     component: EditForms,
-    handler: forms,
+    handler: handleForms,
   },
   'get-text': {
     ...tasks['get-text'],
     component: '',
-    handler: getText,
+    handler: handleGetText,
   },
   'event-click': {
     ...tasks['event-click'],
     component: '',
-    handler: eventClick,
+    handler: handleEventClick,
   },
   'trigger-event': {
     ...tasks['trigger-event'],
     component: EditTriggerEvent,
-    handler: triggerEvent,
+    handler: handelTriggerEvent,
   },
   'element-scroll': {
     ...tasks['element-scroll'],
     component: EditScrollElement,
-    handler: elementScroll,
+    handler: handleElementScroll,
   },
 };
 

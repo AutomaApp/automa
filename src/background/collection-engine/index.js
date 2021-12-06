@@ -3,7 +3,7 @@ import browser from 'webextension-polyfill';
 import { toCamelCase } from '@/utils/helper';
 import * as flowHandler from './flow-handler';
 import workflowState from '../workflow-state';
-import WorkflowEngine from '../workflow-engine';
+import workflowEngine from '../workflow-engine';
 
 class CollectionEngine {
   constructor(collection) {
@@ -37,7 +37,7 @@ class CollectionEngine {
           const currentWorkflow = workflows.find(({ id }) => id === itemId);
 
           if (currentWorkflow) {
-            const engine = new WorkflowEngine(currentWorkflow, {});
+            const engine = workflowEngine(currentWorkflow, {});
 
             engine.init();
           }

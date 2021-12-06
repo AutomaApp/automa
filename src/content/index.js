@@ -1,7 +1,7 @@
 import browser from 'webextension-polyfill';
 import { toCamelCase } from '@/utils/helper';
 import elementSelector from './element-selector';
-import * as blocksHandler from './blocks-handler';
+import blocksHandler from './blocks-handler';
 
 (() => {
   browser.runtime.onMessage.addListener((data) => {

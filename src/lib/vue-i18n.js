@@ -10,7 +10,7 @@ const i18n = createI18n({
 
 export function setI18nLanguage(locale) {
   i18n.global.locale.value = locale;
-  console.log(i18n.global);
+
   document.querySelector('html').setAttribute('lang', locale);
 }
 
