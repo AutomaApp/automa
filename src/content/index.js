@@ -29,5 +29,4 @@ import blocksHandler from './blocks-handler';
       }
     });
   });
-  elementSelector();
 })();

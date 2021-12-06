@@ -4,7 +4,16 @@
       'select-none': state.isDragging,
       'bg-black bg-opacity-30': !state.hide,
     }"
-    class="root fixed h-full w-full pointer-events-none top-0 left-0"
+    class="
+      root
+      fixed
+      h-full
+      w-full
+      pointer-events-none
+      top-0
+      text-gray-900
+      left-0
+    "
     style="z-index: 9999999999; font-family: Inter, sans-serif"
   >
     <div
@@ -129,12 +138,12 @@ const rootElement = inject('rootElement');
 
 const cardEl = ref('cardEl');
 const state = reactive({
-  hide: false,
+  activeTab: '',
   elSelector: '',
   isDragging: false,
   isExecuting: false,
-  activeTab: 'blocks',
   selectedElements: [],
+  hide: window.self !== window.top,
 });
 const hoverElementRect = reactive({
   x: 0,

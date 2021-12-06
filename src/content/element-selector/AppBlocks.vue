@@ -113,7 +113,7 @@ function executeBlock() {
   emit('execute', true);
 
   blocks[state.selectedBlock].handler({ data: params }).then((result) => {
-    state.blockResult = JSON.stringify(result, null, 2);
+    state.blockResult = JSON.stringify(result, null, 2).trim();
     emit('update');
     emit('execute', false);
   });
