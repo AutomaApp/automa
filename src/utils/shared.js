@@ -443,6 +443,8 @@ export const tasks = {
     data: {
       loopId: '',
       maxLoop: 0,
+      fromNumber: 1,
+      toNumber: 10,
       loopData: '[]',
       description: '',
       loopThrough: 'data-columns',

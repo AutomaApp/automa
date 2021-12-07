@@ -269,7 +269,10 @@
         },
         "loopThrough": {
           "placeholder": "Loop through",
+          "fromNumber": "From number",
+          "toNumber": "To number",
           "options": {
+            "numbers": "Numbers",
             "data-columns": "Data columns",
             "custom-data": "Custom data"
           }
