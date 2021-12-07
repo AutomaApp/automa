@@ -28,6 +28,7 @@
   ],
   "permissions": [
     "tabs",
+    "proxy",
     "alarms",
     "storage",
     "unlimitedStorage",

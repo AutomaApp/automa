@@ -82,6 +82,7 @@
     "messages": {
       "workflow-disabled": "Workflow is disabled",
       "stop-timeout": "Workflow is stopped because of timeout",
+      "invalid-proxy-host": "Invalid proxy host",
       "no-iframe-id": "Can't find Frame ID for the iframe element with \"{selector}\" selector",
       "no-tab": "Can't connect to a tab, use \"New tab\" or \"Active tab\" block before using the \"{name}\" block.",
       "empty-workflow": "You must select a workflow first",

@@ -47,8 +47,6 @@ function loopData(block) {
       };
       /* eslint-disable-next-line */
       this.loopData[data.loopId] = data.loopThrough === 'numbers' ? data.fromNumber : currLoopData[0];
-
-      console.log(this.loopList, this.loopData);
     }
 
     resolve({

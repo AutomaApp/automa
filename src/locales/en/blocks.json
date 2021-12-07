@@ -67,6 +67,15 @@
         "name": "Active tab",
         "description": "Set current tab that you're in as an active tab"
       },
+      "proxy": {
+        "name": "Proxy",
+        "description": "Set the proxy of the browser",
+        "clear": "Clear all proxy",
+        "bypass": {
+          "label": "Bypass list",
+          "note": "Use commas (,) to separate URL"
+        }
+      },
       "new-window": {
         "name": "New window",
         "description": "Create a new window",

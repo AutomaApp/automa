@@ -5,7 +5,7 @@ function forms(block) {
   return new Promise((resolve) => {
     const { data } = block;
     const elements = handleElement(block, true);
-    console.log(data);
+
     if (data.getValue) {
       let result = '';
 
@@ -14,7 +14,7 @@ function forms(block) {
       } else {
         result = elements.value || '';
       }
-      console.log(result);
+
       resolve(result);
       return;
     }

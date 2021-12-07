@@ -58,4 +58,7 @@ select:focus,
   .bg-box-transparent {
     @apply bg-black bg-opacity-5 dark:bg-gray-200 dark:bg-opacity-5;
   }
+  .bg-box-transparent-2 {
+    @apply bg-black bg-opacity-10 dark:bg-gray-200 dark:bg-opacity-10;
+  }
 }

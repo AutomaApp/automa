@@ -93,6 +93,7 @@ class WorkflowEngine {
     this.eventListeners = {};
     this.isPaused = false;
     this.isDestroyed = false;
+    this.isUsingProxy = false;
     this.frameId = null;
     this.windowId = null;
     this.tabGroupId = null;
@@ -172,7 +173,6 @@ class WorkflowEngine {
   async stop(message) {
     try {
       if (this.childWorkflow) {
-        console.log('setop', this.childWorkflow);
         await this.childWorkflow.stop();
       }
 
@@ -190,6 +190,8 @@ class WorkflowEngine {
 
   async destroy(status, message) {
     try {
+      if (this.isUsingProxy) chrome.proxy.settings.clear({});
+
       await browser.tabs.onRemoved.removeListener(this.tabRemovedHandler);
       await browser.tabs.onUpdated.removeListener(this.tabUpdatedHandler);
 
