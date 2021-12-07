@@ -3,7 +3,14 @@
     <slot name="header">
       <div class="flex items-center mb-4">
         <span class="p-2 rounded-lg bg-box-transparent">
-          <v-remixicon :name="data.icon || icon" />
+          <ui-img
+            v-if="data.icon.startsWith('http')"
+            :src="data.icon"
+            class="overflow-hidden rounded-lg"
+            style="height: 40px; width: 40px"
+            alt="Can not display"
+          />
+          <v-remixicon v-else :name="data.icon || icon" />
         </span>
         <div class="flex-grow"></div>
         <button
@@ -62,6 +69,7 @@ const props = defineProps({
     default: () => [],
   },
 });
+
 defineEmits(['execute', 'click', 'menuSelected']);
 
 let formattedDate = null;
