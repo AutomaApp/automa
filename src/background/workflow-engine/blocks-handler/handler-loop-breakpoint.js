@@ -19,6 +19,8 @@ function loopBreakpoint(block, prevBlockData) {
         nextBlockId: currentLoop.blockId,
       });
     } else {
+      delete this.loopList[block.data.loopId];
+
       resolve({
         data: prevBlockData,
         nextBlockId: getBlockConnection(block),

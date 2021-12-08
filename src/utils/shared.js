@@ -370,7 +370,7 @@ export const tasks = {
     maxConnection: 1,
     data: {
       description: '',
-      timeout: 10000,
+      timeout: 20000,
       code: 'console.log("Hello world!")',
       preloadScripts: [],
     },

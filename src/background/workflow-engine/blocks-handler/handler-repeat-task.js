@@ -3,6 +3,8 @@ import { getBlockConnection } from '../helper';
 function repeatTask({ data, id, outputs }) {
   return new Promise((resolve) => {
     if (this.repeatedTasks[id] >= data.repeatFor) {
+      delete this.repeatedTasks[id];
+
       resolve({
         data: data.repeatFor,
         nextBlockId: getBlockConnection({ outputs }),
