@@ -95,8 +95,8 @@
 </template>
 <script setup>
 import { watch, reactive } from 'vue';
-import { PrismEditor } from 'vue-prism-editor';
 import { useI18n } from 'vue-i18n';
+import { PrismEditor } from 'vue-prism-editor';
 import { highlighter } from '@/lib/prism';
 
 const props = defineProps({

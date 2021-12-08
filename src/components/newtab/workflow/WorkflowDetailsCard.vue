@@ -1,24 +1,45 @@
 <template>
   <div class="px-4 flex items-center mb-2 mt-1">
-    <ui-popover class="mr-2 h-6">
+    <ui-popover class="mr-2 h-8">
       <template #trigger>
         <span
           :title="t('workflow.sidebar.workflowIcon')"
-          class="cursor-pointer"
+          class="cursor-pointer inline-block h-full"
         >
-          <v-remixicon :name="workflow.icon" size="26" />
+          <ui-img
+            v-if="workflow.icon.startsWith('http')"
+            :src="workflow.icon"
+            class="w-8 h-8"
+          />
+          <v-remixicon v-else :name="workflow.icon" size="26" class="mt-1" />
         </span>
       </template>
-      <p class="mb-2">{{ t('workflow.sidebar.workflowIcon') }}</p>
-      <div class="grid grid-cols-4 gap-1">
-        <span
-          v-for="icon in icons"
-          :key="icon"
-          class="cursor-pointer rounded-lg inline-block p-2 hoverable"
-          @click="$emit('update', { icon })"
-        >
-          <v-remixicon :name="icon" />
-        </span>
+      <div class="w-56">
+        <p class="mb-2">{{ t('workflow.sidebar.workflowIcon') }}</p>
+        <div class="grid grid-cols-5 mb-2 gap-1">
+          <span
+            v-for="icon in icons"
+            :key="icon"
+            class="
+              cursor-pointer
+              rounded-lg
+              inline-block
+              text-center
+              p-2
+              hoverable
+            "
+            @click="$emit('update', { icon })"
+          >
+            <v-remixicon :name="icon" />
+          </span>
+        </div>
+        <ui-input
+          :model-value="workflow.icon.startsWith('ri') ? '' : workflow.icon"
+          type="url"
+          placeholder="http://example.com/img.png"
+          label="Icon URL"
+          @change="$emit('update', { icon: $event })"
+        />
       </div>
     </ui-popover>
     <p class="font-semibold text-overflow inline-block text-lg flex-1 mr-4">

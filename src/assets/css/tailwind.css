@@ -2,11 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+:host, body {
   font-family: 'Inter var';
   font-size: 16px;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-  @apply bg-gray-50 dark:bg-gray-900;
+  @apply bg-gray-50 dark:bg-gray-900 leading-normal;
 }
 table th,
 table td {
@@ -57,5 +57,8 @@ select:focus,
   }
   .bg-box-transparent {
     @apply bg-black bg-opacity-5 dark:bg-gray-200 dark:bg-opacity-5;
+  }
+  .bg-box-transparent-2 {
+    @apply bg-black bg-opacity-10 dark:bg-gray-200 dark:bg-opacity-10;
   }
 }

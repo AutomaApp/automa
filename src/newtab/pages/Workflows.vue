@@ -54,12 +54,18 @@
       >
         <template #header>
           <div class="flex items-center mb-4">
-            <span
-              v-if="!workflow.isDisabled"
-              class="p-2 rounded-lg bg-box-transparent"
-            >
-              <v-remixicon :name="workflow.icon || icon" />
-            </span>
+            <template v-if="!workflow.isDisabled">
+              <ui-img
+                v-if="workflow.icon.startsWith('http')"
+                :src="workflow.icon"
+                class="rounded-lg overflow-hidden"
+                style="height: 40px; width: 40px"
+                alt="Can not display"
+              />
+              <span v-else class="p-2 rounded-lg bg-box-transparent">
+                <v-remixicon :name="workflow.icon" />
+              </span>
+            </template>
             <p v-else class="py-2">{{ t('common.disabled') }}</p>
             <div class="flex-grow"></div>
             <button

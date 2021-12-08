@@ -1,7 +1,9 @@
 import vRemixicon from 'v-remixicon';
 import {
   riHome5Line,
+  riHandHeartLine,
   riFileCopyLine,
+  riShieldKeyholeLine,
   riToggleLine,
   riFolderLine,
   riInformationLine,
@@ -13,6 +15,7 @@ import {
   riCodeSSlashLine,
   riRecordCircleLine,
   riErrorWarningLine,
+  riEyeLine,
   riCalendarLine,
   riFileTextLine,
   riFilter2Line,
@@ -74,7 +77,9 @@ import {
 
 export const icons = {
   riHome5Line,
+  riHandHeartLine,
   riFileCopyLine,
+  riShieldKeyholeLine,
   riToggleLine,
   riFolderLine,
   riInformationLine,
@@ -86,6 +91,7 @@ export const icons = {
   riCodeSSlashLine,
   riRecordCircleLine,
   riErrorWarningLine,
+  riEyeLine,
   riCalendarLine,
   riFileTextLine,
   riFilter2Line,

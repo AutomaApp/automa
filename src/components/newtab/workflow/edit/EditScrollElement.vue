@@ -1,5 +1,5 @@
 <template>
-  <edit-interaction-base v-bind="{ data }" @change="updateData">
+  <edit-interaction-base v-bind="{ data, hide: hideBase }" @change="updateData">
     <div v-if="!data.scrollIntoView" class="flex items-center mt-3 space-x-2">
       <ui-input
         :model-value="data.scrollX || 0"
@@ -53,6 +53,10 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  hideBase: {
+    type: Boolean,
+    default: false,
   },
 });
 const emit = defineEmits(['update:data']);

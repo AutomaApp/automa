@@ -285,8 +285,8 @@ const runningCollection = computed(() =>
 const logs = computed(() =>
   Log.query()
     .where(
-      ({ collectionId, isInCollection }) =>
-        collectionId === route.params.id && !isInCollection
+      ({ collectionId, isInCollection, isChildLog }) =>
+        collectionId === route.params.id && (!isInCollection || !isChildLog)
     )
     .orderBy('startedAt', 'desc')
     .limit(10)

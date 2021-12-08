@@ -187,7 +187,11 @@ const workflowState = computed(() =>
 const workflow = computed(() => Workflow.find(workflowId) || {});
 const logs = computed(() =>
   Log.query()
-    .where((item) => item.workflowId === workflowId && !item.isInCollection)
+    .where(
+      (item) =>
+        item.workflowId === workflowId &&
+        (!item.isInCollection || !item.isChildLog)
+    )
     .orderBy('startedAt', 'desc')
     .get()
 );

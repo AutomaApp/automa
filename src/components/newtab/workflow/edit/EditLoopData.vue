@@ -29,6 +29,7 @@
       </option>
     </ui-select>
     <ui-input
+      v-if="data.loopThrough !== 'numbers'"
       :model-value="data.maxLoop"
       :label="t('workflow.blocks.loop-data.maxLoop.label')"
       :title="t('workflow.blocks.loop-data.maxLoop.title')"
@@ -45,6 +46,32 @@
     >
       {{ t('workflow.blocks.loop-data.buttons.insert') }}
     </ui-button>
+    <div
+      v-else-if="data.loopThrough === 'numbers'"
+      class="flex items-center space-x-2"
+    >
+      <ui-input
+        :model-value="data.fromNumber"
+        :label="t('workflow.blocks.loop-data.loopThrough.fromNumber')"
+        type="number"
+        @change="
+          updateData({
+            fromNumber: +$event >= data.toNumber ? data.toNumber - 1 : +$event,
+          })
+        "
+      />
+      <ui-input
+        :model-value="data.toNumber"
+        :label="t('workflow.blocks.loop-data.loopThrough.toNumber')"
+        type="number"
+        @change="
+          updateData({
+            toNumber:
+              +$event <= data.fromNumber ? data.fromNumber + 1 : +$event,
+          })
+        "
+      />
+    </div>
     <ui-modal
       v-model="state.showDataModal"
       title="Data"
@@ -94,6 +121,7 @@
   </div>
 </template>
 <script setup>
+/* eslint-disable no-alert */
 import { onMounted, shallowReactive } from 'vue';
 import { nanoid } from 'nanoid';
 import { PrismEditor } from 'vue-prism-editor';
@@ -118,7 +146,7 @@ const { t } = useI18n();
 
 const maxStrLength = 5e4;
 const maxFileSize = 1024 * 1024;
-const loopTypes = ['data-columns', 'custom-data'];
+const loopTypes = ['data-columns', 'numbers', 'custom-data'];
 const tempLoopData =
   props.data.loopData.length > maxStrLength
     ? props.data.loopData.slice(0, maxStrLength)

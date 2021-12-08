@@ -1,4 +1,4 @@
-import WorkflowEngine from '../workflow-engine';
+import workflowEngine from '../workflow-engine';
 import dataExporter from '@/utils/data-exporter';
 
 export function workflow(flow) {
@@ -26,7 +26,7 @@ export function workflow(flow) {
     const { globalData } = this.collection;
     this.currentWorkflow = currentWorkflow;
 
-    const engine = new WorkflowEngine(currentWorkflow, {
+    const engine = workflowEngine(currentWorkflow, {
       isInCollection: true,
       collectionLogId: this.id,
       collectionId: this.collection.id,

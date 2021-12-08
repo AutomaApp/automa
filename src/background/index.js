@@ -1,7 +1,7 @@
 import browser from 'webextension-polyfill';
 import { MessageListener } from '@/utils/message';
 import workflowState from './workflow-state';
-import WorkflowEngine from './workflow-engine';
+import workflowEngine from './workflow-engine';
 import CollectionEngine from './collection-engine';
 import { registerSpecificDay } from '../utils/workflow-trigger';
 
@@ -20,7 +20,7 @@ const runningCollections = {};
 
 async function executeWorkflow(workflow, tabId) {
   try {
-    const engine = new WorkflowEngine(workflow, { tabId });
+    const engine = workflowEngine(workflow, { tabId });
 
     runningWorkflows[engine.id] = engine;
 

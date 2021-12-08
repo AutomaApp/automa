@@ -70,22 +70,15 @@
       </template>
       <ui-list class="space-y-1">
         <ui-list-item
+          v-for="item in links"
+          :key="item.name"
+          :href="item.url"
           tag="a"
-          href="https://github.com/kholid060/automa/wiki"
           rel="noopener"
           target="_blank"
         >
-          <v-remixicon name="riBookOpenLine" class="-ml-1 mr-2" />
-          <span>{{ t('common.docs', 2) }}</span>
-        </ui-list-item>
-        <ui-list-item
-          tag="a"
-          href="https://github.com/kholid060/automa"
-          rel="noopener"
-          target="_blank"
-        >
-          <v-remixicon name="riGithubFill" class="-ml-1 mr-2" />
-          <span>GitHub</span>
+          <v-remixicon :name="item.icon" class="-ml-1 mr-2" />
+          <span>{{ item.name }}</span>
         </ui-list-item>
       </ui-list>
     </ui-popover>
@@ -99,6 +92,23 @@ import { useGroupTooltip } from '@/composable/groupTooltip';
 useGroupTooltip();
 const { t } = useI18n();
 
+const links = [
+  {
+    name: 'Donate',
+    icon: 'riHandHeartLine',
+    url: 'https://paypal.me/akholid060',
+  },
+  {
+    name: t('common.docs', 2),
+    icon: 'riBookOpenLine',
+    url: 'https://github.com/kholid060/automa/wiki',
+  },
+  {
+    name: 'GitHub',
+    icon: 'riGithubFill',
+    url: 'https://github.com/kholid060/automa',
+  },
+];
 const tabs = [
   {
     id: 'dashboard',

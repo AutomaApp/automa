@@ -11,6 +11,13 @@
     "blocks": {
       "base": {
         "selector": "Element selector",
+        "findElement": {
+          "placeholder": "Find element by",
+          "options": {
+            "cssSelector": "CSS Selector",
+            "xpath": "XPath"
+          }
+        },
         "markElement": {
           "title": "An element will not be selected if have been selected before",
           "text": "Mark element"
@@ -57,9 +64,24 @@
           "keyboard-shortcut": "Keyboard shortcut"
         }
       },
+      "execute-workflow": {
+        "name": "Execute workflow",
+        "overwriteNote": "This will overwrite the global data of the selected workflow",
+        "select": "Select workflow",
+        "description": ""
+      },
       "active-tab": {
         "name": "Active tab",
         "description": "Set current tab that you're in as an active tab"
+      },
+      "proxy": {
+        "name": "Proxy",
+        "description": "Set the proxy of the browser",
+        "clear": "Clear all proxy",
+        "bypass": {
+          "label": "Bypass list",
+          "note": "Use commas (,) to separate URL"
+        }
       },
       "new-window": {
         "name": "New window",
@@ -158,6 +180,7 @@
         "description": "",
         "selected": "Selected",
         "type": "Form type",
+        "getValue": "Get form value",
         "text-field": {
           "name": "Text field",
           "value": "Value",
@@ -262,7 +285,10 @@
         },
         "loopThrough": {
           "placeholder": "Loop through",
+          "fromNumber": "From number",
+          "toNumber": "To number",
           "options": {
+            "numbers": "Numbers",
             "data-columns": "Data columns",
             "custom-data": "Custom data"
           }
