@@ -1,3 +1,7 @@
+export function isWhitespace(str) {
+  return !/\S/g.test(str);
+}
+
 export function parseJSON(data, def) {
   try {
     const result = JSON.parse(data);

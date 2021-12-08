@@ -8,7 +8,7 @@
     <slot></slot>
     <div class="absolute z-10 p-4 bottom-0 left-0">
       <button
-        v-tooltip.group="'Reset zoom'"
+        v-tooltip.group="t('workflow.editor.resetZoom')"
         class="p-2 rounded-lg bg-white mr-2"
         @click="editor.zoom_reset()"
       >
@@ -16,7 +16,7 @@
       </button>
       <div class="rounded-lg bg-white inline-block">
         <button
-          v-tooltip.group="'Zoom out'"
+          v-tooltip.group="t('workflow.editor.zoomOut')"
           class="p-2 rounded-lg relative z-10"
           @click="editor.zoom_out()"
         >
@@ -24,7 +24,7 @@
         </button>
         <hr class="h-6 border-r inline-block" />
         <button
-          v-tooltip.group="'Zoom in'"
+          v-tooltip.group="t('workflow.editor.zoomIn')"
           class="p-2 rounded-lg"
           @click="editor.zoom_in()"
         >
@@ -56,6 +56,7 @@
 /* eslint-disable camelcase */
 import { onMounted, shallowRef, reactive, getCurrentInstance } from 'vue';
 import emitter from 'tiny-emitter/instance';
+import { useI18n } from 'vue-i18n';
 import { tasks } from '@/utils/shared';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import drawflow from '@/lib/drawflow';
@@ -70,18 +71,19 @@ export default {
   emits: ['load', 'deleteBlock'],
   setup(props, { emit }) {
     useGroupTooltip();
+    const { t } = useI18n();
 
     const contextMenuItems = {
       block: [
         {
           id: 'duplicate',
-          name: 'Duplicate',
+          name: t('workflow.editor.duplicate'),
           icon: 'riFileCopyLine',
           event: 'duplicateBlock',
         },
         {
           id: 'delete',
-          name: 'Delete',
+          name: t('common.delete'),
           icon: 'riDeleteBin7Line',
           event: 'deleteBlock',
         },
@@ -254,6 +256,7 @@ export default {
     });
 
     return {
+      t,
       editor,
       contextMenu,
       dropHandler,

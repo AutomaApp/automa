@@ -1,0 +1,128 @@
+{
+  "home": {
+    "viewAll": "檢視全部"
+  },
+  "settings": {
+    "language": {
+      "label": "語言",
+      "helpTranslate": "找不到你的語言嗎? 請協助我們翻譯。",
+      "reloadPage": "重整頁面使其生效"
+    }
+  },
+  "workflow": {
+    "import": "匯入工作流",
+    "new": "新增工作流",
+    "delete": "刪除工作流",
+    "name": "工作流名稱",
+    "rename": "重新命名工作流",
+    "add": "建立工作流",
+    "clickToEnable": "點擊啟用",
+    "dataColumns": {
+      "title": "資料欄位",
+      "placeholder": "搜尋或建立欄位",
+      "column": {
+        "name": "欄位名稱",
+        "type": "資料型別"
+      }
+    },
+    "sidebar": {
+      "workflowIcon": "工作流圖示"
+    },
+    "editor": {
+      "zoomIn": "放大",
+      "zoomOut": "縮小",
+      "resetZoom": "重設縮放",
+      "duplicate": "複製"
+    },
+    "settings": {
+      "onError": {
+        "title": "工作流發生錯誤",
+        "items": {
+          "keepRunning": "繼續執行",
+          "stopWorkflow": "停止工作流"
+        }
+      },
+      "timeout": {
+        "title": "工作流超時 (毫秒)"
+      }
+    }
+  },
+  "collection": {
+    "description": "依序執行工作流",
+    "new": "新增集合",
+    "delete": "刪除集合",
+    "add": "建立集合",
+    "rename": "重新命名集合",
+    "flow": "工作流",
+    "dragDropText": "拖曳工作流或區塊至此",
+    "options": {
+      "atOnce": {
+        "title": "立即執行集合中的所有工作流",
+        "description": "使用此選項不會執行區塊"
+      }
+    },
+    "globalData": {
+      "note": "這將覆蓋工作流的全域資料"
+    }
+  },
+  "log": {
+    "goBack": "返回 \"{name}\" 紀錄",
+    "startedDate": "開始日期",
+    "duration": "期間",
+    "selectAll": "全選",
+    "deselectAll": "取消全選",
+    "deleteSelected": "刪除選取的紀錄",
+    "types": {
+      "stop": "工作流停止",
+      "finish": "工作流完成"
+    },
+    "messages": {
+      "workflow-disabled": "工作流已禁用",
+      "stop-timeout": "工作流因逾時而停止",
+      "no-iframe-id": "Can't find Frame ID for the iframe element with \"{selector}\" selector",
+      "no-tab": "Can't connect to a tab, use \"New tab\" or \"Active tab\" block before using the \"{name}\" block."
+    },
+    "description": {
+      "text": "{status} on {date} in {duration}",
+      "status": {
+        "success": "成功",
+        "error": "失敗",
+        "stopped": "停止"
+      }
+    },
+    "delete": {
+      "title": "刪除紀錄",
+      "description": "確定要刪除所有選取的紀錄嗎?"
+    },
+    "exportData": {
+      "title": "匯出資料",
+      "types": {
+        "json": "JSON",
+        "csv": "CSV",
+        "plain-text": "純文字"
+      }
+    },
+    "filter": {
+      "title": "篩選",
+      "byStatus": "依 status",
+      "byDate": {
+        "title": "依 date",
+        "items": {
+          "lastDay": "最後1天",
+          "last7Days": "最後7天",
+          "last30Days": "最後30天"
+        }
+      }
+    }
+  },
+  "components": {
+    "pagination": {
+      "text1": "顯示",
+      "text2": "項， 總共 {count} 項",
+      "nextPage": "下一頁",
+      "currentPage": "目前頁數",
+      "prevPage": "上一頁",
+      "of": "of {page}"
+    }
+  }
+}

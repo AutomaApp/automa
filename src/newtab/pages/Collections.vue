@@ -1,18 +1,18 @@
 <template>
   <div class="container pt-8 pb-4">
-    <h1 class="text-2xl font-semibold">Collections</h1>
+    <h1 class="text-2xl font-semibold">{{ t('common.collection', 2) }}</h1>
     <p class="text-gray-600 dark:text-gray-200">
-      Execute your workflows in sequence
+      {{ t('collection.description') }}
     </p>
     <div class="flex items-center my-6 space-x-4">
       <ui-input
         v-model="query"
+        :placeholder="`${t('common.search')}...`"
         prepend-icon="riSearch2Line"
-        placeholder="Search..."
         class="flex-1"
       />
       <ui-button variant="accent" @click="newCollection">
-        New collection
+        {{ t('collection.new') }}
       </ui-button>
     </div>
     <div
@@ -22,10 +22,10 @@
       <img src="@/assets/svg/alien.svg" class="w-96" />
       <div class="ml-4">
         <h1 class="text-2xl font-semibold max-w-md mb-6">
-          Oppss... It's looks like you don't have any collections.
+          {{ t('message.empty') }}
         </h1>
         <ui-button variant="accent" @click="newCollection">
-          New collection
+          {{ t('collection.new') }}
         </ui-button>
       </div>
     </div>
@@ -45,16 +45,18 @@
 </template>
 <script setup>
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { sendMessage } from '@/utils/message';
 import { useDialog } from '@/composable/dialog';
 import Collection from '@/models/collection';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 
 const dialog = useDialog();
+const { t } = useI18n();
 
 const collectionCardMenu = [
-  { name: 'rename', icon: 'riPencilLine' },
-  { name: 'delete', icon: 'riDeleteBin7Line' },
+  { id: 'rename', name: t('common.rename'), icon: 'riPencilLine' },
+  { id: 'delete', name: t('common.delete'), icon: 'riDeleteBin7Line' },
 ];
 
 const query = ref('');
@@ -73,9 +75,9 @@ function executeCollection(collection) {
 }
 function newCollection() {
   dialog.prompt({
-    title: 'New collection',
-    placeholder: 'Collection name',
-    okText: 'Add collection',
+    title: t('collection.new'),
+    placeholder: t('common.name'),
+    okText: t('collection.add'),
     onConfirm: (name) => {
       Collection.insert({
         data: {
@@ -88,9 +90,9 @@ function newCollection() {
 }
 function renameCollection({ id, name }) {
   dialog.prompt({
-    title: 'Rename collection',
-    placeholder: 'Collection name',
-    okText: 'Rename',
+    title: t('collection.rename'),
+    placeholder: t('common.name'),
+    okText: t('common.rename'),
     inputValue: name,
     onConfirm: (newName) => {
       Collection.update({
@@ -104,9 +106,9 @@ function renameCollection({ id, name }) {
 }
 function deleteCollection({ name, id }) {
   dialog.confirm({
-    title: 'Delete collection',
+    title: t('collection.delete'),
     okVariant: 'danger',
-    body: `Are you sure you want to delete "${name}" collection?`,
+    body: t('message.delete', { name }),
     onConfirm: () => {
       Collection.delete(id);
     },

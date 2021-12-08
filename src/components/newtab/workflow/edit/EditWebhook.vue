@@ -2,7 +2,7 @@
   <div class="mb-2 mt-4">
     <ui-textarea
       :model-value="data.description"
-      placeholder="Description"
+      :placeholder="t('common.description')"
       class="w-full mb-2"
       @change="updateData({ description: $event })"
     />
@@ -11,13 +11,13 @@
       class="mb-2 w-full"
       placeholder="https://example.com/postreceive"
       required
-      title="The Post receive URL"
+      :title="t('workflow.blocks.webhook.url')"
       type="url"
       @change="updateData({ url: $event })"
     />
     <ui-select
       :model-value="data.contentType"
-      placeholder="Select a content type"
+      :placeholder="t('workflow.blocks.webhook.contentType')"
       class="mb-2 w-full"
       @change="updateData({ contentType: $event })"
     >
@@ -31,15 +31,17 @@
     </ui-select>
     <ui-input
       :model-value="data.timeout"
+      :placeholder="t('workflow.blocks.webhook.timeout.placeholder')"
+      :title="t('workflow.blocks.webhook.timeout.title')"
       class="mb-2 w-full"
-      placeholder="Timeout"
-      title="Http request execution timeout(ms)"
       type="number"
       @change="updateData({ timeout: +$event })"
     />
     <ui-tabs v-model="activeTab" fill class="mb-4">
-      <ui-tab value="headers">Headers</ui-tab>
-      <ui-tab value="body">Content body</ui-tab>
+      <ui-tab value="headers">{{
+        t('workflow.blocks.webhook.tabs.headers')
+      }}</ui-tab>
+      <ui-tab value="body">{{ t('workflow.blocks.webhook.tabs.body') }}</ui-tab>
     </ui-tabs>
     <ui-tab-panels :model-value="activeTab">
       <ui-tab-panel
@@ -68,7 +70,7 @@
           variant="accent"
           @click="addHeader"
         >
-          <span> Add Header </span>
+          <span> {{ t('workflow.blocks.webhook.buttons.header') }} </span>
         </ui-button>
       </ui-tab-panel>
       <ui-tab-panel value="body">
@@ -85,7 +87,7 @@
     <ui-modal
       v-model="showContentModalRef"
       content-class="max-w-3xl"
-      title="Content Body"
+      :title="t('workflow.blocks.webhook.tabs.body')"
     >
       <prism-editor
         v-model="contentRef"
@@ -101,7 +103,7 @@
           class="border-b text-primary"
           target="_blank"
         >
-          Click here to learn how to add dynamic data
+          {{ t('message.useDynamicData') }}
         </a>
       </div>
     </ui-modal>
@@ -109,6 +111,7 @@
 </template>
 <script setup>
 import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { PrismEditor } from 'vue-prism-editor';
 import { highlighter } from '@/lib/prism';
 import { contentTypes } from '@/utils/shared';
@@ -120,6 +123,8 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update:data']);
+
+const { t } = useI18n();
 
 const activeTab = ref('headers');
 const contentRef = ref(props.data.body);

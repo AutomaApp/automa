@@ -14,8 +14,11 @@
       <v-remixicon :name="block.details.icon || 'riGlobalLine'" />
     </span>
     <div style="max-width: 200px">
-      <p class="font-semibold leading-none whitespace-nowrap">
-        {{ block.details.name }}
+      <p
+        v-if="block.details.id"
+        class="font-semibold leading-none whitespace-nowrap"
+      >
+        {{ t(`workflow.blocks.${block.details.id}.name`) }}
       </p>
       <p class="text-gray-600 text-overflow leading-tight">
         {{ block.data.description }}
@@ -31,6 +34,7 @@
 </template>
 <script setup>
 import emitter from 'tiny-emitter/instance';
+import { useI18n } from 'vue-i18n';
 import { useEditorBlock } from '@/composable/editorBlock';
 import { useComponentId } from '@/composable/componentId';
 import BlockBase from './BlockBase.vue';
@@ -42,6 +46,7 @@ const props = defineProps({
   },
 });
 
+const { t } = useI18n();
 const componentId = useComponentId('block-base');
 const block = useEditorBlock(`#${componentId}`, props.editor);
 

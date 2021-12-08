@@ -14,10 +14,10 @@
       />
       <div class="flex-grow"></div>
       <ui-button variant="accent" class="mr-4" @click="executeCollection">
-        Execute
+        {{ t('common.execute') }}
       </ui-button>
       <ui-button class="text-red-500" @click="deleteCollection">
-        Delete
+        {{ t('common.delete') }}
       </ui-button>
     </div>
     <div class="flex items-start">
@@ -32,8 +32,8 @@
           prepend-icon="riSearch2Line"
         />
         <ui-tabs v-model="state.sidebarTab" fill class="w-full mb-4">
-          <ui-tab value="workflows">Workflows</ui-tab>
-          <ui-tab value="blocks">Blocks</ui-tab>
+          <ui-tab value="workflows">{{ t('common.workflow', 2) }}</ui-tab>
+          <ui-tab value="blocks">{{ t('common.block', 2) }}</ui-tab>
         </ui-tabs>
         <draggable
           :list="state.sidebarTab === 'workflows' ? workflows : blocksArr"
@@ -61,10 +61,10 @@
               v-model="state.activeTab"
               class="border-none h-full space-x-1"
             >
-              <ui-tab value="flow">Flow</ui-tab>
-              <ui-tab value="logs">Logs</ui-tab>
+              <ui-tab value="flow">{{ t('collection.flow') }}</ui-tab>
+              <ui-tab value="logs">{{ t('common.log', 2) }}</ui-tab>
               <ui-tab value="running">
-                Running
+                {{ t('common.running') }}
                 <span
                   v-if="runningCollection.length > 0"
                   class="
@@ -82,12 +82,12 @@
                   {{ runningCollection.length }}
                 </span>
               </ui-tab>
-              <ui-tab value="options">Options</ui-tab>
+              <ui-tab value="options">{{ t('common.options') }}</ui-tab>
             </ui-tabs>
           </div>
           <div class="flex-grow"></div>
           <ui-button
-            v-tooltip="'Global data'"
+            v-tooltip="t('common.globalData')"
             icon
             @click="state.showGlobalData = !state.showGlobalData"
           >
@@ -112,7 +112,7 @@
                 p-4
               "
             >
-              Drop a workflow or block in here
+              {{ t('collection.dragDropText') }}
             </div>
             <draggable
               :model-value="collectionFlow"
@@ -166,7 +166,7 @@
                 src="@/assets/svg/files-and-folder.svg"
                 class="mx-auto max-w-sm"
               />
-              <p class="text-xl font-semibold">No data to show</p>
+              <p class="text-xl font-semibold">{{ t('message.noData') }}</p>
             </div>
             <shared-logs-table :logs="logs" class="w-full">
               <template #item-append="{ log }">
@@ -186,7 +186,7 @@
                 src="@/assets/svg/files-and-folder.svg"
                 class="mx-auto max-w-sm"
               />
-              <p class="text-xl font-semibold">No data to show</p>
+              <p class="text-xl font-semibold">{{ t('message.noData') }}</p>
             </div>
             <div class="grid grid-cols-2 gap-4">
               <shared-workflow-state
@@ -199,10 +199,10 @@
           <ui-tab-panel value="options">
             <ui-checkbox v-model="collectionOptions.atOnce">
               <p class="leading-tight">
-                Execute all workflows in the collection at once
+                {{ t('collection.options.atOnce.title') }}
               </p>
               <p class="text-sm text-gray-600 leading-tight">
-                Block not gonna executed when using this option
+                {{ t('collection.options.atOnce.description') }}
               </p>
             </ui-checkbox>
           </ui-tab-panel>
@@ -211,9 +211,9 @@
     </div>
   </div>
   <ui-modal v-model="state.showGlobalData" content-class="max-w-xl">
-    <template #header>Global data</template>
+    <template #header>{{ t('common.globalData') }}</template>
     <p class="inline-block">
-      This will overwrite the global data of the workflow
+      {{ t('collection.globalData.note') }}
     </p>
     <p class="float-right clear-both" title="Characters limit">
       {{ collection.globalData.length }}/{{ (1e4).toLocaleString() }}
@@ -233,6 +233,7 @@ import { nanoid } from 'nanoid';
 import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';
 import { PrismEditor } from 'vue-prism-editor';
+import { useI18n } from 'vue-i18n';
 import Draggable from 'vuedraggable';
 import { highlighter } from '@/lib/prism';
 import { useDialog } from '@/composable/dialog';
@@ -243,13 +244,19 @@ import Collection from '@/models/collection';
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
 import SharedWorkflowState from '@/components/newtab/shared/SharedWorkflowState.vue';
 
+const { t } = useI18n();
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
+const dialog = useDialog();
+
 const blocks = {
   'export-result': {
     type: 'block',
     id: 'export-result',
     icon: 'riDownloadLine',
-    name: 'Export result',
-    description: 'Export the collection result as JSON',
+    name: t('collection.blocks.export-result.name'),
+    description: t('collection.blocks.export-result.description'),
     data: {
       type: 'json',
     },
@@ -259,11 +266,6 @@ const blocksArr = Object.entries(blocks).map(([id, value]) => ({
   ...value,
   id,
 }));
-
-const store = useStore();
-const route = useRoute();
-const router = useRouter();
-const dialog = useDialog();
 
 const state = shallowReactive({
   query: '',
@@ -283,8 +285,8 @@ const runningCollection = computed(() =>
 const logs = computed(() =>
   Log.query()
     .where(
-      ({ collectionId, isInCollection }) =>
-        collectionId === route.params.id && !isInCollection
+      ({ collectionId, isInCollection, isChildLog }) =>
+        collectionId === route.params.id && (!isInCollection || !isChildLog)
     )
     .orderBy('startedAt', 'desc')
     .limit(10)

@@ -3,12 +3,14 @@
     <ui-input
       v-model.lowercase="state.query"
       autofocus
-      placeholder="Search or add column"
+      :placeholder="t('workflow.dataColumns.placeholder')"
       class="mr-2 flex-1"
       @keyup.enter="addColumn"
       @keyup.esc="$emit('close')"
     />
-    <ui-button variant="accent" @click="addColumn">Add</ui-button>
+    <ui-button variant="accent" @click="addColumn">
+      {{ t('common.add') }}
+    </ui-button>
   </div>
   <ul
     class="space-y-2 overflow-y-auto scroll py-1"
@@ -23,12 +25,12 @@
         :model-value="columns[index].name"
         disabled
         class="flex-1"
-        placeholder="Column name"
+        :placeholder="t('workflow.dataColumns.column.name')"
       />
       <ui-select
         v-model="columns[index].type"
         class="flex-1"
-        placeholder="Data type"
+        :placeholder="t('workflow.dataColumns.column.type')"
       >
         <option v-for="type in dataTypes" :key="type.id" :value="type.id">
           {{ type.name }}
@@ -42,6 +44,7 @@
 </template>
 <script setup>
 import { computed, onMounted, watch, reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { debounce } from '@/utils/helper';
 
 const props = defineProps({
@@ -51,6 +54,8 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update', 'close']);
+
+const { t } = useI18n();
 
 const dataTypes = [
   { id: 'string', name: 'Text' },

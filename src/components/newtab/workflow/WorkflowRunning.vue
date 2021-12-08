@@ -25,7 +25,7 @@
         </ui-button>
         <ui-button variant="accent" @click="stopWorkflow(item)">
           <v-remixicon name="riStopLine" class="mr-2 -ml-1" />
-          <span>Stop</span>
+          <span>{{ t('common.stop') }}</span>
         </ui-button>
       </div>
       <div class="flex items-center bg-box-transparent px-4 py-2 rounded-lg">
@@ -34,13 +34,14 @@
           <p class="flex-1 ml-2 mr-4">{{ getBlock(item).name }}</p>
           <ui-spinner color="text-accnet" size="20" />
         </template>
-        <p v-else>No block</p>
+        <p v-else>{{ t('message.noBlock') }}</p>
       </div>
     </ui-card>
   </div>
 </template>
 <script setup>
 import browser from 'webextension-polyfill';
+import { useI18n } from 'vue-i18n';
 import { sendMessage } from '@/utils/message';
 import { tasks } from '@/utils/shared';
 import dayjs from '@/lib/dayjs';
@@ -51,6 +52,8 @@ defineProps({
     default: () => [],
   },
 });
+
+const { t } = useI18n();
 
 function getBlock(item) {
   if (!item.state.currentBlock) return {};

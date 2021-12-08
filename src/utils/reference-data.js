@@ -3,13 +3,17 @@ import { isObject, objectHasKey, replaceMustache } from '@/utils/helper';
 
 const objectPath = { get, set };
 
-function parseKey(key) {
+export function parseKey(key) {
   const [dataKey, path] = key.split('@');
 
-  if (['prevBlockData', 'loopData', 'globalData'].includes(dataKey))
+  if (
+    ['prevBlockData', 'loopData', 'globalData', 'activeTabUrl'].includes(
+      dataKey
+    )
+  )
     return { dataKey, path: path || '' };
 
-  const pathArr = path?.split('.') ?? '';
+  const pathArr = path?.split('.') ?? [];
   let dataPath = '';
 
   if (pathArr.length === 1) {
@@ -31,7 +35,16 @@ function parseKey(key) {
 }
 
 export default function (block, data) {
-  const replaceKeys = ['url', 'fileName', 'name', 'value', 'body', 'selector'];
+  const replaceKeys = [
+    'url',
+    'name',
+    'body',
+    'value',
+    'fileName',
+    'selector',
+    'prefixText',
+    'suffixText',
+  ];
   let replacedBlock = block;
 
   replaceKeys.forEach((blockDataKey) => {

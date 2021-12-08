@@ -22,9 +22,13 @@
       >
         <v-remixicon name="riExternalLinkLine" />
       </ui-button>
-      <ui-button variant="accent" @click="stopWorkflow">
+      <ui-button
+        variant="accent"
+        :disabled="!!data.state.parentState"
+        @click="stopWorkflow"
+      >
         <v-remixicon name="riStopLine" class="mr-2 -ml-1" />
-        <span>Stop</span>
+        <span>{{ t('common.stop') }}</span>
       </ui-button>
     </div>
     <div class="divide-y bg-box-transparent divide-y px-4 rounded-lg">
@@ -34,14 +38,21 @@
         class="flex items-center py-2"
       >
         <v-remixicon :name="block.icon" />
-        <p class="flex-1 ml-2 mr-4">{{ block.name }}</p>
+        <p class="flex-1 ml-2 mr-4 text-overflow">{{ block.name }}</p>
         <ui-spinner color="text-accnet" size="20" />
       </div>
+    </div>
+    <div
+      v-if="data.state.parentState"
+      class="py-2 px-4 bg-yellow-200 rounded-lg mt-2 text-sm"
+    >
+      {{ t('workflow.state.executeBy', { name: data.state.parentState.name }) }}
     </div>
   </ui-card>
 </template>
 <script setup>
 import browser from 'webextension-polyfill';
+import { useI18n } from 'vue-i18n';
 import { sendMessage } from '@/utils/message';
 import { tasks } from '@/utils/shared';
 import dayjs from '@/lib/dayjs';
@@ -53,12 +64,18 @@ const props = defineProps({
   },
 });
 
+const { t } = useI18n();
+
 function getBlock() {
   if (!props.data.state.currentBlock) return [];
 
   if (Array.isArray(props.data.state.currentBlock)) {
     return props.data.state.currentBlock.map((item) => {
-      if (tasks[item.name]) return tasks[item.name];
+      if (tasks[item.name])
+        return {
+          ...tasks[item.name],
+          name: t(`workflow.blocks.${item.name}.name`),
+        };
 
       return item;
     });

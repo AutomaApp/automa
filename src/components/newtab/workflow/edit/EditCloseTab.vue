@@ -5,7 +5,7 @@
         :model-value="data.activeTab"
         @change="updateData({ activeTab: $event })"
       >
-        Close active tab
+        {{ t('workflow.blocks.close-tab.activeTab') }}
       </ui-checkbox>
     </div>
     <ui-input
@@ -15,7 +15,7 @@
       @change="updateData({ url: $event })"
     >
       <template #label>
-        URL or match pattern
+        {{ t('workflow.blocks.close-tab.url') }}
         <a
           href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns"
           target="_blank"
@@ -29,6 +29,8 @@
   </div>
 </template>
 <script setup>
+import { useI18n } from 'vue-i18n';
+
 const props = defineProps({
   data: {
     type: Object,
@@ -36,6 +38,8 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update:data']);
+
+const { t } = useI18n();
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });

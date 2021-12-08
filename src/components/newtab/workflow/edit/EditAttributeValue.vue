@@ -2,7 +2,7 @@
   <edit-interaction-base v-bind="{ data }" @change="updateData">
     <ui-input
       :model-value="data.attributeName"
-      placeholder="Attribute name"
+      :placeholder="t('workflow.blocks.attribute-value.forms.name')"
       class="mt-3 w-full"
       @change="updateData({ attributeName: $event })"
     />
@@ -11,12 +11,12 @@
       class="mt-3"
       @change="updateData({ saveData: $event })"
     >
-      Save data
+      {{ t('workflow.blocks.attribute-value.forms.checkbox') }}
     </ui-checkbox>
     <div v-if="data.saveData" class="flex items-center mt-1">
       <ui-select
         :model-value="data.dataColumn"
-        placeholder="Data column"
+        :placeholder="t('workflow.blocks.attribute-value.forms.column')"
         class="mr-2 flex-1"
         @change="updateData({ dataColumn: $event })"
       >
@@ -28,11 +28,7 @@
           {{ column.name }}
         </option>
       </ui-select>
-      <ui-button
-        icon
-        title="Data columns"
-        @click="workflow.showDataColumnsModal(true)"
-      >
+      <ui-button icon @click="workflow.showDataColumnsModal(true)">
         <v-remixicon name="riKey2Line" />
       </ui-button>
     </div>
@@ -40,6 +36,7 @@
 </template>
 <script setup>
 import { inject } from 'vue';
+import { useI18n } from 'vue-i18n';
 import EditInteractionBase from './EditInteractionBase.vue';
 
 const props = defineProps({
@@ -50,6 +47,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:data']);
 
+const { t } = useI18n();
 const workflow = inject('workflow');
 
 function updateData(value) {

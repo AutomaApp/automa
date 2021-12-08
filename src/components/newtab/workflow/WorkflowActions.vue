@@ -12,12 +12,21 @@
   </ui-card>
   <ui-card padding="p-1 ml-4">
     <button
-      v-tooltip.group="'Execute'"
+      v-if="!workflow.isDisabled"
+      v-tooltip.group="t('common.execute')"
       icon
       class="hoverable p-2 rounded-lg"
       @click="$emit('execute')"
     >
       <v-remixicon name="riPlayLine" />
+    </button>
+    <button
+      v-else
+      v-tooltip="t('workflow.clickToEnable')"
+      class="p-2"
+      @click="$emit('update', { isDisabled: false })"
+    >
+      {{ t('common.disabled') }}
     </button>
   </ui-card>
   <ui-card padding="p-1 ml-4 space-x-1">
@@ -28,6 +37,13 @@
         </button>
       </template>
       <ui-list class="w-36">
+        <ui-list-item
+          class="cursor-pointer"
+          @click="$emit('update', { isDisabled: !workflow.isDisabled })"
+        >
+          <v-remixicon name="riToggleLine" class="mr-2 -ml-1" />
+          {{ t(`common.${workflow.isDisabled ? 'enable' : 'disable'}`) }}
+        </ui-list-item>
         <ui-list-item
           v-for="item in moreActions"
           :key="item.id"
@@ -62,11 +78,12 @@
         ></span>
       </span>
       <v-remixicon name="riSaveLine" class="mr-2 -ml-1 my-1" />
-      Save
+      {{ t('common.save') }}
     </ui-button>
   </ui-card>
 </template>
 <script setup>
+import { useI18n } from 'vue-i18n';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 
 defineProps({
@@ -74,42 +91,55 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  workflow: {
+    type: Object,
+    default: () => ({}),
+  },
 });
-defineEmits(['showModal', 'execute', 'rename', 'delete', 'save', 'export']);
+defineEmits([
+  'showModal',
+  'execute',
+  'rename',
+  'delete',
+  'save',
+  'export',
+  'update',
+]);
 
 useGroupTooltip();
+const { t } = useI18n();
 
 const modalActions = [
   {
     id: 'data-columns',
-    name: 'Data columns',
+    name: t('workflow.dataColumns.title'),
     icon: 'riKey2Line',
   },
   {
     id: 'global-data',
-    name: 'Global data',
+    name: t('common.globalData'),
     icon: 'riDatabase2Line',
   },
   {
     id: 'settings',
-    name: 'Settings',
+    name: t('common.settings'),
     icon: 'riSettings3Line',
   },
 ];
 const moreActions = [
   {
     id: 'export',
-    name: 'Export',
+    name: t('common.export'),
     icon: 'riDownloadLine',
   },
   {
     id: 'rename',
-    name: 'Rename',
+    name: t('common.rename'),
     icon: 'riPencilLine',
   },
   {
     id: 'delete',
-    name: 'Delete',
+    name: t('common.delete'),
     icon: 'riDeleteBin7Line',
   },
   {

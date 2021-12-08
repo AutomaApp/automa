@@ -9,6 +9,7 @@ export const tasks = {
     editComponent: 'EditTrigger',
     category: 'general',
     inputs: 0,
+    docs: true,
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
@@ -24,6 +25,22 @@ export const tasks = {
       activeInInput: false,
       isUrlRegex: false,
       days: [],
+    },
+  },
+  'execute-workflow': {
+    name: 'Execute workflow',
+    description: '',
+    icon: 'riFlowChart',
+    component: 'BlockBasic',
+    category: 'general',
+    editComponent: 'EditExecuteWorkflow',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      workflowId: '',
+      globalData: '',
     },
   },
   'active-tab': {
@@ -73,6 +90,25 @@ export const tasks = {
       description: '',
       incognito: false,
       windowState: 'normal',
+    },
+  },
+  proxy: {
+    name: 'Proxy',
+    description: 'Set the proxy of the browser',
+    icon: 'riShieldKeyholeLine',
+    component: 'BlockBasic',
+    category: 'browser',
+    editComponent: 'EditProxy',
+    inputs: 1,
+    outputs: 1,
+    maxConnection: 1,
+    allowedInputs: true,
+    data: {
+      scheme: 'https',
+      host: '',
+      port: 443,
+      bypassList: '',
+      clearProxy: false,
     },
   },
   'go-back': {
@@ -146,6 +182,7 @@ export const tasks = {
     maxConnection: 1,
     data: {
       description: '',
+      findBy: 'cssSelector',
       selector: '',
       markEl: false,
       multiple: false,
@@ -179,10 +216,13 @@ export const tasks = {
     maxConnection: 1,
     data: {
       description: '',
+      findBy: 'cssSelector',
       selector: '',
       markEl: false,
       multiple: false,
       regex: '',
+      prefixText: '',
+      suffixText: '',
       regexExp: ['g'],
       dataColumn: '',
       saveData: true,
@@ -215,6 +255,7 @@ export const tasks = {
     maxConnection: 1,
     data: {
       description: '',
+      findBy: 'cssSelector',
       selector: 'html',
       markEl: false,
       multiple: false,
@@ -239,6 +280,7 @@ export const tasks = {
     maxConnection: 1,
     data: {
       description: '',
+      findBy: 'cssSelector',
       selector: '',
       markEl: false,
       disableMultiple: true,
@@ -257,6 +299,7 @@ export const tasks = {
     maxConnection: 1,
     data: {
       description: '',
+      findBy: 'cssSelector',
       selector: '',
       markEl: false,
       multiple: false,
@@ -278,11 +321,15 @@ export const tasks = {
     maxConnection: 1,
     data: {
       description: '',
+      findBy: 'cssSelector',
       selector: '',
       markEl: false,
       multiple: false,
       selected: true,
       clearValue: true,
+      getValue: false,
+      saveData: true,
+      dataColumn: '',
       type: 'text-field',
       value: '',
       delay: 0,
@@ -324,12 +371,14 @@ export const tasks = {
     category: 'interaction',
     inputs: 1,
     outputs: 1,
+    docs: true,
     allowedInputs: true,
     maxConnection: 1,
     data: {
       description: '',
-      timeout: 10000,
+      timeout: 20000,
       code: 'console.log("Hello world!")',
+      preloadScripts: [],
     },
   },
   'trigger-event': {
@@ -345,6 +394,7 @@ export const tasks = {
     maxConnection: 1,
     data: {
       description: '',
+      findBy: 'cssSelector',
       selector: '',
       markEl: false,
       multiple: false,
@@ -379,6 +429,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     data: {
+      findBy: 'cssSelector',
       selector: '',
       tryCount: 1,
       timeout: 500,
@@ -419,6 +470,8 @@ export const tasks = {
     data: {
       loopId: '',
       maxLoop: 0,
+      fromNumber: 1,
+      toNumber: 10,
       loopData: '[]',
       description: '',
       loopThrough: 'data-columns',
@@ -452,6 +505,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     data: {
+      findBy: 'cssSelector',
       selector: '',
       windowType: 'main-window',
     },
@@ -482,6 +536,11 @@ export const eventList = [
   { id: 'dblclick', name: 'Double Click', type: 'mouse-event' },
   { id: 'mouseup', name: 'Mouseup', type: 'mouse-event' },
   { id: 'mousedown', name: 'Mousedown', type: 'mouse-event' },
+  { id: 'mouseenter ', name: 'Mouseenter', type: 'mouse-event' },
+  { id: 'mouseleave ', name: 'Mouseleave', type: 'mouse-event' },
+  { id: 'mouseover ', name: 'Mouseover', type: 'mouse-event' },
+  { id: 'mouseout ', name: 'Mouseout', type: 'mouse-event' },
+  { id: 'mousemove ', name: 'Mousemove', type: 'mouse-event' },
   { id: 'focus', name: 'Focus', type: 'focus-event' },
   { id: 'blur', name: 'Blur', type: 'focus-event' },
   { id: 'input', name: 'Input', type: 'input-event' },
@@ -521,4 +580,10 @@ export const firstWorkflows = [
 export const contentTypes = [
   { name: 'application/json', value: 'json' },
   { name: 'application/x-www-form-urlencoded', value: 'form' },
+];
+
+export const supportLocales = [
+  { id: 'en', name: 'English' },
+  { id: 'zh', name: '简体中文' },
+  { id: 'zh-tw', name: '繁體中文' },
 ];

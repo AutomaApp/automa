@@ -6,7 +6,7 @@
       rel="noopener"
       class="inline-block text-primary"
     >
-      Learn how to access the global data in a block
+      {{ t('message.useDynamicData') }}
     </a>
     <p class="float-right clear-both" title="Characters limit">
       {{ globalData.length }}/{{ maxLength.toLocaleString() }}
@@ -21,6 +21,7 @@
 </template>
 <script setup>
 import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { PrismEditor } from 'vue-prism-editor';
 import { highlighter } from '@/lib/prism';
 import { debounce } from '@/utils/helper';
@@ -32,6 +33,8 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update']);
+
+const { t } = useI18n();
 
 const maxLength = 1e4;
 const globalData = ref(`${props.workflow.globalData}`);

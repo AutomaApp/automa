@@ -36,12 +36,12 @@
       <router-link
         v-for="tab in tabs"
         v-slot="{ href, navigate, isActive }"
-        :key="tab.name"
+        :key="tab.id"
         :to="tab.path"
         custom
       >
         <a
-          v-tooltip:right.group="tab.name"
+          v-tooltip:right.group="t(`common.${tab.id}`, 2)"
           :class="{ 'is-active': isActive }"
           :href="href"
           class="
@@ -64,51 +64,76 @@
       </router-link>
     </div>
     <div class="flex-grow"></div>
-    <a
-      v-tooltip:right="'Documentation'"
-      href="https://github.com/kholid060/automa/wiki"
-      rel="noopener"
-      class="mb-8"
-      target="_blank"
-    >
-      <v-remixicon name="riBookOpenLine" />
-    </a>
-    <a
-      v-tooltip:right="'Github'"
-      href="https://github.com/kholid060/automa"
-      rel="noopener"
-      target="_blank"
-    >
-      <v-remixicon name="riGithubFill" />
-    </a>
+    <ui-popover placement="right" trigger="mouseenter click">
+      <template #trigger>
+        <v-remixicon class="cursor-pointer" name="riInformationLine" />
+      </template>
+      <ui-list class="space-y-1">
+        <ui-list-item
+          v-for="item in links"
+          :key="item.name"
+          :href="item.url"
+          tag="a"
+          rel="noopener"
+          target="_blank"
+        >
+          <v-remixicon :name="item.icon" class="-ml-1 mr-2" />
+          <span>{{ item.name }}</span>
+        </ui-list-item>
+      </ui-list>
+    </ui-popover>
   </aside>
 </template>
 <script setup>
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 
 useGroupTooltip();
+const { t } = useI18n();
 
+const links = [
+  {
+    name: 'Donate',
+    icon: 'riHandHeartLine',
+    url: 'https://paypal.me/akholid060',
+  },
+  {
+    name: t('common.docs', 2),
+    icon: 'riBookOpenLine',
+    url: 'https://github.com/kholid060/automa/wiki',
+  },
+  {
+    name: 'GitHub',
+    icon: 'riGithubFill',
+    url: 'https://github.com/kholid060/automa',
+  },
+];
 const tabs = [
   {
-    name: 'Dashboard',
+    id: 'dashboard',
     icon: 'riHome5Line',
     path: '/',
   },
   {
-    name: 'Workflows',
+    id: 'workflow',
     icon: 'riFlowChart',
     path: '/workflows',
   },
   {
-    name: 'Collections',
+    id: 'collection',
     icon: 'riFolderLine',
     path: '/collections',
   },
   {
-    name: 'Logs',
+    id: 'log',
     icon: 'riHistoryLine',
     path: '/logs',
+  },
+  {
+    id: 'settings',
+    icon: 'riSettings3Line',
+    path: '/settings',
   },
 ];
 const hoverIndicator = ref(null);

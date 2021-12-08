@@ -6,7 +6,7 @@
         class="inline-block text-sm mr-4 p-2 rounded-lg"
       >
         <v-remixicon name="riTimerLine" size="20" class="inline-block mr-1" />
-        <span>Delay</span>
+        <span>{{ t('workflow.blocks.delay.name') }}</span>
       </div>
       <div class="flex-grow"></div>
       <v-remixicon
@@ -18,9 +18,9 @@
     <input
       :value="block.data.time"
       min="0"
-      title="Delay in millisecond"
+      :title="t('workflow.blocks.delay.input.title')"
+      :placeholder="t('workflow.blocks.delay.input.placeholder')"
       class="px-4 py-2 rounded-lg w-36 bg-input"
-      placeholder="(millisecond)"
       type="number"
       required
       @input="handleInput"
@@ -28,6 +28,7 @@
   </div>
 </template>
 <script setup>
+import { useI18n } from 'vue-i18n';
 import emitter from 'tiny-emitter/instance';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
@@ -39,6 +40,7 @@ const props = defineProps({
   },
 });
 
+const { t } = useI18n();
 const componentId = useComponentId('block-delay');
 const block = useEditorBlock(`#${componentId}`, props.editor);
 

@@ -55,10 +55,25 @@
         <v-remixicon name="riKey2Line" />
       </ui-button>
     </div>
+    <ui-input
+      :model-value="data.prefixText"
+      :title="t('workflow.blocks.get-text.prefixText.title')"
+      :placeholder="t('workflow.blocks.get-text.prefixText.placeholder')"
+      class="w-full mt-3 mb-2"
+      @change="updateData({ prefixText: $event })"
+    />
+    <ui-input
+      :model-value="data.suffixText"
+      :title="t('workflow.blocks.get-text.suffixText.title')"
+      :placeholder="t('workflow.blocks.get-text.suffixText.placeholder')"
+      class="w-full"
+      @change="updateData({ suffixText: $event })"
+    />
   </edit-interaction-base>
 </template>
 <script setup>
 import { inject, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import EditInteractionBase from './EditInteractionBase.vue';
 
 const props = defineProps({
@@ -68,6 +83,8 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update:data']);
+
+const { t } = useI18n();
 
 const workflow = inject('workflow');
 const regexExp = ref(props.data.regexExp);

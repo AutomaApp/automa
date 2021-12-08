@@ -3,7 +3,7 @@
     <ui-textarea
       :model-value="data.description"
       autoresize
-      placeholder="Description"
+      :placeholder="t('common.description')"
       class="w-full mb-2"
       @change="updateData({ description: $event })"
     />
@@ -11,57 +11,91 @@
       type="number"
       :model-value="data.timeout"
       class="mb-2 w-full"
-      placeholder="Timeout"
-      title="Javascript code execution timeout"
+      :placeholder="t('workflow.blocks.javascript-code.timeout.placeholder')"
+      :title="t('workflow.blocks.javascript-code.timeout.title')"
       @change="updateData({ timeout: +$event })"
     />
     <prism-editor
-      v-if="!showCodeModal"
+      v-if="!state.showCodeModal"
       :model-value="data.code"
       :highlight="highlighter('javascript')"
       readonly
       class="p-4 max-h-80"
-      @click="showCodeModal = true"
+      @click="state.showCodeModal = true"
     />
-    <ui-modal
-      v-model="showCodeModal"
-      title="Javascript code"
-      content-class="max-w-3xl"
-    >
-      <prism-editor
-        v-model="code"
-        class="py-4"
-        :highlight="highlighter('javascript')"
-        line-numbers
-        style="height: calc(100vh - 18rem)"
-      />
-      <div>
-        Note:
-        <ul class="list-disc pl-5">
-          <li>
-            To execute the next block, you can call the
-            <code>automaNextBlock</code> function. This function accepts one
-            parameter, which you can use to save data to the workflow. Data
-            format:
-            <ul class="list-disc space-y-2 mt-2 text-sm pl-5">
-              <li><code>{ key: value }</code></li>
-              <li>
-                <code>[{ key: value }, { key: value }]</code>
-              </li>
-            </ul>
-            You must use the column that you added as a key.
-          </li>
-          <li>
-            To reset the execution timeout of the code, you can call the
-            <code>automaResetTimeout</code> function.
-          </li>
-        </ul>
-      </div>
+    <ui-modal v-model="state.showCodeModal" content-class="max-w-3xl">
+      <template #header>
+        <ui-tabs v-model="state.activeTab" class="border-none">
+          <ui-tab value="code">
+            {{ t('workflow.blocks.javascript-code.modal.tabs.code') }}
+          </ui-tab>
+          <ui-tab value="preloadScript">
+            {{ t('workflow.blocks.javascript-code.modal.tabs.preloadScript') }}
+          </ui-tab>
+        </ui-tabs>
+      </template>
+      <ui-tab-panels
+        v-model="state.activeTab"
+        class="overflow-auto"
+        style="height: calc(100vh - 9rem)"
+      >
+        <ui-tab-panel value="code" class="h-full">
+          <prism-editor
+            v-model="state.code"
+            :highlight="highlighter('javascript')"
+            line-numbers
+            class="py-4 overflow-auto"
+            style="height: 87%"
+          />
+          <p class="mt-1">
+            {{ t('workflow.blocks.javascript-code.availabeFuncs') }}
+          </p>
+          <p class="space-x-1">
+            <a
+              v-for="func in availableFuncs"
+              :key="func.id"
+              :href="`https://github.com/Kholid060/automa/wiki/Blocks#${func.id}`"
+              target="_blank"
+              rel="noopener"
+              class="inline-block"
+            >
+              <code>
+                {{ func.name }}
+              </code>
+            </a>
+          </p>
+        </ui-tab-panel>
+        <ui-tab-panel value="preloadScript">
+          <div
+            v-for="(script, index) in state.preloadScripts"
+            :key="index"
+            class="flex items-center mt-4"
+          >
+            <v-remixicon
+              name="riDeleteBin7Line"
+              class="mr-2 cursor-pointer"
+              @click="state.preloadScripts.splice(index, 1)"
+            />
+            <ui-input
+              v-model="state.preloadScripts[index].src"
+              placeholder="http://example.com/script.js"
+              class="flex-1 mr-4"
+            />
+            <ui-checkbox v-model="state.preloadScripts[index].removeAfterExec">
+              {{ t('workflow.blocks.javascript-code.removeAfterExec') }}
+            </ui-checkbox>
+          </div>
+          <ui-button variant="accent" class="w-20 mt-4" @click="addScript">
+            {{ t('common.add') }}
+          </ui-button>
+        </ui-tab-panel>
+      </ui-tab-panels>
     </ui-modal>
   </div>
 </template>
 <script setup>
-import { ref, watch } from 'vue';
+import { watch, reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { PrismEditor } from 'vue-prism-editor';
 import { highlighter } from '@/lib/prism';
 
@@ -73,16 +107,41 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:data']);
 
-const code = ref(props.data.code);
-const showCodeModal = ref(false);
+const { t } = useI18n();
+
+const availableFuncs = [
+  { name: 'automaNextBlock(data)', id: 'automanextblockdata' },
+  { name: 'automaRefData(keyword, path)', id: 'automarefdatakeyword-path' },
+  { name: 'automaResetTimeout', id: 'automaresettimeout' },
+];
+
+const state = reactive({
+  activeTab: 'code',
+  code: `${props.data.code}`,
+  preloadScripts: [...(props.data.preloadScripts || [])],
+  showCodeModal: false,
+});
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }
+function addScript() {
+  state.preloadScripts.push({ src: '', removeAfterExec: true });
+}
 
-watch(code, (value) => {
-  updateData({ code: value });
-});
+watch(
+  () => state.code,
+  (value) => {
+    updateData({ code: value });
+  }
+);
+watch(
+  () => state.preloadScripts,
+  (value) => {
+    updateData({ preloadScripts: value });
+  },
+  { deep: true }
+);
 </script>
 <style scoped>
 code {

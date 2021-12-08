@@ -28,9 +28,16 @@
   ],
   "permissions": [
     "tabs",
+    "proxy",
     "alarms",
     "storage",
     "unlimitedStorage",
     "<all_urls>"
+  ],
+  "web_accessible_resources": [
+    "/elementSelector.css",
+    "/Inter-roman-latin.var.woff2",
+    "/locales/*",
+    "elementSelector.bundle.js"
   ]
 }

@@ -1,21 +1,45 @@
 <template>
   <div class="px-4 flex items-center mb-2 mt-1">
-    <ui-popover class="mr-2 h-6">
+    <ui-popover class="mr-2 h-8">
       <template #trigger>
-        <span title="Workflow icon" class="cursor-pointer">
-          <v-remixicon :name="workflow.icon" size="26" />
+        <span
+          :title="t('workflow.sidebar.workflowIcon')"
+          class="cursor-pointer inline-block h-full"
+        >
+          <ui-img
+            v-if="workflow.icon.startsWith('http')"
+            :src="workflow.icon"
+            class="w-8 h-8"
+          />
+          <v-remixicon v-else :name="workflow.icon" size="26" class="mt-1" />
         </span>
       </template>
-      <p class="mb-2">Workflow icon</p>
-      <div class="grid grid-cols-4 gap-1">
-        <span
-          v-for="icon in icons"
-          :key="icon"
-          class="cursor-pointer rounded-lg inline-block p-2 hoverable"
-          @click="$emit('update', { icon })"
-        >
-          <v-remixicon :name="icon" />
-        </span>
+      <div class="w-56">
+        <p class="mb-2">{{ t('workflow.sidebar.workflowIcon') }}</p>
+        <div class="grid grid-cols-5 mb-2 gap-1">
+          <span
+            v-for="icon in icons"
+            :key="icon"
+            class="
+              cursor-pointer
+              rounded-lg
+              inline-block
+              text-center
+              p-2
+              hoverable
+            "
+            @click="$emit('update', { icon })"
+          >
+            <v-remixicon :name="icon" />
+          </span>
+        </div>
+        <ui-input
+          :model-value="workflow.icon.startsWith('ri') ? '' : workflow.icon"
+          type="url"
+          placeholder="http://example.com/img.png"
+          label="Icon URL"
+          @change="$emit('update', { icon: $event })"
+        />
       </div>
     </ui-popover>
     <p class="font-semibold text-overflow inline-block text-lg flex-1 mr-4">
@@ -24,12 +48,12 @@
   </div>
   <ui-input
     v-model="query"
+    :placeholder="`${t('common.search')}...`"
     prepend-icon="riSearch2Line"
     class="px-4 mt-4 mb-2"
-    placeholder="Search blocks"
   />
   <div class="scroll bg-scroll overflow-auto px-4 flex-1 overflow-auto">
-    <template v-for="(items, catId) in taskList" :key="catId">
+    <template v-for="(items, catId) in blocks" :key="catId">
       <div class="flex items-center top-0 space-x-2 mb-2">
         <span
           :class="categories[catId].color"
@@ -41,7 +65,13 @@
         <div
           v-for="block in items"
           :key="block.id"
-          :title="block.description || block.name"
+          :title="
+            t(
+              `workflow.blocks.${block.id}.${
+                block.description ? 'description' : 'name'
+              }`
+            )
+          "
           draggable="true"
           class="
             transform
@@ -61,7 +91,7 @@
             v-if="block.docs"
             :href="`https://github.com/Kholid060/automa/wiki/Blocks#${block.id}`"
             target="_blank"
-            title="Documentation"
+            :title="t('common.docs')"
             rel="noopener"
             class="absolute top-px right-2"
           >
@@ -78,6 +108,7 @@
 </template>
 <script setup>
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { tasks, categories } from '@/utils/shared';
 
 defineProps({
@@ -91,6 +122,8 @@ defineProps({
   },
 });
 defineEmits(['update']);
+
+const { t } = useI18n();
 
 const icons = [
   'riGlobalLine',
@@ -107,16 +140,19 @@ const icons = [
   'riCommandLine',
 ];
 
-const query = ref('');
-const taskList = computed(() =>
-  Object.keys(tasks).reduce((arr, key) => {
-    const task = tasks[key];
+const blocksArr = Object.entries(tasks).map(([key, block]) => ({
+  ...block,
+  id: key,
+  name: t(`workflow.blocks.${key}.name`),
+}));
 
-    if (tasks[key].name.toLowerCase().includes(query.value.toLowerCase())) {
-      (arr[task.category] = arr[task.category] || []).push({
-        id: key,
-        ...task,
-      });
+const query = ref('');
+const blocks = computed(() =>
+  blocksArr.reduce((arr, block) => {
+    if (
+      block.name.toLocaleLowerCase().includes(query.value.toLocaleLowerCase())
+    ) {
+      (arr[block.category] = arr[block.category] || []).push(block);
     }
 
     return arr;

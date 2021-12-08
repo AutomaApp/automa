@@ -6,6 +6,7 @@ import Collections from './pages/Collections.vue';
 import CollectionsDetails from './pages/collections/[id].vue';
 import Logs from './pages/Logs.vue';
 import LogsDetails from './pages/logs/[id].vue';
+import Settings from './pages/Settings.vue';
 
 const routes = [
   {
@@ -42,6 +43,11 @@ const routes = [
     name: 'logs-details',
     path: '/logs/:id',
     component: LogsDetails,
+  },
+  {
+    name: 'settings',
+    path: '/settings',
+    component: Settings,
   },
 ];
 

@@ -43,9 +43,16 @@ const options = {
     background: path.join(__dirname, 'src', 'background', 'index.js'),
     contentScript: path.join(__dirname, 'src', 'content', 'index.js'),
     shortcut: path.join(__dirname, 'src', 'content', 'shortcut.js'),
+    elementSelector: path.join(
+      __dirname,
+      'src',
+      'content',
+      'element-selector',
+      'main.js'
+    ),
   },
   chromeExtensionBoilerplate: {
-    notHotReload: ['contentScript', 'shortcut'],
+    notHotReload: ['contentScript', 'shortcut', 'elementSelector'],
   },
   output: {
     path: path.resolve(__dirname, 'build'),
@@ -62,9 +69,6 @@ const options = {
         test: /\.css$/,
         use: [
           MiniCssExtractPlugin.loader,
-          // {
-          //   loader: 'style-loader',
-          // },
           {
             loader: 'css-loader',
           },
@@ -72,6 +76,13 @@ const options = {
             loader: 'postcss-loader',
           },
         ],
+      },
+      {
+        test: /\.(json5?|ya?ml)$/, // target json, json5, yaml and yml files
+        type: 'javascript/auto',
+        // Use `Rule.include` to specify the files of locale messages to be pre-compiled
+        include: [path.resolve(__dirname, './src/locales')],
+        loader: '@intlify/vue-i18n-loader',
       },
       {
         test: new RegExp(`.(${fileExtensions.join('|')})$`),

@@ -22,6 +22,7 @@ class Workflow extends Model {
       globalData: this.string('[{ "key": "value" }]'),
       lastRunAt: this.number(),
       createdAt: this.number(),
+      isDisabled: this.boolean(false),
       settings: this.attr({
         timeout: 120000,
         onError: 'stop-workflow',
