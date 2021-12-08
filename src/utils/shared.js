@@ -540,6 +540,7 @@ export const eventList = [
   { id: 'mouseleave ', name: 'Mouseleave', type: 'mouse-event' },
   { id: 'mouseover ', name: 'Mouseover', type: 'mouse-event' },
   { id: 'mouseout ', name: 'Mouseout', type: 'mouse-event' },
+  { id: 'mousemove ', name: 'Mousemove', type: 'mouse-event' },
   { id: 'focus', name: 'Focus', type: 'focus-event' },
   { id: 'blur', name: 'Blur', type: 'focus-event' },
   { id: 'input', name: 'Input', type: 'input-event' },
