@@ -15,6 +15,7 @@ class Workflow extends Model {
       id: this.uid(() => nanoid()),
       name: this.string(''),
       icon: this.string('riGlobalLine'),
+      isIconFromURL: this.boolean(false),
       data: this.attr(null),
       drawflow: this.string(''),
       dataColumns: this.attr([]),

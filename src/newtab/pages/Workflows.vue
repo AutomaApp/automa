@@ -121,6 +121,7 @@ import { sendMessage } from '@/utils/message';
 import { exportWorkflow, importWorkflow } from '@/utils/workflow-data';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 import Workflow from '@/models/workflow';
+import { isWhiteSpace } from '@/utils/helper';
 
 const dialog = useDialog();
 const { t } = useI18n();
@@ -195,14 +196,39 @@ function renameWorkflow({ id, name }) {
           name: newName,
         },
       });
+      console.log(Workflow.data);
     },
   });
 }
 
+function setIconWorkflow({ id }) {
+  dialog.prompt({
+    title: 'Set icon workflow',
+    placeholder: 'URL of the new icon',
+    okText: 'Set Icon',
+    inputValue: '',
+    onConfirm: (iconUrl) => {
+      let isIconFromURL = true;
+      if (!iconUrl || isWhiteSpace(iconUrl)) {
+        iconUrl = String('riGlobalLine');
+        isIconFromURL = false;
+      }
+
+      Workflow.update({
+        where: id,
+        data: {
+          icon: String(iconUrl),
+          isIconFromURL,
+        },
+      });
+    },
+  });
+}
 const menuHandlers = {
   export: exportWorkflow,
   rename: renameWorkflow,
   delete: deleteWorkflow,
+  setIcon: setIconWorkflow,
 };
 
 watch(

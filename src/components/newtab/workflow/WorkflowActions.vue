@@ -142,5 +142,10 @@ const moreActions = [
     name: t('common.delete'),
     icon: 'riDeleteBin7Line',
   },
+  {
+    id: 'setIcon',
+    name: 'Set icon',
+    icon: 'riImageLine',
+  },
 ];
 </script>
