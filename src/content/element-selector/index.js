@@ -4,6 +4,7 @@ async function getStyles() {
     const mainCSS = await response.text();
 
     const fontCSS = `
+      :host { font-size: 16px }
       @font-face {
         font-family: Inter var;
         font-weight: 100 900;

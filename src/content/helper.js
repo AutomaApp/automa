@@ -1,3 +1,5 @@
+import FindElement from '@/utils/find-element';
+
 /* eslint-disable consistent-return */
 
 export function markElement(el, { id, data }) {
@@ -10,18 +12,12 @@ export function handleElement({ data, id }, callback, errCallback) {
   if (!data || !data.selector) return null;
 
   try {
-    const blockIdAttr = `block--${id}`;
-    const selector = data.markEl
-      ? `${data.selector.trim()}:not([${blockIdAttr}])`
-      : data.selector;
-
-    const element = data.multiple
-      ? document.querySelectorAll(selector)
-      : document.querySelector(selector);
+    data.blockIdAttr = `block--${id}`;
+    const element = FindElement[data.findBy || 'cssSelector'](data);
 
     if (typeof callback === 'boolean' && callback) return element;
 
-    if (data.multiple) {
+    if (data.multiple && (data.findBy || 'cssSelector') === 'cssSelector') {
       element.forEach((el) => {
         markElement(el, { id, data });
         callback(el);

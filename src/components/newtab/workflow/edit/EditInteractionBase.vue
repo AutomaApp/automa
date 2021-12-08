@@ -9,6 +9,16 @@
         class="w-full mb-2"
         @change="updateData({ description: $event })"
       />
+      <ui-select
+        :model-value="data.findBy || 'cssSelector'"
+        :placeholder="t('workflow.blocks.base.findElement.placeholder')"
+        class="w-full mb-2"
+        @change="updateData({ findBy: $event })"
+      >
+        <option v-for="type in selectorTypes" :key="type" :value="type">
+          {{ t(`workflow.blocks.base.findElement.options.${type}`) }}
+        </option>
+      </ui-select>
       <ui-input
         v-if="!hideSelector"
         :model-value="data.selector"
@@ -16,7 +26,9 @@
         class="mb-1 w-full"
         @change="updateData({ selector: $event })"
       />
-      <template v-if="!hideSelector">
+      <template
+        v-if="!hideSelector && (data.findBy || 'cssSelector') === 'cssSelector'"
+      >
         <ui-checkbox
           v-if="!data.disableMultiple && !hideMultiple"
           :title="t('workflow.blocks.base.multiple.title')"
@@ -39,6 +51,7 @@
   </div>
 </template>
 <script setup>
+import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps({
@@ -63,10 +76,18 @@ const emit = defineEmits(['update:data', 'change']);
 
 const { t } = useI18n();
 
+const selectorTypes = ['cssSelector', 'xpath'];
+
 function updateData(value) {
   const payload = { ...props.data, ...value };
 
   emit('update:data', payload);
   emit('change', payload);
 }
+
+onMounted(() => {
+  if (!props.data.findBy) {
+    updateData({ findBy: 'cssSelector' });
+  }
+});
 </script>

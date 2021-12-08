@@ -11,6 +11,13 @@
     "blocks": {
       "base": {
         "selector": "Element selector",
+        "findElement": {
+          "placeholder": "Find element by",
+          "options": {
+            "cssSelector": "CSS Selector",
+            "xpath": "XPath"
+          }
+        },
         "markElement": {
           "title": "An element will not be selected if have been selected before",
           "text": "Mark element"

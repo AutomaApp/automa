@@ -182,6 +182,7 @@ export const tasks = {
     maxConnection: 1,
     data: {
       description: '',
+      findBy: 'cssSelector',
       selector: '',
       markEl: false,
       multiple: false,
@@ -215,6 +216,7 @@ export const tasks = {
     maxConnection: 1,
     data: {
       description: '',
+      findBy: 'cssSelector',
       selector: '',
       markEl: false,
       multiple: false,
@@ -253,6 +255,7 @@ export const tasks = {
     maxConnection: 1,
     data: {
       description: '',
+      findBy: 'cssSelector',
       selector: 'html',
       markEl: false,
       multiple: false,
@@ -277,6 +280,7 @@ export const tasks = {
     maxConnection: 1,
     data: {
       description: '',
+      findBy: 'cssSelector',
       selector: '',
       markEl: false,
       disableMultiple: true,
@@ -295,6 +299,7 @@ export const tasks = {
     maxConnection: 1,
     data: {
       description: '',
+      findBy: 'cssSelector',
       selector: '',
       markEl: false,
       multiple: false,
@@ -316,12 +321,13 @@ export const tasks = {
     maxConnection: 1,
     data: {
       description: '',
+      findBy: 'cssSelector',
       selector: '',
       markEl: false,
       multiple: false,
       selected: true,
       clearValue: true,
-      getValue: true,
+      getValue: false,
       saveData: true,
       dataColumn: '',
       type: 'text-field',
@@ -388,6 +394,7 @@ export const tasks = {
     maxConnection: 1,
     data: {
       description: '',
+      findBy: 'cssSelector',
       selector: '',
       markEl: false,
       multiple: false,
@@ -422,6 +429,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     data: {
+      findBy: 'cssSelector',
       selector: '',
       tryCount: 1,
       timeout: 500,
@@ -497,6 +505,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     data: {
+      findBy: 'cssSelector',
       selector: '',
       windowType: 'main-window',
     },

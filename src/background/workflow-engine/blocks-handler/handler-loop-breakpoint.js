@@ -20,6 +20,7 @@ function loopBreakpoint(block, prevBlockData) {
       });
     } else {
       delete this.loopList[block.data.loopId];
+      delete this.loopData[block.data.loopId];
 
       resolve({
         data: prevBlockData,

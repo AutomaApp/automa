@@ -14,11 +14,12 @@
       text-gray-900
       left-0
     "
-    style="z-index: 9999999999; font-family: Inter, sans-serif"
+    style="z-index: 9999999999; font-family: Inter, sans-serif; font-size: 16px"
   >
     <div
       ref="cardEl"
       :style="{ transform: `translate(${cardRect.x}px, ${cardRect.y}px)` }"
+      style="width: 320px"
       class="
         absolute
         root-card
@@ -28,7 +29,6 @@
         p-4
         pointer-events-auto
         rounded-lg
-        w-80
       "
     >
       <div
