@@ -1,5 +1,5 @@
 <template>
-  <div class="px-4 flex items-center mb-2 mt-1">
+  <div class="px-4 flex items-start mb-2 mt-1">
     <ui-popover class="mr-2 h-8">
       <template #trigger>
         <span
@@ -42,9 +42,14 @@
         />
       </div>
     </ui-popover>
-    <p class="font-semibold text-overflow inline-block text-lg flex-1 mr-4">
-      {{ workflow.name }}
-    </p>
+    <div class="flex-1 overflow-hidden">
+      <p class="font-semibold mt-1 text-overflow text-lg leading-tight">
+        {{ workflow.name }}
+      </p>
+      <p class="line-clamp leading-tight">
+        {{ workflow.description }}
+      </p>
+    </div>
   </div>
   <ui-input
     v-model="query"

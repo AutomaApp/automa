@@ -45,7 +45,7 @@
         </ui-button>
       </div>
     </div>
-    <div v-else class="grid gap-4 grid-cols-5 2xl:grid-cols-6">
+    <div v-else class="grid gap-4 grid-cols-4 2xl:grid-cols-5">
       <shared-card
         v-for="workflow in workflows"
         :key="workflow.id"
@@ -91,9 +91,11 @@
                   "
                 >
                   <v-remixicon name="riToggleLine" class="mr-2 -ml-1" />
-                  <span class="capitalize">{{
-                    t(`common.${workflow.isDisabled ? 'enable' : 'disable'}`)
-                  }}</span>
+                  <span class="capitalize">
+                    {{
+                      t(`common.${workflow.isDisabled ? 'enable' : 'disable'}`)
+                    }}
+                  </span>
                 </ui-list-item>
                 <ui-list-item
                   v-for="item in menu"
@@ -111,6 +113,37 @@
         </template>
       </shared-card>
     </div>
+    <ui-modal v-model="workflowModal.show" title="Workflow">
+      <ui-input
+        v-model="workflowModal.name"
+        :placeholder="t('common.name')"
+        autofocus
+        class="w-full mb-4"
+        @keyup.enter="handleWorkflowModal"
+      />
+      <ui-textarea
+        v-model="workflowModal.description"
+        :placeholder="t('common.description')"
+        height="165px"
+        class="w-full dark:text-gray-200 text-right"
+        max="300"
+      />
+      <p class="mb-6 text-right text-gray-600 dark:text-gray-200">
+        {{ workflowModal.description.length }}/300
+      </p>
+      <div class="space-x-2 flex">
+        <ui-button class="w-full" @click="workflowModal.show = false">
+          {{ t('common.cancel') }}
+        </ui-button>
+        <ui-button variant="accent" class="w-full" @click="handleWorkflowModal">
+          {{
+            workflowModal.type === 'update'
+              ? t('common.update')
+              : t('common.add')
+          }}
+        </ui-button>
+      </div>
+    </ui-modal>
   </div>
 </template>
 <script setup>
@@ -121,7 +154,6 @@ import { sendMessage } from '@/utils/message';
 import { exportWorkflow, importWorkflow } from '@/utils/workflow-data';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 import Workflow from '@/models/workflow';
-import { isWhiteSpace } from '@/utils/helper';
 
 const dialog = useDialog();
 const { t } = useI18n();
@@ -138,6 +170,11 @@ const state = shallowReactive({
   query: '',
   sortBy: savedSorts.sortBy || 'createdAt',
   sortOrder: savedSorts.sortOrder || 'desc',
+});
+const workflowModal = shallowReactive({
+  type: 'update',
+  name: '',
+  description: '',
 });
 
 const workflows = computed(() =>
@@ -159,18 +196,11 @@ function updateWorkflow(id, data) {
   });
 }
 function newWorkflow() {
-  dialog.prompt({
-    title: t('workflow.new'),
-    placeholder: t('common.name'),
-    okText: t('workflow.add'),
-    onConfirm: (name) => {
-      Workflow.insert({
-        data: {
-          name: name || 'Unnamed',
-          createdAt: Date.now(),
-        },
-      });
-    },
+  Object.assign(workflowModal, {
+    name: '',
+    show: true,
+    type: 'add',
+    description: '',
   });
 }
 function deleteWorkflow({ name, id }) {
@@ -183,52 +213,49 @@ function deleteWorkflow({ name, id }) {
     },
   });
 }
-function renameWorkflow({ id, name }) {
-  dialog.prompt({
-    title: t('workflow.rename'),
-    placeholder: t('common.name'),
-    okText: t('common.rename'),
-    inputValue: name,
-    onConfirm: (newName) => {
-      Workflow.update({
-        where: id,
-        data: {
-          name: newName,
-        },
-      });
-      console.log(Workflow.data);
-    },
+function renameWorkflow({ id, name, description }) {
+  Object.assign(workflowModal, {
+    id,
+    name,
+    description,
+    show: true,
+    type: 'update',
   });
 }
-
-function setIconWorkflow({ id }) {
-  dialog.prompt({
-    title: 'Set icon workflow',
-    placeholder: 'URL of the new icon',
-    okText: 'Set Icon',
-    inputValue: '',
-    onConfirm: (iconUrl) => {
-      let isIconFromURL = true;
-      if (!iconUrl || isWhiteSpace(iconUrl)) {
-        iconUrl = String('riGlobalLine');
-        isIconFromURL = false;
-      }
-
-      Workflow.update({
-        where: id,
+async function handleWorkflowModal() {
+  try {
+    if (workflowModal.type === 'add') {
+      await Workflow.insert({
         data: {
-          icon: String(iconUrl),
-          isIconFromURL,
+          createdAt: Date.now(),
+          name: workflowModal.name || 'Unnamed',
+          description: workflowModal.description,
         },
       });
-    },
-  });
+    } else {
+      await Workflow.update({
+        where: workflowModal.id,
+        data: {
+          name: workflowModal.name,
+          description: workflowModal.description,
+        },
+      });
+    }
+
+    Object.assign(workflowModal, {
+      name: '',
+      show: false,
+      description: '',
+    });
+  } catch (error) {
+    console.error(error);
+  }
 }
+
 const menuHandlers = {
   export: exportWorkflow,
   rename: renameWorkflow,
   delete: deleteWorkflow,
-  setIcon: setIconWorkflow,
 };
 
 watch(

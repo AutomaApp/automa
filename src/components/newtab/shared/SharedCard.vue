@@ -44,12 +44,17 @@
       <p class="line-clamp font-semibold leading-tight">
         {{ data.name }}
       </p>
+      <p
+        v-show="data.description"
+        class="text-gray-600 dark:text-gray-200 line-clamp leading-tight mb-1"
+      >
+        {{ data.description }}
+      </p>
       <p class="text-gray-600 dark:text-gray-200">{{ formatDate() }}</p>
     </div>
   </ui-card>
 </template>
 <script setup>
-import { computed } from 'vue';
 import dayjs from '@/lib/dayjs';
 
 const props = defineProps({

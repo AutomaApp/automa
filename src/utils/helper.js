@@ -1,7 +1,3 @@
-export function isWhitespace(str) {
-  return !/\S/g.test(str);
-}
-
 export function parseJSON(data, def) {
   try {
     const result = JSON.parse(data);
@@ -77,7 +73,7 @@ export function objectHasKey(obj, key) {
   return Object.prototype.hasOwnProperty.call(obj, key);
 }
 
-export function isWhiteSpace(str) {
+export function isWhitespace(str) {
   return !/\S/.test(str);
 }
 

@@ -30,7 +30,8 @@
     "disable": "Disable",
     "disabled": "Disabled",
     "enable": "Enable",
-    "fallback": "Fallback"
+    "fallback": "Fallback",
+    "update": "Update"
   },
   "message": {
     "noBlock": "No block",

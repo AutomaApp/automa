@@ -27,6 +27,7 @@ export function exportWorkflow(workflow) {
     'name',
     'settings',
     'globalData',
+    'description',
   ];
   const content = {};
 

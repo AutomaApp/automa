@@ -114,6 +114,32 @@
       @close="state.showModal = false"
     />
   </ui-modal>
+  <ui-modal v-model="renameModal.show" title="Workflow">
+    <ui-input
+      v-model="renameModal.name"
+      :placeholder="t('common.name')"
+      class="w-full mb-4"
+      @keyup.enter="updateNameAndDesc"
+    />
+    <ui-textarea
+      v-model="renameModal.description"
+      :placeholder="t('common.description')"
+      height="165px"
+      class="w-full dark:text-gray-200 text-right"
+      max="300"
+    />
+    <p class="mb-6 text-right text-gray-600 dark:text-gray-200">
+      {{ renameModal.description.length }}/300
+    </p>
+    <div class="space-x-2 flex">
+      <ui-button class="w-full" @click="renameModal.show = false">
+        {{ t('common.cancel') }}
+      </ui-button>
+      <ui-button variant="accent" class="w-full" @click="updateNameAndDesc">
+        {{ t('common.update') }}
+      </ui-button>
+    </div>
+  </ui-modal>
 </template>
 <script setup>
 /* eslint-disable consistent-return */
@@ -180,6 +206,11 @@ const state = reactive({
   isEditBlock: false,
   isDataChanged: false,
 });
+const renameModal = reactive({
+  show: false,
+  name: '',
+  description: '',
+});
 
 const workflowState = computed(() =>
   store.getters.getWorkflowState(workflowId)
@@ -224,6 +255,18 @@ function updateWorkflow(data) {
   return Workflow.update({
     where: workflowId,
     data,
+  });
+}
+function updateNameAndDesc() {
+  updateWorkflow({
+    name: renameModal.name,
+    description: renameModal.description.slice(0, 300),
+  }).then(() => {
+    Object.assign(renameModal, {
+      show: false,
+      name: '',
+      description: '',
+    });
   });
 }
 function saveWorkflow() {
@@ -277,19 +320,10 @@ function deleteWorkflow() {
   });
 }
 function renameWorkflow() {
-  dialog.prompt({
-    title: t('workflow.rename'),
-    placeholder: t('common.name'),
-    okText: t('common.rename'),
-    inputValue: workflow.value.name,
-    onConfirm: (newName) => {
-      Workflow.update({
-        where: route.params.id,
-        data: {
-          name: newName,
-        },
-      });
-    },
+  Object.assign(renameModal, {
+    show: true,
+    name: workflow.value.name,
+    description: workflow.value.description,
   });
 }
 
