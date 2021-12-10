@@ -3,7 +3,7 @@
     <slot name="header">
       <div class="flex items-center mb-4">
         <ui-img
-          v-if="data.icon.startsWith('http')"
+          v-if="data.icon?.startsWith('http')"
           :src="data.icon"
           class="overflow-hidden rounded-lg"
           style="height: 40px; width: 40px"
