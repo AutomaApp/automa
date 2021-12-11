@@ -113,7 +113,29 @@ const message = new MessageListener('background');
 message.on('fetch:text', (url) => {
   return fetch(url).then((response) => response.text());
 });
+message.on('open:dashboard', async (url) => {
+  const tabOptions = {
+    active: true,
+    url: browser.runtime.getURL(
+      `/newtab.html#${typeof url === 'string' ? url : ''}`
+    ),
+  };
 
+  try {
+    const [tab] = await browser.tabs.query({
+      url: browser.runtime.getURL('/newtab.html'),
+    });
+
+    if (tab) {
+      await browser.tabs.update(tab.id, tabOptions);
+      await browser.tabs.reload(tab.id);
+    } else {
+      browser.tabs.create(tabOptions);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
 message.on('get:sender', (_, sender) => {
   return sender;
 });

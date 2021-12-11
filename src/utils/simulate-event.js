@@ -6,7 +6,7 @@ export function getEventObj(name, params) {
 
   switch (eventType) {
     case 'mouse-event':
-      event = new MouseEvent(name, params);
+      event = new MouseEvent(name, { ...params, view: window });
       break;
     case 'focus-event':
       event = new FocusEvent(name, params);

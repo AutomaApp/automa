@@ -106,24 +106,7 @@ function deleteWorkflow({ id, name }) {
   });
 }
 function openDashboard(url) {
-  const tabOptions = {
-    active: true,
-    url: browser.runtime.getURL(
-      `/newtab.html#${typeof url === 'string' ? url : ''}`
-    ),
-  };
-
-  browser.tabs
-    .query({ url: browser.runtime.getURL('/newtab.html') })
-    .then(([tab]) => {
-      if (tab) {
-        browser.tabs.update(tab.id, tabOptions).then(() => {
-          browser.tabs.reload(tab.id);
-        });
-      } else {
-        browser.tabs.create(tabOptions);
-      }
-    });
+  sendMessage('open:dashboard', url, 'background');
 }
 async function selectElement() {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
