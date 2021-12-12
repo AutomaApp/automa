@@ -1,13 +1,13 @@
 {
   "home": {
     "elementSelector": {
-      "name": "Element selector",
-      "noAccess": "Don't have access to this site"
+      "name": "Bộ chọn phần tử",
+      "noAccess": "Không có quyền truy cập vào trang web này"
     },
     "workflow": {
-      "new": "New workflow",
-      "rename": "Rename workflow",
-      "delete": "Delete workflow"
+      "new": "Quy trình mới",
+      "rename": "Đổi tên quy trình",
+      "delete": "Xóa quy trình"
     },
   }
 }
