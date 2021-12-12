@@ -2,192 +2,192 @@
   "collection": {
     "blocks": {
       "export-result": {
-        "name": "Export result",
-        "description": "Export the collection result as JSON"
+        "name": "Xuất kết quả",
+        "description": "Xuất kết quả thu thập dưới dạng JSON"
       }
     }
   },
   "workflow": {
     "blocks": {
       "base": {
-        "selector": "Element selector",
+        "selector": "Bộ chọn phần tử",
         "findElement": {
-          "placeholder": "Find element by",
+          "placeholder": "Tìm phần tử bằng",
           "options": {
-            "cssSelector": "CSS Selector",
+            "cssSelector": "Bộ chọn CSS",
             "xpath": "XPath"
           }
         },
         "markElement": {
-          "title": "An element will not be selected if have been selected before",
-          "text": "Mark element"
+          "title": "Một phần tử sẽ không được chọn nếu nó đã được chọn trước đó",
+          "text": "Đánh dấu phần tử"
         },
         "multiple": {
-          "title": "Select multiple element",
-          "text": "Multiple"
+          "title": "Chọn nhiều phần tử",
+          "text": "Nhiều"
         }
       },
       "trigger": {
-        "name": "Trigger",
-        "description": "Block where the workflow will start executing",
+        "name": "Kích hoạt",
+        "description": "Quy trình bắt đầu được thực thi ở đây",
         "days": [
-          "Sunday",
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday"
+          "Chủ nhật",
+          "Thứ hai",
+          "Thứ ba",
+          "Thứ tư",
+          "Thứ năm",
+          "Thứ sáu",
+          "Thứ bảy"
         ],
-        "useRegex": "Use regex",
+        "useRegex": "Dùng regex",
         "shortcut": {
-          "tootlip": "Record shortcut",
+          "tootlip": "Ghi lại lối tắt",
           "checkboxTitle": "Execute shortcut even when you're in an input element",
-          "checkbox": "Active while in input",
-          "note": "Note: keyboard shortcut only working when you're on a webpage"
+          "checkbox": "Hoạt động khi nhập liệu",
+          "note": "Lưu ý: phím tắt chỉ hoạt động khi bạn đang truy cập một trang web"
         },
         "forms": {
-          "triggerWorkflow": "Trigger workflow",
-          "interval": "Interval (minutes)",
-          "delay": "Delay (minutes)",
-          "date": "Date",
-          "time": "Time",
-          "url": "URL or Regex",
-          "shortcut": "Shortcut"
+          "triggerWorkflow": "Quy trình kích hoạt",
+          "interval": "Chu kỳ (phút)",
+          "delay": "Độ trễ (phút)",
+          "date": "Ngày",
+          "time": "Giờ",
+          "url": "URL hoặc Regex",
+          "shortcut": "Phim tắt"
         },
         "items": {
-          "manual": "Manually",
-          "interval": "Interval",
-          "date": "On a specific date",
-          "specific-day": "On a specific day",
-          "visit-web": "When visit a website",
-          "keyboard-shortcut": "Keyboard shortcut"
+          "manual": "Thủ công",
+          "interval": "Chu kỳ",
+          "date": "Vào một ngày cụ thể",
+          "specific-day": "Vào một ngày cụ thể",
+          "visit-web": "Khi truy cập một trang web",
+          "keyboard-shortcut": "Phim tắt"
         }
       },
       "execute-workflow": {
-        "name": "Execute workflow",
-        "overwriteNote": "This will overwrite the global data of the selected workflow",
-        "select": "Select workflow",
+        "name": "Thực thi quy trình",
+        "overwriteNote": "Thao tác này sẽ ghi đè lên dữ liệu chung của quy trình đã chọn",
+        "select": "Chọn quy trình",
         "description": ""
       },
       "active-tab": {
-        "name": "Active tab",
-        "description": "Set current tab that you're in as an active tab"
+        "name": "Tab hoạt động",
+        "description": "Chỉ định tab hiện tại mà bạn đang truy cập thành tab đang hoạt động"
       },
       "proxy": {
         "name": "Proxy",
-        "description": "Set the proxy of the browser",
-        "clear": "Clear all proxy",
+        "description": "Thiết lập proxy của trình duyệt",
+        "clear": "Xóa tất cả proxy",
         "bypass": {
-          "label": "Bypass list",
-          "note": "Use commas (,) to separate URL"
+          "label": "Danh sách bỏ qua",
+          "note": "Dùng dấu phẩy (,) để tách biệt URL"
         }
       },
       "new-window": {
-        "name": "New window",
-        "description": "Create a new window",
+        "name": "Cửa sổ mới",
+        "description": "Tạo cửa sổ mới",
         "windowState": {
-          "placeholder": "Window state",
+          "placeholder": "Trạng thái cửa sổ",
           "options": {
-            "normal": "Normal",
-            "minimized": "Minimized",
-            "maximized": "Maximized",
-            "fullscreen": "Fullscreen"
+            "normal": "Bình thường",
+            "minimized": "Thu gọn",
+            "maximized": "Mở rộng tối đa",
+            "fullscreen": "Toàn màn hình"
           }
         },
         "incognito": {
-          "text": "Set as incognito window",
-          "note": "You must enable 'Allow in incognito' for this extension to use the option"
+          "text": "Đặt làm cửa sổ ẩn danh",
+          "note": "Bạn cần bật 'Cho phép ở chế độ ẩn danh' cho tiện ích mở rộng này để sử dụng tùy chọn"
         }
       },
       "go-back": {
-        "name": "Go back",
-        "description": "Go back to the previous page"
+        "name": "Quay lại",
+        "description": "Quay trở lại trang trước"
       },
       "forward-page": {
-        "name": "Go forward",
-        "description": "Go forward to the next page"
+        "name": "Về trước",
+        "description": "Đi tới trang tiếp theo"
       },
       "close-tab": {
-        "name": "Close tab",
+        "name": "Đóng tab",
         "description": "",
-        "activeTab": "Close activeTab",
-        "url": "URL or match pattern"
+        "activeTab": "Đóng activeTab",
+        "url": "URL hoặc match pattern"
       },
       "event-click": {
-        "name": "Click element",
+        "name": "Nhấp vào phần tử",
         "description": ""
       },
       "delay": {
-        "name": "Delay",
-        "description": "Add delay before executing the next block",
+        "name": "Độ trễ",
+        "description": "Thêm độ trễ trước khi thực hiện khối tiếp theo",
         "input": {
-          "title": "Delay in millisecond",
-          "placeholder": "(millisecond)"
+          "title": "Độ trễ trong mili giây",
+          "placeholder": "(mili giây)"
         }
       },
       "get-text": {
-        "name": "Get text",
-        "description": "Get text from an element",
+        "name": "Trích văn bản",
+        "description": "Trích văn bản từ một phần tử",
         "prefixText": {
-          "placeholder": "Text prefix",
-          "title": "Add prefix to the text"
+          "placeholder": "Tiền tố văn bản",
+          "title": "Thêm tiền tố vào văn bản"
         },
         "suffixText": {
-          "placeholder": "Text suffix",
-          "title": "Add suffix to the text"
+          "placeholder": "Hậu tố văn bản",
+          "title": "Thêm hậu tố vào văn bản"
         }
       },
       "export-data": {
-        "name": "Export data",
-        "description": "Export workflow data columns"
+        "name": "Xuất dữ liệu",
+        "description": "Xuất dữ liệu của quy trình"
       },
       "element-scroll": {
-        "name": "Scroll element",
+        "name": "Cuộn",
         "description": "",
-        "scrollY": "Scroll vertical",
-        "scrollX": "Scroll horizontal",
+        "scrollY": "Cuộn thẳng",
+        "scrollX": "Cuộn ngang",
         "intoView": "Scroll into view",
-        "smooth": "Smooth scroll",
-        "incScrollX": "Increment horizontal scroll",
-        "incScrollY": "Increment vertical scroll"
+        "smooth": "Cuộn mượt",
+        "incScrollX": "Cuộn ngang tăng dần",
+        "incScrollY": "Cuộn dọc tăng dần"
       },
       "new-tab": {
-        "name": "New tab",
+        "name": "Tab mới",
         "description": "",
-        "activeTab": "Set as active tab",
-        "tabToGroup": "Add tab to group",
+        "activeTab": "Đặt làm tab hoạt động",
+        "tabToGroup": "Thêm tab vào nhóm",
         "updatePrevTab": {
-          "title": "Use the previously opened new tab instead of creating a new one",
-          "text": "Update previously opened tab"
+          "title": "Sử dụng tab mới đã mở trước đó thay vì tạo tab mới",
+          "text": "Cập nhật tab đã mở trước đó"
         }
       },
       "link": {
         "name": "Link",
-        "description": "Open link element"
+        "description": "Mở phần tử link"
       },
       "attribute-value": {
-        "name": "Attribute value",
-        "description": "Get value of an element attribute",
+        "name": "Giá trị thuộc tính",
+        "description": "Trích xuất giá trị từ một thuộc tính của phần tử",
         "forms": {
-          "name": "Attribute name",
-          "checkbox": "Save data",
-          "column": "Select column"
+          "name": "Tên thuộc tính",
+          "checkbox": "Lưu dữ liệu",
+          "column": "Chọn cột"
         }
       },
       "forms": {
-        "name": "Forms",
+        "name": "Biểu mẫu",
         "description": "",
-        "selected": "Selected",
-        "type": "Form type",
-        "getValue": "Get form value",
+        "selected": "Đã chọn",
+        "type": "Loại biểu mẫu",
+        "getValue": "Trích xuất giá trị từ biểu mẫu",
         "text-field": {
-          "name": "Text field",
-          "value": "Value",
-          "clearValue": "Clear form value",
+          "name": "Trường văn bản",
+          "value": "Giá trị",
+          "clearValue": "Xóa giá trị biểu mẫu",
           "delay": {
-            "placeholder": "Delay",
-            "label": "Typing delay (millisecond)(0 to disable)"
+            "placeholder": "Độ trễ",
+            "label": "Nhập độ trễ (mili giây)(0 là vô hiệu hóa)"
           }
         },
         "select": { "name": "Select" },
@@ -195,16 +195,16 @@
         "checkbox": { "name": "Checkbox" }
       },
       "repeat-task": {
-        "name": "Repeat task",
+        "name": "Nhiệm vụ lặp lại",
         "description": "",
-        "times": "times",
-        "repeatFrom": "Repeat from"
+        "times": "lần",
+        "repeatFrom": "Lặp lại từ"
       },
       "javascript-code": {
         "name": "JavaScript code",
-        "description": "Execute your javascript code in the web page",
-        "availabeFuncs": "Available functions:",
-        "removeAfterExec": "Remove after block executed",
+        "description": "Thực thi code Javascript trong trang web",
+        "availabeFuncs": "Các hàm có sẵn:",
+        "removeAfterExec": "Xóa sau khi khối được thực thi",
         "modal": {
           "tabs": {
             "code": "JavaScript code",
@@ -212,103 +212,103 @@
           }
         },
         "timeout": {
-          "placeholder": "Timeout",
-          "title": "Javascript code execution timeout"
+          "placeholder": "Thời gian chờ",
+          "title": "Thời gian thực thi code Javascript"
         }
       },
       "trigger-event": {
-        "name": "Trigger event",
+        "name": "Sự kiện kích hoạt",
         "description": "",
-        "selectEvent": "Select event"
+        "selectEvent": "Chọn sự kiện"
       },
       "conditions": {
-        "name": "Conditions",
-        "description": "Conditional block",
-        "fallbackTitle": "Execute when all comparisons don't meet the requirement",
-        "equals": "Equals",
-        "gt": "Greater than",
-        "gte": "Greater than or equal",
-        "lt": "Less than",
-        "lte": "Less than or equal",
-        "contains": "Contains"
+        "name": "Điều kiện",
+        "description": "Khối có điều kiện",
+        "fallbackTitle": "Thực thi khi tất cả các phép so sánh không đáp ứng yêu cầu",
+        "equals": "Ngang bằng",
+        "gt": "Lớn hơn",
+        "gte": "Lớn hơn hoặc ngang bằng",
+        "lt": "Nhỏ hơn",
+        "lte": "Nhỏ hơn hoặc ngang bằng",
+        "contains": "Bao hàm"
       },
       "element-exists": {
-        "name": "Element exists",
-        "description": "Check if an element is exists",
-        "selector": "Element selector",
-        "fallbackTitle": "Execute when element doesn't exists",
+        "name": "Phần tử tồn tại",
+        "description": "Kiểm tra xem một phần tử có tồn tại không",
+        "selector": "Bộ chọn phần tử",
+        "fallbackTitle": "Thực thi khi phần tử không tồn tại",
         "tryFor": {
-          "title": "Try to check if element exist",
-          "label": "Try for"
+          "title": "Cố gắng kiểm tra xem phần tử có tồn tại không",
+          "label": "Số lần thử"
         },
         "timeout": {
-          "label": "Timeout (milliseconds)",
-          "title": "Timeout for each try"
+          "label": "Giới hạn thời gian (mili giây)",
+          "title": "Thời gian cho mỗi lần thử"
         }
       },
       "webhook": {
         "name": "Webhook",
-        "description": "Webhook allow external service to be notified",
+        "description": "Webhook cho phép dịch vụ bên ngoài được thông báo",
         "url": "The Post receive URL",
-        "contentType": "Select a content type",
+        "contentType": "Chọn một loại nội dung",
         "buttons": {
-          "header": "Add header"
+          "header": "Thêm header"
         },
         "timeout": {
-          "placeholder": "Timeout",
-          "title": "Http request execution timeout(ms)"
+          "placeholder": "Thời gian chờ",
+          "title": "Thời gian chờ thực hiện yêu cầu Http(ms)"
         },
         "tabs": {
           "headers": "Headers",
-          "body": "Content body"
+          "body": "Nội dung"
         }
       },
       "loop-data": {
         "name": "Loop data",
-        "description": "Iterate through data columns or your custom data",
+        "description": "Lặp lại qua các cột dữ liệu hoặc dữ liệu tùy chỉnh của bạn",
         "loopId": "Loop ID",
         "modal": {
-          "fileTooLarge": "File too large to edit",
-          "maxFile": "Max file size is 1MB",
+          "fileTooLarge": "Tệp quá lớn để chỉnh sửa",
+          "maxFile": "Kích thước tệp tối đa là 1MB",
           "options": {
             "firstRow": "Use the first row as keys"
           }
         },
         "buttons": {
-          "clear": "Clear data",
-          "insert": "Insert data",
-          "import": "Import file"
+          "clear": "Xóa dữ liệu",
+          "insert": "Chèn dữ liệu",
+          "import": "Nhập tệp"
         },
         "maxLoop": {
-          "title": "Max numbers of data to loop",
-          "label": "Max data to loop (0 to disable)"
+          "title": "Số lượng dữ liệu tối đa để lặp lại",
+          "label": "Dữ liệu tối đa cho vòng lặp (0 là vô hiệu hóa)"
         },
         "loopThrough": {
-          "placeholder": "Loop through",
-          "fromNumber": "From number",
-          "toNumber": "To number",
+          "placeholder": "Lặp lại",
+          "fromNumber": "Từ số",
+          "toNumber": "Đến số",
           "options": {
-            "numbers": "Numbers",
-            "data-columns": "Data columns",
-            "custom-data": "Custom data"
+            "numbers": "Số liệu",
+            "data-columns": "Cột dữ liệu",
+            "custom-data": "Dữ liệu tùy chỉnh"
           }
         }
       },
       "loop-breakpoint": {
-        "name": "Loop breakpoint",
-        "description": "To tell where loop data block must stop"
+        "name": "Điểm ngắt vòng lặp",
+        "description": "Để cho biết khối dữ liệu vòng lặp phải dừng ở đâu"
       },
       "take-screenshot": {
-        "name": "Take screenshot",
-        "description": "Take a screenshot of current active tab",
-        "imageQuality": "Image quality"
+        "name": "Chụp màn hình",
+        "description": "Chụp màn hình của tab đang hoạt động",
+        "imageQuality": "Chất lượng hình ảnh"
       },
       "switch-to": {
-        "name": "Switch frame",
-        "description": "Switch between main window and iframe",
-        "iframeSelector": "Iframe element selector",
+        "name": "Chuyển đổi frame",
+        "description": "Chuyển đổi giữa cửa sổ chính và iframe",
+        "iframeSelector": "Bộ chọn phần tử Iframe",
         "windowTypes": {
-          "main": "Main window",
+          "main": "Cửa sổ chính",
           "iframe": "Iframe"
         }
       }
