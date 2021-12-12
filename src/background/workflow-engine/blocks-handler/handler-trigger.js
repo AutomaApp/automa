@@ -1,4 +1,5 @@
 import { getBlockConnection } from '../helper';
+import executeContentScript from '../execute-content-script';
 
 async function trigger(block) {
   const nextBlockId = getBlockConnection(block);
