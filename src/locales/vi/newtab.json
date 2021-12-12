@@ -1,135 +1,135 @@
 {
   "home": {
-    "viewAll": "View all"
+    "viewAll": "Tất cả"
   },
   "settings": {
     "language": {
-      "label": "Language",
-      "helpTranslate": "Can't find your language? Help translate.",
-      "reloadPage": "Reload the page to take effect"
+      "label": "Ngôn ngữ",
+      "helpTranslate": "Không tìm thấy ngôn ngữ của bạn? Hãy đóng góp bản dịch với chúng tôi.",
+      "reloadPage": "Tải lại trang để hoàn tất thao tác"
     }
   },
   "workflow": {
-    "import": "Import workflow",
-    "new": "New workflow",
-    "delete": "Delete workflow",
-    "name": "Workflow name",
-    "rename": "Rename workflow",
-    "add": "Add workflow",
-    "clickToEnable": "Click to enable",
+    "import": "Nhập quy trình",
+    "new": "Tạo quy trình mới",
+    "delete": "Xóa quy trình",
+    "name": "Tên quy trình",
+    "rename": "Sửa tên quy trình",
+    "add": "Thêm quy trình",
+    "clickToEnable": "Nhấn để kích hoạt",
     "state": {
-      "executeBy": "Executed by: \"{name}\""
+      "executeBy": "Thực hiện bởi: \"{name}\""
     },
     "dataColumns": {
-      "title": "Data columns",
-      "placeholder": "Search or add column",
+      "title": "Cơ sở dữ liệu Cột",
+      "placeholder": "Tìm kiếm hoặc thêm cột",
       "column": {
-        "name": "Column name",
-        "type": "Data type"
+        "name": "Tên cột",
+        "type": "Kiểu dữ liệu"
       }
     },
     "sidebar": {
-      "workflowIcon": "Workflow icon"
+      "workflowIcon": "Icon"
     },
     "editor": {
-      "zoomIn": "Zoom in",
-      "zoomOut": "Zoom out",
-      "resetZoom": "Reset zoom",
-      "duplicate": "Duplicate"
+      "zoomIn": "Phóng to",
+      "zoomOut": "Thu nhỏ",
+      "resetZoom": "Về mặc định",
+      "duplicate": "Nhân bản"
     },
     "settings": {
       "onError": {
-        "title": "On workflow error",
+        "title": "Khi quy trình gặp lỗi",
         "items": {
-          "keepRunning": "Keep running",
-          "stopWorkflow": "Stop workflow"
+          "keepRunning": "Tiếp tục chạy",
+          "stopWorkflow": "Dừng quy trình"
         }
       },
       "timeout": {
-        "title": "Workflow timeout (milliseconds)"
+        "title": "Thời lượng thực thi tối đa (Mili giây)"
       }
     }
   },
   "collection": {
-    "description": "Execute your workflows in sequence",
-    "new": "New collection",
-    "delete": "Delete collection",
-    "add": "Add collection",
-    "rename": "Rename collection",
-    "flow": "Flow",
-    "dragDropText": "Drop a workflow or block in here",
+    "description": "Thực thi quy trình của bạn theo trình tự",
+    "new": "Bộ sưu tập mới",
+    "delete": "Xóa bộ sưu tập",
+    "add": "Thêm bộ sưu tập",
+    "rename": "Đổi tên bộ sưu tập",
+    "flow": "Trình tự",
+    "dragDropText": "Thả một quy trình hoặc khối vào đây",
     "options": {
       "atOnce": {
-        "title": "Execute all workflows in the collection at once",
-        "description": "Block not gonna executed when using this option"
+        "title": "Thực thi tất cả quy trình trong bộ sưu tập cùng một lúc",
+        "description": "Khối sẽ không được thực thi khi kích hoạt tùy chọn này"
       }
     },
     "globalData": {
-      "note": "This will overwrite the global data of the workflow"
+      "note": "Điều này sẽ ghi đè lên dữ liệu chung của quy trình"
     }
   },
   "log": {
-    "goBack": "Go back to \"{name}\" log",
-    "startedDate": "Started date",
-    "duration": "Duration",
-    "selectAll": "Select all",
-    "deselectAll": "Deselect all",
-    "deleteSelected": "Delete selected logs",
+    "goBack": "Trở lại nhật ký \"{name}\"",
+    "startedDate": "Ngày bắt đầu",
+    "duration": "Thời lượng",
+    "selectAll": "Chọn tất cả",
+    "deselectAll": "Bỏ chọn tất cả",
+    "deleteSelected": "Xóa nhật ký đã chọn",
     "types": {
-      "stop": "Workflow is stopped",
-      "finish": "Finish"
+      "stop": "Quy trình đã bị dừng",
+      "finish": "Hoàn thành"
     },
     "messages": {
-      "workflow-disabled": "Workflow is disabled",
-      "stop-timeout": "Workflow is stopped because of timeout",
-      "invalid-proxy-host": "Invalid proxy host",
-      "no-iframe-id": "Can't find Frame ID for the iframe element with \"{selector}\" selector",
-      "no-tab": "Can't connect to a tab, use \"New tab\" or \"Active tab\" block before using the \"{name}\" block.",
-      "empty-workflow": "You must select a workflow first",
-      "no-workflow": "Can't find workflow with \"{workflowId}\" ID",
-      "workflow-infinite-loop": "Can't execute the workflow to prevent an infinite loop"
+      "workflow-disabled": "Quy trình đã được vô hiệu hóa",
+      "stop-timeout": "Quy trình đã bị dừng vì hết thời lượng thực thi",
+      "invalid-proxy-host": "Máy chủ proxy không hợp lệ",
+      "no-iframe-id": "Không tìm thấy Frame ID cho iframe element với bộ chọn \"{selector}\"",
+      "no-tab": "Không thể kết nối với một tab, dùng \"New tab\" hoặc khối \"Active tab\" trước khi dùng khối \"{name}\".",
+      "empty-workflow": "Đầu tiên, bạn phải chọn một quy trình",
+      "no-workflow": "Không tìm thấy quy trình với ID \"{workflowId}\"",
+      "workflow-infinite-loop": "Quy trình không được thực thi để ngăn vòng lặp vô hạn"
     },
     "description": {
-      "text": "{status} on {date} in {duration}",
+      "text": "{status} vào {date} trong {duration}",
       "status": {
-        "success": "Succeeded",
-        "error": "Failed",
-        "stopped": "Stopped"
+        "success": "Thành công",
+        "error": "Thất bại",
+        "stopped": "Đã dừng lại"
       }
     },
     "delete": {
-      "title": "Delete log",
-      "description": "Are you sure want to delete all the selected logs?"
+      "title": "Xóa nhật ký",
+      "description": "Bạn muốn xóa tất cả các nhật ký đã chọn?"
     },
     "exportData": {
-      "title": "Export data",
+      "title": "Xuất dữ liệu",
       "types": {
         "json": "JSON",
         "csv": "CSV",
-        "plain-text": "Plain text"
+        "plain-text": "Văn bản thuần túy"
       }
     },
     "filter": {
-      "title": "Filter",
-      "byStatus": "By status",
+      "title": "Bộ lọc",
+      "byStatus": "Theo trang thái",
       "byDate": {
-        "title": "By date",
+        "title": "Theo ngày",
         "items": {
-          "lastDay": "Last day",
-          "last7Days": "Last seven days",
-          "last30Days": "Last thirty days"
+          "lastDay": "Hôm nay",
+          "last7Days": "7 ngày qua",
+          "last30Days": "30 ngày qua"
         }
       }
     }
   },
   "components": {
     "pagination": {
-      "text1": "Showing",
-      "text2": "items out of {count}",
-      "nextPage": "Next page",
-      "currentPage": "Current page",
-      "prevPage": "Previous page",
-      "of": "of {page}"
+      "text1": "Hiển thị",
+      "text2": "trong tổng số {count}",
+      "nextPage": "Trang tiếp theo",
+      "currentPage": "Trang hiện tại",
+      "prevPage": "Trang trước",
+      "of": "trong tổng số {page}"
     }
   }
 }
