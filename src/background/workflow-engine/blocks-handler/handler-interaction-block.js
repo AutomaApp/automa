@@ -1,17 +1,10 @@
 import { objectHasKey } from '@/utils/helper';
 import { getBlockConnection } from '../helper';
 
-async function interactionHandler(block, prevBlockData) {
+async function interactionHandler(block, { refData }) {
   const nextBlockId = getBlockConnection(block);
 
   try {
-    const refData = {
-      prevBlockData,
-      dataColumns: this.data,
-      loopData: this.loopData,
-      globalData: this.globalData,
-      activeTabUrl: this.activeTabUrl,
-    };
     const data = await this._sendMessageToTab(
       { ...block, refData },
       {

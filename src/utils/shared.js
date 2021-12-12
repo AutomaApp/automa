@@ -408,6 +408,7 @@ export const tasks = {
     description: 'Conditional block',
     icon: 'riAB',
     component: 'BlockConditions',
+    editComponent: 'EditConditions',
     category: 'conditions',
     inputs: 1,
     outputs: 0,

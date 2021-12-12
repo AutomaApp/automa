@@ -6,8 +6,8 @@ function eventClick(block) {
       onSelected(element) {
         element.click();
       },
-      onError() {
-        reject(new Error('element-not-found'));
+      onError(error) {
+        reject(error);
       },
       onSuccess() {
         resolve('');

@@ -3,8 +3,14 @@ import { handleElement } from '../helper';
 function getText(block) {
   return new Promise((resolve, reject) => {
     let regex;
-    const { regex: regexData, regexExp, prefixText, suffixText } = block.data;
-    const textResult = [];
+    let textResult = [];
+    const {
+      regex: regexData,
+      regexExp,
+      prefixText,
+      suffixText,
+      multiple,
+    } = block.data;
 
     if (regexData) {
       regex = new RegExp(regexData, regexExp.join(''));
@@ -18,10 +24,14 @@ function getText(block) {
 
         text = (prefixText || '') + text + (suffixText || '');
 
-        textResult.push(text);
+        if (multiple) {
+          textResult.push(text);
+        } else {
+          textResult = text;
+        }
       },
-      onError() {
-        reject(new Error('element-not-found'));
+      onError(error) {
+        reject(error);
       },
       onSuccess() {
         resolve(textResult);

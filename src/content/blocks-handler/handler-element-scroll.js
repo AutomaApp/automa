@@ -29,8 +29,8 @@ function elementScroll(block) {
           });
         }
       },
-      onError() {
-        reject(new Error('element-not-found'));
+      onError(error) {
+        reject(error);
       },
       onSuccess() {
         window.dispatchEvent(new Event('scroll'));

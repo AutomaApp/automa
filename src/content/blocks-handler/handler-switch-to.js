@@ -14,8 +14,8 @@ function switchTo(block) {
       onSuccess() {
         resolve('');
       },
-      onError() {
-        reject(new Error('element-not-found'));
+      onError(error) {
+        reject(error);
       },
     });
   });

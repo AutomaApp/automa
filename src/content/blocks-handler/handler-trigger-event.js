@@ -12,8 +12,8 @@ function triggerEvent(block) {
       onSuccess() {
         resolve(data.eventName);
       },
-      onError() {
-        reject(new Error('element-not-found'));
+      onError(error) {
+        reject(error);
       },
     });
 

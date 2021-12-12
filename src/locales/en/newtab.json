@@ -84,8 +84,10 @@
       "finish": "Finish"
     },
     "messages": {
+      "conditions-empty": "Conditions is empty",
       "invalid-proxy-host": "Invalid proxy host",
       "workflow-disabled": "Workflow is disabled",
+      "selector-empty": "Element selector is empty",
       "empty-workflow": "You must select a workflow first",
       "active-tab-removed": "Workflow active tab is removed",
       "stop-timeout": "Workflow is stopped because of timeout",

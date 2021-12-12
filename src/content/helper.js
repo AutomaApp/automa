@@ -12,7 +12,10 @@ export function handleElement(
   { data, id },
   { onSelected, onError, onSuccess, returnElement }
 ) {
-  if (!data || !data.selector) return null;
+  if (!data || !data.selector) {
+    if (onError) onError(new Error('selector-empty'));
+    return null;
+  }
 
   try {
     data.blockIdAttr = `block--${id}`;
@@ -23,11 +26,11 @@ export function handleElement(
     if (returnElement) return element;
 
     if (!element) {
-      if (onError) onError();
+      if (onError) onError(new Error('element-not-found'));
 
-      return;
+      return null;
     }
-    console.log(element, onSelected);
+
     if (data.multiple && selectorType === 'cssSelector') {
       element.forEach((el) => {
         markElement(el, { id, data });

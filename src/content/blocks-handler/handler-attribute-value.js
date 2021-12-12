@@ -20,8 +20,8 @@ function attributeValue(block) {
         if (multiple) result.push(value);
         else result = value;
       },
-      onError() {
-        reject(new Error('element-not-found'));
+      onError(error) {
+        reject(error);
       },
       onSuccess() {
         resolve(result);

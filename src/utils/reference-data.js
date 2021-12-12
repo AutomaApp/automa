@@ -31,6 +31,16 @@ export function parseKey(key) {
 
   return { dataKey: 'data', path: dataPath };
 }
+export function replaceMustacheHandler(match, data) {
+  const key = match.slice(2, -2).replace(/\s/g, '');
+
+  if (!key) return '';
+
+  const { dataKey, path } = parseKey(key);
+  const result = objectPath.get(data[dataKey], path) ?? match;
+
+  return isObject(result) ? JSON.stringify(result) : result;
+}
 
 export default function (block, data) {
   const replaceKeys = [
@@ -50,24 +60,7 @@ export default function (block, data) {
 
     const newDataValue = replaceMustache(
       replacedBlock.data[blockDataKey],
-      (match) => {
-        const key = match.slice(2, -2).replace(/\s/g, '');
-
-        if (!key) return '';
-
-        const { dataKey, path } = parseKey(key);
-
-        if (
-          dataKey === 'prevBlockData' &&
-          (!isObject(data.prevBlockData) || !Array.isArray(data.prevBlockData))
-        ) {
-          return data.prevBlockData;
-        }
-
-        const result = objectPath.get(data[dataKey], path) ?? match;
-
-        return isObject(result) ? JSON.stringify(result) : result;
-      }
+      (match) => replaceMustacheHandler(match, data)
     );
 
     replacedBlock = objectPath.set(

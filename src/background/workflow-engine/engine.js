@@ -333,18 +333,19 @@ class WorkflowEngine {
         : blockHandler;
 
     if (handler) {
-      const blockDelay =
-        block.name === 'trigger' ? 0 : this.workflow.settings?.blockDelay || 0;
-      const replacedBlock = referenceData(block, {
+      const refData = {
         prevBlockData,
         data: this.data,
         loopData: this.loopData,
         globalData: this.globalData,
         activeTabUrl: this.activeTabUrl,
-      });
+      };
+      const replacedBlock = referenceData(block, refData);
+      const blockDelay =
+        block.name === 'trigger' ? 0 : this.workflow.settings?.blockDelay || 0;
 
       handler
-        .call(this, replacedBlock, prevBlockData)
+        .call(this, replacedBlock, { prevBlockData, refData })
         .then((result) => {
           clearTimeout(this.workflowTimeout);
           this.workflowTimeout = null;

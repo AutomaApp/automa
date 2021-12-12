@@ -14,15 +14,11 @@
         class="cursor-pointer mr-2"
         @click="editor.removeNodeId(`node-${block.id}`)"
       />
-      <ui-button
-        :disabled="block.data.conditions && block.data.conditions.length > 4"
-        icon
-        variant="accent"
-        style="height: 37px; width: 37px"
-        @click="addComparison"
-      >
-        <v-remixicon name="riAddLine" class="inline-block" />
-      </ui-button>
+      <v-remixicon
+        name="riPencilLine"
+        class="inline-block cursor-pointer"
+        @click="editBlock"
+      />
     </div>
     <div
       v-if="block.data.conditions && block.data.conditions.length !== 0"
@@ -35,39 +31,30 @@
       >
         <v-remixicon
           name="riDeleteBin7Line"
-          class="mr-2 invisible group-hover:visible cursor-pointer"
-          @click="deleteComparison(index)"
+          class="mr-2 cursor-pointer group-hover:visible invisible"
+          @click="deleteCondition(index)"
         />
-        <div class="flex items-center transition bg-input rounded-lg">
-          <select
-            v-model="block.data.conditions[index].type"
-            :title="getTitle(index)"
-            class="
-              bg-transparent
-              font-mono
-              z-10
-              p-2
-              text-center
-              transition
-              rounded-l-lg
-              appearance-none
-            "
-          >
-            <option
-              v-for="(name, type) in conditions"
-              :key="type"
-              :value="type"
-            >
-              {{ type }}
-            </option>
-          </select>
-          <div class="bg-gray-300 w-px" style="height: 30px"></div>
-          <input
-            v-model="block.data.conditions[index].value"
-            type="text"
-            placeholder="value"
-            class="p-2 flex-1 transition rounded-r-lg bg-transparent w-36"
-          />
+        <div
+          class="
+            flex
+            items-center
+            flex-1
+            p-2
+            bg-box-transparent
+            rounded-lg
+            overflow-hidden
+            w-44
+          "
+        >
+          <p class="w-5/12 text-overflow text-right">
+            {{ item.compareValue || '_____' }}
+          </p>
+          <p class="w-2/12 text-center mx-1 font-mono">
+            {{ item.type }}
+          </p>
+          <p class="w-5/12 text-overflow">
+            {{ item.value || '_____' }}
+          </p>
         </div>
       </div>
       <p
@@ -83,7 +70,7 @@
   </div>
 </template>
 <script setup>
-import { watch, toRaw } from 'vue';
+import { watch, toRaw, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import emitter from 'tiny-emitter/instance';
 import { debounce } from '@/utils/helper';
@@ -101,35 +88,35 @@ const { t } = useI18n();
 const componentId = useComponentId('block-conditions');
 const block = useEditorBlock(`#${componentId}`, props.editor);
 
-const conditions = {
-  '==': 'equals',
-  '>': 'gt',
-  '>=': 'gte',
-  '<': 'lt',
-  '<=': 'lte',
-  '()': 'contains',
-};
-
-function getTitle(index) {
-  const type = conditions[block.data.conditions[index]?.type] || 'equals';
-
-  return t(`workflow.blocks.conditions.${type}`);
+function editBlock() {
+  emitter.emit('editor:edit-block', {
+    ...block.details,
+    data: block.data,
+    blockId: block.id,
+  });
 }
-function addComparison() {
-  if (block.data.conditions.length >= 10) return;
+function addConditionEmit({ id }) {
+  if (id !== block.id) return;
 
-  block.data.conditions.push({ type: '==', value: '' });
+  const { length } = block.data.conditions;
 
-  if (block.data.conditions.length === 1) props.editor.addNodeOutput(block.id);
+  if (length >= 10) return;
+  if (length === 1) props.editor.addNodeOutput(block.id);
 
   props.editor.addNodeOutput(block.id);
 }
-function deleteComparison(index) {
-  block.data.conditions.splice(index, 1);
+function deleteConditionEmit({ index, id }) {
+  if (id !== block.id) return;
 
   props.editor.removeNodeOutput(block.id, `output_${index + 1}`);
+
   if (block.data.conditions.length === 0)
     props.editor.removeNodeOutput(block.id, `output_1`);
+}
+function deleteCondition(index) {
+  block.data.conditions.splice(index, 1);
+
+  deleteConditionEmit({ index, id: block.id });
 }
 
 watch(
@@ -141,12 +128,20 @@ watch(
 
     props.editor.updateConnectionNodes(`node-${block.id}`);
 
-    if (oldValue) {
-      emitter.emit('editor:data-changed', block.id);
-    }
+    if (!oldValue) return;
+
+    emitter.emit('editor:data-changed', block.id);
   }, 250),
   { deep: true }
 );
+
+emitter.on('conditions-block:add', addConditionEmit);
+emitter.on('conditions-block:delete', deleteConditionEmit);
+
+onBeforeUnmount(() => {
+  emitter.off('conditions-block:add', addConditionEmit);
+  emitter.off('conditions-block:delete', deleteConditionEmit);
+});
 </script>
 <style>
 .drawflow .drawflow-node.conditions .outputs {
@@ -154,9 +149,9 @@ watch(
   transform: none !important;
 }
 .drawflow .drawflow-node.conditions .output {
-  margin-bottom: 32px;
+  margin-bottom: 30px;
 }
 .drawflow .drawflow-node.conditions .output:nth-last-child(2) {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 </style>
