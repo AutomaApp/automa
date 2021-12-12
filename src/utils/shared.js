@@ -586,4 +586,5 @@ export const supportLocales = [
   { id: 'en', name: 'English' },
   { id: 'zh', name: '简体中文' },
   { id: 'zh-tw', name: '繁體中文' },
+  { id: 'vi', name: 'Vietnamese' },
 ];
