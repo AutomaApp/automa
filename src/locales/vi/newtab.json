@@ -1,0 +1,135 @@
+{
+  "home": {
+    "viewAll": "View all"
+  },
+  "settings": {
+    "language": {
+      "label": "Language",
+      "helpTranslate": "Can't find your language? Help translate.",
+      "reloadPage": "Reload the page to take effect"
+    }
+  },
+  "workflow": {
+    "import": "Import workflow",
+    "new": "New workflow",
+    "delete": "Delete workflow",
+    "name": "Workflow name",
+    "rename": "Rename workflow",
+    "add": "Add workflow",
+    "clickToEnable": "Click to enable",
+    "state": {
+      "executeBy": "Executed by: \"{name}\""
+    },
+    "dataColumns": {
+      "title": "Data columns",
+      "placeholder": "Search or add column",
+      "column": {
+        "name": "Column name",
+        "type": "Data type"
+      }
+    },
+    "sidebar": {
+      "workflowIcon": "Workflow icon"
+    },
+    "editor": {
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "resetZoom": "Reset zoom",
+      "duplicate": "Duplicate"
+    },
+    "settings": {
+      "onError": {
+        "title": "On workflow error",
+        "items": {
+          "keepRunning": "Keep running",
+          "stopWorkflow": "Stop workflow"
+        }
+      },
+      "timeout": {
+        "title": "Workflow timeout (milliseconds)"
+      }
+    }
+  },
+  "collection": {
+    "description": "Execute your workflows in sequence",
+    "new": "New collection",
+    "delete": "Delete collection",
+    "add": "Add collection",
+    "rename": "Rename collection",
+    "flow": "Flow",
+    "dragDropText": "Drop a workflow or block in here",
+    "options": {
+      "atOnce": {
+        "title": "Execute all workflows in the collection at once",
+        "description": "Block not gonna executed when using this option"
+      }
+    },
+    "globalData": {
+      "note": "This will overwrite the global data of the workflow"
+    }
+  },
+  "log": {
+    "goBack": "Go back to \"{name}\" log",
+    "startedDate": "Started date",
+    "duration": "Duration",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "deleteSelected": "Delete selected logs",
+    "types": {
+      "stop": "Workflow is stopped",
+      "finish": "Finish"
+    },
+    "messages": {
+      "workflow-disabled": "Workflow is disabled",
+      "stop-timeout": "Workflow is stopped because of timeout",
+      "invalid-proxy-host": "Invalid proxy host",
+      "no-iframe-id": "Can't find Frame ID for the iframe element with \"{selector}\" selector",
+      "no-tab": "Can't connect to a tab, use \"New tab\" or \"Active tab\" block before using the \"{name}\" block.",
+      "empty-workflow": "You must select a workflow first",
+      "no-workflow": "Can't find workflow with \"{workflowId}\" ID",
+      "workflow-infinite-loop": "Can't execute the workflow to prevent an infinite loop"
+    },
+    "description": {
+      "text": "{status} on {date} in {duration}",
+      "status": {
+        "success": "Succeeded",
+        "error": "Failed",
+        "stopped": "Stopped"
+      }
+    },
+    "delete": {
+      "title": "Delete log",
+      "description": "Are you sure want to delete all the selected logs?"
+    },
+    "exportData": {
+      "title": "Export data",
+      "types": {
+        "json": "JSON",
+        "csv": "CSV",
+        "plain-text": "Plain text"
+      }
+    },
+    "filter": {
+      "title": "Filter",
+      "byStatus": "By status",
+      "byDate": {
+        "title": "By date",
+        "items": {
+          "lastDay": "Last day",
+          "last7Days": "Last seven days",
+          "last30Days": "Last thirty days"
+        }
+      }
+    }
+  },
+  "components": {
+    "pagination": {
+      "text1": "Showing",
+      "text2": "items out of {count}",
+      "nextPage": "Next page",
+      "currentPage": "Current page",
+      "prevPage": "Previous page",
+      "of": "of {page}"
+    }
+  }
+}
