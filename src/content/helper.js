@@ -8,26 +8,37 @@ export function markElement(el, { id, data }) {
   }
 }
 
-export function handleElement({ data, id }, callback, errCallback) {
+export function handleElement(
+  { data, id },
+  { onSelected, onError, onSuccess, returnElement }
+) {
   if (!data || !data.selector) return null;
 
   try {
     data.blockIdAttr = `block--${id}`;
-    const element = FindElement[data.findBy || 'cssSelector'](data);
 
-    if (typeof callback === 'boolean' && callback) return element;
+    const selectorType = data.findBy || 'cssSelector';
+    const element = FindElement[selectorType](data);
 
-    if (data.multiple && (data.findBy || 'cssSelector') === 'cssSelector') {
+    if (returnElement) return element;
+
+    if (!element) {
+      if (onError) onError();
+
+      return;
+    }
+    console.log(element, onSelected);
+    if (data.multiple && selectorType === 'cssSelector') {
       element.forEach((el) => {
         markElement(el, { id, data });
-        callback(el);
+        onSelected(el);
       });
     } else if (element) {
       markElement(element, { id, data });
-      callback(element);
-    } else if (errCallback) {
-      errCallback();
+      onSelected(element);
     }
+
+    if (onSuccess) onSuccess();
   } catch (error) {
     console.error(error);
   }

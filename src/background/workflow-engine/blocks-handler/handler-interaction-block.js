@@ -22,13 +22,6 @@ async function interactionHandler(block, prevBlockData) {
     if (block.name === 'link')
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
-    if (data?.isError) {
-      const error = new Error(data.message);
-      error.nextBlockId = nextBlockId;
-
-      throw error;
-    }
-
     if (objectHasKey(block.data, 'dataColumn')) {
       if (!block.data.saveData)
         return {
@@ -58,6 +51,11 @@ async function interactionHandler(block, prevBlockData) {
     };
   } catch (error) {
     error.nextBlockId = nextBlockId;
+    error.data = {
+      name: block.name,
+      selector: block.data.selector,
+    };
+    console.dir(error);
 
     throw error;
   }

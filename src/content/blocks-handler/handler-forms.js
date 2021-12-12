@@ -2,9 +2,15 @@ import { handleElement, markElement } from '../helper';
 import handleFormElement from '@/utils/handle-form-element';
 
 function forms(block) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const { data } = block;
-    const elements = handleElement(block, true);
+    const elements = handleElement(block, { returnElement: true });
+
+    if (!elements) {
+      reject(new Error('element-not-found'));
+
+      return;
+    }
 
     if (data.getValue) {
       let result = '';

@@ -1,11 +1,11 @@
 import { markElement } from '../helper';
 
 function link(block) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const element = document.querySelector(block.data.selector);
 
     if (!element) {
-      resolve('');
+      reject(new Error('element-not-found'));
       return;
     }
 
