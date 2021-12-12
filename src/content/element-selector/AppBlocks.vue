@@ -29,6 +29,7 @@
     <prism-editor
       v-if="state.blockResult"
       v-model="state.blockResult"
+      readonly
       :highlight="highlighter('json')"
       class="h-full scroll mt-2"
     />
