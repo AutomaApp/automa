@@ -1,0 +1,135 @@
+{
+  "home": {
+    "viewAll": "Tất cả"
+  },
+  "settings": {
+    "language": {
+      "label": "Ngôn ngữ",
+      "helpTranslate": "Không tìm thấy ngôn ngữ của bạn? Hãy đóng góp bản dịch với chúng tôi.",
+      "reloadPage": "Tải lại trang để hoàn tất thao tác"
+    }
+  },
+  "workflow": {
+    "import": "Nhập quy trình",
+    "new": "Tạo quy trình mới",
+    "delete": "Xóa quy trình",
+    "name": "Tên quy trình",
+    "rename": "Sửa tên quy trình",
+    "add": "Thêm quy trình",
+    "clickToEnable": "Nhấn để kích hoạt",
+    "state": {
+      "executeBy": "Thực hiện bởi: \"{name}\""
+    },
+    "dataColumns": {
+      "title": "Cơ sở dữ liệu Cột",
+      "placeholder": "Tìm kiếm hoặc thêm cột",
+      "column": {
+        "name": "Tên cột",
+        "type": "Kiểu dữ liệu"
+      }
+    },
+    "sidebar": {
+      "workflowIcon": "Icon"
+    },
+    "editor": {
+      "zoomIn": "Phóng to",
+      "zoomOut": "Thu nhỏ",
+      "resetZoom": "Về mặc định",
+      "duplicate": "Nhân bản"
+    },
+    "settings": {
+      "onError": {
+        "title": "Khi quy trình gặp lỗi",
+        "items": {
+          "keepRunning": "Tiếp tục chạy",
+          "stopWorkflow": "Dừng quy trình"
+        }
+      },
+      "timeout": {
+        "title": "Thời lượng thực thi tối đa (Mili giây)"
+      }
+    }
+  },
+  "collection": {
+    "description": "Thực thi quy trình của bạn theo trình tự",
+    "new": "Bộ sưu tập mới",
+    "delete": "Xóa bộ sưu tập",
+    "add": "Thêm bộ sưu tập",
+    "rename": "Đổi tên bộ sưu tập",
+    "flow": "Trình tự",
+    "dragDropText": "Thả một quy trình hoặc khối vào đây",
+    "options": {
+      "atOnce": {
+        "title": "Thực thi tất cả quy trình trong bộ sưu tập cùng một lúc",
+        "description": "Khối sẽ không được thực thi khi kích hoạt tùy chọn này"
+      }
+    },
+    "globalData": {
+      "note": "Điều này sẽ ghi đè lên dữ liệu chung của quy trình"
+    }
+  },
+  "log": {
+    "goBack": "Trở lại nhật ký \"{name}\"",
+    "startedDate": "Ngày bắt đầu",
+    "duration": "Thời lượng",
+    "selectAll": "Chọn tất cả",
+    "deselectAll": "Bỏ chọn tất cả",
+    "deleteSelected": "Xóa nhật ký đã chọn",
+    "types": {
+      "stop": "Quy trình đã bị dừng",
+      "finish": "Hoàn thành"
+    },
+    "messages": {
+      "workflow-disabled": "Quy trình đã được vô hiệu hóa",
+      "stop-timeout": "Quy trình đã bị dừng vì hết thời lượng thực thi",
+      "invalid-proxy-host": "Máy chủ proxy không hợp lệ",
+      "no-iframe-id": "Không tìm thấy Frame ID cho iframe element với bộ chọn \"{selector}\"",
+      "no-tab": "Không thể kết nối với một tab, dùng \"New tab\" hoặc khối \"Active tab\" trước khi dùng khối \"{name}\".",
+      "empty-workflow": "Đầu tiên, bạn phải chọn một quy trình",
+      "no-workflow": "Không tìm thấy quy trình với ID \"{workflowId}\"",
+      "workflow-infinite-loop": "Quy trình không được thực thi để ngăn vòng lặp vô hạn"
+    },
+    "description": {
+      "text": "{status} vào {date} trong {duration}",
+      "status": {
+        "success": "Thành công",
+        "error": "Thất bại",
+        "stopped": "Đã dừng lại"
+      }
+    },
+    "delete": {
+      "title": "Xóa nhật ký",
+      "description": "Bạn muốn xóa tất cả các nhật ký đã chọn?"
+    },
+    "exportData": {
+      "title": "Xuất dữ liệu",
+      "types": {
+        "json": "JSON",
+        "csv": "CSV",
+        "plain-text": "Văn bản thuần túy"
+      }
+    },
+    "filter": {
+      "title": "Bộ lọc",
+      "byStatus": "Theo trang thái",
+      "byDate": {
+        "title": "Theo ngày",
+        "items": {
+          "lastDay": "Hôm nay",
+          "last7Days": "7 ngày qua",
+          "last30Days": "30 ngày qua"
+        }
+      }
+    }
+  },
+  "components": {
+    "pagination": {
+      "text1": "Hiển thị",
+      "text2": "trong tổng số {count}",
+      "nextPage": "Trang tiếp theo",
+      "currentPage": "Trang hiện tại",
+      "prevPage": "Trang trước",
+      "of": "trong tổng số {page}"
+    }
+  }
+}
