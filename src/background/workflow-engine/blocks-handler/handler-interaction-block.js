@@ -55,7 +55,6 @@ async function interactionHandler(block, prevBlockData) {
       name: block.name,
       selector: block.data.selector,
     };
-    console.dir(error);
 
     throw error;
   }

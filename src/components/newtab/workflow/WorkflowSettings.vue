@@ -1,6 +1,6 @@
 <template>
   <div class="workflow-settings">
-    <div class="mb-4">
+    <div class="mb-6">
       <p class="mb-1">{{ t('workflow.settings.onError.title') }}</p>
       <div class="space-x-4">
         <ui-radio
@@ -15,12 +15,27 @@
         </ui-radio>
       </div>
     </div>
-    <div>
+    <div class="mb-6">
       <p class="mb-1">{{ t('workflow.settings.timeout.title') }}</p>
       <ui-input
         :model-value="workflow.settings.timeout"
         type="number"
+        class="w-full max-w-sm"
         @change="updateWorkflow({ timeout: +$event })"
+      />
+    </div>
+    <div>
+      <p class="mb-1">
+        {{ t('workflow.settings.blockDelay.title') }}
+        <span :title="t('workflow.settings.blockDelay.description')">
+          &#128712;
+        </span>
+      </p>
+      <ui-input
+        :model-value="workflow.settings.blockDelay"
+        type="number"
+        class="w-full max-w-sm"
+        @change="updateWorkflow({ blockDelay: +$event })"
       />
     </div>
   </div>

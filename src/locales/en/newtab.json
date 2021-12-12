@@ -47,7 +47,11 @@
       },
       "timeout": {
         "title": "Workflow timeout (milliseconds)"
-      }
+      },
+      "blockDelay": {
+        "title": "Block delay (milliseconds)",
+        "description": "Add delay before executing each of the blocks"
+      },
     }
   },
   "collection": {

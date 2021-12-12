@@ -333,6 +333,8 @@ class WorkflowEngine {
         : blockHandler;
 
     if (handler) {
+      const blockDelay =
+        block.name === 'trigger' ? 0 : this.workflow.settings?.blockDelay || 0;
       const replacedBlock = referenceData(block, {
         prevBlockData,
         data: this.data,
@@ -354,7 +356,9 @@ class WorkflowEngine {
           });
 
           if (result.nextBlockId) {
-            this._blockHandler(this.blocks[result.nextBlockId], result.data);
+            setTimeout(() => {
+              this._blockHandler(this.blocks[result.nextBlockId], result.data);
+            }, blockDelay);
           } else {
             this.addLog({
               type: 'finish',
@@ -376,10 +380,12 @@ class WorkflowEngine {
             this.workflow.settings.onError === 'keep-running' &&
             error.nextBlockId
           ) {
-            this._blockHandler(
-              this.blocks[error.nextBlockId],
-              error.data || ''
-            );
+            setTimeout(() => {
+              this._blockHandler(
+                this.blocks[error.nextBlockId],
+                error.data || ''
+              );
+            }, blockDelay);
           } else {
             this.destroy('error', error.message);
           }
