@@ -17,6 +17,8 @@ const files = {
 };
 
 export function generateJSON(keys, data) {
+  if (Array.isArray(data)) return data;
+
   const result = [];
 
   keys.forEach((key) => {
@@ -45,7 +47,11 @@ export default function (data, { name, type }, converted) {
         ? Papa.unparse(jsonData)
         : JSON.stringify(jsonData, null, 2);
   } else if (type === 'plain-text') {
-    result = Object.values(data).join(' ');
+    result = (
+      Array.isArray(data)
+        ? data.map((item) => Object.values(item)).flat()
+        : Object.values(data)
+    ).join(' ');
   }
 
   const { mime, ext } = files[type];

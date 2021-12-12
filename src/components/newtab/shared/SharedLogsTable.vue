@@ -51,7 +51,7 @@ defineProps({
   },
 });
 
-const { t } = useI18n();
+const { t, te } = useI18n();
 
 const statusColors = {
   error: 'bg-red-200',
@@ -64,7 +64,13 @@ function formatDate(date, format) {
 
   return dayjs(date).format(format);
 }
-function getErrorMessage({ history }) {
+function getErrorMessage({ history, message }) {
+  const messagePath = `log.messages.${message}`;
+
+  if (message && te(messagePath)) {
+    return t(messagePath);
+  }
+
   const lastHistory = history[history.length - 1];
 
   return lastHistory && lastHistory.type === 'error'

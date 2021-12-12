@@ -2,8 +2,9 @@
 import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
 import { tasks } from '@/utils/shared';
-import { toCamelCase, parseJSON } from '@/utils/helper';
+import { convertData } from './helper';
 import { generateJSON } from '@/utils/data-exporter';
+import { toCamelCase, parseJSON, isObject, objectHasKey } from '@/utils/helper';
 import errorMessage from './error-message';
 import referenceData from '@/utils/reference-data';
 import workflowState from '../workflow-state';
@@ -20,7 +21,7 @@ function tabRemovedHandler(tabId) {
     this.currentBlock.name === 'new-tab' ||
     tasks[this.currentBlock.name].category === 'interaction'
   ) {
-    this.destroy('error', 'Current active tab is removed');
+    this.destroy('error', 'active-tab-removed');
   }
 
   workflowState.update(this.id, this.state);
@@ -83,7 +84,8 @@ class WorkflowEngine {
     this.collectionLogId = collectionLogId;
     this.globalData = parseJSON(globalDataVal, globalDataVal);
     this.activeTabUrl = '';
-    this.data = {};
+    this.columns = { column: { index: 0, type: 'any' } };
+    this.data = [];
     this.logs = [];
     this.blocks = {};
     this.frames = {};
@@ -113,7 +115,7 @@ class WorkflowEngine {
       typeof this.workflow.drawflow === 'string'
         ? JSON.parse(this.workflow.drawflow || '{}')
         : this.workflow.drawflow;
-    const blocks = drawflowData?.drawflow.Home.data;
+    const blocks = drawflowData?.drawflow?.Home.data;
 
     if (!blocks) {
       console.error(errorMessage('no-block', this.workflow));
@@ -138,14 +140,10 @@ class WorkflowEngine {
     this.blocks = blocks;
     this.startedTimestamp = Date.now();
     this.workflow.dataColumns = dataColumns;
-    this.data = dataColumns.reduce(
-      (acc, column) => {
-        acc[column.name] = [];
 
-        return acc;
-      },
-      { column: [] }
-    );
+    dataColumns.forEach(({ name, type }) => {
+      this.columns[name] = { index: 0, type };
+    });
 
     workflowState
       .add(this.id, {
@@ -156,6 +154,38 @@ class WorkflowEngine {
       .then(() => {
         this._blockHandler(triggerBlock);
       });
+  }
+
+  addData(key, value) {
+    if (Array.isArray(key)) {
+      key.forEach((item) => {
+        if (!isObject(item)) return;
+
+        Object.entries(item).forEach(([itemKey, itemValue]) => {
+          this.addData(itemKey, itemValue);
+        });
+      });
+
+      return;
+    }
+
+    const columnName = objectHasKey(this.columns, key) ? key : 'column';
+    const currentColumn = this.columns[columnName];
+    const convertedValue = convertData(value, currentColumn.type);
+
+    if (objectHasKey(this.data, currentColumn.index)) {
+      this.data[currentColumn.index][columnName] = convertedValue;
+    } else {
+      this.data.push({ [columnName]: convertedValue });
+    }
+
+    currentColumn.index += 1;
+  }
+
+  addLog(detail) {
+    if (this.logs.length >= 1001) return;
+
+    this.logs.push(detail);
   }
 
   on(name, listener) {
@@ -176,7 +206,7 @@ class WorkflowEngine {
         await this.childWorkflow.stop();
       }
 
-      this.logs.push({
+      this.addLog({
         message,
         type: 'stop',
         name: 'stop',
@@ -210,6 +240,7 @@ class WorkflowEngine {
           name,
           icon,
           status,
+          message,
           id: this.id,
           workflowId: id,
           data: jsonData,
@@ -285,7 +316,6 @@ class WorkflowEngine {
 
     if (!disableTimeoutKeys.includes(block.name)) {
       this.workflowTimeout = setTimeout(() => {
-        alert('timeout');
         if (!this.isDestroyed) this.stop('stop-timeout');
       }, this.workflow.settings.timeout || 120000);
     }
@@ -316,7 +346,7 @@ class WorkflowEngine {
         .then((result) => {
           clearTimeout(this.workflowTimeout);
           this.workflowTimeout = null;
-          this.logs.push({
+          this.addLog({
             type: 'success',
             name: block.name,
             logId: result.logId,
@@ -326,7 +356,7 @@ class WorkflowEngine {
           if (result.nextBlockId) {
             this._blockHandler(this.blocks[result.nextBlockId], result.data);
           } else {
-            this.logs.push({
+            this.addLog({
               type: 'finish',
               name: 'finish',
             });
@@ -335,7 +365,7 @@ class WorkflowEngine {
           }
         })
         .catch((error) => {
-          this.logs.push({
+          this.addLog({
             type: 'error',
             message: error.message,
             name: block.name,

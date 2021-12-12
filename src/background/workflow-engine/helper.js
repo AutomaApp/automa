@@ -3,7 +3,7 @@ export function convertData(data, type) {
 
   switch (type) {
     case 'integer':
-      result = +data.replace(/\D+/g, '');
+      result = Number.isNaN(data) ? +data?.replace(/\D+/g, '') : data;
       break;
     case 'boolean':
       result = Boolean(data);

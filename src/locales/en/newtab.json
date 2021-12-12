@@ -86,6 +86,7 @@
       "no-iframe-id": "Can't find Frame ID for the iframe element with \"{selector}\" selector",
       "no-tab": "Can't connect to a tab, use \"New tab\" or \"Active tab\" block before using the \"{name}\" block.",
       "empty-workflow": "You must select a workflow first",
+      "active-tab-removed": "Workflow active tab is removed",
       "no-workflow": "Can't find workflow with \"{workflowId}\" ID",
       "workflow-infinite-loop": "Can't execute the workflow to prevent an infinite loop"
     },
