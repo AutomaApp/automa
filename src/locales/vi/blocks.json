@@ -1,0 +1,317 @@
+{
+  "collection": {
+    "blocks": {
+      "export-result": {
+        "name": "Xuất kết quả",
+        "description": "Xuất kết quả thu thập dưới dạng JSON"
+      }
+    }
+  },
+  "workflow": {
+    "blocks": {
+      "base": {
+        "selector": "Bộ chọn phần tử",
+        "findElement": {
+          "placeholder": "Tìm phần tử bằng",
+          "options": {
+            "cssSelector": "Bộ chọn CSS",
+            "xpath": "XPath"
+          }
+        },
+        "markElement": {
+          "title": "Một phần tử sẽ không được chọn nếu nó đã được chọn trước đó",
+          "text": "Đánh dấu phần tử"
+        },
+        "multiple": {
+          "title": "Chọn nhiều phần tử",
+          "text": "Nhiều"
+        }
+      },
+      "trigger": {
+        "name": "Kích hoạt",
+        "description": "Quy trình bắt đầu được thực thi ở đây",
+        "days": [
+          "Chủ nhật",
+          "Thứ hai",
+          "Thứ ba",
+          "Thứ tư",
+          "Thứ năm",
+          "Thứ sáu",
+          "Thứ bảy"
+        ],
+        "useRegex": "Dùng regex",
+        "shortcut": {
+          "tootlip": "Ghi lại lối tắt",
+          "checkboxTitle": "Execute shortcut even when you're in an input element",
+          "checkbox": "Hoạt động khi nhập liệu",
+          "note": "Lưu ý: phím tắt chỉ hoạt động khi bạn đang truy cập một trang web"
+        },
+        "forms": {
+          "triggerWorkflow": "Quy trình kích hoạt",
+          "interval": "Chu kỳ (phút)",
+          "delay": "Độ trễ (phút)",
+          "date": "Ngày",
+          "time": "Giờ",
+          "url": "URL hoặc Regex",
+          "shortcut": "Phim tắt"
+        },
+        "items": {
+          "manual": "Thủ công",
+          "interval": "Chu kỳ",
+          "date": "Vào một ngày cụ thể",
+          "specific-day": "Vào một ngày cụ thể",
+          "visit-web": "Khi truy cập một trang web",
+          "keyboard-shortcut": "Phim tắt"
+        }
+      },
+      "execute-workflow": {
+        "name": "Thực thi quy trình",
+        "overwriteNote": "Thao tác này sẽ ghi đè lên dữ liệu chung của quy trình đã chọn",
+        "select": "Chọn quy trình",
+        "description": ""
+      },
+      "active-tab": {
+        "name": "Tab hoạt động",
+        "description": "Chỉ định tab hiện tại mà bạn đang truy cập thành tab đang hoạt động"
+      },
+      "proxy": {
+        "name": "Proxy",
+        "description": "Thiết lập proxy của trình duyệt",
+        "clear": "Xóa tất cả proxy",
+        "bypass": {
+          "label": "Danh sách bỏ qua",
+          "note": "Dùng dấu phẩy (,) để tách biệt URL"
+        }
+      },
+      "new-window": {
+        "name": "Cửa sổ mới",
+        "description": "Tạo cửa sổ mới",
+        "windowState": {
+          "placeholder": "Trạng thái cửa sổ",
+          "options": {
+            "normal": "Bình thường",
+            "minimized": "Thu gọn",
+            "maximized": "Mở rộng tối đa",
+            "fullscreen": "Toàn màn hình"
+          }
+        },
+        "incognito": {
+          "text": "Đặt làm cửa sổ ẩn danh",
+          "note": "Bạn cần bật 'Cho phép ở chế độ ẩn danh' cho tiện ích mở rộng này để sử dụng tùy chọn"
+        }
+      },
+      "go-back": {
+        "name": "Quay lại",
+        "description": "Quay trở lại trang trước"
+      },
+      "forward-page": {
+        "name": "Về trước",
+        "description": "Đi tới trang tiếp theo"
+      },
+      "close-tab": {
+        "name": "Đóng tab",
+        "description": "",
+        "activeTab": "Đóng activeTab",
+        "url": "URL hoặc match pattern"
+      },
+      "event-click": {
+        "name": "Nhấp vào phần tử",
+        "description": ""
+      },
+      "delay": {
+        "name": "Độ trễ",
+        "description": "Thêm độ trễ trước khi thực hiện khối tiếp theo",
+        "input": {
+          "title": "Độ trễ trong mili giây",
+          "placeholder": "(mili giây)"
+        }
+      },
+      "get-text": {
+        "name": "Trích văn bản",
+        "description": "Trích văn bản từ một phần tử",
+        "prefixText": {
+          "placeholder": "Tiền tố văn bản",
+          "title": "Thêm tiền tố vào văn bản"
+        },
+        "suffixText": {
+          "placeholder": "Hậu tố văn bản",
+          "title": "Thêm hậu tố vào văn bản"
+        }
+      },
+      "export-data": {
+        "name": "Xuất dữ liệu",
+        "description": "Xuất dữ liệu của quy trình"
+      },
+      "element-scroll": {
+        "name": "Cuộn",
+        "description": "",
+        "scrollY": "Cuộn thẳng",
+        "scrollX": "Cuộn ngang",
+        "intoView": "Scroll into view",
+        "smooth": "Cuộn mượt",
+        "incScrollX": "Cuộn ngang tăng dần",
+        "incScrollY": "Cuộn dọc tăng dần"
+      },
+      "new-tab": {
+        "name": "Tab mới",
+        "description": "",
+        "activeTab": "Đặt làm tab hoạt động",
+        "tabToGroup": "Thêm tab vào nhóm",
+        "updatePrevTab": {
+          "title": "Sử dụng tab mới đã mở trước đó thay vì tạo tab mới",
+          "text": "Cập nhật tab đã mở trước đó"
+        }
+      },
+      "link": {
+        "name": "Link",
+        "description": "Mở phần tử link"
+      },
+      "attribute-value": {
+        "name": "Giá trị thuộc tính",
+        "description": "Trích xuất giá trị từ một thuộc tính của phần tử",
+        "forms": {
+          "name": "Tên thuộc tính",
+          "checkbox": "Lưu dữ liệu",
+          "column": "Chọn cột"
+        }
+      },
+      "forms": {
+        "name": "Biểu mẫu",
+        "description": "",
+        "selected": "Đã chọn",
+        "type": "Loại biểu mẫu",
+        "getValue": "Trích xuất giá trị từ biểu mẫu",
+        "text-field": {
+          "name": "Trường văn bản",
+          "value": "Giá trị",
+          "clearValue": "Xóa giá trị biểu mẫu",
+          "delay": {
+            "placeholder": "Độ trễ",
+            "label": "Nhập độ trễ (mili giây)(0 là vô hiệu hóa)"
+          }
+        },
+        "select": { "name": "Select" },
+        "radio": { "name": "Radio" },
+        "checkbox": { "name": "Checkbox" }
+      },
+      "repeat-task": {
+        "name": "Nhiệm vụ lặp lại",
+        "description": "",
+        "times": "lần",
+        "repeatFrom": "Lặp lại từ"
+      },
+      "javascript-code": {
+        "name": "JavaScript code",
+        "description": "Thực thi code Javascript trong trang web",
+        "availabeFuncs": "Các hàm có sẵn:",
+        "removeAfterExec": "Xóa sau khi khối được thực thi",
+        "modal": {
+          "tabs": {
+            "code": "JavaScript code",
+            "preloadScript": "Preload script"
+          }
+        },
+        "timeout": {
+          "placeholder": "Thời gian chờ",
+          "title": "Thời gian thực thi code Javascript"
+        }
+      },
+      "trigger-event": {
+        "name": "Sự kiện kích hoạt",
+        "description": "",
+        "selectEvent": "Chọn sự kiện"
+      },
+      "conditions": {
+        "name": "Điều kiện",
+        "description": "Khối có điều kiện",
+        "fallbackTitle": "Thực thi khi tất cả các phép so sánh không đáp ứng yêu cầu",
+        "equals": "Ngang bằng",
+        "gt": "Lớn hơn",
+        "gte": "Lớn hơn hoặc ngang bằng",
+        "lt": "Nhỏ hơn",
+        "lte": "Nhỏ hơn hoặc ngang bằng",
+        "contains": "Bao hàm"
+      },
+      "element-exists": {
+        "name": "Phần tử tồn tại",
+        "description": "Kiểm tra xem một phần tử có tồn tại không",
+        "selector": "Bộ chọn phần tử",
+        "fallbackTitle": "Thực thi khi phần tử không tồn tại",
+        "tryFor": {
+          "title": "Cố gắng kiểm tra xem phần tử có tồn tại không",
+          "label": "Số lần thử"
+        },
+        "timeout": {
+          "label": "Giới hạn thời gian (mili giây)",
+          "title": "Thời gian cho mỗi lần thử"
+        }
+      },
+      "webhook": {
+        "name": "Webhook",
+        "description": "Webhook cho phép dịch vụ bên ngoài được thông báo",
+        "url": "The Post receive URL",
+        "contentType": "Chọn một loại nội dung",
+        "buttons": {
+          "header": "Thêm header"
+        },
+        "timeout": {
+          "placeholder": "Thời gian chờ",
+          "title": "Thời gian chờ thực hiện yêu cầu Http(ms)"
+        },
+        "tabs": {
+          "headers": "Headers",
+          "body": "Nội dung"
+        }
+      },
+      "loop-data": {
+        "name": "Loop data",
+        "description": "Lặp lại qua các cột dữ liệu hoặc dữ liệu tùy chỉnh của bạn",
+        "loopId": "Loop ID",
+        "modal": {
+          "fileTooLarge": "Tệp quá lớn để chỉnh sửa",
+          "maxFile": "Kích thước tệp tối đa là 1MB",
+          "options": {
+            "firstRow": "Use the first row as keys"
+          }
+        },
+        "buttons": {
+          "clear": "Xóa dữ liệu",
+          "insert": "Chèn dữ liệu",
+          "import": "Nhập tệp"
+        },
+        "maxLoop": {
+          "title": "Số lượng dữ liệu tối đa để lặp lại",
+          "label": "Dữ liệu tối đa cho vòng lặp (0 là vô hiệu hóa)"
+        },
+        "loopThrough": {
+          "placeholder": "Lặp lại",
+          "fromNumber": "Từ số",
+          "toNumber": "Đến số",
+          "options": {
+            "numbers": "Số liệu",
+            "data-columns": "Cột dữ liệu",
+            "custom-data": "Dữ liệu tùy chỉnh"
+          }
+        }
+      },
+      "loop-breakpoint": {
+        "name": "Điểm ngắt vòng lặp",
+        "description": "Để cho biết khối dữ liệu vòng lặp phải dừng ở đâu"
+      },
+      "take-screenshot": {
+        "name": "Chụp màn hình",
+        "description": "Chụp màn hình của tab đang hoạt động",
+        "imageQuality": "Chất lượng hình ảnh"
+      },
+      "switch-to": {
+        "name": "Chuyển đổi frame",
+        "description": "Chuyển đổi giữa cửa sổ chính và iframe",
+        "iframeSelector": "Bộ chọn phần tử Iframe",
+        "windowTypes": {
+          "main": "Cửa sổ chính",
+          "iframe": "Iframe"
+        }
+      }
+    }
+  }
+}
