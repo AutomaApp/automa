@@ -1,16 +1,16 @@
 <template>
-  <ui-input
-    :model-value="data.selector"
-    :label="t('workflow.blocks.element-exists.selector')"
-    class="mb-1 w-full"
-    @change="updateData({ selector: $event })"
-  />
-  <div class="flex space-x-2">
+  <div>
+    <ui-input
+      :model-value="data.selector"
+      :label="t('workflow.blocks.element-exists.selector')"
+      class="mb-1 w-full"
+      @change="updateData({ selector: $event })"
+    />
     <ui-input
       :model-value="data.tryCount"
       :title="t('workflow.blocks.element-exists.tryFor.title')"
       :label="t('workflow.blocks.element-exists.tryFor.label')"
-      class="flex-1"
+      class="w-full mb-1"
       type="number"
       min="1"
       @change="updateData({ tryCount: +$event })"
@@ -19,7 +19,7 @@
       :model-value="data.timeout"
       :label="t('workflow.blocks.element-exists.timeout.label')"
       :title="t('workflow.blocks.element-exists.timeout.title')"
-      class="flex-1"
+      class="w-full"
       type="number"
       min="200"
       @change="updateData({ timeout: +$event })"

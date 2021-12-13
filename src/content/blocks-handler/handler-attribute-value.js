@@ -1,7 +1,7 @@
 import { handleElement } from '../helper';
 
 function attributeValue(block) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let result = [];
     const { attributeName, multiple } = block.data;
     const isCheckboxOrRadio = (element) => {
@@ -10,17 +10,23 @@ function attributeValue(block) {
       return ['checkbox', 'radio'].includes(element.getAttribute('type'));
     };
 
-    handleElement(block, (element) => {
-      const value =
-        attributeName === 'checked' && isCheckboxOrRadio(element)
-          ? element.checked
-          : element.getAttribute(attributeName);
+    handleElement(block, {
+      onSelected(element) {
+        const value =
+          attributeName === 'checked' && isCheckboxOrRadio(element)
+            ? element.checked
+            : element.getAttribute(attributeName);
 
-      if (multiple) result.push(value);
-      else result = value;
+        if (multiple) result.push(value);
+        else result = value;
+      },
+      onError(error) {
+        reject(error);
+      },
+      onSuccess() {
+        resolve(result);
+      },
     });
-
-    resolve(result);
   });
 }
 

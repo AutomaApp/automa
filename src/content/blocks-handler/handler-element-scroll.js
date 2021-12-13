@@ -13,25 +13,30 @@ function elementScroll(block) {
     return currentPos;
   }
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const { data } = block;
     const behavior = data.smooth ? 'smooth' : 'auto';
 
-    handleElement(block, (element) => {
-      if (data.scrollIntoView) {
-        element.scrollIntoView({ behavior, block: 'center' });
-      } else {
-        element.scroll({
-          behavior,
-          top: data.incY ? incScrollPos(element, data) : data.scrollY,
-          left: data.incX ? incScrollPos(element, data, false) : data.scrollX,
-        });
-      }
+    handleElement(block, {
+      onSelected(element) {
+        if (data.scrollIntoView) {
+          element.scrollIntoView({ behavior, block: 'center' });
+        } else {
+          element.scroll({
+            behavior,
+            top: data.incY ? incScrollPos(element, data) : data.scrollY,
+            left: data.incX ? incScrollPos(element, data, false) : data.scrollX,
+          });
+        }
+      },
+      onError(error) {
+        reject(error);
+      },
+      onSuccess() {
+        window.dispatchEvent(new Event('scroll'));
+        resolve('');
+      },
     });
-
-    window.dispatchEvent(new Event('scroll'));
-
-    resolve('');
   });
 }
 

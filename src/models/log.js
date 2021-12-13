@@ -11,6 +11,7 @@ class Log extends Model {
       name: this.string(''),
       history: this.attr([]),
       endedAt: this.number(0),
+      message: this.string(''),
       startedAt: this.number(0),
       workflowId: this.attr(null),
       collectionId: this.attr(null),

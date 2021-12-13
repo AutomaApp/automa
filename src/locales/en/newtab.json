@@ -47,7 +47,11 @@
       },
       "timeout": {
         "title": "Workflow timeout (milliseconds)"
-      }
+      },
+      "blockDelay": {
+        "title": "Block delay (milliseconds)",
+        "description": "Add delay before executing each of the blocks"
+      },
     }
   },
   "collection": {
@@ -80,14 +84,18 @@
       "finish": "Finish"
     },
     "messages": {
-      "workflow-disabled": "Workflow is disabled",
-      "stop-timeout": "Workflow is stopped because of timeout",
+      "conditions-empty": "Conditions is empty",
       "invalid-proxy-host": "Invalid proxy host",
-      "no-iframe-id": "Can't find Frame ID for the iframe element with \"{selector}\" selector",
-      "no-tab": "Can't connect to a tab, use \"New tab\" or \"Active tab\" block before using the \"{name}\" block.",
+      "workflow-disabled": "Workflow is disabled",
+      "selector-empty": "Element selector is empty",
       "empty-workflow": "You must select a workflow first",
+      "active-tab-removed": "Workflow active tab is removed",
+      "stop-timeout": "Workflow is stopped because of timeout",
       "no-workflow": "Can't find workflow with \"{workflowId}\" ID",
-      "workflow-infinite-loop": "Can't execute the workflow to prevent an infinite loop"
+      "element-not-found": "Can't find an element with \"{selector}\" selector.",
+      "workflow-infinite-loop": "Can't execute the workflow to prevent an infinite loop",
+      "no-iframe-id": "Can't find Frame ID for the iframe element with \"{selector}\" selector",
+      "no-tab": "Can't connect to a tab, use \"New tab\" or \"Active tab\" block before using the \"{name}\" block."
     },
     "description": {
       "text": "{status} on {date} in {duration}",

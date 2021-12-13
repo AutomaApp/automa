@@ -4,9 +4,15 @@ class FindElement {
       ? `${data.selector.trim()}:not([${data.blockIdAttr}])`
       : data.selector;
 
-    return data.multiple
-      ? document.querySelectorAll(selector)
-      : document.querySelector(selector);
+    if (data.multiple) {
+      const elements = document.querySelectorAll(selector);
+
+      if (elements.length === 0) return null;
+
+      return elements;
+    }
+
+    return document.querySelector(selector);
   }
 
   static xpath(data) {

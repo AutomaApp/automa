@@ -1,5 +1,7 @@
+import { openDB } from 'idb';
 import Mousetrap from 'mousetrap';
 import browser from 'webextension-polyfill';
+import secrets from 'secrets';
 import { sendMessage } from '@/utils/message';
 
 Mousetrap.prototype.stopCallback = function () {
@@ -17,6 +19,34 @@ function getTriggerBlock(workflow) {
   return trigger;
 }
 
+async function listenWindowMessage(workflows) {
+  try {
+    if (secrets?.webOrigin !== window.location.origin) return;
+
+    const db = await openDB('automa', 1, {
+      upgrade(event) {
+        event.createObjectStore('store');
+      },
+    });
+
+    db.put('store', workflows, 'workflows');
+
+    window.addEventListener('__automa-ext__', async ({ detail }) => {
+      if (detail.type === 'open-workflow') {
+        if (!detail.workflowId) return;
+
+        sendMessage(
+          'open:dashboard',
+          `/workflows/${detail.workflowId}`,
+          'background'
+        );
+      }
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 (async () => {
   try {
     const { shortcuts, workflows } = await browser.storage.local.get([
@@ -24,6 +54,10 @@ function getTriggerBlock(workflow) {
       'workflows',
     ]);
     const shortcutsArr = Object.entries(shortcuts || {});
+
+    listenWindowMessage(workflows);
+
+    document.body.setAttribute('data-atm-ext-installed', '');
 
     if (shortcutsArr.length === 0) return;
 

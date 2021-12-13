@@ -24,6 +24,7 @@ class Workflow extends Model {
       createdAt: this.number(),
       isDisabled: this.boolean(false),
       settings: this.attr({
+        blockDelay: 0,
         timeout: 120000,
         onError: 'stop-workflow',
       }),

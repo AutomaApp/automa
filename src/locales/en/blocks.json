@@ -230,6 +230,7 @@
         "gte": "Greater than or equal",
         "lt": "Less than",
         "lte": "Less than or equal",
+        "ne": "Not equals",
         "contains": "Contains"
       },
       "element-exists": {

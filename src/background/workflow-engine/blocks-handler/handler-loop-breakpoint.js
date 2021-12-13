@@ -1,6 +1,6 @@
 import { getBlockConnection } from '../helper';
 
-function loopBreakpoint(block, prevBlockData) {
+function loopBreakpoint(block, { prevBlockData }) {
   const currentLoop = this.loopList[block.data.loopId];
 
   return new Promise((resolve) => {

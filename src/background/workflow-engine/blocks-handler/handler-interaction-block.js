@@ -1,17 +1,10 @@
-import { objectHasKey, isObject } from '@/utils/helper';
-import { getBlockConnection, convertData } from '../helper';
+import { objectHasKey } from '@/utils/helper';
+import { getBlockConnection } from '../helper';
 
-async function interactionHandler(block, prevBlockData) {
+async function interactionHandler(block, { refData }) {
   const nextBlockId = getBlockConnection(block);
 
   try {
-    const refData = {
-      prevBlockData,
-      dataColumns: this.data,
-      loopData: this.loopData,
-      globalData: this.globalData,
-      activeTabUrl: this.activeTabUrl,
-    };
     const data = await this._sendMessageToTab(
       { ...block, refData },
       {
@@ -22,60 +15,27 @@ async function interactionHandler(block, prevBlockData) {
     if (block.name === 'link')
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
-    if (data?.isError) {
-      const error = new Error(data.message);
-      error.nextBlockId = nextBlockId;
-
-      throw error;
-    }
-
-    const getColumn = (name) =>
-      this.workflow.dataColumns.find((item) => item.name === name) || {
-        name: 'column',
-        type: 'text',
-      };
-    const pushData = (column, value) => {
-      this.data[column.name]?.push(convertData(value, column.type));
-    };
-
     if (objectHasKey(block.data, 'dataColumn')) {
-      const column = getColumn(block.data.dataColumn);
+      if (!block.data.saveData)
+        return {
+          data,
+          nextBlockId,
+        };
 
-      if (block.data.saveData) {
-        if (Array.isArray(data) && column.type !== 'array') {
-          data.forEach((item) => {
-            pushData(column, item);
-          });
-        } else {
-          pushData(column, data);
-        }
+      const currentColumnType =
+        this.columns[block.data.dataColumn]?.type || 'any';
+
+      if (Array.isArray(data) && currentColumnType !== 'array') {
+        data.forEach((item) => {
+          this.addData(block.data.dataColumn, item);
+        });
+      } else {
+        this.addData(block.data.dataColumn, data);
       }
     } else if (block.name === 'javascript-code') {
-      const memoColumn = {};
-      const pushObjectData = (obj) => {
-        Object.entries(obj).forEach(([key, value]) => {
-          let column;
+      const arrData = Array.isArray(data) ? data : [data];
 
-          if (memoColumn[key]) {
-            column = memoColumn[key];
-          } else {
-            const currentColumn = getColumn(key);
-
-            column = currentColumn;
-            memoColumn[key] = currentColumn;
-          }
-
-          pushData(column, value);
-        });
-      };
-
-      if (Array.isArray(data)) {
-        data.forEach((obj) => {
-          if (isObject(obj)) pushObjectData(obj);
-        });
-      } else if (isObject(data)) {
-        pushObjectData(data);
-      }
+      this.addData(arrData);
     }
 
     return {
@@ -84,6 +44,10 @@ async function interactionHandler(block, prevBlockData) {
     };
   } catch (error) {
     error.nextBlockId = nextBlockId;
+    error.data = {
+      name: block.name,
+      selector: block.data.selector,
+    };
 
     throw error;
   }

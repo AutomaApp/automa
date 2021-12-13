@@ -1,26 +1,42 @@
 import { handleElement } from '../helper';
 
 function getText(block) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let regex;
-    const { regex: regexData, regexExp, prefixText, suffixText } = block.data;
-    const textResult = [];
+    let textResult = [];
+    const {
+      regex: regexData,
+      regexExp,
+      prefixText,
+      suffixText,
+      multiple,
+    } = block.data;
 
     if (regexData) {
       regex = new RegExp(regexData, regexExp.join(''));
     }
 
-    handleElement(block, (element) => {
-      let text = element.innerText;
+    handleElement(block, {
+      onSelected(element) {
+        let text = element.innerText;
 
-      if (regex) text = text.match(regex).join(' ');
+        if (regex) text = text.match(regex).join(' ');
 
-      text = (prefixText || '') + text + (suffixText || '');
+        text = (prefixText || '') + text + (suffixText || '');
 
-      textResult.push(text);
+        if (multiple) {
+          textResult.push(text);
+        } else {
+          textResult = text;
+        }
+      },
+      onError(error) {
+        reject(error);
+      },
+      onSuccess() {
+        resolve(textResult);
+      },
     });
-
-    resolve(textResult);
   });
 }
 

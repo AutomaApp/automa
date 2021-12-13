@@ -1,0 +1,13 @@
+{
+  "home": {
+    "elementSelector": {
+      "name": "Bộ chọn phần tử",
+      "noAccess": "Không có quyền truy cập vào trang web này"
+    },
+    "workflow": {
+      "new": "Tạo quy trình mới",
+      "rename": "Đổi tên quy trình",
+      "delete": "Xóa quy trình"
+    },
+  }
+}
