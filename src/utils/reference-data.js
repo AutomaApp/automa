@@ -17,14 +17,12 @@ export function parseKey(key) {
   if (dataKey !== 'dataColumns') return { dataKey, path: path || '' };
 
   const pathArr = path?.split('.') ?? [];
-  let dataPath = '';
+  let dataPath = path;
 
   if (pathArr.length === 1) {
     dataPath = `0.${pathArr[0]}`;
-  } else if (typeof +pathArr[0] !== 'number') {
-    const firstPath = pathArr.shift();
-
-    dataPath = `0.${firstPath}.${pathArr.join('.')}`;
+  } else if (typeof +pathArr[0] !== 'number' || Number.isNaN(+pathArr[0])) {
+    dataPath = `0.${pathArr.join('.')}`;
   }
 
   if (dataPath.endsWith('.')) dataPath = dataPath.slice(0, -1);
