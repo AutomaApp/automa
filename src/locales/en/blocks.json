@@ -223,6 +223,7 @@
       },
       "conditions": {
         "name": "Conditions",
+        "add": "Add condition",
         "description": "Conditional block",
         "fallbackTitle": "Execute when all comparisons don't meet the requirement",
         "equals": "Equals",
