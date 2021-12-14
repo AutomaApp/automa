@@ -1,0 +1,56 @@
+{
+  "common": {
+    "dashboard": "Tableau de bord",
+    "workflow": "Workflow | Workflows",
+    "collection": "Collection | Collections",
+    "log": "Log | Logs",
+    "block": "Bloc | Blocs",
+    "docs": "Documentation",
+    "search": "Rechercher",
+    "import": "Importer",
+    "export": "Exporter",
+    "rename": "Renomer",
+    "execute": "Executer",
+    "delete": "Supprimer",
+    "cancel": "Annuler",
+    "settings": "Réglages",
+    "options": "Options",
+    "confirm": "Confirmer",
+    "name": "Nom",
+    "all": "Tous",
+    "add": "Ajouter",
+    "save": "Enregistrer",
+    "data": "Données",
+    "stop": "Arrêter",
+    "editor": "Éditeur",
+    "running": "En cours",
+    "globalData": "Données générales",
+    "fileName": "Nom du fichier",
+    "description": "Description",
+    "disable": "Désactiver",
+    "disabled": "Désactivé",
+    "enable": "Activer",
+    "fallback": "Fallback",
+    "update": "Mettre à jour"
+  },
+  "message": {
+    "noBlock": "Pas de bloc",
+    "noData": "Aucune donnée à afficher",
+    "noTriggerBlock": "Impossible de trouver un bloc déclencheur",
+    "useDynamicData": "Apprenez à ajouter des données dynamiques",
+    "delete": "Voulez-vous vraiment supprimer \"{name}\"?",
+    "empty": "Oupss... Il semble que vous n'ayez aucun élément",
+    "notSaved": "Voulez-vous vraiment partir ? Vous avez des changements non enregistrés !",
+    "maxSizeExceeded": "La taille maximum autorisé du fichier est dépassé"
+  },
+  "sort": {
+    "sortBy": "Trier par",
+    "name": "Nom",
+    "createdAt": "Date de création"
+  },
+  "logStatus": {
+    "stopped": "arrêté",
+    "error": "erreur",
+    "success": "succès"
+  }
+}

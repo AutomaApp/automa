@@ -1,0 +1,143 @@
+{
+  "home": {
+    "viewAll": "Voir tout"
+  },
+  "settings": {
+    "language": {
+      "label": "Langue",
+      "helpTranslate": "Vous ne trouvez pas votre langue ? Aider à traduire.",
+      "reloadPage": "Recharger la page pour appliquer"
+    }
+  },
+  "workflow": {
+    "import": "Importer un workflow",
+    "new": "Nouveau workflow",
+    "delete": "Supprimer le workflow",
+    "name": "Nom du workflow",
+    "rename": "Renommer le workflow",
+    "add": "Ajouter un workflow",
+    "clickToEnable": "Cliquer pour activer",
+    "state": {
+      "executeBy": "Exécuté par: \"{name}\""
+    },
+    "dataColumns": {
+      "title": "Colonnes de données",
+      "placeholder": "Rechercher ou ajouter une colonne",
+      "column": {
+        "name": "Nom de la colonne",
+        "type": "Type de donnée"
+      }
+    },
+    "sidebar": {
+      "workflowIcon": "Icône du workflow"
+    },
+    "editor": {
+      "zoomIn": "Agrandir",
+      "zoomOut": "Réduire",
+      "resetZoom": "Réinitialiser le zoom",
+      "duplicate": "Dupliquer"
+    },
+    "settings": {
+      "onError": {
+        "title": "Lors d'une erreur du workflow",
+        "items": {
+          "keepRunning": "Continuer",
+          "stopWorkflow": "Arrêter le workflow"
+        }
+      },
+      "timeout": {
+        "title": "Délai d'expiration du workflow (millisecondes)"
+      },
+      "blockDelay": {
+        "title": "Délai du bloc (millisecondes)",
+        "description": "Ajouter un délai avant d'exécuter chacun des blocs"
+      }
+    }
+  },
+  "collection": {
+    "description": "Exécutez vos workflows en séquence",
+    "new": "Nouvelle collection",
+    "delete": "Supprimer la collection",
+    "add": "Ajouter une collection",
+    "rename": "Renommer la collection",
+    "flow": "Flow",
+    "dragDropText": "Déposez un workflow ou un bloc ici",
+    "options": {
+      "atOnce": {
+        "title": "Exécuter tous les workflows de la collection en même temps",
+        "description": "Le bloc ne sera pas exécuté lors de l'utilisation de cette option"
+      }
+    },
+    "globalData": {
+      "note": "Cela écrasera les données globales du workflow"
+    }
+  },
+  "log": {
+    "goBack": "Revenir aux logs de \"{name}\"",
+    "startedDate": "Date de début",
+    "duration": "Durée",
+    "selectAll": "Tout sélectionner",
+    "deselectAll": "Tout déselectionner",
+    "deleteSelected": "Supprimer les logs sélectionnés",
+    "types": {
+      "stop": "Le workflow est arrêté",
+      "finish": "Finir"
+    },
+    "messages": {
+      "conditions-empty": "Les conditions sont vides",
+      "invalid-proxy-host": "Hôte proxy non valide",
+      "workflow-disabled": "Le workflow est désactivé",
+      "selector-empty": "Le sélecteur d'élément est vide",
+      "empty-workflow": "Vous devez d'abord sélectionner workflow",
+      "active-tab-removed": "L'onglet actif du workflow est supprimé",
+      "stop-timeout": "Le workflow est arrêté en raison du délai d'attente",
+      "no-workflow": "Impossible de trouver le workflow avec l'ID \"{workflowId}\"",
+      "element-not-found": "Impossible de trouver un élément avec le sélecteur \"{selector}\".",
+      "workflow-infinite-loop": "Impossible d'exécuter le workflow pour éviter une boucle infinie",
+      "no-iframe-id": "Impossible de trouver l'ID de Frame pour l'élément iframe avec le sélecteur \"{selector}\"",
+      "no-tab": "Impossible de se connecter à un onglet, utilisez le bloc \"Nouvel onglet\" ou \"Onglet actif\" avant d'utiliser le bloc \"{name}\"."
+    },
+    "description": {
+      "text": "{status} le {date} en {duration}",
+      "status": {
+        "success": "Réussi",
+        "error": "Échoué",
+        "stopped": "Arrêté"
+      }
+    },
+    "delete": {
+      "title": "Supprimer le log",
+      "description": "Voulez-vous vraiment supprimer tous les logs sélectionnés ?"
+    },
+    "exportData": {
+      "title": "Exporter les données",
+      "types": {
+        "json": "JSON",
+        "csv": "CSV",
+        "plain-text": "Texte brut"
+      }
+    },
+    "filter": {
+      "title": "Filtrer",
+      "byStatus": "Par statut",
+      "byDate": {
+        "title": "Par date",
+        "items": {
+          "lastDay": "Hier",
+          "last7Days": "La semaine dernière",
+          "last30Days": "Le mois dernier"
+        }
+      }
+    }
+  },
+  "components": {
+    "pagination": {
+      "text1": "Afficher",
+      "text2": "Éléments sur {count}",
+      "nextPage": "Page suivante",
+      "currentPage": "Page actuelle",
+      "prevPage": "Page précédente",
+      "of": "sur {page}"
+    }
+  }
+}
