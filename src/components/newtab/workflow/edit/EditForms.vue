@@ -7,7 +7,7 @@
     >
       {{ t('workflow.blocks.forms.getValue') }}
     </ui-checkbox>
-    <template v-if="data.getValue">
+    <template v-if="data.getValue && !hideBase">
       <ui-checkbox
         :model-value="data.saveData"
         class="mb-2 ml-2"

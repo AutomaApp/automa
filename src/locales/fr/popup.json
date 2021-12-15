@@ -1,0 +1,13 @@
+{
+  "home": {
+    "elementSelector": {
+      "name": "Sélecteur d'éléments",
+      "noAccess": "L'extension n'a pas accès à ce site"
+    },
+    "workflow": {
+      "new": "Nouveau workflow",
+      "rename": "Renommer le workflow",
+      "delete": "Supprimer le workflow"
+    }
+  }
+}

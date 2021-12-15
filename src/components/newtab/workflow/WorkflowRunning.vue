@@ -32,7 +32,7 @@
         <template v-if="item.state.currentBlock">
           <v-remixicon :name="getBlock(item).icon" />
           <p class="flex-1 ml-2 mr-4">{{ getBlock(item).name }}</p>
-          <ui-spinner color="text-accnet" size="20" />
+          <ui-spinner color="text-accent" size="20" />
         </template>
         <p v-else>{{ t('message.noBlock') }}</p>
       </div>

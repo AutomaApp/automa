@@ -38,7 +38,7 @@
           type="url"
           placeholder="http://example.com/img.png"
           label="Icon URL"
-          @change="$emit('update', { icon: $event })"
+          @change="updateWorkflowIcon"
         />
       </div>
     </ui-popover>
@@ -126,7 +126,7 @@ defineProps({
     default: false,
   },
 });
-defineEmits(['update']);
+const emit = defineEmits(['update']);
 
 const { t } = useI18n();
 
@@ -163,4 +163,12 @@ const blocks = computed(() =>
     return arr;
   }, {})
 );
+
+function updateWorkflowIcon(value) {
+  if (!value.startsWith('http')) return;
+
+  const iconUrl = value.slice(0, 1024);
+
+  emit('update', { icon: iconUrl });
+}
 </script>

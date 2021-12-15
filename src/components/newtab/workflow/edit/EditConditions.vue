@@ -1,7 +1,12 @@
 <template>
   <div>
-    <ui-button variant="accent" class="mb-4" @click="addCondition">
-      Add condition
+    <ui-button
+      :disabled="conditions.length >= 10"
+      variant="accent"
+      class="mb-4"
+      @click="addCondition"
+    >
+      {{ t('workflow.blocks.conditions.add') }}
     </ui-button>
     <ul class="space-y-2">
       <li
@@ -109,14 +114,14 @@ function getTitle(index) {
 function addCondition() {
   if (conditions.value.length >= 10) return;
 
+  emitter.emit('conditions-block:add', {
+    id: props.blockId,
+  });
+
   conditions.value.unshift({
     compareValue: '',
     value: '',
     type: '==',
-  });
-
-  emitter.emit('conditions-block:add', {
-    id: props.blockId,
   });
 }
 function deleteCondition(index) {
@@ -124,7 +129,7 @@ function deleteCondition(index) {
 
   emitter.emit('conditions-block:delete', {
     index,
-    id: prps.blockId,
+    id: props.blockId,
   });
 }
 // function updateData(value) {
