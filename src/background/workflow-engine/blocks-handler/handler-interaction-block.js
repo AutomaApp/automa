@@ -3,14 +3,12 @@ import { getBlockConnection } from '../helper';
 
 async function interactionHandler(block, { refData }) {
   const nextBlockId = getBlockConnection(block);
+  const messagePayload = { ...block, refData };
 
   try {
-    const data = await this._sendMessageToTab(
-      { ...block, refData },
-      {
-        frameId: this.frameId || 0,
-      }
-    );
+    const data = await this._sendMessageToTab(messagePayload, {
+      frameId: this.frameId || 0,
+    });
 
     if (block.name === 'link')
       await new Promise((resolve) => setTimeout(resolve, 5000));
