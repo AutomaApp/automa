@@ -335,7 +335,7 @@ class WorkflowEngine {
     if (handler) {
       const refData = {
         prevBlockData,
-        data: this.data,
+        dataColumns: this.data,
         loopData: this.loopData,
         globalData: this.globalData,
         activeTabUrl: this.activeTabUrl,

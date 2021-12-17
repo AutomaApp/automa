@@ -1,5 +1,4 @@
 import { sendMessage } from '@/utils/message';
-import { generateJSON } from '@/utils/data-exporter';
 
 function getAutomaScript(blockId) {
   return `
@@ -38,11 +37,6 @@ function automaRefData(keyword, path = '') {
 }
 
 function javascriptCode(block) {
-  block.refData.dataColumns = generateJSON(
-    Object.keys(block.refData.dataColumns),
-    block.refData.dataColumns
-  );
-
   sessionStorage.setItem(`automa--${block.id}`, JSON.stringify(block.refData));
   const automaScript = getAutomaScript(block.id);
 

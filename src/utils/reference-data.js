@@ -27,7 +27,7 @@ export function parseKey(key) {
 
   if (dataPath.endsWith('.')) dataPath = dataPath.slice(0, -1);
 
-  return { dataKey: 'data', path: dataPath };
+  return { dataKey: 'dataColumns', path: dataPath };
 }
 export function replaceMustacheHandler(match, data) {
   const key = match.slice(2, -2).replace(/\s/g, '');
