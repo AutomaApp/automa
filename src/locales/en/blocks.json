@@ -129,6 +129,7 @@
       "get-text": {
         "name": "Get text",
         "description": "Get text from an element",
+        "checkbox": "Save data",
         "prefixText": {
           "placeholder": "Text prefix",
           "title": "Add prefix to the text"
@@ -136,6 +137,11 @@
         "suffixText": {
           "placeholder": "Text suffix",
           "title": "Add suffix to the text"
+        },
+        "extraRow": {
+          "checkbox": "Add extra row",
+          "placeholder": "Value",
+          "title": "Value of the extra row"
         }
       },
       "export-data": {
@@ -172,7 +178,12 @@
         "forms": {
           "name": "Attribute name",
           "checkbox": "Save data",
-          "column": "Select column"
+          "column": "Select column",
+          "extraRow": {
+            "checkbox": "Add extra row",
+            "placeholder": "Value",
+            "title": "Value of the extra row"
+          }
         }
       },
       "forms": {
@@ -190,9 +201,15 @@
             "label": "Typing delay (millisecond)(0 to disable)"
           }
         },
-        "select": { "name": "Select" },
-        "radio": { "name": "Radio" },
-        "checkbox": { "name": "Checkbox" }
+        "select": {
+          "name": "Select"
+        },
+        "radio": {
+          "name": "Radio"
+        },
+        "checkbox": {
+          "name": "Checkbox"
+        }
       },
       "repeat-task": {
         "name": "Repeat task",

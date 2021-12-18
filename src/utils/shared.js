@@ -226,6 +226,9 @@ export const tasks = {
       regexExp: ['g'],
       dataColumn: '',
       saveData: true,
+      addExtraRow: false,
+      extraRowValue: '',
+      extraRowDataColumn: '',
     },
   },
   'export-data': {
@@ -306,6 +309,9 @@ export const tasks = {
       attributeName: '',
       dataColumn: '',
       saveData: true,
+      addExtraRow: false,
+      extraRowValue: '',
+      extraRowDataColumn: '',
     },
   },
   forms: {

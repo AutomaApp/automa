@@ -26,9 +26,23 @@ async function interactionHandler(block, { refData }) {
       if (Array.isArray(data) && currentColumnType !== 'array') {
         data.forEach((item) => {
           this.addData(block.data.dataColumn, item);
+          if (objectHasKey(block.data, 'extraRowDataColumn')) {
+            if (block.data.addExtraRow)
+              this.addData(
+                block.data.extraRowDataColumn,
+                block.data.extraRowValue
+              );
+          }
         });
       } else {
         this.addData(block.data.dataColumn, data);
+        if (objectHasKey(block.data, 'extraRowDataColumn')) {
+          if (block.data.addExtraRow)
+            this.addData(
+              block.data.extraRowDataColumn,
+              block.data.extraRowValue
+            );
+        }
       }
     } else if (block.name === 'javascript-code') {
       const arrData = Array.isArray(data) ? data : [data];
