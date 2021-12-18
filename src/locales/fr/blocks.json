@@ -129,6 +129,7 @@
       "get-text": {
         "name": "Obtenir le texte",
         "description": "Obtenir le texte d'un élément",
+        "checkbox": "Enregistrer les données",
         "prefixText": {
           "placeholder": "Préfixe du texte",
           "title": "Ajouter un préfixe au texte"
@@ -136,6 +137,11 @@
         "suffixText": {
           "placeholder": "Suffixe du texte",
           "title": "Ajouter un suffixe au texte"
+        },
+        "extraRow": {
+          "checkbox": "Ajouter une ligne supplémentaire",
+          "placeholder": "Valeur",
+          "title": "Valeur de la ligne supplémentaire"
         }
       },
       "export-data": {
@@ -172,7 +178,12 @@
         "forms": {
           "name": "Nom de l'attribut",
           "checkbox": "Enregistrer des données",
-          "column": "Sélectionnez la colonne"
+          "column": "Sélectionnez la colonne",
+          "extraRow": {
+            "checkbox": "Ajouter une ligne supplémentaire",
+            "placeholder": "Valeur",
+            "title": "Valeur de la ligne supplémentaire"
+          }
         }
       },
       "forms": {
