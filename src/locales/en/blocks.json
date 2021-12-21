@@ -41,7 +41,7 @@
         ],
         "useRegex": "Use regex",
         "shortcut": {
-          "tootlip": "Record shortcut",
+          "tooltip": "Record shortcut",
           "checkboxTitle": "Execute shortcut even when you're in an input element",
           "checkbox": "Active while in input",
           "note": "Note: keyboard shortcut only working when you're on a webpage"

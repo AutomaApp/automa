@@ -1,5 +1,5 @@
 <template>
-  <ui-card class="hover:ring-2 group hover:ring-accent">
+  <ui-card class="hover:ring-2 flex flex-col group hover:ring-accent">
     <slot name="header">
       <div class="flex items-center mb-4">
         <ui-img
@@ -40,7 +40,7 @@
         </ui-popover>
       </div>
     </slot>
-    <div class="cursor-pointer" @click="$emit('click', data)">
+    <div class="cursor-pointer flex-1" @click="$emit('click', data)">
       <p class="line-clamp font-semibold leading-tight">
         {{ data.name }}
       </p>
@@ -50,8 +50,8 @@
       >
         {{ data.description }}
       </p>
-      <p class="text-gray-600 dark:text-gray-200">{{ formatDate() }}</p>
     </div>
+    <p class="text-gray-600 dark:text-gray-200">{{ formatDate() }}</p>
   </ui-card>
 </template>
 <script setup>

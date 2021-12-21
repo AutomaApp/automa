@@ -41,7 +41,7 @@
         ],
         "useRegex": "Utiliser une Regex",
         "shortcut": {
-          "tootlip": "Enregistrer un raccourci",
+          "tooltip": "Enregistrer un raccourci",
           "checkboxTitle": "Exécuter le raccourci même lorsque vous êtes dans un élément de saisie",
           "checkbox": "Actif dans un élément de saisie",
           "note": "Note: le raccourci clavier ne fonctionne que lorsque vous êtes sur une page web"

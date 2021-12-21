@@ -34,7 +34,7 @@
         ],
         "useRegex": "使用正則表達式",
         "shortcut": {
-          "tootlip": "設定快捷鍵",
+          "tooltip": "設定快捷鍵",
           "checkboxTitle": "允許快捷鍵在文字輸入框內執行",
           "checkbox": "啟用輸入框內執行快捷鍵",
           "note": "Note: 鍵盤快捷鍵只在當前網頁有效"

@@ -47,6 +47,16 @@ select:focus,
 .tippy-box[data-theme~='tooltip-theme'] {
   @apply px-2 py-1 bg-gray-900 text-sm text-gray-200 rounded-md;
 }
+.ProseMirror > * + * {
+  margin-top: 0.75em;
+}
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+}
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 3px solid #68CEF8;
+}
 
 @layer utilities {
   .hoverable {

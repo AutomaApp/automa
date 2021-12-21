@@ -1,7 +1,9 @@
 import { openDB } from 'idb';
+import { nanoid } from 'nanoid';
 import Mousetrap from 'mousetrap';
 import browser from 'webextension-polyfill';
 import secrets from 'secrets';
+import { objectHasKey } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
 
 Mousetrap.prototype.stopCallback = function () {
@@ -19,6 +21,23 @@ function getTriggerBlock(workflow) {
   return trigger;
 }
 
+function initWebListener() {
+  const listeners = {};
+
+  function on(name, callback) {
+    (listeners[name] = listeners[name] || []).push(callback);
+  }
+
+  window.addEventListener('__automa-ext__', ({ detail }) => {
+    if (!detail || !objectHasKey(listeners, detail.type)) return;
+
+    listeners[detail.type].forEach((listener) => {
+      listener(detail.data);
+    });
+  });
+
+  return { on };
+}
 async function listenWindowMessage(workflows) {
   try {
     if (secrets?.webOrigin !== window.location.origin) return;
@@ -31,15 +50,28 @@ async function listenWindowMessage(workflows) {
 
     db.put('store', workflows, 'workflows');
 
-    window.addEventListener('__automa-ext__', async ({ detail }) => {
-      if (detail.type === 'open-workflow') {
-        if (!detail.workflowId) return;
+    const webListener = initWebListener();
 
-        sendMessage(
-          'open:dashboard',
-          `/workflows/${detail.workflowId}`,
-          'background'
+    webListener.on('open-workflow', ({ workflowId }) => {
+      if (!workflowId) return;
+
+      sendMessage('open:dashboard', `/workflows/${workflowId}`, 'background');
+    });
+    webListener.on('add-workflow', async ({ workflow }) => {
+      try {
+        const { workflows: workflowsStorage } = await browser.storage.local.get(
+          'workflows'
         );
+
+        workflowsStorage.push({
+          ...workflow,
+          id: nanoid(),
+          createdAt: Date.now(),
+        });
+
+        await browser.storage.local.set({ workflows: workflowsStorage });
+      } catch (error) {
+        console.error(error);
       }
     });
   } catch (error) {
@@ -57,7 +89,10 @@ async function listenWindowMessage(workflows) {
 
     listenWindowMessage(workflows);
 
-    document.body.setAttribute('data-atm-ext-installed', '');
+    document.body.setAttribute(
+      'data-atm-ext-installed',
+      browser.runtime.getManifest().version
+    );
 
     if (shortcutsArr.length === 0) return;
 
