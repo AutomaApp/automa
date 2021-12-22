@@ -93,6 +93,8 @@
       "stop-timeout": "Workflow is stopped because of timeout",
       "no-workflow": "Can't find workflow with \"{workflowId}\" ID",
       "element-not-found": "Can't find an element with \"{selector}\" selector.",
+      "not-iframe": "Element with \"{selector}\" selector is not an Iframe element",
+      "iframe-not-found": "Can't find an Iframe element with \"{selector}\" selector.",
       "workflow-infinite-loop": "Can't execute the workflow to prevent an infinite loop",
       "no-iframe-id": "Can't find Frame ID for the iframe element with \"{selector}\" selector",
       "no-tab": "Can't connect to a tab, use \"New tab\" or \"Active tab\" block before using the \"{name}\" block."

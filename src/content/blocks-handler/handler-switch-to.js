@@ -4,15 +4,15 @@ function switchTo(block) {
   return new Promise((resolve, reject) => {
     handleElement(block, {
       onSelected(element) {
+        console.log(element, element.tagName);
         if (element.tagName !== 'IFRAME') {
-          resolve('');
+          reject(new Error('not-iframe'));
           return;
         }
 
-        resolve({ url: element.src });
-      },
-      onSuccess() {
-        resolve('');
+        const isSameOrigin = element.contentDocument !== null;
+
+        resolve({ url: element.src, isSameOrigin });
       },
       onError(error) {
         reject(error);

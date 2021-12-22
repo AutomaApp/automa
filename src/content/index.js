@@ -4,6 +4,10 @@ import elementSelector from './element-selector';
 import blocksHandler from './blocks-handler';
 
 (() => {
+  if (window.isAutomaInjected) return;
+
+  window.isAutomaInjected = true;
+
   browser.runtime.onMessage.addListener((data) => {
     if (data.isBlock) {
       const handler = blocksHandler[toCamelCase(data.name)];
@@ -26,6 +30,8 @@ import blocksHandler from './blocks-handler';
         browser.runtime.sendMessage({
           type: 'this-is-the-frame-id',
         });
+
+        resolve();
       }
     });
   });

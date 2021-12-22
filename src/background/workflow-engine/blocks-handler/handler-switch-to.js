@@ -1,5 +1,6 @@
 import { objectHasKey } from '@/utils/helper';
 import { getBlockConnection } from '../helper';
+import executeContentScript, { getFrames } from '../execute-content-script';
 
 async function switchTo(block) {
   const nextBlockId = getBlockConnection(block);
@@ -8,16 +9,33 @@ async function switchTo(block) {
     if (block.data.windowType === 'main-window') {
       this.frameId = 0;
 
+      delete this.frameSelector;
+
       return {
         data: '',
         nextBlockId,
       };
     }
 
-    const { url } = await this._sendMessageToTab(block, { frameId: 0 });
+    const frames = await getFrames(this.tabId);
+    const { url, isSameOrigin } = await this._sendMessageToTab(block, {
+      frameId: 0,
+    });
 
-    if (objectHasKey(this.frames, url)) {
+    if (isSameOrigin) {
+      this.frameSelector = block.data.selector;
+
+      return {
+        data: block.data.selector,
+        nextBlockId,
+      };
+    }
+
+    if (objectHasKey(frames, url)) {
       this.frameId = this.frames[url];
+
+      await executeContentScript(this.tabId, this.frameId);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       return {
         data: this.frameId,
@@ -25,11 +43,9 @@ async function switchTo(block) {
       };
     }
 
-    const error = new Error('no-iframe-id');
-    error.data = { selector: block.selector };
-
-    throw error;
+    throw new Error('no-iframe-id');
   } catch (error) {
+    error.data = { selector: block.data.selector };
     error.nextBlockId = nextBlockId;
 
     throw error;

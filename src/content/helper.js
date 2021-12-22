@@ -9,7 +9,7 @@ export function markElement(el, { id, data }) {
 }
 
 export function handleElement(
-  { data, id },
+  { data, id, frameSelector },
   { onSelected, onError, onSuccess, returnElement }
 ) {
   if (!data || !data.selector) {
@@ -17,11 +17,25 @@ export function handleElement(
     return null;
   }
 
+  let documentCtx = document;
+
+  if (frameSelector) {
+    const iframeCtx = document.querySelector(frameSelector)?.contentDocument;
+
+    if (!iframeCtx && returnElement) return null;
+    if (!iframeCtx && onError) {
+      onError(new Error('iframe-not-found'));
+      return;
+    }
+
+    documentCtx = iframeCtx;
+  }
+
   try {
     data.blockIdAttr = `block--${id}`;
 
     const selectorType = data.findBy || 'cssSelector';
-    const element = FindElement[selectorType](data);
+    const element = FindElement[selectorType](data, documentCtx);
 
     if (returnElement) return element;
 

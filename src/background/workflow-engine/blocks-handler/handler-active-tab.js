@@ -22,7 +22,7 @@ async function activeTab(block) {
       currentWindow: true,
     });
 
-    this.frames = await executeContentScript(tab.id, 'activetab');
+    this.frames = await executeContentScript(tab.id);
 
     this.frameId = 0;
     this.tabId = tab.id;

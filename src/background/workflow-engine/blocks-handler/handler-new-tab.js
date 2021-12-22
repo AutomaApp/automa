@@ -10,7 +10,7 @@ function tabUpdatedListener(tab) {
       callback: async (tabId, changeInfo, deleteListener) => {
         if (changeInfo.status !== 'complete') return;
 
-        const frames = await executeContentScript(tabId, 'newtab');
+        const frames = await executeContentScript(tabId);
 
         deleteListener();
 

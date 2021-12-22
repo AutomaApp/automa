@@ -3,7 +3,11 @@ import { getBlockConnection } from '../helper';
 
 async function interactionHandler(block, { refData }) {
   const nextBlockId = getBlockConnection(block);
-  const messagePayload = { ...block, refData };
+  const messagePayload = {
+    ...block,
+    refData,
+    frameSelector: this.frameSelector,
+  };
 
   try {
     const data = await this._sendMessageToTab(messagePayload, {
