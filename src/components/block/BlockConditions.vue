@@ -101,7 +101,7 @@ function addConditionEmit({ id }) {
   const { length } = block.data.conditions;
 
   if (length >= 10) return;
-  if (length === 1) props.editor.addNodeOutput(block.id);
+  if (length === 0) props.editor.addNodeOutput(block.id);
 
   props.editor.addNodeOutput(block.id);
 }
