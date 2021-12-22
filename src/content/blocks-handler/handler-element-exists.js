@@ -1,21 +1,32 @@
-function elementExists({ data }) {
+import { handleElement } from '../helper';
+
+function elementExists(block) {
   return new Promise((resolve) => {
     let trying = 0;
 
+    const isExists = () => {
+      try {
+        const element = handleElement(block, { returnElement: true });
+
+        return !!element;
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
+    };
+
     function checkElement() {
-      if (trying >= (data.tryCount || 1)) {
+      if (trying > (block.data.tryCount || 1)) {
         resolve(false);
         return;
       }
 
-      const element = document.querySelector(data.selector);
-
-      if (element) {
+      if (isExists()) {
         resolve(true);
       } else {
         trying += 1;
 
-        setTimeout(checkElement, data.timeout || 500);
+        setTimeout(checkElement, block.data.timeout || 500);
       }
     }
 

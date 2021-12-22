@@ -384,7 +384,7 @@ export const tasks = {
     data: {
       description: '',
       timeout: 20000,
-      code: 'console.log("Hello world!")',
+      code: 'console.log("Hello world!");\nautomaNextBlock()',
       preloadScripts: [],
     },
   },

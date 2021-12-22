@@ -40,8 +40,23 @@ function javascriptCode(block) {
   sessionStorage.setItem(`automa--${block.id}`, JSON.stringify(block.refData));
   const automaScript = getAutomaScript(block.id);
 
-  return new Promise((resolve) => {
-    const isScriptExists = document.getElementById('automa-custom-js');
+  return new Promise((resolve, reject) => {
+    let documentCtx = document;
+
+    if (block.frameSelector) {
+      const iframeCtx = document.querySelector(
+        block.frameSelector
+      )?.contentDocument;
+
+      if (!iframeCtx) {
+        reject(new Error('iframe-not-found'));
+        return;
+      }
+
+      documentCtx = iframeCtx;
+    }
+
+    const isScriptExists = documentCtx.getElementById('automa-custom-js');
     const scriptAttr = `block--${block.id}`;
 
     if (isScriptExists && isScriptExists.hasAttribute(scriptAttr)) {
@@ -62,7 +77,7 @@ function javascriptCode(block) {
             item.src,
             'background'
           );
-          const scriptEl = document.createElement('script');
+          const scriptEl = documentCtx.createElement('script');
 
           scriptEl.type = 'text/javascript';
           scriptEl.innerHTML = script;
@@ -74,14 +89,14 @@ function javascriptCode(block) {
         } catch (error) {
           return null;
         }
-      }, []) || [];
+      }) || [];
 
     Promise.allSettled(promisePreloadScripts).then((result) => {
       const preloadScripts = result.reduce((acc, { status, value }) => {
         if (status !== 'fulfilled' || !value) return acc;
 
         acc.push(value);
-        document.body.appendChild(value.script);
+        documentCtx.body.appendChild(value.script);
 
         return acc;
       }, []);
@@ -112,7 +127,7 @@ function javascriptCode(block) {
         timeout = setTimeout(cleanUp, block.data.timeout);
       });
 
-      document.body.appendChild(script);
+      documentCtx.body.appendChild(script);
 
       timeout = setTimeout(cleanUp, block.data.timeout);
     });
