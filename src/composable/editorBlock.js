@@ -7,6 +7,7 @@ export function useEditorBlock(selector, editor) {
     data: {},
     details: {},
     category: {},
+    retrieved: false,
   });
 
   nextTick(() => {
@@ -29,6 +30,8 @@ export function useEditorBlock(selector, editor) {
       editor.updateConnectionNodes(`node-${block.id}`);
     }, 200);
   });
+
+  block.retrieved = true;
 
   return block;
 }

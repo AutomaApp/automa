@@ -27,6 +27,12 @@
           "text": "Multiple"
         }
       },
+      "blocks-group": {
+        "name": "Blocks group",
+        "groupName": "Group name",
+        "description": "Grouping blocks",
+        "dropText": "Drag & drop a block here"
+      },
       "trigger": {
         "name": "Trigger",
         "description": "Block where the workflow will start executing",

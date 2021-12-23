@@ -150,13 +150,14 @@ import {
   provide,
   onMounted,
   onUnmounted,
+  toRaw,
 } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import emitter from 'tiny-emitter/instance';
 import { sendMessage } from '@/utils/message';
-import { debounce } from '@/utils/helper';
+import { debounce, isObject } from '@/utils/helper';
 import { useDialog } from '@/composable/dialog';
 import { exportWorkflow } from '@/utils/workflow-data';
 import Log from '@/models/log';
@@ -228,15 +229,25 @@ const logs = computed(() =>
 );
 
 const updateBlockData = debounce((data) => {
+  let payload = data;
+
   state.blockData.data = data;
   state.isDataChanged = true;
-  editor.value.updateNodeDataFromId(state.blockData.blockId, data);
+
+  if (state.blockData.isInGroup) {
+    payload = { itemId: state.blockData.itemId, data };
+  } else {
+    editor.value.updateNodeDataFromId(state.blockData.blockId, data);
+  }
 
   const inputEl = document.querySelector(
     `#node-${state.blockData.blockId} input.trigger`
   );
 
-  if (inputEl) inputEl.dispatchEvent(new Event('change'));
+  if (inputEl)
+    inputEl.dispatchEvent(
+      new CustomEvent('change', { detail: toRaw(payload) })
+    );
 }, 250);
 function deleteLog(logId) {
   Log.delete(logId).then(() => {
@@ -244,7 +255,13 @@ function deleteLog(logId) {
   });
 }
 function deleteBlock(id) {
-  if (state.isEditBlock && state.blockData.blockId === id) {
+  if (!state.isEditBlock) return;
+
+  const isGroupBlock =
+    isObject(id) && id.isInGroup && id.itemId === state.blockData.itemId;
+  const isEditedBlock = state.blockData.blockId === id;
+
+  if (isEditedBlock || isGroupBlock) {
     state.isEditBlock = false;
     state.blockData = {};
   }
@@ -358,11 +375,13 @@ onMounted(() => {
   };
 
   emitter.on('editor:edit-block', editBlock);
+  emitter.on('editor:delete-block', deleteBlock);
   emitter.on('editor:data-changed', handleEditorDataChanged);
 });
 onUnmounted(() => {
   window.onbeforeunload = null;
   emitter.off('editor:edit-block', editBlock);
+  emitter.off('editor:delete-block', deleteBlock);
   emitter.off('editor:data-changed', handleEditorDataChanged);
 });
 </script>

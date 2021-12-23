@@ -1,4 +1,4 @@
-/* to-do screenshot, looping, cookies, assets, tab loaded, opened tab, and run workflow block? */
+/* to-do execute multiple blocks simultaneously, keyboard shortcut */
 import { nanoid } from 'nanoid';
 
 export const tasks = {
@@ -499,6 +499,22 @@ export const tasks = {
     maxConnection: 1,
     data: {
       loopId: '',
+    },
+  },
+  'blocks-group': {
+    name: 'Blocks group',
+    description: 'Grouping blocks',
+    icon: 'riFolderZipLine',
+    component: 'BlockGroup',
+    category: 'general',
+    disableEdit: true,
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      name: '',
+      blocks: [],
     },
   },
   'switch-to': {

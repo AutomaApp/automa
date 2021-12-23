@@ -100,6 +100,9 @@ export default {
 
     function dropHandler({ dataTransfer, clientX, clientY }) {
       const block = JSON.parse(dataTransfer.getData('block') || null);
+
+      if (!block) return;
+
       const isTriggerExists =
         block.id === 'trigger' &&
         editor.value.getNodesFromName('trigger').length !== 0;
