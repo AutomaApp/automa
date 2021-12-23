@@ -1,10 +1,12 @@
-import { isObject } from './helper';
+import { isObject, parseJSON } from './helper';
 
 const renderContent = (content, contentType) => {
   // 1. render the content
   // 2. if the content type is json then parse the json
   // 3. else parse to form data
-  const renderedJson = JSON.parse(content);
+  const renderedJson = parseJSON(content, new Error('invalid-body'));
+
+  if (renderedJson instanceof Error) throw renderedJson;
 
   if (contentType === 'form') {
     return Object.keys(renderedJson)

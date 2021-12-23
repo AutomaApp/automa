@@ -84,8 +84,11 @@
       "finish": "Finish"
     },
     "messages": {
+      "url-empty": "URL is empty",
+      "invalid-url": "URL is not valid",
       "conditions-empty": "Conditions is empty",
       "invalid-proxy-host": "Invalid proxy host",
+      "invalid-body": "Content body is not valid",
       "workflow-disabled": "Workflow is disabled",
       "selector-empty": "Element selector is empty",
       "empty-workflow": "You must select a workflow first",

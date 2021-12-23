@@ -30,6 +30,7 @@ export function parseKey(key) {
   return { dataKey: 'dataColumns', path: dataPath };
 }
 export function replaceMustacheHandler(match, data) {
+  console.log(match, data);
   const key = match.slice(2, -2).replace(/\s/g, '');
 
   if (!key) return '';
