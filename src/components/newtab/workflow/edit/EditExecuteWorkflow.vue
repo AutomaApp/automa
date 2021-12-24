@@ -15,13 +15,11 @@
       </option>
     </ui-select>
     <p>{{ t('common.globalData') }}</p>
-    <prism-editor
+    <pre
       v-if="!state.showGlobalData"
-      :model-value="data.globalData"
-      :highlight="highlighter('json')"
-      readonly
-      class="p-4 max-h-80"
+      class="rounded-lg text-gray-200 p-4 max-h-80 bg-gray-900 overflow-auto"
       @click="state.showGlobalData = true"
+      v-text="data.globalData"
     />
     <ui-modal
       v-model="state.showGlobalData"
@@ -29,12 +27,12 @@
       content-class="max-w-xl"
     >
       <p>{{ t('workflow.blocks.execute-workflow.overwriteNote') }}</p>
-      <prism-editor
-        :model-value="state.globalData"
-        :highlight="highlighter('json')"
+      <shared-codemirror
+        :model-value="data.globalData"
+        lang="json"
         class="w-full scroll"
         style="height: calc(100vh - 10rem)"
-        @input="updateGlobalData"
+        @change="updateData({ globalData: $event })"
       />
     </ui-modal>
   </div>
@@ -43,9 +41,8 @@
 import { computed, shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
-import { PrismEditor } from 'vue-prism-editor';
-import { highlighter } from '@/lib/prism';
 import Workflow from '@/models/workflow';
+import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
 
 const props = defineProps({
   data: {
@@ -64,7 +61,6 @@ const route = useRoute();
 
 const state = shallowReactive({
   showGlobalData: false,
-  globalData: `${props.data.globalData}`,
 });
 
 const workflows = computed(() =>
@@ -79,11 +75,5 @@ const workflows = computed(() =>
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
-}
-function updateGlobalData(event) {
-  const { value } = event.target;
-
-  state.globalData = value;
-  updateData({ globalData: value });
 }
 </script>

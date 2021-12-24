@@ -82,7 +82,7 @@
           {{ t('workflow.blocks.loop-data.buttons.import') }}
         </ui-button>
         <ui-button
-          v-tooltip="t('commons.options')"
+          v-tooltip="t('common.options')"
           :class="{ 'text-primary': state.showOptions }"
           icon
           class="ml-2"
@@ -91,24 +91,15 @@
           <v-remixicon name="riSettings3Line" />
         </ui-button>
         <p class="flex-1 text-overflow mx-4">{{ file.name }}</p>
-        <template v-if="data.loopData.length > maxStrLength">
-          <p class="mr-2">
-            {{ t('workflow.blocks.loop-data.modal.fileTooLarge') }}
-          </p>
-          <ui-button @click="updateData({ loopData: '[]' })">
-            {{ t('workflow.blocks.loop-data.buttons.clear') }}
-          </ui-button>
-        </template>
-        <p v-else>{{ t('workflow.blocks.loop-data.modal.maxFile') }}</p>
+        <p>{{ t('workflow.blocks.loop-data.modal.maxFile') }}</p>
       </div>
       <div style="height: calc(100vh - 11rem)">
-        <prism-editor
+        <shared-codemirror
           v-show="!state.showOptions"
-          v-model="state.tempLoopData"
-          :highlight="highlighter('json')"
-          :readonly="data.loopData.length > maxStrLength"
-          class="py-4"
-          @input="updateData({ loopData: $event.target.value })"
+          :model-value="data.loopData"
+          lang="json"
+          class="h-full"
+          @change="updateLoopData"
         />
         <div v-show="state.showOptions">
           <p class="font-semibold mb-2">CSV</p>
@@ -124,11 +115,10 @@
 /* eslint-disable no-alert */
 import { onMounted, shallowReactive } from 'vue';
 import { nanoid } from 'nanoid';
-import { PrismEditor } from 'vue-prism-editor';
 import { useI18n } from 'vue-i18n';
 import Papa from 'papaparse';
-import { highlighter } from '@/lib/prism';
 import { openFilePicker } from '@/utils/helper';
+import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
 
 const props = defineProps({
   blockId: {
@@ -144,16 +134,10 @@ const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
 
-const maxStrLength = 5e4;
 const maxFileSize = 1024 * 1024;
 const loopTypes = ['data-columns', 'numbers', 'custom-data'];
-const tempLoopData =
-  props.data.loopData.length > maxStrLength
-    ? props.data.loopData.slice(0, maxStrLength)
-    : props.data.loopData;
 
 const state = shallowReactive({
-  tempLoopData,
   showOptions: false,
   showDataModal: false,
   workflowLoopData: {},
@@ -169,6 +153,13 @@ const file = shallowReactive({
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
+}
+function updateLoopData(value) {
+  if (value.length > maxFileSize) {
+    alert(t('message.maxSizeExceeded'));
+  }
+
+  updateData({ loopData: value.slice(0, maxFileSize) });
 }
 function updateLoopID(id) {
   let loopId = id.replace(/\s/g, '');
@@ -205,12 +196,8 @@ function importFile() {
         }
 
         if (Array.isArray(loopData)) {
-          const loopDataStr = JSON.stringify(loopData);
+          const loopDataStr = JSON.stringify(loopData, null, 2);
 
-          state.tempLoopData =
-            loopDataStr.length > maxStrLength
-              ? loopDataStr.slice(0, maxStrLength)
-              : loopDataStr;
           updateData({ loopData: loopDataStr });
         }
       };

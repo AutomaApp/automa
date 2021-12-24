@@ -38,9 +38,9 @@
       @change="updateData({ timeout: +$event })"
     />
     <ui-tabs v-model="activeTab" fill class="mb-4">
-      <ui-tab value="headers">{{
-        t('workflow.blocks.webhook.tabs.headers')
-      }}</ui-tab>
+      <ui-tab value="headers">
+        {{ t('workflow.blocks.webhook.tabs.headers') }}
+      </ui-tab>
       <ui-tab value="body">{{ t('workflow.blocks.webhook.tabs.body') }}</ui-tab>
     </ui-tabs>
     <ui-tab-panels :model-value="activeTab">
@@ -74,13 +74,18 @@
         </ui-button>
       </ui-tab-panel>
       <ui-tab-panel value="body">
-        <prism-editor
+        <pre
           v-if="!showContentModalRef"
-          :highlight="highlighter('json')"
-          :model-value="data.body"
-          class="p-4 max-h-80 mb-2"
-          readonly
+          class="
+            rounded-lg
+            text-gray-200
+            p-4
+            max-h-80
+            bg-gray-900
+            overflow-auto
+          "
           @click="showContentModalRef = true"
+          v-text="data.body"
         />
       </ui-tab-panel>
     </ui-tab-panels>
@@ -89,12 +94,11 @@
       content-class="max-w-3xl"
       :title="t('workflow.blocks.webhook.tabs.body')"
     >
-      <prism-editor
-        v-model="contentRef"
-        :highlight="highlighter('json')"
-        class="py-4"
-        line-numbers
-        style="height: calc(100vh - 18rem)"
+      <shared-codemirror
+        :model-value="data.body"
+        lang="json"
+        style="height: calc(100vh - 10rem)"
+        @change="updateData({ body: $event })"
       />
       <div class="mt-3">
         <a
@@ -112,9 +116,8 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { PrismEditor } from 'vue-prism-editor';
-import { highlighter } from '@/lib/prism';
 import { contentTypes } from '@/utils/shared';
+import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
 
 const props = defineProps({
   data: {
@@ -127,22 +130,15 @@ const emit = defineEmits(['update:data']);
 const { t } = useI18n();
 
 const activeTab = ref('headers');
-const contentRef = ref(props.data.body);
 const headerRef = ref(props.data.headers);
 const showContentModalRef = ref(false);
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }
-
-watch(contentRef, (value) => {
-  updateData({ body: value });
-});
-
 function removeHeader(index) {
   headerRef.value.splice(index, 1);
 }
-
 function addHeader() {
   headerRef.value.push({ name: '', value: '' });
 }

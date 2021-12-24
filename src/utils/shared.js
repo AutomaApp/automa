@@ -461,7 +461,7 @@ export const tasks = {
       contentType: 'json',
       timeout: 10000,
       headers: [{ name: '', value: '' }],
-      body: '{\n "key": "{{ dataColumns@0.key }}" \n}',
+      body: '{}',
     },
   },
   'loop-data': {

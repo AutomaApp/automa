@@ -26,26 +26,26 @@
       :hide-base="true"
       @update:data="updateParams"
     />
-    <prism-editor
+    <shared-codemirror
       v-if="state.blockResult"
       v-model="state.blockResult"
+      :line-numbers="false"
       readonly
-      :highlight="highlighter('json')"
-      class="h-full scroll mt-2"
+      lang="json"
+      class="h-full mt-2"
     />
   </div>
 </template>
 <script setup>
 import { shallowReactive } from 'vue';
-import { PrismEditor } from 'vue-prism-editor';
 import { tasks } from '@/utils/shared';
-import { highlighter } from '@/lib/prism';
 import handleForms from '../blocks-handler/handler-forms';
 import handleGetText from '../blocks-handler/handler-get-text';
 import handleEventClick from '../blocks-handler/handler-event-click';
 import handelTriggerEvent from '../blocks-handler/handler-trigger-event';
 import handleElementScroll from '../blocks-handler/handler-element-scroll';
 import EditForms from '@/components/newtab/workflow/edit/EditForms.vue';
+import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
 import EditTriggerEvent from '@/components/newtab/workflow/edit/EditTriggerEvent.vue';
 import EditScrollElement from '@/components/newtab/workflow/edit/EditScrollElement.vue';
 

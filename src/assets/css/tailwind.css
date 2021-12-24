@@ -33,6 +33,9 @@ select:focus,
   overflow: hidden;
   text-overflow: ellipsis;
 }
+pre {
+  font-size: 15px;
+}
 .scroll::-webkit-scrollbar {
   width: 7px;
   height: 9px;
