@@ -58,6 +58,7 @@ import { onMounted, shallowRef, reactive, getCurrentInstance } from 'vue';
 import emitter from 'tiny-emitter/instance';
 import { useI18n } from 'vue-i18n';
 import { tasks } from '@/utils/shared';
+import { parseJSON } from '@/utils/helper';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import drawflow from '@/lib/drawflow';
 
@@ -185,8 +186,10 @@ export default {
       if (props.data) {
         const data =
           typeof props.data === 'string'
-            ? JSON.parse(props.data.replace(/BlockNewTab/g, 'BlockBasic'))
+            ? parseJSON(props.data.replace(/BlockNewTab/g, 'BlockBasic'), null)
             : props.data;
+
+        if (!data) return;
 
         editor.value.import(data);
       } else {

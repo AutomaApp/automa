@@ -312,7 +312,7 @@ class WorkflowEngine {
       return;
     }
 
-    const disableTimeoutKeys = ['delay', 'javascript-code'];
+    const disableTimeoutKeys = ['delay', 'javascript-code', 'webhook'];
 
     if (!disableTimeoutKeys.includes(block.name)) {
       this.workflowTimeout = setTimeout(() => {

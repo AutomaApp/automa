@@ -16,7 +16,7 @@ class Workflow extends Model {
       name: this.string(''),
       icon: this.string('riGlobalLine'),
       data: this.attr(null),
-      drawflow: this.string(''),
+      drawflow: this.attr(''),
       dataColumns: this.attr([]),
       description: this.string(''),
       globalData: this.string('[{ "key": "value" }]'),

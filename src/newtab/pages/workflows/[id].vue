@@ -227,7 +227,6 @@ const logs = computed(() =>
     .orderBy('startedAt', 'desc')
     .get()
 );
-
 const updateBlockData = debounce((data) => {
   let payload = data;
 
