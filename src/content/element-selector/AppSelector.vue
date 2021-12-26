@@ -13,10 +13,10 @@
       </template>
     </ui-input>
     <template v-if="selectedCount === 1">
-      <button class="mr-2 ml-4" @click="$emit('parent')">
+      <button class="mr-2 ml-4" title="Parent element" @click="$emit('parent')">
         <v-remixicon rotate="90" name="riArrowLeftLine" />
       </button>
-      <button @click="$emit('child')">
+      <button title="Child element" @click="$emit('child')">
         <v-remixicon rotate="-90" name="riArrowLeftLine" />
       </button>
     </template>

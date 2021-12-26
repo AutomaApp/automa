@@ -13,6 +13,7 @@
     "import": "Import workflow",
     "new": "New workflow",
     "delete": "Delete workflow",
+    "browse": "Browse workflows",
     "name": "Workflow name",
     "rename": "Rename workflow",
     "add": "Add workflow",

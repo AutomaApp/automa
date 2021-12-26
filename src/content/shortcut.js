@@ -48,10 +48,9 @@ async function listenWindowMessage(workflows) {
       },
     });
 
-    db.put('store', workflows, 'workflows');
+    await db.put('store', workflows, 'workflows');
 
     const webListener = initWebListener();
-
     webListener.on('open-workflow', ({ workflowId }) => {
       if (!workflowId) return;
 

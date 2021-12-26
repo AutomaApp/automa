@@ -26,6 +26,36 @@
           </option>
         </ui-select>
       </div>
+      <ui-button
+        tag="a"
+        href="https://automa.vercel.app/workflows"
+        target="_blank"
+        class="inline-block relative"
+        @click="browseWorkflow"
+      >
+        <span
+          v-if="state.highlightBrowse"
+          class="flex h-3 w-3 absolute top-0 right-0 -mr-1 -mt-1"
+        >
+          <span
+            class="
+              animate-ping
+              absolute
+              inline-flex
+              h-full
+              w-full
+              rounded-full
+              bg-primary
+              opacity-75
+            "
+          ></span>
+          <span
+            class="relative inline-flex rounded-full h-3 w-3 bg-blue-600"
+          ></span>
+        </span>
+        <v-remixicon name="riCompass3Line" class="mr-2 -ml-1" />
+        {{ t('workflow.browse') }}
+      </ui-button>
       <ui-button @click="importWorkflow">
         <v-remixicon name="riUploadLine" class="mr-2 -ml-1" />
         {{ t('workflow.import') }}
@@ -168,6 +198,7 @@ const menu = [
 const savedSorts = JSON.parse(localStorage.getItem('workflow-sorts') || '{}');
 const state = shallowReactive({
   query: '',
+  highlightBrowse: !localStorage.getItem('first-time-browse'),
   sortBy: savedSorts.sortBy || 'createdAt',
   sortOrder: savedSorts.sortOrder || 'desc',
 });
@@ -186,6 +217,10 @@ const workflows = computed(() =>
     .get()
 );
 
+function browseWorkflow() {
+  state.highlightBrowse = false;
+  localStorage.setItem('first-time-browse', false);
+}
 function executeWorkflow(workflow) {
   sendMessage('workflow:execute', workflow, 'background');
 }
