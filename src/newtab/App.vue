@@ -13,6 +13,7 @@ import { useStore } from 'vuex';
 import browser from 'webextension-polyfill';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vue-i18n';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
+import { sendMessage } from '@/utils/message';
 
 const store = useStore();
 const retrieved = ref(false);
@@ -46,6 +47,8 @@ onMounted(async () => {
 
     await loadLocaleMessages(store.state.settings.locale, 'newtab');
     await setI18nLanguage(store.state.settings.locale);
+
+    await sendMessage('workflow:check-state', {}, 'background');
 
     retrieved.value = true;
   } catch (error) {
