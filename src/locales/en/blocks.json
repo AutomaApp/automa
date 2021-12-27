@@ -326,7 +326,9 @@
       "take-screenshot": {
         "name": "Take screenshot",
         "description": "Take a screenshot of current active tab",
-        "imageQuality": "Image quality"
+        "imageQuality": "Image quality",
+        "saveToColumn": "Save screenshot to column",
+        "saveToComputer": "Save screenshot to computer"
       },
       "switch-to": {
         "name": "Switch frame",
