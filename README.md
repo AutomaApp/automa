@@ -6,6 +6,9 @@
 An extension for automating your browser by connecting blocks. <br />
 From auto-fill forms, doing a repetitive task, taking a screenshot, to scraping data of the website, it's up to you what you want to do with this extension. And you also can schedule when the automation will execute.
 
+## Marketplace
+In this marketplace you can shared or download a workflow for Automa. Go to [marketplace](https://automa.vercel.app/workflows)
+
 ## Project setup
 ```bash
 # Install dependencies
