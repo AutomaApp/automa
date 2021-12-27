@@ -29,7 +29,9 @@ export function exportWorkflow(workflow) {
     'globalData',
     'description',
   ];
-  const content = {};
+  const content = {
+    extVersion: chrome.runtime.getManifest().version,
+  };
 
   keys.forEach((key) => {
     content[key] = workflow[key];

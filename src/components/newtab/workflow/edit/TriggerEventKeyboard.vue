@@ -8,9 +8,15 @@
       {{ item }}
     </ui-checkbox>
   </div>
-  <div class="flex items-center mt-3 space-x-2">
-    <ui-input v-model="defaultParams.code" class="flex-1" label="code" />
+  <ui-input v-model="defaultParams.code" class="w-full mt-2" label="code" />
+  <div class="flex items-center mt-1 space-x-2">
     <ui-input v-model="defaultParams.key" class="flex-1" label="key" />
+    <ui-input
+      v-model.number="defaultParams.keyCode"
+      type="number"
+      class="flex-1"
+      label="keyCode"
+    />
   </div>
   <ui-checkbox v-model="defaultParams.repeat" class="mt-4">
     Repeat
@@ -35,6 +41,7 @@ const defaultParams = shallowReactive({
   shiftKey: false,
   code: '',
   key: '',
+  keyCode: 0,
   repat: false,
 });
 

@@ -7,7 +7,7 @@
       @click="$emit('details', workflow)"
     >
       <p class="leading-tight text-overflow">{{ workflow.name }}</p>
-      <p class="leading-none text-gray-500">
+      <p class="leading-tight text-gray-500">
         {{ dayjs(workflow.createdAt).fromNow() }}
       </p>
     </div>

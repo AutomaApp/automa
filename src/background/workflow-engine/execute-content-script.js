@@ -1,37 +1,30 @@
 import browser from 'webextension-polyfill';
 
-function getFrames(tabId) {
-  return new Promise((resolve) => {
-    const frames = {};
-    let frameTimeout;
-    let timeout;
+export async function getFrames(tabId) {
+  try {
+    const frames = await browser.webNavigation.getAllFrames({ tabId });
+    const framesObj = frames.reduce((acc, { frameId, url }) => {
+      const key = url === 'about:blank' ? '' : url;
 
-    const onMessageListener = (_, sender) => {
-      if (sender.frameId !== 0) frames[sender.url] = sender.frameId;
+      acc[key] = frameId;
 
-      clearTimeout(frameTimeout);
-      frameTimeout = setTimeout(() => {
-        clearTimeout(timeout);
-        browser.runtime.onMessage.removeListener(onMessageListener);
-        resolve(frames);
-      }, 250);
-    };
+      return acc;
+    }, {});
 
-    browser.tabs.sendMessage(tabId, {
-      type: 'give-me-the-frame-id',
-    });
-    browser.runtime.onMessage.addListener(onMessageListener);
-
-    timeout = setTimeout(() => {
-      clearTimeout(frameTimeout);
-      resolve(frames);
-    }, 5000);
-  });
+    return framesObj;
+  } catch (error) {
+    console.error(error);
+    return {};
+  }
 }
 
-async function contentScriptExist(tabId) {
+async function contentScriptExist(tabId, frameId = 0) {
   try {
-    await browser.tabs.sendMessage(tabId, { type: 'content-script-exists' });
+    await browser.tabs.sendMessage(
+      tabId,
+      { type: 'content-script-exists' },
+      { frameId }
+    );
 
     return true;
   } catch (error) {
@@ -39,18 +32,16 @@ async function contentScriptExist(tabId) {
   }
 }
 
-export default async function (tabId) {
+export default async function (tabId, frameId = 0) {
   try {
-    const isScriptExists = await contentScriptExist(tabId);
+    const isScriptExists = await contentScriptExist(tabId, frameId);
 
     if (!isScriptExists) {
       await browser.tabs.executeScript(tabId, {
+        frameId,
         file: './contentScript.bundle.js',
-        allFrames: true,
       });
     }
-
-    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const frames = await getFrames(tabId);
 

@@ -28,7 +28,7 @@ onMounted(async () => {
 <style>
 body {
   height: 500px;
-  width: 330px;
+  width: 350px;
   font-size: 16px;
 }
 </style>

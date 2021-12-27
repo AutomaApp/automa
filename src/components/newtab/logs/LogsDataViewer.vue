@@ -26,21 +26,20 @@
       </ui-list>
     </ui-popover>
   </div>
-  <prism-editor
+  <shared-codemirror
     :model-value="jsonData"
-    :highlight="highlighter('json')"
     :class="editorClass"
+    lang="json"
     readonly
-    class="my-editor p-4 bg-gray-900 rounded-lg mt-4"
-  ></prism-editor>
+    class="mt-4"
+  />
 </template>
 <script setup>
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { PrismEditor } from 'vue-prism-editor';
-import { highlighter } from '@/lib/prism';
 import { dataExportTypes } from '@/utils/shared';
 import dataExporter, { generateJSON } from '@/utils/data-exporter';
+import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
 
 const props = defineProps({
   log: {

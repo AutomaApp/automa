@@ -218,12 +218,12 @@
     <p class="float-right clear-both" title="Characters limit">
       {{ collection.globalData.length }}/{{ (1e4).toLocaleString() }}
     </p>
-    <prism-editor
+    <shared-codemirror
       :model-value="collection.globalData"
-      :highlight="highlighter('json')"
-      class="h-full scroll mt-2"
+      lang="json"
+      class="mt-2"
       style="height: calc(100vh - 10rem)"
-      @update:modelValue="updateGlobalData"
+      @change="updateGlobalData"
     />
   </ui-modal>
 </template>
@@ -232,16 +232,15 @@ import { computed, shallowReactive, onMounted, watch } from 'vue';
 import { nanoid } from 'nanoid';
 import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';
-import { PrismEditor } from 'vue-prism-editor';
 import { useI18n } from 'vue-i18n';
 import Draggable from 'vuedraggable';
-import { highlighter } from '@/lib/prism';
 import { useDialog } from '@/composable/dialog';
 import { sendMessage } from '@/utils/message';
 import Log from '@/models/log';
 import Workflow from '@/models/workflow';
 import Collection from '@/models/collection';
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
+import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
 import SharedWorkflowState from '@/components/newtab/shared/SharedWorkflowState.vue';
 
 const { t } = useI18n();

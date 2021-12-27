@@ -34,7 +34,7 @@
         ],
         "useRegex": "使用正则表达式",
         "shortcut": {
-          "tootlip": "录制快捷键",
+          "tooltip": "录制快捷键",
           "checkboxTitle": "即使在输入框中也执行快捷键",
           "checkbox": "在输入框中执行快捷键",
           "note": "提示: 键盘快捷键仅在你访问网页时有效"

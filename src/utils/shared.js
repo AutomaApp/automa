@@ -1,4 +1,5 @@
-/* to-do screenshot, looping, cookies, assets, tab loaded, opened tab, and run workflow block? */
+/* to-do execute multiple blocks simultaneously, keyboard shortcut */
+import { nanoid } from 'nanoid';
 
 export const tasks = {
   trigger: {
@@ -167,6 +168,9 @@ export const tasks = {
       fileName: '',
       ext: 'png',
       quality: 100,
+      dataColumn: '',
+      saveToColumn: false,
+      saveToComputer: true,
       captureActiveTab: true,
     },
   },
@@ -226,6 +230,9 @@ export const tasks = {
       regexExp: ['g'],
       dataColumn: '',
       saveData: true,
+      addExtraRow: false,
+      extraRowValue: '',
+      extraRowDataColumn: '',
     },
   },
   'export-data': {
@@ -306,6 +313,9 @@ export const tasks = {
       attributeName: '',
       dataColumn: '',
       saveData: true,
+      addExtraRow: false,
+      extraRowValue: '',
+      extraRowDataColumn: '',
     },
   },
   forms: {
@@ -377,7 +387,7 @@ export const tasks = {
     data: {
       description: '',
       timeout: 20000,
-      code: 'console.log("Hello world!")',
+      code: 'console.log("Hello world!");\nautomaNextBlock()',
       preloadScripts: [],
     },
   },
@@ -454,7 +464,7 @@ export const tasks = {
       contentType: 'json',
       timeout: 10000,
       headers: [{ name: '', value: '' }],
-      body: '{\n "key": {{ dataColumns@0.key }} \n}',
+      body: '{}',
     },
   },
   'loop-data': {
@@ -492,6 +502,22 @@ export const tasks = {
     maxConnection: 1,
     data: {
       loopId: '',
+    },
+  },
+  'blocks-group': {
+    name: 'Blocks group',
+    description: 'Grouping blocks',
+    icon: 'riFolderZipLine',
+    component: 'BlockGroup',
+    category: 'general',
+    disableEdit: true,
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      name: '',
+      blocks: [],
     },
   },
   'switch-to': {
@@ -564,13 +590,13 @@ export const dataExportTypes = [
 
 export const firstWorkflows = [
   {
-    id: 'google-search',
+    id: nanoid(),
     name: 'Google search',
     createdAt: Date.now(),
     drawflow: `{"drawflow":{"Home":{"data":{"d634ff22-5dfe-44dc-83d2-842412bd9fbf":{"id":"d634ff22-5dfe-44dc-83d2-842412bd9fbf","name":"trigger","data":{"type":"manual","interval":10},"class":"trigger","html":"BlockBasic","typenode":"vue","inputs":{},"outputs":{"output_1":{"connections":[{"node":"b9e7e0d4-e86a-4635-a352-31c63723fef4","output":"input_1"}]}},"pos_x":50,"pos_y":300},"b9e7e0d4-e86a-4635-a352-31c63723fef4":{"id":"b9e7e0d4-e86a-4635-a352-31c63723fef4","name":"new-tab","data":{"url":"https://google.com","active":true},"class":"new-tab","html":"BlockBasic","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"d634ff22-5dfe-44dc-83d2-842412bd9fbf","input":"output_1"}]}},"outputs":{"output_1":{"connections":[{"node":"09f3a14c-0514-4287-93b0-aa92b0064fba","output":"input_1"}]}},"pos_x":278,"pos_y":268},"09f3a14c-0514-4287-93b0-aa92b0064fba":{"id":"09f3a14c-0514-4287-93b0-aa92b0064fba","name":"forms","data":{"description":"Type query","selector":"[name='q']","markEl":false,"multiple":false,"selected":true,"type":"text-field","value":"Stackoverflow","delay":"120","events":[]},"class":"forms","html":"BlockBasic","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"b9e7e0d4-e86a-4635-a352-31c63723fef4","input":"output_1"}]}},"outputs":{"output_1":{"connections":[{"node":"5f76370d-aa3d-4258-8319-230fcfc49a3a","output":"input_1"}]}},"pos_x":551,"pos_y":290},"5f76370d-aa3d-4258-8319-230fcfc49a3a":{"id":"5f76370d-aa3d-4258-8319-230fcfc49a3a","name":"event-click","data":{"description":"Click search","selector":"center:nth-child(1) > .gNO89b","markEl":false,"multiple":false},"class":"event-click","html":"BlockBasic","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"09f3a14c-0514-4287-93b0-aa92b0064fba","input":"output_1"}]}},"outputs":{"output_1":{"connections":[]}},"pos_x":794,"pos_y":308}}}}}`,
   },
   {
-    id: 'lorem-ipsum',
+    id: nanoid(),
     name: 'Generate lorem ipsum',
     createdAt: Date.now(),
     drawflow:

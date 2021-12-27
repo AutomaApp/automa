@@ -15,13 +15,11 @@
       :title="t('workflow.blocks.javascript-code.timeout.title')"
       @change="updateData({ timeout: +$event })"
     />
-    <prism-editor
+    <pre
       v-if="!state.showCodeModal"
-      :model-value="data.code"
-      :highlight="highlighter('javascript')"
-      readonly
-      class="p-4 max-h-80"
+      class="rounded-lg overflow-auto text-gray-200 p-4 max-h-80 bg-gray-900"
       @click="state.showCodeModal = true"
+      v-text="data.code"
     />
     <ui-modal v-model="state.showCodeModal" content-class="max-w-3xl">
       <template #header>
@@ -40,11 +38,9 @@
         style="height: calc(100vh - 9rem)"
       >
         <ui-tab-panel value="code" class="h-full">
-          <prism-editor
+          <shared-codemirror
             v-model="state.code"
-            :highlight="highlighter('javascript')"
-            line-numbers
-            class="py-4 overflow-auto"
+            class="overflow-auto"
             style="height: 87%"
           />
           <p class="mt-1">
@@ -96,8 +92,7 @@
 <script setup>
 import { watch, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { PrismEditor } from 'vue-prism-editor';
-import { highlighter } from '@/lib/prism';
+import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
 
 const props = defineProps({
   data: {

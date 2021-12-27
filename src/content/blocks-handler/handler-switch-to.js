@@ -5,14 +5,13 @@ function switchTo(block) {
     handleElement(block, {
       onSelected(element) {
         if (element.tagName !== 'IFRAME') {
-          resolve('');
+          reject(new Error('not-iframe'));
           return;
         }
 
-        resolve({ url: element.src });
-      },
-      onSuccess() {
-        resolve('');
+        const isSameOrigin = element.contentDocument !== null;
+
+        resolve({ url: element.src, isSameOrigin });
       },
       onError(error) {
         reject(error);

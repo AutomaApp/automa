@@ -41,7 +41,7 @@
         ],
         "useRegex": "Dùng regex",
         "shortcut": {
-          "tootlip": "Ghi lại lối tắt",
+          "tooltip": "Ghi lại lối tắt",
           "checkboxTitle": "Execute shortcut even when you're in an input element",
           "checkbox": "Hoạt động khi nhập liệu",
           "note": "Lưu ý: phím tắt chỉ hoạt động khi bạn đang truy cập một trang web"

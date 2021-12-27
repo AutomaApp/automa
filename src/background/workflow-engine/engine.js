@@ -183,7 +183,7 @@ class WorkflowEngine {
   }
 
   addLog(detail) {
-    if (this.logs.length >= 1001) return;
+    if (this.logs.length >= 1001 || detail.name === 'blocks-group') return;
 
     this.logs.push(detail);
   }
@@ -312,7 +312,7 @@ class WorkflowEngine {
       return;
     }
 
-    const disableTimeoutKeys = ['delay', 'javascript-code'];
+    const disableTimeoutKeys = ['delay', 'javascript-code', 'webhook'];
 
     if (!disableTimeoutKeys.includes(block.name)) {
       this.workflowTimeout = setTimeout(() => {

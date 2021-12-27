@@ -31,21 +31,18 @@ function formEvent(element, data) {
     new Event('change', { bubbles: true, cancelable: true })
   );
 }
-function inputText({ data, element, index = 0, callback }) {
+function inputText({ data, element, isEditable, index = 0, callback }) {
   const noDelay = data.delay === 0;
   const currentChar = data.value[index] ?? '';
+  const elementKey = isEditable ? 'textContent' : 'value';
 
-  if (noDelay) {
-    element.value += data.value;
-  } else {
-    element.value += currentChar;
-  }
+  element[elementKey] += noDelay ? data.value : currentChar;
 
-  formEvent(element, { ...data, value: currentChar });
+  formEvent(element, { type: 'text-field', value: currentChar, isEditable });
 
   if (!noDelay && index + 1 !== data.value.length) {
     setTimeout(() => {
-      inputText({ data, element, callback, index: index + 1 });
+      inputText({ data, element, callback, isEditable, index: index + 1 });
     }, data.delay);
   } else {
     callback();
@@ -54,6 +51,15 @@ function inputText({ data, element, index = 0, callback }) {
 
 export default function (element, data, callback) {
   const textFields = ['INPUT', 'TEXTAREA'];
+  const isEditable =
+    element.hasAttribute('contenteditable') && element.isContentEditable;
+
+  if (isEditable) {
+    if (data.clearValue) element.innerText = '';
+
+    inputText({ data, element, callback, isEditable });
+    return;
+  }
 
   if (data.type === 'text-field' && textFields.includes(element.tagName)) {
     if (data.clearValue) element.value = '';

@@ -1,9 +1,10 @@
 import browser from 'webextension-polyfill';
+import { objectHasKey } from '@/utils/helper';
 import { MessageListener } from '@/utils/message';
+import { registerSpecificDay } from '../utils/workflow-trigger';
 import workflowState from './workflow-state';
 import workflowEngine from './workflow-engine';
 import CollectionEngine from './collection-engine';
-import { registerSpecificDay } from '../utils/workflow-trigger';
 
 function getWorkflow(workflowId) {
   return new Promise((resolve) => {
@@ -47,6 +48,22 @@ function executeCollection(collection) {
 
   return true;
 }
+async function checkRunnigWorkflows() {
+  try {
+    const result = await browser.storage.local.get('workflowState');
+
+    result.workflowState.forEach(({ id }, index) => {
+      if (objectHasKey(runningWorkflows, id)) return;
+
+      result.workflowState.splice(index, 1);
+    });
+
+    browser.storage.local.set({ workflowState: result.workflowState });
+  } catch (error) {
+    console.error(error);
+  }
+}
+checkRunnigWorkflows();
 
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete') {
@@ -151,6 +168,7 @@ message.on('collection:stop', (id) => {
   collection.stop();
 });
 
+message.on('workflow:check-state', checkRunnigWorkflows);
 message.on('workflow:execute', (workflow) => executeWorkflow(workflow));
 message.on('workflow:stop', (id) => {
   const workflow = runningWorkflows[id];

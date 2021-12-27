@@ -11,20 +11,18 @@
     <p class="float-right clear-both" title="Characters limit">
       {{ globalData.length }}/{{ maxLength.toLocaleString() }}
     </p>
-    <prism-editor
+    <shared-codemirror
       v-model="globalData"
-      :highlight="highlighter('json')"
-      class="h-full scroll mt-2"
       style="height: calc(100vh - 10rem)"
+      lang="json"
     />
   </div>
 </template>
 <script setup>
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { PrismEditor } from 'vue-prism-editor';
-import { highlighter } from '@/lib/prism';
 import { debounce } from '@/utils/helper';
+import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
 
 const props = defineProps({
   workflow: {

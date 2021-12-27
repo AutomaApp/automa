@@ -22,7 +22,13 @@ function saveImage({ fileName, uri, ext }) {
 
 async function takeScreenshot(block) {
   const nextBlockId = getBlockConnection(block);
-  const { ext, quality, captureActiveTab, fileName } = block.data;
+  const { ext, quality, captureActiveTab, fileName, saveToColumn, dataColumn } =
+    block.data;
+
+  const saveToComputer =
+    typeof block.data.saveToComputer === 'undefined'
+      ? true
+      : block.data.saveToComputer;
 
   try {
     const options = {
@@ -52,11 +58,13 @@ async function takeScreenshot(block) {
         await browser.tabs.update(tab.id, { active: true });
       }
 
-      saveImage({ fileName, uri, ext });
+      if (saveToColumn) this.addData(dataColumn, uri);
+      if (saveToComputer) saveImage({ fileName, uri, ext });
     } else {
       const uri = await browser.tabs.captureVisibleTab(options);
 
-      saveImage({ fileName, uri, ext });
+      if (saveToColumn) this.addData(dataColumn, uri);
+      if (saveToComputer) saveImage({ fileName, uri, ext });
     }
 
     return { data: '', nextBlockId };

@@ -50,6 +50,7 @@ export default function (block, data) {
     'selector',
     'prefixText',
     'suffixText',
+    'extraRowValue',
   ];
   let replacedBlock = block;
 

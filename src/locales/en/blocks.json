@@ -27,6 +27,12 @@
           "text": "Multiple"
         }
       },
+      "blocks-group": {
+        "name": "Blocks group",
+        "groupName": "Group name",
+        "description": "Grouping blocks",
+        "dropText": "Drag & drop a block here"
+      },
       "trigger": {
         "name": "Trigger",
         "description": "Block where the workflow will start executing",
@@ -41,7 +47,7 @@
         ],
         "useRegex": "Use regex",
         "shortcut": {
-          "tootlip": "Record shortcut",
+          "tooltip": "Record shortcut",
           "checkboxTitle": "Execute shortcut even when you're in an input element",
           "checkbox": "Active while in input",
           "note": "Note: keyboard shortcut only working when you're on a webpage"
@@ -129,6 +135,7 @@
       "get-text": {
         "name": "Get text",
         "description": "Get text from an element",
+        "checkbox": "Save data",
         "prefixText": {
           "placeholder": "Text prefix",
           "title": "Add prefix to the text"
@@ -136,6 +143,11 @@
         "suffixText": {
           "placeholder": "Text suffix",
           "title": "Add suffix to the text"
+        },
+        "extraRow": {
+          "checkbox": "Add extra row",
+          "placeholder": "Value",
+          "title": "Value of the extra row"
         }
       },
       "export-data": {
@@ -172,7 +184,12 @@
         "forms": {
           "name": "Attribute name",
           "checkbox": "Save data",
-          "column": "Select column"
+          "column": "Select column",
+          "extraRow": {
+            "checkbox": "Add extra row",
+            "placeholder": "Value",
+            "title": "Value of the extra row"
+          }
         }
       },
       "forms": {
@@ -190,9 +207,15 @@
             "label": "Typing delay (millisecond)(0 to disable)"
           }
         },
-        "select": { "name": "Select" },
-        "radio": { "name": "Radio" },
-        "checkbox": { "name": "Checkbox" }
+        "select": {
+          "name": "Select"
+        },
+        "radio": {
+          "name": "Radio"
+        },
+        "checkbox": {
+          "name": "Checkbox"
+        }
       },
       "repeat-task": {
         "name": "Repeat task",
@@ -303,7 +326,9 @@
       "take-screenshot": {
         "name": "Take screenshot",
         "description": "Take a screenshot of current active tab",
-        "imageQuality": "Image quality"
+        "imageQuality": "Image quality",
+        "saveToColumn": "Save screenshot to column",
+        "saveToComputer": "Save screenshot to computer"
       },
       "switch-to": {
         "name": "Switch frame",
