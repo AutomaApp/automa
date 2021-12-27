@@ -92,6 +92,7 @@
       "invalid-body": "Content body is not valid",
       "workflow-disabled": "Workflow is disabled",
       "selector-empty": "Element selector is empty",
+      "invalid-active-tab": "\"{url}\" is invalid URL",
       "empty-workflow": "You must select a workflow first",
       "active-tab-removed": "Workflow active tab is removed",
       "stop-timeout": "Workflow is stopped because of timeout",
