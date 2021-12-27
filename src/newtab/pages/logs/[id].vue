@@ -194,7 +194,7 @@ onMounted(() => {
 });
 </script>
 <style>
-.logs-details .my-editor {
+.logs-details .cm-editor {
   max-height: calc(100vh - 12rem);
 }
 </style>
