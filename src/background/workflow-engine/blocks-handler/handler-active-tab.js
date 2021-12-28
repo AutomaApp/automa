@@ -22,6 +22,13 @@ async function activeTab(block) {
       currentWindow: true,
     });
 
+    if (!tab?.url.startsWith('http')) {
+      const error = new Error('invalid-active-tab');
+      error.data = { url: tab.url };
+
+      throw error;
+    }
+
     this.frames = await executeContentScript(tab.id);
 
     this.frameId = 0;
@@ -32,11 +39,10 @@ async function activeTab(block) {
     return data;
   } catch (error) {
     console.error(error);
-    return {
-      data: '',
-      message: error.message || error,
-      nextBlockId,
-    };
+    error.nextBlockId = nextBlockId;
+    error.data = error.data || {};
+
+    throw error;
   }
 }
 

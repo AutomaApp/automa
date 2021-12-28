@@ -49,6 +49,7 @@ export default function (block, data) {
     'fileName',
     'selector',
     'prefixText',
+    'globalData',
     'suffixText',
     'extraRowValue',
   ];
