@@ -76,6 +76,10 @@
         "select": "Select workflow",
         "description": ""
       },
+      "google-sheets": {
+        "name": "Google sheets",
+        "description": "Read or write google sheet data"
+      },
       "active-tab": {
         "name": "Active tab",
         "description": "Set current tab that you're in as an active tab"
