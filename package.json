@@ -27,6 +27,7 @@
     "@codemirror/theme-one-dark": "^0.19.1",
     "@medv/finder": "^2.1.0",
     "@vuex-orm/core": "^0.36.4",
+    "compare-versions": "^4.1.2",
     "dayjs": "^1.10.7",
     "drawflow": "^0.0.51",
     "idb": "^7.0.0",

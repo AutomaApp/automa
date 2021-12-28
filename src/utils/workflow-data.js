@@ -21,13 +21,14 @@ export function importWorkflow() {
 
 export function exportWorkflow(workflow) {
   const keys = [
-    'dataColumns',
-    'drawflow',
-    'icon',
     'name',
+    'icon',
+    'version',
+    'drawflow',
     'settings',
     'globalData',
     'description',
+    'dataColumns',
   ];
   const content = {
     extVersion: chrome.runtime.getManifest().version,
