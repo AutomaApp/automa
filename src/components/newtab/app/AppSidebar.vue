@@ -1,17 +1,6 @@
 <template>
   <aside
-    class="
-      fixed
-      flex flex-col
-      items-center
-      h-screen
-      left-0
-      top-0
-      w-16
-      py-6
-      bg-white
-      z-50
-    "
+    class="fixed flex flex-col items-center h-screen left-0 top-0 w-16 py-6 bg-white z-50"
   >
     <img src="@/assets/svg/logo.svg" class="w-10 mb-4 mx-auto" />
     <div
@@ -21,16 +10,7 @@
       <div
         v-show="showHoverIndicator"
         ref="hoverIndicator"
-        class="
-          rounded-lg
-          h-10
-          w-10
-          absolute
-          left-1/2
-          bg-box-transparent
-          transition-transform
-          duration-200
-        "
+        class="rounded-lg h-10 w-10 absolute left-1/2 bg-box-transparent transition-transform duration-200"
         style="transform: translate(-50%, 0)"
       ></div>
       <router-link
@@ -44,16 +24,7 @@
           v-tooltip:right.group="t(`common.${tab.id}`, 2)"
           :class="{ 'is-active': isActive }"
           :href="href"
-          class="
-            z-10
-            relative
-            w-full
-            flex
-            items-center
-            justify-center
-            tab
-            relative
-          "
+          class="z-10 relative w-full flex items-center justify-center tab relative"
           @click="navigate"
           @mouseenter="hoverHandler"
         >

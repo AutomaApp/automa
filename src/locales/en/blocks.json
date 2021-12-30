@@ -78,7 +78,25 @@
       },
       "google-sheets": {
         "name": "Google sheets",
-        "description": "Read or write google sheet data"
+        "description": "Read Google Sheets data",
+        "previewData": "Preview data",
+        "firstRow": "Use the first row as keys",
+        "refKey": {
+          "label": "Reference key",
+          "placeholder": "Key name"
+        },
+        "spreadsheetId": {
+          "label": "Spreadsheet Id",
+          "link": "See how to get spreadsheet Id"
+        },
+        "range": {
+          "label": "Range",
+          "link": "Click to see more example"
+        },
+        "select": {
+          "get": "Get spreadsheet data",
+          "write": "Write spreadsheet data"
+        }
       },
       "active-tab": {
         "name": "Active tab",

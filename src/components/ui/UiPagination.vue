@@ -15,15 +15,7 @@
         :value="modelValue"
         :max="maxPage"
         min="0"
-        class="
-          p-2
-          text-center
-          transition
-          w-10
-          appearance-none
-          bg-input
-          rounded-lg
-        "
+        class="p-2 text-center transition w-10 appearance-none bg-input rounded-lg"
         type="number"
         @click="$event.target.select()"
         @input="updatePage(+$event.target.value, $event.target)"

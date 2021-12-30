@@ -1,3 +1,33 @@
+export function convert2DArrayToArrayObj(values) {
+  let keyIndex = 0;
+  const keys = values.shift();
+  const result = [];
+
+  for (let columnIndex = 0; columnIndex < values.length; columnIndex += 1) {
+    const currentColumn = {};
+
+    for (
+      let rowIndex = 0;
+      rowIndex < values[columnIndex].length;
+      rowIndex += 1
+    ) {
+      let key = keys[rowIndex];
+
+      if (!key) {
+        keyIndex += 1;
+        key = `_row${keyIndex}`;
+        keys.push(key);
+      }
+
+      currentColumn[key] = values[columnIndex][rowIndex];
+
+      result.push(currentColumn);
+    }
+  }
+
+  return result;
+}
+
 export function parseJSON(data, def) {
   try {
     const result = JSON.parse(data);

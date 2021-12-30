@@ -2,7 +2,7 @@
   <div
     ref="containerEl"
     :class="{ 'hide-gutters': !lineNumbers }"
-    class="codemirror relative"
+    class="codemirror relative overflow-auto"
   ></div>
 </template>
 <script setup>

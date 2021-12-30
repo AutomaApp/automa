@@ -20,14 +20,7 @@
           <span
             v-for="icon in icons"
             :key="icon"
-            class="
-              cursor-pointer
-              rounded-lg
-              inline-block
-              text-center
-              p-2
-              hoverable
-            "
+            class="cursor-pointer rounded-lg inline-block text-center p-2 hoverable"
             @click="$emit('update', { icon })"
           >
             <v-remixicon :name="icon" />
@@ -78,16 +71,7 @@
             )
           "
           draggable="true"
-          class="
-            transform
-            select-none
-            cursor-move
-            relative
-            p-4
-            rounded-lg
-            bg-input
-            transition
-          "
+          class="transform select-none cursor-move relative p-4 rounded-lg bg-input transition"
           @dragstart="
             $event.dataTransfer.setData('block', JSON.stringify(block))
           "

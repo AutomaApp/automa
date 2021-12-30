@@ -7,18 +7,7 @@
       <transition name="modal" mode="out-in">
         <div
           v-if="show"
-          class="
-            bg-black
-            p-5
-            overflow-y-auto
-            bg-opacity-20
-            modal-ui__content-container
-            z-50
-            flex
-            justify-center
-            items-end
-            md:items-center
-          "
+          class="bg-black p-5 overflow-y-auto bg-opacity-20 modal-ui__content-container z-50 flex justify-center items-end md:items-center"
           :style="{ 'backdrop-filter': blur && 'blur(2px)' }"
           @click.self="closeModal"
         >

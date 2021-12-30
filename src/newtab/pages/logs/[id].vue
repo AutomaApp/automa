@@ -46,12 +46,7 @@
               <p
                 v-if="item.message"
                 :title="item.message"
-                class="
-                  text-sm
-                  leading-tight
-                  text-overflow text-gray-600
-                  dark:text-gray-200
-                "
+                class="text-sm leading-tight text-overflow text-gray-600 dark:text-gray-200"
               >
                 {{ item.message }}
               </p>
@@ -166,7 +161,7 @@ function translateLog(log) {
 
   copyLog.message = getTranslatation(
     { path: `log.messages.${log.message}`, params: log },
-    ''
+    log.message
   );
 
   return copyLog;

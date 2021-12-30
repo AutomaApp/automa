@@ -4,12 +4,7 @@
       <input
         :value="collection.name"
         placeholder="Collection name"
-        class="
-          text-2xl
-          hover:ring-2 hover:ring-accent
-          font-semibold
-          bg-transparent
-        "
+        class="text-2xl hover:ring-2 hover:ring-accent font-semibold bg-transparent"
         @blur="updateCollection({ name: $event.target.value || 'Unnamed' })"
       />
       <div class="flex-grow"></div>
@@ -67,16 +62,7 @@
                 {{ t('common.running') }}
                 <span
                   v-if="runningCollection.length > 0"
-                  class="
-                    ml-2
-                    p-1
-                    text-center
-                    inline-block
-                    text-xs
-                    rounded-full
-                    bg-black
-                    text-white
-                  "
+                  class="ml-2 p-1 text-center inline-block text-xs rounded-full bg-black text-white"
                   style="min-width: 25px"
                 >
                   {{ runningCollection.length }}
@@ -98,19 +84,7 @@
           <ui-tab-panel class="relative" value="flow">
             <div
               v-if="collection.flow.length === 0"
-              class="
-                border
-                text-gray-600
-                absolute
-                top-0
-                w-full
-                z-0
-                dark:text-gray-200
-                rounded-lg
-                border-dashed
-                text-center
-                p-4
-              "
+              class="border text-gray-600 absolute top-0 w-full z-0 dark:text-gray-200 rounded-lg border-dashed text-center p-4"
             >
               {{ t('collection.dragDropText') }}
             </div>
@@ -123,15 +97,7 @@
             >
               <template #item="{ element, index }">
                 <ui-card
-                  class="
-                    group
-                    flex
-                    cursor-move
-                    mb-2
-                    items-center
-                    relative
-                    overflow-hidden
-                  "
+                  class="group flex cursor-move mb-2 items-center relative overflow-hidden"
                 >
                   <span
                     :class="[

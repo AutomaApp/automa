@@ -103,6 +103,8 @@ class WorkflowEngine {
     this.childWorkflow = null;
     this.workflowTimeout = null;
 
+    this.googleSheets = {};
+
     this.tabUpdatedListeners = {};
     this.tabUpdatedHandler = tabUpdatedHandler.bind(this);
     this.tabRemovedHandler = tabRemovedHandler.bind(this);
@@ -183,7 +185,11 @@ class WorkflowEngine {
   }
 
   addLog(detail) {
-    if (this.logs.length >= 1001 || detail.name === 'blocks-group') return;
+    if (
+      (this.logs.length >= 1001 || detail.name === 'blocks-group') &&
+      detail.type !== 'error'
+    )
+      return;
 
     this.logs.push(detail);
   }
@@ -338,6 +344,7 @@ class WorkflowEngine {
         dataColumns: this.data,
         loopData: this.loopData,
         globalData: this.globalData,
+        googleSheets: this.googleSheets,
         activeTabUrl: this.activeTabUrl,
       };
       const replacedBlock = referenceData(block, refData);

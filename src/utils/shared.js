@@ -415,17 +415,21 @@ export const tasks = {
   },
   'google-sheets': {
     name: 'Google sheets',
-    description: 'Read or write google sheet data',
+    description: 'Read Google Sheets data',
     icon: 'mdiGoogleSheet',
     component: 'BlockBasic',
+    editComponent: 'EditGoogleSheets',
     category: 'onlineServices',
     inputs: 1,
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
     data: {
-      url: '',
+      spreadsheetId: '',
       type: 'get',
+      range: '',
+      firstRowAsKey: false,
+      refKey: '',
     },
   },
   conditions: {
@@ -569,7 +573,7 @@ export const categories = {
   },
   onlineServices: {
     name: 'Online services',
-    color: 'bg-purple-200',
+    color: 'bg-red-200',
   },
   conditions: {
     name: 'Conditions',

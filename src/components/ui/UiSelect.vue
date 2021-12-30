@@ -18,19 +18,7 @@
         :id="selectId"
         :class="{ 'pl-8': prependIcon }"
         :value="modelValue"
-        class="
-          px-4
-          pr-10
-          transition
-          rounded-lg
-          bg-input bg-transparent
-          py-2
-          z-10
-          appearance-none
-          w-full
-          h-full
-          appearance-none
-        "
+        class="px-4 pr-10 transition rounded-lg bg-input bg-transparent py-2 z-10 appearance-none w-full h-full appearance-none"
         @change="emitValue"
       >
         <option v-if="placeholder" value="" disabled selected>

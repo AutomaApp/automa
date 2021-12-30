@@ -74,15 +74,7 @@
       </template>
       <template #footer>
         <div
-          class="
-            p-2
-            rounded-lg
-            text-gray-600
-            dark:text-gray-200
-            border
-            text-center
-            border-dashed
-          "
+          class="p-2 rounded-lg text-gray-600 dark:text-gray-200 border text-center border-dashed"
         >
           {{ t('workflow.blocks.blocks-group.dropText') }}
         </div>
