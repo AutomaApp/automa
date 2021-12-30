@@ -46,7 +46,7 @@ function tabUpdatedHandler(tabId, changeInfo, tab) {
       clearTimeout(reloadTimeout);
       reloadTimeout = null;
 
-      executeContentScript(tabId, 'update tab')
+      executeContentScript(tabId)
         .then((frames) => {
           this.tabId = tabId;
           this.frames = frames;
@@ -96,7 +96,7 @@ class WorkflowEngine {
     this.isPaused = false;
     this.isDestroyed = false;
     this.isUsingProxy = false;
-    this.frameId = null;
+    this.frameId = 0;
     this.windowId = null;
     this.tabGroupId = null;
     this.currentBlock = null;
@@ -311,9 +311,13 @@ class WorkflowEngine {
   _blockHandler(block, prevBlockData) {
     if (this.isDestroyed) return;
     if (this.isPaused) {
-      setTimeout(() => {
-        this._blockHandler(block, prevBlockData);
-      }, 1000);
+      browser.tabs.get(this.tabId).then(({ status }) => {
+        this.isPaused = status !== 'complete';
+
+        setTimeout(() => {
+          this._blockHandler(block, prevBlockData);
+        }, 1000);
+      });
 
       return;
     }
@@ -356,6 +360,7 @@ class WorkflowEngine {
         .then((result) => {
           clearTimeout(this.workflowTimeout);
           this.workflowTimeout = null;
+
           this.addLog({
             type: 'success',
             name: block.name,

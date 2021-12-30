@@ -43,7 +43,6 @@ export default async function ({ data, outputs }) {
     };
   } catch (error) {
     error.nextBlockId = nextBlockId;
-    console.log(error.message, 'halo');
 
     throw error;
   }
