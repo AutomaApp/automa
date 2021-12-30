@@ -351,7 +351,7 @@ class WorkflowEngine {
         googleSheets: this.googleSheets,
         activeTabUrl: this.activeTabUrl,
       };
-      const replacedBlock = referenceData(block, refData);
+      const replacedBlock = referenceData({ block, data: refData });
       const blockDelay =
         block.name === 'trigger' ? 0 : this.workflow.settings?.blockDelay || 0;
 
