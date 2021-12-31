@@ -31,6 +31,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  extensions: {
+    type: [Object, Array],
+    default: () => [],
+  },
 });
 const emit = defineEmits(['change', 'update:modelValue']);
 
@@ -48,6 +52,9 @@ const updateListener = EditorView.updateListener.of((event) => {
   }
 });
 
+const customExtension = Array.isArray(props.extensions)
+  ? props.extensions
+  : [props.extensions];
 const state = EditorState.create({
   doc: props.modelValue,
   extensions: [
@@ -58,6 +65,7 @@ const state = EditorState.create({
     keymap.of([indentWithTab]),
     EditorState.readOnly.of(props.readonly),
     props.lang === 'javascript' ? javascript() : json(),
+    ...customExtension,
   ],
 });
 

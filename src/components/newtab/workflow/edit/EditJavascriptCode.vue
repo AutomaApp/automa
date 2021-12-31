@@ -40,6 +40,7 @@
         <ui-tab-panel value="code" class="h-full">
           <shared-codemirror
             v-model="state.code"
+            :extensions="codemirrorExts"
             class="overflow-auto"
             style="height: 87%"
           />
@@ -92,8 +93,12 @@
 <script setup>
 import { watch, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { syntaxTree } from '@codemirror/language';
+import { autocompletion, snippet } from '@codemirror/autocomplete';
+import * as anu from '@codemirror/autocomplete';
 import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
 
+console.log(anu);
 const props = defineProps({
   data: {
     type: Object,
@@ -123,6 +128,79 @@ function updateData(value) {
 function addScript() {
   state.preloadScripts.push({ src: '', removeAfterExec: true });
 }
+const dontCompleteIn = [
+  'String',
+  'TemplateString',
+  'LineComment',
+  'BlockComment',
+  'VariableDefinition',
+  'PropertyDefinition',
+];
+/* eslint-disable no-template-curly-in-string */
+function automaFuncsCompletion(context) {
+  const word = context.matchBefore(/\w*/);
+  const nodeBefore = syntaxTree(context.state).resolveInner(context.pos, -1);
+
+  if (
+    (word.from === word.to && !context.explicit) ||
+    dontCompleteIn.includes(nodeBefore.name)
+  )
+    return null;
+
+  return {
+    from: word.from,
+    options: [
+      {
+        label: 'automaNextBlock',
+        type: 'function',
+        apply: snippet('automaNextBlock(${data})'),
+        info: () => {
+          const container = document.createElement('div');
+
+          container.innerHTML = `
+            <code>automaNextBlock(<i>data</i>)</code>
+            <p class="mt-2">
+              Execute the next block
+              <a href="https://github.com/Kholid060/automa/wiki/Blocks#automanextblockdata" target="_blank" class="underline">
+                Read more
+              </a>
+            </p>
+          `;
+
+          return container;
+        },
+      },
+      {
+        label: 'automaRefData',
+        type: 'function',
+        apply: snippet("automaRefData('${keyword}', '${path}')"),
+        info: () => {
+          const container = document.createElement('div');
+
+          container.innerHTML = `
+            <code>automaRefData(<i>keyword</i>, <i>path</i>)</code>
+            <p class="mt-2">
+              Use this function to
+              <a href="https://github.com/Kholid060/automa/wiki/Features#reference-data" target="_blank" class="underline">
+                reference data
+              </a>
+            </p>
+          `;
+
+          return container;
+        },
+      },
+      {
+        label: 'automaResetTimeout',
+        type: 'function',
+        info: 'Reset javascript execution timeout',
+        apply: 'automaResetTimeout()',
+      },
+    ],
+  };
+}
+
+const codemirrorExts = [autocompletion({ override: [automaFuncsCompletion] })];
 
 watch(
   () => state.code,

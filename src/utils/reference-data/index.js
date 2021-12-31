@@ -4,19 +4,20 @@ import { objectHasKey } from '@/utils/helper';
 import mustacheReplacer from './mustache-replacer';
 
 export const funcs = {
-  date: (...params) => {
+  date(...args) {
     let date = new Date();
     let dateFormat = 'DD-MM-YYYY';
 
     const getDateFormat = (value) =>
       value ? value?.replace(/['"]/g, '') : dateFormat;
 
-    if (params.length === 1) {
-      dateFormat = getDateFormat(params[0][0]);
-    } else if (params.length >= 2) {
-      date = new Date(params[0]);
-      dateFormat = getDateFormat(params[1][0]);
+    if (args.length === 1) {
+      dateFormat = getDateFormat(args[0]);
+    } else if (args.length >= 2) {
+      date = new Date(args[0]);
+      dateFormat = getDateFormat(args[1]);
     }
+    console.log(this, 'anu');
 
     /* eslint-disable-next-line */
     const isValidDate = date instanceof Date && !isNaN(date);

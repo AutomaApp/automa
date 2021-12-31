@@ -22,7 +22,7 @@ export default function (str, data) {
     const funcRef = extractStrFunction(key);
 
     if (funcRef && data.funcs[funcRef.name]) {
-      return data.funcs[funcRef.name]?.(funcRef.params);
+      return data.funcs[funcRef.name]?.apply({ refData: data }, funcRef.params);
     }
 
     const { dataKey, path } = keyParser(key);

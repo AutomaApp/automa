@@ -96,7 +96,7 @@ export function toCamelCase(str) {
 }
 
 export function isObject(obj) {
-  return typeof obj === 'object' && obj !== null;
+  return typeof obj === 'object' && obj !== null && !Array.isArray(obj);
 }
 
 export function objectHasKey(obj, key) {
