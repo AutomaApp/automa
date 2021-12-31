@@ -2,6 +2,10 @@
   "home": {
     "viewAll": "View all"
   },
+  "updateMessage": {
+    "text1": "Automa has been updated to v{version},",
+    "text2": "see what's new."
+  },
   "settings": {
     "language": {
       "label": "Language",
