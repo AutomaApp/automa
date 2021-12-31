@@ -1,52 +1,40 @@
 <template>
   <div class="container pt-8 pb-4">
     <h1 class="text-2xl font-semibold mb-10">{{ t('common.settings') }}</h1>
-    <div class="flex items-center">
-      <div id="languages">
-        <ui-select
-          :model-value="settings.locale"
-          :label="t('settings.language.label')"
-          class="w-80"
-          @change="updateLanguage"
+    <div class="flex items-start">
+      <ui-list class="w-64 mr-12 space-y-2">
+        <router-link
+          v-for="menu in menus"
+          :key="menu.id"
+          v-slot="{ href, navigate, isActive }"
+          custom
+          :to="menu.path"
         >
-          <option
-            v-for="locale in supportLocales"
-            :key="locale.id"
-            :value="locale.id"
+          <ui-list-item
+            :href="href"
+            :class="[
+              isActive
+                ? 'bg-box-transparent'
+                : 'text-gray-600 dark:text-gray-600',
+            ]"
+            tag="a"
+            @click="navigate"
           >
-            {{ locale.name }}
-          </option>
-        </ui-select>
-        <a
-          class="block text-sm text-gray-600 dark:text-gray-200 ml-1"
-          href="https://github.com/Kholid060/automa/wiki/Help-Translate"
-          target="_blank"
-          rel="noopener"
-        >
-          {{ t('settings.language.helpTranslate') }}
-        </a>
+            <v-remixicon :name="menu.icon" class="mr-2 -ml-1" />
+            {{ t(`settings.menu.${menu.id}`) }}
+          </ui-list-item>
+        </router-link>
+      </ui-list>
+      <div class="settings-content">
+        <router-view />
       </div>
-      <p v-if="isLangChange" class="inline-block ml-4">
-        {{ t('settings.language.reloadPage') }}
-      </p>
     </div>
   </div>
 </template>
 <script setup>
-import { computed, ref } from 'vue';
-import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
-import { supportLocales } from '@/utils/shared';
 
 const { t } = useI18n();
-const store = useStore();
 
-const isLangChange = ref(false);
-const settings = computed(() => store.state.settings);
-
-async function updateLanguage(value) {
-  isLangChange.value = true;
-
-  store.dispatch('updateSettings', { locale: value });
-}
+const menus = [{ id: 'general', path: '/settings', icon: 'riSettings3Line' }];
 </script>

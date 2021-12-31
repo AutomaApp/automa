@@ -7,6 +7,9 @@
       "label": "Language",
       "helpTranslate": "Can't find your language? Help translate.",
       "reloadPage": "Reload the page to take effect"
+    },
+    "menu": {
+      "general": "General"
     }
   },
   "workflow": {

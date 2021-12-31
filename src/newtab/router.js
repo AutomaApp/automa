@@ -7,6 +7,7 @@ import CollectionsDetails from './pages/collections/[id].vue';
 import Logs from './pages/Logs.vue';
 import LogsDetails from './pages/logs/[id].vue';
 import Settings from './pages/Settings.vue';
+import SettingsIndex from './pages/settings/index.vue';
 
 const routes = [
   {
@@ -45,9 +46,9 @@ const routes = [
     component: LogsDetails,
   },
   {
-    name: 'settings',
     path: '/settings',
     component: Settings,
+    children: [{ path: '', component: SettingsIndex }],
   },
 ];
 
