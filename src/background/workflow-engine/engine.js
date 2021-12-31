@@ -103,6 +103,8 @@ class WorkflowEngine {
     this.childWorkflow = null;
     this.workflowTimeout = null;
 
+    this.saveLog = workflow.settings?.saveLog ?? true;
+
     this.googleSheets = {};
 
     this.tabUpdatedListeners = {};
@@ -186,6 +188,7 @@ class WorkflowEngine {
 
   addLog(detail) {
     if (
+      !this.saveLog &&
       (this.logs.length >= 1001 || detail.name === 'blocks-group') &&
       detail.type !== 'error'
     )
@@ -237,7 +240,7 @@ class WorkflowEngine {
       this.isDestroyed = true;
       this.endedTimestamp = Date.now();
 
-      if (!this.workflow.isTesting) {
+      if (!this.workflow.isTesting && this.saveLog) {
         const { logs } = await browser.storage.local.get('logs');
         const { name, icon, id } = this.workflow;
         const jsonData = generateJSON(Object.keys(this.data), this.data);

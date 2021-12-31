@@ -6,10 +6,10 @@
         <ui-radio
           v-for="item in onError"
           :key="item.id"
-          :model-value="workflow.settings.onError"
+          :model-value="settings.onError"
           :value="item.id"
           class="mr-4"
-          @change="updateWorkflow({ onError: $event })"
+          @change="settings.onError = $event"
         >
           {{ item.name }}
         </ui-radio>
@@ -18,10 +18,9 @@
     <div class="mb-6">
       <p class="mb-1">{{ t('workflow.settings.timeout.title') }}</p>
       <ui-input
-        :model-value="workflow.settings.timeout"
+        v-model="settings.timeout"
         type="number"
         class="w-full max-w-sm"
-        @change="updateWorkflow({ timeout: +$event })"
       />
     </div>
     <div>
@@ -32,15 +31,19 @@
         </span>
       </p>
       <ui-input
-        :model-value="workflow.settings.blockDelay"
+        v-model.number="settings.blockDelay"
         type="number"
         class="w-full max-w-sm"
-        @change="updateWorkflow({ blockDelay: +$event })"
       />
+    </div>
+    <div class="flex mt-6">
+      <ui-switch v-model="settings.saveLog" class="mr-4" />
+      <p>Save log</p>
     </div>
   </div>
 </template>
 <script setup>
+import { onMounted, reactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps({
@@ -64,9 +67,24 @@ const onError = [
   },
 ];
 
-function updateWorkflow(data) {
-  emit('update', {
-    settings: { ...props.workflow.settings, ...data },
-  });
-}
+const settings = reactive({
+  blockDelay: 0,
+  saveLog: true,
+  timeout: 120000,
+  onError: 'stop-workflow',
+});
+
+watch(
+  settings,
+  (newSettings) => {
+    emit('update', {
+      settings: newSettings,
+    });
+  },
+  { deep: true }
+);
+
+onMounted(() => {
+  Object.assign(settings, props.workflow.settings);
+});
 </script>
