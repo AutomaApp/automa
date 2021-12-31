@@ -28,7 +28,9 @@ export default function (str, data) {
     const { dataKey, path } = keyParser(key);
     const result = getObjectPath(data[dataKey], path) ?? match;
 
-    return isObject(result) ? JSON.stringify(result) : result;
+    return isObject(result) || Array.isArray(result)
+      ? JSON.stringify(result)
+      : result;
   });
 
   return replacedStr;
