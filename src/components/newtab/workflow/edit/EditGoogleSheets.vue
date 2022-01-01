@@ -22,7 +22,7 @@
       <template #label>
         {{ t('workflow.blocks.google-sheets.spreadsheetId.label') }}
         <a
-          href="https://developers.google.com/sheets/api/guides/concepts#:~:text=the%20Sheets%20API%3A-,Spreadsheet,-The%20primary%20object"
+          href="https://github.com/Kholid060/automa/wiki/Blocks#spreadsheet-id"
           target="_blank"
           rel="noopener"
           :title="t('workflow.blocks.google-sheets.spreadsheetId.link')"
@@ -40,7 +40,7 @@
       <template #label>
         {{ t('workflow.blocks.google-sheets.range.label') }}
         <a
-          href="https://developers.google.com/sheets/api/guides/concepts#expandable-1"
+          href="https://github.com/Kholid060/automa/wiki/Blocks#range"
           target="_blank"
           rel="noopener"
           :title="t('workflow.blocks.google-sheets.range.link')"

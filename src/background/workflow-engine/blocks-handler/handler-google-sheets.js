@@ -25,7 +25,7 @@ export default async function ({ data, outputs }) {
       throw new Error('empty-spreadsheet-id');
     if (isWhitespace(data.range)) throw new Error('empty-spreadsheet-range');
 
-    let result = '';
+    let result = [];
 
     if (data.type === 'get') {
       const spreadsheetValues = await getSpreadsheetValues(data);

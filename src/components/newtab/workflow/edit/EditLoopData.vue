@@ -46,6 +46,13 @@
     >
       {{ t('workflow.blocks.loop-data.buttons.insert') }}
     </ui-button>
+    <ui-input
+      v-else-if="data.loopThrough === 'google-sheets'"
+      :model-value="data.referenceKey"
+      :label="t('workflow.blocks.loop-data.refKey')"
+      class="w-full"
+      @change="updateData({ referenceKey: $event })"
+    />
     <div
       v-else-if="data.loopThrough === 'numbers'"
       class="flex items-center space-x-2"
@@ -135,7 +142,7 @@ const emit = defineEmits(['update:data']);
 const { t } = useI18n();
 
 const maxFileSize = 1024 * 1024;
-const loopTypes = ['data-columns', 'numbers', 'custom-data'];
+const loopTypes = ['data-columns', 'numbers', 'google-sheets', 'custom-data'];
 
 const state = shallowReactive({
   showOptions: false,

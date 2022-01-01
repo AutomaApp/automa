@@ -422,6 +422,7 @@ export const tasks = {
     category: 'onlineServices',
     inputs: 1,
     outputs: 1,
+    docs: true,
     allowedInputs: true,
     maxConnection: 1,
     data: {
@@ -504,6 +505,7 @@ export const tasks = {
       toNumber: 10,
       loopData: '[]',
       description: '',
+      referenceKey: '',
       loopThrough: 'data-columns',
     },
   },

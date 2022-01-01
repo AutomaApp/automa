@@ -314,6 +314,7 @@
         "name": "Loop data",
         "description": "Iterate through data columns or your custom data",
         "loopId": "Loop ID",
+        "refKey": "Reference key",
         "modal": {
           "fileTooLarge": "File too large to edit",
           "maxFile": "Max file size is 1MB",
@@ -337,7 +338,8 @@
           "options": {
             "numbers": "Numbers",
             "data-columns": "Data columns",
-            "custom-data": "Custom data"
+            "custom-data": "Custom data",
+            "google-sheets": "Google sheets"
           }
         }
       },
