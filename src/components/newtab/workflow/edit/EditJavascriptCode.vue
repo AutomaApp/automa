@@ -95,10 +95,8 @@ import { watch, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { syntaxTree } from '@codemirror/language';
 import { autocompletion, snippet } from '@codemirror/autocomplete';
-import * as anu from '@codemirror/autocomplete';
 import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
 
-console.log(anu);
 const props = defineProps({
   data: {
     type: Object,

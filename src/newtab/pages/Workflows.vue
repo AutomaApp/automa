@@ -5,9 +5,12 @@
     </h1>
     <div class="flex items-center mb-6 space-x-4">
       <ui-input
+        id="search-input"
         v-model="state.query"
+        :placeholder="`${t(`common.search`)}... (${
+          shortcut['action:search'].readable
+        })`"
         prepend-icon="riSearch2Line"
-        :placeholder="`${t(`common.search`)}...`"
         class="flex-1"
       />
       <div class="flex items-center workflow-sort">
@@ -173,11 +176,17 @@ import { useI18n } from 'vue-i18n';
 import { useDialog } from '@/composable/dialog';
 import { sendMessage } from '@/utils/message';
 import { exportWorkflow, importWorkflow } from '@/utils/workflow-data';
+import { useShortcut } from '@/composable/shortcut';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 import Workflow from '@/models/workflow';
 
 const dialog = useDialog();
 const { t } = useI18n();
+const shortcut = useShortcut('action:search', () => {
+  const searchInput = document.querySelector('#search-input input');
+
+  searchInput?.focus();
+});
 
 const sorts = ['name', 'createdAt'];
 const menu = [

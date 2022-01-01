@@ -14,6 +14,7 @@
     <button
       v-if="!workflow.isDisabled"
       v-tooltip.group="t('common.execute')"
+      :title="shortcuts['editor:execute-workflow'].readable"
       icon
       class="hoverable p-2 rounded-lg"
       @click="$emit('execute')"
@@ -56,7 +57,12 @@
         </ui-list-item>
       </ui-list>
     </ui-popover>
-    <ui-button variant="accent" class="relative" @click="$emit('save')">
+    <ui-button
+      :title="shortcuts['editor:save'].readable"
+      variant="accent"
+      class="relative"
+      @click="$emit('save')"
+    >
       <span
         v-if="isDataChanged"
         class="flex h-3 w-3 absolute top-0 left-0 -ml-1 -mt-1"
@@ -76,6 +82,7 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { useGroupTooltip } from '@/composable/groupTooltip';
+import { useShortcut, getShortcut } from '@/composable/shortcut';
 
 defineProps({
   isDataChanged: {
@@ -87,7 +94,7 @@ defineProps({
     default: () => ({}),
   },
 });
-defineEmits([
+const emit = defineEmits([
   'showModal',
   'execute',
   'rename',
@@ -99,6 +106,15 @@ defineEmits([
 
 useGroupTooltip();
 const { t } = useI18n();
+const shortcuts = useShortcut(
+  [
+    getShortcut('editor:save', 'save'),
+    getShortcut('editor:execute-workflow', 'execute'),
+  ],
+  ({ data }) => {
+    emit(data);
+  }
+);
 
 const modalActions = [
   {

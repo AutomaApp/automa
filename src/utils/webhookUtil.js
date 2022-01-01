@@ -50,7 +50,7 @@ export async function executeWebhook({
   const id = setTimeout(() => {
     controller.abort();
   }, timeout);
-  console.log(body);
+
   try {
     const finalHeaders = filterHeaders(headers);
     const finalContent = renderContent(body, contentType);

@@ -1,8 +1,11 @@
 <template>
   <div class="flex items-center mb-6 space-x-4">
     <ui-input
+      id="search-input"
       :model-value="filters.query"
-      :placeholder="`${t('common.search')}...`"
+      :placeholder="`${t('common.search')}... (${
+        shortcut['action:search'].readable
+      })`"
       prepend-icon="riSearch2Line"
       class="flex-1"
       @change="updateFilters('query', $event)"
@@ -67,6 +70,7 @@
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
+import { useShortcut } from '@/composable/shortcut';
 
 defineProps({
   filters: {
@@ -81,6 +85,11 @@ defineProps({
 const emit = defineEmits(['updateSorts', 'updateFilters']);
 
 const { t } = useI18n();
+const shortcut = useShortcut('action:search', () => {
+  const searchInput = document.querySelector('#search-input input');
+
+  searchInput?.focus();
+});
 
 const filterByStatus = [
   { id: 'all', name: t('common.all') },

@@ -21,7 +21,9 @@
         custom
       >
         <a
-          v-tooltip:right.group="t(`common.${tab.id}`, 2)"
+          v-tooltip:right.group="
+            `${t(`common.${tab.id}`, 2)} (${tab.shortcut.readable})`
+          "
           :class="{ 'is-active': isActive }"
           :href="href"
           class="z-10 relative w-full flex items-center justify-center tab relative"
@@ -58,10 +60,13 @@
 <script setup>
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
+import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 
 useGroupTooltip();
 const { t } = useI18n();
+const router = useRouter();
 
 const links = [
   {
@@ -85,30 +90,44 @@ const tabs = [
     id: 'dashboard',
     icon: 'riHome5Line',
     path: '/',
+    shortcut: getShortcut('page:dashboard', '/'),
   },
   {
     id: 'workflow',
     icon: 'riFlowChart',
     path: '/workflows',
+    shortcut: getShortcut('page:workflows', '/workflows'),
   },
   {
     id: 'collection',
     icon: 'riFolderLine',
     path: '/collections',
+    shortcut: getShortcut('page:collections', '/collections'),
   },
   {
     id: 'log',
     icon: 'riHistoryLine',
     path: '/logs',
+    shortcut: getShortcut('page:logs', '/logs'),
   },
   {
     id: 'settings',
     icon: 'riSettings3Line',
     path: '/settings',
+    shortcut: getShortcut('page:settings', '/settings'),
   },
 ];
 const hoverIndicator = ref(null);
 const showHoverIndicator = ref(false);
+
+useShortcut(
+  tabs.map(({ shortcut }) => shortcut),
+  ({ data }) => {
+    if (!data) return;
+
+    router.push(data);
+  }
+);
 
 function hoverHandler({ target }) {
   showHoverIndicator.value = true;

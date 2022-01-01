@@ -17,7 +17,6 @@ export const funcs = {
       date = new Date(args[0]);
       dateFormat = getDateFormat(args[1]);
     }
-    console.log(this, 'anu');
 
     /* eslint-disable-next-line */
     const isValidDate = date instanceof Date && !isNaN(date);

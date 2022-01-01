@@ -37,16 +37,23 @@
       :options="contextMenu.position"
       padding="p-3"
     >
-      <ui-list class="w-36 space-y-1">
+      <ui-list class="space-y-1 w-52">
         <ui-list-item
           v-for="item in contextMenu.items"
           :key="item.id"
           v-close-popover
-          class="cursor-pointer"
+          class="cursor-pointer justify-between"
           @click="contextMenuHandler[item.event]"
         >
-          <v-remixicon :name="item.icon" class="mr-2 -ml-1" />
-          <span>{{ item.name }}</span>
+          <span>
+            {{ item.name }}
+          </span>
+          <span
+            v-if="item.shortcut"
+            class="text-sm capitalize text-gray-600 dark:text-gray-200"
+          >
+            {{ item.shortcut }}
+          </span>
         </ui-list-item>
       </ui-list>
     </ui-popover>
@@ -58,6 +65,7 @@ import { onMounted, shallowRef, reactive, getCurrentInstance } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { compare } from 'compare-versions';
 import emitter from 'tiny-emitter/instance';
+import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { tasks } from '@/utils/shared';
 import { parseJSON } from '@/utils/helper';
 import { useGroupTooltip } from '@/composable/groupTooltip';
@@ -86,12 +94,14 @@ export default {
           name: t('workflow.editor.duplicate'),
           icon: 'riFileCopyLine',
           event: 'duplicateBlock',
+          shortcut: getShortcut('editor:duplicate-block').readable,
         },
         {
           id: 'delete',
           name: t('common.delete'),
           icon: 'riDeleteBin7Line',
           event: 'deleteBlock',
+          shortcut: 'Del',
         },
       ],
     };
@@ -157,9 +167,9 @@ export default {
     function deleteBlock() {
       editor.value.removeNodeId(contextMenu.data);
     }
-    function duplicateBlock() {
+    function duplicateBlock(id) {
       const { name, pos_x, pos_y, data, html } = editor.value.getNodeFromId(
-        contextMenu.data.substr(5)
+        id || contextMenu.data.substr(5)
       );
 
       if (name === 'trigger') return;
@@ -178,6 +188,14 @@ export default {
         'vue'
       );
     }
+
+    useShortcut('editor:duplicate-block', () => {
+      const selectedElement = document.querySelector('.drawflow-node.selected');
+
+      if (!selectedElement) return;
+
+      duplicateBlock(selectedElement.id.substr(5));
+    });
 
     onMounted(() => {
       const context = getCurrentInstance().appContext.app._context;
@@ -310,7 +328,7 @@ export default {
       dropHandler,
       contextMenuHandler: {
         deleteBlock,
-        duplicateBlock,
+        duplicateBlock: () => duplicateBlock(),
       },
     };
   },
