@@ -1,14 +1,7 @@
 <template>
   <label class="radio-ui inline-flex items-center">
     <div
-      class="
-        relative
-        h-5
-        w-5
-        inline-block
-        focus-within:ring-2 focus-within:ring-accent
-        rounded-full
-      "
+      class="relative h-5 w-5 inline-block focus-within:ring-2 focus-within:ring-accent rounded-full"
     >
       <input
         type="radio"
@@ -18,16 +11,7 @@
         @change="changeHandler"
       />
       <div
-        class="
-          border
-          rounded-full
-          absolute
-          top-0
-          left-0
-          bg-input
-          radio-ui__mark
-          cursor-pointer
-        "
+        class="border rounded-full absolute top-0 left-0 bg-input radio-ui__mark cursor-pointer"
       ></div>
     </div>
     <span v-if="$slots.default" class="ml-2 inline-block">

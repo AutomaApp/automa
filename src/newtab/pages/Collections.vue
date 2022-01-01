@@ -6,8 +6,11 @@
     </p>
     <div class="flex items-center my-6 space-x-4">
       <ui-input
+        id="search-input"
         v-model="query"
-        :placeholder="`${t('common.search')}...`"
+        :placeholder="`${t('common.search')}... (${
+          shortcut['action:search'].readable
+        })`"
         prepend-icon="riSearch2Line"
         class="flex-1"
       />
@@ -48,11 +51,17 @@ import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { sendMessage } from '@/utils/message';
 import { useDialog } from '@/composable/dialog';
+import { useShortcut } from '@/composable/shortcut';
 import Collection from '@/models/collection';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 
 const dialog = useDialog();
 const { t } = useI18n();
+const shortcut = useShortcut('action:search', () => {
+  const searchInput = document.querySelector('#search-input input');
+
+  searchInput?.focus();
+});
 
 const collectionCardMenu = [
   { id: 'rename', name: t('common.rename'), icon: 'riPencilLine' },

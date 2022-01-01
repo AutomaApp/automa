@@ -76,14 +76,7 @@
       <ui-tab-panel value="body">
         <pre
           v-if="!showContentModalRef"
-          class="
-            rounded-lg
-            text-gray-200
-            p-4
-            max-h-80
-            bg-gray-900
-            overflow-auto
-          "
+          class="rounded-lg text-gray-200 p-4 max-h-80 bg-gray-900 overflow-auto"
           @click="showContentModalRef = true"
           v-text="data.body"
         />

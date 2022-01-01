@@ -21,16 +21,7 @@
           class="py-2 px-4 w-full transition rounded-lg bg-transparent"
         />
         <button
-          class="
-            bg-white
-            absolute
-            top-1/2
-            right-4
-            p-2
-            rounded-lg
-            -translate-y-1/2
-            group-hover:right-14
-          "
+          class="bg-white absolute top-1/2 right-4 p-2 rounded-lg -translate-y-1/2 group-hover:right-14"
           @click="deleteCondition(index)"
         >
           <v-remixicon size="20" name="riDeleteBin7Line" />
@@ -38,21 +29,7 @@
         <select
           v-model="condition.type"
           :title="getTitle(index)"
-          class="
-            bg-white
-            absolute
-            right-4
-            font-mono
-            z-10
-            p-2
-            top-1/2
-            leading-tight
-            -translate-y-1/2
-            text-center
-            transition
-            rounded-lg
-            appearance-none
-          "
+          class="bg-white absolute right-4 font-mono z-10 p-2 top-1/2 leading-tight -translate-y-1/2 text-center transition rounded-lg appearance-none"
         >
           <option
             v-for="(name, type) in conditionTypes"

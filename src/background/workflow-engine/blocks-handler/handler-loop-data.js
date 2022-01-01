@@ -2,8 +2,9 @@ import { generateJSON } from '@/utils/data-exporter';
 import { getBlockConnection } from '../helper';
 
 function loopData(block) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const { data } = block;
+    const nextBlockId = getBlockConnection(block);
 
     if (this.loopList[data.loopId]) {
       this.loopList[data.loopId].index += 1;
@@ -28,10 +29,21 @@ function loopData(block) {
         case 'data-columns':
           currLoopData = generateJSON(Object.keys(this.data), this.data);
           break;
+        case 'google-sheets':
+          currLoopData = this.googleSheets[data.referenceKey];
+          break;
         case 'custom-data':
           currLoopData = JSON.parse(data.loopData);
           break;
         default:
+      }
+
+      if (data.loopThrough !== 'number' && !Array.isArray(currLoopData)) {
+        const error = new Error('invalid-loop-data');
+        error.nextBlockId = nextBlockId;
+
+        reject(error);
+        return;
       }
 
       this.loopList[data.loopId] = {
@@ -50,8 +62,8 @@ function loopData(block) {
     }
 
     resolve({
+      nextBlockId,
       data: this.loopData[data.loopId],
-      nextBlockId: getBlockConnection(block),
     });
   });
 }

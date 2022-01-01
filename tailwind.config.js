@@ -1,16 +1,15 @@
 const colors = require('tailwindcss/colors');
 
 module.exports = {
-  mode: 'jit',
-  purge: ['./src/**/*.{js,jsx,ts,tsx,vue}'],
+  content: ['./src/**/*.{js,jsx,ts,tsx,vue}'],
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     extend: {
       colors: {
         primary: colors.blue['500'],
         secondary: colors.blue['400'],
-        accent: colors.gray['900'],
-        gray: colors.gray,
+        accent: colors.zinc['900'],
+        gray: colors.zinc,
         orange: colors.orange,
       },
       fontFamily: {

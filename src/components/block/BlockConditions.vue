@@ -35,16 +35,7 @@
           @click="deleteCondition(index)"
         />
         <div
-          class="
-            flex
-            items-center
-            flex-1
-            p-2
-            bg-box-transparent
-            rounded-lg
-            overflow-hidden
-            w-44
-          "
+          class="flex items-center flex-1 p-2 bg-box-transparent rounded-lg overflow-hidden w-44"
         >
           <p class="w-5/12 text-overflow text-right">
             {{ item.compareValue || '_____' }}

@@ -1,8 +1,8 @@
-import { markElement } from '../helper';
+import { handleElement, markElement } from '../helper';
 
 function link(block) {
   return new Promise((resolve, reject) => {
-    const element = document.querySelector(block.data.selector);
+    const element = handleElement(block, { returnElement: true });
 
     if (!element) {
       reject(new Error('element-not-found'));

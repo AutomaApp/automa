@@ -20,14 +20,7 @@
           <span
             v-for="icon in icons"
             :key="icon"
-            class="
-              cursor-pointer
-              rounded-lg
-              inline-block
-              text-center
-              p-2
-              hoverable
-            "
+            class="cursor-pointer rounded-lg inline-block text-center p-2 hoverable"
             @click="$emit('update', { icon })"
           >
             <v-remixicon :name="icon" />
@@ -52,8 +45,11 @@
     </div>
   </div>
   <ui-input
+    id="search-input"
     v-model="query"
-    :placeholder="`${t('common.search')}...`"
+    :placeholder="`${t('common.search')}... (${
+      shortcut['action:search'].readable
+    })`"
     prepend-icon="riSearch2Line"
     class="px-4 mt-4 mb-2"
   />
@@ -78,16 +74,7 @@
             )
           "
           draggable="true"
-          class="
-            transform
-            select-none
-            cursor-move
-            relative
-            p-4
-            rounded-lg
-            bg-input
-            transition
-          "
+          class="transform select-none cursor-move relative p-4 rounded-lg bg-input transition"
           @dragstart="
             $event.dataTransfer.setData('block', JSON.stringify(block))
           "
@@ -114,6 +101,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useShortcut } from '@/composable/shortcut';
 import { tasks, categories } from '@/utils/shared';
 
 defineProps({
@@ -129,6 +117,11 @@ defineProps({
 const emit = defineEmits(['update']);
 
 const { t } = useI18n();
+const shortcut = useShortcut('action:search', () => {
+  const searchInput = document.querySelector('#search-input input');
+
+  searchInput?.focus();
+});
 
 const icons = [
   'riGlobalLine',

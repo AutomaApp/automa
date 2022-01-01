@@ -34,11 +34,12 @@ async function contentScriptExist(tabId, frameId = 0) {
 
 export default async function (tabId, frameId = 0) {
   try {
-    const isScriptExists = await contentScriptExist(tabId, frameId);
+    const currentFrameId = typeof frameId !== 'number' ? 0 : frameId;
+    const isScriptExists = await contentScriptExist(tabId, currentFrameId);
 
     if (!isScriptExists) {
       await browser.tabs.executeScript(tabId, {
-        frameId,
+        frameId: currentFrameId,
         file: './contentScript.bundle.js',
       });
     }

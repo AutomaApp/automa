@@ -2,14 +2,7 @@
   <label class="checkbox-ui inline-flex items-center">
     <div
       :class="{ 'pointer-events-none opacity-75': disabled }"
-      class="
-        relative
-        h-5
-        w-5
-        inline-block
-        focus-within:ring-2 focus-within:ring-accent
-        rounded
-      "
+      class="relative h-5 w-5 inline-block focus-within:ring-2 focus-within:ring-accent rounded"
     >
       <input
         type="checkbox"
@@ -19,16 +12,7 @@
         @change="changeHandler"
       />
       <div
-        class="
-          border
-          rounded
-          absolute
-          top-0
-          left-0
-          bg-input
-          checkbox-ui__mark
-          cursor-pointer
-        "
+        class="border rounded absolute top-0 left-0 bg-input checkbox-ui__mark cursor-pointer"
       >
         <v-remixicon
           name="riCheckLine"

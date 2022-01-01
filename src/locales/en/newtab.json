@@ -2,11 +2,18 @@
   "home": {
     "viewAll": "View all"
   },
+  "updateMessage": {
+    "text1": "Automa has been updated to v{version},",
+    "text2": "see what's new."
+  },
   "settings": {
     "language": {
       "label": "Language",
       "helpTranslate": "Can't find your language? Help translate.",
       "reloadPage": "Reload the page to take effect"
+    },
+    "menu": {
+      "general": "General"
     }
   },
   "workflow": {
@@ -89,11 +96,14 @@
       "invalid-url": "URL is not valid",
       "conditions-empty": "Conditions is empty",
       "invalid-proxy-host": "Invalid proxy host",
-      "invalid-body": "Content body is not valid",
       "workflow-disabled": "Workflow is disabled",
       "selector-empty": "Element selector is empty",
+      "invalid-body": "Content body is not valid JSON",
       "invalid-active-tab": "\"{url}\" is invalid URL",
+      "empty-spreadsheet-id": "Spreadsheet Id is empty",
+      "invalid-loop-data": "Invalid data to loop through",
       "empty-workflow": "You must select a workflow first",
+      "empty-spreadsheet-range": "Spreadsheet range is empty",
       "active-tab-removed": "Workflow active tab is removed",
       "stop-timeout": "Workflow is stopped because of timeout",
       "no-workflow": "Can't find workflow with \"{workflowId}\" ID",

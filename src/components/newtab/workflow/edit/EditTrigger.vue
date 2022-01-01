@@ -203,7 +203,7 @@ function handleKeydownEvent(event) {
   const { ctrlKey, altKey, metaKey, shiftKey, key } = event;
 
   if (ctrlKey || metaKey) keys.push('mod');
-  if (altKey) keys.push('alt');
+  if (altKey) keys.push('option');
   if (shiftKey) keys.push('shift');
 
   const isValidKey = !!allowedKeys[key] || /^[a-z0-9,./;'[\]\-=`]$/i.test(key);

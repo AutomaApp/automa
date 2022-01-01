@@ -76,6 +76,28 @@
         "select": "Select workflow",
         "description": ""
       },
+      "google-sheets": {
+        "name": "Google sheets",
+        "description": "Read Google Sheets data",
+        "previewData": "Preview data",
+        "firstRow": "Use the first row as keys",
+        "refKey": {
+          "label": "Reference key",
+          "placeholder": "Key name"
+        },
+        "spreadsheetId": {
+          "label": "Spreadsheet Id",
+          "link": "See how to get spreadsheet Id"
+        },
+        "range": {
+          "label": "Range",
+          "link": "Click to see more example"
+        },
+        "select": {
+          "get": "Get spreadsheet data",
+          "write": "Write spreadsheet data"
+        }
+      },
       "active-tab": {
         "name": "Active tab",
         "description": "Set current tab that you're in as an active tab"
@@ -292,6 +314,7 @@
         "name": "Loop data",
         "description": "Iterate through data columns or your custom data",
         "loopId": "Loop ID",
+        "refKey": "Reference key",
         "modal": {
           "fileTooLarge": "File too large to edit",
           "maxFile": "Max file size is 1MB",
@@ -315,7 +338,8 @@
           "options": {
             "numbers": "Numbers",
             "data-columns": "Data columns",
-            "custom-data": "Custom data"
+            "custom-data": "Custom data",
+            "google-sheets": "Google sheets"
           }
         }
       },

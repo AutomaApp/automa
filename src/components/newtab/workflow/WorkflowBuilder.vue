@@ -37,16 +37,23 @@
       :options="contextMenu.position"
       padding="p-3"
     >
-      <ui-list class="w-36 space-y-1">
+      <ui-list class="space-y-1 w-52">
         <ui-list-item
           v-for="item in contextMenu.items"
           :key="item.id"
           v-close-popover
-          class="cursor-pointer"
+          class="cursor-pointer justify-between"
           @click="contextMenuHandler[item.event]"
         >
-          <v-remixicon :name="item.icon" class="mr-2 -ml-1" />
-          <span>{{ item.name }}</span>
+          <span>
+            {{ item.name }}
+          </span>
+          <span
+            v-if="item.shortcut"
+            class="text-sm capitalize text-gray-600 dark:text-gray-200"
+          >
+            {{ item.shortcut }}
+          </span>
         </ui-list-item>
       </ui-list>
     </ui-popover>
@@ -55,8 +62,10 @@
 <script>
 /* eslint-disable camelcase */
 import { onMounted, shallowRef, reactive, getCurrentInstance } from 'vue';
-import emitter from 'tiny-emitter/instance';
 import { useI18n } from 'vue-i18n';
+import { compare } from 'compare-versions';
+import emitter from 'tiny-emitter/instance';
+import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { tasks } from '@/utils/shared';
 import { parseJSON } from '@/utils/helper';
 import { useGroupTooltip } from '@/composable/groupTooltip';
@@ -68,8 +77,12 @@ export default {
       type: [Object, String],
       default: null,
     },
+    version: {
+      type: String,
+      default: '',
+    },
   },
-  emits: ['load', 'deleteBlock'],
+  emits: ['load', 'deleteBlock', 'update'],
   setup(props, { emit }) {
     useGroupTooltip();
     const { t } = useI18n();
@@ -81,12 +94,14 @@ export default {
           name: t('workflow.editor.duplicate'),
           icon: 'riFileCopyLine',
           event: 'duplicateBlock',
+          shortcut: getShortcut('editor:duplicate-block').readable,
         },
         {
           id: 'delete',
           name: t('common.delete'),
           icon: 'riDeleteBin7Line',
           event: 'deleteBlock',
+          shortcut: 'Del',
         },
       ],
     };
@@ -152,9 +167,9 @@ export default {
     function deleteBlock() {
       editor.value.removeNodeId(contextMenu.data);
     }
-    function duplicateBlock() {
+    function duplicateBlock(id) {
       const { name, pos_x, pos_y, data, html } = editor.value.getNodeFromId(
-        contextMenu.data.substr(5)
+        id || contextMenu.data.substr(5)
       );
 
       if (name === 'trigger') return;
@@ -174,6 +189,14 @@ export default {
       );
     }
 
+    useShortcut('editor:duplicate-block', () => {
+      const selectedElement = document.querySelector('.drawflow-node.selected');
+
+      if (!selectedElement) return;
+
+      duplicateBlock(selectedElement.id.substr(5));
+    });
+
     onMounted(() => {
       const context = getCurrentInstance().appContext.app._context;
       const element = document.querySelector('#drawflow');
@@ -184,12 +207,49 @@ export default {
       emit('load', editor.value);
 
       if (props.data) {
-        const data =
+        let data =
           typeof props.data === 'string'
             ? parseJSON(props.data.replace(/BlockNewTab/g, 'BlockBasic'), null)
             : props.data;
 
         if (!data) return;
+
+        const currentExtVersion = chrome.runtime.getManifest().version;
+        const isOldWorkflow = compare(
+          currentExtVersion,
+          props.version || '0.0.0',
+          '>'
+        );
+
+        if (isOldWorkflow) {
+          const newDrawflowData = Object.entries(
+            data.drawflow.Home.data
+          ).reduce((obj, [key, value]) => {
+            const newBlockData = {
+              ...tasks[value.name],
+              ...value,
+              data: {
+                ...tasks[value.name].data,
+                ...value.data,
+              },
+            };
+
+            obj[key] = newBlockData;
+
+            return obj;
+          }, {});
+
+          const drawflowData = {
+            drawflow: { Home: { data: newDrawflowData } },
+          };
+
+          data = drawflowData;
+
+          emit('update', {
+            version: currentExtVersion,
+            drawflow: JSON.stringify(drawflowData),
+          });
+        }
 
         editor.value.import(data);
       } else {
@@ -268,7 +328,7 @@ export default {
       dropHandler,
       contextMenuHandler: {
         deleteBlock,
-        duplicateBlock,
+        duplicateBlock: () => duplicateBlock(),
       },
     };
   },

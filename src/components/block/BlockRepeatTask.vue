@@ -16,15 +16,7 @@
       />
     </div>
     <label
-      class="
-        mb-2
-        block
-        bg-input
-        focus-within:bg-input
-        pr-4
-        transition
-        rounded-lg
-      "
+      class="mb-2 block bg-input focus-within:bg-input pr-4 transition rounded-lg"
     >
       <input
         :value="block.data.repeatFor || 0"

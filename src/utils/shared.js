@@ -413,6 +413,26 @@ export const tasks = {
       eventParams: { bubbles: true, cancelable: false },
     },
   },
+  'google-sheets': {
+    name: 'Google sheets',
+    description: 'Read Google Sheets data',
+    icon: 'mdiGoogleSheet',
+    component: 'BlockBasic',
+    editComponent: 'EditGoogleSheets',
+    category: 'onlineServices',
+    inputs: 1,
+    outputs: 1,
+    docs: true,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      spreadsheetId: '',
+      type: 'get',
+      range: '',
+      firstRowAsKey: false,
+      refKey: '',
+    },
+  },
   conditions: {
     name: 'Conditions',
     description: 'Conditional block',
@@ -485,6 +505,7 @@ export const tasks = {
       toNumber: 10,
       loopData: '[]',
       description: '',
+      referenceKey: '',
       loopThrough: 'data-columns',
     },
   },
@@ -551,6 +572,10 @@ export const categories = {
   general: {
     name: 'General',
     color: 'bg-yellow-200',
+  },
+  onlineServices: {
+    name: 'Online services',
+    color: 'bg-red-200',
   },
   conditions: {
     name: 'Conditions',

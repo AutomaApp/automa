@@ -1,30 +1,13 @@
 <template>
   <div
     aria-role="tablist"
-    class="
-      ui-tabs
-      text-gray-600
-      dark:text-gray-200
-      border-b
-      flex
-      space-x-1
-      items-center
-      relative
-    "
+    class="ui-tabs text-gray-600 dark:text-gray-200 border-b flex space-x-1 items-center relative"
     @mouseleave="showHoverIndicator = false"
   >
     <div
       v-show="showHoverIndicator"
       ref="hoverIndicator"
-      class="
-        ui-tabs__indicator
-        z-0
-        top-[5px]
-        absolute
-        left-0
-        rounded-lg
-        bg-box-transparent
-      "
+      class="ui-tabs__indicator z-0 top-[5px] absolute left-0 rounded-lg bg-box-transparent"
     ></div>
     <slot></slot>
   </div>

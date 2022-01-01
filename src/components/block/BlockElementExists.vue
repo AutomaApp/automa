@@ -14,16 +14,7 @@
     </div>
     <p
       :title="t('workflow.blocks.element-exists.selector')"
-      class="
-        text-overflow
-        p-2
-        rounded-lg
-        bg-box-transparent
-        text-sm
-        font-mono
-        text-right
-        mb-2
-      "
+      class="text-overflow p-2 rounded-lg bg-box-transparent text-sm font-mono text-right mb-2"
       style="max-width: 200px"
     >
       {{ block.data.selector || t('workflow.blocks.element-exists.selector') }}

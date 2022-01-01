@@ -46,7 +46,7 @@ function tabUpdatedHandler(tabId, changeInfo, tab) {
       clearTimeout(reloadTimeout);
       reloadTimeout = null;
 
-      executeContentScript(tabId, 'update tab')
+      executeContentScript(tabId)
         .then((frames) => {
           this.tabId = tabId;
           this.frames = frames;
@@ -96,12 +96,16 @@ class WorkflowEngine {
     this.isPaused = false;
     this.isDestroyed = false;
     this.isUsingProxy = false;
-    this.frameId = null;
+    this.frameId = 0;
     this.windowId = null;
     this.tabGroupId = null;
     this.currentBlock = null;
     this.childWorkflow = null;
     this.workflowTimeout = null;
+
+    this.saveLog = workflow.settings?.saveLog ?? true;
+
+    this.googleSheets = {};
 
     this.tabUpdatedListeners = {};
     this.tabUpdatedHandler = tabUpdatedHandler.bind(this);
@@ -183,7 +187,12 @@ class WorkflowEngine {
   }
 
   addLog(detail) {
-    if (this.logs.length >= 1001 || detail.name === 'blocks-group') return;
+    if (
+      !this.saveLog &&
+      (this.logs.length >= 1001 || detail.name === 'blocks-group') &&
+      detail.type !== 'error'
+    )
+      return;
 
     this.logs.push(detail);
   }
@@ -231,7 +240,7 @@ class WorkflowEngine {
       this.isDestroyed = true;
       this.endedTimestamp = Date.now();
 
-      if (!this.workflow.isTesting) {
+      if (!this.workflow.isTesting && this.saveLog) {
         const { logs } = await browser.storage.local.get('logs');
         const { name, icon, id } = this.workflow;
         const jsonData = generateJSON(Object.keys(this.data), this.data);
@@ -305,9 +314,13 @@ class WorkflowEngine {
   _blockHandler(block, prevBlockData) {
     if (this.isDestroyed) return;
     if (this.isPaused) {
-      setTimeout(() => {
-        this._blockHandler(block, prevBlockData);
-      }, 1000);
+      browser.tabs.get(this.tabId).then(({ status }) => {
+        this.isPaused = status !== 'complete';
+
+        setTimeout(() => {
+          this._blockHandler(block, prevBlockData);
+        }, 1000);
+      });
 
       return;
     }
@@ -338,9 +351,10 @@ class WorkflowEngine {
         dataColumns: this.data,
         loopData: this.loopData,
         globalData: this.globalData,
+        googleSheets: this.googleSheets,
         activeTabUrl: this.activeTabUrl,
       };
-      const replacedBlock = referenceData(block, refData);
+      const replacedBlock = referenceData({ block, data: refData });
       const blockDelay =
         block.name === 'trigger' ? 0 : this.workflow.settings?.blockDelay || 0;
 
@@ -349,6 +363,7 @@ class WorkflowEngine {
         .then((result) => {
           clearTimeout(this.workflowTimeout);
           this.workflowTimeout = null;
+
           this.addLog({
             type: 'success',
             name: block.name,

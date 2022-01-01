@@ -4,44 +4,17 @@
       'select-none': state.isDragging,
       'bg-black bg-opacity-30': !state.hide,
     }"
-    class="
-      root
-      fixed
-      h-full
-      w-full
-      pointer-events-none
-      top-0
-      text-gray-900
-      left-0
-    "
+    class="root fixed h-full w-full pointer-events-none top-0 text-gray-900 left-0"
     style="z-index: 9999999999; font-family: Inter, sans-serif; font-size: 16px"
   >
     <div
       ref="cardEl"
       :style="{ transform: `translate(${cardRect.x}px, ${cardRect.y}px)` }"
       style="width: 320px"
-      class="
-        absolute
-        root-card
-        bg-white
-        shadow-xl
-        z-50
-        p-4
-        pointer-events-auto
-        rounded-lg
-      "
+      class="absolute root-card bg-white shadow-xl z-50 p-4 pointer-events-auto rounded-lg"
     >
       <div
-        class="
-          absolute
-          p-2
-          drag-button
-          shadow-xl
-          bg-white
-          p-1
-          cursor-move
-          rounded-lg
-        "
+        class="absolute p-2 drag-button shadow-xl bg-white p-1 cursor-move rounded-lg"
         style="top: -15px; left: -15px"
       >
         <v-remixicon
