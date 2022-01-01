@@ -38,7 +38,7 @@ function loopData(block) {
         default:
       }
 
-      if (data.loopThrough !== 'number' && !Array.isArray(currLoopData)) {
+      if (data.loopThrough !== 'numbers' && !Array.isArray(currLoopData)) {
         const error = new Error('invalid-loop-data');
         error.nextBlockId = nextBlockId;
 
