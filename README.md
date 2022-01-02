@@ -26,3 +26,9 @@ yarn build:zip
 # Lints and fixes files
 yarn lint
 ```
+## Contributors
+Thanks to everyone who has submitted issues, made suggestions, and generally helped make this a better project.
+
+<a href="https://github.com/kholid060/automa/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=kholid060/automa" />
+</a>
