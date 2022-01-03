@@ -2,24 +2,6 @@ import browser from 'webextension-polyfill';
 import { getBlockConnection } from '../helper';
 import executeContentScript from '../execute-content-script';
 
-function tabUpdatedListener(tab) {
-  return new Promise((resolve) => {
-    this._listener({
-      name: 'tab-updated',
-      id: tab.id,
-      callback: async (tabId, changeInfo, deleteListener) => {
-        if (changeInfo.status !== 'complete') return;
-
-        const frames = await executeContentScript(tabId);
-
-        deleteListener();
-
-        resolve(frames);
-      },
-    });
-  });
-}
-
 async function newTab(block) {
   if (this.windowId) {
     try {
@@ -29,11 +11,13 @@ async function newTab(block) {
     }
   }
 
+  const nextBlockId = getBlockConnection(block);
+
   try {
     const { updatePrevTab, url, active, inGroup } = block.data;
 
-    if (updatePrevTab && this.tabId) {
-      await browser.tabs.update(this.tabId, { url, active });
+    if (updatePrevTab && this.activeTab.id) {
+      await browser.tabs.update(this.activeTab.id, { url, active });
     } else {
       const tab = await browser.tabs.create({
         url,
@@ -41,37 +25,39 @@ async function newTab(block) {
         windowId: this.windowId,
       });
 
-      this.tabId = tab.id;
-      this.activeTabUrl = url;
+      this.activeTab.id = tab.id;
+      this.activeTab.url = url;
       this.windowId = tab.windowId;
     }
 
     if (inGroup && !updatePrevTab) {
       const options = {
-        groupId: this.tabGroupId,
-        tabIds: this.tabId,
+        groupId: this.activeTab.groupId,
+        tabIds: this.activeTab.id,
       };
 
-      if (!this.tabGroupId) {
+      if (!this.activeTab.groupId) {
         options.createProperties = {
           windowId: this.windowId,
         };
       }
 
       chrome.tabs.group(options, (tabGroupId) => {
-        this.tabGroupId = tabGroupId;
+        this.activeTab.groupId = tabGroupId;
       });
     }
 
-    this.frameId = 0;
-    this.frames = await tabUpdatedListener.call(this, { id: this.tabId });
+    this.activeTab.frameId = 0;
+    this.activeTab.frames = await executeContentScript(this.activeTab.id);
 
     return {
       data: url,
-      nextBlockId: getBlockConnection(block),
+      nextBlockId,
     };
   } catch (error) {
     console.error(error);
+    error.nextBlockId = nextBlockId;
+
     throw error;
   }
 }

@@ -39,6 +39,7 @@ export default async function (tabId, frameId = 0) {
 
     if (!isScriptExists) {
       await browser.tabs.executeScript(tabId, {
+        runAt: 'document_end',
         frameId: currentFrameId,
         file: './contentScript.bundle.js',
       });

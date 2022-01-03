@@ -1,94 +1,87 @@
+/* eslint-disable */
 import browser from 'webextension-polyfill';
 import { objectHasKey } from '@/utils/helper';
 import { MessageListener } from '@/utils/message';
 import { registerSpecificDay } from '../utils/workflow-trigger';
 import workflowState from './workflow-state';
-import workflowEngine from './workflow-engine';
+import WorkflowState from './workflow-state2';
 import CollectionEngine from './collection-engine';
+import WorkflowEngine from './workflow-engine2';
+import blocksHandler from './workflow-engine/blocks-handler';
+import WorkflowLogger from './workflow-logger';
 
-function getWorkflow(workflowId) {
-  return new Promise((resolve) => {
-    browser.storage.local.get('workflows').then(({ workflows }) => {
-      const workflow = workflows.find(({ id }) => id === workflowId);
+const storage = {
+  async get(key) {
+    try {
+      const result = await browser.storage.local.get(key);
 
-      resolve(workflow);
-    });
-  });
-}
+      return result[key];
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  },
+  async set(key, value) {
+    await browser.storage.local.set({ [key]: value });
+  }
+};
+const workflow = {
+  async get(workflowId) {
+    const { workflows } = await browser.storage.local.get('workflows');
+    const workflow = workflows.find(({ id }) => id === workflowId);
 
-const runningWorkflows = {};
-const runningCollections = {};
+    return workflow;
+  },
+  async states() {
+    const states = new WorkflowState({ storage });
 
-async function executeWorkflow(workflow, tabId) {
-  try {
-    const engine = workflowEngine(workflow, { tabId });
+    return states;
+  },
+  async logger() {
+    const logger = new WorkflowLogger({ storage });
 
-    runningWorkflows[engine.id] = engine;
+    return logger;
+  },
+  async execute(workflow, options) {
+    const states = await this.states();
+    const logger = await this.logger();
 
+    const engine = new WorkflowEngine(workflow, { ...options, states, blocksHandler, logger });
     engine.init();
-    engine.on('destroyed', ({ id }) => {
-      delete runningWorkflows[id];
-    });
 
-    return true;
-  } catch (error) {
-    console.error(error);
-    return error;
+    console.log(engine);
+
+    return engine;
   }
-}
-function executeCollection(collection) {
-  const engine = new CollectionEngine(collection);
+};
 
-  runningCollections[engine.id] = engine;
+async function checkVisitWebTriggers(states, tab) {
+  const visitWebTriggers = await storage.get('visitWebTriggers');
+  const triggeredWorkflow = visitWebTriggers.find(({ url, isRegex }) => {
+    if (url.trim() === '') return false;
 
-  engine.init();
-  engine.on('destroyed', (id) => {
-    delete runningWorkflows[id];
+    return tab.url.match(isRegex ? new RegExp(url, 'g') : url);
   });
 
-  return true;
-}
-async function checkRunnigWorkflows() {
-  try {
-    const result = await browser.storage.local.get('workflowState');
+  if (triggeredWorkflow) {
+    const workflowData = await workflow.get(triggeredWorkflow.id);
 
-    result.workflowState.forEach(({ id }, index) => {
-      if (objectHasKey(runningWorkflows, id)) return;
-
-      result.workflowState.splice(index, 1);
-    });
-
-    browser.storage.local.set({ workflowState: result.workflowState });
-  } catch (error) {
-    console.error(error);
+    if (workflowData) workflow.execute(workflowData);
   }
 }
-checkRunnigWorkflows();
-
+async function checkWorkflowStates() {
+  /* check if tab is reloaded */
+}
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete') {
-    const { visitWebTriggers } = await browser.storage.local.get(
-      'visitWebTriggers'
-    );
-    const trigger = visitWebTriggers.find(({ url, isRegex }) => {
-      if (url.trim() === '') return false;
-
-      return tab.url.match(isRegex ? new RegExp(url, 'g') : url);
-    });
-    const state = await workflowState.get((item) => item.state.tabId === tabId);
-
-    if (trigger && state.length === 0) {
-      const workflow = await getWorkflow(trigger.id);
-
-      if (workflow) executeWorkflow(workflow, tabId);
-    }
+    await checkVisitWebTriggers(null, tab);
   }
 });
 browser.alarms.onAlarm.addListener(({ name }) => {
-  getWorkflow(name).then((workflow) => {
+  workflow.get(name).then((workflow) => {
     if (!workflow) return;
 
-    executeWorkflow(workflow);
+    workflow.execute(workflow);
 
     const triggerBlock = Object.values(
       JSON.parse(workflow.drawflow).drawflow.Home.data
@@ -108,7 +101,7 @@ chrome.runtime.onInstalled.addListener((details) => {
         shortcuts: {},
         workflows: [],
         collections: [],
-        workflowState: [],
+        workflowState: {},
         isFirstTime: true,
         visitWebTriggers: [],
       })
@@ -157,7 +150,7 @@ message.on('get:sender', (_, sender) => {
   return sender;
 });
 
-message.on('collection:execute', executeCollection);
+// message.on('collection:execute', executeCollection);
 message.on('collection:stop', (id) => {
   const collection = runningCollections[id];
   if (!collection) {
@@ -168,17 +161,13 @@ message.on('collection:stop', (id) => {
   collection.stop();
 });
 
-message.on('workflow:check-state', checkRunnigWorkflows);
-message.on('workflow:execute', (workflow) => executeWorkflow(workflow));
-message.on('workflow:stop', (id) => {
-  const workflow = runningWorkflows[id];
-
-  if (!workflow) {
-    workflowState.delete(id);
-    return;
-  }
-
-  workflow.stop();
+// message.on('workflow:check-state', checkRunnigWorkflows);
+message.on('workflow:execute', (param) => {
+  workflow.execute(param);
+});
+message.on('workflow:stop', async (id) => {
+  const states = await workflow.states();
+  await states.update(id, { isDestroyed: true });
 });
 
 browser.runtime.onMessage.addListener(message.listener());

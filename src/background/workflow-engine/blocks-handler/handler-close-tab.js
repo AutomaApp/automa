@@ -1,15 +1,14 @@
 import browser from 'webextension-polyfill';
 import { getBlockConnection } from '../helper';
 
-async function closeTab(block) {
-  const nextBlockId = getBlockConnection(block);
+async function closeTab({ data, outputs }) {
+  const nextBlockId = getBlockConnection({ outputs });
 
   try {
-    const { data } = block;
     let tabIds;
 
-    if (data.activeTab && this.tabId) {
-      tabIds = this.tabId;
+    if (data.activeTab && this.activeTab.id) {
+      tabIds = this.activeTab.id;
     } else if (data.url) {
       tabIds = (await browser.tabs.query({ url: data.url })).map(
         (tab) => tab.id
@@ -23,8 +22,7 @@ async function closeTab(block) {
       data: '',
     };
   } catch (error) {
-    const errorInstance = typeof error === 'string' ? new Error(error) : error;
-    errorInstance.nextBlockId = nextBlockId;
+    error.nextBlockId = nextBlockId;
 
     throw error;
   }

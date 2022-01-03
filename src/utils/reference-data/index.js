@@ -26,7 +26,7 @@ export const funcs = {
   },
 };
 
-export default function ({ block, data }) {
+export default function ({ block, data: refData }) {
   const replaceKeys = [
     'url',
     'name',
@@ -40,15 +40,16 @@ export default function ({ block, data }) {
     'extraRowValue',
   ];
   let replacedBlock = { ...block };
-  const refData = Object.assign(data, { funcs });
+  const data = Object.assign(refData, { funcs });
 
   replaceKeys.forEach((blockDataKey) => {
     if (!objectHasKey(block.data, blockDataKey)) return;
 
-    const newDataValue = mustacheReplacer(
-      replacedBlock.data[blockDataKey],
-      refData
-    );
+    const newDataValue = mustacheReplacer({
+      data,
+      block,
+      str: replacedBlock.data[blockDataKey],
+    });
 
     replacedBlock = setObjectPath(
       replacedBlock,

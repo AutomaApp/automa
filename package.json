@@ -29,6 +29,7 @@
     "@vuex-orm/core": "^0.36.4",
     "compare-versions": "^4.1.2",
     "dayjs": "^1.10.7",
+    "defu": "^5.0.0",
     "drawflow": "^0.0.51",
     "idb": "^7.0.0",
     "mousetrap": "^1.6.5",

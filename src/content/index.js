@@ -4,6 +4,7 @@ import elementSelector from './element-selector';
 import blocksHandler from './blocks-handler';
 
 (() => {
+  alert('ha');
   if (window.isAutomaInjected) return;
 
   window.isAutomaInjected = true;

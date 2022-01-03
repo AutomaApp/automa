@@ -11,7 +11,7 @@ async function interactionHandler(block, { refData }) {
 
   try {
     const data = await this._sendMessageToTab(messagePayload, {
-      frameId: this.frameId || 0,
+      frameId: this.activeTab.frameId || 0,
     });
 
     if (block.name === 'link')
@@ -29,20 +29,20 @@ async function interactionHandler(block, { refData }) {
 
       if (Array.isArray(data) && currentColumnType !== 'array') {
         data.forEach((item) => {
-          this.addData(block.data.dataColumn, item);
+          this.addDataToColumn(block.data.dataColumn, item);
           if (objectHasKey(block.data, 'extraRowDataColumn')) {
             if (block.data.addExtraRow)
-              this.addData(
+              this.addDataToColumn(
                 block.data.extraRowDataColumn,
                 block.data.extraRowValue
               );
           }
         });
       } else {
-        this.addData(block.data.dataColumn, data);
+        this.addDataToColumn(block.data.dataColumn, data);
         if (objectHasKey(block.data, 'extraRowDataColumn')) {
           if (block.data.addExtraRow)
-            this.addData(
+            this.addDataToColumn(
               block.data.extraRowDataColumn,
               block.data.extraRowValue
             );
@@ -51,7 +51,7 @@ async function interactionHandler(block, { refData }) {
     } else if (block.name === 'javascript-code') {
       const arrData = Array.isArray(data) ? data : [data];
 
-      this.addData(arrData);
+      this.addDataToColumn(arrData);
     }
 
     return {

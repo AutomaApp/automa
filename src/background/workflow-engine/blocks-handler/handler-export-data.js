@@ -3,7 +3,7 @@ import dataExporter from '@/utils/data-exporter';
 
 function exportData(block) {
   return new Promise((resolve) => {
-    dataExporter(this.data, block.data);
+    dataExporter(this.referenceData.dataColumns, block.data);
 
     resolve({
       data: '',

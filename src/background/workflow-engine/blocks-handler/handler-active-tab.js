@@ -11,8 +11,8 @@ async function activeTab(block) {
       data: '',
     };
 
-    if (this.tabId) {
-      await browser.tabs.update(this.tabId, { active: true });
+    if (this.activeTab.id) {
+      await browser.tabs.update(this.activeTab.id, { active: true });
 
       return data;
     }
@@ -29,11 +29,15 @@ async function activeTab(block) {
       throw error;
     }
 
-    this.frames = await executeContentScript(tab.id);
+    const frames = await executeContentScript(tab.id);
 
-    this.frameId = 0;
-    this.tabId = tab.id;
-    this.activeTabUrl = tab.url;
+    this.activeTab = {
+      ...this.activeTab,
+      frames,
+      frameId: 0,
+      id: tab.id,
+      url: tab.url,
+    };
     this.windowId = tab.windowId;
 
     return data;

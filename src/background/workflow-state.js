@@ -23,7 +23,11 @@ class WorkflowState {
       let { workflowState } = await browser.storage.local.get('workflowState');
 
       if (workflowState && filter) {
-        workflowState = workflowState.filter(filter);
+        workflowState = (
+          Array.isArray(workflowState)
+            ? workflowState
+            : Object.values(workflowState)
+        ).filter(filter);
       }
 
       return workflowState || [];

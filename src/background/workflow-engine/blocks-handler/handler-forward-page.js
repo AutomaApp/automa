@@ -5,7 +5,7 @@ function forwardPage(block) {
   return new Promise((resolve, reject) => {
     const nextBlockId = getBlockConnection(block);
 
-    if (!this.tabId) {
+    if (!this.activeTab.id) {
       const error = new Error('no-tab');
       error.nextBlockId = nextBlockId;
 
@@ -15,7 +15,7 @@ function forwardPage(block) {
     }
 
     browser.tabs
-      .goForward(this.tabId)
+      .goForward(this.activeTab.id)
       .then(() => {
         resolve({
           nextBlockId,
