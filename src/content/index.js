@@ -22,7 +22,6 @@ import blocksHandler from './blocks-handler';
 
     return new Promise((resolve) => {
       if (data.type === 'content-script-exists') {
-        console.log('content-script-exists');
         resolve(true);
       } else if (data.type === 'select-element') {
         elementSelector();

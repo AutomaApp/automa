@@ -50,8 +50,6 @@ async function newTab(block) {
     this.activeTab.frameId = 0;
     this.activeTab.frames = await executeContentScript(this.activeTab.id);
 
-    console.log(this.activeTab);
-
     return {
       data: url,
       nextBlockId,

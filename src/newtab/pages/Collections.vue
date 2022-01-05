@@ -41,7 +41,7 @@
         icon="riFolderLine"
         @click="$router.push(`/collections/${$event.id}`)"
         @execute="executeCollection"
-        @menuSelected="menuHandlers[$event.name]($event.data)"
+        @menuSelected="menuHandlers[$event.id]($event.data)"
       />
     </div>
   </div>

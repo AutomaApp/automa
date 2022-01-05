@@ -52,7 +52,6 @@ class WorkflowEngine {
 
     this.onWorkflowStopped = (id) => {
       if (this.id !== id || this.isDestroyed) return;
-
       this.stop();
     };
   }
@@ -194,15 +193,15 @@ class WorkflowEngine {
         });
       }
 
+      this.states.off('stop', this.onWorkflowStopped);
+      await this.states.delete(this.id);
+
       this.dispatchEvent('destroyed', {
         status,
         message,
         id: this.id,
         currentBlock: this.currentBlock,
       });
-
-      this.states.off('stop', this.onWorkflowStopped);
-      await this.states.delete(this.id);
 
       this.isDestroyed = true;
       this.eventListeners = {};
@@ -224,6 +223,7 @@ class WorkflowEngine {
     this.currentBlock = block;
 
     await this.states.update(this.id, { state: this.state });
+    this.dispatchEvent('update', { state: this.state });
 
     const startExecutedTime = Date.now();
     const blockHandler = this.blocksHandler[toCamelCase(block?.name)];
@@ -334,7 +334,6 @@ class WorkflowEngine {
           browser.tabs
             .get(this.activeTab.id)
             .then((tab) => {
-              console.log('Tab status:\t', tab.status);
               if (tab.status === 'loading') {
                 setTimeout(() => {
                   activeTabStatus();

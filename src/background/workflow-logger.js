@@ -5,7 +5,7 @@ class WorkflowLogger {
   }
 
   async add(data) {
-    const logs = (await this.storage.get(this.key)) || {};
+    const logs = (await this.storage.get(this.key)) || [];
 
     logs.unshift(data);
 

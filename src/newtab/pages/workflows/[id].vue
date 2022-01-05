@@ -215,7 +215,7 @@ const logs = computed(() =>
     .where(
       (item) =>
         item.workflowId === workflowId &&
-        (!item.isInCollection || !item.isChildLog)
+        (!item.isInCollection || !item.isChildLog || !item.parentLog)
     )
     .orderBy('startedAt', 'desc')
     .get()

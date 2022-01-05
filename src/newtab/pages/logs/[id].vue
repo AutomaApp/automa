@@ -176,6 +176,7 @@ const history = computed(() =>
     )
     .map(translateLog)
 );
+
 const collectionLog = computed(() => {
   if (activeLog.value.parentLog) {
     return Log.find(activeLog.value.parentLog.id);
@@ -183,7 +184,6 @@ const collectionLog = computed(() => {
 
   return Log.find(activeLog.value.collectionLogId);
 });
-console.log(history.value);
 
 function deleteLog() {
   Log.delete(route.params.id).then(() => {

@@ -2,7 +2,7 @@ import browser from 'webextension-polyfill';
 import { MessageListener } from '@/utils/message';
 import { registerSpecificDay } from '../utils/workflow-trigger';
 import WorkflowState from './workflow-state';
-// import CollectionEngine from './collection-engine';
+import CollectionEngine from './collection-engine';
 import WorkflowEngine from './workflow-engine/engine';
 import blocksHandler from './workflow-engine/blocks-handler';
 import WorkflowLogger from './workflow-logger';
@@ -19,11 +19,11 @@ const storage = {
     }
   },
   async set(key, value) {
+    await browser.storage.local.set({ [key]: value });
+
     if (key === 'workflowState') {
       sessionStorage.setItem(key, JSON.stringify(value));
     }
-
-    await browser.storage.local.set({ [key]: value });
   },
 };
 const workflow = {
@@ -169,15 +169,12 @@ message.on('get:sender', (_, sender) => {
   return sender;
 });
 
-// message.on('collection:execute', executeCollection);
-message.on('collection:stop', (id) => {
-  const collection = runningCollections[id];
-  if (!collection) {
-    workflowState.delete(id);
-    return;
-  }
-
-  collection.stop();
+message.on('collection:execute', (collection) => {
+  const engine = new CollectionEngine(collection, {
+    states: workflow.states,
+    logger: workflow.logger,
+  });
+  engine.init();
 });
 
 message.on('workflow:execute', (param) => {

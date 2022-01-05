@@ -4,6 +4,8 @@ class WorkflowState {
   constructor({ storage, key = 'workflowState' }) {
     this.key = key;
     this.storage = storage;
+
+    this.cache = null;
     this.eventListeners = {};
   }
 
@@ -52,7 +54,7 @@ class WorkflowState {
 
   async get(stateId) {
     try {
-      let states = (await this.storage.get(this.key)) || {};
+      let states = this.cache ?? ((await this.storage.get(this.key)) || {});
 
       if (Array.isArray(states)) {
         states = {};
@@ -63,6 +65,8 @@ class WorkflowState {
         states = Object.values(states).find(stateId);
       } else if (stateId) {
         states = states[stateId];
+      } else {
+        this.cache = states;
       }
 
       return states;
