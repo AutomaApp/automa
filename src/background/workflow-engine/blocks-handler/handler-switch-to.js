@@ -1,6 +1,6 @@
 import { objectHasKey } from '@/utils/helper';
 import { getBlockConnection } from '../helper';
-import executeContentScript, { getFrames } from '../execute-content-script';
+import executeContentScript from '../execute-content-script';
 
 async function switchTo(block) {
   const nextBlockId = getBlockConnection(block);
@@ -17,7 +17,6 @@ async function switchTo(block) {
       };
     }
 
-    const frames = await getFrames(this.activeTab.id);
     const { url, isSameOrigin } = await this._sendMessageToTab(block, {
       frameId: 0,
     });
@@ -31,7 +30,7 @@ async function switchTo(block) {
       };
     }
 
-    if (objectHasKey(frames, url)) {
+    if (objectHasKey(this.activeTab.frames, url)) {
       this.activeTab.frameId = this.activeTab.frames[url];
 
       await executeContentScript(this.activeTab.id, this.activeTab.frameId);

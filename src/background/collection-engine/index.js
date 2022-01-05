@@ -3,7 +3,7 @@ import browser from 'webextension-polyfill';
 import { toCamelCase } from '@/utils/helper';
 import * as flowHandler from './flow-handler';
 import workflowState from '../workflow-state';
-import workflowEngine from '../workflow-engine';
+import workflowEngine from '../workflow-engine/engine';
 
 class CollectionEngine {
   constructor(collection) {

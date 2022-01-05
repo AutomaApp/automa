@@ -18,7 +18,11 @@ async function interactionHandler(block, { refData }) {
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
     if (objectHasKey(block.data, 'dataColumn')) {
-      if (!block.data.saveData)
+      const dontSaveData =
+        (block.name === 'forms' && !block.data.getValue) ||
+        !block.data.saveData;
+
+      if (dontSaveData)
         return {
           data,
           nextBlockId,

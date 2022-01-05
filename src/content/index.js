@@ -4,7 +4,6 @@ import elementSelector from './element-selector';
 import blocksHandler from './blocks-handler';
 
 (() => {
-  alert('ha');
   if (window.isAutomaInjected) return;
 
   window.isAutomaInjected = true;
@@ -23,6 +22,7 @@ import blocksHandler from './blocks-handler';
 
     return new Promise((resolve) => {
       if (data.type === 'content-script-exists') {
+        console.log('content-script-exists');
         resolve(true);
       } else if (data.type === 'select-element') {
         elementSelector();

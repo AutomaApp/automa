@@ -25,7 +25,7 @@
         <ui-list>
           <router-link
             v-if="collectionLog"
-            :to="activeLog.collectionLogId"
+            :to="activeLog.parentLog?.id || activeLog.collectionLogId"
             replace
             class="mb-4 flex"
           >
@@ -176,7 +176,14 @@ const history = computed(() =>
     )
     .map(translateLog)
 );
-const collectionLog = computed(() => Log.find(activeLog.value.collectionLogId));
+const collectionLog = computed(() => {
+  if (activeLog.value.parentLog) {
+    return Log.find(activeLog.value.parentLog.id);
+  }
+
+  return Log.find(activeLog.value.collectionLogId);
+});
+console.log(history.value);
 
 function deleteLog() {
   Log.delete(route.params.id).then(() => {

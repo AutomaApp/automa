@@ -55,7 +55,9 @@ function handleStorageChanged(change) {
   if (change.workflowState) {
     store.commit('updateState', {
       key: 'workflowState',
-      value: Object.values(change.workflowState.newValue || {}),
+      value: Object.values(change.workflowState.newValue || {}).filter(
+        ({ isDestroyed }) => !isDestroyed
+      ),
     });
   }
 }

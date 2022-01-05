@@ -1,4 +1,4 @@
-import workflowEngine from '../workflow-engine';
+import workflowEngine from '../workflow-engine/engine';
 import dataExporter from '@/utils/data-exporter';
 
 export function workflow(flow) {

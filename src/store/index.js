@@ -84,7 +84,9 @@ const store = createStore({
 
         commit('updateState', {
           key: 'workflowState',
-          value: Object.values(workflowState || {}),
+          value: Object.values(workflowState || {}).filter(
+            ({ isDestroyed }) => !isDestroyed
+          ),
         });
       } catch (error) {
         console.error(error);

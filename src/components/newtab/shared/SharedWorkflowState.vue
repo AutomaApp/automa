@@ -43,10 +43,15 @@
       </div>
     </div>
     <div
-      v-if="data.state.parentState"
+      v-if="data.parentState"
       class="py-2 px-4 bg-yellow-200 rounded-lg mt-2 text-sm"
     >
-      {{ t('workflow.state.executeBy', { name: data.state.parentState.name }) }}
+      {{ t('workflow.state.executeBy', { name: data.parentState.name }) }}
+      <span class="lowercase">
+        {{
+          data.isInCollection ? t('common.collection') : t('common.workflow')
+        }}
+      </span>
     </div>
   </ui-card>
 </template>
@@ -65,7 +70,7 @@ const props = defineProps({
 });
 
 const { t } = useI18n();
-
+console.log(props.data);
 function getBlock() {
   if (!props.data.state.currentBlock) return [];
 

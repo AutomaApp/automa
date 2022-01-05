@@ -1,12 +1,9 @@
-/* eslint-disable */
 import browser from 'webextension-polyfill';
-import { objectHasKey } from '@/utils/helper';
 import { MessageListener } from '@/utils/message';
 import { registerSpecificDay } from '../utils/workflow-trigger';
-import workflowState from './workflow-state';
-import WorkflowState from './workflow-state2';
-import CollectionEngine from './collection-engine';
-import WorkflowEngine from './workflow-engine2';
+import WorkflowState from './workflow-state';
+// import CollectionEngine from './collection-engine';
+import WorkflowEngine from './workflow-engine/engine';
 import blocksHandler from './workflow-engine/blocks-handler';
 import WorkflowLogger from './workflow-logger';
 
@@ -22,39 +19,64 @@ const storage = {
     }
   },
   async set(key, value) {
+    if (key === 'workflowState') {
+      sessionStorage.setItem(key, JSON.stringify(value));
+    }
+
     await browser.storage.local.set({ [key]: value });
-  }
+  },
 };
 const workflow = {
+  states: new WorkflowState({ storage }),
+  logger: new WorkflowLogger({ storage }),
   async get(workflowId) {
     const { workflows } = await browser.storage.local.get('workflows');
-    const workflow = workflows.find(({ id }) => id === workflowId);
+    const findWorkflow = workflows.find(({ id }) => id === workflowId);
 
-    return workflow;
+    return findWorkflow;
   },
-  async states() {
-    const states = new WorkflowState({ storage });
+  execute(workflowData, options) {
+    const engine = new WorkflowEngine(workflowData, {
+      ...options,
+      blocksHandler,
+      logger: this.logger,
+      states: this.states,
+    });
 
-    return states;
-  },
-  async logger() {
-    const logger = new WorkflowLogger({ storage });
-
-    return logger;
-  },
-  async execute(workflow, options) {
-    const states = await this.states();
-    const logger = await this.logger();
-
-    const engine = new WorkflowEngine(workflow, { ...options, states, blocksHandler, logger });
-    engine.init();
-
-    console.log(engine);
+    if (options?.resume) {
+      engine.resume(options.state);
+    } else {
+      engine.init();
+    }
 
     return engine;
-  }
+  },
 };
 
+async function checkWorkflowStates() {
+  const states = await workflow.states.get();
+  // const sessionStates = parseJSON(sessionStorage.getItem('workflowState'), {});
+
+  Object.values(states || {}).forEach((state) => {
+    /* Enable when using manifest 3 */
+    // const resumeWorkflow =
+    //   !state.isDestroyed && objectHasKey(sessionStates, state.id);
+
+    if (false) {
+      workflow.get(state.workflowId).then((workflowData) => {
+        workflow.execute(workflowData, {
+          state,
+          resume: true,
+        });
+      });
+    } else {
+      delete states[state.id];
+    }
+  });
+
+  await storage.set('workflowState', states);
+}
+checkWorkflowStates();
 async function checkVisitWebTriggers(states, tab) {
   const visitWebTriggers = await storage.get('visitWebTriggers');
   const triggeredWorkflow = visitWebTriggers.find(({ url, isRegex }) => {
@@ -69,26 +91,23 @@ async function checkVisitWebTriggers(states, tab) {
     if (workflowData) workflow.execute(workflowData);
   }
 }
-async function checkWorkflowStates() {
-  /* check if tab is reloaded */
-}
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete') {
     await checkVisitWebTriggers(null, tab);
   }
 });
 browser.alarms.onAlarm.addListener(({ name }) => {
-  workflow.get(name).then((workflow) => {
-    if (!workflow) return;
+  workflow.get(name).then((currentWorkflow) => {
+    if (!currentWorkflow) return;
 
-    workflow.execute(workflow);
+    workflow.execute(currentWorkflow);
 
     const triggerBlock = Object.values(
-      JSON.parse(workflow.drawflow).drawflow.Home.data
+      JSON.parse(currentWorkflow.drawflow).drawflow.Home.data
     ).find((block) => block.name === 'trigger');
 
     if (triggerBlock?.data.type === 'specific-day') {
-      registerSpecificDay(workflow.id, triggerBlock.data);
+      registerSpecificDay(currentWorkflow.id, triggerBlock.data);
     }
   });
 });
@@ -161,13 +180,11 @@ message.on('collection:stop', (id) => {
   collection.stop();
 });
 
-// message.on('workflow:check-state', checkRunnigWorkflows);
 message.on('workflow:execute', (param) => {
   workflow.execute(param);
 });
 message.on('workflow:stop', async (id) => {
-  const states = await workflow.states();
-  await states.update(id, { isDestroyed: true });
+  await workflow.states.stop(id);
 });
 
 browser.runtime.onMessage.addListener(message.listener());

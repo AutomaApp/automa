@@ -1,15 +1,16 @@
 import browser from 'webextension-polyfill';
-import WorkflowEngine from '../index';
+import WorkflowEngine from '../engine';
 import { getBlockConnection } from '../helper';
+import { isWhitespace } from '@/utils/helper';
 
 function workflowListener(workflow, options) {
   return new Promise((resolve, reject) => {
     const engine = new WorkflowEngine(workflow, options);
     engine.init();
-    engine.on('destroyed', ({ id, status, message, currentBlock }) => {
+    engine.on('destroyed', ({ id, status, message }) => {
       if (status === 'error') {
         const error = new Error(message);
-        error.data = { logId: id, name: currentBlock.name };
+        error.data = { logId: id };
 
         reject(error);
         return;
@@ -38,17 +39,20 @@ async function executeWorkflow(block) {
 
       throw errorInstance;
     }
-
-    const onInit = (engine) => {
-      this.childWorkflow = engine;
-    };
     const options = {
-      events: { onInit },
-      isChildWorkflow: true,
-      collectionLogId: this.id,
-      collectionId: this.workflow.id,
-      parentWorkflow: { name: this.workflow.name },
-      globalData: !/\S/g.test(data.globalData) ? null : data.globalData,
+      parentWorkflow: {
+        id: this.id,
+        name: this.workflow.name,
+      },
+      events: {
+        onInit: (engine) => {
+          this.childWorkflowId = engine.id;
+        },
+      },
+      states: this.states,
+      logger: this.logger,
+      blocksHandler: this.blocksHandler,
+      globalData: isWhitespace(data.globalData) ? null : data.globalData,
     };
 
     if (workflow.drawflow.includes(this.workflow.id)) {

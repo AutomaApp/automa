@@ -13,6 +13,7 @@ class Log extends Model {
       endedAt: this.number(0),
       message: this.string(''),
       startedAt: this.number(0),
+      parentLog: this.attr(null),
       workflowId: this.attr(null),
       collectionId: this.attr(null),
       status: this.string('success'),

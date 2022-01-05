@@ -121,27 +121,29 @@ const exportDataModal = shallowReactive({
 
 const filteredLogs = computed(() =>
   Log.query()
-    .where(({ name, status, startedAt, isInCollection, isChildLog }) => {
-      if (isInCollection || isChildLog) return false;
+    .where(
+      ({ name, status, startedAt, isInCollection, isChildLog, parentLog }) => {
+        if (isInCollection || isChildLog || parentLog) return false;
 
-      let statusFilter = true;
-      let dateFilter = true;
-      const searchFilter = name
-        .toLocaleLowerCase()
-        .includes(filtersBuilder.query.toLocaleLowerCase());
+        let statusFilter = true;
+        let dateFilter = true;
+        const searchFilter = name
+          .toLocaleLowerCase()
+          .includes(filtersBuilder.query.toLocaleLowerCase());
 
-      if (filtersBuilder.byStatus !== 'all') {
-        statusFilter = status === filtersBuilder.byStatus;
+        if (filtersBuilder.byStatus !== 'all') {
+          statusFilter = status === filtersBuilder.byStatus;
+        }
+
+        if (filtersBuilder.byDate > 0) {
+          const date = Date.now() - filtersBuilder.byDate * 24 * 60 * 60 * 1000;
+
+          dateFilter = date <= startedAt;
+        }
+
+        return searchFilter && statusFilter && dateFilter;
       }
-
-      if (filtersBuilder.byDate > 0) {
-        const date = Date.now() - filtersBuilder.byDate * 24 * 60 * 60 * 1000;
-
-        dateFilter = date <= startedAt;
-      }
-
-      return searchFilter && statusFilter && dateFilter;
-    })
+    )
     .orderBy(sortsBuilder.by, sortsBuilder.order)
     .get()
 );
