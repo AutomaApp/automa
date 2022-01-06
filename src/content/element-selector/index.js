@@ -23,17 +23,21 @@ async function getStyles() {
     return '';
   }
 }
-function getLocale() {
-  return new Promise((resolve) => {
-    chrome.storage.local.get('settings', ({ settings }) => {
-      resolve(settings?.locale || 'en');
-    });
-  });
-}
 
 export default async function () {
   try {
+    const rootElementExist = document.querySelector(
+      '#app-container.automa-element-selector'
+    );
+
+    if (rootElementExist) {
+      rootElementExist.style.display = 'block';
+
+      return;
+    }
+
     const rootElement = document.createElement('div');
+    rootElement.setAttribute('id', 'app-container');
     rootElement.classList.add('automa-element-selector');
     rootElement.attachShadow({ mode: 'open' });
 
@@ -48,15 +52,9 @@ export default async function () {
       chrome.runtime.getURL('/elementSelector.bundle.js')
     );
 
-    const appContainer = document.createElement('div');
-    appContainer.setAttribute('data-id', chrome.runtime.id);
-    appContainer.setAttribute('data-locale', await getLocale());
-    appContainer.setAttribute('id', 'app');
-
     const appStyle = document.createElement('style');
     appStyle.innerHTML = await getStyles();
 
-    rootElement.shadowRoot.appendChild(appContainer);
     rootElement.shadowRoot.appendChild(appStyle);
     rootElement.shadowRoot.appendChild(scriptEl);
 

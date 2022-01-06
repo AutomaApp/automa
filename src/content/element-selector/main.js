@@ -7,7 +7,10 @@ import vueI18n from './vue-i18n';
 import '@/assets/css/tailwind.css';
 
 const rootElement = document.querySelector('div.automa-element-selector');
-const appRoot = rootElement.shadowRoot.querySelector('#app');
+const appRoot = document.createElement('div');
+appRoot.setAttribute('id', 'app');
+
+rootElement.shadowRoot.appendChild(appRoot);
 
 createApp(App)
   .provide('rootElement', rootElement)

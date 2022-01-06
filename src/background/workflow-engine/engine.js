@@ -337,7 +337,7 @@ class WorkflowEngine {
               if (tab.status === 'loading') {
                 setTimeout(() => {
                   activeTabStatus();
-                }, 1000);
+                }, 500);
                 return;
               }
 

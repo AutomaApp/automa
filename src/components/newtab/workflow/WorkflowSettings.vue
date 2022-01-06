@@ -15,14 +15,6 @@
         </ui-radio>
       </div>
     </div>
-    <div class="mb-6">
-      <p class="mb-1">{{ t('workflow.settings.timeout.title') }}</p>
-      <ui-input
-        v-model="settings.timeout"
-        type="number"
-        class="w-full max-w-sm"
-      />
-    </div>
     <div>
       <p class="mb-1">
         {{ t('workflow.settings.blockDelay.title') }}

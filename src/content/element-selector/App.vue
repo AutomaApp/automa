@@ -268,17 +268,21 @@ const handleScroll = debounce(() => {
   lastScrollPosY = window.scrollY;
 }, 100);
 function destroy() {
-  window.removeEventListener('scroll', handleScroll);
-  window.removeEventListener('mouseup', handleMouseUp);
-  window.removeEventListener('mousemove', handleMouseMove);
-  document.removeEventListener('click', handleClick, true);
+  rootElement.style.display = 'none';
 
-  const automaElements = document.querySelectorAll('automa-element-selector');
-  automaElements.forEach((element) => {
-    element.remove();
+  Object.assign(state, {
+    activeTab: '',
+    elSelector: '',
+    isDragging: false,
+    isExecuting: false,
+    selectedElements: [],
   });
-
-  rootElement.remove();
+  Object.assign(hoverElementRect, {
+    x: 0,
+    y: 0,
+    height: 0,
+    width: 0,
+  });
 }
 
 window.addEventListener('scroll', handleScroll);
