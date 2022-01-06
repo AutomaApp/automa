@@ -1,5 +1,11 @@
 <template>
   <div>
+    <ui-textarea
+      :model-value="data.description"
+      class="w-full mb-2"
+      :placeholder="t('common.description')"
+      @change="updateData({ description: $event })"
+    />
     <ui-select
       v-if="false"
       :model-value="data.type"

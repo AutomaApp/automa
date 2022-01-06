@@ -64,6 +64,7 @@
 import { onMounted, shallowRef, reactive, getCurrentInstance } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { compare } from 'compare-versions';
+import defu from 'defu';
 import emitter from 'tiny-emitter/instance';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { tasks } from '@/utils/shared';
@@ -225,14 +226,7 @@ export default {
           const newDrawflowData = Object.entries(
             data.drawflow.Home.data
           ).reduce((obj, [key, value]) => {
-            const newBlockData = {
-              ...tasks[value.name],
-              ...value,
-              data: {
-                ...tasks[value.name].data,
-                ...value.data,
-              },
-            };
+            const newBlockData = defu(value, tasks[value.name]);
 
             obj[key] = newBlockData;
 
