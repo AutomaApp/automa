@@ -14,7 +14,11 @@
         prepend-icon="riSearch2Line"
         class="flex-1"
       />
-      <ui-button variant="accent" @click="newCollection">
+      <ui-button
+        :title="shortcut['action:new'].readable"
+        variant="accent"
+        @click="newCollection"
+      >
         {{ t('collection.new') }}
       </ui-button>
     </div>
@@ -57,11 +61,6 @@ import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 
 const dialog = useDialog();
 const { t } = useI18n();
-const shortcut = useShortcut('action:search', () => {
-  const searchInput = document.querySelector('#search-input input');
-
-  searchInput?.focus();
-});
 
 const collectionCardMenu = [
   { id: 'rename', name: t('common.rename'), icon: 'riPencilLine' },
@@ -123,6 +122,15 @@ function deleteCollection({ name, id }) {
     },
   });
 }
+
+const shortcut = useShortcut(['action:search', 'action:new'], ({ id }) => {
+  if (id === 'action:search') {
+    const searchInput = document.querySelector('#search-input input');
+    searchInput?.focus();
+  } else {
+    newCollection();
+  }
+});
 
 const menuHandlers = { rename: renameCollection, delete: deleteCollection };
 </script>

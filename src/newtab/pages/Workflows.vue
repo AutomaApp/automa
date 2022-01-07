@@ -54,7 +54,11 @@
         <v-remixicon name="riUploadLine" class="mr-2 -ml-1" />
         {{ t('workflow.import') }}
       </ui-button>
-      <ui-button variant="accent" @click="newWorkflow">
+      <ui-button
+        :title="shortcut['action:new'].readable"
+        variant="accent"
+        @click="newWorkflow"
+      >
         {{ t('workflow.new') }}
       </ui-button>
     </div>
@@ -174,19 +178,14 @@
 import { computed, shallowReactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDialog } from '@/composable/dialog';
+import { useShortcut } from '@/composable/shortcut';
 import { sendMessage } from '@/utils/message';
 import { exportWorkflow, importWorkflow } from '@/utils/workflow-data';
-import { useShortcut } from '@/composable/shortcut';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 import Workflow from '@/models/workflow';
 
 const dialog = useDialog();
 const { t } = useI18n();
-const shortcut = useShortcut('action:search', () => {
-  const searchInput = document.querySelector('#search-input input');
-
-  searchInput?.focus();
-});
 
 const sorts = ['name', 'createdAt'];
 const menu = [
@@ -287,6 +286,14 @@ async function handleWorkflowModal() {
   }
 }
 
+const shortcut = useShortcut(['action:search', 'action:new'], ({ id }) => {
+  if (id === 'action:search') {
+    const searchInput = document.querySelector('#search-input input');
+    searchInput?.focus();
+  } else {
+    newWorkflow();
+  }
+});
 const menuHandlers = {
   export: exportWorkflow,
   rename: renameWorkflow,
