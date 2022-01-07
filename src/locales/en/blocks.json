@@ -174,7 +174,16 @@
       },
       "export-data": {
         "name": "Export data",
-        "description": "Export workflow data columns"
+        "description": "Export workflow data columns",
+        "exportAs": "Export as",
+        "refKey": "Reference key",
+        "dataToExport": {
+          "placeholder": "Data to export",
+          "options": {
+            "data-columns": "Data columns",
+            "google-sheets": "Google sheets",
+          },
+        }
       },
       "element-scroll": {
         "name": "Scroll element",

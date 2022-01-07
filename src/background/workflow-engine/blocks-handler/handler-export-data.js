@@ -1,13 +1,20 @@
 import { getBlockConnection } from '../helper';
 import dataExporter from '@/utils/data-exporter';
 
-function exportData(block) {
+function exportData({ data, outputs }) {
   return new Promise((resolve) => {
-    dataExporter(this.data, block.data);
+    const dataToExport = data.dataToExport || 'data-columns';
+    let payload = this.referenceData.dataColumns;
+
+    if (dataToExport === 'google-sheets') {
+      payload = this.referenceData.googleSheets[data.refKey] || [];
+    }
+
+    dataExporter(payload, data);
 
     resolve({
       data: '',
-      nextBlockId: getBlockConnection(block),
+      nextBlockId: getBlockConnection({ outputs }),
     });
   });
 }

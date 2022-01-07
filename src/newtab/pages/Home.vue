@@ -66,7 +66,10 @@ const workflows = computed(() =>
 );
 const logs = computed(() =>
   Log.query()
-    .where(({ isInCollection, isChildLog }) => !isInCollection && !isChildLog)
+    .where(
+      ({ isInCollection, isChildLog, parentLog }) =>
+        !isInCollection && !isChildLog && !parentLog
+    )
     .orderBy('startedAt', 'desc')
     .limit(10)
     .get()

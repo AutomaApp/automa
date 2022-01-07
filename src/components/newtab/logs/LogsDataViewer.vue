@@ -27,7 +27,7 @@
     </ui-popover>
   </div>
   <shared-codemirror
-    :model-value="jsonData"
+    :model-value="dataStr"
     :class="editorClass"
     lang="json"
     readonly
@@ -35,7 +35,7 @@
   />
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { dataExportTypes } from '@/utils/shared';
 import dataExporter, { generateJSON } from '@/utils/data-exporter';
@@ -54,12 +54,13 @@ const props = defineProps({
 
 const { t } = useI18n();
 
-const data = Array.isArray(props.log.data)
-  ? props.log.data
-  : generateJSON(Object.keys(props.log.data), props.log.data);
-const dataStr = JSON.stringify(data, null, 2);
-const jsonData =
-  dataStr.length >= 5e4 ? `${dataStr.slice(0, 5e4)}\n...` : dataStr;
+const dataStr = computed(() => {
+  const data = Array.isArray(props.log.data)
+    ? props.log.data
+    : generateJSON(Object.keys(props.log.data), props.log.data);
+
+  return JSON.stringify(data, null, 2);
+});
 
 const fileName = ref(props.log.name);
 

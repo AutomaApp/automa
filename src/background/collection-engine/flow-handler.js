@@ -1,4 +1,5 @@
-import workflowEngine from '../workflow-engine';
+import WorkflowEngine from '../workflow-engine/engine';
+import blocksHandler from '../workflow-engine/blocks-handler';
 import dataExporter from '@/utils/data-exporter';
 
 export function workflow(flow) {
@@ -24,22 +25,27 @@ export function workflow(flow) {
     }
 
     const { globalData } = this.collection;
-    this.currentWorkflow = currentWorkflow;
 
-    const engine = workflowEngine(currentWorkflow, {
-      isInCollection: true,
-      collectionLogId: this.id,
-      collectionId: this.collection.id,
+    const engine = new WorkflowEngine(currentWorkflow, {
+      blocksHandler,
+      states: this.states,
+      logger: this.logger,
+      parentWorkflow: {
+        id: this.id,
+        isCollection: true,
+        name: this.collection.name,
+      },
       globalData: globalData.trim() === '' ? null : globalData,
     });
 
-    this.workflowEngine = engine;
+    this.executedWorkflow.data = {
+      id: engine.id,
+      name: currentWorkflow.name,
+      icon: currentWorkflow.icon,
+      workflowId: currentWorkflow.id,
+    };
 
     engine.init();
-    engine.on('update', (state) => {
-      this.workflowState = state;
-      this.updateState();
-    });
     engine.on('destroyed', ({ id, status, message }) => {
       this.data.push({
         id,

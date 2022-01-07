@@ -37,7 +37,7 @@ async function takeScreenshot(block) {
     };
 
     if (captureActiveTab) {
-      if (!this.tabId) {
+      if (!this.activeTab.id) {
         throw new Error('no-tab');
       }
 
@@ -47,7 +47,7 @@ async function takeScreenshot(block) {
       });
 
       await browser.windows.update(this.windowId, { focused: true });
-      await browser.tabs.update(this.tabId, { active: true });
+      await browser.tabs.update(this.activeTab.id, { active: true });
 
       await new Promise((resolve) => setTimeout(resolve, 500));
 
@@ -58,12 +58,12 @@ async function takeScreenshot(block) {
         await browser.tabs.update(tab.id, { active: true });
       }
 
-      if (saveToColumn) this.addData(dataColumn, uri);
+      if (saveToColumn) this.addDataToColumn(dataColumn, uri);
       if (saveToComputer) saveImage({ fileName, uri, ext });
     } else {
       const uri = await browser.tabs.captureVisibleTab(options);
 
-      if (saveToColumn) this.addData(dataColumn, uri);
+      if (saveToColumn) this.addDataToColumn(dataColumn, uri);
       if (saveToComputer) saveImage({ fileName, uri, ext });
     }
 

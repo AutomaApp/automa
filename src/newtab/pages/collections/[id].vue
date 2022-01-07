@@ -243,9 +243,7 @@ const collectionOptions = shallowReactive({
 });
 
 const runningCollection = computed(() =>
-  store.state.workflowState.filter(
-    ({ collectionId }) => collectionId === route.params.id
-  )
+  store.state.workflowState.filter(({ id }) => id === route.params.id)
 );
 const logs = computed(() =>
   Log.query()

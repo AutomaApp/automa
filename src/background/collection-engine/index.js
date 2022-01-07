@@ -2,23 +2,54 @@ import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
 import { toCamelCase } from '@/utils/helper';
 import * as flowHandler from './flow-handler';
-import workflowState from '../workflow-state';
-import workflowEngine from '../workflow-engine';
+import blocksHandler from '../workflow-engine/blocks-handler';
+import WorkflowEngine from '../workflow-engine/engine';
+
+const executedWorkflows = (workflows, options) => {
+  if (workflows.length === 0) return;
+
+  const workflow = workflows.shift();
+  const engine = new WorkflowEngine(workflow, options);
+
+  engine.init();
+
+  setTimeout(() => {
+    executedWorkflows(workflows, options);
+  }, 500);
+};
 
 class CollectionEngine {
-  constructor(collection) {
+  constructor(collection, { states, logger }) {
     this.id = nanoid();
+    this.states = states;
+    this.logger = logger;
     this.collection = collection;
-    this.workflows = [];
+
     this.data = [];
-    this.logs = [];
+    this.history = [];
+    this.workflows = [];
+
     this.isDestroyed = false;
     this.currentFlow = null;
-    this.workflowState = null;
-    this.workflowEngine = null;
-    this.currentWorkflow = null;
     this.currentIndex = 0;
     this.eventListeners = {};
+
+    this.executedWorkflow = {
+      data: null,
+      state: null,
+    };
+
+    this.onStatesUpdated = ({ data, id }) => {
+      if (id === this.executedWorkflow.data?.id) {
+        this.executedWorkflow.state = data.state;
+        this.states.update(this.id, { state: this.state });
+      }
+    };
+    this.onStatesStopped = (id) => {
+      if (id !== this.id) return;
+
+      this.stop();
+    };
   }
 
   async init() {
@@ -31,23 +62,35 @@ class CollectionEngine {
       this.startedTimestamp = Date.now();
 
       if (this.collection?.options.atOnce) {
-        this.collection.flow.forEach(({ itemId, type }) => {
-          if (type !== 'workflow') return;
+        const filteredWorkflows = this.collection.flow.reduce(
+          (acc, { itemId, type }) => {
+            if (type !== 'workflow') return acc;
 
-          const currentWorkflow = workflows.find(({ id }) => id === itemId);
+            const currentWorkflow = workflows.find(({ id }) => id === itemId);
 
-          if (currentWorkflow) {
-            const engine = workflowEngine(currentWorkflow, {});
+            if (currentWorkflow) {
+              acc.push(currentWorkflow);
+            }
 
-            engine.init();
-          }
+            return acc;
+          },
+          []
+        );
+
+        executedWorkflows(filteredWorkflows, {
+          blocksHandler,
+          states: this.states,
+          logger: this.logger,
         });
       } else {
-        await workflowState.add(this.id, {
+        await this.states.add(this.id, {
           state: this.state,
-          isCollection: true,
           collectionId: this.collection.id,
         });
+
+        this.states.on('stop', this.onStatesStopped);
+        this.states.on('update', this.onStatesUpdated);
+
         this._flowHandler(this.collection.flow[0]);
       }
     } catch (error) {
@@ -72,28 +115,35 @@ class CollectionEngine {
   }
 
   async destroy(status) {
-    this.isDestroyed = true;
-    this.dispatchEvent('destroyed', { id: this.id });
+    try {
+      if (this.isDestroyed) return;
 
-    const { logs } = await browser.storage.local.get('logs');
-    const { name, icon } = this.collection;
+      this.isDestroyed = true;
+      this.dispatchEvent('destroyed', { id: this.id });
 
-    logs.push({
-      name,
-      icon,
-      status,
-      id: this.id,
-      data: this.data,
-      history: this.logs,
-      endedAt: Date.now(),
-      collectionId: this.collection.id,
-      startedAt: this.startedTimestamp,
-    });
+      const { name, icon } = this.collection;
 
-    await browser.storage.local.set({ logs });
-    await workflowState.delete(this.id);
+      await this.logger.add({
+        name,
+        icon,
+        status,
+        id: this.id,
+        data: this.data,
+        endedAt: Date.now(),
+        history: this.history,
+        collectionId: this.collection.id,
+        startedAt: this.startedTimestamp,
+      });
 
-    this.listeners = {};
+      await this.states.delete(this.id);
+
+      this.states.off('stop', this.onStatesStopped);
+      this.states.off('update', this.onStatesUpdated);
+
+      this.listeners = {};
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   nextFlow() {
@@ -113,36 +163,45 @@ class CollectionEngine {
       id: this.id,
       currentBlock: [],
       name: this.collection.name,
+      currentIndex: this.currentIndex,
+      executedWorkflow: this.executedWorkflow,
       startedTimestamp: this.startedTimestamp,
     };
 
-    if (this.currentWorkflow) {
-      const { name, icon } = this.currentWorkflow;
-
-      data.currentBlock.push({ name, icon });
+    if (this.executedWorkflow.data) {
+      data.currentBlock.push(this.executedWorkflow.data);
     }
 
-    if (this.workflowState) {
-      const { name } = this.workflowState.currentBlock;
-
-      data.currentBlock.push({ name });
+    if (this.executedWorkflow.state) {
+      data.currentBlock.push(this.executedWorkflow.state.currentBlock);
     }
 
     return data;
   }
 
-  updateState() {
-    workflowState.update(this.id, this.state);
+  async stop() {
+    try {
+      if (this.executedWorkflow.data) {
+        await this.states.stop(this.executedWorkflow.data.id);
+      }
+
+      setTimeout(() => {
+        this.destroy('stopped');
+      }, 1000);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  stop() {
-    this.workflowEngine.stop();
+  async _flowHandler(flow) {
+    const currentState = await this.states.get(this.id);
 
-    this.destroy('stopped');
-  }
+    if (!currentState || currentState.isDestroyed) {
+      if (this.isDestroyed) return;
 
-  _flowHandler(flow) {
-    if (this.isDestroyed) return;
+      await this.destroy('stopped');
+      return;
+    }
 
     const handlerName =
       flow.type === 'workflow' ? 'workflow' : toCamelCase(flow.itemId);
@@ -150,41 +209,41 @@ class CollectionEngine {
     const started = Date.now();
 
     this.currentFlow = flow;
-    this.updateState();
+    await this.states.update(this.id, { state: this.state });
 
-    if (handler) {
+    if (!handler) {
+      console.error(`"${flow.type}" flow doesn't have a handler`);
+      return;
+    }
+
+    try {
       if (flow.type !== 'workflow') {
-        this.workflowState = null;
-        this.currentWorkflow = null;
-        this.workflowEngine = null;
+        this.executedWorkflow = {
+          data: null,
+          state: null,
+        };
       }
 
-      handler
-        .call(this, flow)
-        .then((data) => {
-          this.logs.push({
-            type: data.type || 'success',
-            name: data.name,
-            logId: data.id,
-            message: data.message,
-            duration: Math.round(Date.now() - started),
-          });
+      const data = await handler.call(this, flow);
 
-          this.nextFlow();
-        })
-        .catch((error) => {
-          this.logs.push({
-            type: 'error',
-            name: error.name,
-            logId: error.id,
-            message: error.message,
-            duration: Math.round(Date.now() - started),
-          });
+      this.history.push({
+        type: data.type || 'success',
+        name: data.name,
+        logId: data.id,
+        message: data.message,
+        duration: Math.round(Date.now() - started),
+      });
+      this.nextFlow();
+    } catch (error) {
+      this.history.push({
+        type: 'error',
+        name: error.name,
+        logId: error.id,
+        message: error.message,
+        duration: Math.round(Date.now() - started),
+      });
 
-          this.nextFlow();
-        });
-    } else {
-      console.error(`"${flow.type}" flow doesn't have a handler`);
+      this.nextFlow();
     }
   }
 }

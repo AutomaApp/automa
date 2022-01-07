@@ -1,13 +1,13 @@
 import { objectHasKey } from '@/utils/helper';
 import { getBlockConnection } from '../helper';
-import executeContentScript, { getFrames } from '../execute-content-script';
+import executeContentScript from '../execute-content-script';
 
 async function switchTo(block) {
   const nextBlockId = getBlockConnection(block);
 
   try {
     if (block.data.windowType === 'main-window') {
-      this.frameId = 0;
+      this.activeTab.frameId = 0;
 
       delete this.frameSelector;
 
@@ -17,7 +17,6 @@ async function switchTo(block) {
       };
     }
 
-    const frames = await getFrames(this.tabId);
     const { url, isSameOrigin } = await this._sendMessageToTab(block, {
       frameId: 0,
     });
@@ -31,14 +30,14 @@ async function switchTo(block) {
       };
     }
 
-    if (objectHasKey(frames, url)) {
-      this.frameId = this.frames[url];
+    if (objectHasKey(this.activeTab.frames, url)) {
+      this.activeTab.frameId = this.activeTab.frames[url];
 
-      await executeContentScript(this.tabId, this.frameId);
+      await executeContentScript(this.activeTab.id, this.activeTab.frameId);
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       return {
-        data: this.frameId,
+        data: this.activeTab.frameId,
         nextBlockId,
       };
     }

@@ -20,7 +20,7 @@
         "<all_urls>"
       ],
       "js": [
-        "shortcut.bundle.js"
+        "services.bundle.js"
       ],
       "run_at": "document_end",
       "all_frames": false

@@ -3,7 +3,7 @@
     id="drawflow"
     class="parent-drawflow relative"
     @drop="dropHandler"
-    @dragover.prevent
+    @dragover.prevent="handleDragOver"
   >
     <slot></slot>
     <div class="absolute z-10 p-4 bottom-0 left-0">
@@ -64,6 +64,7 @@
 import { onMounted, shallowRef, reactive, getCurrentInstance } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { compare } from 'compare-versions';
+import defu from 'defu';
 import emitter from 'tiny-emitter/instance';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { tasks } from '@/utils/shared';
@@ -114,7 +115,24 @@ export default {
       position: {},
     });
 
-    function dropHandler({ dataTransfer, clientX, clientY }) {
+    const isConnectionEl = (el) =>
+      el.matches('path.main-path') ||
+      el.parentElement.classList.contains('connection');
+
+    let prevSelectedElement = null;
+    function handleDragOver({ target }) {
+      const dropInConnection = isConnectionEl(target);
+
+      if (dropInConnection) {
+        if (prevSelectedElement !== target)
+          target.classList.toggle('selected', true);
+      } else if (prevSelectedElement) {
+        prevSelectedElement.classList.toggle('selected', false);
+      }
+
+      prevSelectedElement = target;
+    }
+    function dropHandler({ dataTransfer, clientX, clientY, target }) {
       const block = JSON.parse(dataTransfer.getData('block') || null);
 
       if (!block) return;
@@ -140,7 +158,7 @@ export default {
           (editor.value.precanvas.clientHeight /
             (editor.value.precanvas.clientHeight * editor.value.zoom));
 
-      editor.value.addNode(
+      const blockId = editor.value.addNode(
         block.id,
         block.inputs,
         block.outputs,
@@ -151,6 +169,51 @@ export default {
         block.component,
         'vue'
       );
+
+      const dropInConnection = isConnectionEl(target);
+
+      if (dropInConnection) {
+        target.classList.remove('selected');
+
+        const classes = target.parentElement.classList.toString();
+        const result = {};
+        const items = [
+          { str: 'node_in_', key: 'inputId' },
+          { str: 'input_', key: 'inputClass' },
+          { str: 'node_out_', key: 'outputId' },
+          { str: 'output_', key: 'outputClass' },
+        ];
+
+        items.forEach(({ key, str }) => {
+          result[key] = classes
+            .match(new RegExp(`${str}[^\\s]*`))[0]
+            ?.replace(/node_in_node-|node_out_node-/, '');
+        });
+
+        try {
+          editor.value.removeSingleConnection(
+            result.outputId,
+            result.inputId,
+            result.outputClass,
+            result.inputClass
+          );
+          editor.value.addConnection(
+            result.outputId,
+            blockId,
+            result.outputClass,
+            'input_1'
+          );
+          editor.value.addConnection(
+            blockId,
+            result.inputId,
+            'output_1',
+            result.inputClass
+          );
+        } catch (error) {
+          // Do nothing
+        }
+      }
+
       emitter.emit('editor:data-changed');
     }
     function isInputAllowed(allowedInputs, input) {
@@ -225,14 +288,7 @@ export default {
           const newDrawflowData = Object.entries(
             data.drawflow.Home.data
           ).reduce((obj, [key, value]) => {
-            const newBlockData = {
-              ...tasks[value.name],
-              ...value,
-              data: {
-                ...tasks[value.name].data,
-                ...value.data,
-              },
-            };
+            const newBlockData = defu(value, tasks[value.name]);
 
             obj[key] = newBlockData;
 
@@ -326,6 +382,7 @@ export default {
       editor,
       contextMenu,
       dropHandler,
+      handleDragOver,
       contextMenuHandler: {
         deleteBlock,
         duplicateBlock: () => duplicateBlock(),

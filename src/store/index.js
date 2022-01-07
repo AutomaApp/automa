@@ -84,7 +84,10 @@ const store = createStore({
 
         commit('updateState', {
           key: 'workflowState',
-          value: workflowState || [],
+          value: Object.values(workflowState || {}).filter(
+            ({ isDestroyed, parentState }) =>
+              !isDestroyed && !parentState?.isCollection
+          ),
         });
       } catch (error) {
         console.error(error);

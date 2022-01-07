@@ -27,6 +27,10 @@ export const mapShortcuts = {
     id: 'action:search',
     combo: 'mod+shift+f',
   },
+  'action:new': {
+    id: 'action:new',
+    combo: 'mod+option+n',
+  },
   'editor:duplicate-block': {
     id: 'editor:duplicate-block',
     combo: 'mod+option+d',

@@ -1,4 +1,3 @@
-import { generateJSON } from '@/utils/data-exporter';
 import { getBlockConnection } from '../helper';
 
 function loopData(block) {
@@ -12,13 +11,13 @@ function loopData(block) {
       let currentLoopData;
 
       if (data.loopThrough === 'numbers') {
-        currentLoopData = this.loopData[data.loopId] + 1;
+        currentLoopData = this.referenceData.loopData[data.loopId] + 1;
       } else {
         currentLoopData =
           this.loopList[data.loopId].data[this.loopList[data.loopId].index];
       }
 
-      this.loopData[data.loopId] = currentLoopData;
+      this.referenceData.loopData[data.loopId] = currentLoopData;
     } else {
       let currLoopData;
 
@@ -27,10 +26,10 @@ function loopData(block) {
           currLoopData = data.fromNumber;
           break;
         case 'data-columns':
-          currLoopData = generateJSON(Object.keys(this.data), this.data);
+          currLoopData = this.referenceData.dataColumns;
           break;
         case 'google-sheets':
-          currLoopData = this.googleSheets[data.referenceKey];
+          currLoopData = this.referenceData.googleSheets[data.referenceKey];
           break;
         case 'custom-data':
           currLoopData = JSON.parse(data.loopData);
@@ -58,12 +57,12 @@ function loopData(block) {
             : data.maxLoop || currLoopData.length,
       };
       /* eslint-disable-next-line */
-      this.loopData[data.loopId] = data.loopThrough === 'numbers' ? data.fromNumber : currLoopData[0];
+      this.referenceData.loopData[data.loopId] = data.loopThrough === 'numbers' ? data.fromNumber : currLoopData[0];
     }
 
     resolve({
       nextBlockId,
-      data: this.loopData[data.loopId],
+      data: this.referenceData.loopData[data.loopId],
     });
   });
 }

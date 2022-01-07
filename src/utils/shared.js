@@ -238,8 +238,8 @@ export const tasks = {
   'export-data': {
     name: 'Export data',
     icon: 'riDownloadLine',
-    component: 'BlockExportData',
-    editComponent: 'EditTrigger',
+    component: 'BlockBasic',
+    editComponent: 'EditExportData',
     category: 'general',
     inputs: 1,
     outputs: 1,
@@ -247,7 +247,10 @@ export const tasks = {
     maxConnection: 1,
     data: {
       name: '',
+      refKey: '',
       type: 'json',
+      description: '',
+      dataToExport: 'data-columns',
     },
   },
   'element-scroll': {
@@ -426,6 +429,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     data: {
+      description: '',
       spreadsheetId: '',
       type: 'get',
       range: '',

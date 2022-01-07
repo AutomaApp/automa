@@ -1,32 +1,26 @@
 /* eslint-disable  no-param-reassign */
-import browser from 'webextension-polyfill';
-
-async function updater(callback, id) {
-  try {
-    const state = await this.get();
-    const index = id ? state.findIndex((item) => item.id === id) : -1;
-    const items = callback(state, index);
-
-    await browser.storage.local.set({ workflowState: items });
-
-    return items;
-  } catch (error) {
-    console.error(error);
-
-    return [];
-  }
-}
 
 class WorkflowState {
-  static async get(filter) {
-    try {
-      let { workflowState } = await browser.storage.local.get('workflowState');
+  constructor({ storage, key = 'workflowState' }) {
+    this.key = key;
+    this.storage = storage;
 
-      if (workflowState && filter) {
-        workflowState = workflowState.filter(filter);
+    this.cache = null;
+    this.eventListeners = {};
+  }
+
+  async _updater(callback, event) {
+    try {
+      const storageStates = await this.get();
+      const states = callback(storageStates);
+
+      await this.storage.set(this.key, states);
+
+      if (event) {
+        this.dispatchEvent(event.name, event.params);
       }
 
-      return workflowState || [];
+      return states;
     } catch (error) {
       console.error(error);
 
@@ -34,38 +28,102 @@ class WorkflowState {
     }
   }
 
-  static add(id, data) {
-    return updater.call(this, (items) => {
-      items.unshift({ id, ...data });
+  dispatchEvent(name, params) {
+    const listeners = this.eventListeners[name];
 
-      return items;
+    if (!listeners) return;
+
+    listeners.forEach((callback) => {
+      callback(params);
     });
   }
 
-  static update(id, data = {}) {
-    return updater.call(
-      this,
-      (items, index) => {
-        if (typeof index === 'number' && index !== -1) {
-          items[index].state = { ...items[index].state, ...data };
-        }
-
-        return items;
-      },
-      id
+  on(name, listener) {
+    (this.eventListeners[name] = this.eventListeners[name] || []).push(
+      listener
     );
   }
 
-  static delete(id) {
-    return updater.call(
-      this,
-      (items, index) => {
-        if (index !== -1) items.splice(index, 1);
+  off(name, listener) {
+    const listeners = this.eventListeners[name];
+    if (!listeners) return;
 
-        return items;
-      },
-      id
-    );
+    const index = listeners.indexOf(listener);
+    if (index !== -1) listeners.splice(index, 1);
+  }
+
+  async get(stateId) {
+    try {
+      let states = this.cache ?? ((await this.storage.get(this.key)) || {});
+
+      if (Array.isArray(states)) {
+        states = {};
+        await this.storage.set(this.key, {});
+      }
+
+      if (typeof stateId === 'function') {
+        states = Object.values(states).find(stateId);
+      } else if (stateId) {
+        states = states[stateId];
+      } else {
+        this.cache = states;
+      }
+
+      return states;
+    } catch (error) {
+      console.error(error);
+
+      return null;
+    }
+  }
+
+  add(id, data = {}) {
+    return this._updater((states) => {
+      states[id] = {
+        id,
+        isPaused: false,
+        isDestroyed: false,
+        ...data,
+      };
+
+      return states;
+    });
+  }
+
+  async stop(id) {
+    await this.update(id, { isDestroyed: true });
+
+    this.dispatchEvent('stop', id);
+
+    return id;
+  }
+
+  update(id, data = {}) {
+    const event = {
+      name: 'update',
+      params: { id, data },
+    };
+
+    return this._updater((states) => {
+      if (states[id]) {
+        states[id] = { ...states[id], ...data };
+      }
+
+      return states;
+    }, event);
+  }
+
+  delete(id) {
+    const event = {
+      name: 'delete',
+      params: id,
+    };
+
+    return this._updater((states) => {
+      delete states[id];
+
+      return states;
+    }, event);
   }
 }
 

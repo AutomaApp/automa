@@ -33,7 +33,7 @@ export default async function ({ data, outputs }) {
       result = spreadsheetValues;
 
       if (data.refKey && !isWhitespace(data.refKey)) {
-        this.googleSheets[data.refKey] = spreadsheetValues;
+        this.referenceData.googleSheets[data.refKey] = spreadsheetValues;
       }
     }
 

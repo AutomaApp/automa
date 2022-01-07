@@ -22,11 +22,7 @@
       >
         <v-remixicon name="riExternalLinkLine" />
       </ui-button>
-      <ui-button
-        variant="accent"
-        :disabled="!!data.state.parentState"
-        @click="stopWorkflow"
-      >
+      <ui-button variant="accent" @click="stopWorkflow">
         <v-remixicon name="riStopLine" class="mr-2 -ml-1" />
         <span>{{ t('common.stop') }}</span>
       </ui-button>
@@ -34,7 +30,7 @@
     <div class="divide-y bg-box-transparent divide-y px-4 rounded-lg">
       <div
         v-for="block in getBlock()"
-        :key="block.name"
+        :key="block.id || block.name"
         class="flex items-center py-2"
       >
         <v-remixicon :name="block.icon" />
@@ -43,10 +39,17 @@
       </div>
     </div>
     <div
-      v-if="data.state.parentState"
+      v-if="data.parentState"
       class="py-2 px-4 bg-yellow-200 rounded-lg mt-2 text-sm"
     >
-      {{ t('workflow.state.executeBy', { name: data.state.parentState.name }) }}
+      {{ t('workflow.state.executeBy', { name: data.parentState.name }) }}
+      <span class="lowercase">
+        {{
+          data.parentState.isCollection
+            ? t('common.collection')
+            : t('common.workflow')
+        }}
+      </span>
     </div>
   </ui-card>
 </template>
@@ -67,21 +70,21 @@ const props = defineProps({
 const { t } = useI18n();
 
 function getBlock() {
-  if (!props.data.state.currentBlock) return [];
+  const block = props.data.state.currentBlock;
 
-  if (Array.isArray(props.data.state.currentBlock)) {
-    return props.data.state.currentBlock.map((item) => {
-      if (tasks[item.name])
-        return {
-          ...tasks[item.name],
-          name: t(`workflow.blocks.${item.name}.name`),
-        };
+  if (!block) return [];
 
-      return item;
-    });
-  }
+  const blockArr = Array.isArray(block) ? block : [block];
 
-  return [tasks[props.data.state.currentBlock.name]];
+  return blockArr.map((item) => {
+    if (tasks[item.name] && item.outputs)
+      return {
+        ...tasks[item.name],
+        name: t(`workflow.blocks.${item.name}.name`),
+      };
+
+    return item;
+  });
 }
 function formatDate(date, format) {
   if (format === 'relative') return dayjs(date).fromNow();

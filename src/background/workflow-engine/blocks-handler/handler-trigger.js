@@ -5,8 +5,8 @@ async function trigger(block) {
   const nextBlockId = getBlockConnection(block);
 
   try {
-    if (block.data.type === 'visit-web' && this.tabId) {
-      this.frames = await executeContentScript(this.tabId);
+    if (block.data.type === 'visit-web' && this.activeTab.id) {
+      this.activeTab.frames = await executeContentScript(this.activeTab.id);
     }
 
     return { nextBlockId, data: '' };

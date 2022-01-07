@@ -1,5 +1,5 @@
 import { get as getObjectPath } from 'object-path-immutable';
-import { replaceMustache, isObject } from '../helper';
+import { replaceMustache } from '../helper';
 import keyParser from './key-parser';
 
 export function extractStrFunction(str) {
@@ -13,24 +13,28 @@ export function extractStrFunction(str) {
   };
 }
 
-export default function (str, data) {
+export default function ({ str, data, block }) {
   const replacedStr = replaceMustache(str, (match) => {
     const key = match.slice(2, -2).replace(/\s/g, '');
 
     if (!key) return '';
 
+    let result = '';
     const funcRef = extractStrFunction(key);
 
     if (funcRef && data.funcs[funcRef.name]) {
-      return data.funcs[funcRef.name]?.apply({ refData: data }, funcRef.params);
+      result = data.funcs[funcRef.name]?.apply(
+        { refData: data },
+        funcRef.params
+      );
+    } else {
+      const { dataKey, path } = keyParser(key);
+      result = getObjectPath(data[dataKey], path) ?? match;
     }
-
-    const { dataKey, path } = keyParser(key);
-    const result = getObjectPath(data[dataKey], path) ?? match;
-
-    return isObject(result) || Array.isArray(result)
-      ? JSON.stringify(result)
-      : result;
+    if (block.name === 'webhook') {
+      return JSON.stringify(result);
+    }
+    return typeof result === 'string' ? result : JSON.stringify(result);
   });
 
   return replacedStr;

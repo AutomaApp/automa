@@ -26,8 +26,8 @@ class Workflow extends Model {
       settings: this.attr({
         blockDelay: 0,
         saveLog: true,
-        timeout: 120000,
         onError: 'stop-workflow',
+        executedBlockOnWeb: false,
       }),
       logs: this.hasMany(Log, 'workflowId'),
     };
