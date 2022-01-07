@@ -31,7 +31,6 @@ export default function ({ str, data, block }) {
       const { dataKey, path } = keyParser(key);
       result = getObjectPath(data[dataKey], path) ?? match;
     }
-
     if (block.name === 'webhook') {
       return JSON.stringify(result);
     }

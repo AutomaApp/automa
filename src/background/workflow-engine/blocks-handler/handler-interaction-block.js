@@ -7,6 +7,7 @@ async function interactionHandler(block, { refData }) {
     ...block,
     refData,
     frameSelector: this.frameSelector,
+    executedBlockOnWeb: this.workflow.settings?.executedBlockOnWeb,
   };
 
   try {

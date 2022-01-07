@@ -14,7 +14,7 @@
     },
     "menu": {
       "general": "General"
-    }
+    },
   },
   "workflow": {
     "import": "Import workflow",
@@ -60,6 +60,8 @@
         "title": "Block delay (milliseconds)",
         "description": "Add delay before executing each of the blocks"
       },
+      "saveLog": "Save workflow log",
+      "executedBlockOnWeb": "Show executed block on web page"
     }
   },
   "collection": {

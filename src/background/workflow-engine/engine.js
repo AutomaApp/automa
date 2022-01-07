@@ -221,6 +221,7 @@ class WorkflowEngine {
     }
 
     this.currentBlock = block;
+    this.referenceData.prevBlockData = prevBlockData;
 
     await this.states.update(this.id, { state: this.state });
     this.dispatchEvent('update', { state: this.state });
@@ -248,9 +249,9 @@ class WorkflowEngine {
       });
 
       this.addLogHistory({
-        type: 'success',
         name: block.name,
         logId: result.logId,
+        type: result.status || 'success',
         duration: Math.round(Date.now() - startExecutedTime),
       });
 
@@ -308,6 +309,7 @@ class WorkflowEngine {
   get state() {
     const keys = [
       'history',
+      'columns',
       'activeTab',
       'isUsingProxy',
       'currentBlock',

@@ -30,7 +30,11 @@
     </div>
     <div class="flex mt-6">
       <ui-switch v-model="settings.saveLog" class="mr-4" />
-      <p>Save log</p>
+      <p>{{ t('workflow.settings.saveLog') }}</p>
+    </div>
+    <div class="flex mt-6">
+      <ui-switch v-model="settings.executedBlockOnWeb" class="mr-4" />
+      <p>{{ t('workflow.settings.executedBlockOnWeb') }}</p>
     </div>
   </div>
 </template>
@@ -62,8 +66,8 @@ const onError = [
 const settings = reactive({
   blockDelay: 0,
   saveLog: true,
-  timeout: 120000,
   onError: 'stop-workflow',
+  executedBlockOnWeb: false,
 });
 
 watch(
