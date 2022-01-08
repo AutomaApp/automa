@@ -19,8 +19,11 @@ function conditions({ data, outputs }, { prevBlockData, refData }) {
     data.conditions.forEach(({ type, value, compareValue }, index) => {
       if (isConditionMatch) return;
 
-      const firstValue = mustacheReplacer(compareValue ?? prevData, refData);
-      const secondValue = mustacheReplacer(value, refData);
+      const firstValue = mustacheReplacer({
+        str: compareValue ?? prevData,
+        data: refData,
+      });
+      const secondValue = mustacheReplacer({ str: value, data: refData });
 
       const isMatch = compareBlockValue(type, firstValue, secondValue);
 
