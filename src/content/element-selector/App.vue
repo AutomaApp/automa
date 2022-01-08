@@ -271,6 +271,7 @@ function destroy() {
   rootElement.style.display = 'none';
 
   Object.assign(state, {
+    hide: true,
     activeTab: '',
     elSelector: '',
     isDragging: false,

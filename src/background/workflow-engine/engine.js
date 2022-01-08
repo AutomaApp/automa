@@ -1,7 +1,7 @@
 import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
 import { tasks } from '@/utils/shared';
-import { convertData } from './helper';
+import { convertData, waitTabLoaded } from './helper';
 import { toCamelCase, parseJSON, isObject, objectHasKey } from '@/utils/helper';
 import referenceData from '@/utils/reference-data';
 import executeContentScript from './execute-content-script';
@@ -330,28 +330,6 @@ class WorkflowEngine {
   }
 
   async _sendMessageToTab(payload, options = {}) {
-    const checkActiveTab = () => {
-      return new Promise((resolve, reject) => {
-        const activeTabStatus = () => {
-          browser.tabs
-            .get(this.activeTab.id)
-            .then((tab) => {
-              if (tab.status === 'loading') {
-                setTimeout(() => {
-                  activeTabStatus();
-                }, 500);
-                return;
-              }
-
-              resolve();
-            })
-            .catch(reject);
-        };
-
-        activeTabStatus();
-      });
-    };
-
     try {
       if (!this.activeTab.id) {
         const error = new Error('no-tab');
@@ -360,7 +338,7 @@ class WorkflowEngine {
         throw error;
       }
 
-      await checkActiveTab();
+      await waitTabLoaded(this.activeTab.id);
 
       this.activeTab.frames = await executeContentScript(
         this.activeTab.id,

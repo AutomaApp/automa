@@ -1,3 +1,27 @@
+export function waitTabLoaded(tabId) {
+  return new Promise((resolve, reject) => {
+    const activeTabStatus = () => {
+      chrome.tabs.get(tabId, (tab) => {
+        if (!tab) {
+          reject(new Error('no-tab'));
+          return;
+        }
+
+        if (tab.status === 'loading') {
+          setTimeout(() => {
+            activeTabStatus();
+          }, 500);
+          return;
+        }
+
+        resolve();
+      });
+    };
+
+    activeTabStatus();
+  });
+}
+
 export function convertData(data, type) {
   let result = data;
 

@@ -1,32 +1,23 @@
 import browser from 'webextension-polyfill';
 import { getBlockConnection } from '../helper';
 
-function forwardPage(block) {
-  return new Promise((resolve, reject) => {
-    const nextBlockId = getBlockConnection(block);
+export async function goBack({ outputs }) {
+  const nextBlockId = getBlockConnection({ outputs });
 
-    if (!this.activeTab.id) {
-      const error = new Error('no-tab');
-      error.nextBlockId = nextBlockId;
+  try {
+    if (!this.activeTab.id) throw new Error('no-tab');
 
-      reject(nextBlockId);
+    await browser.tabs.goForward(this.activeTab.id);
 
-      return;
-    }
+    return {
+      data: '',
+      nextBlockId,
+    };
+  } catch (error) {
+    error.nextBlockId = nextBlockId;
 
-    browser.tabs
-      .goForward(this.activeTab.id)
-      .then(() => {
-        resolve({
-          nextBlockId,
-          data: '',
-        });
-      })
-      .catch((error) => {
-        error.nextBlockId = nextBlockId;
-        reject(error);
-      });
-  });
+    throw error;
+  }
 }
 
-export default forwardPage;
+export default goBack;
