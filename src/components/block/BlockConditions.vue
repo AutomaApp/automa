@@ -58,12 +58,13 @@
         {{ t('common.fallback') }}
       </p>
     </div>
+    <input class="trigger hidden" @change="onChange" />
   </div>
 </template>
 <script setup>
 import { watch, toRaw, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
-import emitter from 'tiny-emitter/instance';
+import emitter from '@/lib/mitt';
 import { debounce } from '@/utils/helper';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
@@ -79,6 +80,9 @@ const { t } = useI18n();
 const componentId = useComponentId('block-conditions');
 const block = useEditorBlock(`#${componentId}`, props.editor);
 
+function onChange({ detail }) {
+  if (detail.conditions) block.data.conditions = detail.conditions;
+}
 function editBlock() {
   emitter.emit('editor:edit-block', {
     ...block.details,
@@ -106,7 +110,10 @@ function deleteConditionEmit({ index, id }) {
 }
 function deleteCondition(index) {
   block.data.conditions.splice(index, 1);
-
+  emitter.emit('conditions-block:delete-cond', {
+    index,
+    id: block.id,
+  });
   deleteConditionEmit({ index, id: block.id });
 }
 

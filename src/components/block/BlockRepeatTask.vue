@@ -37,7 +37,7 @@
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
-import emitter from 'tiny-emitter/instance';
+import emitter from '@/lib/mitt';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
 

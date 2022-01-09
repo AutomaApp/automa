@@ -65,7 +65,7 @@ import { onMounted, shallowRef, reactive, getCurrentInstance } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { compare } from 'compare-versions';
 import defu from 'defu';
-import emitter from 'tiny-emitter/instance';
+import emitter from '@/lib/mitt';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { tasks } from '@/utils/shared';
 import { parseJSON } from '@/utils/helper';

@@ -149,7 +149,7 @@ import { useStore } from 'vuex';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import defu from 'defu';
-import emitter from 'tiny-emitter/instance';
+import emitter from '@/lib/mitt';
 import { useDialog } from '@/composable/dialog';
 import { tasks } from '@/utils/shared';
 import { sendMessage } from '@/utils/message';
