@@ -33,8 +33,8 @@
   </block-base>
 </template>
 <script setup>
-import emitter from 'tiny-emitter/instance';
 import { useI18n } from 'vue-i18n';
+import emitter from '@/lib/mitt';
 import { useEditorBlock } from '@/composable/editorBlock';
 import { useComponentId } from '@/composable/componentId';
 import BlockBase from './BlockBase.vue';

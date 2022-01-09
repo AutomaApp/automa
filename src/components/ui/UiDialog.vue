@@ -35,7 +35,7 @@
 <script>
 import { reactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import emitter from 'tiny-emitter/instance';
+import emitter from '@/lib/mitt';
 
 export default {
   setup() {
@@ -60,7 +60,7 @@ export default {
       options: defaultOptions,
     });
 
-    emitter.on('show-dialog', (type, options) => {
+    emitter.on('show-dialog', ({ type, options }) => {
       state.type = type;
       state.input = options?.inputValue ?? '';
       state.options = {

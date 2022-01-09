@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "0.13.0",
+  "version": "0.13.2",
   "description": "An extension for automating your browser by connecting blocks",
   "license": "MIT",
   "repository": {
@@ -32,11 +32,11 @@
     "defu": "^5.0.0",
     "drawflow": "^0.0.51",
     "idb": "^7.0.0",
+    "mitt": "^3.0.0",
     "mousetrap": "^1.6.5",
     "nanoid": "3.1.28",
     "object-path-immutable": "^4.1.2",
     "papaparse": "^5.3.1",
-    "tiny-emitter": "^2.1.0",
     "tippy.js": "^6.3.1",
     "v-remixicon": "^0.1.1",
     "vue": "3.2.19",

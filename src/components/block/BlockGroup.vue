@@ -88,7 +88,7 @@ import { watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid';
 import draggable from 'vuedraggable';
-import emitter from 'tiny-emitter/instance';
+import emitter from '@/lib/mitt';
 import { tasks } from '@/utils/shared';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';

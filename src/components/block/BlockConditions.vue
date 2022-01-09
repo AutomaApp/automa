@@ -25,15 +25,10 @@
       class="mt-4 space-y-2"
     >
       <div
-        v-for="(item, index) in block.data.conditions"
+        v-for="item in block.data.conditions"
         :key="item.id"
-        class="flex items-center group justify-end"
+        class="flex items-center justify-end"
       >
-        <v-remixicon
-          name="riDeleteBin7Line"
-          class="mr-2 cursor-pointer group-hover:visible invisible"
-          @click="deleteCondition(index)"
-        />
         <div
           class="flex items-center flex-1 p-2 bg-box-transparent rounded-lg overflow-hidden w-44"
         >
@@ -58,12 +53,13 @@
         {{ t('common.fallback') }}
       </p>
     </div>
+    <input class="trigger hidden" @change="onChange" />
   </div>
 </template>
 <script setup>
 import { watch, toRaw, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
-import emitter from 'tiny-emitter/instance';
+import emitter from '@/lib/mitt';
 import { debounce } from '@/utils/helper';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
@@ -79,6 +75,9 @@ const { t } = useI18n();
 const componentId = useComponentId('block-conditions');
 const block = useEditorBlock(`#${componentId}`, props.editor);
 
+function onChange({ detail }) {
+  if (detail.conditions) block.data.conditions = detail.conditions;
+}
 function editBlock() {
   emitter.emit('editor:edit-block', {
     ...block.details,
@@ -88,7 +87,7 @@ function editBlock() {
 }
 function addConditionEmit({ id }) {
   if (id !== block.id) return;
-
+  console.log(block);
   const { length } = block.data.conditions;
 
   if (length >= 10) return;
@@ -103,11 +102,6 @@ function deleteConditionEmit({ index, id }) {
 
   if (block.data.conditions.length === 0)
     props.editor.removeNodeOutput(block.id, `output_1`);
-}
-function deleteCondition(index) {
-  block.data.conditions.splice(index, 1);
-
-  deleteConditionEmit({ index, id: block.id });
 }
 
 watch(

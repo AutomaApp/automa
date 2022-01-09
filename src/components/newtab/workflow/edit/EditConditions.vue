@@ -54,9 +54,9 @@
   </div>
 </template>
 <script setup>
-import { toRef } from 'vue';
+import { ref, watch, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import emitter from 'tiny-emitter/instance';
+import emitter from '@/lib/mitt';
 
 const props = defineProps({
   data: {
@@ -68,7 +68,7 @@ const props = defineProps({
     default: '',
   },
 });
-defineEmits(['update:data']);
+const emit = defineEmits(['update:data']);
 
 const conditionTypes = {
   '==': 'equals',
@@ -81,7 +81,7 @@ const conditionTypes = {
 };
 const { t } = useI18n();
 
-const conditions = toRef(props.data, 'conditions');
+const conditions = ref(props.data.conditions);
 
 function getTitle(index) {
   const type = conditionTypes[conditions.value[index]?.type] || 'equals';
@@ -109,7 +109,18 @@ function deleteCondition(index) {
     id: props.blockId,
   });
 }
-// function updateData(value) {
-//   emit('update:data', { ...props.data, ...value });
-// }
+
+watch(
+  conditions,
+  () => {
+    emit('update:data', {
+      conditions: conditions.value,
+    });
+  },
+  { deep: true }
+);
+
+onUnmounted(() => {
+  emitter.off('conditions-block:delete-cond', handleDelCondition);
+});
 </script>

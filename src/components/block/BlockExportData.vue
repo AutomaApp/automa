@@ -34,7 +34,7 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { watch } from 'vue';
-import emitter from 'tiny-emitter/instance';
+import emitter from '@/lib/mitt';
 import { dataExportTypes } from '@/utils/shared';
 import { debounce } from '@/utils/helper';
 import { useComponentId } from '@/composable/componentId';
