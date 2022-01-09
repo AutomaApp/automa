@@ -25,6 +25,7 @@
     "rename": "Rename workflow",
     "add": "Add workflow",
     "clickToEnable": "Click to enable",
+    "toggleSidebar": "Toggle sidebar",
     "state": {
       "executeBy": "Executed by: \"{name}\""
     },
