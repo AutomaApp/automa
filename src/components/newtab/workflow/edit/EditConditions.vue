@@ -109,13 +109,6 @@ function deleteCondition(index) {
     id: props.blockId,
   });
 }
-function handleDelCondition({ index, id }) {
-  if (props.blockId !== id) return;
-
-  conditions.value.splice(index, 1);
-}
-
-emitter.on('conditions-block:delete-cond', handleDelCondition);
 
 watch(
   conditions,
