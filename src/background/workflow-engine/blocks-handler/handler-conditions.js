@@ -2,7 +2,9 @@ import { getBlockConnection } from '../helper';
 import compareBlockValue from '@/utils/compare-block-value';
 import mustacheReplacer from '@/utils/reference-data/mustache-replacer';
 
-function conditions({ data, outputs }, { prevBlockData, refData }) {
+function conditions(block, { prevBlockData, refData }) {
+  const data = block.data;
+  const outputs = block.outputs
   return new Promise((resolve, reject) => {
     if (data.conditions.length === 0) {
       reject(new Error('conditions-empty'));
@@ -19,8 +21,16 @@ function conditions({ data, outputs }, { prevBlockData, refData }) {
     data.conditions.forEach(({ type, value, compareValue }, index) => {
       if (isConditionMatch) return;
 
-      const firstValue = mustacheReplacer(compareValue ?? prevData, refData);
-      const secondValue = mustacheReplacer(value, refData);
+      const firstValue = mustacheReplacer({
+        str: compareValue ?? prevData,
+        data: refData,
+        block
+      });
+      const secondValue = mustacheReplacer({
+        str: value,
+        data: refData,
+        block
+      });
 
       const isMatch = compareBlockValue(type, firstValue, secondValue);
 
