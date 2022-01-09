@@ -27,6 +27,7 @@
       <ui-input
         v-if="!data.activeTab"
         :model-value="data.url"
+        class="w-full"
         placeholder="http://example.com/*"
         @change="updateData({ url: $event })"
       >
