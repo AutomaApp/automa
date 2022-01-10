@@ -137,10 +137,11 @@
         "description": "Go forward to the next page"
       },
       "close-tab": {
-        "name": "Close tab",
+        "name": "Close tab/window",
         "description": "",
-        "activeTab": "Close activeTab",
-        "url": "URL or match pattern"
+        "url": "URL or match pattern",
+        "activeTab": "Close active tab",
+        "allWindows": "Close all windows"
       },
       "event-click": {
         "name": "Click element",

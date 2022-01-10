@@ -139,7 +139,7 @@ export const tasks = {
     data: {},
   },
   'close-tab': {
-    name: 'Close tab',
+    name: 'Close tab/window',
     icon: 'riCloseCircleLine',
     component: 'BlockBasic',
     category: 'browser',
@@ -151,6 +151,8 @@ export const tasks = {
     data: {
       url: '',
       activeTab: true,
+      closeType: 'tab',
+      allWindows: false,
     },
   },
   'take-screenshot': {

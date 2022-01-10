@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "0.13.2",
+  "version": "0.14.1",
   "description": "An extension for automating your browser by connecting blocks",
   "license": "MIT",
   "repository": {
@@ -10,6 +10,7 @@
   "scripts": {
     "build": "node utils/build.js",
     "build:zip": "node utils/build-zip.js",
+    "build:prod": "yarn build && yarn build:zip",
     "dev": "node utils/webserver.js",
     "prettier": "prettier --write '**/*.{js,jsx,css,html}'",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."

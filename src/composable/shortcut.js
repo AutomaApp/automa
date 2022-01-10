@@ -43,6 +43,10 @@ export const mapShortcuts = {
     id: 'editor:execute-workflow',
     combo: 'option+enter',
   },
+  'editor:toggle-sidebar': {
+    id: 'editor:toggle-sidebar',
+    combo: 'mod+[',
+  },
 };
 
 const os = navigator.appVersion.indexOf('Win') !== -1 ? 'win' : 'mac';

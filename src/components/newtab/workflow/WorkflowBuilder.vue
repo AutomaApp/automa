@@ -115,22 +115,41 @@ export default {
       position: {},
     });
 
+    const prevSelectedEl = {
+      output: null,
+      connection: null,
+    };
+    const isOutputEl = (el) => el.classList.contains('output');
     const isConnectionEl = (el) =>
       el.matches('path.main-path') ||
       el.parentElement.classList.contains('connection');
 
-    let prevSelectedElement = null;
-    function handleDragOver({ target }) {
-      const dropInConnection = isConnectionEl(target);
+    function toggleHoverClass({ target, name, active, classes }) {
+      const prev = prevSelectedEl[name];
 
-      if (dropInConnection) {
-        if (prevSelectedElement !== target)
-          target.classList.toggle('selected', true);
-      } else if (prevSelectedElement) {
-        prevSelectedElement.classList.toggle('selected', false);
+      if (active) {
+        if (prev === target) return;
+
+        target.classList.toggle(classes, true);
+      } else if (prev) {
+        prev.classList.toggle(classes, false);
       }
 
-      prevSelectedElement = target;
+      prevSelectedEl[name] = target;
+    }
+    function handleDragOver({ target }) {
+      toggleHoverClass({
+        target,
+        name: 'connection',
+        classes: 'selected',
+        active: isConnectionEl(target),
+      });
+      toggleHoverClass({
+        target,
+        name: 'output',
+        classes: 'ring-4',
+        active: isOutputEl(target),
+      });
     }
     function dropHandler({ dataTransfer, clientX, clientY, target }) {
       const block = JSON.parse(dataTransfer.getData('block') || null);
@@ -162,17 +181,15 @@ export default {
         block.id,
         block.inputs,
         block.outputs,
-        xPosition,
-        yPosition,
+        xPosition + 25,
+        yPosition - 25,
         block.id,
         block.data,
         block.component,
         'vue'
       );
 
-      const dropInConnection = isConnectionEl(target);
-
-      if (dropInConnection) {
+      if (isConnectionEl(target)) {
         target.classList.remove('selected');
 
         const classes = target.parentElement.classList.toString();
@@ -212,6 +229,33 @@ export default {
         } catch (error) {
           // Do nothing
         }
+      } else if (isOutputEl(target)) {
+        prevSelectedEl.output?.classList.remove('ring-4');
+
+        const targetBlockId = target
+          .closest('.drawflow-node')
+          .id.replace(/node-/, '');
+        const outputClass = target.classList[1];
+        const blockData = editor.value.getNodeFromId(targetBlockId);
+        const { connections } = blockData.outputs[outputClass];
+
+        if (connections[0]) {
+          const { output, node } = connections[0];
+
+          editor.value.removeSingleConnection(
+            targetBlockId,
+            node,
+            outputClass,
+            output
+          );
+        }
+
+        editor.value.addConnection(
+          targetBlockId,
+          blockId,
+          outputClass,
+          'input_1'
+        );
       }
 
       emitter.emit('editor:data-changed');

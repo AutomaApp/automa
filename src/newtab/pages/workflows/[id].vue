@@ -1,6 +1,7 @@
 <template>
   <div class="flex h-screen">
     <div
+      v-if="state.showSidebar"
       class="w-80 bg-white py-6 relative border-l border-gray-100 flex flex-col"
     >
       <workflow-edit-block
@@ -21,6 +22,20 @@
           v-model="activeTab"
           class="border-none px-2 rounded-lg h-full space-x-1 bg-white"
         >
+          <button
+            v-tooltip="
+              `${t('workflow.toggleSidebar')} (${
+                shortcut['editor:toggle-sidebar'].readable
+              })`
+            "
+            class="text-gray-800"
+            style="margin-right: 6px"
+            @click="toggleSidebar"
+          >
+            <v-remixicon
+              :name="state.showSidebar ? 'riSideBarFill' : 'riSideBarLine'"
+            />
+          </button>
           <ui-tab value="editor">{{ t('common.editor') }}</ui-tab>
           <ui-tab value="logs">{{ t('common.log', 2) }}</ui-tab>
           <ui-tab value="running" class="flex items-center">
@@ -135,7 +150,7 @@
   </ui-modal>
 </template>
 <script setup>
-/* eslint-disable consistent-return */
+/* eslint-disable consistent-return, no-use-before-define */
 import {
   computed,
   reactive,
@@ -151,6 +166,7 @@ import { useI18n } from 'vue-i18n';
 import defu from 'defu';
 import emitter from '@/lib/mitt';
 import { useDialog } from '@/composable/dialog';
+import { useShortcut } from '@/composable/shortcut';
 import { tasks } from '@/utils/shared';
 import { sendMessage } from '@/utils/message';
 import { debounce, isObject } from '@/utils/helper';
@@ -173,6 +189,7 @@ const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const dialog = useDialog();
+const shortcut = useShortcut('editor:toggle-sidebar', toggleSidebar);
 
 const workflowId = route.params.id;
 const workflowModals = {
@@ -199,6 +216,7 @@ const state = reactive({
   blockData: {},
   modalName: '',
   showModal: false,
+  showSidebar: true,
   isEditBlock: false,
   isDataChanged: false,
 });
@@ -247,6 +265,10 @@ function deleteLog(logId) {
   Log.delete(logId).then(() => {
     store.dispatch('saveToStorage', 'logs');
   });
+}
+function toggleSidebar() {
+  state.showSidebar = !state.showSidebar;
+  localStorage.setItem('workflow:sidebar', state.showSidebar);
 }
 function deleteBlock(id) {
   if (!state.isEditBlock) return;
@@ -361,6 +383,9 @@ onMounted(() => {
   if (!isWorkflowExists) {
     router.push('/workflows');
   }
+
+  state.showSidebar =
+    JSON.parse(localStorage.getItem('workflow:sidebar')) ?? true;
 
   window.onbeforeunload = () => {
     if (state.isDataChanged) {
