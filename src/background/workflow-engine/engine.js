@@ -222,6 +222,7 @@ class WorkflowEngine {
 
     this.currentBlock = block;
     this.referenceData.prevBlockData = prevBlockData;
+    this.referenceData.activeTabUrl = this.activeTab.url || '';
 
     await this.states.update(this.id, { state: this.state });
     this.dispatchEvent('update', { state: this.state });
