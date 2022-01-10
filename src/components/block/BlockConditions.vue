@@ -87,7 +87,7 @@ function editBlock() {
 }
 function addConditionEmit({ id }) {
   if (id !== block.id) return;
-  console.log(block);
+
   const { length } = block.data.conditions;
 
   if (length >= 10) return;

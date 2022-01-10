@@ -54,7 +54,7 @@
   </div>
 </template>
 <script setup>
-import { ref, watch, onUnmounted } from 'vue';
+import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import emitter from '@/lib/mitt';
 
@@ -119,8 +119,4 @@ watch(
   },
   { deep: true }
 );
-
-onUnmounted(() => {
-  emitter.off('conditions-block:delete-cond', handleDelCondition);
-});
 </script>

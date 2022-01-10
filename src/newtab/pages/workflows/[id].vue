@@ -23,7 +23,11 @@
           class="border-none px-2 rounded-lg h-full space-x-1 bg-white"
         >
           <button
-            v-tooltip="t('workflow.toggleSidebar')"
+            v-tooltip="
+              `${t('workflow.toggleSidebar')} (${
+                shortcut['editor:toggle-sidebar'].readable
+              })`
+            "
             class="text-gray-800"
             style="margin-right: 6px"
             @click="toggleSidebar"
@@ -146,7 +150,7 @@
   </ui-modal>
 </template>
 <script setup>
-/* eslint-disable consistent-return */
+/* eslint-disable consistent-return, no-use-before-define */
 import {
   computed,
   reactive,
@@ -162,6 +166,7 @@ import { useI18n } from 'vue-i18n';
 import defu from 'defu';
 import emitter from '@/lib/mitt';
 import { useDialog } from '@/composable/dialog';
+import { useShortcut } from '@/composable/shortcut';
 import { tasks } from '@/utils/shared';
 import { sendMessage } from '@/utils/message';
 import { debounce, isObject } from '@/utils/helper';
@@ -184,6 +189,7 @@ const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const dialog = useDialog();
+const shortcut = useShortcut('editor:toggle-sidebar', toggleSidebar);
 
 const workflowId = route.params.id;
 const workflowModals = {
