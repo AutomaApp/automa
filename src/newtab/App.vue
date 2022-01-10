@@ -6,7 +6,7 @@
     </main>
     <ui-dialog />
     <div
-      v-if="isUpdated"
+      v-if="false"
       class="p-4 shadow-2xl z-50 fixed bottom-8 left-1/2 -translate-x-1/2 rounded-lg bg-accent text-white flex items-center"
     >
       <v-remixicon name="riInformationLine" class="mr-3" />
