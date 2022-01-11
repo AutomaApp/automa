@@ -24,6 +24,9 @@ export const funcs = {
 
     return result;
   },
+  randint(min = 0, max = 100) {
+    return Math.round(Math.random() * (+max - +min) + +min);
+  },
 };
 
 export default function ({ block, data: refData }) {
