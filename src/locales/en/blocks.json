@@ -81,6 +81,16 @@
         "description": "Read Google Sheets data",
         "previewData": "Preview data",
         "firstRow": "Use the first row as keys",
+        "keysAsFirstRow": "Use keys as the first row",
+        "insertData": "Insert data",
+        "valueInputOption": "Value input option",
+        "dataFrom": {
+          "label": "Data from",
+          "options": {
+            "data-columns": "Data columns",
+            "custom": "Custom"
+          }
+        },
         "refKey": {
           "label": "Reference key",
           "placeholder": "Key name"
@@ -95,7 +105,7 @@
         },
         "select": {
           "get": "Get spreadsheet data",
-          "write": "Write spreadsheet data"
+          "update": "Update spreadsheet data"
         }
       },
       "active-tab": {

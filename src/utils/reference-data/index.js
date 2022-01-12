@@ -1,5 +1,5 @@
 import { set as setObjectPath } from 'object-path-immutable';
-import dayjs from 'dayjs';
+import dayjs from '@/lib/dayjs';
 import { objectHasKey } from '@/utils/helper';
 import mustacheReplacer from './mustache-replacer';
 
@@ -20,7 +20,12 @@ export const funcs = {
 
     /* eslint-disable-next-line */
     const isValidDate = date instanceof Date && !isNaN(date);
-    const result = dayjs(isValidDate ? date : Date.now()).format(dateFormat);
+    const dayjsDate = dayjs(isValidDate ? date : Date.now());
+
+    const result =
+      dateFormat === 'relative'
+        ? dayjsDate.fromNow()
+        : dayjsDate.format(dateFormat);
 
     return result;
   },
@@ -38,6 +43,7 @@ export default function ({ block, data: refData }) {
     'fileName',
     'selector',
     'prefixText',
+    'customData',
     'globalData',
     'suffixText',
     'extraRowValue',

@@ -1,3 +1,27 @@
+export function convertArrObjTo2DArr(arr) {
+  const keyIndex = new Map();
+  const values = [[]];
+
+  arr.forEach((obj) => {
+    const keys = Object.keys(obj);
+    const row = [];
+
+    keys.forEach((key) => {
+      if (!keyIndex.has(key)) {
+        keyIndex.set(key, keyIndex.size);
+        values[0].push(key);
+      }
+
+      const rowIndex = keyIndex.get(key);
+      row[rowIndex] = obj[key];
+    });
+
+    values.push([...row]);
+  });
+
+  return values;
+}
+
 export function convert2DArrayToArrayObj(values) {
   let keyIndex = 0;
   const keys = values.shift();

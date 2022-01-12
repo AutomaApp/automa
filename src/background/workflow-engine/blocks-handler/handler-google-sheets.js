@@ -1,20 +1,59 @@
 import { getBlockConnection } from '../helper';
-import { getGoogleSheetsValue } from '@/utils/api';
-import { convert2DArrayToArrayObj, isWhitespace } from '@/utils/helper';
+import { googleSheets } from '@/utils/api';
+import {
+  convert2DArrayToArrayObj,
+  convertArrObjTo2DArr,
+  isWhitespace,
+  parseJSON,
+} from '@/utils/helper';
 
-async function getSpreadsheetValues(data) {
-  const response = await getGoogleSheetsValue(data.spreadsheetId, data.range);
+async function getSpreadsheetValues({ spreadsheetId, range, firstRowAsKey }) {
+  const response = await googleSheets.getValues({ spreadsheetId, range });
 
   if (response.status !== 200) {
     throw new Error(response.statusText);
   }
 
   const { values } = await response.json();
-  const sheetsData = data.firstRowAsKey
-    ? convert2DArrayToArrayObj(values)
-    : values;
+  const sheetsData = firstRowAsKey ? convert2DArrayToArrayObj(values) : values;
 
   return sheetsData;
+}
+async function updateSpreadsheetValues(
+  {
+    spreadsheetId,
+    range,
+    valueInputOption,
+    keysAsFirstRow,
+    dataFrom,
+    customData,
+  },
+  dataColumns
+) {
+  let values = [];
+
+  if (dataFrom === 'data-columns') {
+    if (keysAsFirstRow) {
+      values = convertArrObjTo2DArr(dataColumns);
+    } else {
+      values = dataColumns.map(Object.values);
+    }
+  } else if (dataFrom === 'custom') {
+    values = parseJSON(customData, customData);
+  }
+
+  const response = await googleSheets.updateValues({
+    range,
+    spreadsheetId,
+    valueInputOption,
+    options: {
+      body: JSON.stringify({ values }),
+    },
+  });
+
+  if (response.status !== 200) {
+    throw new Error(response.statusText);
+  }
 }
 
 export default async function ({ data, outputs }) {
@@ -35,6 +74,11 @@ export default async function ({ data, outputs }) {
       if (data.refKey && !isWhitespace(data.refKey)) {
         this.referenceData.googleSheets[data.refKey] = spreadsheetValues;
       }
+    } else if (data.type === 'update') {
+      result = await updateSpreadsheetValues(
+        data,
+        this.referenceData.dataColumns
+      );
     }
 
     return {

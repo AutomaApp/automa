@@ -7,7 +7,6 @@
       @change="updateData({ description: $event })"
     />
     <ui-select
-      v-if="false"
       :model-value="data.type"
       class="w-full mb-2"
       @change="updateData({ type: $event })"
@@ -15,8 +14,8 @@
       <option value="get">
         {{ t('workflow.blocks.google-sheets.select.get') }}
       </option>
-      <option value="write">
-        {{ t('workflow.blocks.google-sheets.select.write') }}
+      <option value="update">
+        {{ t('workflow.blocks.google-sheets.select.update') }}
       </option>
     </ui-select>
     <ui-input
@@ -88,17 +87,75 @@
         class="mt-4 max-h-96"
       />
     </template>
-    <template v-else-if="data.type === 'write'">
-      <pre>
-        halo
-      </pre>
+    <template v-else-if="data.type === 'update'">
+      <ui-select
+        :model-value="data.valueInputOption"
+        class="w-full mt-2"
+        @change="updateData({ valueInputOption: $event })"
+      >
+        <template #label>
+          {{ t('workflow.blocks.google-sheets.valueInputOption') }}
+          <a
+            href="https://developers.google.com/sheets/api/reference/rest/v4/ValueInputOption"
+            target="_blank"
+            rel="noopener"
+          >
+            <v-remixicon name="riInformationLine" size="18" class="inline" />
+          </a>
+        </template>
+        <option
+          v-for="option in valueInputOptions"
+          :key="option"
+          :value="option"
+        >
+          {{ option }}
+        </option>
+      </ui-select>
+      <ui-select
+        :model-value="data.dataFrom"
+        :label="t('workflow.blocks.google-sheets.dataFrom.label')"
+        class="w-full mt-2"
+        @change="updateData({ dataFrom: $event })"
+      >
+        <option v-for="item in dataFrom" :key="item" :value="item">
+          {{ t(`workflow.blocks.google-sheets.dataFrom.options.${item}`) }}
+        </option>
+      </ui-select>
+      <ui-checkbox
+        v-if="data.dataFrom === 'data-columns'"
+        :model-value="data.keysAsFirstRow"
+        class="mt-2"
+        @change="updateData({ keysAsFirstRow: $event })"
+      >
+        {{ t('workflow.blocks.google-sheets.keysAsFirstRow') }}
+      </ui-checkbox>
+      <ui-button
+        v-else
+        class="w-full mt-2"
+        variant="accent"
+        @click="customDataState.showModal = true"
+      >
+        {{ t('workflow.blocks.google-sheets.insertData') }}
+      </ui-button>
     </template>
+    <ui-modal
+      v-model="customDataState.showModal"
+      title="Custom data"
+      content-class="max-w-xl"
+    >
+      <shared-codemirror
+        v-model="customDataState.data"
+        style="height: calc(100vh - 10rem)"
+        lang="json"
+        @change="updateData({ customData: $event })"
+      />
+    </ui-modal>
   </div>
 </template>
 <script setup>
 import { shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { getGoogleSheetsValue } from '@/utils/api';
+import { googleSheets } from '@/utils/api';
 import { convert2DArrayToArrayObj } from '@/utils/helper';
 import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
 
@@ -112,10 +169,17 @@ const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
 
+const dataFrom = ['data-columns', 'custom'];
+const valueInputOptions = ['RAW', 'USER_ENTERED'];
+
 const previewDataState = shallowReactive({
+  data: '',
   status: 'idle',
   errorMessage: '',
-  data: '',
+});
+const customDataState = shallowReactive({
+  showModal: false,
+  data: props.data.customData,
 });
 
 function updateData(value) {
@@ -124,10 +188,10 @@ function updateData(value) {
 async function previewData() {
   try {
     previewDataState.status = 'loading';
-    const response = await getGoogleSheetsValue(
-      props.data.spreadsheetId,
-      props.data.range
-    );
+    const response = await googleSheets.getValues({
+      spreadsheetId: props.data.spreadsheetId,
+      range: props.data.range,
+    });
 
     if (response.status !== 200) {
       throw new Error(response.statusText);

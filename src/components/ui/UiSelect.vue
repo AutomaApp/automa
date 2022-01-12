@@ -1,11 +1,13 @@
 <template>
   <div :class="{ 'inline-block': !block }" class="ui-select cursor-pointer">
     <label
-      v-if="label"
+      v-if="label || $slots.label"
       :for="selectId"
       class="text-gray-600 dark:text-gray-200 text-sm ml-2"
     >
-      {{ label }}
+      <slot name="label">
+        {{ label }}
+      </slot>
     </label>
     <div class="ui-select__content flex items-center w-full block relative">
       <v-remixicon
