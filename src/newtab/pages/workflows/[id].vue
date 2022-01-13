@@ -161,6 +161,7 @@ import {
   toRaw,
 } from 'vue';
 import { useStore } from 'vuex';
+import { useToast } from 'vue-toastification';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import defu from 'defu';
@@ -187,6 +188,7 @@ import SharedWorkflowState from '@/components/newtab/shared/SharedWorkflowState.
 const { t } = useI18n();
 const store = useStore();
 const route = useRoute();
+const toast = useToast();
 const router = useRouter();
 const dialog = useDialog();
 const shortcut = useShortcut('editor:toggle-sidebar', toggleSidebar);
@@ -325,7 +327,7 @@ function editBlock(data) {
 function executeWorkflow() {
   if (editor.value.getNodesFromName('trigger').length === 0) {
     /* eslint-disable-next-line */
-    alert(t('message.noTriggerBlock'));
+    toast.error(t('message.noTriggerBlock'));
     return;
   }
 
