@@ -36,6 +36,9 @@
       "trigger": {
         "name": "Trigger",
         "description": "Block where the workflow will start executing",
+        "addTime": "Add time",
+        "selectDay": "Select day",
+        "timeExist": "You alread add {time} on {day}",
         "days": [
           "Sunday",
           "Monday",
