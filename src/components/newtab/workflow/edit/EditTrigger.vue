@@ -96,14 +96,12 @@
             </ui-checkbox>
           </div>
         </ui-popover>
-        <form @submit="addTime">
-          <div class="flex items-center">
-            <ui-input v-model="tempDate.time" type="time" class="flex-1 mr-2" />
-            <ui-button variant="accent">
-              {{ t('workflow.blocks.trigger.addTime') }}
-            </ui-button>
-          </div>
-        </form>
+        <div class="flex items-center">
+          <ui-input v-model="tempDate.time" type="time" class="flex-1 mr-2" />
+          <ui-button variant="accent" @click="addTime">
+            {{ t('workflow.blocks.trigger.addTime') }}
+          </ui-button>
+        </div>
         <div class="my-2">
           <ui-expand
             v-for="(day, index) in sortedDaysArr"

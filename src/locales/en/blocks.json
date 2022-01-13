@@ -81,7 +81,7 @@
       },
       "google-sheets": {
         "name": "Google sheets",
-        "description": "Read Google Sheets data",
+        "description": "Read or update Google Sheets data",
         "previewData": "Preview data",
         "firstRow": "Use the first row as keys",
         "keysAsFirstRow": "Use keys as the first row",
