@@ -137,12 +137,15 @@ function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }
 function handleExpCheckbox(id, value) {
+  const copy = [...new Set(regexExp.value)];
+
   if (value) {
-    regexExp.value.push(id);
+    copy.push(id);
   } else {
-    regexExp.value.splice(regexExp.value.indexOf(id), 1);
+    copy.splice(copy.indexOf(id), 1);
   }
 
+  regexExp.value = copy;
   updateData({ regexExp: regexExp.value });
 }
 </script>

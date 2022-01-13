@@ -1,5 +1,6 @@
 import browser from 'webextension-polyfill';
 import dayjs from 'dayjs';
+import { isObject } from './helper';
 
 export async function cleanWorkflowTriggers(workflowId) {
   try {
@@ -32,15 +33,33 @@ export async function cleanWorkflowTriggers(workflowId) {
 export function registerSpecificDay(workflowId, data) {
   if (data.days.length === 0) return null;
 
-  const [hour, minute] = data.time.split(':');
-  const dates = data.days.map((id) =>
-    dayjs().day(id).hour(hour).minute(minute)
-  );
+  const getDate = (dayId, time) => {
+    const [hour, minute] = time.split(':');
+    const date = dayjs().day(dayId).hour(hour).minute(minute).second(0);
+
+    return date.valueOf();
+  };
+
+  const dates = data.days
+    .reduce((acc, item) => {
+      if (isObject(item)) {
+        item.times.forEach((time) => {
+          acc.push(getDate(item.id, time));
+        });
+      } else {
+        acc.push(getDate(item, data.time));
+      }
+
+      return acc;
+    }, [])
+    .sort();
+
   const findDate =
-    dates.find((date) => date.valueOf() > Date.now()) || dates[0].add(7, 'day');
+    dates.find((date) => date > Date.now()) ||
+    dayjs(dates[0]).add(7, 'day').valueOf();
 
   return browser.alarms.create(workflowId, {
-    when: findDate.valueOf(),
+    when: findDate,
   });
 }
 

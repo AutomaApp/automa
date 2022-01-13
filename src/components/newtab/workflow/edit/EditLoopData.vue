@@ -119,10 +119,10 @@
   </div>
 </template>
 <script setup>
-/* eslint-disable no-alert */
 import { onMounted, shallowReactive } from 'vue';
 import { nanoid } from 'nanoid';
 import { useI18n } from 'vue-i18n';
+import { useToast } from 'vue-toastification';
 import Papa from 'papaparse';
 import { openFilePicker } from '@/utils/helper';
 import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
@@ -140,6 +140,7 @@ const props = defineProps({
 const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
+const toast = useToast();
 
 const maxFileSize = 1024 * 1024;
 const loopTypes = ['data-columns', 'numbers', 'google-sheets', 'custom-data'];
@@ -163,7 +164,7 @@ function updateData(value) {
 }
 function updateLoopData(value) {
   if (value.length > maxFileSize) {
-    alert(t('message.maxSizeExceeded'));
+    toast.error(t('message.maxSizeExceeded'));
   }
 
   updateData({ loopData: value.slice(0, maxFileSize) });
@@ -181,7 +182,7 @@ function importFile() {
   openFilePicker(['application/json', 'text/csv', 'application/vnd.ms-excel'])
     .then(async (fileObj) => {
       if (fileObj.size > maxFileSize) {
-        alert(t('message.maxSizeExceeded'));
+        toast.error(t('message.maxSizeExceeded'));
         return;
       }
 
@@ -213,7 +214,7 @@ function importFile() {
     })
     .catch((error) => {
       console.error(error);
-      if (error.message.startsWith('invalid')) alert(error.message);
+      if (error.message.startsWith('invalid')) toast.error(error.message);
     });
 }
 

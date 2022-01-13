@@ -1,6 +1,10 @@
 <template>
   <div class="ui-popover inline-block" :class="{ hidden: to }">
-    <div ref="targetEl" class="ui-popover__trigger h-full inline-block">
+    <div
+      ref="targetEl"
+      :class="triggerClass"
+      class="ui-popover__trigger h-full inline-block"
+    >
       <slot name="trigger" v-bind="{ isShow }"></slot>
     </div>
     <div
@@ -42,9 +46,17 @@ export default {
       type: Boolean,
       default: false,
     },
+    triggerWidth: {
+      type: Boolean,
+      default: false,
+    },
     modelValue: {
       type: Boolean,
       default: false,
+    },
+    triggerClass: {
+      type: String,
+      default: null,
     },
   },
   emits: ['show', 'trigger', 'close', 'update:modelValue'],
@@ -101,6 +113,12 @@ export default {
         interactive: true,
         appendTo: () => document.body,
         onShow: (event) => {
+          if (props.triggerWidth) {
+            event.popper.style.width = `${
+              event.reference.getBoundingClientRect().width
+            }px`;
+          }
+
           emit('show', event);
           isShow.value = true;
         },
