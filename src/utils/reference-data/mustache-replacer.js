@@ -7,15 +7,21 @@ export function extractStrFunction(str) {
 
   if (!extractedStr) return null;
 
+  const { 1: name, 2: funcParams } = extractedStr;
+
+  const params = funcParams
+    .split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/)
+    .map((param) => param?.trim().replace(/^['"]|['"]$/g, '') || '');
+
   return {
-    name: extractedStr[1],
-    params: extractedStr[2].split(','),
+    name,
+    params,
   };
 }
 
 export default function ({ str, data, block }) {
   const replacedStr = replaceMustache(str, (match) => {
-    const key = match.slice(2, -2).replace(/\s/g, '');
+    const key = match.slice(2, -2).trim();
 
     if (!key) return '';
 

@@ -3,19 +3,17 @@ import dayjs from '@/lib/dayjs';
 import { objectHasKey } from '@/utils/helper';
 import mustacheReplacer from './mustache-replacer';
 
+/* eslint-disable prefer-destructuring */
 export const funcs = {
   date(...args) {
     let date = new Date();
     let dateFormat = 'DD-MM-YYYY';
 
-    const getDateFormat = (value) =>
-      value ? value?.replace(/['"]/g, '') : dateFormat;
-
     if (args.length === 1) {
-      dateFormat = getDateFormat(args[0]);
+      dateFormat = args[0];
     } else if (args.length >= 2) {
       date = new Date(args[0]);
-      dateFormat = getDateFormat(args[1]);
+      dateFormat = args[1];
     }
 
     /* eslint-disable-next-line */
