@@ -32,24 +32,13 @@ export const funcs = {
   },
 };
 
-export default function ({ block, data: refData }) {
-  const replaceKeys = [
-    'url',
-    'name',
-    'body',
-    'value',
-    'fileName',
-    'selector',
-    'prefixText',
-    'customData',
-    'globalData',
-    'suffixText',
-    'extraRowValue',
-  ];
+export default function ({ block, refKeys, data: refData }) {
+  if (!refKeys || refKeys.length === 0) return block;
+
   let replacedBlock = { ...block };
   const data = Object.assign(refData, { funcs });
 
-  replaceKeys.forEach((blockDataKey) => {
+  refKeys.forEach((blockDataKey) => {
     if (!objectHasKey(block.data, blockDataKey)) return;
 
     const newDataValue = mustacheReplacer({

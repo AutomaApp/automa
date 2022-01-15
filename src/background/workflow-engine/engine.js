@@ -240,7 +240,11 @@ class WorkflowEngine {
       return;
     }
 
-    const replacedBlock = referenceData({ block, data: this.referenceData });
+    const replacedBlock = referenceData({
+      block,
+      data: this.referenceData,
+      refKeys: tasks[block.name].refDataKeys,
+    });
     const blockDelay = this.workflow.settings?.blockDelay || 0;
 
     try {
