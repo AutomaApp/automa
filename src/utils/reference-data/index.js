@@ -3,19 +3,17 @@ import dayjs from '@/lib/dayjs';
 import { objectHasKey } from '@/utils/helper';
 import mustacheReplacer from './mustache-replacer';
 
+/* eslint-disable prefer-destructuring */
 export const funcs = {
   date(...args) {
     let date = new Date();
     let dateFormat = 'DD-MM-YYYY';
 
-    const getDateFormat = (value) =>
-      value ? value?.replace(/['"]/g, '') : dateFormat;
-
     if (args.length === 1) {
-      dateFormat = getDateFormat(args[0]);
+      dateFormat = args[0];
     } else if (args.length >= 2) {
       date = new Date(args[0]);
-      dateFormat = getDateFormat(args[1]);
+      dateFormat = args[1];
     }
 
     /* eslint-disable-next-line */
@@ -34,24 +32,13 @@ export const funcs = {
   },
 };
 
-export default function ({ block, data: refData }) {
-  const replaceKeys = [
-    'url',
-    'name',
-    'body',
-    'value',
-    'fileName',
-    'selector',
-    'prefixText',
-    'customData',
-    'globalData',
-    'suffixText',
-    'extraRowValue',
-  ];
+export default function ({ block, refKeys, data: refData }) {
+  if (!refKeys || refKeys.length === 0) return block;
+
   let replacedBlock = { ...block };
   const data = Object.assign(refData, { funcs });
 
-  replaceKeys.forEach((blockDataKey) => {
+  refKeys.forEach((blockDataKey) => {
     if (!objectHasKey(block.data, blockDataKey)) return;
 
     const newDataValue = mustacheReplacer({

@@ -365,7 +365,6 @@ function renameWorkflow() {
 provide('workflow', {
   data: workflow,
   updateWorkflow,
-  /* eslint-disable-next-line */
   showDataColumnsModal: (show = true) => {
     state.showModal = show;
     state.modalName = 'data-columns';
@@ -375,6 +374,7 @@ provide('workflow', {
 onBeforeRouteLeave(() => {
   if (!state.isDataChanged) return;
 
+  /* eslint-disable-next-line */
   const answer = window.confirm(t('message.notSaved'));
 
   if (!answer) return false;

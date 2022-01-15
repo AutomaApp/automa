@@ -14,6 +14,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['url'],
     data: {
       description: '',
       type: 'manual',
@@ -39,6 +40,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['globalData'],
     data: {
       workflowId: '',
       globalData: '',
@@ -68,6 +70,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['url'],
     data: {
       description: '',
       url: '',
@@ -148,6 +151,7 @@ export const tasks = {
     outputs: 1,
     maxConnection: 1,
     allowedInputs: true,
+    refDataKeys: ['url'],
     data: {
       url: '',
       activeTab: true,
@@ -166,6 +170,7 @@ export const tasks = {
     outputs: 1,
     maxConnection: 1,
     allowedInputs: true,
+    refDataKeys: ['fileName'],
     data: {
       fileName: '',
       ext: 'png',
@@ -186,6 +191,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['selector'],
     data: {
       description: '',
       findBy: 'cssSelector',
@@ -220,6 +226,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['selector', 'prefixText', 'suffixText', 'extraRowValue'],
     data: {
       description: '',
       findBy: 'cssSelector',
@@ -247,6 +254,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['name'],
     data: {
       name: '',
       refKey: '',
@@ -265,6 +273,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['selector'],
     data: {
       description: '',
       findBy: 'cssSelector',
@@ -290,6 +299,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['selector'],
     data: {
       description: '',
       findBy: 'cssSelector',
@@ -309,6 +319,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['selector', 'attributeName', 'extraRowValue'],
     data: {
       description: '',
       findBy: 'cssSelector',
@@ -334,6 +345,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['selector', 'value'],
     data: {
       description: '',
       findBy: 'cssSelector',
@@ -407,6 +419,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['selector'],
     data: {
       description: '',
       findBy: 'cssSelector',
@@ -430,6 +443,7 @@ export const tasks = {
     docs: true,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['customData'],
     data: {
       range: '',
       refKey: '',
@@ -469,6 +483,7 @@ export const tasks = {
     outputs: 2,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['selector'],
     data: {
       findBy: 'cssSelector',
       selector: '',
@@ -488,12 +503,13 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['body', 'url'],
     data: {
       description: '',
       url: '',
       contentType: 'json',
       timeout: 10000,
-      headers: [{ name: '', value: '' }],
+      headers: [],
       body: '{}',
     },
   },
@@ -508,6 +524,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['loopData'],
     data: {
       loopId: '',
       maxLoop: 0,
@@ -562,6 +579,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['selector'],
     data: {
       findBy: 'cssSelector',
       selector: '',
