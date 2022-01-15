@@ -493,7 +493,7 @@ export const tasks = {
       url: '',
       contentType: 'json',
       timeout: 10000,
-      headers: [{ name: '', value: '' }],
+      headers: [],
       body: '{}',
     },
   },

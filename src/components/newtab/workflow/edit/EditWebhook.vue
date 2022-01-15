@@ -48,7 +48,7 @@
         value="headers"
         class="grid grid-cols-7 justify-items-center gap-2"
       >
-        <template v-for="(items, index) in headerRef" :key="index">
+        <template v-for="(items, index) in headers" :key="index">
           <ui-input
             v-model="items.name"
             :placeholder="`Header ${index + 1}`"
@@ -75,15 +75,15 @@
       </ui-tab-panel>
       <ui-tab-panel value="body">
         <pre
-          v-if="!showContentModalRef"
+          v-if="!showBodyModal"
           class="rounded-lg text-gray-200 p-4 max-h-80 bg-gray-900 overflow-auto"
-          @click="showContentModalRef = true"
+          @click="showBodyModal = true"
           v-text="data.body"
         />
       </ui-tab-panel>
     </ui-tab-panels>
     <ui-modal
-      v-model="showContentModalRef"
+      v-model="showBodyModal"
       content-class="max-w-3xl"
       :title="t('workflow.blocks.webhook.tabs.body')"
     >
@@ -123,21 +123,21 @@ const emit = defineEmits(['update:data']);
 const { t } = useI18n();
 
 const activeTab = ref('headers');
-const headerRef = ref(props.data.headers);
-const showContentModalRef = ref(false);
+const showBodyModal = ref(false);
+const headers = ref(JSON.parse(JSON.stringify(props.data.headers)));
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }
 function removeHeader(index) {
-  headerRef.value.splice(index, 1);
+  headers.value.splice(index, 1);
 }
 function addHeader() {
-  headerRef.value.push({ name: '', value: '' });
+  headers.value.push({ name: '', value: '' });
 }
 
 watch(
-  headerRef,
+  headers,
   (value) => {
     updateData({ headers: value });
   },
