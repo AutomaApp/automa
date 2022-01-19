@@ -27,7 +27,7 @@
       <template #label>
         {{ t('workflow.blocks.google-sheets.spreadsheetId.label') }}
         <a
-          href="https://github.com/Kholid060/automa/wiki/Blocks#spreadsheet-id"
+          href="https://docs.automa.site/blocks/google-sheets.html#spreadsheet-id"
           target="_blank"
           rel="noopener"
           :title="t('workflow.blocks.google-sheets.spreadsheetId.link')"
@@ -45,7 +45,7 @@
       <template #label>
         {{ t('workflow.blocks.google-sheets.range.label') }}
         <a
-          href="https://github.com/Kholid060/automa/wiki/Blocks#range"
+          href="https://docs.automa.site/blocks/google-sheets.html#range"
           target="_blank"
           rel="noopener"
           :title="t('workflow.blocks.google-sheets.range.link')"

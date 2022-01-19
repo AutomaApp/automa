@@ -95,7 +95,7 @@
       />
       <div class="mt-3">
         <a
-          href="https://github.com/Kholid060/automa/wiki/Features#reference-data"
+          href="https://docs.automa.site/api-reference/reference-data.html"
           rel="noopener"
           class="border-b text-primary"
           target="_blank"

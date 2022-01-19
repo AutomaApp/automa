@@ -15,7 +15,7 @@
       @change="updateData({ url: $event })"
     />
     <a
-      href="https://github.com/Kholid060/automa/wiki/Features#reference-data"
+      href="https://docs.automa.site/api-reference/reference-data.html"
       rel="noopener"
       class="text-primary inline-block text-sm"
       target="_blank"

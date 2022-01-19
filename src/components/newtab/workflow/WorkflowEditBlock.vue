@@ -1,12 +1,22 @@
 <template>
   <div class="px-4 overflow-auto scroll pb-1">
-    <div class="sticky top-0 z-20 bg-white border-b border-gray-100 pb-4 mb-4">
-      <button class="mr-2 align-middle" @click="$emit('close')">
+    <div
+      class="sticky top-0 z-20 bg-white border-b border-gray-100 pb-4 mb-4 flex items-center"
+    >
+      <button class="mr-2" @click="$emit('close')">
         <v-remixicon name="riArrowLeftLine" />
       </button>
-      <p class="font-semibold inline-block align-middle">
+      <p class="font-semibold inline-block flex-1">
         {{ t(`workflow.blocks.${data.id}.name`) }}
       </p>
+      <a
+        :title="t('common.docs')"
+        :href="`https://docs.automa.site/blocks/${data.id}.html`"
+        rel="noopener"
+        target="_blank"
+      >
+        <v-remixicon name="riInformationLine" />
+      </a>
     </div>
     <component
       :is="data.editComponent"

@@ -74,20 +74,19 @@
             )
           "
           draggable="true"
-          class="transform select-none cursor-move relative p-4 rounded-lg bg-input transition"
+          class="transform select-none cursor-move relative p-4 rounded-lg bg-input transition group"
           @dragstart="
             $event.dataTransfer.setData('block', JSON.stringify(block))
           "
         >
           <a
-            v-if="block.docs"
-            :href="`https://github.com/Kholid060/automa/wiki/Blocks#${block.id}`"
-            target="_blank"
+            :href="`https://docs.automa.site/blocks/${block.id}.html`"
             :title="t('common.docs')"
+            target="_blank"
             rel="noopener"
-            class="absolute top-px right-2"
+            class="absolute top-px right-2 top-2 text-gray-600 invisible group-hover:visible"
           >
-            &#128712;
+            <v-remixicon name="riInformationLine" size="18" />
           </a>
           <v-remixicon :name="block.icon" size="24" class="mb-2" />
           <p class="leading-tight text-overflow">
