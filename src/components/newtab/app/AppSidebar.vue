@@ -76,8 +76,8 @@ const links = [
   },
   {
     name: t('common.docs', 2),
-    icon: 'riBookOpenLine',
-    url: 'https://github.com/kholid060/automa/wiki',
+    icon: 'riBook3Line',
+    url: 'https://docs.automa.site',
   },
   {
     name: 'GitHub',

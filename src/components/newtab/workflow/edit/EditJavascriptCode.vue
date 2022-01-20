@@ -51,7 +51,7 @@
             <a
               v-for="func in availableFuncs"
               :key="func.id"
-              :href="`https://github.com/Kholid060/automa/wiki/Blocks#${func.id}`"
+              :href="`https://docs.automa.site/blocks/javascript-code.html#${func.id}`"
               target="_blank"
               rel="noopener"
               class="inline-block"
@@ -108,8 +108,8 @@ const emit = defineEmits(['update:data']);
 const { t } = useI18n();
 
 const availableFuncs = [
-  { name: 'automaNextBlock(data)', id: 'automanextblockdata' },
-  { name: 'automaRefData(keyword, path)', id: 'automarefdatakeyword-path' },
+  { name: 'automaNextBlock(data)', id: 'automanextblock-data' },
+  { name: 'automaRefData(keyword, path)', id: 'automarefdata-keyword-path' },
   { name: 'automaResetTimeout', id: 'automaresettimeout' },
 ];
 
@@ -159,7 +159,7 @@ function automaFuncsCompletion(context) {
             <code>automaNextBlock(<i>data</i>)</code>
             <p class="mt-2">
               Execute the next block
-              <a href="https://github.com/Kholid060/automa/wiki/Blocks#automanextblockdata" target="_blank" class="underline">
+              <a href="https://docs.automa.site/blocks/javascript-code.html#automanextblock-data" target="_blank" class="underline">
                 Read more
               </a>
             </p>
@@ -179,7 +179,7 @@ function automaFuncsCompletion(context) {
             <code>automaRefData(<i>keyword</i>, <i>path</i>)</code>
             <p class="mt-2">
               Use this function to
-              <a href="https://github.com/Kholid060/automa/wiki/Features#reference-data" target="_blank" class="underline">
+              <a href="https://docs.automa.site/api-reference/reference-data.html" target="_blank" class="underline">
                 reference data
               </a>
             </p>

@@ -1,7 +1,7 @@
 <template>
   <div class="global-data">
     <a
-      href="https://github.com/Kholid060/automa/wiki/Features#reference-data"
+      href="https://docs.automa.site/api-reference/reference-data.html"
       target="_blank"
       rel="noopener"
       class="inline-block text-primary"

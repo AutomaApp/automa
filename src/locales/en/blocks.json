@@ -107,8 +107,8 @@
           "link": "Click to see more example"
         },
         "select": {
-          "get": "Get spreadsheet data",
-          "update": "Update spreadsheet data"
+          "get": "Get spreadsheet cell values",
+          "update": "Update spreadsheet cell values"
         }
       },
       "active-tab": {

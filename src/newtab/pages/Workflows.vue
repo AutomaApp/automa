@@ -31,7 +31,7 @@
       </div>
       <ui-button
         tag="a"
-        href="https://automa.vercel.app/workflows"
+        href="https://automa.site/workflows"
         target="_blank"
         class="inline-block relative"
         @click="browseWorkflow"
