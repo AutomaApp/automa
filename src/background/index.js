@@ -128,7 +128,7 @@ chrome.runtime.onInstalled.addListener((details) => {
         browser.tabs
           .create({
             active: true,
-            url: browser.runtime.getURL('newtab.html#/workflows'),
+            url: browser.runtime.getURL('newtab.html#/welcome'),
           })
           .catch((error) => {
             console.error(error);

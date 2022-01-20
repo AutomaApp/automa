@@ -76,7 +76,7 @@ const links = [
   },
   {
     name: t('common.docs', 2),
-    icon: 'riBookOpenLine',
+    icon: 'riBook3Line',
     url: 'https://docs.automa.site',
   },
   {

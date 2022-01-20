@@ -2,6 +2,11 @@
   "home": {
     "viewAll": "View all"
   },
+  "welcome": {
+    "title": "Welcome to Automa! 🎉",
+    "text": "Get started by reading the documentation or browsing workflows in the Automa Marketplace.",
+    "marketplace": "Marketplace"
+  },
   "updateMessage": {
     "text1": "Automa has been updated to v{version},",
     "text2": "see what's new."
