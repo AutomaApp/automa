@@ -11,7 +11,16 @@ export default function (key) {
 
   dataKey = objectHasKey(refKeys, dataKey) ? refKeys[dataKey] : dataKey;
 
-  if (dataKey !== 'dataColumns') return { dataKey, path: path || '' };
+  if (dataKey !== 'dataColumns') {
+    if (dataKey === 'loopData' && !path.endsWith('.$index')) {
+      const pathArr = path.split('.');
+      pathArr.splice(1, 0, 'data');
+
+      path = pathArr.join('.');
+    }
+
+    return { dataKey, path: path || '' };
+  }
 
   const pathArr = path?.split('.') ?? [];
   let dataPath = path;

@@ -6,18 +6,22 @@ function loopData(block) {
     const nextBlockId = getBlockConnection(block);
 
     if (this.loopList[data.loopId]) {
-      this.loopList[data.loopId].index += 1;
+      const index = this.loopList[data.loopId].index + 1;
+
+      this.loopList[data.loopId].index = index;
 
       let currentLoopData;
 
       if (data.loopThrough === 'numbers') {
         currentLoopData = this.referenceData.loopData[data.loopId] + 1;
       } else {
-        currentLoopData =
-          this.loopList[data.loopId].data[this.loopList[data.loopId].index];
+        currentLoopData = this.loopList[data.loopId].data[index];
       }
 
-      this.referenceData.loopData[data.loopId] = currentLoopData;
+      this.referenceData.loopData[data.loopId] = {
+        data: currentLoopData,
+        $index: index,
+      };
     } else {
       let currLoopData;
 
@@ -57,7 +61,11 @@ function loopData(block) {
             : data.maxLoop || currLoopData.length,
       };
       /* eslint-disable-next-line */
-      this.referenceData.loopData[data.loopId] = data.loopThrough === 'numbers' ? data.fromNumber : currLoopData[0];
+      this.referenceData.loopData[data.loopId] = {
+        data:
+          data.loopThrough === 'numbers' ? data.fromNumber : currLoopData[0],
+        $index: 0,
+      };
     }
 
     resolve({
