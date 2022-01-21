@@ -31,6 +31,7 @@
     "proxy",
     "alarms",
     "storage",
+    "downloads",
     "webNavigation",
     "unlimitedStorage",
     "<all_urls>"

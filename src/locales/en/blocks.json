@@ -27,6 +27,14 @@
           "text": "Multiple"
         }
       },
+      "browser-event": {
+        "name": "Browser event",
+        "description": "Execute the next block when the event is triggered",
+        "events": "Events",
+        "timeout": "Timeout (milliseconds)",
+        "activeTabLoaded": "Active tab",
+        "setAsActiveTab": "Set as active tab"
+      },
       "blocks-group": {
         "name": "Blocks group",
         "groupName": "Group name",

@@ -6,7 +6,7 @@ async function trigger(block) {
 
   try {
     if (block.data.type === 'visit-web' && this.activeTab.id) {
-      this.activeTab.frames = await executeContentScript(this.activeTab.id);
+      await executeContentScript(this.activeTab.id);
     }
 
     return { nextBlockId, data: '' };
