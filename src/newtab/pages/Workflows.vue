@@ -189,6 +189,7 @@ const { t } = useI18n();
 
 const sorts = ['name', 'createdAt'];
 const menu = [
+  { id: 'duplicate', name: t('common.duplicate'), icon: 'riFileCopyLine' },
   { id: 'export', name: t('common.export'), icon: 'riDownloadLine' },
   { id: 'rename', name: t('common.rename'), icon: 'riPencilLine' },
   { id: 'delete', name: t('common.delete'), icon: 'riDeleteBin7Line' },
@@ -285,6 +286,16 @@ async function handleWorkflowModal() {
     console.error(error);
   }
 }
+function duplicateWorkflow(workflow) {
+  const copyWorkflow = { ...workflow, createdAt: Date.now() };
+  const delKeys = ['$id', 'data', 'id', 'isDisabled'];
+
+  delKeys.forEach((key) => {
+    delete copyWorkflow[key];
+  });
+
+  Workflow.insert({ data: copyWorkflow });
+}
 
 const shortcut = useShortcut(['action:search', 'action:new'], ({ id }) => {
   if (id === 'action:search') {
@@ -298,6 +309,7 @@ const menuHandlers = {
   export: exportWorkflow,
   rename: renameWorkflow,
   delete: deleteWorkflow,
+  duplicate: duplicateWorkflow,
 };
 
 watch(

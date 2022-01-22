@@ -31,7 +31,8 @@
     "disabled": "Disabled",
     "enable": "Enable",
     "fallback": "Fallback",
-    "update": "Update"
+    "update": "Update",
+    "duplicate": "Duplicate"
   },
   "message": {
     "noBlock": "No block",
