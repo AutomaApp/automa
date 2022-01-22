@@ -555,6 +555,7 @@ export const tasks = {
       loopData: '[]',
       description: '',
       referenceKey: '',
+      specificRowAndCol: false,
       loopThrough: 'data-columns',
     },
   },
