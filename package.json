@@ -35,7 +35,7 @@
     "idb": "^7.0.0",
     "mitt": "^3.0.0",
     "mousetrap": "^1.6.5",
-    "nanoid": "3.1.28",
+    "nanoid": "^3.2.0",
     "object-path-immutable": "^4.1.2",
     "papaparse": "^5.3.1",
     "tippy.js": "^6.3.1",
