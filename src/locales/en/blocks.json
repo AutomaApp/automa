@@ -45,7 +45,8 @@
         "name": "Blocks group",
         "groupName": "Group name",
         "description": "Grouping blocks",
-        "dropText": "Drag & drop a block here"
+        "dropText": "Drag & drop a block here",
+        "cantAdd": "Can't add \"{blockName}\" block to the group."
       },
       "trigger": {
         "name": "Trigger",
