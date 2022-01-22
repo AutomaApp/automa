@@ -26,6 +26,7 @@ class Workflow extends Model {
       settings: this.attr({
         blockDelay: 0,
         saveLog: true,
+        debugMode: false,
         onError: 'stop-workflow',
         executedBlockOnWeb: false,
       }),

@@ -52,6 +52,9 @@
       "duplicate": "Duplicate"
     },
     "settings": {
+      "saveLog": "Save workflow log",
+      "executedBlockOnWeb": "Show executed block on web page",
+      "debugMode": "Debug mode",
       "onError": {
         "title": "On workflow error",
         "items": {
@@ -65,9 +68,7 @@
       "blockDelay": {
         "title": "Block delay (milliseconds)",
         "description": "Add delay before executing each of the blocks"
-      },
-      "saveLog": "Save workflow log",
-      "executedBlockOnWeb": "Show executed block on web page"
+      }
     }
   },
   "collection": {

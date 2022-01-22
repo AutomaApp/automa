@@ -2,12 +2,15 @@ import { objectHasKey } from '@/utils/helper';
 import { getBlockConnection } from '../helper';
 
 async function interactionHandler(block, { refData }) {
+  const { executedBlockOnWeb, debugMode } = this.workflow.settings;
+
   const nextBlockId = getBlockConnection(block);
   const messagePayload = {
     ...block,
     refData,
+    debugMode,
+    executedBlockOnWeb,
     frameSelector: this.frameSelector,
-    executedBlockOnWeb: this.workflow.settings?.executedBlockOnWeb,
   };
 
   try {
