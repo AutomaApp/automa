@@ -608,6 +608,24 @@ export const tasks = {
       windowType: 'main-window',
     },
   },
+  'upload-file': {
+    name: 'Upload file',
+    description: 'Upload file into <input type="file"> element',
+    icon: 'riFileUploadLine',
+    component: 'BlockBasic',
+    editComponent: 'EditUploadFile',
+    category: 'interaction',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    refDataKeys: ['selector'],
+    data: {
+      findBy: 'cssSelector',
+      selector: '',
+      filePaths: [],
+    },
+  },
 };
 
 export const categories = {

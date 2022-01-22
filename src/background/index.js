@@ -168,6 +168,37 @@ message.on('open:dashboard', async (url) => {
 message.on('get:sender', (_, sender) => {
   return sender;
 });
+message.on('get:file', (path) => {
+  return new Promise((resolve, reject) => {
+    const isFile = /\.(.*)/.test(path);
+
+    if (!isFile) {
+      reject(new Error(`"${path}" is invalid file path.`));
+      return;
+    }
+
+    const fileUrl = path.startsWith('file://') ? path : `file://${path}`;
+
+    const xhr = new XMLHttpRequest();
+    xhr.responseType = 'blob';
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status === 0 || xhr.status === 200) {
+          const objUrl = URL.createObjectURL(xhr.response);
+
+          resolve({ path, objUrl, type: xhr.response.type });
+        } else {
+          reject(new Error(xhr.statusText));
+        }
+      }
+    };
+    xhr.onerror = function () {
+      reject(new Error(xhr.statusText));
+    };
+    xhr.open('GET', fileUrl);
+    xhr.send();
+  });
+});
 
 message.on('collection:execute', (collection) => {
   const engine = new CollectionEngine(collection, {

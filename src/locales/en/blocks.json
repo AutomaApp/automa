@@ -27,6 +27,12 @@
           "text": "Multiple"
         }
       },
+      "upload-file": {
+        "name": "Upload file",
+        "description": "Upload file into <input type=\"file\"> element",
+        "filePath": "File path",
+        "addFile": "Add file"
+      },
       "browser-event": {
         "name": "Browser event",
         "description": "Execute the next block when the event is triggered",
