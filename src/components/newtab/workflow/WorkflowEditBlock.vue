@@ -6,7 +6,7 @@
       <button class="mr-2" @click="$emit('close')">
         <v-remixicon name="riArrowLeftLine" />
       </button>
-      <p class="font-semibold inline-block flex-1">
+      <p class="font-semibold inline-block flex-1 capitalize">
         {{ t(`workflow.blocks.${data.id}.name`) }}
       </p>
       <a

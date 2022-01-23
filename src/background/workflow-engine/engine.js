@@ -344,11 +344,8 @@ class WorkflowEngine {
       }
 
       await waitTabLoaded(this.activeTab.id);
+      await executeContentScript(this.activeTab.id, options.frameId || 0);
 
-      this.activeTab.frames = await executeContentScript(
-        this.activeTab.id,
-        options.frameId || 0
-      );
       const data = await browser.tabs.sendMessage(
         this.activeTab.id,
         { isBlock: true, ...payload },

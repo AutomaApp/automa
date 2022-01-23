@@ -87,6 +87,7 @@
 import { watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid';
+import { useToast } from 'vue-toastification';
 import draggable from 'vuedraggable';
 import emitter from '@/lib/mitt';
 import { tasks } from '@/utils/shared';
@@ -101,6 +102,7 @@ const props = defineProps({
 });
 
 const { t } = useI18n();
+const toast = useToast();
 const componentId = useComponentId('blocks-group');
 const block = useEditorBlock(`#${componentId}`, props.editor);
 
@@ -149,7 +151,15 @@ function handleDrop(event) {
 
   const { id, data } = droppedBlock;
 
-  if (excludeBlocks.includes(id)) return;
+  if (excludeBlocks.includes(id)) {
+    toast.error(
+      t('workflow.blocks.blocks-group.cantAdd', {
+        blockName: t(`workflow.blocks.${id}.name`),
+      })
+    );
+
+    return;
+  }
 
   block.data.blocks.push({ id, data, itemId: nanoid(5) });
 }

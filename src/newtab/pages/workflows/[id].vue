@@ -409,7 +409,7 @@ onUnmounted(() => {
 <style>
 .ghost-task {
   height: 40px;
-  @apply bg-box-transparent;
+  @apply bg-gray-200;
 }
 .ghost-task:not(.workflow-task) * {
   display: none;

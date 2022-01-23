@@ -27,11 +27,26 @@
           "text": "Multiple"
         }
       },
+      "upload-file": {
+        "name": "Upload file",
+        "description": "Upload file into <input type=\"file\"> element",
+        "filePath": "File path",
+        "addFile": "Add file"
+      },
+      "browser-event": {
+        "name": "Browser event",
+        "description": "Execute the next block when the event is triggered",
+        "events": "Events",
+        "timeout": "Timeout (milliseconds)",
+        "activeTabLoaded": "Active tab",
+        "setAsActiveTab": "Set as active tab"
+      },
       "blocks-group": {
         "name": "Blocks group",
         "groupName": "Group name",
         "description": "Grouping blocks",
-        "dropText": "Drag & drop a block here"
+        "dropText": "Drag & drop a block here",
+        "cantAdd": "Can't add \"{blockName}\" block to the group."
       },
       "trigger": {
         "name": "Trigger",

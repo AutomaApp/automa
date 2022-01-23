@@ -44,12 +44,8 @@ export default async function (tabId, frameId = 0) {
         file: './contentScript.bundle.js',
       });
     }
-
-    const frames = await getFrames(tabId);
-
-    return frames;
   } catch (error) {
     console.error(error);
-    return {};
+    throw error;
   }
 }

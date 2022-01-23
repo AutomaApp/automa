@@ -55,7 +55,7 @@ const emit = defineEmits(['update:modelValue', 'paginate']);
 const { t } = useI18n();
 
 const inputEl = ref(null);
-const maxPage = computed(() => Math.round(props.records / props.perPage) + 1);
+const maxPage = computed(() => Math.ceil(props.records / props.perPage));
 
 function emitEvent(page) {
   emit('update:modelValue', page);

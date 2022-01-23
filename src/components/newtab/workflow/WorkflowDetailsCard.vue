@@ -89,7 +89,7 @@
             <v-remixicon name="riInformationLine" size="18" />
           </a>
           <v-remixicon :name="block.icon" size="24" class="mb-2" />
-          <p class="leading-tight text-overflow">
+          <p class="leading-tight text-overflow capitalize">
             {{ block.name }}
           </p>
         </div>
