@@ -239,7 +239,7 @@
         "buttons": {
           "clear": "清除数据",
           "insert": "插入数据",
-          "import": "导出文件"
+          "import": "导入文件"
         },
         "maxLoop": {
           "title": "循环数据的最大值",
