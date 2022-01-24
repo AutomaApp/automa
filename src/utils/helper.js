@@ -44,9 +44,9 @@ export function convert2DArrayToArrayObj(values) {
       }
 
       currentColumn[key] = values[columnIndex][rowIndex];
-
-      result.push(currentColumn);
     }
+
+    result.push(currentColumn);
   }
 
   return result;
