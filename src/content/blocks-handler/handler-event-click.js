@@ -7,7 +7,7 @@ function eventClick(block) {
         if (element.click) {
           element.click();
         } else {
-          element.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+          element.dispatchEvent(new PointerEvent('click', { bubbles: true }));
         }
       },
       onError(error) {
