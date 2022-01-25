@@ -1,4 +1,3 @@
-import { set as setObjectPath } from 'object-path-immutable';
 import dayjs from '@/lib/dayjs';
 import { objectHasKey } from '@/utils/helper';
 import mustacheReplacer from './mustache-replacer';
@@ -35,24 +34,22 @@ export const funcs = {
 export default function ({ block, refKeys, data: refData }) {
   if (!refKeys || refKeys.length === 0) return block;
 
-  let replacedBlock = { ...block };
-  const data = Object.assign(refData, { funcs });
+  const data = { ...refData, funcs };
+  const copyBlock = JSON.parse(JSON.stringify(block));
 
   refKeys.forEach((blockDataKey) => {
     if (!objectHasKey(block.data, blockDataKey)) return;
 
-    const newDataValue = mustacheReplacer({
-      data,
-      block,
-      str: replacedBlock.data[blockDataKey],
-    });
+    const currentData = copyBlock.data[blockDataKey];
 
-    replacedBlock = setObjectPath(
-      replacedBlock,
-      `data.${blockDataKey}`,
-      newDataValue
-    );
+    if (Array.isArray(currentData)) {
+      currentData.forEach((str, index) => {
+        currentData[index] = mustacheReplacer(str, data);
+      });
+    } else {
+      copyBlock.data[blockDataKey] = mustacheReplacer(currentData, data);
+    }
   });
 
-  return replacedBlock;
+  return copyBlock;
 }
