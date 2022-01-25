@@ -193,7 +193,9 @@ message.on('get:file', (path) => {
       }
     };
     xhr.onerror = function () {
-      reject(new Error(xhr.statusText));
+      reject(
+        new Error(xhr.statusText || `Can't find a file with "${path}" path`)
+      );
     };
     xhr.open('GET', fileUrl);
     xhr.send();
