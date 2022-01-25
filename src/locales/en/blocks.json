@@ -187,6 +187,7 @@
         "name": "Get text",
         "description": "Get text from an element",
         "checkbox": "Save data",
+        "includeTags": "Include HTML tags",
         "prefixText": {
           "placeholder": "Text prefix",
           "title": "Add prefix to the text"

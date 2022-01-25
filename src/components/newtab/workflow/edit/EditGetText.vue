@@ -1,6 +1,6 @@
 <template>
   <edit-interaction-base v-bind="{ data }" @change="updateData">
-    <div class="flex rounded-lg bg-input px-4 items-center transition mt-2">
+    <div class="flex rounded-lg bg-input px-4 items-center transition mt-3">
       <span>/</span>
       <input
         :value="data.regex"
@@ -70,6 +70,13 @@
       @change="updateData({ suffixText: $event })"
     />
     <ui-checkbox
+      :model-value="data.includeTags"
+      class="mt-3"
+      @change="updateData({ includeTags: $event })"
+    >
+      {{ t('workflow.blocks.get-text.includeTags') }}
+    </ui-checkbox>
+    <ui-checkbox
       :model-value="data.addExtraRow"
       class="mt-3"
       @change="updateData({ addExtraRow: $event })"
@@ -125,7 +132,7 @@ const emit = defineEmits(['update:data']);
 const { t } = useI18n();
 
 const workflow = inject('workflow');
-const regexExp = ref(props.data.regexExp);
+const regexExp = ref([...new Set(props.data.regexExp)]);
 
 const exps = [
   { id: 'g', name: 'global' },
@@ -137,15 +144,12 @@ function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }
 function handleExpCheckbox(id, value) {
-  const copy = [...new Set(regexExp.value)];
-
   if (value) {
-    copy.push(id);
+    regexExp.value.push(id);
   } else {
-    copy.splice(copy.indexOf(id), 1);
+    regexExp.value.splice(regexExp.value.indexOf(id), 1);
   }
 
-  regexExp.value = copy;
   updateData({ regexExp: regexExp.value });
 }
 </script>
