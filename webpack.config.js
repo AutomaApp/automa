@@ -43,7 +43,20 @@ const options = {
     popup: path.join(__dirname, 'src', 'popup', 'index.js'),
     background: path.join(__dirname, 'src', 'background', 'index.js'),
     contentScript: path.join(__dirname, 'src', 'content', 'index.js'),
-    services: path.join(__dirname, 'src', 'content', 'services', 'index.js'),
+    shortcutListener: path.join(
+      __dirname,
+      'src',
+      'content',
+      'services',
+      'shortcut-listener.js'
+    ),
+    webService: path.join(
+      __dirname,
+      'src',
+      'content',
+      'services',
+      'web-service.js'
+    ),
     elementSelector: path.join(
       __dirname,
       'src',
@@ -53,7 +66,12 @@ const options = {
     ),
   },
   chromeExtensionBoilerplate: {
-    notHotReload: ['contentScript', 'services', 'elementSelector'],
+    notHotReload: [
+      'contentScript',
+      'webService',
+      'shortcutListener',
+      'elementSelector',
+    ],
   },
   output: {
     path: path.resolve(__dirname, 'build'),

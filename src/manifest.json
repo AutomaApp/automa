@@ -20,9 +20,19 @@
         "<all_urls>"
       ],
       "js": [
-        "services.bundle.js"
+        "shortcutListener.bundle.js"
       ],
       "run_at": "document_end",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "*://*.automa.site/*",
+        "*://automa.vercel.app/*"
+      ],
+      "js": [
+        "webService.bundle.js"
+      ],
       "all_frames": false
     }
   ],
