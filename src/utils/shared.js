@@ -176,6 +176,7 @@ export const tasks = {
       ext: 'png',
       quality: 100,
       dataColumn: '',
+      fullPage: false,
       saveToColumn: false,
       saveToComputer: true,
       captureActiveTab: true,

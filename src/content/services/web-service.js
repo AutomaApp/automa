@@ -25,7 +25,7 @@ function initWebListener() {
 
 async function listenWindowMessage(workflows) {
   try {
-    if (secrets?.webOrigin.includes(window.location.origin)) return;
+    if (!secrets?.webOrigin.includes(window.location.origin)) return;
 
     const db = await openDB('automa', 1, {
       upgrade(event) {
