@@ -261,6 +261,7 @@ export const tasks = {
       regexExp: ['g'],
       dataColumn: '',
       saveData: true,
+      includeTags: false,
       addExtraRow: false,
       extraRowValue: '',
       extraRowDataColumn: '',
