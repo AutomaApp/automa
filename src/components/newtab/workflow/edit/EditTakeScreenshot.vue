@@ -1,6 +1,13 @@
 <template>
   <div class="take-screenshot">
     <ui-checkbox
+      :model-value="data.fullPage"
+      class="mb-2"
+      @change="updateData({ fullPage: $event })"
+    >
+      {{ t('workflow.blocks.take-screenshot.fullPage') }}
+    </ui-checkbox>
+    <ui-checkbox
       :model-value="data.saveToComputer"
       class="mb-2"
       @change="updateData({ saveToComputer: $event })"

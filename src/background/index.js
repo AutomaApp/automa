@@ -165,8 +165,16 @@ message.on('open:dashboard', async (url) => {
     console.error(error);
   }
 });
+message.on('set:active-tab', (tabId) => {
+  return browser.tabs.update(tabId, { active: true });
+});
+
 message.on('get:sender', (_, sender) => {
   return sender;
+});
+message.on('get:tab-screenshot', (options) => {
+  console.log(browser.tabs.captureVisibleTab(options), 'aaa');
+  return browser.tabs.captureVisibleTab(options);
 });
 message.on('get:file', (path) => {
   return new Promise((resolve, reject) => {

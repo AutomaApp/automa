@@ -388,6 +388,7 @@
       },
       "take-screenshot": {
         "name": "Take screenshot",
+        "fullPage": "Take full page screenshot",
         "description": "Take a screenshot of current active tab",
         "imageQuality": "Image quality",
         "saveToColumn": "Save screenshot to column",
