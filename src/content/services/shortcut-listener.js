@@ -17,9 +17,12 @@ function getTriggerBlock(workflow) {
   return trigger;
 }
 
-export default async function (workflows) {
+(async () => {
   try {
-    const { shortcuts } = await browser.storage.local.get('shortcuts');
+    const { shortcuts, workflows } = await browser.storage.local.get([
+      'shortcuts',
+      'workflows',
+    ]);
     const shortcutsArr = Object.entries(shortcuts || {});
 
     if (shortcutsArr.length === 0) return;
@@ -52,4 +55,4 @@ export default async function (workflows) {
   } catch (error) {
     console.error(error);
   }
-}
+})();

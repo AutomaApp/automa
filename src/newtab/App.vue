@@ -42,7 +42,7 @@ const retrieved = ref(false);
 
 const currentVersion = browser.runtime.getManifest().version;
 const prevVersion = localStorage.getItem('ext-version') || '0.0.0';
-const isUpdated = ref(compare(currentVersion, prevVersion, '>'));
+const isUpdated = ref(false);
 
 function handleStorageChanged(change) {
   if (change.logs) {
@@ -71,6 +71,10 @@ window.addEventListener('beforeunload', () => {
 
 onMounted(async () => {
   try {
+    const { isFirstTime } = await browser.storage.local.get('isFirstTime');
+
+    isUpdated.value = !isFirstTime && compare(currentVersion, prevVersion, '>');
+
     await store.dispatch('retrieve', ['workflows', 'logs', 'collections']);
     await store.dispatch('retrieveWorkflowState');
 

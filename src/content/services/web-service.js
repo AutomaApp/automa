@@ -1,6 +1,5 @@
 import { openDB } from 'idb';
 import { nanoid } from 'nanoid';
-import secrets from 'secrets';
 import browser from 'webextension-polyfill';
 import { objectHasKey } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
@@ -23,10 +22,14 @@ function initWebListener() {
   return { on };
 }
 
-async function listenWindowMessage(workflows) {
+(async () => {
   try {
-    if (!secrets?.webOrigin.includes(window.location.origin)) return;
+    document.body.setAttribute(
+      'data-atm-ext-installed',
+      browser.runtime.getManifest().version
+    );
 
+    const { workflows } = await browser.storage.local.get('workflows');
     const db = await openDB('automa', 1, {
       upgrade(event) {
         event.createObjectStore('store');
@@ -61,13 +64,4 @@ async function listenWindowMessage(workflows) {
   } catch (error) {
     console.error(error);
   }
-}
-
-export default async function (workflows) {
-  await listenWindowMessage(workflows);
-
-  document.body.setAttribute(
-    'data-atm-ext-installed',
-    browser.runtime.getManifest().version
-  );
-}
+})();
