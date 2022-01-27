@@ -39,6 +39,8 @@
         <div
           class="p-2 rounded-lg bg-input space-x-2 flex items-center group"
           style="cursor: grab"
+          @dragstart="onDragStart(element, $event)"
+          @dragend="onDragEnd(element.itemId)"
         >
           <v-remixicon
             :name="tasks[element.id].icon"
@@ -109,7 +111,6 @@ const block = useEditorBlock(`#${componentId}`, props.editor);
 const excludeBlocks = [
   'trigger',
   'repeat-task',
-  'export-data',
   'loop-data',
   'loop-breakpoint',
   'blocks-group',
@@ -118,6 +119,28 @@ const excludeBlocks = [
   'delay',
 ];
 
+function onDragStart(item, event) {
+  event.dataTransfer.setData(
+    'block',
+    JSON.stringify({ ...tasks[item.id], ...item, fromGroup: true })
+  );
+}
+function onDragEnd(itemId) {
+  setTimeout(() => {
+    const blockEl = document.querySelector(`[group-item-id="${itemId}"]`);
+
+    if (blockEl) {
+      const blockIndex = block.data.blocks.findIndex(
+        (item) => item.itemId === itemId
+      );
+
+      if (blockIndex !== -1) {
+        emitter.emit('editor:delete-block', { itemId, isInGroup: true });
+        block.data.blocks.splice(blockIndex, 1);
+      }
+    }
+  }, 200);
+}
 function handleDataChange({ detail }) {
   if (!detail) return;
 
@@ -147,9 +170,9 @@ function handleDrop(event) {
 
   const droppedBlock = JSON.parse(event.dataTransfer.getData('block') || null);
 
-  if (!droppedBlock) return;
+  if (!droppedBlock || droppedBlock.fromGroup) return;
 
-  const { id, data } = droppedBlock;
+  const { id, data, blockId } = droppedBlock;
 
   if (excludeBlocks.includes(id)) {
     toast.error(
@@ -159,6 +182,10 @@ function handleDrop(event) {
     );
 
     return;
+  }
+
+  if (blockId) {
+    props.editor.removeNodeId(`node-${blockId}`);
   }
 
   block.data.blocks.push({ id, data, itemId: nanoid(5) });

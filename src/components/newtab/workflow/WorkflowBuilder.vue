@@ -160,7 +160,7 @@ export default {
         block.id === 'trigger' &&
         editor.value.getNodesFromName('trigger').length !== 0;
 
-      if (!block || isTriggerExists) return;
+      if (isTriggerExists) return;
 
       const xPosition =
         clientX *
@@ -188,6 +188,12 @@ export default {
         block.component,
         'vue'
       );
+
+      if (block.fromGroup) {
+        const blockEl = document.getElementById(`node-${blockId}`);
+
+        blockEl.setAttribute('group-item-id', block.itemId);
+      }
 
       if (isConnectionEl(target)) {
         target.classList.remove('selected');

@@ -10,6 +10,7 @@
   "workflow": {
     "blocks": {
       "base": {
+        "moveToGroup": "Move block to blocks group",
         "selector": "Element selector",
         "findElement": {
           "placeholder": "Find element by",
