@@ -66,6 +66,7 @@
         "useRegex": "Use regex",
         "shortcut": {
           "tooltip": "Record shortcut",
+          "stopRecord": "Stop record",
           "checkboxTitle": "Execute shortcut even when you're in an input element",
           "checkbox": "Active while in input",
           "note": "Note: keyboard shortcut only working when you're on a webpage"
@@ -85,6 +86,7 @@
           "date": "On a specific date",
           "specific-day": "On a specific day",
           "visit-web": "When visit a website",
+          "on-startup": "On browser startup",
           "keyboard-shortcut": "Keyboard shortcut"
         }
       },

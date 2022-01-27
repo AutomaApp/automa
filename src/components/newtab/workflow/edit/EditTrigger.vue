@@ -164,7 +164,13 @@
             :placeholder="t('workflow.blocks.trigger.forms.shortcut')"
           />
           <ui-button
-            v-tooltip="t('workflow.blocks.trigger.shortcut.tooltip')"
+            v-tooltip="
+              t(
+                `workflow.blocks.trigger.shortcut.${
+                  recordKeys.isRecording ? 'stopRecord' : 'tooltip'
+                }`
+              )
+            "
             icon
             @click="toggleRecordKeys"
           >
@@ -213,6 +219,7 @@ const triggers = [
   'interval',
   'date',
   'specific-day',
+  'on-startup',
   'visit-web',
   'keyboard-shortcut',
 ];

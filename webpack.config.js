@@ -199,9 +199,6 @@ if (env.NODE_ENV === 'development') {
         extractComments: false,
       }),
     ],
-    splitChunks: {
-      chunks: ({ name }) => ['elementSelector', 'newtab'].includes(name),
-    },
   };
 }
 

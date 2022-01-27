@@ -136,6 +136,23 @@ chrome.runtime.onInstalled.addListener((details) => {
       });
   }
 });
+chrome.runtime.onStartup.addListener(async () => {
+  const { onStartupTriggers, workflows } = await browser.storage.local.get([
+    'onStartupTriggers',
+    'workflows',
+  ]);
+
+  (onStartupTriggers || []).forEach((workflowId, index) => {
+    const findWorkflow = workflows.find(({ id }) => id === workflowId);
+
+    if (findWorkflow) {
+      workflow.execute(findWorkflow);
+    } else {
+      onStartupTriggers.splice(index, 1);
+    }
+  });
+  await browser.storage.local.set({ onStartupTriggers });
+});
 
 const message = new MessageListener('background');
 
@@ -218,8 +235,8 @@ message.on('collection:execute', (collection) => {
   engine.init();
 });
 
-message.on('workflow:execute', (param) => {
-  workflow.execute(param);
+message.on('workflow:execute', (workflowData) => {
+  workflow.execute(workflowData);
 });
 message.on('workflow:stop', async (id) => {
   await workflow.states.stop(id);
