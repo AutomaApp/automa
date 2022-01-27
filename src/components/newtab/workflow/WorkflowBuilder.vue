@@ -316,7 +316,7 @@ export default {
       if (props.data) {
         let data =
           typeof props.data === 'string'
-            ? parseJSON(props.data.replace(/BlockNewTab/g, 'BlockBasic'), null)
+            ? parseJSON(props.data, null)
             : props.data;
 
         if (!data) return;
@@ -332,22 +332,22 @@ export default {
           const newDrawflowData = Object.entries(
             data.drawflow.Home.data
           ).reduce((obj, [key, value]) => {
-            const newBlockData = defu(value, tasks[value.name]);
-
-            obj[key] = newBlockData;
+            obj[key] = {
+              ...value,
+              html: tasks[value.name].component,
+              data: defu({}, value.data, tasks[value.name].data),
+            };
 
             return obj;
           }, {});
 
-          const drawflowData = {
+          data = {
             drawflow: { Home: { data: newDrawflowData } },
           };
 
-          data = drawflowData;
-
           emit('update', {
             version: currentExtVersion,
-            drawflow: JSON.stringify(drawflowData),
+            drawflow: JSON.stringify(data),
           });
         }
 

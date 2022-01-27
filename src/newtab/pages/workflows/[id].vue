@@ -164,11 +164,9 @@ import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import defu from 'defu';
 import emitter from '@/lib/mitt';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
-import { tasks } from '@/utils/shared';
 import { sendMessage } from '@/utils/message';
 import { debounce, isObject } from '@/utils/helper';
 import { exportWorkflow } from '@/utils/workflow-data';
@@ -322,7 +320,7 @@ function saveWorkflow() {
 }
 function editBlock(data) {
   state.isEditBlock = true;
-  state.blockData = defu(data, tasks[data.id] || {});
+  state.blockData = data;
 }
 function executeWorkflow() {
   if (editor.value.getNodesFromName('trigger').length === 0) {
