@@ -1,11 +1,13 @@
 import browser from 'webextension-polyfill';
 import { MessageListener } from '@/utils/message';
 import { registerSpecificDay } from '../utils/workflow-trigger';
+import { parseJSON } from '@/utils/helper';
 import WorkflowState from './workflow-state';
 import CollectionEngine from './collection-engine';
 import WorkflowEngine from './workflow-engine/engine';
 import blocksHandler from './workflow-engine/blocks-handler';
 import WorkflowLogger from './workflow-logger';
+import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
 
 const storage = {
   async get(key) {
@@ -36,6 +38,16 @@ const workflow = {
     return findWorkflow;
   },
   execute(workflowData, options) {
+    if (workflowData.isProtected) {
+      const flow = parseJSON(workflowData.drawflow, null);
+
+      if (!flow) {
+        const pass = getWorkflowPass(workflowData.pass);
+
+        workflowData.drawflow = decryptFlow(workflowData, pass);
+      }
+    }
+
     const engine = new WorkflowEngine(workflowData, {
       ...options,
       blocksHandler,
@@ -190,7 +202,6 @@ message.on('get:sender', (_, sender) => {
   return sender;
 });
 message.on('get:tab-screenshot', (options) => {
-  console.log(browser.tabs.captureVisibleTab(options), 'aaa');
   return browser.tabs.captureVisibleTab(options);
 });
 message.on('get:file', (path) => {

@@ -1,10 +1,15 @@
-import { parseJSON, fileSaver, openFilePicker } from './helper';
+import { parseJSON, fileSaver, openFilePicker, isObject } from './helper';
 import Workflow from '@/models/workflow';
 
 export function importWorkflow() {
   openFilePicker(['application/json'])
     .then((file) => {
       const reader = new FileReader();
+      const getDrawflow = ({ drawflow }) => {
+        if (isObject(drawflow)) return JSON.stringify(drawflow);
+
+        return drawflow;
+      };
 
       reader.onload = ({ target }) => {
         const workflow = JSON.parse(target.result);
@@ -20,6 +25,7 @@ export function importWorkflow() {
             Workflow.insert({
               data: {
                 ...workflow.includedWorkflows[workflowId],
+                drawflow: getDrawflow(workflow.includedWorkflows[workflowId]),
                 id: workflowId,
                 createdAt: Date.now(),
               },
@@ -29,7 +35,13 @@ export function importWorkflow() {
           delete workflow.includedWorkflows;
         }
 
-        Workflow.insert({ data: { ...workflow, createdAt: Date.now() } });
+        Workflow.insert({
+          data: {
+            ...workflow,
+            drawflow: getDrawflow(workflow),
+            createdAt: Date.now(),
+          },
+        });
       };
 
       reader.readAsText(file);

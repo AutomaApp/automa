@@ -31,6 +31,20 @@
     "add": "Add workflow",
     "clickToEnable": "Click to enable",
     "toggleSidebar": "Toggle sidebar",
+    "protect": {
+      "title": "Protect workflow",
+      "remove": "Remove protection",
+      "button": "Protect",
+      "note": "Note: you must remember this password, this password will be required to edit and delete the workflow later on."
+    },
+    "locked": {
+      "title": "This Workflow is Protected",
+      "body": "Input the password to unlock it",
+      "unlock": "Unlock",
+      "messages": {
+        "incorrect-password": "Incorrect password"
+      }
+    },
     "state": {
       "executeBy": "Executed by: \"{name}\""
     },

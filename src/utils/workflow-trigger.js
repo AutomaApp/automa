@@ -142,7 +142,6 @@ export async function registerOnStartup(workflowId) {
   const startupTriggers = onStartupTriggers || [];
 
   startupTriggers.push(workflowId);
-  console.log(startupTriggers);
 
   await browser.storage.local.set({ onStartupTriggers: startupTriggers });
 }

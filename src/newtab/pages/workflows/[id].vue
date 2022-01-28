@@ -1,5 +1,39 @@
 <template>
-  <div class="flex h-screen">
+  <div v-if="protectionState.needed" class="my-12 mx-auto max-w-md w-full">
+    <div class="inline-block p-4 bg-green-200 mb-4 rounded-full">
+      <v-remixicon name="riShieldKeyholeLine" size="52" />
+    </div>
+    <h1 class="text-2xl font-semibold">
+      {{ t('workflow.locked.title') }}
+    </h1>
+    <p class="text-gray-600 text-lg">{{ t('workflow.locked.body') }}</p>
+    <form class="flex items-center mt-6" @submit.prevent="unlockWorkflow">
+      <ui-input
+        v-model="protectionState.password"
+        :placeholder="t('common.password')"
+        :type="protectionState.showPassword ? 'text' : 'password'"
+        autofocus
+        class="flex-1 mr-4"
+      >
+        <template #append>
+          <v-remixicon
+            :name="protectionState.showPassword ? 'riEyeOffLine' : 'riEyeLine'"
+            class="absolute right-2"
+            @click="
+              protectionState.showPassword = !protectionState.showPassword
+            "
+          />
+        </template>
+      </ui-input>
+      <ui-button variant="accent">
+        {{ t('workflow.locked.unlock') }}
+      </ui-button>
+    </form>
+    <p v-if="protectionState.message" class="ml-2 text-red-500">
+      {{ t(`workflow.locked.messages.${protectionState.message}`) }}
+    </p>
+  </div>
+  <div v-else class="flex h-screen">
     <div
       v-if="state.showSidebar"
       class="w-80 bg-white py-6 relative border-l border-gray-100 flex flex-col"
@@ -60,13 +94,14 @@
           @rename="renameWorkflow"
           @update="updateWorkflow"
           @delete="deleteWorkflow"
+          @protect="toggleProtection"
         />
       </div>
       <keep-alive>
         <workflow-builder
-          v-if="activeTab === 'editor'"
+          v-if="activeTab === 'editor' && state.drawflow"
           class="h-full w-full"
-          :data="workflow.drawflow"
+          :data="state.drawflow"
           :version="workflow.version"
           @update="updateWorkflow"
           @load="editor = $event"
@@ -164,17 +199,25 @@ import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import { nanoid } from 'nanoid';
+import defu from 'defu';
+import AES from 'crypto-js/aes';
+import encUtf8 from 'crypto-js/enc-utf8';
 import emitter from '@/lib/mitt';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
 import { sendMessage } from '@/utils/message';
 import { debounce, isObject } from '@/utils/helper';
 import { exportWorkflow } from '@/utils/workflow-data';
+import { tasks } from '@/utils/shared';
 import Log from '@/models/log';
+import getPassKey from '@/utils/get-pass-key';
+import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
 import Workflow from '@/models/workflow';
 import workflowTrigger from '@/utils/workflow-trigger';
 import WorkflowActions from '@/components/newtab/workflow/WorkflowActions.vue';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';
+import WorkflowProtect from '@/components/newtab/workflow/WorkflowProtect.vue';
 import WorkflowSettings from '@/components/newtab/workflow/WorkflowSettings.vue';
 import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
@@ -203,6 +246,11 @@ const workflowModals = {
     component: WorkflowGlobalData,
     title: t('common.globalData'),
   },
+  'protect-workflow': {
+    icon: 'riShieldKeyholeLine',
+    component: WorkflowProtect,
+    title: t('workflow.protect.title'),
+  },
   settings: {
     icon: 'riSettings3Line',
     component: WorkflowSettings,
@@ -215,6 +263,7 @@ const activeTab = shallowRef('editor');
 const state = reactive({
   blockData: {},
   modalName: '',
+  drawflow: null,
   showModal: false,
   showSidebar: true,
   isEditBlock: false,
@@ -224,6 +273,12 @@ const renameModal = reactive({
   show: false,
   name: '',
   description: '',
+});
+const protectionState = reactive({
+  message: '',
+  password: '',
+  needed: false,
+  showPassword: false,
 });
 
 const workflowState = computed(() =>
@@ -266,6 +321,39 @@ function deleteLog(logId) {
     store.dispatch('saveToStorage', 'logs');
   });
 }
+function toggleProtection() {
+  if (workflow.value.isProtected) {
+    const pass = getPassKey(nanoid());
+    const password = AES.decrypt(
+      workflow.value.pass.substring(64),
+      pass
+    ).toString(encUtf8);
+    const decryptedFlow = decryptFlow(workflow.value, password);
+
+    updateWorkflow({
+      pass: '',
+      isProtected: false,
+      drawflow: decryptedFlow,
+    });
+  } else {
+    state.showModal = true;
+    state.modalName = 'protect-workflow';
+  }
+}
+function unlockWorkflow() {
+  protectionState.message = '';
+
+  const decryptedFlow = decryptFlow(workflow.value, protectionState.password);
+
+  if (decryptedFlow.isError) {
+    protectionState.message = decryptedFlow.message;
+    return;
+  }
+
+  state.drawflow = decryptedFlow;
+  protectionState.password = '';
+  protectionState.needed = false;
+}
 function toggleSidebar() {
   state.showSidebar = !state.showSidebar;
   localStorage.setItem('workflow:sidebar', state.showSidebar);
@@ -302,25 +390,33 @@ function updateNameAndDesc() {
     });
   });
 }
-function saveWorkflow() {
-  const data = editor.value.export();
+async function saveWorkflow() {
+  try {
+    let flow = JSON.stringify(editor.value.export());
 
-  updateWorkflow({ drawflow: JSON.stringify(data) }).then(() => {
-    const [triggerBlockId] = editor.value.getNodesFromName('trigger');
-
-    if (triggerBlockId) {
-      workflowTrigger.register(
-        workflowId,
-        editor.value.getNodeFromId(triggerBlockId)
-      );
+    if (workflow.value.isProtected) {
+      flow = AES.encrypt(flow, getWorkflowPass(workflow.value.pass)).toString();
     }
 
-    state.isDataChanged = false;
-  });
+    updateWorkflow({ drawflow: flow }).then(() => {
+      const [triggerBlockId] = editor.value.getNodesFromName('trigger');
+
+      if (triggerBlockId) {
+        workflowTrigger.register(
+          workflowId,
+          editor.value.getNodeFromId(triggerBlockId)
+        );
+      }
+
+      state.isDataChanged = false;
+    });
+  } catch (error) {
+    console.error(error);
+  }
 }
 function editBlock(data) {
   state.isEditBlock = true;
-  state.blockData = data;
+  state.blockData = defu(data, tasks[data.id] || {});
 }
 function executeWorkflow() {
   if (editor.value.getNodesFromName('trigger').length === 0) {
@@ -331,8 +427,8 @@ function executeWorkflow() {
 
   const payload = {
     ...workflow.value,
-    drawflow: editor.value.export(),
     isTesting: state.isDataChanged,
+    drawflow: JSON.stringify(editor.value.export()),
   };
 
   sendMessage('workflow:execute', payload, 'background');
@@ -382,6 +478,13 @@ onMounted(() => {
 
   if (!isWorkflowExists) {
     router.push('/workflows');
+    return;
+  }
+
+  if (workflow.value.isProtected) {
+    protectionState.needed = true;
+  } else {
+    state.drawflow = workflow.value.drawflow;
   }
 
   state.showSidebar =

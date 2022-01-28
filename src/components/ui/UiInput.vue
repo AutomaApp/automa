@@ -1,48 +1,50 @@
 <template>
   <div class="inline-block input-ui">
-    <label class="relative">
-      <span
-        v-if="label || $slots.label"
-        class="text-sm dark:text-gray-200 text-gray-600 mb-1 ml-1"
-      >
+    <label v-if="label || $slots.label" :for="componentId">
+      <span class="text-sm dark:text-gray-200 text-gray-600 mb-1 ml-1">
         <slot name="label">{{ label }}</slot>
       </span>
-      <div class="flex items-center">
-        <slot name="prepend">
-          <v-remixicon
-            v-if="prependIcon"
-            class="ml-2 dark:text-gray-200 text-gray-600 absolute left-0"
-            :name="prependIcon"
-          ></v-remixicon>
-        </slot>
-        <input
-          v-autofocus="autofocus"
-          v-bind="{
-            readonly: disabled || readonly || null,
-            placeholder,
-            type,
-            autofocus,
-            min,
-            max,
-            list,
-          }"
-          :class="{
+    </label>
+    <div class="flex items-center relative w-full">
+      <slot name="prepend">
+        <v-remixicon
+          v-if="prependIcon"
+          class="ml-2 dark:text-gray-200 text-gray-600 absolute left-0"
+          :name="prependIcon"
+        ></v-remixicon>
+      </slot>
+      <input
+        v-bind="{
+          readonly: disabled || readonly || null,
+          placeholder,
+          type,
+          autofocus,
+          min,
+          max,
+          list,
+        }"
+        :id="componentId"
+        v-autofocus="autofocus"
+        :class="[
+          inputClass,
+          {
             'opacity-75 pointer-events-none': disabled,
             'pl-10': prependIcon || $slots.prepend,
             'appearance-none': list,
-          }"
-          :value="modelValue"
-          class="py-2 px-4 rounded-lg w-full bg-input bg-transparent transition"
-          @keydown="$emit('keydown', $event)"
-          @blur="$emit('blur', $event)"
-          @input="emitValue"
-        />
-        <slot name="append" />
-      </div>
-    </label>
+          },
+        ]"
+        :value="modelValue"
+        class="py-2 px-4 rounded-lg w-full bg-input bg-transparent transition"
+        @keydown="$emit('keydown', $event)"
+        @blur="$emit('blur', $event)"
+        @input="emitValue"
+      />
+      <slot name="append" />
+    </div>
   </div>
 </template>
 <script>
+import { useComponentId } from '@/composable/componentId';
 /* eslint-disable vue/require-prop-types */
 export default {
   props: {
@@ -63,6 +65,10 @@ export default {
     },
     modelValue: {
       type: [String, Number],
+      default: '',
+    },
+    inputClass: {
+      type: String,
       default: '',
     },
     prependIcon: {
@@ -96,6 +102,8 @@ export default {
   },
   emits: ['update:modelValue', 'change', 'keydown', 'blur'],
   setup(props, { emit }) {
+    const componentId = useComponentId('ui-input');
+
     function emitValue(event) {
       let { value } = event.target;
 
@@ -111,6 +119,7 @@ export default {
 
     return {
       emitValue,
+      componentId,
     };
   },
 };

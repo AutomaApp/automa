@@ -32,7 +32,8 @@
     "enable": "Enable",
     "fallback": "Fallback",
     "update": "Update",
-    "duplicate": "Duplicate"
+    "duplicate": "Duplicate",
+    "password": "Password"
   },
   "message": {
     "noBlock": "No block",
