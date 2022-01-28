@@ -1,13 +1,26 @@
 import browser from 'webextension-polyfill';
 import WorkflowEngine from '../engine';
 import { getBlockConnection } from '../helper';
-import { isWhitespace } from '@/utils/helper';
+import { isWhitespace, parseJSON } from '@/utils/helper';
+import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
 
 function workflowListener(workflow, options) {
   return new Promise((resolve, reject) => {
+    if (workflow.isProtected) {
+      const flow = parseJSON(workflow.drawflow, null);
+
+      if (!flow) {
+        const pass = getWorkflowPass(workflow.pass);
+
+        workflow.drawflow = decryptFlow(workflow, pass);
+      }
+    }
+
     const engine = new WorkflowEngine(workflow, options);
     engine.init();
     engine.on('destroyed', ({ id, status, message }) => {
+      options.events.onDestroyed(engine);
+
       if (status === 'error') {
         const error = new Error(message);
         error.data = { logId: id };
@@ -23,9 +36,8 @@ function workflowListener(workflow, options) {
   });
 }
 
-async function executeWorkflow(block) {
-  const nextBlockId = getBlockConnection(block);
-  const { data } = block;
+async function executeWorkflow({ outputs, data }) {
+  const nextBlockId = getBlockConnection({ outputs });
 
   try {
     if (data.workflowId === '') throw new Error('empty-workflow');
@@ -47,6 +59,22 @@ async function executeWorkflow(block) {
       events: {
         onInit: (engine) => {
           this.childWorkflowId = engine.id;
+        },
+        onDestroyed: (engine) => {
+          if (data.executeId) {
+            const { dataColumns, globalData, googleSheets } =
+              engine.referenceData;
+
+            this.referenceData.workflow[data.executeId] = {
+              dataColumns,
+              globalData,
+              googleSheets,
+            };
+          }
+          console.log(
+            'destroyed: ',
+            this.referenceData.workflow[data.executeId]
+          );
         },
       },
       states: this.states,

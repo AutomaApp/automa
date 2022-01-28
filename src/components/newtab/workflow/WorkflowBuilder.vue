@@ -83,7 +83,7 @@ export default {
       default: '',
     },
   },
-  emits: ['load', 'deleteBlock', 'update'],
+  emits: ['load', 'deleteBlock', 'update', 'save'],
   setup(props, { emit }) {
     useGroupTooltip();
     const { t } = useI18n();
@@ -351,13 +351,16 @@ export default {
             drawflow: { Home: { data: newDrawflowData } },
           };
 
-          emit('update', {
-            version: currentExtVersion,
-            drawflow: JSON.stringify(data),
-          });
+          emit('update', { version: currentExtVersion });
         }
 
         editor.value.import(data);
+
+        if (isOldWorkflow) {
+          setTimeout(() => {
+            emit('save');
+          }, 200);
+        }
       } else {
         editor.value.addNode(
           'trigger',

@@ -43,6 +43,7 @@ export const tasks = {
     refDataKeys: ['globalData'],
     data: {
       workflowId: '',
+      executeId: '',
       globalData: '',
     },
   },

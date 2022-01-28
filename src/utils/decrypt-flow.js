@@ -2,6 +2,7 @@ import { nanoid } from 'nanoid';
 import hmacSHA256 from 'crypto-js/hmac-sha256';
 import AES from 'crypto-js/aes';
 import encUtf8 from 'crypto-js/enc-utf8';
+import { parseJSON } from './helper';
 import getPassKey from './get-pass-key';
 
 export function getWorkflowPass(pass) {
@@ -20,6 +21,9 @@ export default function ({ pass, drawflow }, password) {
       isError: true,
       message: 'incorrect-password',
     };
+
+  const isDecrypted = parseJSON(drawflow, null);
+  if (isDecrypted) return isDecrypted;
 
   return AES.decrypt(drawflow, password).toString(encUtf8);
 }

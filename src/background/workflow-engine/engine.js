@@ -45,6 +45,7 @@ class WorkflowEngine {
     };
     this.referenceData = {
       loopData: {},
+      workflow: {},
       dataColumns: [],
       googleSheets: {},
       globalData: parseJSON(globalDataValue, globalDataValue),

@@ -99,10 +99,11 @@
       </div>
       <keep-alive>
         <workflow-builder
-          v-if="activeTab === 'editor' && state.drawflow"
+          v-if="activeTab === 'editor' && state.drawflow !== null"
           class="h-full w-full"
           :data="state.drawflow"
           :version="workflow.version"
+          @save="saveWorkflow"
           @update="updateWorkflow"
           @load="editor = $event"
           @deleteBlock="deleteBlock"
@@ -480,7 +481,7 @@ onMounted(() => {
     router.push('/workflows');
     return;
   }
-
+  console.log(workflow.value, state.drawflow);
   if (workflow.value.isProtected) {
     protectionState.needed = true;
   } else {
