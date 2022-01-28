@@ -89,7 +89,7 @@
           :is-data-changed="state.isDataChanged"
           @showModal="(state.modalName = $event), (state.showModal = true)"
           @save="saveWorkflow"
-          @export="exportWorkflow(workflow)"
+          @export="workflowExporter"
           @execute="executeWorkflow"
           @rename="renameWorkflow"
           @update="updateWorkflow"
@@ -200,10 +200,8 @@ import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { nanoid } from 'nanoid';
 import defu from 'defu';
 import AES from 'crypto-js/aes';
-import encUtf8 from 'crypto-js/enc-utf8';
 import emitter from '@/lib/mitt';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
@@ -212,7 +210,6 @@ import { debounce, isObject } from '@/utils/helper';
 import { exportWorkflow } from '@/utils/workflow-data';
 import { tasks } from '@/utils/shared';
 import Log from '@/models/log';
-import getPassKey from '@/utils/get-pass-key';
 import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
 import Workflow from '@/models/workflow';
 import workflowTrigger from '@/utils/workflow-trigger';
@@ -324,12 +321,10 @@ function deleteLog(logId) {
 }
 function toggleProtection() {
   if (workflow.value.isProtected) {
-    const pass = getPassKey(nanoid());
-    const password = AES.decrypt(
-      workflow.value.pass.substring(64),
-      pass
-    ).toString(encUtf8);
-    const decryptedFlow = decryptFlow(workflow.value, password);
+    const decryptedFlow = decryptFlow(
+      workflow.value,
+      getWorkflowPass(workflow.value.pass)
+    );
 
     updateWorkflow({
       pass: '',
@@ -340,6 +335,19 @@ function toggleProtection() {
     state.showModal = true;
     state.modalName = 'protect-workflow';
   }
+}
+function workflowExporter() {
+  const currentWorkflow = { ...workflow.value };
+
+  if (currentWorkflow.isProtected) {
+    currentWorkflow.drawflow = decryptFlow(
+      workflow.value,
+      getWorkflowPass(workflow.value.pass)
+    );
+    delete currentWorkflow.isProtected;
+  }
+
+  exportWorkflow(currentWorkflow);
 }
 function unlockWorkflow() {
   protectionState.message = '';
@@ -394,19 +402,16 @@ function updateNameAndDesc() {
 async function saveWorkflow() {
   try {
     let flow = JSON.stringify(editor.value.export());
+    const [triggerBlockId] = editor.value.getNodesFromName('trigger');
+    const triggerBlock = editor.value.getNodeFromId(triggerBlockId);
 
     if (workflow.value.isProtected) {
       flow = AES.encrypt(flow, getWorkflowPass(workflow.value.pass)).toString();
     }
-
-    updateWorkflow({ drawflow: flow }).then(() => {
-      const [triggerBlockId] = editor.value.getNodesFromName('trigger');
-
-      if (triggerBlockId) {
-        workflowTrigger.register(
-          workflowId,
-          editor.value.getNodeFromId(triggerBlockId)
-        );
+    console.log(triggerBlock);
+    updateWorkflow({ drawflow: flow, trigger: triggerBlock }).then(() => {
+      if (triggerBlock) {
+        workflowTrigger.register(workflowId, triggerBlock);
       }
 
       state.isDataChanged = false;
@@ -481,7 +486,7 @@ onMounted(() => {
     router.push('/workflows');
     return;
   }
-  console.log(workflow.value, state.drawflow);
+
   if (workflow.value.isProtected) {
     protectionState.needed = true;
   } else {

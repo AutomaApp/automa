@@ -52,6 +52,8 @@ export function importWorkflow() {
 }
 
 function convertWorkflow(workflow) {
+  if (!workflow) return null;
+
   const keys = [
     'name',
     'icon',
@@ -83,14 +85,18 @@ function findIncludedWorkflows({ drawflow }, maxDepth = 3, workflows = {}) {
     if (name !== 'execute-workflow' || workflows[data.workflowId]) return;
 
     const workflow = Workflow.find(data.workflowId);
-    workflows[data.workflowId] = convertWorkflow(workflow);
 
-    findIncludedWorkflows(workflow, maxDepth - 1, workflows);
+    if (workflow && !workflow.isProtected) {
+      workflows[data.workflowId] = convertWorkflow(workflow);
+      findIncludedWorkflows(workflow, maxDepth - 1, workflows);
+    }
   });
 
   return workflows;
 }
 export function exportWorkflow(workflow) {
+  if (workflow.isProtected) return;
+
   const includedWorkflows = findIncludedWorkflows(workflow);
   const content = convertWorkflow(workflow);
 

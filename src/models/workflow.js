@@ -20,6 +20,7 @@ class Workflow extends Model {
       dataColumns: this.attr([]),
       description: this.string(''),
       pass: this.string(''),
+      trigger: this.attr(null),
       isProtected: this.boolean(false),
       version: this.string(''),
       globalData: this.string('[{ "key": "value" }]'),

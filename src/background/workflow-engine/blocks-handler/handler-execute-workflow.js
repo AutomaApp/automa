@@ -71,10 +71,6 @@ async function executeWorkflow({ outputs, data }) {
               googleSheets,
             };
           }
-          console.log(
-            'destroyed: ',
-            this.referenceData.workflow[data.executeId]
-          );
         },
       },
       states: this.states,
