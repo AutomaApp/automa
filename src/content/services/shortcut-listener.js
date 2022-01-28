@@ -6,17 +6,6 @@ Mousetrap.prototype.stopCallback = function () {
   return false;
 };
 
-function getTriggerBlock(workflow) {
-  const drawflow = JSON.parse(workflow?.drawflow || '{}');
-
-  if (!drawflow?.drawflow?.Home?.data) return null;
-
-  const blocks = Object.values(drawflow.drawflow.Home.data);
-  const trigger = blocks.find(({ name }) => name === 'trigger');
-
-  return trigger;
-}
-
 (async () => {
   try {
     const { shortcuts, workflows } = await browser.storage.local.get([
@@ -28,12 +17,12 @@ function getTriggerBlock(workflow) {
     if (shortcutsArr.length === 0) return;
 
     const keyboardShortcuts = shortcutsArr.reduce((acc, [id, value]) => {
-      const workflow = [...workflows].find((item) => item.id === id);
+      const workflow = workflows.find((item) => item.id === id);
 
       (acc[value] = acc[value] || []).push({
         id,
         workflow,
-        activeInInput: getTriggerBlock(workflow)?.data?.activeInInput,
+        activeInInput: workflow.trigger?.activeInInput || false,
       });
 
       return acc;

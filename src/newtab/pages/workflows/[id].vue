@@ -408,8 +408,8 @@ async function saveWorkflow() {
     if (workflow.value.isProtected) {
       flow = AES.encrypt(flow, getWorkflowPass(workflow.value.pass)).toString();
     }
-    console.log(triggerBlock);
-    updateWorkflow({ drawflow: flow, trigger: triggerBlock }).then(() => {
+
+    updateWorkflow({ drawflow: flow, trigger: triggerBlock?.data }).then(() => {
       if (triggerBlock) {
         workflowTrigger.register(workflowId, triggerBlock);
       }
