@@ -146,6 +146,11 @@
       "new-window": {
         "name": "New window",
         "description": "Create a new window",
+        "top": "Top",
+        "left": "Left",
+        "height": "Height",
+        "width": "Width",
+        "note": "Note: use 0 to disable",
         "windowState": {
           "placeholder": "Window state",
           "options": {

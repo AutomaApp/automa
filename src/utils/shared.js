@@ -93,6 +93,10 @@ export const tasks = {
     maxConnection: 1,
     data: {
       description: '',
+      top: 0,
+      left: 0,
+      width: 0,
+      height: 0,
       incognito: false,
       windowState: 'normal',
     },

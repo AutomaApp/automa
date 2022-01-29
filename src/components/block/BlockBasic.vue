@@ -80,6 +80,7 @@ function handleStartDrag(event) {
     data: block.data,
     id: block.details.id,
     blockId: block.id,
+    fromBlockBasic: true,
   };
 
   event.dataTransfer.setData('block', JSON.stringify(payload));
