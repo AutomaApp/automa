@@ -7,6 +7,7 @@ import { firstWorkflows } from '@/utils/shared';
 const store = createStore({
   plugins: [vuexORM(models)],
   state: () => ({
+    contributors: null,
     workflowState: [],
     settings: {
       locale: 'en',

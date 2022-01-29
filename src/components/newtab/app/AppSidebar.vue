@@ -2,7 +2,11 @@
   <aside
     class="fixed flex flex-col items-center h-screen left-0 top-0 w-16 py-6 bg-white z-50"
   >
-    <img src="@/assets/svg/logo.svg" class="w-10 mb-4 mx-auto" />
+    <img
+      :title="`v${extensionVersion}`"
+      src="@/assets/svg/logo.svg"
+      class="w-10 mb-4 mx-auto"
+    />
     <div
       class="space-y-2 w-full relative text-center"
       @mouseleave="showHoverIndicator = false"
@@ -37,24 +41,9 @@
       </router-link>
     </div>
     <div class="flex-grow"></div>
-    <ui-popover placement="right" trigger="mouseenter click">
-      <template #trigger>
-        <v-remixicon class="cursor-pointer" name="riInformationLine" />
-      </template>
-      <ui-list class="space-y-1">
-        <ui-list-item
-          v-for="item in links"
-          :key="item.name"
-          :href="item.url"
-          tag="a"
-          rel="noopener"
-          target="_blank"
-        >
-          <v-remixicon :name="item.icon" class="-ml-1 mr-2" />
-          <span>{{ item.name }}</span>
-        </ui-list-item>
-      </ui-list>
-    </ui-popover>
+    <router-link v-tooltip:right.group="t('settings.menu.about')" to="/about">
+      <v-remixicon class="cursor-pointer" name="riInformationLine" />
+    </router-link>
   </aside>
 </template>
 <script setup>
@@ -68,23 +57,7 @@ useGroupTooltip();
 const { t } = useI18n();
 const router = useRouter();
 
-const links = [
-  {
-    name: 'Donate',
-    icon: 'riHandHeartLine',
-    url: 'https://paypal.me/akholid060',
-  },
-  {
-    name: t('common.docs', 2),
-    icon: 'riBook3Line',
-    url: 'https://docs.automa.site',
-  },
-  {
-    name: 'GitHub',
-    icon: 'riGithubFill',
-    url: 'https://github.com/kholid060/automa',
-  },
-];
+const extensionVersion = chrome.runtime.getManifest().version;
 const tabs = [
   {
     id: 'dashboard',

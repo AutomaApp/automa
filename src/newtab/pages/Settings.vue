@@ -6,14 +6,14 @@
         <router-link
           v-for="menu in menus"
           :key="menu.id"
-          v-slot="{ href, navigate, isActive }"
+          v-slot="{ href, navigate, isExactActive }"
           custom
           :to="menu.path"
         >
           <ui-list-item
             :href="href"
             :class="[
-              isActive
+              isExactActive
                 ? 'bg-box-transparent'
                 : 'text-gray-600 dark:text-gray-600',
             ]"
@@ -36,5 +36,8 @@ import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
-const menus = [{ id: 'general', path: '/settings', icon: 'riSettings3Line' }];
+const menus = [
+  { id: 'general', path: '/settings', icon: 'riSettings3Line' },
+  { id: 'about', path: '/about', icon: 'riInformationLine' },
+];
 </script>

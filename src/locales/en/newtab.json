@@ -18,7 +18,8 @@
       "reloadPage": "Reload the page to take effect"
     },
     "menu": {
-      "general": "General"
+      "general": "General",
+      "about": "About"
     },
   },
   "workflow": {

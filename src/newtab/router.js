@@ -9,6 +9,7 @@ import Logs from './pages/Logs.vue';
 import LogsDetails from './pages/logs/[id].vue';
 import Settings from './pages/Settings.vue';
 import SettingsIndex from './pages/settings/index.vue';
+import SettingsAbout from './pages/settings/About.vue';
 
 const routes = [
   {
@@ -54,7 +55,10 @@ const routes = [
   {
     path: '/settings',
     component: Settings,
-    children: [{ path: '', component: SettingsIndex }],
+    children: [
+      { path: '', component: SettingsIndex },
+      { path: '/about', component: SettingsAbout },
+    ],
   },
 ];
 
