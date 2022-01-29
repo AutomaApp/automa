@@ -43,6 +43,7 @@ export const tasks = {
     refDataKeys: ['globalData'],
     data: {
       workflowId: '',
+      executeId: '',
       globalData: '',
     },
   },
@@ -176,6 +177,7 @@ export const tasks = {
       ext: 'png',
       quality: 100,
       dataColumn: '',
+      fullPage: false,
       saveToColumn: false,
       saveToComputer: true,
       captureActiveTab: true,
@@ -261,6 +263,7 @@ export const tasks = {
       regexExp: ['g'],
       dataColumn: '',
       saveData: true,
+      includeTags: false,
       addExtraRow: false,
       extraRowValue: '',
       extraRowDataColumn: '',

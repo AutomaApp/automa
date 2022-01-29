@@ -199,18 +199,6 @@ if (env.NODE_ENV === 'development') {
         extractComments: false,
       }),
     ],
-    // runtimeChunk: 'single',
-    // splitChunks: {
-    //   chunks: 'all',
-    //   maxInitialRequests: Infinity,
-    //   minSize: 0,
-    //   cacheGroups: {
-    //     vendor: {
-    //       test: /[\\/]node_modules[\\/]/,
-    //       name: 'vendor',
-    //     },
-    //   },
-    // },
   };
 }
 

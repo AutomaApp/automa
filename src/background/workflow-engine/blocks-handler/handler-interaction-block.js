@@ -1,7 +1,23 @@
 import { objectHasKey } from '@/utils/helper';
 import { getBlockConnection } from '../helper';
 
+async function checkAccess(blockName) {
+  if (blockName === 'upload-file') {
+    const hasFileAccess = await new Promise((resolve) =>
+      chrome.extension.isAllowedFileSchemeAccess(resolve)
+    );
+
+    if (hasFileAccess) return true;
+
+    throw new Error('no-file-access');
+  }
+
+  return true;
+}
+
 async function interactionHandler(block, { refData }) {
+  await checkAccess(block.name);
+
   const { executedBlockOnWeb, debugMode } = this.workflow.settings;
 
   const nextBlockId = getBlockConnection(block);

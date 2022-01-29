@@ -6,13 +6,21 @@ export async function cleanWorkflowTriggers(workflowId) {
   try {
     await browser.alarms.clear(workflowId);
 
-    const { visitWebTriggers, shortcuts } = await browser.storage.local.get([
-      'visitWebTriggers',
-      'shortcuts',
-    ]);
+    const { visitWebTriggers, onStartupTriggers, shortcuts } =
+      await browser.storage.local.get([
+        'shortcuts',
+        'visitWebTriggers',
+        'onStartupTriggers',
+      ]);
 
     const keyboardShortcuts = Array.isArray(shortcuts) ? {} : shortcuts || {};
     delete keyboardShortcuts[workflowId];
+
+    const startupTriggers = onStartupTriggers || [];
+    const startupTriggerIndex = startupTriggers.indexOf(workflowId);
+    if (startupTriggerIndex !== -1) {
+      startupTriggers.splice(startupTriggerIndex, 1);
+    }
 
     const visitWebTriggerIndex = visitWebTriggers.findIndex(
       (item) => item.id === workflowId
@@ -24,6 +32,7 @@ export async function cleanWorkflowTriggers(workflowId) {
     await browser.storage.local.set({
       visitWebTriggers,
       shortcuts: keyboardShortcuts,
+      onStartupTriggers: startupTriggers,
     });
   } catch (error) {
     console.error(error);
@@ -126,14 +135,26 @@ export async function registerKeyboardShortcut(workflowId, data) {
   }
 }
 
+export async function registerOnStartup(workflowId) {
+  const { onStartupTriggers } = await browser.storage.local.get(
+    'onStartupTriggers'
+  );
+  const startupTriggers = onStartupTriggers || [];
+
+  startupTriggers.push(workflowId);
+
+  await browser.storage.local.set({ onStartupTriggers: startupTriggers });
+}
+
 export async function registerWorkflowTrigger(workflowId, { data }) {
   try {
     await cleanWorkflowTriggers(workflowId);
 
     const triggersHandler = {
-      date: registerSpecificDate,
       interval: registerInterval,
+      date: registerSpecificDate,
       'visit-web': registerVisitWeb,
+      'on-startup': registerOnStartup,
       'specific-day': registerSpecificDay,
       'keyboard-shortcut': registerKeyboardShortcut,
     };

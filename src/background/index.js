@@ -1,11 +1,13 @@
 import browser from 'webextension-polyfill';
 import { MessageListener } from '@/utils/message';
 import { registerSpecificDay } from '../utils/workflow-trigger';
+import { parseJSON } from '@/utils/helper';
 import WorkflowState from './workflow-state';
 import CollectionEngine from './collection-engine';
 import WorkflowEngine from './workflow-engine/engine';
 import blocksHandler from './workflow-engine/blocks-handler';
 import WorkflowLogger from './workflow-logger';
+import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
 
 const storage = {
   async get(key) {
@@ -36,6 +38,16 @@ const workflow = {
     return findWorkflow;
   },
   execute(workflowData, options) {
+    if (workflowData.isProtected) {
+      const flow = parseJSON(workflowData.drawflow, null);
+
+      if (!flow) {
+        const pass = getWorkflowPass(workflowData.pass);
+
+        workflowData.drawflow = decryptFlow(workflowData, pass);
+      }
+    }
+
     const engine = new WorkflowEngine(workflowData, {
       ...options,
       blocksHandler,
@@ -136,6 +148,23 @@ chrome.runtime.onInstalled.addListener((details) => {
       });
   }
 });
+chrome.runtime.onStartup.addListener(async () => {
+  const { onStartupTriggers, workflows } = await browser.storage.local.get([
+    'onStartupTriggers',
+    'workflows',
+  ]);
+
+  (onStartupTriggers || []).forEach((workflowId, index) => {
+    const findWorkflow = workflows.find(({ id }) => id === workflowId);
+
+    if (findWorkflow) {
+      workflow.execute(findWorkflow);
+    } else {
+      onStartupTriggers.splice(index, 1);
+    }
+  });
+  await browser.storage.local.set({ onStartupTriggers });
+});
 
 const message = new MessageListener('background');
 
@@ -165,8 +194,15 @@ message.on('open:dashboard', async (url) => {
     console.error(error);
   }
 });
+message.on('set:active-tab', (tabId) => {
+  return browser.tabs.update(tabId, { active: true });
+});
+
 message.on('get:sender', (_, sender) => {
   return sender;
+});
+message.on('get:tab-screenshot', (options) => {
+  return browser.tabs.captureVisibleTab(options);
 });
 message.on('get:file', (path) => {
   return new Promise((resolve, reject) => {
@@ -193,7 +229,9 @@ message.on('get:file', (path) => {
       }
     };
     xhr.onerror = function () {
-      reject(new Error(xhr.statusText));
+      reject(
+        new Error(xhr.statusText || `Can't find a file with "${path}" path`)
+      );
     };
     xhr.open('GET', fileUrl);
     xhr.send();
@@ -208,8 +246,8 @@ message.on('collection:execute', (collection) => {
   engine.init();
 });
 
-message.on('workflow:execute', (param) => {
-  workflow.execute(param);
+message.on('workflow:execute', (workflowData) => {
+  workflow.execute(workflowData);
 });
 message.on('workflow:stop', async (id) => {
   await workflow.states.stop(id);

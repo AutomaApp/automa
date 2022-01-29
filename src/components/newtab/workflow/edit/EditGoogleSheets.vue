@@ -81,7 +81,7 @@
         {{ previewDataState.errorMessage }}
       </p>
       <shared-codemirror
-        v-if="previewDataState.data"
+        v-if="previewDataState.data && previewDataState.status !== 'error'"
         :model-value="previewDataState.data"
         readonly
         class="mt-4 max-h-96"
@@ -194,7 +194,9 @@ async function previewData() {
     });
 
     if (response.status !== 200) {
-      throw new Error(response.statusText);
+      const error = await response.json();
+
+      throw new Error(response.statusText || error.statusMessage);
     }
 
     const { values } = await response.json();
@@ -206,7 +208,8 @@ async function previewData() {
 
     previewDataState.status = 'idle';
   } catch (error) {
-    console.error(error);
+    console.dir(error);
+    previewDataState.data = '';
     previewDataState.status = 'error';
     previewDataState.errorMessage = error.message;
   }

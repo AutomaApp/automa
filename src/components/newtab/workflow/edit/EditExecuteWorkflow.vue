@@ -14,6 +14,13 @@
         {{ workflow.name }}
       </option>
     </ui-select>
+    <ui-input
+      :model-value="data.executeId"
+      :placeholder="t('workflow.blocks.execute-workflow.executeId')"
+      :title="t('workflow.blocks.execute-workflow.executeId')"
+      class="mb-2 w-full"
+      @change="updateData({ executeId: $event })"
+    />
     <p>{{ t('common.globalData') }}</p>
     <pre
       v-if="!state.showGlobalData"

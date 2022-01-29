@@ -4,6 +4,7 @@
     :hide-edit="block.details.disableEdit"
     :hide-delete="block.details.disableDelete"
     content-class="flex items-center"
+    class="block-basic"
     @edit="editBlock"
     @delete="editor.removeNodeId(`node-${block.id}`)"
   >
@@ -30,6 +31,18 @@
         @change="handleDataChange"
       />
     </div>
+    <template #prepend>
+      <div
+        v-if="block.details.id !== 'trigger'"
+        :title="t('workflow.blocks.base.moveToGroup')"
+        draggable="true"
+        class="bg-white invisible move-to-group z-50 absolute -top-2 -right-2 rounded-md p-1 shadow-md"
+        @dragstart="handleStartDrag"
+        @mousedown.stop
+      >
+        <v-remixicon name="riDragDropLine" size="20" />
+      </div>
+    </template>
   </block-base>
 </template>
 <script setup>
@@ -62,4 +75,19 @@ function handleDataChange() {
 
   block.data = data;
 }
+function handleStartDrag(event) {
+  const payload = {
+    data: block.data,
+    id: block.details.id,
+    blockId: block.id,
+  };
+
+  event.dataTransfer.setData('block', JSON.stringify(payload));
+}
 </script>
+<style>
+.drawflow-node.selected .move-to-group,
+.block-basic:hover .move-to-group {
+  visibility: visible;
+}
+</style>

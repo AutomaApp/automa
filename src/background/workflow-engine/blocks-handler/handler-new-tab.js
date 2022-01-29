@@ -1,6 +1,5 @@
 import browser from 'webextension-polyfill';
 import { getBlockConnection } from '../helper';
-import executeContentScript from '../execute-content-script';
 
 async function newTab(block) {
   if (this.windowId) {
@@ -48,7 +47,6 @@ async function newTab(block) {
     }
 
     this.activeTab.frameId = 0;
-    await executeContentScript(this.activeTab.id);
 
     return {
       data: url,

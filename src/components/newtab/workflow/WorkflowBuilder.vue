@@ -83,7 +83,7 @@ export default {
       default: '',
     },
   },
-  emits: ['load', 'deleteBlock', 'update'],
+  emits: ['load', 'deleteBlock', 'update', 'save'],
   setup(props, { emit }) {
     useGroupTooltip();
     const { t } = useI18n();
@@ -160,7 +160,7 @@ export default {
         block.id === 'trigger' &&
         editor.value.getNodesFromName('trigger').length !== 0;
 
-      if (!block || isTriggerExists) return;
+      if (isTriggerExists) return;
 
       const xPosition =
         clientX *
@@ -188,6 +188,12 @@ export default {
         block.component,
         'vue'
       );
+
+      if (block.fromGroup) {
+        const blockEl = document.getElementById(`node-${blockId}`);
+
+        blockEl.setAttribute('group-item-id', block.itemId);
+      }
 
       if (isConnectionEl(target)) {
         target.classList.remove('selected');
@@ -316,7 +322,7 @@ export default {
       if (props.data) {
         let data =
           typeof props.data === 'string'
-            ? parseJSON(props.data.replace(/BlockNewTab/g, 'BlockBasic'), null)
+            ? parseJSON(props.data, null)
             : props.data;
 
         if (!data) return;
@@ -332,26 +338,29 @@ export default {
           const newDrawflowData = Object.entries(
             data.drawflow.Home.data
           ).reduce((obj, [key, value]) => {
-            const newBlockData = defu(value, tasks[value.name]);
-
-            obj[key] = newBlockData;
+            obj[key] = {
+              ...value,
+              html: tasks[value.name].component,
+              data: defu({}, value.data, tasks[value.name].data),
+            };
 
             return obj;
           }, {});
 
-          const drawflowData = {
+          data = {
             drawflow: { Home: { data: newDrawflowData } },
           };
 
-          data = drawflowData;
-
-          emit('update', {
-            version: currentExtVersion,
-            drawflow: JSON.stringify(drawflowData),
-          });
+          emit('update', { version: currentExtVersion });
         }
 
         editor.value.import(data);
+
+        if (isOldWorkflow) {
+          setTimeout(() => {
+            emit('save');
+          }, 200);
+        }
       } else {
         editor.value.addNode(
           'trigger',

@@ -1,15 +1,14 @@
-import { objectHasKey } from '../helper';
-
 const refKeys = {
   dataColumn: 'dataColumns',
   dataColumns: 'dataColumns',
 };
 
 export default function (key) {
-  /* eslint-disable-next-line */
-  let [dataKey, path] = key.split('@');
+  let [dataKey, path] = key.split(/@(.+)/);
 
-  dataKey = objectHasKey(refKeys, dataKey) ? refKeys[dataKey] : dataKey;
+  dataKey = refKeys[dataKey] ?? dataKey;
+
+  if (!path) return { dataKey, path: '' };
 
   if (dataKey !== 'dataColumns') {
     if (dataKey === 'loopData' && !path.endsWith('.$index')) {
@@ -19,19 +18,18 @@ export default function (key) {
       path = pathArr.join('.');
     }
 
-    return { dataKey, path: path || '' };
+    return { dataKey, path };
   }
 
-  const pathArr = path?.split('.') ?? [];
-  let dataPath = path;
+  const pathArr = path.split('.');
 
   if (pathArr.length === 1) {
-    dataPath = `0.${pathArr[0]}`;
+    path = `0.${pathArr[0]}`;
   } else if (typeof +pathArr[0] !== 'number' || Number.isNaN(+pathArr[0])) {
-    dataPath = `0.${pathArr.join('.')}`;
+    path = `0.${pathArr.join('.')}`;
   }
 
-  if (dataPath.endsWith('.')) dataPath = dataPath.slice(0, -1);
+  if (path.endsWith('.')) path = path.slice(0, -1);
 
-  return { dataKey: 'dataColumns', path: dataPath };
+  return { dataKey: 'dataColumns', path };
 }

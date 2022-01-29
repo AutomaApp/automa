@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "0.16.2",
+  "version": "0.17.0",
   "description": "An extension for automating your browser by connecting blocks",
   "license": "MIT",
   "repository": {
@@ -29,8 +29,9 @@
     "@medv/finder": "^2.1.0",
     "@vuex-orm/core": "^0.36.4",
     "compare-versions": "^4.1.2",
+    "crypto-js": "^4.1.1",
     "dayjs": "^1.10.7",
-    "defu": "^5.0.0",
+    "defu": "^5.0.1",
     "drawflow": "^0.0.51",
     "idb": "^7.0.0",
     "mitt": "^3.0.0",
@@ -41,7 +42,7 @@
     "tippy.js": "^6.3.1",
     "v-remixicon": "^0.1.1",
     "vue": "3.2.19",
-    "vue-i18n": "^9.2.0-beta.20",
+    "vue-i18n": "^9.2.0-beta.29",
     "vue-router": "^4.0.11",
     "vue-toastification": "^2.0.0-rc.5",
     "vuedraggable": "^4.1.0",

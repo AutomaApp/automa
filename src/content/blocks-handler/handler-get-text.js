@@ -10,6 +10,7 @@ function getText(block) {
       prefixText,
       suffixText,
       multiple,
+      includeTags,
     } = block.data;
 
     if (regexData) {
@@ -18,7 +19,7 @@ function getText(block) {
 
     handleElement(block, {
       onSelected(element) {
-        let text = element.innerText;
+        let text = includeTags ? element.outerHTML : element.innerText;
 
         if (regex) text = text.match(regex).join(' ');
 

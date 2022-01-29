@@ -10,6 +10,7 @@
   "workflow": {
     "blocks": {
       "base": {
+        "moveToGroup": "Move block to blocks group",
         "selector": "Element selector",
         "findElement": {
           "placeholder": "Find element by",
@@ -66,6 +67,7 @@
         "useRegex": "Use regex",
         "shortcut": {
           "tooltip": "Record shortcut",
+          "stopRecord": "Stop record",
           "checkboxTitle": "Execute shortcut even when you're in an input element",
           "checkbox": "Active while in input",
           "note": "Note: keyboard shortcut only working when you're on a webpage"
@@ -85,6 +87,7 @@
           "date": "On a specific date",
           "specific-day": "On a specific day",
           "visit-web": "When visit a website",
+          "on-startup": "On browser startup",
           "keyboard-shortcut": "Keyboard shortcut"
         }
       },
@@ -92,6 +95,7 @@
         "name": "Execute workflow",
         "overwriteNote": "This will overwrite the global data of the selected workflow",
         "select": "Select workflow",
+        "executeId": "Execute Id",
         "description": ""
       },
       "google-sheets": {
@@ -187,6 +191,7 @@
         "name": "Get text",
         "description": "Get text from an element",
         "checkbox": "Save data",
+        "includeTags": "Include HTML tags",
         "prefixText": {
           "placeholder": "Text prefix",
           "title": "Add prefix to the text"
@@ -387,6 +392,7 @@
       },
       "take-screenshot": {
         "name": "Take screenshot",
+        "fullPage": "Take full page screenshot",
         "description": "Take a screenshot of current active tab",
         "imageQuality": "Image quality",
         "saveToColumn": "Save screenshot to column",

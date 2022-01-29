@@ -15,7 +15,12 @@
     <button v-else title="Execute" @click="$emit('execute', workflow)">
       <v-remixicon name="riPlayLine" />
     </button>
-    <ui-popover class="h-6">
+    <v-remixicon
+      v-if="workflow.isProtected"
+      name="riShieldKeyholeLine"
+      class="text-green-600"
+    />
+    <ui-popover v-else class="h-6">
       <template #trigger>
         <button>
           <v-remixicon name="riMoreLine" />

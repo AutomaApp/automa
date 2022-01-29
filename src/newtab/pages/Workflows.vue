@@ -103,7 +103,12 @@
             >
               <v-remixicon name="riPlayLine" />
             </button>
-            <ui-popover class="h-6 ml-2">
+            <v-remixicon
+              v-if="workflow.isProtected"
+              name="riShieldKeyholeLine"
+              class="text-green-600 ml-2"
+            />
+            <ui-popover v-if="!workflow.isProtected" class="h-6 ml-2">
               <template #trigger>
                 <button>
                   <v-remixicon name="riMoreLine" />

@@ -1,5 +1,6 @@
 <template>
   <div class="block-base relative" @dblclick="$emit('edit')">
+    <slot name="prepend" />
     <div
       :class="contentClass"
       class="z-10 bg-white relative rounded-lg overflow-hidden w-full p-4"

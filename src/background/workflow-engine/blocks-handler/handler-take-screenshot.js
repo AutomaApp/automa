@@ -22,8 +22,15 @@ function saveImage({ fileName, uri, ext }) {
 
 async function takeScreenshot(block) {
   const nextBlockId = getBlockConnection(block);
-  const { ext, quality, captureActiveTab, fileName, saveToColumn, dataColumn } =
-    block.data;
+  const {
+    ext,
+    quality,
+    captureActiveTab,
+    fileName,
+    saveToColumn,
+    dataColumn,
+    fullPage,
+  } = block.data;
 
   const saveToComputer =
     typeof block.data.saveToComputer === 'undefined'
@@ -51,7 +58,13 @@ async function takeScreenshot(block) {
 
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      const uri = await browser.tabs.captureVisibleTab(options);
+      const uri = await (fullPage
+        ? this._sendMessageToTab({
+            tabId: this.activeTab.id,
+            options,
+            name: block.name,
+          })
+        : browser.tabs.captureVisibleTab(options));
 
       if (tab) {
         await browser.windows.update(tab.windowId, { focused: true });
