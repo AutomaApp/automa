@@ -45,11 +45,14 @@
   </div>
 </template>
 <script setup>
-import { computed, shallowReactive } from 'vue';
+import { computed, shallowReactive, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import Workflow from '@/models/workflow';
-import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
+
+const SharedCodemirror = defineAsyncComponent(() =>
+  import('@/components/newtab/shared/SharedCodemirror.vue')
+);
 
 const props = defineProps({
   data: {

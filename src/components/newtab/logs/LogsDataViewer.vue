@@ -35,11 +35,14 @@
   />
 </template>
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { dataExportTypes } from '@/utils/shared';
 import dataExporter, { generateJSON } from '@/utils/data-exporter';
-import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
+
+const SharedCodemirror = defineAsyncComponent(() =>
+  import('@/components/newtab/shared/SharedCodemirror.vue')
+);
 
 const props = defineProps({
   log: {

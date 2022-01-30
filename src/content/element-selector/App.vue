@@ -42,6 +42,9 @@
       <template v-if="!state.hide && state.selectedElements.length > 0">
         <ui-tabs v-model="state.activeTab" class="mt-2" fill>
           <ui-tab value="attributes"> Attributes </ui-tab>
+          <ui-tab v-if="state.selectElements.length > 0" value="options">
+            Options
+          </ui-tab>
           <ui-tab value="blocks"> Blocks </ui-tab>
         </ui-tabs>
         <ui-tab-panels
@@ -50,13 +53,62 @@
           style="max-height: calc(100vh - 15rem)"
         >
           <ui-tab-panel value="attributes">
-            <app-element-attributes
+            <app-element-list
               :elements="state.selectedElements"
+              @highlight="toggleHighlightElement"
+            >
+              <template #item="{ element }">
+                <div
+                  v-for="attribute in element.attributes"
+                  :key="attribute.name"
+                  class="bg-box-transparent mb-1 rounded-lg py-2 px-3"
+                >
+                  <p
+                    class="text-sm text-overflow leading-tight text-gray-600"
+                    title="Attribute name"
+                  >
+                    {{ attribute.name }}
+                  </p>
+                  <p title="Attribute value" class="text-overflow">
+                    {{ attribute.value }}
+                  </p>
+                </div>
+              </template>
+            </app-element-list>
+          </ui-tab-panel>
+          <ui-tab-panel value="options">
+            <app-element-list
+              :elements="state.selectElements"
+              element-name="Select element options"
               @highlight="
-                state.selectedElements[$event.index].highlight =
-                  $event.highlight
+                toggleHighlightElement({
+                  index: $event.element.index,
+                  highlight: $event.highlight,
+                })
               "
-            />
+            >
+              <template #item="{ element }">
+                <div
+                  v-for="option in element.options"
+                  :key="option.name"
+                  class="bg-box-transparent mb-1 rounded-lg py-2 px-3"
+                >
+                  <p
+                    class="text-sm text-overflow leading-tight text-gray-600"
+                    title="Option name"
+                  >
+                    {{ option.name }}
+                  </p>
+                  <input
+                    :value="option.value"
+                    title="Option value"
+                    class="text-overflow focus:ring-0 w-full bg-transparent"
+                    readonly
+                    @click="$event.target.select()"
+                  />
+                </div>
+              </template>
+            </app-element-list>
           </ui-tab-panel>
           <ui-tab-panel value="blocks">
             <app-blocks
@@ -98,7 +150,7 @@ import { finder } from '@medv/finder';
 import { debounce } from '@/utils/helper';
 import AppBlocks from './AppBlocks.vue';
 import AppSelector from './AppSelector.vue';
-import AppElementAttributes from './AppElementAttributes.vue';
+import AppElementList from './AppElementList.vue';
 
 const selectedElement = {
   path: [],
@@ -115,6 +167,7 @@ const state = reactive({
   elSelector: '',
   isDragging: false,
   isExecuting: false,
+  selectElements: [],
   selectedElements: [],
   hide: window.self !== window.top,
 });
@@ -131,6 +184,9 @@ const cardRect = reactive({
   width: 0,
 });
 
+function toggleHighlightElement({ index, highlight }) {
+  state.selectedElements[index].highlight = highlight;
+}
 function getElementRect(target) {
   if (!target) return {};
 
@@ -148,20 +204,35 @@ function updateSelectedElements(selector) {
 
   try {
     const elements = document.querySelectorAll(selector);
+    const selectElements = [];
 
-    state.selectedElements = Array.from(elements).map((element) => {
+    state.selectedElements = Array.from(elements).map((element, index) => {
       const attributes = Array.from(element.attributes).map(
         ({ name, value }) => ({ name, value })
       );
-
-      return {
+      const elementProps = {
         element,
         attributes,
         highlight: false,
         ...getElementRect(element),
       };
+
+      if (element.tagName === 'SELECT') {
+        const options = Array.from(element.querySelectorAll('option')).map(
+          (option) => ({
+            name: option.innerText,
+            value: option.value,
+          })
+        );
+
+        selectElements.push({ ...elementProps, options, index });
+      }
+
+      return elementProps;
     });
+    state.selectElements = selectElements;
   } catch (error) {
+    state.selectElements = [];
     state.selectedElements = [];
   }
 }

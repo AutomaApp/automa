@@ -91,11 +91,14 @@
   </div>
 </template>
 <script setup>
-import { watch, reactive } from 'vue';
+import { watch, reactive, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { syntaxTree } from '@codemirror/language';
 import { autocompletion, snippet } from '@codemirror/autocomplete';
-import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
+
+const SharedCodemirror = defineAsyncComponent(() =>
+  import('@/components/newtab/shared/SharedCodemirror.vue')
+);
 
 const props = defineProps({
   data: {
