@@ -1,5 +1,6 @@
 import browser from 'webextension-polyfill';
 import { getBlockConnection } from '../helper';
+import { isWhitespace } from '@/utils/helper';
 
 async function newTab(block) {
   if (this.windowId) {
@@ -14,6 +15,16 @@ async function newTab(block) {
 
   try {
     const { updatePrevTab, url, active, inGroup } = block.data;
+    const isInvalidUrl = !/^https?/.test(url);
+
+    if (isInvalidUrl) {
+      const error = new Error(
+        isWhitespace(url) ? 'url-empty' : 'invalid-active-tab'
+      );
+      error.data = { url };
+
+      throw error;
+    }
 
     if (updatePrevTab && this.activeTab.id) {
       await browser.tabs.update(this.activeTab.id, { url, active });
@@ -54,6 +65,7 @@ async function newTab(block) {
     };
   } catch (error) {
     console.error(error);
+    console.dir(error);
     error.nextBlockId = nextBlockId;
 
     throw error;
