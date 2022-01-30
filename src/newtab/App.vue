@@ -15,6 +15,8 @@
       </p>
       <a
         :href="`https://github.com/Kholid060/automa/releases/tag/v${currentVersion}`"
+        target="_blank"
+        rel="noopener"
         class="underline ml-1"
       >
         {{ t('updateMessage.text2') }}
