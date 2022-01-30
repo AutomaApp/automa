@@ -19,10 +19,13 @@
   </div>
 </template>
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { debounce } from '@/utils/helper';
-import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
+
+const SharedCodemirror = defineAsyncComponent(() =>
+  import('@/components/newtab/shared/SharedCodemirror.vue')
+);
 
 const props = defineProps({
   workflow: {

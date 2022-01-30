@@ -18,6 +18,8 @@ export function extractStrFunction(str) {
 }
 
 export default function (str, data) {
+  if (!str || typeof str !== 'string') return '';
+
   const replacedStr = str.replace(/\{\{(.*?)\}\}/g, (match) => {
     const key = match.slice(2, -2).trim();
 

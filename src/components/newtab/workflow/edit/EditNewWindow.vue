@@ -19,6 +19,7 @@
     <ui-checkbox
       :model-value="data.incognito"
       :disabled="!allowInIncognito"
+      class="mb-4"
       @change="updateData({ incognito: $event })"
     >
       {{ t('workflow.blocks.new-window.incognito.text') }}
@@ -26,6 +27,35 @@
         &#128712;
       </span>
     </ui-checkbox>
+    <template v-if="data.windowState === 'normal'">
+      <div class="flex items-center space-x-2">
+        <ui-input
+          :model-value="data.top"
+          :label="t('workflow.blocks.new-window.top')"
+          @change="updateData({ top: +$event })"
+        />
+        <ui-input
+          :model-value="data.left"
+          :label="t('workflow.blocks.new-window.left')"
+          @change="updateData({ left: +$event })"
+        />
+      </div>
+      <div class="flex items-center space-x-2">
+        <ui-input
+          :model-value="data.height"
+          :label="t('workflow.blocks.new-window.height')"
+          @change="updateData({ height: +$event })"
+        />
+        <ui-input
+          :model-value="data.width"
+          :label="t('workflow.blocks.new-window.width')"
+          @change="updateData({ width: +$event })"
+        />
+      </div>
+      <p class="mt-4 text-gray-600">
+        {{ t('workflow.blocks.new-window.note') }}
+      </p>
+    </template>
   </div>
 </template>
 <script setup>

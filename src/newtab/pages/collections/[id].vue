@@ -194,7 +194,13 @@
   </ui-modal>
 </template>
 <script setup>
-import { computed, shallowReactive, onMounted, watch } from 'vue';
+import {
+  computed,
+  shallowReactive,
+  onMounted,
+  watch,
+  defineAsyncComponent,
+} from 'vue';
 import { nanoid } from 'nanoid';
 import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';
@@ -206,8 +212,11 @@ import Log from '@/models/log';
 import Workflow from '@/models/workflow';
 import Collection from '@/models/collection';
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
-import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
 import SharedWorkflowState from '@/components/newtab/shared/SharedWorkflowState.vue';
+
+const SharedCodemirror = defineAsyncComponent(() =>
+  import('@/components/newtab/shared/SharedCodemirror.vue')
+);
 
 const { t } = useI18n();
 const store = useStore();

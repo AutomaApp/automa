@@ -153,11 +153,14 @@
   </div>
 </template>
 <script setup>
-import { shallowReactive } from 'vue';
+import { shallowReactive, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { googleSheets } from '@/utils/api';
 import { convert2DArrayToArrayObj } from '@/utils/helper';
-import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
+
+const SharedCodemirror = defineAsyncComponent(() =>
+  import('@/components/newtab/shared/SharedCodemirror.vue')
+);
 
 const props = defineProps({
   data: {

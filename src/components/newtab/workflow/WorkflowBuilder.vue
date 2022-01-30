@@ -154,7 +154,7 @@ export default {
     function dropHandler({ dataTransfer, clientX, clientY, target }) {
       const block = JSON.parse(dataTransfer.getData('block') || null);
 
-      if (!block) return;
+      if (!block || block.fromBlockBasic) return;
 
       const isTriggerExists =
         block.id === 'trigger' &&

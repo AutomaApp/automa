@@ -56,7 +56,9 @@ export default async function ({ tabId, options }) {
   const context = canvas.getContext('2d');
   const maxCanvasSize = 32767;
 
-  const scrollableElement = findScrollableElement();
+  const scrollElement = document.querySelector('.automa-scrollable-el');
+  let scrollableElement = scrollElement || findScrollableElement();
+
   const takeScreenshot = async () => {
     await sendMessage('set:active-tab', tabId, 'background');
     const imageUrl = await sendMessage(
@@ -74,7 +76,7 @@ export default async function ({ tabId, options }) {
     return imageUrl;
   }
 
-  scrollableElement.classList.add('automa-scrollable-el');
+  scrollableElement.classList?.add('automa-scrollable-el');
 
   const style = injectStyle();
   const originalYPosition = window.scrollY;
@@ -96,6 +98,8 @@ export default async function ({ tabId, options }) {
     });
 
   let scrollPosition = 0;
+
+  if (scrollableElement.tagName === 'HTML') scrollableElement = window;
 
   while (scrollPosition <= originalScrollHeight) {
     const imageUrl = await takeScreenshot();

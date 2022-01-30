@@ -32,7 +32,9 @@
         "name": "Upload file",
         "description": "Upload file into <input type=\"file\"> element",
         "filePath": "File path",
-        "addFile": "Add file"
+        "addFile": "Add file",
+        "requirement": "See the requirement before using this block",
+        "noFileAccess": "Automa doesn't have file access"
       },
       "browser-event": {
         "name": "Browser event",
@@ -146,6 +148,11 @@
       "new-window": {
         "name": "New window",
         "description": "Create a new window",
+        "top": "Top",
+        "left": "Left",
+        "height": "Height",
+        "width": "Width",
+        "note": "Note: use 0 to disable",
         "windowState": {
           "placeholder": "Window state",
           "options": {

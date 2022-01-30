@@ -18,7 +18,7 @@ export default async function (block) {
 
   const getFile = async (path) => {
     const file = await sendMessage('get:file', path, 'background');
-    const name = file.path.replace(/^.*[\\/]/, '');
+    const name = file.path?.replace(/^.*[\\/]/, '') || '';
     const blob = await fetch(file.objUrl).then((response) => response.blob());
 
     URL.revokeObjectURL(file.objUrl);
