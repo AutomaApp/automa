@@ -26,14 +26,11 @@
       :hide-base="true"
       @update:data="updateParams"
     />
-    <shared-codemirror
+    <pre
       v-if="state.blockResult"
-      v-model="state.blockResult"
-      :line-numbers="false"
-      readonly
-      lang="json"
-      class="h-full mt-2"
-    />
+      class="p-2 rounded-lg text-gray-100 bg-accent h-full mt-2 overflow-auto"
+      >{{ state.blockResult }}</pre
+    >
   </div>
 </template>
 <script setup>
@@ -45,7 +42,6 @@ import handleEventClick from '../blocks-handler/handler-event-click';
 import handelTriggerEvent from '../blocks-handler/handler-trigger-event';
 import handleElementScroll from '../blocks-handler/handler-element-scroll';
 import EditForms from '@/components/newtab/workflow/edit/EditForms.vue';
-import SharedCodemirror from '@/components/newtab/shared/SharedCodemirror.vue';
 import EditTriggerEvent from '@/components/newtab/workflow/edit/EditTriggerEvent.vue';
 import EditScrollElement from '@/components/newtab/workflow/edit/EditScrollElement.vue';
 

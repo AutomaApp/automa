@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@codemirror/basic-setup": "^0.19.1",
-    "@codemirror/lang-javascript": "^0.19.3",
+    "@codemirror/lang-javascript": "0.19.1",
     "@codemirror/lang-json": "^0.19.1",
     "@codemirror/theme-one-dark": "^0.19.1",
     "@medv/finder": "^2.1.0",
