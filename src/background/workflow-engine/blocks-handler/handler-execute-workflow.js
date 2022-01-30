@@ -66,8 +66,8 @@ async function executeWorkflow({ outputs, data }) {
               engine.referenceData;
 
             this.referenceData.workflow[data.executeId] = {
-              dataColumns,
               globalData,
+              dataColumns,
               googleSheets,
             };
           }

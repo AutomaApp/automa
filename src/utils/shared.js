@@ -472,7 +472,7 @@ export const tasks = {
     docs: true,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['customData'],
+    refDataKeys: ['customData', 'range', 'spreadsheetId'],
     data: {
       range: '',
       refKey: '',
