@@ -50,6 +50,9 @@ pre {
 .tippy-box[data-theme~='tooltip-theme'] {
   @apply px-2 py-1 bg-gray-900 text-sm text-gray-200 rounded-md;
 }
+.Vue-Toastification__toast {
+  font-family: inherit !important;
+}
 .ProseMirror > * + * {
   margin-top: 0.75em;
 }

@@ -77,7 +77,9 @@ export function openFilePicker(acceptedFileTypes = [], attrs = {}) {
   return new Promise((resolve, reject) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = acceptedFileTypes.join(',');
+    input.accept = Array.isArray(acceptedFileTypes)
+      ? acceptedFileTypes.join(',')
+      : acceptedFileTypes;
 
     Object.entries(attrs).forEach(([key, value]) => {
       input[key] = value;
