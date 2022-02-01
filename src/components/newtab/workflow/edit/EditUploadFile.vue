@@ -61,7 +61,7 @@ const emit = defineEmits(['update:data']);
 const { t } = useI18n();
 
 const filePaths = ref([...props.data.filePaths]);
-const hasFileAccess = ref(false);
+const hasFileAccess = ref(true);
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });

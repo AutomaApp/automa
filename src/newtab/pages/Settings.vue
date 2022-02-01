@@ -25,7 +25,7 @@
           </ui-list-item>
         </router-link>
       </ui-list>
-      <div class="settings-content">
+      <div class="settings-content flex-1">
         <router-view />
       </div>
     </div>

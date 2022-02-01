@@ -21,6 +21,20 @@
       "general": "General",
       "about": "About"
     },
+    "backupWorkflows": {
+      "title": "Backup Workflows",
+      "invalidPassword": "Invalid password",
+      "workflowsAdded": "{count} workflows have been added",
+      "backup": {
+        "button": "Backup",
+        "encrypt": "Encrypt with password"
+      },
+      "restore": {
+        "title": "Restore workflows",
+        "button": "Restore",
+        "update": "Update if the workflow exists"
+      }
+    }
   },
   "workflow": {
     "import": "Import workflow",

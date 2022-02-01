@@ -16,8 +16,21 @@
       autofocus
       :placeholder="state.options.placeholder"
       :label="state.options.label"
+      :type="
+        state.options.inputType === 'password' && state.showPassword
+          ? 'text'
+          : state.options.inputType
+      "
       class="w-full"
-    ></ui-input>
+    >
+      <template v-if="state.options.inputType === 'password'" #append>
+        <v-remixicon
+          :name="state.showPassword ? 'riEyeOffLine' : 'riEyeLine'"
+          class="absolute right-2"
+          @click="state.showPassword = !state.showPassword"
+        />
+      </template>
+    </ui-input>
     <div class="mt-8 flex space-x-2">
       <ui-button class="w-6/12" @click="fireCallback('onCancel')">
         {{ state.options.cancelText }}
@@ -47,6 +60,7 @@ export default {
       title: '',
       placeholder: '',
       label: '',
+      inputType: 'text',
       okText: t('common.confirm'),
       okVariant: 'accent',
       cancelText: t('common.cancel'),
@@ -57,6 +71,7 @@ export default {
       show: false,
       type: '',
       input: '',
+      showPassword: false,
       options: defaultOptions,
     });
 
@@ -84,6 +99,7 @@ export default {
 
       if (hide) {
         state.options = defaultOptions;
+        state.showPassword = false;
         state.show = false;
         state.input = '';
       }

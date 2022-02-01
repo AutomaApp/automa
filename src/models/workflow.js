@@ -24,7 +24,7 @@ class Workflow extends Model {
       isProtected: this.boolean(false),
       version: this.string(''),
       globalData: this.string('[{ "key": "value" }]'),
-      createdAt: this.number(),
+      createdAt: this.number(Date.now()),
       isDisabled: this.boolean(false),
       settings: this.attr({
         blockDelay: 0,
