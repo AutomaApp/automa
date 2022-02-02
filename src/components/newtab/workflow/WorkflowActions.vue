@@ -10,12 +10,12 @@
       <v-remixicon :name="item.icon" />
     </button>
   </ui-card>
-  <ui-card padding="p-1 ml-4">
+  <ui-card padding="p-1 ml-4 flex items-center">
     <button
       v-tooltip.group="
         t(`workflow.protect.${workflow.isProtected ? 'remove' : 'title'}`)
       "
-      :class="{ 'text-green-600': workflow.isProtected }"
+      :class="{ 'text-green-600 dark:text-green-400': workflow.isProtected }"
       class="hoverable p-2 rounded-lg"
       @click="$emit('protect')"
     >

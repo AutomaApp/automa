@@ -4,7 +4,7 @@
       'select-none': state.isDragging,
       'bg-black bg-opacity-30': !state.hide,
     }"
-    class="root fixed h-full w-full pointer-events-none top-0 text-gray-900 left-0"
+    class="root fixed h-full w-full pointer-events-none top-0 text-black left-0"
     style="z-index: 9999999999; font-family: Inter, sans-serif; font-size: 16px"
   >
     <div

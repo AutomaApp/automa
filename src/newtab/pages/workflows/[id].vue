@@ -1,19 +1,23 @@
 <template>
-  <div v-if="protectionState.needed" class="my-12 mx-auto max-w-md w-full">
-    <div class="inline-block p-4 bg-green-200 mb-4 rounded-full">
+  <div v-if="protectionState.needed" class="py-12 mx-auto max-w-md w-full">
+    <div
+      class="inline-block p-4 bg-green-200 dark:bg-green-400 mb-4 rounded-full"
+    >
       <v-remixicon name="riShieldKeyholeLine" size="52" />
     </div>
-    <h1 class="text-2xl font-semibold">
+    <h1 class="text-xl dark:text-gray-100 font-semibold">
       {{ t('workflow.locked.title') }}
     </h1>
-    <p class="text-gray-600 text-lg">{{ t('workflow.locked.body') }}</p>
+    <p class="text-gray-600 dark:text-gray-200">
+      {{ t('workflow.locked.body') }}
+    </p>
     <form class="flex items-center mt-6" @submit.prevent="unlockWorkflow">
       <ui-input
         v-model="protectionState.password"
         :placeholder="t('common.password')"
         :type="protectionState.showPassword ? 'text' : 'password'"
         autofocus
-        class="flex-1 mr-4"
+        class="w-80 mr-4"
       >
         <template #append>
           <v-remixicon
@@ -36,7 +40,7 @@
   <div v-else class="flex h-screen">
     <div
       v-if="state.showSidebar"
-      class="w-80 bg-white py-6 relative border-l border-gray-100 flex flex-col"
+      class="w-80 bg-white dark:bg-gray-800 py-6 relative border-l border-gray-100 dark:border-gray-700 dark:border-opacity-50 flex flex-col"
     >
       <workflow-edit-block
         v-if="state.isEditBlock"
@@ -54,7 +58,7 @@
       <div class="absolute w-full flex items-center z-10 left-0 p-4 top-0">
         <ui-tabs
           v-model="activeTab"
-          class="border-none px-2 rounded-lg h-full space-x-1 bg-white"
+          class="border-none px-2 rounded-lg h-full space-x-1 bg-white dark:bg-gray-800"
         >
           <button
             v-tooltip="
@@ -62,7 +66,6 @@
                 shortcut['editor:toggle-sidebar'].readable
               })`
             "
-            class="text-gray-800"
             style="margin-right: 6px"
             @click="toggleSidebar"
           >
@@ -122,7 +125,7 @@
                 <td class="text-right">
                   <v-remixicon
                     name="riDeleteBin7Line"
-                    class="inline-block text-red-500 cursor-pointer"
+                    class="inline-block text-red-500 cursor-pointer dark:text-red-400"
                     @click="deleteLog(itemLog.id)"
                   />
                 </td>

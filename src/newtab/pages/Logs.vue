@@ -32,7 +32,7 @@
               />
               <v-remixicon
                 name="riDeleteBin7Line"
-                class="text-red-500 cursor-pointer"
+                class="text-red-500 dark:text-red-400 cursor-pointer"
                 @click="deleteLog(log.id)"
               />
             </div>

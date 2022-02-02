@@ -1,5 +1,7 @@
 <template>
-  <ui-card class="hover:ring-2 flex flex-col group hover:ring-accent">
+  <ui-card
+    class="hover:ring-2 flex flex-col group hover:ring-accent dark:hover:ring-gray-200"
+  >
     <slot name="header">
       <div class="flex items-center mb-4">
         <ui-img

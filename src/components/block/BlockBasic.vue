@@ -10,7 +10,7 @@
   >
     <span
       :class="block.category.color"
-      class="inline-block p-2 mr-2 rounded-lg bg-green-200"
+      class="inline-block p-2 mr-2 rounded-lg dark:text-black"
     >
       <v-remixicon :name="block.details.icon || 'riGlobalLine'" />
     </span>
@@ -21,7 +21,7 @@
       >
         {{ t(`workflow.blocks.${block.details.id}.name`) }}
       </p>
-      <p class="text-gray-600 text-overflow leading-tight">
+      <p class="text-gray-600 dark:text-gray-200 text-overflow leading-tight">
         {{ block.data.description }}
       </p>
       <input
@@ -36,7 +36,7 @@
         v-if="block.details.id !== 'trigger'"
         :title="t('workflow.blocks.base.moveToGroup')"
         draggable="true"
-        class="bg-white invisible move-to-group z-50 absolute -top-2 -right-2 rounded-md p-1 shadow-md"
+        class="bg-white dark:bg-gray-700 invisible move-to-group z-50 absolute -top-2 -right-2 rounded-md p-1 shadow-md"
         @dragstart="handleStartDrag"
         @mousedown.stop
       >

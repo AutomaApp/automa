@@ -33,11 +33,15 @@ import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { compare } from 'compare-versions';
 import browser from 'webextension-polyfill';
+import { useTheme } from '@/composable/theme';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vue-i18n';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 
-const store = useStore();
 const { t } = useI18n();
+const store = useStore();
+const theme = useTheme();
+
+theme.init();
 
 const retrieved = ref(false);
 
@@ -91,3 +95,20 @@ onMounted(async () => {
   localStorage.setItem('ext-version', currentVersion);
 });
 </script>
+<style>
+html,
+body {
+  @apply bg-gray-50 dark:bg-gray-900 text-black dark:text-gray-100;
+}
+body {
+  min-height: 100vh;
+}
+#app {
+  height: 100%;
+}
+h1,
+h2,
+h3 {
+  @apply dark:text-white;
+}
+</style>

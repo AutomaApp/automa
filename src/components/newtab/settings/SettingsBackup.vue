@@ -1,10 +1,10 @@
 <template>
-  <div class="max-w-xl mt-8">
+  <div class="max-w-xl mt-10">
     <h2 class="font-semibold mb-2">
       {{ t('settings.backupWorkflows.title') }}
     </h2>
     <div class="flex space-x-4">
-      <div class="border p-4 rounded-lg w-6/12">
+      <div class="border dark:border-gray-700 p-4 rounded-lg w-6/12">
         <div class="text-center">
           <span class="inline-block p-4 rounded-full bg-box-transparent">
             <v-remixicon name="riDownloadLine" size="36" />
@@ -17,7 +17,7 @@
           {{ t('settings.backupWorkflows.backup.button') }}
         </ui-button>
       </div>
-      <div class="border p-4 rounded-lg w-6/12">
+      <div class="border dark:border-gray-700 p-4 rounded-lg w-6/12">
         <div class="text-center">
           <span class="inline-block p-4 rounded-full bg-box-transparent">
             <v-remixicon name="riUploadLine" size="36" />

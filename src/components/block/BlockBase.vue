@@ -3,14 +3,16 @@
     <slot name="prepend" />
     <div
       :class="contentClass"
-      class="z-10 bg-white relative rounded-lg overflow-hidden w-full p-4"
+      class="z-10 bg-white dark:bg-gray-800 relative rounded-lg overflow-hidden w-full p-4"
     >
       <slot></slot>
     </div>
     <div
       class="absolute bottom-1 transition-transform duration-300 pt-4 ml-1 menu"
     >
-      <div class="bg-accent px-3 py-2 text-white rounded-lg flex items-center">
+      <div
+        class="bg-accent dark:bg-gray-100 dark:text-black px-3 py-2 text-white rounded-lg flex items-center"
+      >
         <button v-if="!hideEdit" @click="$emit('edit')">
           <v-remixicon size="20" name="riPencilLine" />
         </button>

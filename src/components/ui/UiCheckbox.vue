@@ -12,12 +12,12 @@
         @change="changeHandler"
       />
       <div
-        class="border rounded absolute top-0 left-0 bg-input checkbox-ui__mark cursor-pointer"
+        class="border dark:border-gray-700 rounded absolute top-0 left-0 bg-input checkbox-ui__mark cursor-pointer"
       >
         <v-remixicon
           name="riCheckLine"
           size="20"
-          class="text-white"
+          class="text-white dark:text-black"
         ></v-remixicon>
       </div>
     </div>

@@ -9,12 +9,12 @@
     <div class="absolute z-10 p-4 bottom-0 left-0">
       <button
         v-tooltip.group="t('workflow.editor.resetZoom')"
-        class="p-2 rounded-lg bg-white mr-2"
+        class="p-2 rounded-lg bg-white dark:bg-gray-800 mr-2"
         @click="editor.zoom_reset()"
       >
         <v-remixicon name="riFullscreenLine" />
       </button>
-      <div class="rounded-lg bg-white inline-block">
+      <div class="rounded-lg bg-white dark:bg-gray-800 inline-block">
         <button
           v-tooltip.group="t('workflow.editor.zoomOut')"
           class="p-2 rounded-lg relative z-10"
@@ -448,5 +448,11 @@ export default {
 #drawflow {
   background-image: url('@/assets/images/tile.png');
   background-size: 35px;
+}
+.dark #drawflow {
+  background-image: url('@/assets/images/tile-white.png');
+}
+.drawflow .drawflow-node {
+  @apply dark:bg-gray-800;
 }
 </style>

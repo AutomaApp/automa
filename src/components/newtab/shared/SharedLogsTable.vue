@@ -1,6 +1,6 @@
 <template>
   <table>
-    <tbody class="divide-y">
+    <tbody class="divide-y dark:divide-gray-800">
       <tr v-for="log in logs" :key="log.id" class="hoverable">
         <slot name="item-prepend" :log="log" />
         <td class="text-overflow" style="min-width: 140px; max-width: 330px">
@@ -11,7 +11,7 @@
             {{ log.name }}
           </router-link>
         </td>
-        <td class="log-time">
+        <td class="log-time dark:text-gray-200">
           <v-remixicon
             :title="t('log.startedDate')"
             name="riCalendarLine"
@@ -21,7 +21,7 @@
             {{ formatDate(log.startedAt, 'relative') }}
           </span>
         </td>
-        <td class="log-time" :title="t('log.duration')">
+        <td class="log-time dark:text-gray-200" :title="t('log.duration')">
           <v-remixicon name="riTimerLine"></v-remixicon>
           <span>{{ countDuration(log.startedAt, log.endedAt) }}</span>
         </td>
@@ -29,7 +29,7 @@
           <span
             :class="statusColors[log.status]"
             :title="log.status === 'error' ? getErrorMessage(log) : null"
-            class="inline-block py-1 w-16 text-center text-sm rounded-lg"
+            class="inline-block py-1 w-16 text-center text-sm rounded-md dark:text-black"
           >
             {{ t(`logStatus.${log.status}`) }}
           </span>
@@ -54,9 +54,9 @@ defineProps({
 const { t, te } = useI18n();
 
 const statusColors = {
-  error: 'bg-red-200',
-  success: 'bg-green-200',
-  stopped: 'bg-yellow-200',
+  error: 'bg-red-200 dark:bg-red-300',
+  success: 'bg-green-200 dark:bg-green-300',
+  stopped: 'bg-yellow-200 dark:bg-yellow-300',
 };
 
 function formatDate(date, format) {

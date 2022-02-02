@@ -12,6 +12,7 @@
     "text2": "see what's new."
   },
   "settings": {
+    "theme": "Theme",
     "language": {
       "label": "Language",
       "helpTranslate": "Can't find your language? Help translate.",

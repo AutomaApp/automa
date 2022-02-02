@@ -60,7 +60,9 @@
           :class="categories[catId].color"
           class="h-3 w-3 rounded-full"
         ></span>
-        <p class="capitalize text-gray-600">{{ categories[catId].name }}</p>
+        <p class="capitalize text-gray-600 dark:text-gray-200">
+          {{ categories[catId].name }}
+        </p>
       </div>
       <div class="grid grid-cols-2 gap-2 mb-4">
         <div
@@ -84,7 +86,7 @@
             :title="t('common.docs')"
             target="_blank"
             rel="noopener"
-            class="absolute top-px right-2 top-2 text-gray-600 invisible group-hover:visible"
+            class="absolute top-px right-2 top-2 text-gray-600 dark:text-gray-300 invisible group-hover:visible"
           >
             <v-remixicon name="riInformationLine" size="18" />
           </a>

@@ -5,7 +5,7 @@
     </div>
     <p class="text-2xl font-semibold">Automa</p>
     <p class="mb-2 mt-1">Version: {{ extensionVersion }}</p>
-    <p class="text-gray-600">
+    <p class="text-gray-600 dark:text-gray-200">
       Automa is a chrome extension for browser automation. From auto-fill forms,
       doing a repetitive task, taking a screenshot, to scraping data of the
       website, it's up to you what you want to do with this extension.
@@ -23,9 +23,9 @@
         <p class="ml-1 hidden">{{ link.name }}</p>
       </a>
     </div>
-    <div class="border-b my-8"></div>
+    <div class="border-b dark:border-gray-700 my-8"></div>
     <h2 class="text-xl font-semibold">Contributors</h2>
-    <p class="mt-1 text-gray-600">
+    <p class="mt-1 text-gray-600 dark:text-gray-200">
       Thanks to everyone who has submitted issues, made suggestions, and
       generally helped make this a better project.
     </p>

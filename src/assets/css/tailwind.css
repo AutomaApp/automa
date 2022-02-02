@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+:host, :root {
+  --color-primary: 59 130 246;
+  --color-secondary: 96 165 250;
+  --color-accent: 24 24 27;
+}
+.dark {
+  --color-primary: 96 165 250;
+  --color-secondary: 59 130 246;
+  --color-accent: 244 244 245;
+}
+
+* {
+  @apply dark:border-gray-700;
+}
+
 :host, body {
   font-family: 'Inter var';
   font-size: 16px;
@@ -48,7 +63,7 @@ pre {
   background: transparent;
 }
 .tippy-box[data-theme~='tooltip-theme'] {
-  @apply px-2 py-1 bg-gray-900 text-sm text-gray-200 rounded-md;
+  @apply px-2 py-1 bg-gray-900 dark:bg-gray-200 dark:text-black text-sm text-gray-200 rounded-md;
 }
 .Vue-Toastification__toast {
   font-family: inherit !important;

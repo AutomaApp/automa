@@ -71,6 +71,7 @@ export default {
 }
 
 .ui-switch input:checked ~ .ui-switch__ball {
+  @apply dark:bg-gray-900;
   background-color: white;
   left: calc(100% - 21px);
 }

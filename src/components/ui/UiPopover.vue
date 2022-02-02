@@ -9,7 +9,7 @@
     </div>
     <div
       ref="content"
-      class="ui-popover__content bg-white dark:bg-gray-800 rounded-lg shadow-xl border"
+      class="ui-popover__content bg-white dark:bg-gray-800 rounded-lg shadow-xl border dark:border-gray-700"
       :class="[padding]"
     >
       <slot v-bind="{ isShow }"></slot>

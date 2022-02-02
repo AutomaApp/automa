@@ -52,7 +52,7 @@
           @change="updateData({ width: +$event })"
         />
       </div>
-      <p class="mt-4 text-gray-600">
+      <p class="mt-4 text-gray-600 dark:text-gray-200">
         {{ t('workflow.blocks.new-window.note') }}
       </p>
     </template>

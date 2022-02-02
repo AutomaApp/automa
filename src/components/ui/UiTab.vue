@@ -4,8 +4,8 @@
     :class="[
       uiTabs.small.value ? 'p-2' : 'py-3 px-2',
       uiTabs.modelValue.value === value
-        ? 'border-accent text-gray-800 dark:text-white'
-        : 'border-transparent',
+        ? 'border-accent dark:border-gray-100 text-gray-800 dark:text-white'
+        : '!border-transparent',
       { 'flex-1': uiTabs.fill.value },
     ]"
     :tabIndex="uiTabs.modelValue.value === value ? 0 : -1"

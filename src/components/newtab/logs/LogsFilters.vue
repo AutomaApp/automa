@@ -39,7 +39,9 @@
       </template>
       <div class="w-48">
         <p class="flex-1 mb-2 font-semibold">{{ t('log.filter.title') }}</p>
-        <p class="mb-2 text-sm text-gray-600">{{ t('log.filter.byStatus') }}</p>
+        <p class="mb-2 text-sm text-gray-600 dark:text-gray-200">
+          {{ t('log.filter.byStatus') }}
+        </p>
         <div class="grid grid-cols-2 gap-2">
           <ui-radio
             v-for="status in filterByStatus"
@@ -52,7 +54,7 @@
             {{ status.name }}
           </ui-radio>
         </div>
-        <p class="mb-1 text-sm text-gray-600 mt-3">
+        <p class="mb-1 text-sm text-gray-600 dark:text-gray-200 mt-3">
           {{ t('log.filter.byDate.title') }}
         </p>
         <ui-select

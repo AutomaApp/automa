@@ -4,7 +4,7 @@
       <div class="flex items-center mb-2">
         <div
           :class="block.category.color"
-          class="inline-flex items-center text-sm mr-4 p-2 rounded-lg"
+          class="inline-flex items-center text-sm mr-4 p-2 rounded-lg dark:text-black"
         >
           <v-remixicon
             :name="block.details.icon || 'riFolderZipLine'"

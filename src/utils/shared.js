@@ -639,23 +639,23 @@ export const tasks = {
 export const categories = {
   interaction: {
     name: 'Web interaction',
-    color: 'bg-green-200',
+    color: 'bg-green-200 dark:bg-green-300',
   },
   browser: {
     name: 'Browser',
-    color: 'bg-orange-200',
+    color: 'bg-orange-200 dark:bg-orange-300',
   },
   general: {
     name: 'General',
-    color: 'bg-yellow-200',
+    color: 'bg-yellow-200 dark:bg-yellow-300',
   },
   onlineServices: {
     name: 'Online services',
-    color: 'bg-red-200',
+    color: 'bg-red-200 dark:bg-red-300',
   },
   conditions: {
     name: 'Conditions',
-    color: 'bg-blue-200',
+    color: 'bg-blue-200 dark:bg-blue-300',
   },
 };
 

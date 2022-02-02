@@ -13,7 +13,7 @@ function loopData(block) {
       let currentLoopData;
 
       if (data.loopThrough === 'numbers') {
-        currentLoopData = this.referenceData.loopData[data.loopId] + 1;
+        currentLoopData = this.referenceData.loopData[data.loopId].data + 1;
       } else {
         currentLoopData = this.loopList[data.loopId].data[index];
       }

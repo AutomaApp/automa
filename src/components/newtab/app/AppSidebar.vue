@@ -1,6 +1,6 @@
 <template>
   <aside
-    class="fixed flex flex-col items-center h-screen left-0 top-0 w-16 py-6 bg-white z-50"
+    class="fixed flex flex-col items-center h-screen left-0 top-0 w-16 py-6 bg-white dark:bg-gray-800 z-50"
   >
     <img
       :title="`v${extensionVersion}`"
@@ -115,6 +115,6 @@ function hoverHandler({ target }) {
   top: 0;
   height: 100%;
   width: 4px;
-  @apply bg-accent;
+  @apply bg-accent dark:bg-gray-100;
 }
 </style>

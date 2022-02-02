@@ -31,7 +31,7 @@
         <option value="jpeg">JPEG</option>
       </ui-select>
     </div>
-    <p class="text-sm text-gray-600 ml-2">Image quality:</p>
+    <p class="text-sm text-gray-600 dark:text-gray-200 ml-2">Image quality:</p>
     <div class="bg-box-transparent px-4 mb-2 py-2 rounded-lg flex items-center">
       <input
         :value="data.quality"

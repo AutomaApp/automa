@@ -1,14 +1,23 @@
 const colors = require('tailwindcss/colors');
 
+function withOpacityValue(variable) {
+  return ({ opacityValue }) => {
+    if (opacityValue === undefined) {
+      return `rgb(var(${variable}))`;
+    }
+    return `rgb(var(${variable}) / ${opacityValue})`;
+  };
+}
+
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx,vue}'],
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     extend: {
       colors: {
-        primary: colors.blue['500'],
-        secondary: colors.blue['400'],
-        accent: colors.zinc['900'],
+        primary: withOpacityValue('--color-primary'),
+        secondary: withOpacityValue('--color-secondary'),
+        accent: withOpacityValue('--color-accent'),
         gray: colors.zinc,
         orange: colors.orange,
       },

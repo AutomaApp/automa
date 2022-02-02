@@ -15,7 +15,7 @@
             :class="[
               isExactActive
                 ? 'bg-box-transparent'
-                : 'text-gray-600 dark:text-gray-600',
+                : 'text-gray-600 dark:text-gray-200',
             ]"
             tag="a"
             @click="navigate"

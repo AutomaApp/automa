@@ -51,7 +51,7 @@
       </div>
       <div class="flex-1 relative">
         <div class="flex items-center mb-4">
-          <div class="px-1 inline-block rounded-lg bg-white">
+          <div class="px-1 inline-block rounded-lg bg-white dark:bg-gray-800">
             <ui-tabs
               v-model="state.activeTab"
               class="border-none h-full space-x-1"
@@ -167,7 +167,7 @@
               <p class="leading-tight">
                 {{ t('collection.options.atOnce.title') }}
               </p>
-              <p class="text-sm text-gray-600 leading-tight">
+              <p class="text-sm text-gray-600 dark:text-gray-200 leading-tight">
                 {{ t('collection.options.atOnce.description') }}
               </p>
             </ui-checkbox>

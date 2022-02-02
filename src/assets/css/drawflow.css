@@ -63,17 +63,16 @@
   position: relative;
   width: 18px;
   height: 18px;
-  background: #fff;
   border-radius: 50%;
   cursor: crosshair;
   z-index: 1;
   margin-bottom: 5px;
-  border-color: theme('colors.accent');
   border-width: 3px;
+  @apply border-accent bg-white dark:bg-gray-900;
 }
 
 .drawflow .drawflow-node .input {
-  @apply bg-accent;
+  @apply bg-accent !important;
 }
 
 .drawflow .icon-ui {

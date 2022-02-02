@@ -1,4 +1,16 @@
 <template>
+  <div class="mb-8">
+    <p class="font-semibold mb-1">{{ t('settings.theme') }}</p>
+    <ui-select
+      :model-value="theme.activeTheme.value"
+      class="w-80"
+      @change="theme.set($event)"
+    >
+      <option v-for="item in theme.themes" :key="item.id" :value="item.id">
+        {{ item.name }}
+      </option>
+    </ui-select>
+  </div>
   <div class="flex items-center">
     <div id="languages">
       <p class="font-semibold mb-1">{{ t('settings.language.label') }}</p>
@@ -34,11 +46,13 @@
 import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
+import { useTheme } from '@/composable/theme';
 import { supportLocales } from '@/utils/shared';
 import SettingsBackup from '@/components/newtab/settings/SettingsBackup.vue';
 
 const { t } = useI18n();
 const store = useStore();
+const theme = useTheme();
 
 const isLangChange = ref(false);
 const settings = computed(() => store.state.settings);

@@ -1,7 +1,7 @@
 <template>
   <div class="px-4 overflow-auto scroll pb-1">
     <div
-      class="sticky top-0 z-20 bg-white border-b border-gray-100 pb-4 mb-4 flex items-center"
+      class="sticky top-0 z-20 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 pb-4 mb-4 flex items-center"
     >
       <button class="mr-2" @click="$emit('close')">
         <v-remixicon name="riArrowLeftLine" />

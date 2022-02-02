@@ -5,7 +5,7 @@
         <h1 class="text-2xl max-w-md text-overflow font-semibold">
           {{ activeLog.name }}
         </h1>
-        <p class="text-gray-600">
+        <p class="text-gray-600 dark:text-gray-200">
           {{
             t(`log.description.text`, {
               status: t(`log.description.status.${activeLog.status}`),
@@ -16,7 +16,7 @@
         </p>
       </div>
       <div class="flex-grow"></div>
-      <ui-button class="text-red-500" @click="deleteLog">
+      <ui-button class="text-red-500 dark:text-red-400" @click="deleteLog">
         {{ t('common.delete') }}
       </ui-button>
     </div>
@@ -35,7 +35,7 @@
           <ui-list-item v-for="(item, index) in history" :key="index">
             <span
               :class="logsType[item.type]?.color"
-              class="p-1 rounded-lg align-middle inline-block mr-2"
+              class="p-1 rounded-lg align-middle inline-block mr-2 dark:text-black"
             >
               <v-remixicon :name="logsType[item.type]?.icon" size="20" />
             </span>
@@ -59,7 +59,7 @@
             >
               <v-remixicon name="riExternalLinkLine" />
             </router-link>
-            <p class="text-gray-600">
+            <p class="text-gray-600 dark:text-gray-200">
               {{ countDuration(0, item.duration || 0) }}
             </p>
           </ui-list-item>
@@ -112,23 +112,23 @@ import LogsDataViewer from '@/components/newtab/logs/LogsDataViewer.vue';
 
 const logsType = {
   success: {
-    color: 'bg-green-200',
+    color: 'bg-green-200 dark:bg-green-400',
     icon: 'riCheckLine',
   },
   stop: {
-    color: 'bg-yellow-200',
+    color: 'bg-yellow-200 dark:bg-yellow-400',
     icon: 'riStopLine',
   },
   stopped: {
-    color: 'bg-yellow-200',
+    color: 'bg-yellow-200 dark:bg-yellow-400',
     icon: 'riStopLine',
   },
   error: {
-    color: 'bg-red-200',
+    color: 'bg-red-200 dark:bg-red-400',
     icon: 'riErrorWarningLine',
   },
   finish: {
-    color: 'bg-blue-200',
+    color: 'bg-blue-200 dark:bg-blue-400',
     icon: 'riFlagLine',
   },
 };

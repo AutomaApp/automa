@@ -16,7 +16,7 @@
       <div class="flex items-center workflow-sort">
         <ui-button
           icon
-          class="rounded-r-none border-gray-300 border-r"
+          class="rounded-r-none border-gray-300 dark:border-gray-700 border-r"
           @click="state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc'"
         >
           <v-remixicon
@@ -106,7 +106,7 @@
             <v-remixicon
               v-if="workflow.isProtected"
               name="riShieldKeyholeLine"
-              class="text-green-600 ml-2"
+              class="text-green-600 dark:text-green-400 ml-2"
             />
             <ui-popover v-if="!workflow.isProtected" class="h-6 ml-2">
               <template #trigger>
