@@ -236,6 +236,13 @@
         "incScrollX": "Increment horizontal scroll",
         "incScrollY": "Increment vertical scroll"
       },
+      "switch-tab": {
+        "name": "Switch tab",
+        "description": "Switch between tab",
+        "matchPattern": "Match Patterns",
+        "url": "URL for the new tab",
+        "createIfNoMatch": "Create if there's no match"
+      },
       "new-tab": {
         "name": "New tab",
         "description": "",

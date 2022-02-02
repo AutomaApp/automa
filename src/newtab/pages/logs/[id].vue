@@ -112,23 +112,23 @@ import LogsDataViewer from '@/components/newtab/logs/LogsDataViewer.vue';
 
 const logsType = {
   success: {
-    color: 'bg-green-200 dark:bg-green-400',
+    color: 'bg-green-200 dark:bg-green-300',
     icon: 'riCheckLine',
   },
   stop: {
-    color: 'bg-yellow-200 dark:bg-yellow-400',
+    color: 'bg-yellow-200 dark:bg-yellow-300',
     icon: 'riStopLine',
   },
   stopped: {
-    color: 'bg-yellow-200 dark:bg-yellow-400',
+    color: 'bg-yellow-200 dark:bg-yellow-300',
     icon: 'riStopLine',
   },
   error: {
-    color: 'bg-red-200 dark:bg-red-400',
+    color: 'bg-red-200 dark:bg-red-300',
     icon: 'riErrorWarningLine',
   },
   finish: {
-    color: 'bg-blue-200 dark:bg-blue-400',
+    color: 'bg-blue-200 dark:bg-blue-300',
     icon: 'riFlagLine',
   },
 };

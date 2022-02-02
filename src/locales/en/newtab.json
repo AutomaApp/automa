@@ -147,6 +147,7 @@
       "stop-timeout": "Workflow is stopped because of timeout",
       "no-file-access": "Automa doesn't have access to the file",
       "no-workflow": "Can't find workflow with \"{workflowId}\" ID",
+      "no-match-tab": "Can't find a tab with \"{pattern}\" patterns",
       "element-not-found": "Can't find an element with \"{selector}\" selector.",
       "not-iframe": "Element with \"{selector}\" selector is not an Iframe element",
       "iframe-not-found": "Can't find an Iframe element with \"{selector}\" selector.",
