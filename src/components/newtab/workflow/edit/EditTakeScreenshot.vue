@@ -1,4 +1,17 @@
 <template>
+  <p class="text-sm text-gray-600 dark:text-gray-200 ml-2">Image quality</p>
+  <div class="bg-box-transparent px-4 mb-2 py-2 rounded-lg flex items-center">
+    <input
+      :value="data.quality"
+      :title="t('workflow.blocks.take-screenshot.imageQuality')"
+      class="focus:outline-none flex-1"
+      type="range"
+      min="0"
+      max="100"
+      @change="updateQuality"
+    />
+    <span class="w-12 text-right">{{ data.quality }}%</span>
+  </div>
   <div class="take-screenshot">
     <ui-checkbox
       :model-value="data.fullPage"
@@ -9,12 +22,11 @@
     </ui-checkbox>
     <ui-checkbox
       :model-value="data.saveToComputer"
-      class="mb-2"
       @change="updateData({ saveToComputer: $event })"
     >
       {{ t('workflow.blocks.take-screenshot.saveToComputer') }}
     </ui-checkbox>
-    <div v-if="data.saveToComputer" class="flex items-center my-2">
+    <div v-if="data.saveToComputer" class="flex items-center mb-2 mt-1">
       <ui-input
         :model-value="data.fileName"
         :placeholder="t('common.fileName')"
@@ -31,22 +43,9 @@
         <option value="jpeg">JPEG</option>
       </ui-select>
     </div>
-    <p class="text-sm text-gray-600 dark:text-gray-200 ml-2">Image quality:</p>
-    <div class="bg-box-transparent px-4 mb-2 py-2 rounded-lg flex items-center">
-      <input
-        :value="data.quality"
-        :title="t('workflow.blocks.take-screenshot.imageQuality')"
-        class="focus:outline-none flex-1"
-        type="range"
-        min="0"
-        max="100"
-        @change="updateQuality"
-      />
-      <span class="w-12 text-right">{{ data.quality }}%</span>
-    </div>
     <ui-checkbox
       :model-value="data.saveToColumn"
-      class="mt-3"
+      class="mt-2"
       @change="updateData({ saveToColumn: $event })"
     >
       {{ t('workflow.blocks.take-screenshot.saveToColumn') }}

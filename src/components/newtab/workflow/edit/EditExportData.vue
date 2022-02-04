@@ -8,7 +8,7 @@
     />
     <ui-select
       :model-value="data.dataToExport"
-      :placeholder="t('workflow.blocks.export-data.dataToExport.placeholder')"
+      :label="t('workflow.blocks.export-data.dataToExport.placeholder')"
       class="w-full mt-2"
       @change="updateData({ dataToExport: $event })"
     >
@@ -18,9 +18,9 @@
     </ui-select>
     <ui-input
       :model-value="data.name"
+      label="File name"
       class="w-full mt-2"
-      title="File name"
-      placeholder="File name"
+      placeholder="My file"
       @change="updateData({ name: $event })"
     />
     <ui-input
@@ -33,7 +33,7 @@
     />
     <ui-select
       :model-value="data.type"
-      :placeholder="t('workflow.blocks.export-data.exportAs')"
+      :label="t('workflow.blocks.export-data.exportAs')"
       class="w-full mt-2"
       @change="updateData({ type: $event })"
     >

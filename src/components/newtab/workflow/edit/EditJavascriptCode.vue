@@ -4,17 +4,20 @@
       :model-value="data.description"
       autoresize
       :placeholder="t('common.description')"
-      class="w-full mb-2"
+      class="w-full mb-1"
       @change="updateData({ description: $event })"
     />
     <ui-input
-      type="number"
       :model-value="data.timeout"
-      class="mb-2 w-full"
-      :placeholder="t('workflow.blocks.javascript-code.timeout.placeholder')"
+      :label="t('workflow.blocks.javascript-code.timeout.placeholder')"
       :title="t('workflow.blocks.javascript-code.timeout.title')"
+      type="number"
+      class="mb-2 w-full"
       @change="updateData({ timeout: +$event })"
     />
+    <p class="text-sm ml-1 text-gray-600 dark:text-gray-200">
+      {{ t('workflow.blocks.javascript-code.name') }}
+    </p>
     <pre
       v-if="!state.showCodeModal"
       class="rounded-lg overflow-auto text-gray-200 p-4 max-h-80 bg-gray-900"

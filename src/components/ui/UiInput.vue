@@ -1,7 +1,7 @@
 <template>
   <div class="inline-block input-ui">
     <label v-if="label || $slots.label" :for="componentId">
-      <span class="text-sm dark:text-gray-200 text-gray-600 mb-1 ml-1">
+      <span class="text-sm dark:text-gray-200 text-gray-600 ml-1">
         <slot name="label">{{ label }}</slot>
       </span>
     </label>

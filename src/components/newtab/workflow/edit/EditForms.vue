@@ -2,7 +2,7 @@
   <edit-interaction-base v-bind="{ data, hide: hideBase }" @change="updateData">
     <ui-checkbox
       :model-value="data.getValue"
-      class="my-2"
+      class="mt-2"
       @change="updateData({ getValue: $event })"
     >
       {{ t('workflow.blocks.forms.getValue') }}
@@ -42,7 +42,7 @@
     <template v-else>
       <ui-select
         :model-value="data.type"
-        class="block w-full mb-3"
+        class="block w-full mb-2 mt-4"
         :placeholder="t('workflow.blocks.forms.type')"
         @change="updateData({ type: $event })"
       >
@@ -66,7 +66,7 @@
         />
         <ui-checkbox
           :model-value="data.clearValue"
-          class="mb-1 ml-1"
+          class="mb-2 ml-1"
           @change="updateData({ clearValue: $event })"
         >
           {{ t('workflow.blocks.forms.text-field.clearValue') }}

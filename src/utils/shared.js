@@ -42,9 +42,10 @@ export const tasks = {
     maxConnection: 1,
     refDataKeys: ['globalData'],
     data: {
-      workflowId: '',
       executeId: '',
+      workflowId: '',
       globalData: '',
+      description: '',
     },
   },
   'active-tab': {
@@ -178,6 +179,7 @@ export const tasks = {
     refDataKeys: ['url'],
     data: {
       url: '',
+      description: '',
       activeTab: true,
       closeType: 'tab',
       allWindows: false,

@@ -1,9 +1,15 @@
 <template>
   <div class="mb-2 mt-4">
+    <ui-textarea
+      :model-value="data.description"
+      :placeholder="t('common.description')"
+      class="w-full"
+      @change="updateData({ description: $event })"
+    />
     <ui-select
       :model-value="data.closeType"
-      placeholder="Close"
-      class="w-full mb-4"
+      :placeholder="Close"
+      class="w-full mt-2"
       @change="updateData({ closeType: $event })"
     >
       <option
@@ -16,7 +22,7 @@
       </option>
     </ui-select>
     <template v-if="data.closeType === 'tab'">
-      <div class="mb-2">
+      <div class="mt-1">
         <ui-checkbox
           :model-value="data.activeTab"
           @change="updateData({ activeTab: $event })"
@@ -27,25 +33,30 @@
       <ui-input
         v-if="!data.activeTab"
         :model-value="data.url"
-        class="w-full"
+        class="w-full mt-1"
         placeholder="http://example.com/*"
         @change="updateData({ url: $event })"
       >
         <template #label>
           {{ t('workflow.blocks.close-tab.url') }}
           <a
-            href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns"
-            target="_blank"
+            :title="t('common.example', 2)"
             rel="noopener"
-            title="More info"
+            target="_blank"
+            href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns#examples"
           >
-            &#9432;
+            <v-remixicon
+              name="riInformationLine"
+              size="18"
+              class="inline-block"
+            />
           </a>
         </template>
       </ui-input>
     </template>
     <ui-checkbox
       v-else
+      class="mt-1"
       :model-value="data.allWindows"
       @change="updateData({ allWindows: $event })"
     >

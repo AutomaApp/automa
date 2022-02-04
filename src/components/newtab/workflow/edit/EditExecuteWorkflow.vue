@@ -1,9 +1,16 @@
 <template>
   <div>
+    <ui-textarea
+      :model-value="data.description"
+      :placeholder="t('common.description')"
+      autoresize
+      class="w-full mb-2"
+      @change="updateData({ description: $event })"
+    />
     <ui-select
       :model-value="data.workflowId"
       :placeholder="t('workflow.blocks.execute-workflow.select')"
-      class="w-full mb-4"
+      class="w-full mb-2"
       @change="updateData({ workflowId: $event })"
     >
       <option
@@ -16,17 +23,20 @@
     </ui-select>
     <ui-input
       :model-value="data.executeId"
-      :placeholder="t('workflow.blocks.execute-workflow.executeId')"
+      :label="t('workflow.blocks.execute-workflow.executeId')"
       :title="t('workflow.blocks.execute-workflow.executeId')"
-      class="mb-2 w-full"
+      placeholder="abc123"
+      class="mb-3 w-full"
       @change="updateData({ executeId: $event })"
     />
-    <p>{{ t('common.globalData') }}</p>
+    <p class="text-sm text-gray-600 dark:text-gray-200 ml-1 mb-1">
+      {{ t('common.globalData') }}
+    </p>
     <pre
       v-if="!state.showGlobalData"
       class="rounded-lg text-gray-200 p-4 max-h-80 bg-gray-900 overflow-auto"
       @click="state.showGlobalData = true"
-      v-text="data.globalData"
+      v-text="data.globalData || '____'"
     />
     <ui-modal
       v-model="state.showGlobalData"

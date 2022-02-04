@@ -25,7 +25,7 @@
     </ui-input>
     <ui-checkbox
       :model-value="data.createIfNoMatch"
-      class="mt-2"
+      class="mt-1"
       @change="updateData({ createIfNoMatch: $event })"
     >
       {{ t('workflow.blocks.switch-tab.createIfNoMatch') }}

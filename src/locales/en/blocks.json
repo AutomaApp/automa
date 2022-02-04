@@ -153,6 +153,8 @@
         "height": "Height",
         "width": "Width",
         "note": "Note: use 0 to disable",
+        "position": "Window position",
+        "size": "Window size",
         "windowState": {
           "placeholder": "Window state",
           "options": {
@@ -178,7 +180,7 @@
       "close-tab": {
         "name": "Close tab/window",
         "description": "",
-        "url": "URL or match pattern",
+        "url": "Match Patterns",
         "activeTab": "Close active tab",
         "allWindows": "Close all windows"
       },
@@ -314,7 +316,7 @@
           }
         },
         "timeout": {
-          "placeholder": "Timeout",
+          "placeholder": "Timeout (milliseconds)",
           "title": "Javascript code execution timeout"
         }
       },
@@ -342,7 +344,7 @@
         "selector": "Element selector",
         "fallbackTitle": "Execute when element doesn't exists",
         "tryFor": {
-          "title": "Try to check if element exist",
+          "title": "How many times to try to check if element exist",
           "label": "Try for"
         },
         "timeout": {
@@ -370,7 +372,7 @@
       "loop-data": {
         "name": "Loop data",
         "description": "Iterate through data columns or your custom data",
-        "loopId": "Loop ID",
+        "loopId": "Loop id",
         "refKey": "Reference key",
         "modal": {
           "fileTooLarge": "File too large to edit",

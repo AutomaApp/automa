@@ -3,19 +3,19 @@
     <ui-textarea
       :model-value="data.description"
       :placeholder="t('common.description')"
-      class="w-full"
+      class="w-full mb-1"
       @change="updateData({ description: $event })"
     />
     <ui-input
       :model-value="data.loopId"
-      class="w-full mb-3"
+      class="w-full mb-2"
       :label="t('workflow.blocks.loop-data.loopId')"
       :placeholder="t('workflow.blocks.loop-data.loopId')"
       @change="updateLoopID"
     />
     <ui-select
       :model-value="data.loopThrough"
-      :placeholder="t('workflow.blocks.loop-data.loopThrough.placeholder')"
+      :label="t('workflow.blocks.loop-data.loopThrough.placeholder')"
       class="w-full mb-2"
       @change="
         updateData({

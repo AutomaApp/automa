@@ -78,7 +78,7 @@
     </ui-checkbox>
     <ui-checkbox
       :model-value="data.addExtraRow"
-      class="mt-3"
+      class="mt-2"
       @change="updateData({ addExtraRow: $event })"
     >
       {{ t('workflow.blocks.get-text.extraRow.checkbox') }}

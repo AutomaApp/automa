@@ -35,7 +35,7 @@
         :model-value="data.tabLoadedUrl"
         type="url"
         class="w-full mt-1"
-        placeholder="*://*.example.org/*"
+        placeholder="https://example.org/*"
         @change="updateData({ tabLoadedUrl: $event })"
       >
         <template #label>
