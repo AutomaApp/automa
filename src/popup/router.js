@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import Home from './pages/Home.vue';
-import WorkflowEdit from './pages/workflow/Edit.vue';
+import Recording from './pages/Recording.vue';
 
 const routes = [
   {
@@ -9,9 +9,9 @@ const routes = [
     component: Home,
   },
   {
-    path: '/workflow/:id/edit',
-    name: 'workflow-edit',
-    component: WorkflowEdit,
+    path: '/recording',
+    name: 'recording',
+    component: Recording,
   },
 ];
 

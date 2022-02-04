@@ -9,6 +9,7 @@ import blocksHandler from './workflow-engine/blocks-handler';
 import WorkflowLogger from './workflow-logger';
 import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
 
+const validateUrl = (str) => str?.startsWith('http');
 const storage = {
   async get(key) {
     try {
@@ -65,6 +66,19 @@ const workflow = {
   },
 };
 
+async function updateRecording(callback) {
+  const { isRecording, recording } = await browser.storage.local.get([
+    'isRecording',
+    'recording',
+  ]);
+
+  if (!isRecording || !recording) return;
+
+  callback(recording);
+
+  await browser.storage.local.set({ recording });
+}
+
 async function checkWorkflowStates() {
   const states = await workflow.states.get();
   // const sessionStates = parseJSON(sessionStorage.getItem('workflowState'), {});
@@ -89,7 +103,9 @@ async function checkWorkflowStates() {
   await storage.set('workflowState', states);
 }
 checkWorkflowStates();
-async function checkVisitWebTriggers(states, tab) {
+async function checkVisitWebTriggers(changeInfo, tab) {
+  if (!changeInfo.status || changeInfo.status !== 'complete') return;
+
   const visitWebTriggers = await storage.get('visitWebTriggers');
   const triggeredWorkflow = visitWebTriggers.find(({ url, isRegex }) => {
     if (url.trim() === '') return false;
@@ -103,10 +119,107 @@ async function checkVisitWebTriggers(states, tab) {
     if (workflowData) workflow.execute(workflowData);
   }
 }
-browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete') {
-    await checkVisitWebTriggers(null, tab);
+async function checkRecordingWorkflow({ status }, { url, id }) {
+  if (status === 'complete' && validateUrl(url)) {
+    const { isRecording } = await browser.storage.local.get('isRecording');
+
+    if (!isRecording) return;
+
+    await browser.tabs.executeScript(id, {
+      file: 'recordWorkflow.bundle.js',
+    });
   }
+}
+browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  checkRecordingWorkflow(changeInfo, tab);
+  checkVisitWebTriggers(changeInfo, tab);
+});
+browser.webNavigation.onCommitted.addListener(
+  ({ frameId, tabId, url, transitionType }) => {
+    const allowedType = ['link', 'typed', 'form_submit'];
+
+    if (frameId !== 0 || !allowedType.includes(transitionType)) return;
+
+    updateRecording((recording) => {
+      const lastFlow = recording.flows[recording.flows.length - 1];
+      const isClickSubmit =
+        lastFlow.id === 'event-click' && transitionType === 'form_submit';
+
+      if (isClickSubmit) return;
+
+      const isInvalidNewtabFlow =
+        lastFlow &&
+        lastFlow.id === 'new-tab' &&
+        !validateUrl(lastFlow.data.url);
+
+      if (isInvalidNewtabFlow) {
+        lastFlow.data.url = url;
+        lastFlow.description = url;
+      } else if (validateUrl(url)) {
+        if (lastFlow?.id !== 'link' || !lastFlow.isClickLink) {
+          recording.flows.push({
+            id: 'new-tab',
+            description: url,
+            data: {
+              url,
+              updatePrevTab: recording.activeTab.id === tabId,
+            },
+          });
+        }
+
+        recording.activeTab.id = tabId;
+        recording.activeTab.url = url;
+      }
+    });
+  }
+);
+browser.tabs.onActivated.addListener(async ({ tabId }) => {
+  const { url, id } = await browser.tabs.get(tabId);
+
+  if (!validateUrl(url)) return;
+
+  updateRecording((recording) => {
+    recording.activeTab = { id, url };
+    recording.flows.push({
+      id: 'switch-tab',
+      description: url,
+      data: {
+        url,
+        matchPattern: url,
+        createIfNoMatch: true,
+      },
+    });
+  });
+});
+browser.tabs.onCreated.addListener(async (tab) => {
+  const { isRecording, recording } = await browser.storage.local.get([
+    'isRecording',
+    'recording',
+  ]);
+
+  if (!isRecording || !recording) return;
+
+  const url = tab.url || tab.pendingUrl;
+  const lastFlow = recording.flows[recording.flows.length - 1];
+  const invalidPrevFlow =
+    lastFlow && lastFlow.id === 'new-tab' && !validateUrl(lastFlow.data.url);
+
+  if (!invalidPrevFlow) {
+    const validUrl = validateUrl(url) ? url : '';
+
+    recording.flows.push({
+      id: 'new-tab',
+      description: validUrl,
+      data: { url: validUrl },
+    });
+  }
+
+  recording.activeTab = {
+    url,
+    id: tab.id,
+  };
+
+  await browser.storage.local.set({ recording });
 });
 browser.alarms.onAlarm.addListener(({ name }) => {
   workflow.get(name).then((currentWorkflow) => {

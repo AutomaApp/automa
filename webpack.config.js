@@ -43,6 +43,13 @@ const options = {
     popup: path.join(__dirname, 'src', 'popup', 'index.js'),
     background: path.join(__dirname, 'src', 'background', 'index.js'),
     contentScript: path.join(__dirname, 'src', 'content', 'index.js'),
+    recordWorkflow: path.join(
+      __dirname,
+      'src',
+      'content',
+      'services',
+      'record-workflow.js'
+    ),
     shortcutListener: path.join(
       __dirname,
       'src',
@@ -67,10 +74,11 @@ const options = {
   },
   chromeExtensionBoilerplate: {
     notHotReload: [
-      'contentScript',
       'webService',
-      'shortcutListener',
+      'contentScript',
+      'recordWorkflow',
       'elementSelector',
+      'shortcutListener',
     ],
   },
   output: {
