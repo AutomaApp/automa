@@ -78,7 +78,29 @@ async function updateRecording(callback) {
 
   await browser.storage.local.set({ recording });
 }
+async function openDashboard(url) {
+  const tabOptions = {
+    active: true,
+    url: browser.runtime.getURL(
+      `/newtab.html#${typeof url === 'string' ? url : ''}`
+    ),
+  };
 
+  try {
+    const [tab] = await browser.tabs.query({
+      url: browser.runtime.getURL('/newtab.html'),
+    });
+
+    if (tab) {
+      await browser.tabs.update(tab.id, tabOptions);
+      await browser.tabs.reload(tab.id);
+    } else {
+      browser.tabs.create(tabOptions);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
 async function checkWorkflowStates() {
   const states = await workflow.states.get();
   // const sessionStates = parseJSON(sessionStorage.getItem('workflowState'), {});
@@ -133,6 +155,9 @@ async function checkRecordingWorkflow({ status }, { url, id }) {
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   checkRecordingWorkflow(changeInfo, tab);
   checkVisitWebTriggers(changeInfo, tab);
+});
+browser.commands.onCommand.addListener((name) => {
+  if (name === 'open-dashboard') openDashboard();
 });
 browser.webNavigation.onCommitted.addListener(
   ({ frameId, tabId, url, transitionType }) => {
@@ -285,27 +310,9 @@ message.on('fetch:text', (url) => {
   return fetch(url).then((response) => response.text());
 });
 message.on('open:dashboard', async (url) => {
-  const tabOptions = {
-    active: true,
-    url: browser.runtime.getURL(
-      `/newtab.html#${typeof url === 'string' ? url : ''}`
-    ),
-  };
+  await openDashboard(url);
 
-  try {
-    const [tab] = await browser.tabs.query({
-      url: browser.runtime.getURL('/newtab.html'),
-    });
-
-    if (tab) {
-      await browser.tabs.update(tab.id, tabOptions);
-      await browser.tabs.reload(tab.id);
-    } else {
-      browser.tabs.create(tabOptions);
-    }
-  } catch (error) {
-    console.error(error);
-  }
+  return Promise.resolve(true);
 });
 message.on('set:active-tab', (tabId) => {
   return browser.tabs.update(tabId, { active: true });
