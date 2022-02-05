@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-2 mt-4">
+  <div>
     <ui-textarea
       :model-value="data.description"
       :placeholder="t('common.description')"

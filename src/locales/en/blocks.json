@@ -396,6 +396,7 @@
           "toNumber": "To number",
           "options": {
             "numbers": "Numbers",
+            "variable": "Variable",
             "data-columns": "Data columns",
             "custom-data": "Custom data",
             "google-sheets": "Google sheets"

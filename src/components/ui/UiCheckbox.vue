@@ -1,5 +1,8 @@
 <template>
-  <label class="checkbox-ui inline-flex items-center">
+  <label
+    class="checkbox-ui items-center"
+    :class="[block ? 'flex' : 'inline-flex']"
+  >
     <div
       :class="{ 'pointer-events-none opacity-75': disabled }"
       class="relative h-5 w-5 inline-block focus-within:ring-2 focus-within:ring-accent rounded"
@@ -34,6 +37,10 @@ export default {
       default: false,
     },
     disabled: {
+      type: Boolean,
+      default: null,
+    },
+    block: {
       type: Boolean,
       default: null,
     },

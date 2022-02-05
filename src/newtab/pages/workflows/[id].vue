@@ -79,7 +79,7 @@
             {{ t('common.running') }}
             <span
               v-if="workflowState.length > 0"
-              class="ml-2 p-1 text-center inline-block text-xs rounded-full bg-black text-white"
+              class="ml-2 p-1 text-center inline-block text-xs rounded-full bg-accent text-white dark:text-black"
               style="min-width: 25px"
             >
               {{ workflowState.length }}

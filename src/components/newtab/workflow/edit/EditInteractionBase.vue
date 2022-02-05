@@ -5,7 +5,6 @@
       <ui-textarea
         :model-value="data.description"
         :placeholder="t('common.description')"
-        autoresize
         class="w-full mb-2"
         @change="updateData({ description: $event })"
       />

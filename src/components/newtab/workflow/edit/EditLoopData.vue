@@ -16,7 +16,7 @@
     <ui-select
       :model-value="data.loopThrough"
       :label="t('workflow.blocks.loop-data.loopThrough.placeholder')"
-      class="w-full mb-2"
+      class="w-full"
       @change="
         updateData({
           loopThrough: $event,
@@ -29,33 +29,42 @@
       </option>
     </ui-select>
     <ui-input
+      v-if="data.loopThrough === 'google-sheets'"
+      :model-value="data.referenceKey"
+      :label="t('workflow.blocks.loop-data.refKey')"
+      placeholder="abc123"
+      class="w-full mt-2"
+      @change="updateData({ referenceKey: $event })"
+    />
+    <ui-input
+      v-else-if="data.loopThrough === 'variable'"
+      :model-value="data.variableName"
+      :label="t('workflow.variables.name')"
+      placeholder="abc123"
+      class="w-full mt-2"
+      @change="updateData({ variableName: $event })"
+    />
+    <ui-input
       v-if="data.loopThrough !== 'numbers'"
       :model-value="data.maxLoop"
       :label="t('workflow.blocks.loop-data.maxLoop.label')"
       :title="t('workflow.blocks.loop-data.maxLoop.title')"
-      class="w-full mb-4"
+      class="w-full mt-2"
       min="0"
       type="number"
       @change="updateData({ maxLoop: +$event || 0 })"
     />
     <ui-button
-      v-if="data.loopThrough === 'custom-data'"
-      class="w-full"
+      v-else-if="data.loopThrough === 'custom-data'"
+      class="w-full mt-4"
       variant="accent"
       @click="state.showDataModal = true"
     >
       {{ t('workflow.blocks.loop-data.buttons.insert') }}
     </ui-button>
-    <ui-input
-      v-else-if="data.loopThrough === 'google-sheets'"
-      :model-value="data.referenceKey"
-      :label="t('workflow.blocks.loop-data.refKey')"
-      class="w-full"
-      @change="updateData({ referenceKey: $event })"
-    />
     <div
       v-else-if="data.loopThrough === 'numbers'"
-      class="flex items-center space-x-2"
+      class="flex items-center space-x-2 mt-2"
     >
       <ui-input
         :model-value="data.fromNumber"
@@ -146,7 +155,13 @@ const { t } = useI18n();
 const toast = useToast();
 
 const maxFileSize = 1024 * 1024;
-const loopTypes = ['data-columns', 'numbers', 'google-sheets', 'custom-data'];
+const loopTypes = [
+  'data-columns',
+  'numbers',
+  'google-sheets',
+  'variable',
+  'custom-data',
+];
 
 const state = shallowReactive({
   showOptions: false,

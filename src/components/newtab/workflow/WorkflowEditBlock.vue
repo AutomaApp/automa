@@ -1,7 +1,7 @@
 <template>
-  <div class="px-4 overflow-auto scroll pb-1">
+  <div id="workflow-edit-block" class="px-4 overflow-auto scroll pb-1">
     <div
-      class="sticky top-0 z-20 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 pb-4 mb-4 flex items-center"
+      class="sticky top-0 z-20 bg-white dark:bg-gray-800 pb-4 mb-2 flex items-center"
     >
       <button class="mr-2" @click="$emit('close')">
         <v-remixicon name="riArrowLeftLine" />
@@ -75,3 +75,8 @@ export default {
   },
 };
 </script>
+<style>
+#workflow-edit-block hr {
+  @apply dark:border-gray-700 dark:border-opacity-40 my-4;
+}
+</style>

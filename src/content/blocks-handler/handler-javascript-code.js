@@ -1,7 +1,23 @@
 import { sendMessage } from '@/utils/message';
 
+/*
+setVariable(name, value);
+
+init => set variables to sessionStorage
+invoked => update the variable in the sessionStorage
+nextBlock => include the variables in payload
+*/
+
 function getAutomaScript(blockId) {
   return `
+function automaSetVariable(name, value) {
+  const data = JSON.parse(sessionStorage.getItem('automa--${blockId}')) || null;
+
+  if (data === null) return null;
+
+  data.variables[name] = value;
+  sessionStorage.setItem('automa--${blockId}', JSON.stringify(data));
+}
 function automaNextBlock(data) {
   window.dispatchEvent(new CustomEvent('__automa-next-block__', { detail: data }));
 }
@@ -14,17 +30,17 @@ function findData(obj, path) {
 
   if (paths.length === 0 || isWhitespace) return obj;
 
-  let current = obj;
+  let result = obj;
 
   for (let i = 0; i < paths.length; i++) {
-    if (current[paths[i]] == undefined) {
+    if (result[paths[i]] == undefined) {
       return undefined;
     } else {
-      current = current[paths[i]];
+      result = result[paths[i]];
     }
   }
 
-  return current;
+  return result;
 }
 function automaRefData(keyword, path = '') {
   const data = JSON.parse(sessionStorage.getItem('automa--${blockId}')) || null;
@@ -108,13 +124,17 @@ function javascriptCode(block) {
       script.id = 'automa-custom-js';
       script.innerHTML = `(() => {\n${automaScript} ${block.data.code}\n})()`;
 
-      const cleanUp = (data = '') => {
+      const cleanUp = (columns = '') => {
+        const storageKey = `automa--${block.id}`;
+        const storageRefData = JSON.parse(sessionStorage.getItem(storageKey));
+
         script.remove();
         preloadScripts.forEach((item) => {
           if (item.removeAfterExec) item.script.remove();
         });
-        sessionStorage.removeItem(`automa--${block.id}`);
-        resolve(data);
+        sessionStorage.removeItem(storageKey);
+
+        resolve({ columns, variables: storageRefData.variables });
       };
 
       window.addEventListener('__automa-next-block__', ({ detail }) => {

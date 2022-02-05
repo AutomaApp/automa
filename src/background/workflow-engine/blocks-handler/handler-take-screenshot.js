@@ -20,30 +20,26 @@ function saveImage({ fileName, uri, ext }) {
   image.src = uri;
 }
 
-async function takeScreenshot(block) {
-  const nextBlockId = getBlockConnection(block);
-  const {
-    ext,
-    quality,
-    captureActiveTab,
-    fileName,
-    saveToColumn,
-    dataColumn,
-    fullPage,
-  } = block.data;
-
+async function takeScreenshot({ data, outputs, name }) {
+  const nextBlockId = getBlockConnection({ outputs });
   const saveToComputer =
-    typeof block.data.saveToComputer === 'undefined'
-      ? true
-      : block.data.saveToComputer;
+    typeof data.saveToComputer === 'undefined' || data.saveToComputer;
 
   try {
+    let screenshot = null;
     const options = {
       quality,
-      format: ext || 'png',
+      format: data.ext || 'png',
+    };
+    const saveScreenshot = (dataUrl) => {
+      if (data.saveToColumn) this.addDataToColumn(data.dataColumn, dataUrl);
+      if (saveToComputer)
+        saveImage({ fileName: data.fileName, uri: dataUrl, ext: data.ext });
+      if (data.assignVariable)
+        this.referenceData.variables[data.variableName] = dataUrl;
     };
 
-    if (captureActiveTab) {
+    if (data.captureActiveTab) {
       if (!this.activeTab.id) {
         throw new Error('no-tab');
       }
@@ -58,11 +54,11 @@ async function takeScreenshot(block) {
 
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      const uri = await (fullPage
+      screenshot = await (data.fullPage
         ? this._sendMessageToTab({
-            tabId: this.activeTab.id,
+            name,
             options,
-            name: block.name,
+            tabId: this.activeTab.id,
           })
         : browser.tabs.captureVisibleTab(options));
 
@@ -71,16 +67,14 @@ async function takeScreenshot(block) {
         await browser.tabs.update(tab.id, { active: true });
       }
 
-      if (saveToColumn) this.addDataToColumn(dataColumn, uri);
-      if (saveToComputer) saveImage({ fileName, uri, ext });
+      saveScreenshot(screenshot);
     } else {
-      const uri = await browser.tabs.captureVisibleTab(options);
+      screenshot = await browser.tabs.captureVisibleTab(options);
 
-      if (saveToColumn) this.addDataToColumn(dataColumn, uri);
-      if (saveToComputer) saveImage({ fileName, uri, ext });
+      saveScreenshot(screenshot);
     }
 
-    return { data: '', nextBlockId };
+    return { data: screenshot, nextBlockId };
   } catch (error) {
     error.nextBlockId = nextBlockId;
 

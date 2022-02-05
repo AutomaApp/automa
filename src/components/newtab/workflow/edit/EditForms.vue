@@ -1,8 +1,8 @@
 <template>
   <edit-interaction-base v-bind="{ data, hide: hideBase }" @change="updateData">
+    <hr />
     <ui-checkbox
       :model-value="data.getValue"
-      class="mt-2"
       @change="updateData({ getValue: $event })"
     >
       {{ t('workflow.blocks.forms.getValue') }}
@@ -10,34 +10,43 @@
     <template v-if="data.getValue && !hideBase">
       <ui-checkbox
         :model-value="data.saveData"
-        class="mb-2 ml-2"
+        block
+        class="mt-4"
         @change="updateData({ saveData: $event })"
       >
         Save data
       </ui-checkbox>
-      <div class="flex items-center">
-        <ui-select
-          :model-value="data.dataColumn"
-          placeholder="Data column"
-          class="mr-2 flex-1"
-          @change="updateData({ dataColumn: $event })"
+      <ui-select
+        v-if="data.saveData"
+        :model-value="data.dataColumn"
+        placeholder="Select column"
+        class="w-full mt-2"
+        @change="updateData({ dataColumn: $event })"
+      >
+        <option
+          v-for="column in workflow.data.value.dataColumns"
+          :key="column.name"
+          :value="column.name"
         >
-          <option
-            v-for="column in workflow.data.value.dataColumns"
-            :key="column.name"
-            :value="column.name"
-          >
-            {{ column.name }}
-          </option>
-        </ui-select>
-        <ui-button
-          icon
-          title="Data columns"
-          @click="workflow.showDataColumnsModal(true)"
-        >
-          <v-remixicon name="riKey2Line" />
-        </ui-button>
-      </div>
+          {{ column.name }}
+        </option>
+      </ui-select>
+      <ui-checkbox
+        :model-value="data.assignVariable"
+        block
+        class="mt-4"
+        @change="updateData({ assignVariable: $event })"
+      >
+        {{ t('workflow.variables.assign') }}
+      </ui-checkbox>
+      <ui-input
+        v-if="data.assignVariable"
+        :model-value="data.variableName"
+        :placeholder="t('workflow.variables.name')"
+        :title="t('workflow.variables.name')"
+        class="mt-2 w-full"
+        @change="updateData({ variableName: $event })"
+      />
     </template>
     <template v-else>
       <ui-select
@@ -61,12 +70,11 @@
         <ui-textarea
           :model-value="data.value"
           :placeholder="t('workflow.blocks.forms.text-field.value')"
-          class="w-full"
+          class="w-full mb-1"
           @change="updateData({ value: $event })"
         />
         <ui-checkbox
           :model-value="data.clearValue"
-          class="mb-2 ml-1"
           @change="updateData({ clearValue: $event })"
         >
           {{ t('workflow.blocks.forms.text-field.clearValue') }}
@@ -77,7 +85,7 @@
         :model-value="data.delay"
         :label="t('workflow.blocks.forms.text-field.delay.label')"
         :placeholder="t('workflow.blocks.forms.text-field.delay.placeholder')"
-        class="w-full"
+        class="w-full mt-1"
         min="0"
         type="number"
         @change="updateData({ delay: +$event })"

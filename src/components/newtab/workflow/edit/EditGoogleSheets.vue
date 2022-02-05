@@ -211,7 +211,6 @@ async function previewData() {
 
     previewDataState.status = 'idle';
   } catch (error) {
-    console.dir(error);
     previewDataState.data = '';
     previewDataState.status = 'error';
     previewDataState.errorMessage = error.message;

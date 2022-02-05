@@ -34,47 +34,57 @@ async function interactionHandler(block, { refData }) {
       frameId: this.activeTab.frameId || 0,
     });
 
-    if (block.name === 'link')
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-
     if (objectHasKey(block.data, 'dataColumn')) {
       const dontSaveData =
         (block.name === 'forms' && !block.data.getValue) ||
         !block.data.saveData;
 
-      if (dontSaveData)
+      if (dontSaveData) {
         return {
           data,
           nextBlockId,
         };
+      }
 
       const currentColumnType =
         this.columns[block.data.dataColumn]?.type || 'any';
+      const insertDataToColumn = (value) => {
+        this.addDataToColumn(block.data.dataColumn, value);
+
+        const addExtraRow =
+          objectHasKey(block.data, 'extraRowDataColumn') &&
+          block.data.addExtraRow;
+        if (addExtraRow) {
+          this.addDataToColumn(
+            block.data.extraRowDataColumn,
+            block.data.extraRowValue
+          );
+        }
+      };
 
       if (Array.isArray(data) && currentColumnType !== 'array') {
-        data.forEach((item) => {
-          this.addDataToColumn(block.data.dataColumn, item);
-          if (objectHasKey(block.data, 'extraRowDataColumn')) {
-            if (block.data.addExtraRow)
-              this.addDataToColumn(
-                block.data.extraRowDataColumn,
-                block.data.extraRowValue
-              );
-          }
+        data.forEach((value) => {
+          insertDataToColumn(value);
         });
       } else {
-        this.addDataToColumn(block.data.dataColumn, data);
-        if (objectHasKey(block.data, 'extraRowDataColumn')) {
-          if (block.data.addExtraRow)
-            this.addDataToColumn(
-              block.data.extraRowDataColumn,
-              block.data.extraRowValue
-            );
-        }
+        insertDataToColumn(data);
       }
-    } else if (block.name === 'javascript-code') {
-      const arrData = Array.isArray(data) ? data : [data];
+    }
 
+    const isJavascriptBlock = block.name === 'javascript-code';
+
+    if (block.data.assignVariable && !isJavascriptBlock) {
+      this.referenceData.variables[block.data.variableName] = data;
+    }
+
+    if (isJavascriptBlock) {
+      Object.keys(data.variables).forEach((varName) => {
+        this.referenceData.variables[varName] = data.variables[varName];
+      });
+
+      const arrData = Array.isArray(data.columns)
+        ? data.columns
+        : [data.columns];
       this.addDataToColumn(arrData);
     }
 

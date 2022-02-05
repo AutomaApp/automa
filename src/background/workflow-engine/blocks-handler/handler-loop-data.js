@@ -1,4 +1,5 @@
 import { getBlockConnection } from '../helper';
+import { parseJSON } from '@/utils/helper';
 
 function loopData(block) {
   return new Promise((resolve, reject) => {
@@ -38,6 +39,11 @@ function loopData(block) {
         case 'custom-data':
           currLoopData = JSON.parse(data.loopData);
           break;
+        case 'variable': {
+          const variableVal = this.referenceData.variables[data.variableName];
+          currLoopData = parseJSON(variableVal, variableVal);
+          break;
+        }
         default:
       }
 

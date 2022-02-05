@@ -64,8 +64,6 @@ async function newTab(block) {
       nextBlockId,
     };
   } catch (error) {
-    console.error(error);
-    console.dir(error);
     error.nextBlockId = nextBlockId;
 
     throw error;

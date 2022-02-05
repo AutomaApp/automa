@@ -47,6 +47,11 @@
     "add": "Add workflow",
     "clickToEnable": "Click to enable",
     "toggleSidebar": "Toggle sidebar",
+    "variables": {
+      "title": "Variables",
+      "name": "Variable name",
+      "assign": "Assign to variable"
+    },
     "protect": {
       "title": "Protect workflow",
       "remove": "Remove protection",
@@ -63,6 +68,9 @@
     },
     "state": {
       "executeBy": "Executed by: \"{name}\""
+    },
+    "table": {
+      "title": "Table",
     },
     "dataColumns": {
       "title": "Data columns",

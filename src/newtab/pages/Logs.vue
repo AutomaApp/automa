@@ -73,7 +73,7 @@
         {{ t('log.deleteSelected') }} ({{ selectedLogs.length }})
       </ui-button>
     </ui-card>
-    <ui-modal v-model="exportDataModal.show">
+    <ui-modal v-model="exportDataModal.show" content-class="max-w-2xl">
       <template #header>
         <span class="capitalize">{{ t('common.data') }}</span>
       </template>

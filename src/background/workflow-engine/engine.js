@@ -46,6 +46,7 @@ class WorkflowEngine {
     this.referenceData = {
       loopData: {},
       workflow: {},
+      variables: {},
       dataColumns: [],
       googleSheets: {},
       globalData: parseJSON(globalDataValue, globalDataValue),
@@ -190,7 +191,10 @@ class WorkflowEngine {
           endedAt: endedTimestamp,
           parentLog: this.parentWorkflow,
           startedAt: this.startedTimestamp,
-          data: this.referenceData.dataColumns,
+          data: {
+            table: this.referenceData.dataColumns,
+            variables: this.referenceData.variables,
+          },
         });
       }
 

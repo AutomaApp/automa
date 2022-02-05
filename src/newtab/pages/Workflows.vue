@@ -158,7 +158,7 @@
         v-model="workflowModal.description"
         :placeholder="t('common.description')"
         height="165px"
-        class="w-full dark:text-gray-200 text-right"
+        class="w-full dark:text-gray-200"
         max="300"
       />
       <p class="mb-6 text-right text-gray-600 dark:text-gray-200">
