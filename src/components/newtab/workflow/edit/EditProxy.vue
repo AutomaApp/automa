@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex items-center mb-1">
+    <div class="flex items-center mb-2">
       <ui-select
         :model-value="data.scheme"
         label="Scheme"

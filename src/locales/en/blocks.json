@@ -248,6 +248,7 @@
       "new-tab": {
         "name": "New tab",
         "description": "",
+        "url": "New Tab URL",
         "activeTab": "Set as active tab",
         "tabToGroup": "Add tab to group",
         "updatePrevTab": {

@@ -9,7 +9,7 @@
     <ui-input
       v-if="!data.activeTab"
       :model-value="data.url"
-      title="URL"
+      :label="t('workflow.blocks.new-tab.url')"
       class="w-full mt-2"
       placeholder="http://example.com/"
       @change="updateData({ url: $event })"
