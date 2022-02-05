@@ -57,12 +57,12 @@ function convertWorkflow(workflow) {
   const keys = [
     'name',
     'icon',
+    'table',
     'version',
     'drawflow',
     'settings',
     'globalData',
     'description',
-    'dataColumns',
   ];
   const content = {
     extVersion: chrome.runtime.getManifest().version,

@@ -20,7 +20,7 @@
       :model-value="data.name"
       label="File name"
       class="w-full mt-2"
-      placeholder="My file"
+      placeholder="unnamed"
       @change="updateData({ name: $event })"
     />
     <ui-input

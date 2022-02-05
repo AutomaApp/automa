@@ -30,8 +30,9 @@ function loopData(block) {
         case 'numbers':
           currLoopData = data.fromNumber;
           break;
+        case 'table':
         case 'data-columns':
-          currLoopData = this.referenceData.dataColumns;
+          currLoopData = this.referenceData.table;
           break;
         case 'google-sheets':
           currLoopData = this.referenceData.googleSheets[data.referenceKey];

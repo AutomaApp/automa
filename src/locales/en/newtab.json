@@ -71,9 +71,6 @@
     },
     "table": {
       "title": "Table",
-    },
-    "dataColumns": {
-      "title": "Data columns",
       "placeholder": "Search or add column",
       "column": {
         "name": "Column name",

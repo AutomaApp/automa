@@ -128,9 +128,9 @@ const shortcuts = useShortcut(
 
 const modalActions = [
   {
-    id: 'data-columns',
-    name: t('workflow.dataColumns.title'),
-    icon: 'riKey2Line',
+    id: 'table',
+    name: t('workflow.table.title'),
+    icon: 'riTable2',
   },
   {
     id: 'global-data',

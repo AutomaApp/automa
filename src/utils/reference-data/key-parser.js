@@ -1,6 +1,7 @@
 const refKeys = {
-  dataColumn: 'dataColumns',
-  dataColumns: 'dataColumns',
+  table: 'table',
+  dataColumn: 'table',
+  dataColumns: 'table',
 };
 
 export default function (key) {
@@ -10,7 +11,7 @@ export default function (key) {
 
   if (!path) return { dataKey, path: '' };
 
-  if (dataKey !== 'dataColumns') {
+  if (dataKey !== 'table') {
     if (dataKey === 'loopData' && !path.endsWith('.$index')) {
       const pathArr = path.split('.');
       pathArr.splice(1, 0, 'data');
@@ -31,5 +32,5 @@ export default function (key) {
 
   if (path.endsWith('.')) path = path.slice(0, -1);
 
-  return { dataKey: 'dataColumns', path };
+  return { dataKey: 'table', path };
 }

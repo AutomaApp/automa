@@ -17,6 +17,7 @@ class Workflow extends Model {
       icon: this.string('riGlobalLine'),
       data: this.attr(null),
       drawflow: this.attr(''),
+      table: this.attr([]),
       dataColumns: this.attr([]),
       description: this.string(''),
       pass: this.string(''),
@@ -35,6 +36,15 @@ class Workflow extends Model {
       }),
       logs: this.hasMany(Log, 'workflowId'),
     };
+  }
+
+  static beforeCreate(model) {
+    if (model.dataColumns.length > 0) {
+      model.table = model.dataColumns;
+      model.dataColumns = [];
+    }
+
+    return model;
   }
 
   static async insert(payload) {

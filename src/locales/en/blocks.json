@@ -111,7 +111,7 @@
         "dataFrom": {
           "label": "Data from",
           "options": {
-            "data-columns": "Data columns",
+            "data-columns": "Table",
             "custom": "Custom"
           }
         },
@@ -199,7 +199,7 @@
       "get-text": {
         "name": "Get text",
         "description": "Get text from an element",
-        "checkbox": "Save data",
+        "checkbox": "Insert to table",
         "includeTags": "Include HTML tags",
         "prefixText": {
           "placeholder": "Text prefix",
@@ -217,13 +217,13 @@
       },
       "export-data": {
         "name": "Export data",
-        "description": "Export workflow data columns",
+        "description": "Export workflow data",
         "exportAs": "Export as",
         "refKey": "Reference key",
         "dataToExport": {
           "placeholder": "Data to export",
           "options": {
-            "data-columns": "Data columns",
+            "data-columns": "Table",
             "google-sheets": "Google sheets",
           },
         }
@@ -265,7 +265,7 @@
         "description": "Get value of an element attribute",
         "forms": {
           "name": "Attribute name",
-          "checkbox": "Save data",
+          "checkbox": "Insert to table",
           "column": "Select column",
           "extraRow": {
             "checkbox": "Add extra row",
@@ -372,7 +372,7 @@
       },
       "loop-data": {
         "name": "Loop data",
-        "description": "Iterate through data columns or your custom data",
+        "description": "Iterate through table or your custom data",
         "loopId": "Loop id",
         "refKey": "Reference key",
         "modal": {
@@ -398,7 +398,8 @@
           "options": {
             "numbers": "Numbers",
             "variable": "Variable",
-            "data-columns": "Data columns",
+            "data-columns": "Table",
+            "table": "Table",
             "custom-data": "Custom data",
             "google-sheets": "Google sheets"
           }
@@ -413,7 +414,7 @@
         "fullPage": "Take full page screenshot",
         "description": "Take a screenshot of current active tab",
         "imageQuality": "Image quality",
-        "saveToColumn": "Save screenshot to column",
+        "saveToColumn": "Insert screenshot to table",
         "saveToComputer": "Save screenshot to computer"
       },
       "switch-to": {

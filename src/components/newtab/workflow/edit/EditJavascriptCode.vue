@@ -175,6 +175,23 @@ function automaFuncsCompletion(context) {
         },
       },
       {
+        label: 'automaSetVariable',
+        type: 'function',
+        apply: snippet('automaSetVariable(${name}, ${value})'),
+        info: () => {
+          const container = document.createElement('div');
+
+          container.innerHTML = `
+            <code>automaRefData(<i>name</i>, <i>value</i>)</code>
+            <p class="mt-2">
+              Set the value of a variable
+            </p>
+          `;
+
+          return container;
+        },
+      },
+      {
         label: 'automaRefData',
         type: 'function',
         apply: snippet("automaRefData('${keyword}', '${path}')"),

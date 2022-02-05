@@ -28,7 +28,7 @@ async function takeScreenshot({ data, outputs, name }) {
   try {
     let screenshot = null;
     const options = {
-      quality,
+      quality: data.quality,
       format: data.ext || 'png',
     };
     const saveScreenshot = (dataUrl) => {

@@ -223,7 +223,7 @@ import WorkflowSettings from '@/components/newtab/workflow/WorkflowSettings.vue'
 import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
 import WorkflowGlobalData from '@/components/newtab/workflow/WorkflowGlobalData.vue';
-import WorkflowDataColumns from '@/components/newtab/workflow/WorkflowDataColumns.vue';
+import WorkflowDataTable from '@/components/newtab/workflow/WorkflowDataTable.vue';
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
 import SharedWorkflowState from '@/components/newtab/shared/SharedWorkflowState.vue';
 
@@ -237,10 +237,10 @@ const shortcut = useShortcut('editor:toggle-sidebar', toggleSidebar);
 
 const workflowId = route.params.id;
 const workflowModals = {
-  'data-columns': {
+  table: {
     icon: 'riKey2Line',
-    component: WorkflowDataColumns,
-    title: t('workflow.dataColumns.title'),
+    component: WorkflowDataTable,
+    title: t('workflow.table.title'),
   },
   'global-data': {
     icon: 'riDatabase2Line',
@@ -470,7 +470,7 @@ provide('workflow', {
   updateWorkflow,
   showDataColumnsModal: (show = true) => {
     state.showModal = show;
-    state.modalName = 'data-columns';
+    state.modalName = 'table';
   },
 });
 

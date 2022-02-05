@@ -58,7 +58,7 @@
       @change="updateData({ dataColumn: $event })"
     >
       <option
-        v-for="column in workflow.data.value.dataColumns"
+        v-for="column in workflow.data.value.table"
         :key="column.name"
         :value="column.name"
       >

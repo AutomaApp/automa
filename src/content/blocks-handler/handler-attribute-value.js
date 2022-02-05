@@ -12,10 +12,13 @@ function attributeValue(block) {
 
     handleElement(block, {
       onSelected(element) {
-        const value =
-          attributeName === 'checked' && isCheckboxOrRadio(element)
-            ? element.checked
-            : element.getAttribute(attributeName);
+        let value = element.getAttribute(attributeName);
+
+        if (attributeName === 'checked' && isCheckboxOrRadio(element)) {
+          value = element.checked;
+        } else if (attributeName === 'href' && element.tagName === 'A') {
+          value = element.href;
+        }
 
         if (multiple) result.push(value);
         else result = value;
