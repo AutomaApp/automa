@@ -203,13 +203,13 @@ const menu = [
 const savedSorts = JSON.parse(localStorage.getItem('workflow-sorts') || '{}');
 const state = shallowReactive({
   query: '',
-  highlightBrowse: !localStorage.getItem('first-time-browse'),
   sortBy: savedSorts.sortBy || 'createdAt',
   sortOrder: savedSorts.sortOrder || 'desc',
+  highlightBrowse: !localStorage.getItem('first-time-browse'),
 });
 const workflowModal = shallowReactive({
-  type: 'update',
   name: '',
+  type: 'update',
   description: '',
 });
 
@@ -221,7 +221,6 @@ const workflows = computed(() =>
     .orderBy(state.sortBy, state.sortOrder)
     .get()
 );
-
 function browseWorkflow() {
   state.highlightBrowse = false;
   localStorage.setItem('first-time-browse', false);

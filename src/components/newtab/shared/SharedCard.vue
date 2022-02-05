@@ -53,10 +53,21 @@
         {{ data.description }}
       </p>
     </div>
-    <p class="text-gray-600 dark:text-gray-200">{{ formatDate() }}</p>
+    <div class="flex items-center text-gray-600 dark:text-gray-200">
+      <p class="flex-1">{{ state.date }}</p>
+      <v-remixicon
+        v-if="state.triggerText"
+        v-tooltip="state.triggerText"
+        name="riFlashlightLine"
+        size="20"
+      />
+    </div>
   </ui-card>
 </template>
 <script setup>
+import { onMounted, shallowReactive } from 'vue';
+import { useI18n } from 'vue-i18n';
+import browser from 'webextension-polyfill';
 import dayjs from '@/lib/dayjs';
 
 const props = defineProps({
@@ -80,12 +91,33 @@ const props = defineProps({
 
 defineEmits(['execute', 'click', 'menuSelected']);
 
-let formattedDate = null;
-const formatDate = () => {
-  if (formattedDate) return formattedDate;
+const { t } = useI18n();
 
-  formattedDate = dayjs(props.data.createdAt).fromNow();
+const excludeTrigger = ['manual', 'on-startup'];
+const state = shallowReactive({
+  triggerText: null,
+  date: dayjs(props.data.createdAt).fromNow(),
+});
 
-  return formattedDate;
-};
+onMounted(async () => {
+  const { trigger, id } = props.data;
+  const hasTrigger = trigger && !excludeTrigger.includes(trigger.type);
+
+  if (state.triggerText || !hasTrigger) return;
+
+  const triggerName = t(`workflow.blocks.trigger.items.${trigger.type}`);
+  let text = '';
+
+  if (trigger.type === 'keyboard-shortcut') {
+    text = trigger.shortcut;
+  } else if (trigger.type === 'visit-web') {
+    text = trigger.url;
+  } else {
+    const triggerTime = (await browser.alarms.get(id))?.scheduledTime;
+
+    text = dayjs(triggerTime || Date.now()).format('DD-MMM-YYYY, hh:mm A');
+  }
+
+  state.triggerText = `Trigger (${triggerName}): \n ${text}`;
+});
 </script>
