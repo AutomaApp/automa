@@ -22,9 +22,14 @@ export function importWorkflow() {
 
             if (isWorkflowExists) return;
 
+            const currentWorkflow = workflow.includedWorkflows[workflowId];
+            currentWorkflow.table =
+              currentWorkflow.table || currentWorkflow.dataColumns;
+            delete currentWorkflow.dataColumns;
+
             Workflow.insert({
               data: {
-                ...workflow.includedWorkflows[workflowId],
+                ...currentWorkflow,
                 drawflow: getDrawflow(workflow.includedWorkflows[workflowId]),
                 id: workflowId,
                 createdAt: Date.now(),
@@ -34,6 +39,9 @@ export function importWorkflow() {
 
           delete workflow.includedWorkflows;
         }
+
+        workflow.table = workflow.table || workflow.dataColumns;
+        delete workflow.dataColumns;
 
         Workflow.insert({
           data: {
@@ -51,7 +59,7 @@ export function importWorkflow() {
     });
 }
 
-function convertWorkflow(workflow) {
+export function convertWorkflow(workflow, additionalKeys = []) {
   if (!workflow) return null;
 
   const keys = [
@@ -63,6 +71,7 @@ function convertWorkflow(workflow) {
     'settings',
     'globalData',
     'description',
+    ...additionalKeys,
   ];
   const content = {
     extVersion: chrome.runtime.getManifest().version,

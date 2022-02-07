@@ -7,47 +7,55 @@
     <template #header>
       <h3 class="font-semibold">{{ state.options.title }}</h3>
     </template>
-    <p class="text-gray-600 dark:text-gray-200 leading-tight">
-      {{ state.options.body }}
-    </p>
-    <ui-input
-      v-if="state.type === 'prompt'"
-      v-model="state.input"
-      autofocus
-      :placeholder="state.options.placeholder"
-      :label="state.options.label"
-      :type="
-        state.options.inputType === 'password' && state.showPassword
-          ? 'text'
-          : state.options.inputType
-      "
-      class="w-full"
-    >
-      <template v-if="state.options.inputType === 'password'" #append>
-        <v-remixicon
-          :name="state.showPassword ? 'riEyeOffLine' : 'riEyeLine'"
-          class="absolute right-2"
-          @click="state.showPassword = !state.showPassword"
-        />
-      </template>
-    </ui-input>
-    <div class="mt-8 flex space-x-2">
-      <ui-button class="w-6/12" @click="fireCallback('onCancel')">
-        {{ state.options.cancelText }}
-      </ui-button>
-      <ui-button
-        class="w-6/12"
-        :variant="state.options.okVariant"
-        @click="fireCallback('onConfirm')"
+    <slot
+      v-if="state.options.custom"
+      v-bind="{ options: state.options }"
+      :name="state.type"
+    />
+    <template v-else>
+      <p class="text-gray-600 dark:text-gray-200 leading-tight">
+        {{ state.options.body }}
+      </p>
+      <ui-input
+        v-if="state.type === 'prompt'"
+        v-model="state.input"
+        autofocus
+        :placeholder="state.options.placeholder"
+        :label="state.options.label"
+        :type="
+          state.options.inputType === 'password' && state.showPassword
+            ? 'text'
+            : state.options.inputType
+        "
+        class="w-full"
       >
-        {{ state.options.okText }}
-      </ui-button>
-    </div>
+        <template v-if="state.options.inputType === 'password'" #append>
+          <v-remixicon
+            :name="state.showPassword ? 'riEyeOffLine' : 'riEyeLine'"
+            class="absolute right-2"
+            @click="state.showPassword = !state.showPassword"
+          />
+        </template>
+      </ui-input>
+      <div class="mt-8 flex space-x-2">
+        <ui-button class="w-6/12" @click="fireCallback('onCancel')">
+          {{ state.options.cancelText }}
+        </ui-button>
+        <ui-button
+          class="w-6/12"
+          :variant="state.options.okVariant"
+          @click="fireCallback('onConfirm')"
+        >
+          {{ state.options.okText }}
+        </ui-button>
+      </div>
+    </template>
   </ui-modal>
 </template>
 <script>
 import { reactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import defu from 'defu';
 import emitter from '@/lib/mitt';
 
 export default {
@@ -78,10 +86,7 @@ export default {
     emitter.on('show-dialog', ({ type, options }) => {
       state.type = type;
       state.input = options?.inputValue ?? '';
-      state.options = {
-        ...defaultOptions,
-        ...options,
-      };
+      state.options = defu(options, defaultOptions);
 
       state.show = true;
     });

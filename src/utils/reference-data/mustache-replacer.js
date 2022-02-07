@@ -1,4 +1,4 @@
-import { get as getObjectPath } from 'object-path-immutable';
+import objectPath from 'object-path';
 import keyParser from './key-parser';
 
 export function extractStrFunction(str) {
@@ -35,7 +35,7 @@ export default function (str, data) {
       );
     } else {
       const { dataKey, path } = keyParser(key);
-      result = getObjectPath(data[dataKey], path) ?? match;
+      result = objectPath.get(data[dataKey], path) ?? match;
     }
 
     return typeof result === 'string' ? result : JSON.stringify(result);

@@ -12,6 +12,15 @@
   </ui-card>
   <ui-card padding="p-1 ml-4 flex items-center">
     <button
+      v-if="!workflow.isProtected"
+      v-tooltip.group="t('workflow.share.title')"
+      :class="{ 'text-primary': data.hasShared }"
+      class="hoverable p-2 rounded-lg"
+      @click="$emit('share')"
+    >
+      <v-remixicon name="riShareLine" />
+    </button>
+    <button
       v-tooltip.group="
         t(`workflow.protect.${workflow.isProtected ? 'remove' : 'title'}`)
       "
@@ -23,8 +32,11 @@
     </button>
     <button
       v-if="!workflow.isDisabled"
-      v-tooltip.group="t('common.execute')"
-      :title="shortcuts['editor:execute-workflow'].readable"
+      v-tooltip.group="
+        `${t('common.execute')} (${
+          shortcuts['editor:execute-workflow'].readable
+        })`
+      "
       class="hoverable p-2 rounded-lg"
       @click="$emit('execute')"
     >
@@ -102,6 +114,10 @@ defineProps({
     type: Object,
     default: () => ({}),
   },
+  data: {
+    type: Object,
+    default: () => ({}),
+  },
 });
 const emit = defineEmits([
   'showModal',
@@ -112,9 +128,11 @@ const emit = defineEmits([
   'protect',
   'export',
   'update',
+  'share',
 ]);
 
 useGroupTooltip();
+
 const { t } = useI18n();
 const shortcuts = useShortcut(
   [

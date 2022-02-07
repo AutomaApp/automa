@@ -1,15 +1,22 @@
 import emitter from '@/lib/mitt';
 
 export function useDialog() {
-  function confirm(options) {
-    emitter.emit('show-dialog', { type: 'confirm', options });
-  }
+  const emitDialog = (type, options = {}) => {
+    emitter.emit('show-dialog', { type, options });
+  };
 
-  function prompt(options) {
-    emitter.emit('show-dialog', { type: 'prompt', options });
+  function confirm(options = {}) {
+    emitDialog('confirm', options);
+  }
+  function prompt(options = {}) {
+    emitDialog('prompt', options);
+  }
+  function custom(type, options = {}) {
+    emitDialog(type, { ...options, custom: true });
   }
 
   return {
+    custom,
     prompt,
     confirm,
   };

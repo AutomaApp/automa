@@ -37,13 +37,13 @@
       {{ t(`workflow.locked.messages.${protectionState.message}`) }}
     </p>
   </div>
-  <div v-else class="flex h-screen">
+  <div v-else-if="workflow" class="flex h-screen">
     <div
       v-if="state.showSidebar"
       class="w-80 bg-white dark:bg-gray-800 py-6 relative border-l border-gray-100 dark:border-gray-700 dark:border-opacity-50 flex flex-col"
     >
       <workflow-edit-block
-        v-if="state.isEditBlock"
+        v-if="state.isEditBlock && workflowData.active !== 'shared'"
         :data="state.blockData"
         @update="updateBlockData"
         @close="(state.isEditBlock = false), (state.blockData = {})"
@@ -51,6 +51,7 @@
       <workflow-details-card
         v-else
         :workflow="workflow"
+        :data="workflowData"
         @update="updateWorkflow"
       />
     </div>
@@ -87,30 +88,93 @@
           </ui-tab>
         </ui-tabs>
         <div class="flex-grow"></div>
+        <workflow-shared-actions
+          v-if="workflowData.active === 'shared'"
+          :data="workflowData"
+          :workflow="workflow"
+          @insertLocal="insertToLocal"
+          @update="updateSharedWorkflow"
+          @fetchLocal="fetchLocalWorkflow"
+          @save="saveUpdatedSharedWorkflow"
+          @unpublish="unpublishSharedWorkflow"
+        />
         <workflow-actions
+          v-else
+          :data="workflowData"
           :workflow="workflow"
           :is-data-changed="state.isDataChanged"
-          @showModal="(state.modalName = $event), (state.showModal = true)"
           @save="saveWorkflow"
-          @export="workflowExporter"
-          @execute="executeWorkflow"
+          @share="shareWorkflow"
           @rename="renameWorkflow"
           @update="updateWorkflow"
           @delete="deleteWorkflow"
+          @execute="executeWorkflow"
+          @export="workflowExporter"
           @protect="toggleProtection"
+          @showModal="(state.modalName = $event), (state.showModal = true)"
         />
       </div>
       <keep-alive>
         <workflow-builder
           v-if="activeTab === 'editor' && state.drawflow !== null"
+          v-slot="{ editor: currEditor }"
           class="h-full w-full"
+          :is-shared="workflowData.active === 'shared'"
           :data="state.drawflow"
           :version="workflow.version"
           @save="saveWorkflow"
           @update="updateWorkflow"
           @load="editor = $event"
           @deleteBlock="deleteBlock"
-        />
+        >
+          <div
+            class="flex items-end absolute w-full p-4 left-0 bottom-0 justify-between"
+          >
+            <div>
+              <button
+                v-tooltip.group="t('workflow.editor.resetZoom')"
+                class="p-2 rounded-lg bg-white dark:bg-gray-800 mr-2"
+                @click="currEditor.zoom_reset()"
+              >
+                <v-remixicon name="riFullscreenLine" />
+              </button>
+              <div class="rounded-lg bg-white dark:bg-gray-800 inline-block">
+                <button
+                  v-tooltip.group="t('workflow.editor.zoomOut')"
+                  class="p-2 rounded-lg relative z-10"
+                  @click="currEditor.zoom_out()"
+                >
+                  <v-remixicon name="riSubtractLine" />
+                </button>
+                <hr class="h-6 border-r inline-block" />
+                <button
+                  v-tooltip.group="t('workflow.editor.zoomIn')"
+                  class="p-2 rounded-lg"
+                  @click="currEditor.zoom_in()"
+                >
+                  <v-remixicon name="riAddLine" />
+                </button>
+              </div>
+            </div>
+            <ui-tabs
+              v-if="
+                workflowData.hasLocal &&
+                workflowData.hasShared &&
+                !state.isDataChanged
+              "
+              v-model="workflowData.active"
+              class="bg-white dark:bg-gray-800 text-sm"
+              type="fill"
+            >
+              <ui-tab value="local">
+                {{ t('workflow.type.local') }}
+              </ui-tab>
+              <ui-tab value="shared">
+                {{ t('workflow.type.shared') }}
+              </ui-tab>
+            </ui-tabs>
+          </div>
+        </workflow-builder>
         <div v-else class="container pb-4 mt-24 px-4">
           <template v-if="activeTab === 'logs'">
             <div v-if="logs.length === 0" class="text-center">
@@ -152,11 +216,18 @@
       </keep-alive>
     </div>
   </div>
-  <ui-modal v-model="state.showModal" content-class="max-w-xl">
-    <template #header>{{ workflowModals[state.modalName].title }}</template>
+  <ui-modal
+    v-model="state.showModal"
+    :content-class="workflowModal?.width || 'max-w-xl'"
+    v-bind="workflowModal.attrs || {}"
+  >
+    <template v-if="workflowModal.title" #header>
+      {{ workflowModal.title }}
+    </template>
     <component
-      :is="workflowModals[state.modalName].component"
+      :is="workflowModal.component"
       v-bind="{ workflow }"
+      v-on="workflowModal?.events || {}"
       @update="updateWorkflow"
       @close="state.showModal = false"
     />
@@ -172,7 +243,7 @@
       v-model="renameModal.description"
       :placeholder="t('common.description')"
       height="165px"
-      class="w-full dark:text-gray-200 text-right"
+      class="w-full dark:text-gray-200"
       max="300"
     />
     <p class="mb-6 text-right text-gray-600 dark:text-gray-200">
@@ -198,6 +269,7 @@ import {
   onMounted,
   onUnmounted,
   toRaw,
+  watch,
 } from 'vue';
 import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
@@ -209,21 +281,24 @@ import emitter from '@/lib/mitt';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
 import { sendMessage } from '@/utils/message';
-import { debounce, isObject } from '@/utils/helper';
 import { exportWorkflow } from '@/utils/workflow-data';
 import { tasks } from '@/utils/shared';
+import { fetchApi } from '@/utils/api';
+import { debounce, isObject, objectHasKey, parseJSON } from '@/utils/helper';
 import Log from '@/models/log';
 import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
 import Workflow from '@/models/workflow';
 import workflowTrigger from '@/utils/workflow-trigger';
+import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
 import WorkflowActions from '@/components/newtab/workflow/WorkflowActions.vue';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';
 import WorkflowProtect from '@/components/newtab/workflow/WorkflowProtect.vue';
 import WorkflowSettings from '@/components/newtab/workflow/WorkflowSettings.vue';
 import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
-import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
-import WorkflowGlobalData from '@/components/newtab/workflow/WorkflowGlobalData.vue';
 import WorkflowDataTable from '@/components/newtab/workflow/WorkflowDataTable.vue';
+import WorkflowGlobalData from '@/components/newtab/workflow/WorkflowGlobalData.vue';
+import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
+import WorkflowSharedActions from '@/components/newtab/workflow/WorkflowSharedActions.vue';
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
 import SharedWorkflowState from '@/components/newtab/shared/SharedWorkflowState.vue';
 
@@ -235,30 +310,6 @@ const router = useRouter();
 const dialog = useDialog();
 const shortcut = useShortcut('editor:toggle-sidebar', toggleSidebar);
 
-const workflowId = route.params.id;
-const workflowModals = {
-  table: {
-    icon: 'riKey2Line',
-    component: WorkflowDataTable,
-    title: t('workflow.table.title'),
-  },
-  'global-data': {
-    icon: 'riDatabase2Line',
-    component: WorkflowGlobalData,
-    title: t('common.globalData'),
-  },
-  'protect-workflow': {
-    icon: 'riShieldKeyholeLine',
-    component: WorkflowProtect,
-    title: t('workflow.protect.title'),
-  },
-  settings: {
-    icon: 'riSettings3Line',
-    component: WorkflowSettings,
-    title: t('common.settings'),
-  },
-};
-
 const editor = shallowRef(null);
 const activeTab = shallowRef('editor');
 const state = reactive({
@@ -268,7 +319,17 @@ const state = reactive({
   showModal: false,
   showSidebar: true,
   isEditBlock: false,
+  isLoadingFlow: false,
   isDataChanged: false,
+});
+const workflowData = reactive({
+  hasLocal: true,
+  hasShared: false,
+  isChanged: false,
+  isUpdating: false,
+  isUnpublishing: false,
+  changingKeys: new Set(),
+  active: route.query.shared ? 'shared' : 'local',
 });
 const renameModal = reactive({
   show: false,
@@ -282,10 +343,62 @@ const protectionState = reactive({
   showPassword: false,
 });
 
+const workflowId = route.params.id;
+const workflowModals = {
+  table: {
+    icon: 'riKey2Line',
+    component: WorkflowDataTable,
+    title: t('workflow.table.title'),
+  },
+  'workflow-share': {
+    icon: 'riShareLine',
+    component: WorkflowShare,
+    attrs: {
+      blur: true,
+      persist: true,
+      customContent: true,
+    },
+    events: {
+      close() {
+        state.showModal = false;
+        state.modalName = '';
+      },
+      publish() {
+        workflowData.hasShared = true;
+
+        state.showModal = false;
+        state.modalName = '';
+      },
+    },
+  },
+  'global-data': {
+    width: 'max-w-2xl',
+    icon: 'riDatabase2Line',
+    component: WorkflowGlobalData,
+    title: t('common.globalData'),
+  },
+  'protect-workflow': {
+    width: 'max-w-lg',
+    icon: 'riShieldKeyholeLine',
+    component: WorkflowProtect,
+    title: t('workflow.protect.title'),
+  },
+  settings: {
+    icon: 'riSettings3Line',
+    component: WorkflowSettings,
+    title: t('common.settings'),
+  },
+};
+
+const sharedWorkflow = computed(() => store.state.sharedWorkflows[workflowId]);
+const localWorkflow = computed(() => Workflow.find(workflowId));
+const workflow = computed(() =>
+  workflowData.active === 'local' ? localWorkflow.value : sharedWorkflow.value
+);
+const workflowModal = computed(() => workflowModals[state.modalName] || {});
 const workflowState = computed(() =>
   store.getters.getWorkflowState(workflowId)
 );
-const workflow = computed(() => Workflow.find(workflowId) || {});
 const logs = computed(() =>
   Log.query()
     .where(
@@ -296,6 +409,7 @@ const logs = computed(() =>
     .orderBy('startedAt', 'desc')
     .get()
 );
+
 const updateBlockData = debounce((data) => {
   let payload = data;
 
@@ -317,6 +431,155 @@ const updateBlockData = debounce((data) => {
       new CustomEvent('change', { detail: toRaw(payload) })
     );
 }, 250);
+
+function unpublishSharedWorkflow() {
+  dialog.confirm({
+    title: t('workflow.unpublish.title'),
+    body: t('workflow.unpublish.body', { name: workflow.value.name }),
+    okVariant: 'danger',
+    okText: t('workflow.unpublish.button'),
+    async onConfirm() {
+      try {
+        workflowData.isUnpublishing = true;
+
+        const response = await fetchApi(
+          `/me/workflows/shared?workflowId=${workflowId}`,
+          {
+            method: 'DELETE',
+          }
+        );
+
+        if (response.status !== 200) {
+          throw new Error(response.statusText);
+        }
+
+        store.commit('deleteStateNested', `sharedWorkflows.${workflowId}`);
+        sessionStorage.setItem(
+          'shared-workflows',
+          JSON.stringify(store.state.sharedWorkflows)
+        );
+
+        if (workflowData.hasLocal) {
+          workflowData.active = 'local';
+          workflowData.hasShared = false;
+        } else {
+          router.push('/');
+        }
+
+        workflowData.isUnpublishing = false;
+      } catch (error) {
+        console.error(error);
+        workflowData.isUnpublishing = false;
+        toast.error(t('message.somethingWrong'));
+      }
+    },
+  });
+}
+async function saveUpdatedSharedWorkflow() {
+  try {
+    workflowData.isUpdating = true;
+
+    const payload = {};
+    workflowData.changingKeys.forEach((key) => {
+      if (key === 'drawflow') {
+        payload.drawflow = JSON.parse(workflow.value.drawflow);
+      } else {
+        payload[key] = workflow.value[key];
+      }
+    });
+
+    const url = `/me/workflows/shared?workflowId=${workflowId}`;
+    const response = await fetchApi(url, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
+
+    if (response.status !== 200) {
+      toast.error(t('message.somethingWrong'));
+      throw new Error(response.statusText);
+    }
+
+    workflowData.isChanged = false;
+    workflowData.changingKeys.clear();
+    sessionStorage.setItem(
+      'shared-workflows',
+      JSON.stringify(store.state.sharedWorkflows)
+    );
+
+    workflowData.isUpdating = false;
+  } catch (error) {
+    console.error(error);
+    workflowData.isUpdating = false;
+  }
+}
+function updateSharedWorkflow(data = {}) {
+  Object.keys(data).forEach((key) => {
+    workflowData.changingKeys.add(key);
+  });
+
+  store.commit('updateStateNested', {
+    path: `sharedWorkflows.${workflowId}`,
+    value: {
+      ...workflow.value,
+      ...data,
+    },
+  });
+  workflowData.isChanged = true;
+}
+function fetchLocalWorkflow() {
+  const localData = {};
+  const keys = [
+    'drawflow',
+    'name',
+    'description',
+    'icon',
+    'globalData',
+    'dataColumns',
+    'table',
+    'settings',
+  ];
+
+  keys.forEach((key) => {
+    if (localWorkflow.value.isProtected && key === 'drawflow') return;
+
+    localData[key] = localWorkflow.value[key];
+  });
+
+  if (localData.drawflow) {
+    editor.value.import(JSON.parse(localData.drawflow), false);
+  }
+
+  updateSharedWorkflow(localData);
+}
+function insertToLocal() {
+  const copy = {
+    ...props.workflow,
+    createdAt: Date.now(),
+    version: chrome.runtime.getManifest().version,
+  };
+
+  Workflow.insert({
+    data: copy,
+  }).then(() => {
+    workflowData.hasLocal = true;
+  });
+}
+function shareWorkflow() {
+  if (workflowData.hasShared) {
+    workflowData.active = 'shared';
+
+    return;
+  }
+
+  if (store.state.user) {
+    state.modalName = 'workflow-share';
+    state.showModal = true;
+  } else {
+    dialog.custom('auth', {
+      title: t('auth.title'),
+    });
+  }
+}
 function deleteLog(logId) {
   Log.delete(logId).then(() => {
     store.dispatch('saveToStorage', 'logs');
@@ -385,6 +648,8 @@ function deleteBlock(id) {
   state.isDataChanged = true;
 }
 function updateWorkflow(data) {
+  if (workflowData.active === 'shared') return;
+
   return Workflow.update({
     where: workflowId,
     data,
@@ -403,6 +668,8 @@ function updateNameAndDesc() {
   });
 }
 async function saveWorkflow() {
+  if (workflowData.active === 'shared') return;
+
   try {
     let flow = JSON.stringify(editor.value.export());
     const [triggerBlockId] = editor.value.getNodesFromName('trigger');
@@ -424,6 +691,8 @@ async function saveWorkflow() {
   }
 }
 function editBlock(data) {
+  if (workflowData.active === 'shared') return;
+
   state.isEditBlock = true;
   state.blockData = defu(data, tasks[data.id] || {});
 }
@@ -474,6 +743,27 @@ provide('workflow', {
   },
 });
 
+watch(
+  () => workflowData.active,
+  (value) => {
+    if (value === 'shared') {
+      state.isEditBlock = false;
+      state.blockData = {};
+    } else if (workflow.value.isProtected) {
+      protectionState.needed = true;
+      return;
+    }
+
+    let drawflow = parseJSON(workflow.value.drawflow, null);
+
+    if (!drawflow?.drawflow?.Home) {
+      drawflow = { drawflow: { Home: { data: {} } } };
+    }
+
+    editor.value.import(drawflow, false);
+  }
+);
+
 onBeforeRouteLeave(() => {
   if (!state.isDataChanged) return;
 
@@ -485,7 +775,17 @@ onBeforeRouteLeave(() => {
 onMounted(() => {
   const isWorkflowExists = Workflow.query().where('id', workflowId).exists();
 
-  if (!isWorkflowExists) {
+  workflowData.hasLocal = isWorkflowExists;
+  workflowData.hasShared = objectHasKey(
+    store.state.sharedWorkflows,
+    workflowId
+  );
+
+  const dontHaveLocal = !isWorkflowExists && workflowData.active === 'local';
+  const dontHaveShared =
+    !workflowData.hasShared && workflowData.active === 'shared';
+
+  if (dontHaveLocal || dontHaveShared) {
     router.push('/workflows');
     return;
   }
@@ -522,6 +822,14 @@ onUnmounted(() => {
   @apply bg-gray-200;
 }
 .ghost-task:not(.workflow-task) * {
+  display: none;
+}
+
+.parent-drawflow.is-shared .drawflow-node * {
+  pointer-events: none;
+}
+.parent-drawflow.is-shared .drawflow-node .move-to-group,
+.parent-drawflow.is-shared .drawflow-node .menu {
   display: none;
 }
 </style>

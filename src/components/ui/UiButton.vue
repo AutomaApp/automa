@@ -22,7 +22,11 @@
     </span>
     <div v-if="loading" class="button-loading">
       <ui-spinner
-        :color="variant === 'default' ? 'text-primary' : 'text-white'"
+        :color="
+          variant === 'default'
+            ? 'text-primary'
+            : 'text-white dark:text-gray-900'
+        "
       ></ui-spinner>
     </div>
   </component>

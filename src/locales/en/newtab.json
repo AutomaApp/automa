@@ -11,6 +11,11 @@
     "text1": "Automa has been updated to v{version},",
     "text2": "see what's new."
   },
+  "auth": {
+    "title": "Auth",
+    "signIn": "Sign in",
+    "text": "You need to be signed in before you can do that"
+  },
   "settings": {
     "theme": "Theme",
     "language": {
@@ -47,6 +52,26 @@
     "add": "Add workflow",
     "clickToEnable": "Click to enable",
     "toggleSidebar": "Toggle sidebar",
+    "cantEdit": "Can't edit shared workflow",
+    "type": {
+      "local": "Local",
+      "shared": "Shared"
+    },
+    "unpublish": {
+      "title": "Unpublish workflow",
+      "button": "Unpublish",
+      "body": "Are you sure want to unpublish \"{name}\" workflow?"
+    },
+    "share": {
+      "url": "Share URL",
+      "publish": "Publish",
+      "title": "Share workflow",
+      "download": "Add workflow to local",
+      "edit": "Edit description",
+      "fetchLocal": "Fetch local workflow",
+      "update": "Update",
+      "unpublish": "Unpublish"
+    },
     "variables": {
       "title": "Variables",
       "name": "Variable name",

@@ -735,6 +735,12 @@ export const firstWorkflows = [
   },
 ];
 
+export const workflowCategories = {
+  scrape: 'Scraping',
+  automation: 'Automation',
+  productivity: 'Productivity',
+};
+
 export const contentTypes = [
   { name: 'application/json', value: 'json' },
   { name: 'application/x-www-form-urlencoded', value: 'form' },

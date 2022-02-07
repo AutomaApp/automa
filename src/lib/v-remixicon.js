@@ -1,6 +1,17 @@
 import vRemixicon from 'v-remixicon';
 import {
+  riH1,
+  riH2,
+  riLinkM,
+  riLock2Line,
+  riLinkUnlinkM,
+  riFileEditLine,
+  riBold,
+  riItalic,
+  riStrikethrough2,
+  riDoubleQuotesL,
   riHome5Line,
+  riShareLine,
   riTable2,
   riArrowLeftRightLine,
   riFileUploadLine,
@@ -85,7 +96,18 @@ import {
 } from 'v-remixicon/icons';
 
 export const icons = {
+  riH1,
+  riH2,
+  riLinkM,
+  riLock2Line,
+  riLinkUnlinkM,
+  riFileEditLine,
+  riBold,
+  riItalic,
+  riStrikethrough2,
+  riDoubleQuotesL,
   riHome5Line,
+  riShareLine,
   riTable2,
   riArrowLeftRightLine,
   riFileUploadLine,

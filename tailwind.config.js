@@ -1,3 +1,5 @@
+/* eslint-disable global-require */
+
 const colors = require('tailwindcss/colors');
 
 function withOpacityValue(variable) {
@@ -37,5 +39,5 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/typography')],
 };

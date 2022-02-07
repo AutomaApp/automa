@@ -130,6 +130,11 @@ export default {
         onTrigger: () => emit('trigger'),
         ...props.options,
       });
+
+      if (props.disabled) {
+        instance.value.hide();
+        instance.value.disable();
+      }
     });
     onUnmounted(() => {
       instance.value.destroy();

@@ -41,6 +41,24 @@
       </router-link>
     </div>
     <div class="flex-grow"></div>
+    <ui-popover
+      v-if="store.state.user"
+      trigger="mouseenter"
+      placement="right"
+      class="mb-4"
+    >
+      <template #trigger>
+        <span class="inline-block p-1 bg-box-transparent rounded-full">
+          <img
+            :src="store.state.user.avatar_url"
+            height="32"
+            width="32"
+            class="rounded-full"
+          />
+        </span>
+      </template>
+      {{ store.state.user.username }}
+    </ui-popover>
     <router-link v-tooltip:right.group="t('settings.menu.about')" to="/about">
       <v-remixicon class="cursor-pointer" name="riInformationLine" />
     </router-link>
@@ -48,13 +66,16 @@
 </template>
 <script setup>
 import { ref } from 'vue';
+import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 
 useGroupTooltip();
+
 const { t } = useI18n();
+const store = useStore();
 const router = useRouter();
 
 const extensionVersion = chrome.runtime.getManifest().version;

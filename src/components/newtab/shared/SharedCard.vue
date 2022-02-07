@@ -93,7 +93,7 @@ defineEmits(['execute', 'click', 'menuSelected']);
 
 const { t } = useI18n();
 
-const excludeTrigger = ['manual', 'on-startup'];
+const excludeTrigger = ['manual'];
 const state = shallowReactive({
   triggerText: null,
   date: dayjs(props.data.createdAt).fromNow(),
@@ -112,12 +112,15 @@ onMounted(async () => {
     text = trigger.shortcut;
   } else if (trigger.type === 'visit-web') {
     text = trigger.url;
-  } else {
+  } else if (['specific-day', 'date'].includes(trigger.type)) {
     const triggerTime = (await browser.alarms.get(id))?.scheduledTime;
 
     text = dayjs(triggerTime || Date.now()).format('DD-MMM-YYYY, hh:mm A');
   }
 
-  state.triggerText = `Trigger (${triggerName}): \n ${text}`;
+  text = text && `: \n ${text}`;
+  state.triggerText = `${t(
+    'workflow.blocks.trigger.name'
+  )} (${triggerName})${text}`;
 });
 </script>

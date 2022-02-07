@@ -1,4 +1,5 @@
 import { createStore } from 'vuex';
+import objectPath from 'object-path';
 import browser from 'webextension-polyfill';
 import vuexORM from '@/lib/vuex-orm';
 import * as models from '@/models';
@@ -7,8 +8,21 @@ import { firstWorkflows } from '@/utils/shared';
 const store = createStore({
   plugins: [vuexORM(models)],
   state: () => ({
-    contributors: null,
+    user: null,
     workflowState: [],
+    contributors: null,
+    sharedWorkflows: {
+      'Tely-7beu0zHiJrBhzrC4': {
+        id: 'Tely-7beu0zHiJrBhzrC4',
+        name: 'data columns',
+        description: 'Halo perkenalkan nama saya adalah anu 123',
+        icon: 'riGlobalLine',
+        createdAt: '2021-12-20T01:30:08.508289+00:00',
+      },
+    },
+    retrievedData: {
+      sharedWorkflows: false,
+    },
     settings: {
       locale: 'en',
     },
@@ -16,6 +30,12 @@ const store = createStore({
   mutations: {
     updateState(state, { key, value }) {
       state[key] = value;
+    },
+    updateStateNested(state, { path, value }) {
+      objectPath.set(state, path, value);
+    },
+    deleteStateNested(state, path) {
+      objectPath.del(state, path);
     },
   },
   getters: {

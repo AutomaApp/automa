@@ -6,7 +6,7 @@
       :title="t('common.fileName')"
     />
     <div class="flex-grow"></div>
-    <ui-popover>
+    <ui-popover trigger-width>
       <template #trigger>
         <ui-button variant="accent">
           <span>{{ t('log.exportData.title') }}</span>

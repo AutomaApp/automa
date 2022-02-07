@@ -5,33 +5,7 @@
     @drop="dropHandler"
     @dragover.prevent="handleDragOver"
   >
-    <slot></slot>
-    <div class="absolute z-10 p-4 bottom-0 left-0">
-      <button
-        v-tooltip.group="t('workflow.editor.resetZoom')"
-        class="p-2 rounded-lg bg-white dark:bg-gray-800 mr-2"
-        @click="editor.zoom_reset()"
-      >
-        <v-remixicon name="riFullscreenLine" />
-      </button>
-      <div class="rounded-lg bg-white dark:bg-gray-800 inline-block">
-        <button
-          v-tooltip.group="t('workflow.editor.zoomOut')"
-          class="p-2 rounded-lg relative z-10"
-          @click="editor.zoom_out()"
-        >
-          <v-remixicon name="riSubtractLine" />
-        </button>
-        <hr class="h-6 border-r inline-block" />
-        <button
-          v-tooltip.group="t('workflow.editor.zoomIn')"
-          class="p-2 rounded-lg"
-          @click="editor.zoom_in()"
-        >
-          <v-remixicon name="riAddLine" />
-        </button>
-      </div>
-    </div>
+    <slot v-bind="{ editor }"></slot>
     <ui-popover
       v-model="contextMenu.show"
       :options="contextMenu.position"
@@ -61,7 +35,13 @@
 </template>
 <script>
 /* eslint-disable camelcase */
-import { onMounted, shallowRef, reactive, getCurrentInstance } from 'vue';
+import {
+  onMounted,
+  shallowRef,
+  reactive,
+  getCurrentInstance,
+  watch,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 import { compare } from 'compare-versions';
 import defu from 'defu';
@@ -77,6 +57,10 @@ export default {
     data: {
       type: [Object, String],
       default: null,
+    },
+    isShared: {
+      type: Boolean,
+      default: false,
     },
     version: {
       type: String,
@@ -301,6 +285,12 @@ export default {
         'vue'
       );
     }
+    function checkWorkflowData() {
+      if (!editor.value) return;
+
+      editor.value.editor_mode = props.isShared ? 'fixed' : 'edit';
+      editor.value.container.classList.toggle('is-shared', props.isShared);
+    }
 
     useShortcut('editor:duplicate-block', () => {
       const selectedElement = document.querySelector('.drawflow-node.selected');
@@ -309,6 +299,8 @@ export default {
 
       duplicateBlock(selectedElement.id.substr(5));
     });
+
+    watch(() => props.isShared, checkWorkflowData);
 
     onMounted(() => {
       const context = getCurrentInstance().appContext.app._context;
@@ -361,7 +353,7 @@ export default {
             emit('save');
           }, 200);
         }
-      } else {
+      } else if (!props.isShared) {
         editor.value.addNode(
           'trigger',
           0,
@@ -425,6 +417,7 @@ export default {
         }
       });
 
+      checkWorkflowData();
       setTimeout(() => {
         editor.value.zoom_refresh();
       }, 500);

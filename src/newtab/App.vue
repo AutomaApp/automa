@@ -4,10 +4,27 @@
     <main class="pl-16">
       <router-view />
     </main>
-    <ui-dialog />
+    <ui-dialog>
+      <template #auth>
+        <div class="text-center">
+          <p class="font-semibold text-xl">Oops!! 😬</p>
+          <p class="mt-2 text-gray-600 dark:text-gray-200">
+            {{ t('auth.text') }}
+          </p>
+          <ui-button
+            tag="a"
+            href="https://www.automa.site/auth"
+            class="mt-6 w-full block"
+            variant="accent"
+          >
+            {{ t('auth.signIn') }}
+          </ui-button>
+        </div>
+      </template>
+    </ui-dialog>
     <div
       v-if="isUpdated"
-      class="p-4 shadow-2xl z-50 fixed bottom-8 left-1/2 -translate-x-1/2 rounded-lg bg-accent text-white flex items-center"
+      class="p-4 shadow-2xl z-50 fixed bottom-8 left-1/2 -translate-x-1/2 rounded-lg bg-accent text-white dark:text-gray-900 flex items-center"
     >
       <v-remixicon name="riInformationLine" class="mr-3" />
       <p>
@@ -21,11 +38,17 @@
       >
         {{ t('updateMessage.text2') }}
       </a>
-      <button class="ml-6 text-gray-300" @click="isUpdated = false">
+      <button
+        class="ml-6 text-gray-200 dark:text-gray-600"
+        @click="isUpdated = false"
+      >
         <v-remixicon size="20" name="riCloseLine" />
       </button>
     </div>
   </template>
+  <div v-else class="py-8 text-center">
+    <ui-spinner color="text-accent" size="28" />
+  </div>
 </template>
 <script setup>
 import { ref, onMounted } from 'vue';
@@ -34,6 +57,7 @@ import { useI18n } from 'vue-i18n';
 import { compare } from 'compare-versions';
 import browser from 'webextension-polyfill';
 import { useTheme } from '@/composable/theme';
+import { fetchApi, getSharedWorkflows } from '@/utils/api';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vue-i18n';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 
@@ -49,6 +73,32 @@ const currentVersion = browser.runtime.getManifest().version;
 const prevVersion = localStorage.getItem('ext-version') || '0.0.0';
 const isUpdated = ref(false);
 
+async function fetchUserData() {
+  try {
+    const response = await fetchApi('/me');
+    const user = await response.json();
+
+    if (response.status !== 200 || !user) {
+      if (!user) sessionStorage.removeItem('shared-workflows');
+
+      return;
+    }
+
+    store.commit('updateState', {
+      key: 'user',
+      value: user,
+    });
+
+    const sharedWorkflows = await getSharedWorkflows();
+
+    store.commit('updateState', {
+      key: 'sharedWorkflows',
+      value: sharedWorkflows,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
 function handleStorageChanged(change) {
   if (change.logs) {
     store.dispatch('entities/create', {
@@ -80,8 +130,11 @@ onMounted(async () => {
 
     isUpdated.value = !isFirstTime && compare(currentVersion, prevVersion, '>');
 
-    await store.dispatch('retrieve', ['workflows', 'logs', 'collections']);
-    await store.dispatch('retrieveWorkflowState');
+    await Promise.allSettled([
+      store.dispatch('retrieve', ['workflows', 'logs', 'collections']),
+      store.dispatch('retrieveWorkflowState'),
+      fetchUserData(),
+    ]);
 
     await loadLocaleMessages(store.state.settings.locale, 'newtab');
     await setI18nLanguage(store.state.settings.locale);

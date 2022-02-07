@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .hoverable {
+    @apply hover:bg-gray-800 hover:bg-opacity-5 dark:hover:bg-gray-200 dark:hover:bg-opacity-5;
+  }
+  .bg-input {
+    @apply bg-black bg-opacity-5 hover:bg-opacity-10 dark:bg-gray-200 dark:bg-opacity-5 dark:hover:bg-opacity-10;
+  }
+  .bg-box-transparent {
+    @apply bg-black bg-opacity-5 dark:bg-gray-200 dark:bg-opacity-5;
+  }
+  .bg-box-transparent-2 {
+    @apply bg-black bg-opacity-10 dark:bg-gray-200 dark:bg-opacity-10;
+  }
+}
+
 :host, :root {
   --color-primary: 59 130 246;
   --color-secondary: 96 165 250;
@@ -77,19 +92,4 @@ pre {
 }
 .ProseMirror img.ProseMirror-selectednode {
   outline: 3px solid #68CEF8;
-}
-
-@layer utilities {
-  .hoverable {
-    @apply hover:bg-gray-800 hover:bg-opacity-5 dark:hover:bg-gray-200 dark:hover:bg-opacity-5;
-  }
-  .bg-input {
-    @apply bg-black bg-opacity-5 hover:bg-opacity-10 dark:bg-gray-200 dark:bg-opacity-5 dark:hover:bg-opacity-10;
-  }
-  .bg-box-transparent {
-    @apply bg-black bg-opacity-5 dark:bg-gray-200 dark:bg-opacity-5;
-  }
-  .bg-box-transparent-2 {
-    @apply bg-black bg-opacity-10 dark:bg-gray-200 dark:bg-opacity-10;
-  }
 }

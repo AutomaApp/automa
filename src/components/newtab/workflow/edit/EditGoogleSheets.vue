@@ -25,7 +25,7 @@
       @change="updateData({ spreadsheetId: $event })"
     >
       <template #label>
-        {{ t('workflow.blocks.google-sheets.spreadsheetId.label') }}
+        {{ t('workflow.blocks.google-sheets.spreadsheetId.label') }}*
         <a
           href="https://docs.automa.site/blocks/google-sheets.html#spreadsheet-id"
           target="_blank"
@@ -43,7 +43,7 @@
       @change="updateData({ range: $event })"
     >
       <template #label>
-        {{ t('workflow.blocks.google-sheets.range.label') }}
+        {{ t('workflow.blocks.google-sheets.range.label') }}*
         <a
           href="https://docs.automa.site/blocks/google-sheets.html#range"
           target="_blank"
