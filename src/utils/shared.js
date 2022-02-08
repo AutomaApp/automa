@@ -548,6 +548,7 @@ export const tasks = {
       tryCount: 1,
       timeout: 500,
       markEl: false,
+      throwError: false,
     },
   },
   webhook: {

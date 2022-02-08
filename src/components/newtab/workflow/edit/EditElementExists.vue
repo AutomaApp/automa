@@ -35,6 +35,14 @@
       min="200"
       @change="updateData({ timeout: +$event })"
     />
+    <label class="flex items-center mt-4">
+      <ui-switch
+        :model-value="data.throwError"
+        class="mr-2"
+        @change="updateData({ throwError: $event })"
+      />
+      <span>{{ t('workflow.blocks.element-exists.throwError') }}</span>
+    </label>
   </div>
 </template>
 <script setup>
