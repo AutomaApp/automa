@@ -18,6 +18,9 @@
   },
   "settings": {
     "theme": "Theme",
+    "shortcuts": {
+      "duplicate": "Shortcut already use by \"{name}\""
+    },
     "language": {
       "label": "Language",
       "helpTranslate": "Can't find your language? Help translate.",
@@ -25,6 +28,7 @@
     },
     "menu": {
       "general": "General",
+      "shortcuts": "Shortcuts",
       "about": "About"
     },
     "backupWorkflows": {

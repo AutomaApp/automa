@@ -202,6 +202,7 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 import dayjs from 'dayjs';
 import { isObject } from '@/utils/helper';
+import recordShortcut from '@/utils/record-shortcut';
 
 const props = defineProps({
   data: {
@@ -234,17 +235,6 @@ const days = {
 };
 const maxDate = dayjs().add(30, 'day').format('YYYY-MM-DD');
 const minDate = dayjs().format('YYYY-MM-DD');
-const allowedKeys = {
-  '+': 'plus',
-  Delete: 'del',
-  Insert: 'ins',
-  ArrowDown: 'down',
-  ArrowLeft: 'left',
-  ArrowUp: 'up',
-  ArrowRight: 'right',
-  Escape: 'escape',
-  Enter: 'enter',
-};
 
 const recordKeys = reactive({
   isRecording: false,
@@ -312,26 +302,10 @@ function addTime() {
   });
 }
 function handleKeydownEvent(event) {
-  event.preventDefault();
-  event.stopPropagation();
-
-  if (event.repeat) return;
-
-  const keys = [];
-  const { ctrlKey, altKey, metaKey, shiftKey, key } = event;
-
-  if (ctrlKey || metaKey) keys.push('mod');
-  if (altKey) keys.push('option');
-  if (shiftKey) keys.push('shift');
-
-  const isValidKey = !!allowedKeys[key] || /^[a-z0-9,./;'[\]\-=`]$/i.test(key);
-
-  if (isValidKey) {
-    keys.push(allowedKeys[key] || key.toLowerCase());
-
+  recordShortcut(event, (keys) => {
     recordKeys.keys = keys.join('+');
     updateData({ shortcut: recordKeys.keys });
-  }
+  });
 }
 function toggleRecordKeys() {
   if (recordKeys.isRecording) {

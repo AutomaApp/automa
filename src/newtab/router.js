@@ -10,6 +10,7 @@ import LogsDetails from './pages/logs/[id].vue';
 import Settings from './pages/Settings.vue';
 import SettingsIndex from './pages/settings/index.vue';
 import SettingsAbout from './pages/settings/About.vue';
+import SettingsShortcuts from './pages/settings/Shortcuts.vue';
 
 const routes = [
   {
@@ -58,6 +59,7 @@ const routes = [
     children: [
       { path: '', component: SettingsIndex },
       { path: '/about', component: SettingsAbout },
+      { path: '/shortcuts', component: SettingsShortcuts },
     ],
   },
 ];

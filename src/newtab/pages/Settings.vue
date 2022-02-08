@@ -38,6 +38,7 @@ const { t } = useI18n();
 
 const menus = [
   { id: 'general', path: '/settings', icon: 'riSettings3Line' },
+  { id: 'shortcuts', path: '/shortcuts', icon: 'riKeyboardLine' },
   { id: 'about', path: '/about', icon: 'riInformationLine' },
 ];
 </script>
