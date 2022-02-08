@@ -41,7 +41,9 @@ import {
   reactive,
   getCurrentInstance,
   watch,
+  onBeforeUnmount,
 } from 'vue';
+import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { compare } from 'compare-versions';
 import defu from 'defu';
@@ -70,7 +72,9 @@ export default {
   emits: ['load', 'deleteBlock', 'update', 'save'],
   setup(props, { emit }) {
     useGroupTooltip();
+
     const { t } = useI18n();
+    const route = useRoute();
 
     const contextMenuItems = {
       block: [
@@ -98,6 +102,8 @@ export default {
       show: false,
       position: {},
     });
+
+    const workflowId = route.params.id;
 
     const prevSelectedEl = {
       output: null,
@@ -291,6 +297,14 @@ export default {
       editor.value.editor_mode = props.isShared ? 'fixed' : 'edit';
       editor.value.container.classList.toggle('is-shared', props.isShared);
     }
+    function refreshConnection() {
+      const nodes = document.querySelectorAll('#drawflow .drawflow-node');
+      nodes.forEach((node) => {
+        if (!node.id) return;
+
+        editor.value.updateConnectionNodes(node.id);
+      });
+    }
 
     useShortcut('editor:duplicate-block', () => {
       const selectedElement = document.querySelector('.drawflow-node.selected');
@@ -307,6 +321,16 @@ export default {
       const element = document.querySelector('#drawflow');
 
       editor.value = drawflow(element, { context, options: { reroute: true } });
+      const editorStates =
+        parseJSON(localStorage.getItem('editor-states'), {}) || {};
+      const editorState = editorStates[workflowId];
+
+      if (editorState) {
+        editor.value.zoom = editorState.zoom;
+        editor.value.canvas_x = editorState.canvas_x;
+        editor.value.canvas_y = editorState.canvas_y;
+      }
+
       editor.value.start();
 
       emit('load', editor.value);
@@ -418,9 +442,22 @@ export default {
       });
 
       checkWorkflowData();
+
       setTimeout(() => {
         editor.value.zoom_refresh();
+        refreshConnection();
       }, 500);
+    });
+    onBeforeUnmount(() => {
+      const editorStates =
+        parseJSON(localStorage.getItem('editor-states'), {}) || {};
+      editorStates[workflowId] = {
+        zoom: editor.value.zoom,
+        canvas_x: editor.value.canvas_x,
+        canvas_y: editor.value.canvas_y,
+      };
+
+      localStorage.setItem('editor-states', JSON.stringify(editorStates));
     });
 
     return {
