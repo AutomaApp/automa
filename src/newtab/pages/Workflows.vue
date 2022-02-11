@@ -369,7 +369,7 @@ function addHostWorkflow() {
         });
 
         if (!store.state.user && length >= 3) {
-          toast.error(r('message.rateExceeded'));
+          toast.error(t('message.rateExceeded'));
           return false;
         }
 
