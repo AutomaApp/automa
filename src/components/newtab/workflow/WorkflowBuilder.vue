@@ -5,7 +5,37 @@
     @drop="dropHandler"
     @dragover.prevent="handleDragOver"
   >
-    <slot v-bind="{ editor }"></slot>
+    <div
+      class="flex items-end absolute w-full p-4 left-0 bottom-0 justify-between z-10"
+    >
+      <div id="zoom">
+        <button
+          v-tooltip.group="t('workflow.editor.resetZoom')"
+          class="p-2 rounded-lg bg-white dark:bg-gray-800 mr-2"
+          @click="editor.zoom_reset()"
+        >
+          <v-remixicon name="riFullscreenLine" />
+        </button>
+        <div class="rounded-lg bg-white dark:bg-gray-800 inline-block">
+          <button
+            v-tooltip.group="t('workflow.editor.zoomOut')"
+            class="p-2 rounded-lg relative z-10"
+            @click="editor.zoom_out()"
+          >
+            <v-remixicon name="riSubtractLine" />
+          </button>
+          <hr class="h-6 border-r inline-block" />
+          <button
+            v-tooltip.group="t('workflow.editor.zoomIn')"
+            class="p-2 rounded-lg"
+            @click="editor.zoom_in()"
+          >
+            <v-remixicon name="riAddLine" />
+          </button>
+        </div>
+      </div>
+      <slot v-bind="{ editor }"></slot>
+    </div>
     <ui-popover
       v-model="contextMenu.show"
       :options="contextMenu.position"
@@ -65,8 +95,12 @@ export default {
       default: false,
     },
     version: {
-      type: String,
+      type: [String, Boolean],
       default: '',
+    },
+    mode: {
+      type: String,
+      default: 'edit',
     },
   },
   emits: ['load', 'deleteBlock', 'update', 'save'],
@@ -305,6 +339,17 @@ export default {
         editor.value.updateConnectionNodes(node.id);
       });
     }
+    function saveEditorState() {
+      const editorStates =
+        parseJSON(localStorage.getItem('editor-states'), {}) || {};
+      editorStates[workflowId] = {
+        zoom: editor.value.zoom,
+        canvas_x: editor.value.canvas_x,
+        canvas_y: editor.value.canvas_y,
+      };
+
+      localStorage.setItem('editor-states', JSON.stringify(editorStates));
+    }
 
     useShortcut('editor:duplicate-block', () => {
       const selectedElement = document.querySelector('.drawflow-node.selected');
@@ -321,6 +366,7 @@ export default {
       const element = document.querySelector('#drawflow');
 
       editor.value = drawflow(element, { context, options: { reroute: true } });
+
       const editorStates =
         parseJSON(localStorage.getItem('editor-states'), {}) || {};
       const editorState = editorStates[workflowId];
@@ -341,7 +387,7 @@ export default {
             ? parseJSON(props.data, null)
             : props.data;
 
-        if (!data) return;
+        if (!data || !data?.drawflow?.Home) return;
 
         const currentExtVersion = chrome.runtime.getManifest().version;
         const isOldWorkflow = compare(
@@ -350,7 +396,7 @@ export default {
           '>'
         );
 
-        if (isOldWorkflow) {
+        if (isOldWorkflow && typeof props.version !== 'boolean') {
           const newDrawflowData = Object.entries(
             data.drawflow.Home.data
           ).reduce((obj, [key, value]) => {
@@ -419,6 +465,7 @@ export default {
       editor.value.on('connectionRemoved', () => {
         emitter.emit('editor:data-changed');
       });
+      editor.value.on('export', saveEditorState);
       editor.value.on('contextmenu', ({ clientY, clientX, target }) => {
         const isBlock = target.closest('.drawflow .drawflow-node');
 
@@ -448,17 +495,7 @@ export default {
         refreshConnection();
       }, 500);
     });
-    onBeforeUnmount(() => {
-      const editorStates =
-        parseJSON(localStorage.getItem('editor-states'), {}) || {};
-      editorStates[workflowId] = {
-        zoom: editor.value.zoom,
-        canvas_x: editor.value.canvas_x,
-        canvas_y: editor.value.canvas_y,
-      };
-
-      localStorage.setItem('editor-states', JSON.stringify(editorStates));
-    });
+    onBeforeUnmount(saveEditorState);
 
     return {
       t,

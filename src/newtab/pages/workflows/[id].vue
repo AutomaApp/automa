@@ -101,6 +101,7 @@
         <workflow-actions
           v-else
           :data="workflowData"
+          :host="hostWorkflow"
           :workflow="workflow"
           :is-data-changed="state.isDataChanged"
           @save="saveWorkflow"
@@ -108,6 +109,7 @@
           @rename="renameWorkflow"
           @update="updateWorkflow"
           @delete="deleteWorkflow"
+          @host="setAsHostWorkflow"
           @execute="executeWorkflow"
           @export="workflowExporter"
           @protect="toggleProtection"
@@ -117,7 +119,6 @@
       <keep-alive>
         <workflow-builder
           v-if="activeTab === 'editor' && state.drawflow !== null"
-          v-slot="{ editor: currEditor }"
           class="h-full w-full"
           :is-shared="workflowData.active === 'shared'"
           :data="state.drawflow"
@@ -127,53 +128,24 @@
           @load="editor = $event"
           @deleteBlock="deleteBlock"
         >
-          <div
-            class="flex items-end absolute w-full p-4 left-0 bottom-0 justify-between"
+          <ui-tabs
+            v-if="
+              workflowData.hasLocal &&
+              workflowData.hasShared &&
+              !state.isDataChanged
+            "
+            v-model="workflowData.active"
+            class="z-10 text-sm"
+            color="bg-white dark:bg-gray-800"
+            type="fill"
           >
-            <div>
-              <button
-                v-tooltip.group="t('workflow.editor.resetZoom')"
-                class="p-2 rounded-lg bg-white dark:bg-gray-800 mr-2"
-                @click="currEditor.zoom_reset()"
-              >
-                <v-remixicon name="riFullscreenLine" />
-              </button>
-              <div class="rounded-lg bg-white dark:bg-gray-800 inline-block">
-                <button
-                  v-tooltip.group="t('workflow.editor.zoomOut')"
-                  class="p-2 rounded-lg relative z-10"
-                  @click="currEditor.zoom_out()"
-                >
-                  <v-remixicon name="riSubtractLine" />
-                </button>
-                <hr class="h-6 border-r inline-block" />
-                <button
-                  v-tooltip.group="t('workflow.editor.zoomIn')"
-                  class="p-2 rounded-lg"
-                  @click="currEditor.zoom_in()"
-                >
-                  <v-remixicon name="riAddLine" />
-                </button>
-              </div>
-            </div>
-            <ui-tabs
-              v-if="
-                workflowData.hasLocal &&
-                workflowData.hasShared &&
-                !state.isDataChanged
-              "
-              v-model="workflowData.active"
-              class="bg-white dark:bg-gray-800 text-sm"
-              type="fill"
-            >
-              <ui-tab value="local">
-                {{ t('workflow.type.local') }}
-              </ui-tab>
-              <ui-tab value="shared">
-                {{ t('workflow.type.shared') }}
-              </ui-tab>
-            </ui-tabs>
-          </div>
+            <ui-tab value="local">
+              {{ t('workflow.type.local') }}
+            </ui-tab>
+            <ui-tab value="shared">
+              {{ t('workflow.type.shared') }}
+            </ui-tab>
+          </ui-tabs>
         </workflow-builder>
         <div v-else class="container pb-4 mt-24 px-4">
           <template v-if="activeTab === 'logs'">
@@ -281,7 +253,7 @@ import emitter from '@/lib/mitt';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
 import { sendMessage } from '@/utils/message';
-import { exportWorkflow } from '@/utils/workflow-data';
+import { exportWorkflow, convertWorkflow } from '@/utils/workflow-data';
 import { tasks } from '@/utils/shared';
 import { fetchApi } from '@/utils/api';
 import { debounce, isObject, objectHasKey, parseJSON } from '@/utils/helper';
@@ -323,10 +295,12 @@ const state = reactive({
   isDataChanged: false,
 });
 const workflowData = reactive({
+  isHost: false,
   hasLocal: true,
   hasShared: false,
   isChanged: false,
   isUpdating: false,
+  loadingHost: false,
   isUnpublishing: false,
   changingKeys: new Set(),
   active: route.query.shared ? 'shared' : 'local',
@@ -390,6 +364,9 @@ const workflowModals = {
   },
 };
 
+let hostWorkflowPayload = {};
+
+const hostWorkflow = computed(() => store.state.hostWorkflows[workflowId]);
 const sharedWorkflow = computed(() => store.state.sharedWorkflows[workflowId]);
 const localWorkflow = computed(() => Workflow.find(workflowId));
 const workflow = computed(() =>
@@ -432,6 +409,29 @@ const updateBlockData = debounce((data) => {
     );
 }, 250);
 
+async function updateHostedWorkflow() {
+  if (!workflowData.isHost || Object.keys(hostWorkflowPayload).length === 0)
+    return;
+
+  try {
+    if (hostWorkflowPayload.drawflow) {
+      hostWorkflowPayload.drawflow = parseJSON(
+        hostWorkflowPayload.drawflow,
+        null
+      );
+    }
+
+    await fetchApi(`/me/workflows/host?id=${hostWorkflow.value.hostId}`, {
+      method: 'PUT',
+      keepalive: true,
+      body: JSON.stringify({
+        workflow: hostWorkflowPayload,
+      }),
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
 function unpublishSharedWorkflow() {
   dialog.confirm({
     title: t('workflow.unpublish.title'),
@@ -564,6 +564,70 @@ function insertToLocal() {
     workflowData.hasLocal = true;
   });
 }
+async function setAsHostWorkflow(isHost) {
+  if (!store.state.user || isHost === 'auth') {
+    dialog.custom('auth', {
+      title: t('auth.title'),
+    });
+    return;
+  }
+
+  workflowData.loadingHost = true;
+
+  try {
+    let url = '/me/workflows/host';
+    let payload = {};
+
+    if (isHost) {
+      const workflowPaylod = convertWorkflow(workflow.value, ['id']);
+      workflowPaylod.drawflow = parseJSON(workflow.value.drawflow, null);
+      delete workflowPaylod.extVersion;
+
+      payload = {
+        method: 'POST',
+        body: JSON.stringify({
+          workflow: workflowPaylod,
+        }),
+      };
+    } else {
+      url += `?id=${hostWorkflow.value?.hostId}`;
+      payload.method = 'DELETE';
+    }
+
+    const response = await fetchApi(url, payload);
+    const result = await response.json();
+
+    if (response.status !== 200) {
+      const error = new Error(response.statusText);
+      error.data = result.data;
+
+      throw error;
+    }
+
+    if (isHost) {
+      store.commit('updateStateNested', {
+        path: `hostWorkflows.${workflowId}`,
+        value: result,
+      });
+    } else {
+      store.commit('deleteStateNested', `hostWorkflows.${workflowId}`);
+    }
+
+    sessionStorage.setItem(
+      'host-workflows',
+      JSON.stringify(store.state.hostWorkflows)
+    );
+
+    workflowData.isHost = isHost;
+    workflowData.loadingHost = false;
+  } catch (error) {
+    console.error(error);
+    workflowData.loadingHost = false;
+    toast.error(
+      error?.data?.show ? error.message : t('message.somethingWrong')
+    );
+  }
+}
 function shareWorkflow() {
   if (workflowData.hasShared) {
     workflowData.active = 'shared';
@@ -653,6 +717,18 @@ function updateWorkflow(data) {
   return Workflow.update({
     where: workflowId,
     data,
+  }).then((event) => {
+    delete data.id;
+    delete data.pass;
+    delete data.logs;
+    delete data.trigger;
+    delete data.createdAt;
+    delete data.isDisabled;
+    delete data.isProtected;
+
+    hostWorkflowPayload = { ...hostWorkflowPayload, ...data };
+
+    return event;
   });
 }
 function updateNameAndDesc() {
@@ -765,9 +841,10 @@ watch(
 );
 
 onBeforeRouteLeave(() => {
+  updateHostedWorkflow();
+
   if (!state.isDataChanged) return;
 
-  /* eslint-disable-next-line */
   const answer = window.confirm(t('message.notSaved'));
 
   if (!answer) return false;
@@ -780,6 +857,7 @@ onMounted(() => {
     store.state.sharedWorkflows,
     workflowId
   );
+  workflowData.isHost = objectHasKey(store.state.hostWorkflows, workflowId);
 
   const dontHaveLocal = !isWorkflowExists && workflowData.active === 'local';
   const dontHaveShared =
@@ -800,6 +878,8 @@ onMounted(() => {
     JSON.parse(localStorage.getItem('workflow:sidebar')) ?? true;
 
   window.onbeforeunload = () => {
+    updateHostedWorkflow();
+
     if (state.isDataChanged) {
       return t('message.notSaved');
     }

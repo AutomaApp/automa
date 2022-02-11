@@ -8,16 +8,26 @@ Mousetrap.prototype.stopCallback = function () {
 
 (async () => {
   try {
-    const { shortcuts, workflows } = await browser.storage.local.get([
-      'shortcuts',
-      'workflows',
-    ]);
+    const { shortcuts, workflows, workflowHosts } =
+      await browser.storage.local.get([
+        'shortcuts',
+        'workflows',
+        'workflowHosts',
+      ]);
     const shortcutsArr = Object.entries(shortcuts || {});
 
     if (shortcutsArr.length === 0) return;
 
     const keyboardShortcuts = shortcutsArr.reduce((acc, [id, value]) => {
-      const workflow = workflows.find((item) => item.id === id);
+      let workflow = workflows.find((item) => item.id === id);
+
+      if (!workflow) {
+        workflow = Object.values(workflowHosts || {}).find(
+          ({ hostId }) => hostId === id
+        );
+
+        if (workflow) workflow.id = workflow.hostId;
+      }
 
       (acc[value] = acc[value] || []).push({
         id,

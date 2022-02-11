@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import Home from './pages/Home.vue';
 import Welcome from './pages/Welcome.vue';
 import Workflows from './pages/Workflows.vue';
+import WorkflowHost from './pages/workflows/Host.vue';
 import WorkflowDetails from './pages/workflows/[id].vue';
 import Collections from './pages/Collections.vue';
 import CollectionsDetails from './pages/collections/[id].vue';
@@ -32,6 +33,11 @@ const routes = [
     name: 'workflows-details',
     path: '/workflows/:id',
     component: WorkflowDetails,
+  },
+  {
+    name: 'workflow-host',
+    path: '/workflows/:id/host',
+    component: WorkflowHost,
   },
   {
     name: 'collections',

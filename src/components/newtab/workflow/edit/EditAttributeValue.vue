@@ -3,7 +3,8 @@
     <hr />
     <ui-input
       :model-value="data.attributeName"
-      :placeholder="t('workflow.blocks.attribute-value.forms.name')"
+      :label="t('workflow.blocks.attribute-value.forms.name')"
+      placeholder="name"
       class="w-full"
       @change="updateData({ attributeName: $event })"
     />

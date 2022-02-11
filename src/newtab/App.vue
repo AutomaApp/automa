@@ -57,8 +57,8 @@ import { useI18n } from 'vue-i18n';
 import { compare } from 'compare-versions';
 import browser from 'webextension-polyfill';
 import { useTheme } from '@/composable/theme';
-import { fetchApi, getSharedWorkflows } from '@/utils/api';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vue-i18n';
+import { fetchApi, getSharedWorkflows, getHostWorkflows } from '@/utils/api';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 
 const { t } = useI18n();
@@ -73,13 +73,36 @@ const currentVersion = browser.runtime.getManifest().version;
 const prevVersion = localStorage.getItem('ext-version') || '0.0.0';
 const isUpdated = ref(false);
 
+async function syncHostWorkflow(hosts) {
+  const hostIds = [];
+  const workflowHosts = hosts || store.state.workflowHosts;
+  const localWorkflowHost = Object.values(store.state.hostWorkflows);
+
+  Object.keys(workflowHosts).forEach((hostId) => {
+    const isItsOwn = localWorkflowHost.find((item) => item.hostId === hostId);
+
+    if (isItsOwn) return;
+
+    hostIds.push({ hostId, updatedAt: workflowHosts[hostId].updatedAt });
+  });
+
+  try {
+    await store.dispatch('fetchWorkflowHosts', hostIds);
+  } catch (error) {
+    console.error(error);
+  }
+}
 async function fetchUserData() {
   try {
     const response = await fetchApi('/me');
     const user = await response.json();
 
-    if (response.status !== 200 || !user) {
-      if (!user) sessionStorage.removeItem('shared-workflows');
+    if (response.status !== 200) {
+      throw new Error(response.statusText);
+    }
+    if (!user) {
+      sessionStorage.removeItem('shared-workflows');
+      sessionStorage.removeItem('host-workflows');
 
       return;
     }
@@ -89,11 +112,18 @@ async function fetchUserData() {
       value: user,
     });
 
-    const sharedWorkflows = await getSharedWorkflows();
+    const mapPromises = { 0: 'sharedWorkflows', 1: 'hostWorkflows' };
+    const promises = await Promise.allSettled([
+      getSharedWorkflows(),
+      getHostWorkflows(),
+    ]);
+    promises.forEach(({ status, value }, index) => {
+      if (status !== 'fulfilled') return;
 
-    store.commit('updateState', {
-      key: 'sharedWorkflows',
-      value: sharedWorkflows,
+      store.commit('updateState', {
+        value,
+        key: mapPromises[index],
+      });
     });
   } catch (error) {
     console.error(error);
@@ -140,6 +170,8 @@ onMounted(async () => {
     await setI18nLanguage(store.state.settings.locale);
 
     retrieved.value = true;
+
+    await syncHostWorkflow();
   } catch (error) {
     retrieved.value = true;
     console.error(error);

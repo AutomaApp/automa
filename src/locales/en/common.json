@@ -47,6 +47,7 @@
     "maxSizeExceeded": "The file size is the exceeded maximum allowed",
     "notSaved": "Do you really want to leave? you have unsaved changes!",
     "somethingWrong": "Something went wrong",
+    "limitExceeded": "You have exceeded the limit"
   },
   "sort": {
     "sortBy": "Sort by",

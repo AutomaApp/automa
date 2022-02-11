@@ -54,16 +54,34 @@
         <v-remixicon name="riUploadLine" class="mr-2 -ml-1" />
         {{ t('workflow.import') }}
       </ui-button>
-      <ui-button
-        :title="shortcut['action:new'].readable"
-        variant="accent"
-        @click="newWorkflow"
-      >
-        {{ t('workflow.new') }}
-      </ui-button>
+      <div class="flex">
+        <ui-button
+          :title="shortcut['action:new'].readable"
+          variant="accent"
+          class="border-r rounded-r-none"
+          @click="newWorkflow"
+        >
+          {{ t('workflow.new') }}
+        </ui-button>
+        <ui-popover>
+          <template #trigger>
+            <ui-button icon class="rounded-l-none" variant="accent">
+              <v-remixicon name="riArrowLeftSLine" rotate="-90" />
+            </ui-button>
+          </template>
+          <ui-list>
+            <ui-list-item
+              v-close-popover
+              class="cursor-pointer"
+              @click="addHostWorkflow"
+            >
+              {{ t('workflow.host.add') }}
+            </ui-list-item>
+          </ui-list>
+        </ui-popover>
+      </div>
     </div>
     <ui-tabs
-      v-if="store.state.user"
       v-model="state.activeTab"
       class="mt-4 space-x-2"
       type="fill"
@@ -72,21 +90,34 @@
       <ui-tab value="local">
         {{ t('workflow.type.local') }}
       </ui-tab>
-      <ui-tab value="shared">
+      <ui-tab v-if="store.state.user" value="shared">
         {{ t('workflow.type.shared') }}
+      </ui-tab>
+      <ui-tab v-if="workflowHosts.length > 0" value="host">
+        {{ t('workflow.type.host') }}
       </ui-tab>
     </ui-tabs>
     <ui-tab-panels v-model="state.activeTab" class="mt-6">
       <ui-tab-panel value="shared">
-        <div v-if="state.loadingShared" class="text-center">
-          <ui-spinner color="text-accent" />
-        </div>
-        <div v-else class="grid gap-4 grid-cols-4 2xl:grid-cols-5">
+        <div class="grid gap-4 grid-cols-4 2xl:grid-cols-5">
           <shared-card
-            v-for="workflow in store.state.sharedWorkflows"
+            v-for="workflow in sharedWorkflows"
             :key="workflow.id"
             :data="workflow"
+            :show-details="false"
             @click="$router.push(`/workflows/${$event.id}?shared=true`)"
+          />
+        </div>
+      </ui-tab-panel>
+      <ui-tab-panel value="host">
+        <div class="grid gap-4 grid-cols-4 2xl:grid-cols-5">
+          <shared-card
+            v-for="workflow in workflowHosts"
+            :key="workflow.hostId"
+            :data="workflow"
+            :menu="workflowHostMenu"
+            @click="$router.push(`/workflows/${$event.hostId}/host`)"
+            @menuSelected="deleteWorkflowHost(workflow)"
           />
         </div>
       </ui-tab-panel>
@@ -177,6 +208,26 @@
                 </ui-popover>
               </div>
             </template>
+            <template #footer-content>
+              <v-remixicon
+                v-if="sharedWorkflows[workflow.id]"
+                v-tooltip="
+                  t('workflow.share.sharedAs', {
+                    name: sharedWorkflows[workflow.id]?.name.slice(0, 64),
+                  })
+                "
+                name="riShareLine"
+                size="20"
+                class="ml-2"
+              />
+              <v-remixicon
+                v-if="hostWorkflows[workflow.id]"
+                v-tooltip="t('workflow.host.title')"
+                name="riBaseStationLine"
+                size="20"
+                class="ml-2"
+              />
+            </template>
           </shared-card>
         </div>
       </ui-tab-panel>
@@ -218,14 +269,23 @@
 import { computed, shallowReactive, watch } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
+import { useToast } from 'vue-toastification';
+import browser from 'webextension-polyfill';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
 import { sendMessage } from '@/utils/message';
+import { fetchApi } from '@/utils/api';
 import { exportWorkflow, importWorkflow } from '@/utils/workflow-data';
+import {
+  registerWorkflowTrigger,
+  cleanWorkflowTriggers,
+} from '@/utils/workflow-trigger';
+import { findTriggerBlock, isWhitespace } from '@/utils/helper';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 import Workflow from '@/models/workflow';
 
 const { t } = useI18n();
+const toast = useToast();
 const store = useStore();
 const dialog = useDialog();
 
@@ -236,12 +296,14 @@ const menu = [
   { id: 'rename', name: t('common.rename'), icon: 'riPencilLine' },
   { id: 'delete', name: t('common.delete'), icon: 'riDeleteBin7Line' },
 ];
+const workflowHostMenu = [
+  { id: 'delete', name: t('common.delete'), icon: 'riDeleteBin7Line' },
+];
 
 const savedSorts = JSON.parse(localStorage.getItem('workflow-sorts') || '{}');
 const state = shallowReactive({
   query: '',
   activeTab: 'local',
-  loadingShared: false,
   sortBy: savedSorts.sortBy || 'createdAt',
   sortOrder: savedSorts.sortOrder || 'desc',
   highlightBrowse: !localStorage.getItem('first-time-browse'),
@@ -252,6 +314,9 @@ const workflowModal = shallowReactive({
   description: '',
 });
 
+const hostWorkflows = computed(() => store.state.hostWorkflows || {});
+const workflowHosts = computed(() => Object.values(store.state.workflowHosts));
+const sharedWorkflows = computed(() => store.state.sharedWorkflows || {});
 const workflows = computed(() =>
   Workflow.query()
     .where(({ name }) =>
@@ -260,6 +325,114 @@ const workflows = computed(() =>
     .orderBy(state.sortBy, state.sortOrder)
     .get()
 );
+
+async function deleteWorkflowHost(workflow) {
+  dialog.confirm({
+    title: t('workflow.delete'),
+    okVariant: 'danger',
+    body: t('message.delete', { name: workflow.name }),
+    onConfirm: async () => {
+      try {
+        store.commit('deleteStateNested', `workflowHosts.${workflow.hostId}`);
+
+        await browser.storage.local.set({
+          workflowHosts: store.state.sharedWorkflows,
+        });
+        await cleanWorkflowTriggers(workflow.hostId);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+  });
+}
+function addHostWorkflow() {
+  dialog.prompt({
+    async: true,
+    inputType: 'url',
+    okText: t('common.add'),
+    title: t('workflow.host.add'),
+    label: t('workflow.host.id'),
+    placeholder: 'abcd123',
+    onConfirm: async (value) => {
+      try {
+        if (isWhitespace(value)) return false;
+
+        let length = 0;
+        let isItsOwn = false;
+        let isHostExist = false;
+        const hostId = value.replace(/\s/g, '');
+
+        workflowHosts.value.forEach((host) => {
+          if (hostId === host.hostId) isHostExist = true;
+
+          length += 1;
+        });
+
+        if (!store.state.user && length >= 3) {
+          toast.error(r('message.rateExceeded'));
+          return false;
+        }
+
+        Object.values(store.state.hostWorkflows).forEach((host) => {
+          if (hostId === host.hostId) isItsOwn = true;
+        });
+
+        if (isHostExist || isItsOwn) {
+          toast.error(t('workflow.host.messages.hostExist'));
+          return false;
+        }
+
+        const response = await fetchApi('/host', {
+          method: 'POST',
+          body: JSON.stringify({ length, hostId }),
+        });
+        const result = await response.json();
+
+        if (response.status !== 200) {
+          const error = new Error(response.statusText);
+          error.data = result.data;
+
+          throw error;
+        }
+
+        if (result === null) {
+          toast.error(t('workflow.host.messages.notFound', { id: hostId }));
+          return false;
+        }
+
+        result.hostId = hostId;
+        result.createdAt = Date.now();
+
+        store.commit('updateStateNested', {
+          value: result,
+          path: `workflowHosts.${hostId}`,
+        });
+
+        const triggerBlock = findTriggerBlock(result.drawflow);
+        await registerWorkflowTrigger(hostId, triggerBlock);
+
+        result.drawflow = JSON.stringify(result.drawflow);
+
+        let { workflowHosts: storageHosts } = await browser.storage.local.get(
+          'workflowHosts'
+        );
+        (storageHosts = storageHosts || {})[hostId] = result;
+
+        await browser.storage.local.set({ workflowHosts: storageHosts });
+
+        return true;
+      } catch (error) {
+        console.error(error);
+
+        toast.error(
+          error.data?.show ? error.message : t('message.somethingWrong')
+        );
+
+        return false;
+      }
+    },
+  });
+}
 function browseWorkflow() {
   state.highlightBrowse = false;
   localStorage.setItem('first-time-browse', false);

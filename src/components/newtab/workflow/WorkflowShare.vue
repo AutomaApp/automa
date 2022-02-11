@@ -209,7 +209,7 @@ async function publishWorkflow() {
       nodes[nodeId].data.loopData = '';
     });
 
-    const response = await fetchApi('/workflow/publish', {
+    const response = await fetchApi('/me/workflows/shared', {
       method: 'POST',
       body: JSON.stringify({ workflow }),
     });

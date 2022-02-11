@@ -20,6 +20,7 @@
         v-if="state.type === 'prompt'"
         v-model="state.input"
         autofocus
+        :disabled="state.loading"
         :placeholder="state.options.placeholder"
         :label="state.options.label"
         :type="
@@ -43,6 +44,7 @@
         </ui-button>
         <ui-button
           class="w-6/12"
+          :loading="state.loading"
           :variant="state.options.okVariant"
           @click="fireCallback('onConfirm')"
         >
@@ -53,9 +55,10 @@
   </ui-modal>
 </template>
 <script>
-import { reactive, watch } from 'vue';
+import { reactive, watch, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import defu from 'defu';
+import { throttle } from '@/utils/helper';
 import emitter from '@/lib/mitt';
 
 export default {
@@ -63,52 +66,71 @@ export default {
     const { t } = useI18n();
 
     const defaultOptions = {
-      html: false,
       body: '',
       title: '',
-      placeholder: '',
       label: '',
-      inputType: 'text',
-      okText: t('common.confirm'),
-      okVariant: 'accent',
-      cancelText: t('common.cancel'),
-      onConfirm: null,
+      html: false,
       onCancel: null,
+      onConfirm: null,
+      placeholder: '',
+      inputType: 'text',
+      showLoading: false,
+      okVariant: 'accent',
+      okText: t('common.confirm'),
+      cancelText: t('common.cancel'),
     };
     const state = reactive({
-      show: false,
       type: '',
       input: '',
+      show: false,
+      loading: false,
       showPassword: false,
       options: defaultOptions,
     });
 
-    emitter.on('show-dialog', ({ type, options }) => {
+    function handleShowDialog({ type, options }) {
       state.type = type;
       state.input = options?.inputValue ?? '';
       state.options = defu(options, defaultOptions);
 
       state.show = true;
-    });
-
-    function fireCallback(type) {
+    }
+    function destroy() {
+      state.input = '';
+      state.show = false;
+      state.showPassword = false;
+      state.options = defaultOptions;
+    }
+    const fireCallback = throttle((type) => {
       const callback = state.options[type];
       const param = state.type === 'prompt' ? state.input : true;
-      let hide = true;
 
       if (callback) {
-        const cbReturn = callback(param);
+        const isAsync = state.options.async;
+        if (isAsync) state.loading = true;
 
-        if (typeof cbReturn === 'boolean') hide = cbReturn;
-      }
+        const cbReturn = callback(param) ?? true;
 
-      if (hide) {
-        state.options = defaultOptions;
-        state.showPassword = false;
-        state.show = false;
-        state.input = '';
+        if (typeof cbReturn === 'boolean') {
+          if (cbReturn) destroy();
+          state.loading = false;
+
+          return;
+        }
+        if (isAsync && cbReturn?.then) {
+          cbReturn.then((value) => {
+            if (value) destroy();
+            state.loading = false;
+          });
+
+          return;
+        }
+
+        destroy();
+      } else {
+        destroy();
       }
-    }
+    }, 200);
     function keyupHandler({ code }) {
       if (code === 'Enter') {
         fireCallback('onConfirm');
@@ -127,6 +149,12 @@ export default {
         }
       }
     );
+
+    emitter.on('show-dialog', handleShowDialog);
+
+    onUnmounted(() => {
+      emitter.off('show-dialog', handleShowDialog);
+    });
 
     return {
       state,

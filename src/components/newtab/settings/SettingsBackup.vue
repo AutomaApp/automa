@@ -111,12 +111,26 @@ async function restoreWorkflows() {
     const file = await openFilePicker('application/json');
     const reader = new FileReader();
     const insertWorkflows = (workflows) => {
-      const newWorkflows = workflows.map((workflow) => {
-        if (!state.updateIfExists) delete workflow.id;
+      workflows.forEach((workflow) => {
+        const isWorkflowExists = Workflow.query()
+          .where('id', workflow.id)
+          .exists();
 
-        workflow.createdAt = Date.now();
+        if (!state.updateIfExists || !isWorkflowExists) {
+          workflow.createdAt = Date.now();
+          delete workflow.id;
 
-        return workflow;
+          Workflow.insert({
+            data: workflow,
+          });
+
+          return;
+        }
+
+        Workflow.update({
+          where: workflow.id,
+          data: workflow,
+        });
       });
       const showMessage = (event) => {
         toast(

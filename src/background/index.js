@@ -33,8 +33,19 @@ const workflow = {
   states: new WorkflowState({ storage }),
   logger: new WorkflowLogger({ storage }),
   async get(workflowId) {
-    const { workflows } = await browser.storage.local.get('workflows');
-    const findWorkflow = workflows.find(({ id }) => id === workflowId);
+    const { workflows, workflowHosts } = await browser.storage.local.get([
+      'workflows',
+      'workflowHosts',
+    ]);
+    let findWorkflow = workflows.find(({ id }) => id === workflowId);
+
+    if (!findWorkflow) {
+      findWorkflow = Object.values(workflowHosts || {}).find(
+        ({ hostId }) => hostId === workflowId
+      );
+
+      if (findWorkflow) findWorkflow.id = findWorkflow.hostId;
+    }
 
     return findWorkflow;
   },
@@ -93,7 +104,10 @@ async function openDashboard(url) {
 
     if (tab) {
       await browser.tabs.update(tab.id, tabOptions);
-      await browser.tabs.reload(tab.id);
+
+      if (tab.url.includes('workflows/')) {
+        await browser.tabs.reload(tab.id);
+      }
     } else {
       browser.tabs.create(tabOptions);
     }

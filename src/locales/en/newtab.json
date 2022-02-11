@@ -57,9 +57,24 @@
     "clickToEnable": "Click to enable",
     "toggleSidebar": "Toggle sidebar",
     "cantEdit": "Can't edit shared workflow",
+    "host": {
+      "title": "Host workflow",
+      "set": "Set as host workflow",
+      "id": "Host Id",
+      "add": "Add hosted workflow",
+      "sync": {
+        "title": "Sync",
+        "description": "Sync with host workflow"
+      },
+      "messages": {
+        "hostExist": "You already add this host",
+        "notFound": "Can't find hosted workflow with \"{id}\" id"
+      },
+    },
     "type": {
       "local": "Local",
-      "shared": "Shared"
+      "shared": "Shared",
+      "host": "Host",
     },
     "unpublish": {
       "title": "Unpublish workflow",
@@ -69,6 +84,7 @@
     "share": {
       "url": "Share URL",
       "publish": "Publish",
+      "sharedAs": "Shared as \"{name}\"",
       "title": "Share workflow",
       "download": "Add workflow to local",
       "edit": "Edit description",

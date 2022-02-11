@@ -1,6 +1,9 @@
 <template>
   <div
-    :class="tabTypes[type] || tabTypes['default']"
+    :class="[
+      tabTypes[type] || tabTypes['default'],
+      { [color]: type === 'fill' },
+    ]"
     aria-role="tablist"
     class="ui-tabs text-gray-600 dark:text-gray-200 flex space-x-1 items-center relative"
     @mouseleave="showHoverIndicator = false"
@@ -27,6 +30,10 @@ const props = defineProps({
     default: 'default',
     validator: (value) => ['default', 'fill'].includes(value),
   },
+  color: {
+    type: String,
+    default: 'bg-box-transparent',
+  },
   small: Boolean,
   fill: Boolean,
 });
@@ -34,7 +41,7 @@ const emit = defineEmits(['update:modelValue']);
 
 const tabTypes = {
   default: 'border-b',
-  fill: 'p-2 rounded-lg bg-box-transparent',
+  fill: 'p-2 rounded-lg',
 };
 
 const hoverIndicator = ref(null);

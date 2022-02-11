@@ -28,38 +28,65 @@ export const googleSheets = {
   },
 };
 
-export async function getSharedWorkflows(useCache = true) {
-  try {
-    const sharedWorkflowsStorage = parseJSON(
-      sessionStorage.getItem('shared-workflows'),
-      null
-    );
+async function cacheApi(key, callback) {
+  const cacheResult = parseJSON(sessionStorage.getItem(key), null);
 
-    if (sharedWorkflowsStorage && useCache) {
-      return sharedWorkflowsStorage;
-    }
-
-    const response = await fetchApi('/me/workflows/shared?data=all');
-
-    if (response.status !== 200) throw new Error(response.statusText);
-
-    const result = await response.json();
-    const sharedWorkflows = result.reduce((acc, item) => {
-      item.drawflow = JSON.stringify(item.drawflow);
-      item.table = item.table || item.dataColumns || [];
-      item.createdAt = new Date(item.createdAt || Date.now()).getTime();
-
-      acc[item.id] = item;
-
-      return acc;
-    }, {});
-
-    sessionStorage.setItem('shared-workflows', JSON.stringify(sharedWorkflows));
-
-    return sharedWorkflows;
-  } catch (error) {
-    console.error(error);
-
-    return {};
+  if (cacheResult) {
+    return cacheResult;
   }
+
+  const result = await callback();
+  sessionStorage.setItem(key, JSON.stringify(result));
+
+  return result;
+}
+
+export async function getSharedWorkflows() {
+  return cacheApi('shared-workflows', async () => {
+    try {
+      const response = await fetchApi('/me/workflows/shared?data=all');
+
+      if (response.status !== 200) throw new Error(response.statusText);
+
+      const result = await response.json();
+      const sharedWorkflows = result.reduce((acc, item) => {
+        item.drawflow = JSON.stringify(item.drawflow);
+        item.table = item.table || item.dataColumns || [];
+        item.createdAt = new Date(item.createdAt || Date.now()).getTime();
+
+        acc[item.id] = item;
+
+        return acc;
+      }, {});
+
+      return sharedWorkflows;
+    } catch (error) {
+      console.error(error);
+
+      return {};
+    }
+  });
+}
+
+export async function getHostWorkflows() {
+  return cacheApi('host-workflows', async () => {
+    try {
+      const response = await fetchApi('/me/workflows/host');
+
+      if (response.status !== 200) throw new Error(response.statusText);
+
+      const result = await response.json();
+      const hostWorkflows = result.reduce((acc, item) => {
+        acc[item.id] = item;
+
+        return acc;
+      }, {});
+
+      return hostWorkflows || {};
+    } catch (error) {
+      console.error(error);
+
+      return {};
+    }
+  });
 }
