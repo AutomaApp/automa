@@ -1,27 +1,30 @@
-import { handleElement } from '../helper';
+import handleSelector from '../handle-selector';
 
 function elementExists(block) {
   return new Promise((resolve) => {
     let trying = 0;
 
-    const isExists = () => {
+    const isExists = async () => {
       try {
-        const element = handleElement(block, { returnElement: true });
+        const element = await handleSelector(block, { returnElement: true });
 
-        return !!element;
+        if (!element) throw new Error('element-not-found');
+
+        return true;
       } catch (error) {
-        console.error(error);
         return false;
       }
     };
 
-    function checkElement() {
+    async function checkElement() {
       if (trying > (block.data.tryCount || 1)) {
         resolve(false);
         return;
       }
 
-      if (isExists()) {
+      const isElementExist = await isExists();
+
+      if (isElementExist) {
         resolve(true);
       } else {
         trying += 1;

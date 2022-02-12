@@ -256,7 +256,13 @@ import { sendMessage } from '@/utils/message';
 import { exportWorkflow, convertWorkflow } from '@/utils/workflow-data';
 import { tasks } from '@/utils/shared';
 import { fetchApi } from '@/utils/api';
-import { debounce, isObject, objectHasKey, parseJSON } from '@/utils/helper';
+import {
+  debounce,
+  isObject,
+  objectHasKey,
+  parseJSON,
+  throttle,
+} from '@/utils/helper';
 import Log from '@/models/log';
 import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
 import Workflow from '@/models/workflow';
@@ -408,6 +414,21 @@ const updateBlockData = debounce((data) => {
       new CustomEvent('change', { detail: toRaw(payload) })
     );
 }, 250);
+const executeWorkflow = throttle(() => {
+  if (editor.value.getNodesFromName('trigger').length === 0) {
+    /* eslint-disable-next-line */
+    toast.error(t('message.noTriggerBlock'));
+    return;
+  }
+
+  const payload = {
+    ...workflow.value,
+    isTesting: state.isDataChanged,
+    drawflow: JSON.stringify(editor.value.export()),
+  };
+
+  sendMessage('workflow:execute', payload, 'background');
+}, 300);
 
 async function updateHostedWorkflow() {
   if (!workflowData.isHost || Object.keys(hostWorkflowPayload).length === 0)
@@ -771,21 +792,6 @@ function editBlock(data) {
 
   state.isEditBlock = true;
   state.blockData = defu(data, tasks[data.id] || {});
-}
-function executeWorkflow() {
-  if (editor.value.getNodesFromName('trigger').length === 0) {
-    /* eslint-disable-next-line */
-    toast.error(t('message.noTriggerBlock'));
-    return;
-  }
-
-  const payload = {
-    ...workflow.value,
-    isTesting: state.isDataChanged,
-    drawflow: JSON.stringify(editor.value.export()),
-  };
-
-  sendMessage('workflow:execute', payload, 'background');
 }
 function handleEditorDataChanged() {
   state.isDataChanged = true;

@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import simulateEvent from './simulate-event';
 
 function formEvent(element, data) {
@@ -49,38 +48,40 @@ function inputText({ data, element, isEditable, index = 0, callback }) {
   }
 }
 
-export default function (element, data, callback) {
-  const textFields = ['INPUT', 'TEXTAREA'];
-  const isEditable =
-    element.hasAttribute('contenteditable') && element.isContentEditable;
+export default function (element, data) {
+  return new Promise((callback) => {
+    const textFields = ['INPUT', 'TEXTAREA'];
+    const isEditable =
+      element.hasAttribute('contenteditable') && element.isContentEditable;
 
-  if (isEditable) {
-    if (data.clearValue) element.innerText = '';
+    if (isEditable) {
+      if (data.clearValue) element.innerText = '';
 
-    inputText({ data, element, callback, isEditable });
-    return;
-  }
+      inputText({ data, element, callback, isEditable });
+      return;
+    }
 
-  if (data.type === 'text-field' && textFields.includes(element.tagName)) {
-    if (data.clearValue) element.value = '';
+    if (data.type === 'text-field' && textFields.includes(element.tagName)) {
+      if (data.clearValue) element.value = '';
 
-    inputText({ data, element, callback });
-    return;
-  }
+      inputText({ data, element, callback });
+      return;
+    }
 
-  if (data.type === 'checkbox' || data.type === 'radio') {
-    element.checked = data.selected;
-    formEvent(element, { type: data.type, value: data.selected });
-    callback(element.checked);
-    return;
-  }
+    if (data.type === 'checkbox' || data.type === 'radio') {
+      element.checked = data.selected;
+      formEvent(element, { type: data.type, value: data.selected });
+      callback(element.checked);
+      return;
+    }
 
-  if (data.type === 'select') {
-    element.value = data.value;
-    formEvent(element, data);
-    callback(element.value);
-    return;
-  }
+    if (data.type === 'select') {
+      element.value = data.value;
+      formEvent(element, data);
+      callback(element.value);
+      return;
+    }
 
-  callback('');
+    callback('');
+  });
 }

@@ -8,7 +8,35 @@ export function markElement(el, { id, data }) {
   }
 }
 
-export function handleElement(
+export function waitForSelector({
+  timeout,
+  selector,
+  documentCtx = document,
+} = {}) {
+  return new Promise((resolve) => {
+    let isTimeout = false;
+    const findSelector = () => {
+      if (isTimeout) return;
+
+      const element = documentCtx.querySelector(selector);
+
+      if (!element) {
+        setTimeout(findSelector, 200);
+      } else {
+        resolve(element);
+      }
+    };
+
+    findSelector();
+
+    setTimeout(() => {
+      isTimeout = true;
+      resolve(null);
+    }, timeout);
+  });
+}
+
+export default async function (
   { data, id, frameSelector },
   { onSelected, onError, onSuccess, returnElement }
 ) {
@@ -29,6 +57,23 @@ export function handleElement(
     }
 
     documentCtx = iframeCtx;
+  }
+
+  if (data.waitForSelector && data.findBy === 'cssSelector') {
+    const element = await waitForSelector({
+      documentCtx,
+      selector: data.selector,
+      timeout: data.waitSelectorTimeout,
+    });
+
+    if (!element) {
+      if (returnElement) return element;
+
+      if (onError) {
+        onError(new Error('element-not-found'));
+        return;
+      }
+    }
   }
 
   try {

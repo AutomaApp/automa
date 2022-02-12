@@ -25,26 +25,53 @@
         class="mb-1 w-full"
         @change="updateData({ selector: $event })"
       />
-      <template
+      <ui-expand
         v-if="!hideSelector && (data.findBy || 'cssSelector') === 'cssSelector'"
+        hide-header-icon
+        header-class="flex items-center w-full focus:ring-0"
       >
+        <template #header="{ show }">
+          <v-remixicon
+            name="riArrowLeftSLine"
+            :rotate="show ? 270 : 180"
+            class="mr-1 transition-transform -ml-1"
+          />
+          Selector options
+        </template>
+        <div class="mt-1">
+          <ui-checkbox
+            v-if="!data.disableMultiple && !hideMultiple"
+            :title="t('workflow.blocks.base.multiple.title')"
+            :model-value="data.multiple"
+            class="mr-6"
+            @change="updateData({ multiple: $event })"
+          >
+            {{ t('workflow.blocks.base.multiple.text') }}
+          </ui-checkbox>
+          <ui-checkbox
+            :model-value="data.markEl"
+            :title="t('workflow.blocks.base.markElement.title')"
+            @change="updateData({ markEl: $event })"
+          >
+            {{ t('workflow.blocks.base.markElement.text') }}
+          </ui-checkbox>
+        </div>
         <ui-checkbox
-          v-if="!data.disableMultiple && !hideMultiple"
-          :title="t('workflow.blocks.base.multiple.title')"
-          :model-value="data.multiple"
-          class="mr-6"
-          @change="updateData({ multiple: $event })"
+          :model-value="data.waitForSelector"
+          block
+          class="mt-1"
+          @change="updateData({ waitForSelector: $event })"
         >
-          {{ t('workflow.blocks.base.multiple.text') }}
+          {{ t('workflow.blocks.base.waitSelector.title') }}
         </ui-checkbox>
-        <ui-checkbox
-          :model-value="data.markEl"
-          :title="t('workflow.blocks.base.markElement.title')"
-          @change="updateData({ markEl: $event })"
-        >
-          {{ t('workflow.blocks.base.markElement.text') }}
-        </ui-checkbox>
-      </template>
+        <ui-input
+          v-if="data.waitForSelector"
+          :model-value="data.waitSelectorTimeout"
+          :label="t('workflow.blocks.base.waitSelector.timeout')"
+          class="mt-1 w-full"
+          @change="updateData({ waitSelectorTimeout: +$event })"
+        />
+      </ui-expand>
     </template>
     <slot></slot>
   </div>

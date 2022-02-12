@@ -1,8 +1,8 @@
-import { handleElement } from '../helper';
+import handleSelector from '../handle-selector';
 
 function switchTo(block) {
   return new Promise((resolve, reject) => {
-    handleElement(block, {
+    handleSelector(block, {
       onSelected(element) {
         if (element.tagName !== 'IFRAME') {
           reject(new Error('not-iframe'));

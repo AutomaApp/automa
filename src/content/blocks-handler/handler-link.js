@@ -1,22 +1,19 @@
-import { handleElement, markElement } from '../helper';
+import handleSelector, { markElement } from '../handle-selector';
 
-function link(block) {
-  return new Promise((resolve, reject) => {
-    const element = handleElement(block, { returnElement: true });
+async function link(block) {
+  const element = await handleSelector(block, { returnElement: true });
 
-    if (!element) {
-      reject(new Error('element-not-found'));
-      return;
-    }
+  if (!element) {
+    throw new Error('element-not-found');
+  }
 
-    markElement(element, block);
+  markElement(element, block);
 
-    const url = element.href;
+  const url = element.href;
 
-    if (url) window.location.href = url;
+  if (url) window.location.href = url;
 
-    resolve(url);
-  });
+  return url;
 }
 
 export default link;

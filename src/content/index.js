@@ -59,7 +59,6 @@ import blocksHandler from './blocks-handler';
 
             selectors.push(finder(el));
           });
-          console.log(data, selectors);
 
           resolve(selectors);
           break;

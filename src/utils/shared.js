@@ -245,6 +245,8 @@ export const tasks = {
     data: {
       description: '',
       findBy: 'cssSelector',
+      waitForSelector: false,
+      waitSelectorTimeout: 5000,
       selector: '',
       markEl: false,
       multiple: false,
@@ -280,6 +282,8 @@ export const tasks = {
     data: {
       description: '',
       findBy: 'cssSelector',
+      waitForSelector: false,
+      waitSelectorTimeout: 5000,
       selector: '',
       markEl: false,
       multiple: false,
@@ -330,6 +334,8 @@ export const tasks = {
     data: {
       description: '',
       findBy: 'cssSelector',
+      waitForSelector: false,
+      waitSelectorTimeout: 5000,
       selector: 'html',
       markEl: false,
       multiple: false,
@@ -356,6 +362,8 @@ export const tasks = {
     data: {
       description: '',
       findBy: 'cssSelector',
+      waitForSelector: false,
+      waitSelectorTimeout: 5000,
       selector: '',
       markEl: false,
       disableMultiple: true,
@@ -376,6 +384,8 @@ export const tasks = {
     data: {
       description: '',
       findBy: 'cssSelector',
+      waitForSelector: false,
+      waitSelectorTimeout: 5000,
       selector: '',
       markEl: false,
       multiple: false,
@@ -404,6 +414,8 @@ export const tasks = {
     data: {
       description: '',
       findBy: 'cssSelector',
+      waitForSelector: false,
+      waitSelectorTimeout: 5000,
       selector: '',
       markEl: false,
       multiple: false,
@@ -479,6 +491,8 @@ export const tasks = {
     data: {
       description: '',
       findBy: 'cssSelector',
+      waitForSelector: false,
+      waitSelectorTimeout: 5000,
       selector: '',
       markEl: false,
       multiple: false,
@@ -683,6 +697,8 @@ export const tasks = {
     refDataKeys: ['selector', 'filePaths'],
     data: {
       findBy: 'cssSelector',
+      waitForSelector: false,
+      waitSelectorTimeout: 5000,
       selector: '',
       filePaths: [],
     },

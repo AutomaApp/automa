@@ -2,11 +2,12 @@
   <div :aria-expanded="show" class="ui-expand">
     <button :class="headerClass" @click="toggleExpand">
       <v-remixicon
+        v-if="!hideHeaderIcon"
         :rotate="show ? 90 : -90"
         name="riArrowLeftSLine"
         class="mr-2 transition-transform -ml-1"
       />
-      <slot name="header" />
+      <slot v-bind="{ show }" name="header" />
     </button>
     <transition-expand>
       <div v-if="show" :class="panelClass" class="ui-expand__panel">
@@ -30,6 +31,10 @@ const props = defineProps({
   headerClass: {
     type: String,
     default: 'px-4 py-2 w-full flex items-center h-full',
+  },
+  hideHeaderIcon: {
+    type: Boolean,
+    default: false,
   },
 });
 const emit = defineEmits(['update:modelValue']);

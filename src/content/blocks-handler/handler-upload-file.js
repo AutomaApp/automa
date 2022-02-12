@@ -1,5 +1,5 @@
 import { sendMessage } from '@/utils/message';
-import { handleElement } from '../helper';
+import handleSelector from '../handle-selector';
 
 function injectFiles(element, files) {
   const notFileTypeAttr = element.getAttribute('type') !== 'file';
@@ -12,7 +12,7 @@ function injectFiles(element, files) {
 }
 
 export default async function (block) {
-  const elements = handleElement(block, { returnElement: true });
+  const elements = await handleSelector(block, { returnElement: true });
 
   if (!elements) throw new Error('element-not-found');
 

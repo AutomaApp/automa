@@ -26,6 +26,10 @@
         "multiple": {
           "title": "Select multiple element",
           "text": "Multiple"
+        },
+        "waitSelector": {
+          "title": "Wait for selector",
+          "timeout": "Selector timeout (ms)"
         }
       },
       "clipboard": {
