@@ -355,10 +355,12 @@
         }
       },
       "webhook": {
-        "name": "Webhook",
-        "description": "Webhook allow external service to be notified",
+        "name": "HTTP request",
+        "description": "make an HTTP request",
         "url": "The Post receive URL",
-        "contentType": "Select a content type",
+        "contentType": "Content type",
+        "method": "Request method",
+        "url": "Request URL",
         "buttons": {
           "header": "Add header"
         },
@@ -368,7 +370,8 @@
         },
         "tabs": {
           "headers": "Headers",
-          "body": "Content body"
+          "body": "Body",
+          "response": "Response"
         }
       },
       "loop-data": {

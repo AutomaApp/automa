@@ -6,18 +6,28 @@
       class="w-full mb-2"
       @change="updateData({ description: $event })"
     />
+    <ui-select
+      :model-value="data.method || 'POST'"
+      :label="t('workflow.blocks.webhook.method')"
+      class="mb-2 w-full"
+      @change="updateMethod"
+    >
+      <option v-for="method in methods" :key="method" :value="method">
+        {{ method }}
+      </option>
+    </ui-select>
     <ui-input
       :model-value="data.url"
+      :label="`${t('workflow.blocks.webhook.url')}*`"
+      placeholder="http://api.example.com"
       class="mb-2 w-full"
-      placeholder="https://example.com/postreceive"
       required
-      :title="t('workflow.blocks.webhook.url')"
       type="url"
       @change="updateData({ url: $event })"
     />
     <ui-select
       :model-value="data.contentType"
-      :placeholder="t('workflow.blocks.webhook.contentType')"
+      :label="t('workflow.blocks.webhook.contentType')"
       class="mb-2 w-full"
       @change="updateData({ contentType: $event })"
     >
@@ -31,32 +41,39 @@
     </ui-select>
     <ui-input
       :model-value="data.timeout"
-      :placeholder="t('workflow.blocks.webhook.timeout.placeholder')"
+      :label="t('workflow.blocks.webhook.timeout.placeholder')"
       :title="t('workflow.blocks.webhook.timeout.title')"
       class="mb-2 w-full"
       type="number"
       @change="updateData({ timeout: +$event })"
     />
-    <ui-tabs v-model="activeTab" fill class="mb-4">
+    <ui-tabs v-model="activeTab" fill>
       <ui-tab value="headers">
         {{ t('workflow.blocks.webhook.tabs.headers') }}
       </ui-tab>
-      <ui-tab value="body">{{ t('workflow.blocks.webhook.tabs.body') }}</ui-tab>
+      <ui-tab v-if="!notHaveBody.includes(data.method)" value="body">
+        {{ t('workflow.blocks.webhook.tabs.body') }}
+      </ui-tab>
+      <ui-tab value="response">
+        {{ t('workflow.blocks.webhook.tabs.response') }}
+      </ui-tab>
     </ui-tabs>
-    <ui-tab-panels :model-value="activeTab">
+    <ui-tab-panels v-model="activeTab">
       <ui-tab-panel
         value="headers"
-        class="grid grid-cols-7 justify-items-center gap-2"
+        class="grid grid-cols-7 justify-items-center mt-4 gap-2"
       >
         <template v-for="(items, index) in headers" :key="index">
           <ui-input
             v-model="items.name"
+            :title="items.name"
             :placeholder="`Header ${index + 1}`"
             type="text"
             class="col-span-3"
           />
           <ui-input
             v-model="items.value"
+            :title="items.value"
             placeholder="Value"
             type="text"
             class="col-span-3"
@@ -73,13 +90,71 @@
           <span> {{ t('workflow.blocks.webhook.buttons.header') }} </span>
         </ui-button>
       </ui-tab-panel>
-      <ui-tab-panel value="body">
+      <ui-tab-panel value="body" class="mt-4">
         <pre
           v-if="!showBodyModal"
           class="rounded-lg text-gray-200 p-4 max-h-80 bg-gray-900 overflow-auto"
           @click="showBodyModal = true"
           v-text="data.body"
         />
+      </ui-tab-panel>
+      <ui-tab-panel value="response" class="mt-2">
+        <ui-select
+          :model-value="data.responseType"
+          label="Response type"
+          class="w-full"
+          @change="updateData({ responseType: $event })"
+        >
+          <option value="json">JSON</option>
+          <option value="text">Text</option>
+        </ui-select>
+        <ui-input
+          v-if="data.responseType === 'json'"
+          :model-value="data.dataPath"
+          placeholder="path.to.data"
+          label="Data path"
+          class="w-full mt-2"
+          @change="updateData({ dataPath: $event })"
+        />
+        <ui-checkbox
+          :model-value="data.assignVariable"
+          block
+          class="mt-2"
+          @change="updateData({ assignVariable: $event })"
+        >
+          {{ t('workflow.variables.assign') }}
+        </ui-checkbox>
+        <ui-input
+          v-if="data.assignVariable"
+          :model-value="data.variableName"
+          :placeholder="t('workflow.variables.name')"
+          :title="t('workflow.variables.name')"
+          class="mt-2 w-full mb-2"
+          @change="updateData({ variableName: $event })"
+        />
+        <ui-checkbox
+          :model-value="data.saveData"
+          block
+          class="mt-2"
+          @change="updateData({ saveData: $event })"
+        >
+          {{ t('workflow.blocks.get-text.checkbox') }}
+        </ui-checkbox>
+        <ui-select
+          v-if="data.saveData"
+          :model-value="data.dataColumn"
+          placeholder="Select column"
+          class="mt-2 w-full"
+          @change="updateData({ dataColumn: $event })"
+        >
+          <option
+            v-for="column in workflow.data.value.table"
+            :key="column.name"
+            :value="column.name"
+          >
+            {{ column.name }}
+          </option>
+        </ui-select>
       </ui-tab-panel>
     </ui-tab-panels>
     <ui-modal
@@ -107,7 +182,7 @@
   </div>
 </template>
 <script setup>
-import { ref, watch, defineAsyncComponent } from 'vue';
+import { ref, watch, defineAsyncComponent, inject } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { contentTypes } from '@/utils/shared';
 
@@ -125,6 +200,10 @@ const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
 
+const methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
+const notHaveBody = ['GET', 'DELETE'];
+
+const workflow = inject('workflow');
 const activeTab = ref('headers');
 const showBodyModal = ref(false);
 const headers = ref(JSON.parse(JSON.stringify(props.data.headers)));
@@ -137,6 +216,13 @@ function removeHeader(index) {
 }
 function addHeader() {
   headers.value.push({ name: '', value: '' });
+}
+function updateMethod(method) {
+  if (notHaveBody.includes(method) && activeTab.value === 'body') {
+    activeTab.value = 'headers';
+  }
+
+  updateData({ method });
 }
 
 watch(

@@ -45,12 +45,14 @@ export function keyParser(key, data) {
   if (firstPath === '$last') {
     const lastIndex = data.table.length - 1;
 
-    path = `${lastIndex}.${restPath}`;
+    path = `${lastIndex}.${restPath || ''}`;
   } else if (!restPath) {
     path = `0.${firstPath}`;
   } else if (typeof +firstPath !== 'number' || Number.isNaN(+firstPath)) {
     path = `0.${firstPath}.${restPath}`;
   }
+
+  path = path.replace(/\.$/, '');
 
   return { dataKey: 'table', path };
 }

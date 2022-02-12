@@ -2,6 +2,7 @@ import { Model } from '@vuex-orm/core';
 import { nanoid } from 'nanoid';
 import Log from './log';
 import { cleanWorkflowTriggers } from '@/utils/workflow-trigger';
+import { fetchApi } from '@/utils/api';
 
 class Workflow extends Model {
   static entity = 'workflows';
@@ -58,6 +59,26 @@ class Workflow extends Model {
   static async afterDelete({ id }) {
     try {
       await cleanWorkflowTriggers(id);
+
+      try {
+        const hostedWorkflow = this.store().state.hostWorkflows[id];
+
+        if (hostedWorkflow) {
+          const response = await fetchApi(
+            `/me/workflows/host?id=${hostedWorkflow.hostId}`,
+            {
+              method: 'DELETE',
+            }
+          );
+
+          if (response.status !== 200) {
+            throw new Error(response.statusText);
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+      /* delete host workflow */
     } catch (error) {
       console.error(error);
     }

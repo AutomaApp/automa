@@ -75,22 +75,21 @@
     >
       {{ t('workflow.blocks.get-text.checkbox') }}
     </ui-checkbox>
-    <div v-if="data.saveData" class="flex items-center mt-2 mb-4">
-      <ui-select
-        :model-value="data.dataColumn"
-        placeholder="Select column"
-        class="mr-2 flex-1"
-        @change="updateData({ dataColumn: $event })"
+    <ui-select
+      v-if="data.saveData"
+      :model-value="data.dataColumn"
+      placeholder="Select column"
+      class="w-full mt-2 mb-4"
+      @change="updateData({ dataColumn: $event })"
+    >
+      <option
+        v-for="column in workflow.data.value.table"
+        :key="column.name"
+        :value="column.name"
       >
-        <option
-          v-for="column in workflow.data.value.table"
-          :key="column.name"
-          :value="column.name"
-        >
-          {{ column.name }}
-        </option>
-      </ui-select>
-    </div>
+        {{ column.name }}
+      </option>
+    </ui-select>
     <ui-checkbox
       :model-value="data.addExtraRow"
       block

@@ -37,6 +37,7 @@
   <shared-codemirror
     :model-value="dataStr"
     :class="editorClass"
+    class="rounded-t-none"
     lang="json"
     readonly
   />
