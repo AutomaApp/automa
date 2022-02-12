@@ -1,3 +1,4 @@
+import browser from 'webextension-polyfill';
 import { objectHasKey } from '@/utils/helper';
 import { getBlockConnection } from '../helper';
 
@@ -10,6 +11,14 @@ async function checkAccess(blockName) {
     if (hasFileAccess) return true;
 
     throw new Error('no-file-access');
+  } else if (blockName === 'clipboard') {
+    const hasPermission = await browser.permissions.contains({
+      permissions: ['clipboardRead'],
+    });
+
+    if (!hasPermission) {
+      throw new Error('no-clipboard-acces');
+    }
   }
 
   return true;

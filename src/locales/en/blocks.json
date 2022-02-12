@@ -28,6 +28,13 @@
           "text": "Multiple"
         }
       },
+      "clipboard": {
+        "name": "Clipboard",
+        "description": "Get the copied text from the clipboard",
+        "data": "Clipboard data",
+        "noPermission": "Don't have permission to access the clipboard",
+        "grantPermission": "Grant permission"
+      },
       "upload-file": {
         "name": "Upload file",
         "description": "Upload file into <input type=\"file\"> element",
@@ -356,7 +363,7 @@
       },
       "webhook": {
         "name": "HTTP request",
-        "description": "make an HTTP request",
+        "description": "Make an HTTP Request",
         "url": "The Post receive URL",
         "contentType": "Content type",
         "method": "Request method",

@@ -45,6 +45,9 @@
       "all_frames": false
     }
   ],
+  "optional_permissions": [
+    "clipboardRead"
+  ],
   "permissions": [
     "tabs",
     "proxy",
