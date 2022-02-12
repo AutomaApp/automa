@@ -2,12 +2,14 @@ import { getBlockConnection } from '../helper';
 
 function delay(block) {
   return new Promise((resolve) => {
+    const delayTime = +block.data.time || 500;
+
     setTimeout(() => {
       resolve({
-        nextBlockId: getBlockConnection(block),
         data: '',
+        nextBlockId: getBlockConnection(block),
       });
-    }, block.data.time);
+    }, delayTime);
   });
 }
 

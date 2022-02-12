@@ -263,6 +263,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['time'],
     data: {
       time: 500,
     },
