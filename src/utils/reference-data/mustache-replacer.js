@@ -57,13 +57,14 @@ export function keyParser(key, data) {
   return { dataKey: 'table', path };
 }
 
-export default function (str, data) {
-  if (!str || typeof str !== 'string') return '';
-
-  const replacedStr = str.replace(/\{\{(.*?)\}\}/g, (match) => {
-    const key = match.slice(2, -2).trim();
+function replacer(str, { regex, tagLen, modifyPath, data }) {
+  return str.replace(regex, (match) => {
+    let key = match.slice(tagLen, -tagLen).trim();
 
     if (!key) return '';
+    if (modifyPath && typeof modifyPath === 'function') {
+      key = modifyPath(key);
+    }
 
     let result = '';
     const funcRef = extractStrFunction(key);
@@ -80,6 +81,22 @@ export default function (str, data) {
     }
 
     return typeof result === 'string' ? result : JSON.stringify(result);
+  });
+}
+
+export default function (str, data) {
+  if (!str || typeof str !== 'string') return '';
+
+  const replacedStr = replacer(str, {
+    data,
+    tagLen: 2,
+    regex: /\{\{(.*?)\}\}/g,
+    modifyPath: (path) =>
+      replacer(path, {
+        data,
+        tagLen: 1,
+        regex: /\[(.*?)\]/g,
+      }),
   });
 
   return replacedStr;
