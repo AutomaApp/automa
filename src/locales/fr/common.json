@@ -9,8 +9,8 @@
     "search": "Rechercher",
     "import": "Importer",
     "export": "Exporter",
-    "rename": "Renomer",
-    "execute": "Executer",
+    "rename": "Renommer",
+    "execute": "Exécuter",
     "delete": "Supprimer",
     "cancel": "Annuler",
     "settings": "Réglages",
@@ -41,7 +41,7 @@
     "delete": "Voulez-vous vraiment supprimer \"{name}\"?",
     "empty": "Oupss... Il semble que vous n'ayez aucun élément",
     "notSaved": "Voulez-vous vraiment partir ? Vous avez des changements non enregistrés !",
-    "maxSizeExceeded": "La taille maximum autorisé du fichier est dépassé"
+    "maxSizeExceeded": "La taille maximum autorisée du fichier est dépassée"
   },
   "sort": {
     "sortBy": "Trier par",
