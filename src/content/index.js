@@ -1,4 +1,5 @@
 import browser from 'webextension-polyfill';
+import { finder } from '@medv/finder';
 import { toCamelCase } from '@/utils/helper';
 import elementSelector from './element-selector';
 import executedBlock from './executed-block';
@@ -49,6 +50,20 @@ import blocksHandler from './blocks-handler';
           });
           resolve();
           break;
+        case 'loop-elements': {
+          const selectors = [];
+          const elements = document.body.querySelectorAll(data.selector);
+
+          elements.forEach((el) => {
+            if (data.max > 0 && selectors.length - 1 > data.max) return;
+
+            selectors.push(finder(el));
+          });
+          console.log(data, selectors);
+
+          resolve(selectors);
+          break;
+        }
         default:
       }
     });

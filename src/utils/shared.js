@@ -596,6 +596,7 @@ export const tasks = {
       description: '',
       variableName: '',
       referenceKey: '',
+      elementSelector: '',
       specificRowAndCol: false,
       loopThrough: 'data-columns',
     },

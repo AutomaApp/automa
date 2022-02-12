@@ -1,11 +1,10 @@
 import { getBlockConnection } from '../helper';
 import { parseJSON } from '@/utils/helper';
 
-function loopData(block) {
-  return new Promise((resolve, reject) => {
-    const { data } = block;
-    const nextBlockId = getBlockConnection(block);
+async function loopData({ data, id, outputs }) {
+  const nextBlockId = getBlockConnection({ outputs });
 
+  try {
     if (this.loopList[data.loopId]) {
       const index = this.loopList[data.loopId].index + 1;
 
@@ -24,43 +23,41 @@ function loopData(block) {
         $index: index,
       };
     } else {
-      let currLoopData;
-
-      switch (data.loopThrough) {
-        case 'numbers':
-          currLoopData = data.fromNumber;
-          break;
-        case 'table':
-        case 'data-columns':
-          currLoopData = this.referenceData.table;
-          break;
-        case 'google-sheets':
-          currLoopData = this.referenceData.googleSheets[data.referenceKey];
-          break;
-        case 'custom-data':
-          currLoopData = JSON.parse(data.loopData);
-          break;
-        case 'variable': {
+      const getLoopData = {
+        number: () => data.fromNumber,
+        table: () => this.referenceData.table,
+        'custom-data': () => JSON.parse(data.loopData),
+        'data-columns': () => this.referenceData.table,
+        'google-sheets': () =>
+          this.referenceData.googleSheets[data.referenceKey],
+        variable: () => {
           const variableVal = this.referenceData.variables[data.variableName];
-          currLoopData = parseJSON(variableVal, variableVal);
-          break;
-        }
-        default:
-      }
+
+          return parseJSON(variableVal, variableVal);
+        },
+        elements: async () => {
+          const elements = await this._sendMessageToTab({
+            isBlock: false,
+            max: data.maxLoop,
+            type: 'loop-elements',
+            selector: data.elementSelector,
+          });
+
+          return elements;
+        },
+      };
+
+      const currLoopData = await getLoopData[data.loopThrough]();
 
       if (data.loopThrough !== 'numbers' && !Array.isArray(currLoopData)) {
-        const error = new Error('invalid-loop-data');
-        error.nextBlockId = nextBlockId;
-
-        reject(error);
-        return;
+        throw new Error('invalid-loop-data');
       }
 
       this.loopList[data.loopId] = {
         index: 0,
-        data: currLoopData,
+        blockId: id,
         id: data.loopId,
-        blockId: block.id,
+        data: currLoopData,
         type: data.loopThrough,
         maxLoop:
           data.loopThrough === 'numbers'
@@ -75,11 +72,15 @@ function loopData(block) {
       };
     }
 
-    resolve({
+    return {
       nextBlockId,
       data: this.referenceData.loopData[data.loopId],
-    });
-  });
+    };
+  } catch (error) {
+    error.nextBlockId = nextBlockId;
+
+    throw error;
+  }
 }
 
 export default loopData;

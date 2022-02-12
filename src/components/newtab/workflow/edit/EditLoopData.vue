@@ -45,6 +45,14 @@
       @change="updateData({ variableName: $event })"
     />
     <ui-input
+      v-else-if="data.loopThrough === 'elements'"
+      :model-value="data.elementSelector"
+      :label="t('workflow.blocks.base.selector')"
+      placeholder=".selector"
+      class="mt-2 w-full"
+      @change="updateData({ elementSelector: $event })"
+    />
+    <ui-input
       v-if="data.loopThrough !== 'numbers'"
       :model-value="data.maxLoop"
       :label="t('workflow.blocks.loop-data.maxLoop.label')"
@@ -161,6 +169,7 @@ const loopTypes = [
   'google-sheets',
   'variable',
   'custom-data',
+  'elements',
 ];
 
 const state = shallowReactive({

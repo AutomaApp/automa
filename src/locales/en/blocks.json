@@ -412,7 +412,8 @@
             "data-columns": "Table",
             "table": "Table",
             "custom-data": "Custom data",
-            "google-sheets": "Google sheets"
+            "google-sheets": "Google sheets",
+            "elements": "Elements"
           }
         }
       },
