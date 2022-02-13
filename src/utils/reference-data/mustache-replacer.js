@@ -1,9 +1,39 @@
 import objectPath from 'object-path';
+import dayjs from '@/lib/dayjs';
 
 const refKeys = {
   table: 'table',
   dataColumn: 'table',
   dataColumns: 'table',
+};
+
+/* eslint-disable prefer-destructuring */
+export const functions = {
+  date(...args) {
+    let date = new Date();
+    let dateFormat = 'DD-MM-YYYY';
+
+    if (args.length === 1) {
+      dateFormat = args[0];
+    } else if (args.length >= 2) {
+      date = new Date(args[0]);
+      dateFormat = args[1];
+    }
+
+    /* eslint-disable-next-line */
+    const isValidDate = date instanceof Date && !isNaN(date);
+    const dayjsDate = dayjs(isValidDate ? date : Date.now());
+
+    const result =
+      dateFormat === 'relative'
+        ? dayjsDate.fromNow()
+        : dayjsDate.format(dateFormat);
+
+    return result;
+  },
+  randint(min = 0, max = 100) {
+    return Math.round(Math.random() * (+max - +min) + +min);
+  },
 };
 
 export function extractStrFunction(str) {
@@ -69,8 +99,8 @@ function replacer(str, { regex, tagLen, modifyPath, data }) {
     let result = '';
     const funcRef = extractStrFunction(key);
 
-    if (funcRef && data.funcs[funcRef.name]) {
-      result = data.funcs[funcRef.name]?.apply(
+    if (funcRef && data.functions[funcRef.name]) {
+      result = data.functions[funcRef.name]?.apply(
         { refData: data },
         funcRef.params
       );
@@ -84,9 +114,10 @@ function replacer(str, { regex, tagLen, modifyPath, data }) {
   });
 }
 
-export default function (str, data) {
+export default function (str, refData) {
   if (!str || typeof str !== 'string') return '';
 
+  const data = { ...refData, functions };
   const replacedStr = replacer(str, {
     data,
     tagLen: 2,
