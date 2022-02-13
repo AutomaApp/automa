@@ -112,7 +112,6 @@
           @host="setAsHostWorkflow"
           @execute="executeWorkflow"
           @export="workflowExporter"
-          @protect="toggleProtection"
           @showModal="(state.modalName = $event), (state.showModal = true)"
         />
       </div>
@@ -270,7 +269,6 @@ import workflowTrigger from '@/utils/workflow-trigger';
 import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
 import WorkflowActions from '@/components/newtab/workflow/WorkflowActions.vue';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';
-import WorkflowProtect from '@/components/newtab/workflow/WorkflowProtect.vue';
 import WorkflowSettings from '@/components/newtab/workflow/WorkflowSettings.vue';
 import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
 import WorkflowDataTable from '@/components/newtab/workflow/WorkflowDataTable.vue';
@@ -356,12 +354,6 @@ const workflowModals = {
     icon: 'riDatabase2Line',
     component: WorkflowGlobalData,
     title: t('common.globalData'),
-  },
-  'protect-workflow': {
-    width: 'max-w-lg',
-    icon: 'riShieldKeyholeLine',
-    component: WorkflowProtect,
-    title: t('workflow.protect.title'),
   },
   settings: {
     icon: 'riSettings3Line',
@@ -671,23 +663,6 @@ function deleteLog(logId) {
     store.dispatch('saveToStorage', 'logs');
   });
 }
-function toggleProtection() {
-  if (workflow.value.isProtected) {
-    const decryptedFlow = decryptFlow(
-      workflow.value,
-      getWorkflowPass(workflow.value.pass)
-    );
-
-    updateWorkflow({
-      pass: '',
-      isProtected: false,
-      drawflow: decryptedFlow,
-    });
-  } else {
-    state.showModal = true;
-    state.modalName = 'protect-workflow';
-  }
-}
 function workflowExporter() {
   const currentWorkflow = { ...workflow.value };
 
@@ -844,6 +819,18 @@ watch(
     }
 
     editor.value.import(drawflow, false);
+  }
+);
+watch(
+  () => store.state.userDataRetrieved,
+  () => {
+    if (workflowData.hasShared) return;
+
+    workflowData.hasShared = objectHasKey(
+      store.state.sharedWorkflows,
+      workflowId
+    );
+    workflowData.isHost = objectHasKey(store.state.hostWorkflows, workflowId);
   }
 );
 

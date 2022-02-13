@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid';
 import Log from './log';
 import { cleanWorkflowTriggers } from '@/utils/workflow-trigger';
 import { fetchApi } from '@/utils/api';
+import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
 
 class Workflow extends Model {
   static entity = 'workflows';
@@ -43,6 +44,12 @@ class Workflow extends Model {
     if (model.dataColumns.length > 0) {
       model.table = model.dataColumns;
       model.dataColumns = [];
+    }
+    if (model.isProtected) {
+      const pass = getWorkflowPass(model.pass);
+
+      model.drawflow = decryptFlow(model, pass);
+      model.isProtected = false;
     }
 
     return model;

@@ -20,6 +20,7 @@ const store = createStore({
     settings: {
       locale: 'en',
     },
+    userDataRetrieved: false,
   }),
   mutations: {
     updateState(state, { key, value }) {

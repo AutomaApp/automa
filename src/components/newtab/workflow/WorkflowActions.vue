@@ -66,16 +66,6 @@
   </ui-card>
   <ui-card padding="p-1 ml-4 flex items-center">
     <button
-      v-tooltip.group="
-        t(`workflow.protect.${workflow.isProtected ? 'remove' : 'title'}`)
-      "
-      :class="{ 'text-green-600 dark:text-green-400': workflow.isProtected }"
-      class="hoverable p-2 rounded-lg"
-      @click="$emit('protect')"
-    >
-      <v-remixicon name="riShieldKeyholeLine" />
-    </button>
-    <button
       v-if="!workflow.isDisabled"
       v-tooltip.group="
         `${t('common.execute')} (${
@@ -174,7 +164,6 @@ const emit = defineEmits([
   'rename',
   'delete',
   'save',
-  'protect',
   'export',
   'update',
   'share',

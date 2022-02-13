@@ -51,7 +51,7 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { compare } from 'compare-versions';
@@ -154,7 +154,7 @@ window.addEventListener('beforeunload', () => {
   browser.storage.local.onChanged.removeListener(handleStorageChanged);
 });
 
-onMounted(async () => {
+(async () => {
   try {
     const { isFirstTime } = await browser.storage.local.get('isFirstTime');
 
@@ -163,22 +163,26 @@ onMounted(async () => {
     await Promise.allSettled([
       store.dispatch('retrieve', ['workflows', 'logs', 'collections']),
       store.dispatch('retrieveWorkflowState'),
-      fetchUserData(),
+      loadLocaleMessages(store.state.settings.locale, 'newtab'),
     ]);
-
-    await loadLocaleMessages(store.state.settings.locale, 'newtab');
     await setI18nLanguage(store.state.settings.locale);
 
     retrieved.value = true;
 
+    await fetchUserData();
     await syncHostWorkflow();
+
+    store.commit('updateState', {
+      key: 'userDataRetrieved',
+      value: true,
+    });
   } catch (error) {
     retrieved.value = true;
     console.error(error);
   }
 
   localStorage.setItem('ext-version', currentVersion);
-});
+})();
 </script>
 <style>
 html,

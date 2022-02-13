@@ -31,7 +31,7 @@ export const googleSheets = {
 async function cacheApi(key, callback) {
   const cacheResult = parseJSON(sessionStorage.getItem(key), null);
 
-  if (cacheResult) {
+  if (cacheResult && Object.keys(cacheResult).length > 0) {
     return cacheResult;
   }
 
