@@ -389,6 +389,7 @@ const logs = computed(() =>
         item.workflowId === workflowId &&
         (!item.isInCollection || !item.isChildLog || !item.parentLog)
     )
+    .limit(15)
     .orderBy('startedAt', 'desc')
     .get()
 );

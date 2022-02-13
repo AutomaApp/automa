@@ -91,10 +91,12 @@ async function interactionHandler(block, { refData }) {
         this.referenceData.variables[varName] = data.variables[varName];
       });
 
-      const arrData = Array.isArray(data.columns)
-        ? data.columns
-        : [data.columns];
-      this.addDataToColumn(arrData);
+      if (data.columns.insert) {
+        const arrData = Array.isArray(data.columns.data)
+          ? data.columns.data
+          : [data.columns.data];
+        this.addDataToColumn(arrData);
+      }
     }
 
     return {

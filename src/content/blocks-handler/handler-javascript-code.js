@@ -18,8 +18,8 @@ function automaSetVariable(name, value) {
   data.variables[name] = value;
   sessionStorage.setItem('automa--${blockId}', JSON.stringify(data));
 }
-function automaNextBlock(data) {
-  window.dispatchEvent(new CustomEvent('__automa-next-block__', { detail: data }));
+function automaNextBlock(data, insert = true) {
+  window.dispatchEvent(new CustomEvent('__automa-next-block__', { detail: { data, insert } }));
 }
 function automaResetTimeout() {
  window.dispatchEvent(new CustomEvent('__automa-reset-timeout__'));

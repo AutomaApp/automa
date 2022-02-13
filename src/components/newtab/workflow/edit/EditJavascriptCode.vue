@@ -47,10 +47,12 @@
             class="overflow-auto"
             style="height: 87%"
           />
-          <p class="mt-1">
+          <p class="mt-1 text-sm">
             {{ t('workflow.blocks.javascript-code.availabeFuncs') }}
           </p>
-          <p class="space-x-1">
+          <p
+            class="space-x-1 whitespace-nowrap overflow-x-auto overflow-y-hidden pb-1 scroll"
+          >
             <a
               v-for="func in availableFuncs"
               :key="func.id"
@@ -114,9 +116,13 @@ const emit = defineEmits(['update:data']);
 const { t } = useI18n();
 
 const availableFuncs = [
-  { name: 'automaNextBlock(data)', id: 'automanextblock-data' },
-  { name: 'automaRefData(keyword, path)', id: 'automarefdata-keyword-path' },
-  { name: 'automaResetTimeout', id: 'automaresettimeout' },
+  { name: 'automaNextBlock(data, insert?)', id: 'automanextblock-data' },
+  { name: 'automaRefData(keyword, path?)', id: 'automarefdata-keyword-path' },
+  {
+    name: 'automaSetVariable(name, value)',
+    id: 'automasetvariable-name-value',
+  },
+  { name: 'automaResetTimeout()', id: 'automaresettimeout' },
 ];
 
 const state = reactive({
@@ -162,7 +168,7 @@ function automaFuncsCompletion(context) {
           const container = document.createElement('div');
 
           container.innerHTML = `
-            <code>automaNextBlock(<i>data</i>)</code>
+            <code>automaNextBlock(<i>data</i>, <i>insert?</i>)</code>
             <p class="mt-2">
               Execute the next block
               <a href="https://docs.automa.site/blocks/javascript-code.html#automanextblock-data" target="_blank" class="underline">
