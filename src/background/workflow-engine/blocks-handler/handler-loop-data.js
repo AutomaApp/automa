@@ -24,7 +24,7 @@ async function loopData({ data, id, outputs }) {
       };
     } else {
       const getLoopData = {
-        number: () => data.fromNumber,
+        numbers: () => data.fromNumber,
         table: () => this.referenceData.table,
         'custom-data': () => JSON.parse(data.loopData),
         'data-columns': () => this.referenceData.table,
