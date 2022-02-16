@@ -134,7 +134,7 @@ function javascriptCode(block) {
         });
         sessionStorage.removeItem(storageKey);
 
-        resolve({ columns, variables: storageRefData.variables });
+        resolve({ columns, variables: storageRefData?.variables });
       };
 
       window.addEventListener('__automa-next-block__', ({ detail }) => {

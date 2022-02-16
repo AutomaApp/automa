@@ -1,7 +1,7 @@
 import browser from 'webextension-polyfill';
 import { MessageListener } from '@/utils/message';
 import { registerSpecificDay } from '../utils/workflow-trigger';
-import { parseJSON } from '@/utils/helper';
+import { parseJSON, findTriggerBlock } from '@/utils/helper';
 import WorkflowState from './workflow-state';
 import CollectionEngine from './collection-engine';
 import WorkflowEngine from './workflow-engine/engine';
@@ -262,20 +262,34 @@ browser.tabs.onCreated.addListener(async (tab) => {
 
   await browser.storage.local.set({ recording });
 });
-browser.alarms.onAlarm.addListener(({ name }) => {
-  workflow.get(name).then((currentWorkflow) => {
-    if (!currentWorkflow) return;
+browser.alarms.onAlarm.addListener(async ({ name }) => {
+  const currentWorkflow = await workflow.get(name);
+  if (!currentWorkflow) return;
 
-    workflow.execute(currentWorkflow);
+  const { data } = findTriggerBlock(JSON.parse(currentWorkflow.drawflow)) || {};
+  if (data && data.type === 'interval' && data.fixedDelay) {
+    const workflowState = await workflow.states.get(
+      ({ workflowId }) => name === workflowId
+    );
 
-    const triggerBlock = Object.values(
-      JSON.parse(currentWorkflow.drawflow).drawflow.Home.data
-    ).find((block) => block.name === 'trigger');
+    if (workflowState) {
+      let { workflowQueue } = await browser.storage.local.get('workflowQueue');
+      workflowQueue = workflowQueue || [];
 
-    if (triggerBlock?.data.type === 'specific-day') {
-      registerSpecificDay(currentWorkflow.id, triggerBlock.data);
+      if (!workflowQueue.includes(name)) {
+        (workflowQueue = workflowQueue || []).push(name);
+        await browser.storage.local.set({ workflowQueue });
+      }
+
+      return;
     }
-  });
+  }
+
+  workflow.execute(currentWorkflow);
+
+  if (data && data.type === 'specific-day') {
+    registerSpecificDay(currentWorkflow.id, triggerBlock.data);
+  }
 });
 
 chrome.runtime.onInstalled.addListener((details) => {

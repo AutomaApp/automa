@@ -68,6 +68,7 @@
         "addTime": "Add time",
         "selectDay": "Select day",
         "timeExist": "You alread add {time} on {day}",
+        "fixedDelay": "Fixed delay",
         "days": [
           "Sunday",
           "Monday",

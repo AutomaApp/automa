@@ -87,11 +87,13 @@ async function interactionHandler(block, { refData }) {
     }
 
     if (isJavascriptBlock) {
-      Object.keys(data.variables).forEach((varName) => {
-        this.referenceData.variables[varName] = data.variables[varName];
-      });
+      if (data?.variables) {
+        Object.keys(data.variables).forEach((varName) => {
+          this.referenceData.variables[varName] = data.variables[varName];
+        });
+      }
 
-      if (data.columns.insert) {
+      if (data?.columns.insert) {
         const arrData = Array.isArray(data.columns.data)
           ? data.columns.data
           : [data.columns.data];

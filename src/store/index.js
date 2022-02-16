@@ -138,7 +138,7 @@ const store = createStore({
         method: 'POST',
         body: JSON.stringify({ hosts }),
       });
-      console.log(response);
+
       if (!response.ok) throw new Error(response.statusText);
 
       const result = await response.json();

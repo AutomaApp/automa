@@ -2,6 +2,17 @@ import browser from 'webextension-polyfill';
 import dayjs from 'dayjs';
 import { isObject } from './helper';
 
+async function removeFromWorkflowQueue(workflowId) {
+  const { workflowQueue } = await browser.storage.local.get('workflowQueue');
+  const queueIndex = (workflowQueue || []).indexOf(workflowId);
+
+  if (!workflowQueue || queueIndex === -1) return;
+
+  workflowQueue.splice(queueIndex, 1);
+
+  await browser.storage.local.set({ workflowQueue });
+}
+
 export async function cleanWorkflowTriggers(workflowId) {
   try {
     await browser.alarms.clear(workflowId);
@@ -28,6 +39,8 @@ export async function cleanWorkflowTriggers(workflowId) {
     if (visitWebTriggerIndex !== -1) {
       visitWebTriggers.splice(visitWebTriggerIndex, 1);
     }
+
+    await removeFromWorkflowQueue();
 
     await browser.storage.local.set({
       visitWebTriggers,
@@ -77,7 +90,7 @@ export function registerInterval(workflowId, data) {
     periodInMinutes: data.interval,
   };
 
-  if (data.delay > 0) alarmInfo.delayInMinutes = data.delay;
+  if (data.delay > 0 && !data.fixedDelay) alarmInfo.delayInMinutes = data.delay;
 
   return browser.alarms.create(workflowId, alarmInfo);
 }

@@ -144,7 +144,6 @@ async function fetchUserData() {
     }
 
     if (userWorkflows.status === 'fulfilled') {
-      console.log(userWorkflows);
       const { backup, hosted } = userWorkflows.value;
 
       store.commit('updateState', {

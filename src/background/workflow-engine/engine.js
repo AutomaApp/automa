@@ -172,12 +172,31 @@ class WorkflowEngine {
     }
   }
 
+  async executeQueue() {
+    const { workflowQueue } = await browser.storage.local.get('workflowQueue');
+    const queueIndex = (workflowQueue || []).indexOf(this.workflow.id);
+
+    if (!workflowQueue || queueIndex === -1) return;
+
+    const engine = new WorkflowEngine(this.workflow, {
+      logger: this.logger,
+      states: this.states,
+      blocksHandler: this.blocksHandler,
+    });
+    engine.init();
+
+    workflowQueue.splice(queueIndex, 1);
+
+    await browser.storage.local.set({ workflowQueue });
+  }
+
   async destroy(status, message) {
     try {
       if (this.isDestroyed) return;
       if (this.isUsingProxy) chrome.proxy.settings.clear({});
 
       const endedTimestamp = Date.now();
+      this.executeQueue();
 
       if (!this.workflow.isTesting && this.saveLog) {
         const { name, id } = this.workflow;
