@@ -45,7 +45,7 @@ export async function executeWebhook({
   method,
 }) {
   const controller = new AbortController();
-  const controllerId = setTimeout(() => {
+  const timeoutId = setTimeout(() => {
     controller.abort();
   }, timeout);
 
@@ -68,11 +68,11 @@ export async function executeWebhook({
 
     const response = await fetch(url, payload);
 
-    clearTimeout(controllerId);
+    clearTimeout(timeoutId);
 
     return response;
   } catch (error) {
-    clearTimeout(controllerId);
+    clearTimeout(timeoutId);
     throw error;
   }
 }

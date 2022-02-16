@@ -27,14 +27,16 @@
       "reloadPage": "Reload the page to take effect"
     },
     "menu": {
+      "backup": "Backup Workflows",
       "general": "General",
       "shortcuts": "Shortcuts",
       "about": "About"
     },
     "backupWorkflows": {
-      "title": "Backup Workflows",
+      "title": "Local Backup",
       "invalidPassword": "Invalid password",
       "workflowsAdded": "{count} workflows have been added",
+      "name": "Backup workflows",
       "backup": {
         "button": "Backup",
         "encrypt": "Encrypt with password"
@@ -43,6 +45,24 @@
         "title": "Restore workflows",
         "button": "Restore",
         "update": "Update if the workflow exists"
+      },
+      "cloud": {
+        "buttons": {
+          "local": "Local",
+          "cloud": "Cloud"
+        },
+        "delete": "Delete backup",
+        "title": "Cloud Backup",
+        "sync": "Sync",
+        "lastSync": "Last sync",
+        "lastBackup": "Last backup",
+        "select": "Select workflows",
+        "storedWorkflows": "Workflows that are stored in the cloud",
+        "selected": "Selected",
+        "selectText": "Select workflows that you want to backup",
+        "selectAll": "Select all",
+        "deselectAll": "Deselect all",
+        "needSelectWorkflow": "You need to select workflows that you want to backup"
       }
     }
   },

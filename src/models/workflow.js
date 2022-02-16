@@ -1,5 +1,6 @@
 import { Model } from '@vuex-orm/core';
 import { nanoid } from 'nanoid';
+import browser from 'webextension-polyfill';
 import Log from './log';
 import { cleanWorkflowTriggers } from '@/utils/workflow-trigger';
 import { fetchApi } from '@/utils/api';
@@ -14,6 +15,7 @@ class Workflow extends Model {
 
   static fields() {
     return {
+      __id: this.attr(null),
       id: this.uid(() => nanoid()),
       name: this.string(''),
       icon: this.string('riGlobalLine'),
@@ -66,26 +68,26 @@ class Workflow extends Model {
   static async afterDelete({ id }) {
     try {
       await cleanWorkflowTriggers(id);
+      const hostedWorkflow = this.store().state.hostWorkflows[id];
+      const { backupIds } = await browser.storage.local.get('backupIds');
+      const isBackup = (backupIds || []).includes(id);
 
-      try {
-        const hostedWorkflow = this.store().state.hostWorkflows[id];
+      if (hostedWorkflow || isBackup) {
+        const response = await fetchApi(`/me/workflows?id=${id}`, {
+          method: 'DELETE',
+        });
 
-        if (hostedWorkflow) {
-          const response = await fetchApi(
-            `/me/workflows/host?id=${hostedWorkflow.hostId}`,
-            {
-              method: 'DELETE',
-            }
-          );
-
-          if (response.status !== 200) {
-            throw new Error(response.statusText);
-          }
+        if (!response.ok) {
+          throw new Error(response.statusText);
         }
-      } catch (error) {
-        console.error(error);
+
+        if (isBackup) {
+          backupIds.splice(backupIds.indexOf(id), 1);
+          await browser.storage.local.set({ backupIds });
+        }
+
+        await browser.storage.local.set({ clearCache: true });
       }
-      /* delete host workflow */
     } catch (error) {
       console.error(error);
     }

@@ -248,6 +248,7 @@ import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import defu from 'defu';
 import AES from 'crypto-js/aes';
+import browser from 'webextension-polyfill';
 import emitter from '@/lib/mitt';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
@@ -288,6 +289,10 @@ const shortcut = useShortcut('editor:toggle-sidebar', toggleSidebar);
 
 const editor = shallowRef(null);
 const activeTab = shallowRef('editor');
+const workflowPayload = reactive({
+  data: {},
+  isUpdating: false,
+});
 const state = reactive({
   blockData: {},
   modalName: '',
@@ -362,8 +367,6 @@ const workflowModals = {
   },
 };
 
-let hostWorkflowPayload = {};
-
 const hostWorkflow = computed(() => store.state.hostWorkflows[workflowId]);
 const sharedWorkflow = computed(() => store.state.sharedWorkflows[workflowId]);
 const localWorkflow = computed(() => Workflow.find(workflowId));
@@ -424,26 +427,52 @@ const executeWorkflow = throttle(() => {
 }, 300);
 
 async function updateHostedWorkflow() {
-  if (!workflowData.isHost || Object.keys(hostWorkflowPayload).length === 0)
+  if (!store.state.user || workflowPayload.isUpdating) return;
+
+  const { backupIds } = await browser.storage.local.get('backupIds');
+  const isBackup = (backupIds || []).includes(workflowId);
+  const isExists = Workflow.query().where('id', workflowId).exists();
+
+  if (
+    (!isBackup && !workflowData.isHost) ||
+    !isExists ||
+    Object.keys(workflowPayload.data).length === 0
+  )
     return;
 
+  workflowPayload.isUpdating = true;
+
   try {
-    if (hostWorkflowPayload.drawflow) {
-      hostWorkflowPayload.drawflow = parseJSON(
-        hostWorkflowPayload.drawflow,
+    if (workflowPayload.data.drawflow) {
+      workflowPayload.data.drawflow = parseJSON(
+        workflowPayload.data.drawflow,
         null
       );
     }
 
-    await fetchApi(`/me/workflows/host?id=${hostWorkflow.value.hostId}`, {
+    const response = await fetchApi(`/me/workflows?id=${workflowId}`, {
       method: 'PUT',
       keepalive: true,
       body: JSON.stringify({
-        workflow: hostWorkflowPayload,
+        workflow: workflowPayload.data,
       }),
     });
+
+    if (!response.ok) throw new Error(response.statusText);
+
+    if (isBackup) {
+      const result = await response.json();
+
+      if (result.updatedAt) {
+        await browser.storage.local.set({ lastBackup: result.updatedAt });
+      }
+    }
+
+    workflowPayload.data = {};
+    workflowPayload.isUpdating = false;
   } catch (error) {
     console.error(error);
+    workflowPayload.isUpdating = false;
   }
 }
 function unpublishSharedWorkflow() {
@@ -589,7 +618,7 @@ async function setAsHostWorkflow(isHost) {
   workflowData.loadingHost = true;
 
   try {
-    let url = '/me/workflows/host';
+    let url = '/me/workflows';
     let payload = {};
 
     if (isHost) {
@@ -597,21 +626,22 @@ async function setAsHostWorkflow(isHost) {
       workflowPaylod.drawflow = parseJSON(workflow.value.drawflow, null);
       delete workflowPaylod.extVersion;
 
+      url += `?type=host`;
       payload = {
         method: 'POST',
         body: JSON.stringify({
-          workflow: workflowPaylod,
+          workflows: workflowPaylod,
         }),
       };
     } else {
-      url += `?id=${hostWorkflow.value?.hostId}`;
+      url += `?id=${workflowId}&type=host`;
       payload.method = 'DELETE';
     }
 
     const response = await fetchApi(url, payload);
     const result = await response.json();
 
-    if (response.status !== 200) {
+    if (!response.ok) {
       const error = new Error(response.statusText);
       error.data = result.data;
 
@@ -627,10 +657,12 @@ async function setAsHostWorkflow(isHost) {
       store.commit('deleteStateNested', `hostWorkflows.${workflowId}`);
     }
 
-    sessionStorage.setItem(
-      'host-workflows',
-      JSON.stringify(store.state.hostWorkflows)
-    );
+    const userWorkflows = parseJSON('user-workflows', {
+      backup: [],
+      hosted: {},
+    });
+    userWorkflows.hosted = store.state.hostWorkflows;
+    sessionStorage.setItem('user-workflows', JSON.stringify(userWorkflows));
 
     workflowData.isHost = isHost;
     workflowData.loadingHost = false;
@@ -723,7 +755,7 @@ function updateWorkflow(data) {
     delete data.isDisabled;
     delete data.isProtected;
 
-    hostWorkflowPayload = { ...hostWorkflowPayload, ...data };
+    workflowPayload.data = { ...workflowPayload.data, ...data };
 
     return event;
   });
@@ -801,6 +833,9 @@ provide('workflow', {
   },
 });
 
+watch(() => workflowPayload.data, throttle(updateHostedWorkflow, 5000), {
+  deep: true,
+});
 watch(
   () => workflowData.active,
   (value) => {

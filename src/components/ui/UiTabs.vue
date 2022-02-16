@@ -37,7 +37,7 @@ const props = defineProps({
   small: Boolean,
   fill: Boolean,
 });
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'change']);
 
 const tabTypes = {
   default: 'border-b',
@@ -48,6 +48,7 @@ const hoverIndicator = ref(null);
 const showHoverIndicator = ref(false);
 
 function updateActive(id) {
+  emit('change', id);
   emit('update:modelValue', id);
 }
 function hoverHandler({ target }) {

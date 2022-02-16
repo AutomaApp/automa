@@ -144,11 +144,13 @@ function clickListener(event) {
     }
   }
 
+  const elText = target.innerText || target.ariaLabel || target.title;
+
   addBlock({
     isClickLink,
     id: 'event-click',
     data: { selector },
-    description: target.innerText.slice(0, 64) || selector,
+    description: elText.slice(0, 64) || selector,
   });
 }
 

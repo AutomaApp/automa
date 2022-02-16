@@ -13,6 +13,7 @@ const store = createStore({
   state: () => ({
     user: null,
     workflowState: [],
+    backupIds: [],
     contributors: null,
     hostWorkflows: {},
     sharedWorkflows: {},
@@ -137,8 +138,8 @@ const store = createStore({
         method: 'POST',
         body: JSON.stringify({ hosts }),
       });
-
-      if (response.status !== 200) throw new Error(response.statusText);
+      console.log(response);
+      if (!response.ok) throw new Error(response.statusText);
 
       const result = await response.json();
       const newValue = JSON.parse(JSON.stringify(state.workflowHosts));

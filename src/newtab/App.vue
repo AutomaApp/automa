@@ -58,7 +58,8 @@ import { compare } from 'compare-versions';
 import browser from 'webextension-polyfill';
 import { useTheme } from '@/composable/theme';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vue-i18n';
-import { fetchApi, getSharedWorkflows, getHostWorkflows } from '@/utils/api';
+import { fetchApi, getSharedWorkflows, getUserWorkflows } from '@/utils/api';
+import Workflow from '@/models/workflow';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 
 const { t } = useI18n();
@@ -100,11 +101,28 @@ async function fetchUserData() {
     if (response.status !== 200) {
       throw new Error(response.statusText);
     }
-    if (!user) {
-      sessionStorage.removeItem('shared-workflows');
-      sessionStorage.removeItem('host-workflows');
 
-      return;
+    const username = localStorage.getItem('username');
+
+    if (!user || username !== user.username) {
+      sessionStorage.removeItem('shared-workflows');
+      sessionStorage.removeItem('user-workflows');
+      sessionStorage.removeItem('backup-workflows');
+
+      await browser.storage.local.remove([
+        'backupIds',
+        'lastBackup',
+        'lastSync',
+      ]);
+
+      if (username !== user.username) {
+        await Workflow.update({
+          where: ({ __id }) => __id !== null,
+          data: { __id: null },
+        });
+      }
+
+      if (!user) return;
     }
 
     store.commit('updateState', {
@@ -112,18 +130,52 @@ async function fetchUserData() {
       value: user,
     });
 
-    const mapPromises = { 0: 'sharedWorkflows', 1: 'hostWorkflows' };
-    const promises = await Promise.allSettled([
+    const [sharedWorkflows, userWorkflows] = await Promise.allSettled([
       getSharedWorkflows(),
-      getHostWorkflows(),
+      getUserWorkflows(),
     ]);
-    promises.forEach(({ status, value }, index) => {
-      if (status !== 'fulfilled') return;
+    localStorage.setItem('username', user.username);
+
+    if (sharedWorkflows.status === 'fulfilled') {
+      store.commit('updateState', {
+        key: 'sharedWorkflows',
+        value: sharedWorkflows.value,
+      });
+    }
+
+    if (userWorkflows.status === 'fulfilled') {
+      console.log(userWorkflows);
+      const { backup, hosted } = userWorkflows.value;
 
       store.commit('updateState', {
-        value,
-        key: mapPromises[index],
+        key: 'hostWorkflows',
+        value: hosted,
       });
+
+      if (backup.length > 0) {
+        const { lastBackup } = browser.storage.local.get('lastBackup');
+        if (!lastBackup) {
+          const backupIds = backup.map(({ id }) => id);
+
+          store.commit('updateState', {
+            key: 'backupIds',
+            value: backupIds,
+          });
+          await browser.storage.local.set({
+            backupIds,
+            lastBackup: new Date().toISOString(),
+          });
+        }
+
+        await Workflow.insertOrUpdate({
+          data: backup,
+        });
+      }
+    }
+
+    store.commit('updateState', {
+      key: 'userDataRetrieved',
+      value: true,
     });
   } catch (error) {
     console.error(error);

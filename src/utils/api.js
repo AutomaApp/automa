@@ -1,4 +1,5 @@
 import secrets from 'secrets';
+import browser from 'webextension-polyfill';
 import { parseJSON } from './helper';
 
 export function fetchApi(path, options) {
@@ -28,65 +29,105 @@ export const googleSheets = {
   },
 };
 
-async function cacheApi(key, callback) {
-  const cacheResult = parseJSON(sessionStorage.getItem(key), null);
+export async function cacheApi(key, callback, useCache = true) {
+  const halfAnHour = 1000 * 60 * 15;
+  const halfAnHourAgo = Date.now() - halfAnHour;
 
-  if (cacheResult && Object.keys(cacheResult).length > 0) {
+  const timerKey = `cache-time:${key}`;
+  const cacheResult = parseJSON(sessionStorage.getItem(key), null);
+  const cacheTime = +sessionStorage.getItem(timerKey) || Date.now();
+
+  if (useCache && cacheResult && halfAnHourAgo < cacheTime) {
     return cacheResult;
   }
 
   const result = await callback();
-  sessionStorage.setItem(key, JSON.stringify(result));
+  let cacheData = result;
+
+  if (result?.cacheData) {
+    cacheData = result?.cacheData;
+  }
+
+  sessionStorage.setItem(timerKey, Date.now());
+  sessionStorage.setItem(key, JSON.stringify(cacheData));
 
   return result;
 }
 
-export async function getSharedWorkflows() {
-  return cacheApi('shared-workflows', async () => {
-    try {
-      const response = await fetchApi('/me/workflows/shared?data=all');
+export async function getSharedWorkflows(useCache = true) {
+  return cacheApi(
+    'shared-workflows',
+    async () => {
+      try {
+        const response = await fetchApi('/me/workflows/shared?data=all');
 
-      if (response.status !== 200) throw new Error(response.statusText);
+        if (response.status !== 200) throw new Error(response.statusText);
 
-      const result = await response.json();
-      const sharedWorkflows = result.reduce((acc, item) => {
-        item.drawflow = JSON.stringify(item.drawflow);
-        item.table = item.table || item.dataColumns || [];
-        item.createdAt = new Date(item.createdAt || Date.now()).getTime();
+        const result = await response.json();
+        const sharedWorkflows = result.reduce((acc, item) => {
+          item.drawflow = JSON.stringify(item.drawflow);
+          item.table = item.table || item.dataColumns || [];
+          item.createdAt = new Date(item.createdAt || Date.now()).getTime();
 
-        acc[item.id] = item;
+          acc[item.id] = item;
 
-        return acc;
-      }, {});
+          return acc;
+        }, {});
 
-      return sharedWorkflows;
-    } catch (error) {
-      console.error(error);
+        return sharedWorkflows;
+      } catch (error) {
+        console.error(error);
 
-      return {};
-    }
-  });
+        return {};
+      }
+    },
+    useCache
+  );
 }
 
-export async function getHostWorkflows() {
-  return cacheApi('host-workflows', async () => {
-    try {
-      const response = await fetchApi('/me/workflows/host');
+export async function getUserWorkflows(useCache = true) {
+  return cacheApi(
+    'user-workflows',
+    async () => {
+      try {
+        const { lastBackup } = await browser.storage.local.get('lastBackup');
+        const response = await fetchApi(
+          `/me/workflows?lastBackup=${(useCache && lastBackup) || null}`
+        );
 
-      if (response.status !== 200) throw new Error(response.statusText);
+        if (!response.ok) throw new Error(response.statusText);
 
-      const result = await response.json();
-      const hostWorkflows = result.reduce((acc, item) => {
-        acc[item.id] = item;
+        const result = await response.json();
+        const workflows = result.reduce(
+          (acc, workflow) => {
+            if (workflow.isHost) {
+              acc.hosted[workflow.id] = {
+                id: workflow.id,
+                hostId: workflow.hostId,
+              };
+            }
 
-        return acc;
-      }, {});
+            if (workflow.isBackup) {
+              acc.backup.push(workflow);
+            }
 
-      return hostWorkflows || {};
-    } catch (error) {
-      console.error(error);
+            return acc;
+          },
+          { hosted: {}, backup: [] }
+        );
 
-      return {};
-    }
-  });
+        workflows.cacheData = {
+          backup: [],
+          hosted: workflows.hosted,
+        };
+
+        return workflows;
+      } catch (error) {
+        console.error(error);
+
+        return {};
+      }
+    },
+    useCache
+  );
 }

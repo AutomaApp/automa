@@ -40,7 +40,6 @@
       {{ t('settings.language.reloadPage') }}
     </p>
   </div>
-  <settings-backup />
 </template>
 <script setup>
 import { computed, ref } from 'vue';
@@ -48,7 +47,6 @@ import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { useTheme } from '@/composable/theme';
 import { supportLocales } from '@/utils/shared';
-import SettingsBackup from '@/components/newtab/settings/SettingsBackup.vue';
 
 const { t } = useI18n();
 const store = useStore();
