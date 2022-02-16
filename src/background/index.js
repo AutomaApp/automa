@@ -50,6 +50,8 @@ const workflow = {
     return findWorkflow;
   },
   execute(workflowData, options) {
+    if (workflowData.isDisabled) return null;
+
     if (workflowData.isProtected) {
       const flow = parseJSON(workflowData.drawflow, null);
 
