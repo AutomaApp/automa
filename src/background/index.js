@@ -182,6 +182,8 @@ browser.webNavigation.onCommitted.addListener(
     if (frameId !== 0 || !allowedType.includes(transitionType)) return;
 
     updateRecording((recording) => {
+      if (tabId !== recording.activeTab.id) return;
+
       const lastFlow = recording.flows[recording.flows.length - 1];
       const isClickSubmit =
         lastFlow.id === 'event-click' && transitionType === 'form_submit';
@@ -215,7 +217,7 @@ browser.webNavigation.onCommitted.addListener(
   }
 );
 browser.tabs.onActivated.addListener(async ({ tabId }) => {
-  const { url, id } = await browser.tabs.get(tabId);
+  const { url, id, title } = await browser.tabs.get(tabId);
 
   if (!validateUrl(url)) return;
 
@@ -223,11 +225,11 @@ browser.tabs.onActivated.addListener(async ({ tabId }) => {
     recording.activeTab = { id, url };
     recording.flows.push({
       id: 'switch-tab',
-      description: url,
       data: {
         url,
         matchPattern: url,
         createIfNoMatch: true,
+        description: title || url,
       },
     });
   });
@@ -250,8 +252,10 @@ browser.tabs.onCreated.addListener(async (tab) => {
 
     recording.flows.push({
       id: 'new-tab',
-      description: validUrl,
-      data: { url: validUrl },
+      data: {
+        url: validUrl,
+        description: tab.title || validUrl,
+      },
     });
   }
 

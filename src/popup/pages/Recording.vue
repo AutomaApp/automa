@@ -10,7 +10,8 @@
           class="absolute animate-ping bg-red-400 rounded-full"
           style="height: 80%; width: 80%; animation-duration: 1.3s"
         ></span>
-        <v-remixicon name="riStopLine" class="z-10 relative" />
+        <ui-spinner v-if="state.isGenerating" color="text-white" />
+        <v-remixicon v-else name="riStopLine" class="z-10 relative" />
       </button>
       <div class="ml-4 flex-1 overflow-hidden">
         <p class="text-sm">{{ t('recording.title') }}</p>
@@ -33,10 +34,10 @@
             {{ t(`workflow.blocks.${item.id}.name`) }}
           </p>
           <p
-            :title="item.description"
+            :title="item.data.description || item.description"
             class="text-overflow text-sm leading-tight text-gray-600"
           >
-            {{ item.description }}
+            {{ item.data.description || item.description }}
           </p>
         </div>
         <v-remixicon
@@ -65,6 +66,7 @@ const state = reactive({
   name: '',
   flows: [],
   activeTab: {},
+  isGenerating: false,
 });
 
 function generateDrawflow() {
@@ -134,28 +136,43 @@ function generateDrawflow() {
   return { drawflow: { Home: { data: nodes } } };
 }
 async function stopRecording() {
-  const drawflow = generateDrawflow();
+  if (state.isGenerating) return;
+  if (state.flows.length === 0) {
+    router.push('/');
+    return;
+  }
 
-  await Workflow.insert({
-    data: {
-      name: state.name,
-      drawflow: JSON.stringify(drawflow),
-    },
-  });
+  try {
+    state.isGenerating = true;
 
-  await browser.storage.local.remove(['isRecording', 'recording']);
-  await browser.browserAction.setBadgeText({ text: '' });
+    const drawflow = generateDrawflow();
 
-  const tabs = (await browser.tabs.query({})).filter((tab) =>
-    tab.url.startsWith('http')
-  );
-  await Promise.allSettled(
-    tabs.map(({ id }) =>
-      browser.tabs.sendMessage(id, { type: 'recording:stop' })
-    )
-  );
+    await Workflow.insert({
+      data: {
+        name: state.name,
+        drawflow: JSON.stringify(drawflow),
+      },
+    });
 
-  router.push('/');
+    await browser.storage.local.remove(['isRecording', 'recording']);
+    await browser.browserAction.setBadgeText({ text: '' });
+
+    const tabs = (await browser.tabs.query({})).filter((tab) =>
+      tab.url.startsWith('http')
+    );
+    await Promise.allSettled(
+      tabs.map(({ id }) =>
+        browser.tabs.sendMessage(id, { type: 'recording:stop' })
+      )
+    );
+
+    state.isGenerating = false;
+
+    router.push('/');
+  } catch (error) {
+    state.isGenerating = false;
+    console.error(error);
+  }
 }
 function removeBlock(index) {
   state.flows.splice(index, 1);

@@ -29,38 +29,42 @@ function changeListener({ target }) {
   let block = null;
   const selector = finder(target);
   const isSelectEl = target.tagName === 'SELECT';
-  const elementName = target.ariaLabel || target.name || selector;
+  const elementName = target.ariaLabel || target.name;
 
   if (isInputEl && inputType === 'file') {
     block = {
       id: 'upload-file',
-      description: elementName,
+      description: elementName || selector,
       data: {
         selector,
+        waitForSelector: true,
+        description: elementName,
         filePaths: [target.value],
       },
     };
   } else if (textFieldEl(target) || isSelectEl) {
     block = {
       id: 'forms',
-      description: `${isSelectEl ? 'Select' : 'Text field'} (${elementName})`,
       data: {
         selector,
         delay: 100,
         clearValue: true,
         value: target.value,
+        waitForSelector: true,
         type: isSelectEl ? 'select' : 'text-field',
+        description: `${isSelectEl ? 'Select' : 'Text field'} (${elementName})`,
       },
     };
   } else {
     block = {
       id: 'trigger-event',
-      description: `Change event (${selector})`,
       data: {
         selector,
         eventName: 'change',
         eventType: 'event',
+        waitForSelector: true,
         eventParams: { bubbles: true },
+        description: `Change event (${selector})`,
       },
     };
   }
@@ -94,7 +98,6 @@ function keyEventListener({
 
   addBlock({
     id: 'trigger-event',
-    description: `${type}(${key === ' ' ? 'Space' : key}): ${selector}`,
     data: {
       selector,
       eventName: type,
@@ -109,6 +112,7 @@ function keyEventListener({
         keyCode,
         shiftKey,
       },
+      description: `${type}(${key === ' ' ? 'Space' : key}): ${selector}`,
     },
   });
 }
@@ -134,8 +138,10 @@ function clickListener(event) {
 
       addBlock({
         id: 'link',
-        data: { selector },
-        description: target.href,
+        data: {
+          selector,
+          description: (target.innerText || target.href).slice(0, 64),
+        },
       });
 
       window.open(event.target.href, '_blank');
@@ -149,8 +155,12 @@ function clickListener(event) {
   addBlock({
     isClickLink,
     id: 'event-click',
-    data: { selector },
     description: elText.slice(0, 64) || selector,
+    data: {
+      selector,
+      waitForSelector: true,
+      description: elText.slice(0, 64),
+    },
   });
 }
 
