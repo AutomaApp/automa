@@ -2,6 +2,7 @@ import browser from 'webextension-polyfill';
 import { MessageListener } from '@/utils/message';
 import { registerSpecificDay } from '../utils/workflow-trigger';
 import { parseJSON, findTriggerBlock } from '@/utils/helper';
+import getFile from '@/utils/get-file';
 import WorkflowState from './workflow-state';
 import CollectionEngine from './collection-engine';
 import WorkflowEngine from './workflow-engine/engine';
@@ -358,39 +359,7 @@ message.on('get:sender', (_, sender) => {
 message.on('get:tab-screenshot', (options) => {
   return browser.tabs.captureVisibleTab(options);
 });
-message.on('get:file', (path) => {
-  return new Promise((resolve, reject) => {
-    const isFile = /\.(.*)/.test(path);
-
-    if (!isFile) {
-      reject(new Error(`"${path}" is invalid file path.`));
-      return;
-    }
-
-    const fileUrl = path.startsWith('file://') ? path : `file://${path}`;
-
-    const xhr = new XMLHttpRequest();
-    xhr.responseType = 'blob';
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState === XMLHttpRequest.DONE) {
-        if (xhr.status === 0 || xhr.status === 200) {
-          const objUrl = URL.createObjectURL(xhr.response);
-
-          resolve({ path, objUrl, type: xhr.response.type });
-        } else {
-          reject(new Error(xhr.statusText));
-        }
-      }
-    };
-    xhr.onerror = function () {
-      reject(
-        new Error(xhr.statusText || `Can't find a file with "${path}" path`)
-      );
-    };
-    xhr.open('GET', fileUrl);
-    xhr.send();
-  });
-});
+message.on('get:file', (path) => getFile(path));
 
 message.on('collection:execute', (collection) => {
   const engine = new CollectionEngine(collection, {
