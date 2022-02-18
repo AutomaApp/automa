@@ -32,6 +32,10 @@
           "timeout": "Selector timeout (ms)"
         }
       },
+      "insert-data": {
+        "name": "Insert data",
+        "description": "Insert data into table or variable"
+      },
       "clipboard": {
         "name": "Clipboard",
         "description": "Get the copied text from the clipboard",
@@ -42,7 +46,7 @@
       "upload-file": {
         "name": "Upload file",
         "description": "Upload file into <input type=\"file\"> element",
-        "filePath": "File path",
+        "filePath": "URL or File path",
         "addFile": "Add file",
         "requirement": "See the requirement before using this block",
         "noFileAccess": "Automa doesn't have file access"

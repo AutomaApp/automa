@@ -666,6 +666,22 @@ export const tasks = {
       dataColumn: '',
     },
   },
+  'insert-data': {
+    name: 'Insert data',
+    description: 'Insert data into table or variable',
+    icon: 'riDatabase2Line',
+    component: 'BlockBasic',
+    category: 'general',
+    editComponent: 'EditInsertData',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      description: '',
+      dataList: [],
+    },
+  },
   'switch-to': {
     name: 'Switch frame',
     description: 'Switch between main window and iframe',

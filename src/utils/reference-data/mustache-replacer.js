@@ -118,7 +118,7 @@ export default function (str, refData) {
   if (!str || typeof str !== 'string') return '';
 
   const data = { ...refData, functions };
-  const replacedStr = replacer(str, {
+  const replacedStr = replacer(`${str}`, {
     data,
     tagLen: 2,
     regex: /\{\{(.*?)\}\}/g,

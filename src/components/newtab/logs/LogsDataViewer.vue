@@ -31,7 +31,7 @@
       {{ t('workflow.table.title') }}
     </ui-tab>
     <ui-tab value="variables">
-      {{ t('workflow.variables.title') }}
+      {{ t('workflow.variables.title', 2) }}
     </ui-tab>
   </ui-tabs>
   <shared-codemirror

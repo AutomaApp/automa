@@ -113,7 +113,7 @@
       "unpublish": "Unpublish"
     },
     "variables": {
-      "title": "Variables",
+      "title": "Variable | Variables",
       "name": "Variable name",
       "assign": "Assign to variable"
     },
@@ -137,6 +137,7 @@
     "table": {
       "title": "Table",
       "placeholder": "Search or add column",
+      "select": "Select column",
       "column": {
         "name": "Column name",
         "type": "Data type"
