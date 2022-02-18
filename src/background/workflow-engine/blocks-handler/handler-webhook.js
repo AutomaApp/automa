@@ -5,6 +5,7 @@ import { executeWebhook } from '@/utils/webhookUtil';
 
 export async function webhook({ data, outputs }) {
   const nextBlockId = getBlockConnection({ outputs });
+  const fallbackOutput = getBlockConnection({ outputs }, 2);
 
   try {
     if (isWhitespace(data.url)) throw new Error('url-empty');
@@ -13,6 +14,13 @@ export async function webhook({ data, outputs }) {
     const response = await executeWebhook(data);
 
     if (!response.ok) {
+      if (fallbackOutput) {
+        return {
+          data: '',
+          nextBlockId: fallbackOutput,
+        };
+      }
+
       throw new Error(`(${response.status}) ${response.statusText}`);
     }
 
@@ -45,6 +53,13 @@ export async function webhook({ data, outputs }) {
       data: returnData,
     };
   } catch (error) {
+    if (fallbackOutput && error.message === 'Failed to fetch') {
+      return {
+        data: '',
+        nextBlockId: fallbackOutput,
+      };
+    }
+
     error.nextBlockId = nextBlockId;
 
     throw error;

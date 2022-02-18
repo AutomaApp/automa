@@ -377,6 +377,7 @@
         "contentType": "Content type",
         "method": "Request method",
         "url": "Request URL",
+        "fallback": "Execute when failed or error making an HTTP request",
         "buttons": {
           "header": "Add header"
         },

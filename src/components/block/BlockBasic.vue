@@ -3,34 +3,36 @@
     :id="componentId"
     :hide-edit="block.details.disableEdit"
     :hide-delete="block.details.disableDelete"
-    content-class="flex items-center"
     class="block-basic"
     @edit="editBlock"
     @delete="editor.removeNodeId(`node-${block.id}`)"
   >
-    <span
-      :class="block.category.color"
-      class="inline-block p-2 mr-2 rounded-lg dark:text-black"
-    >
-      <v-remixicon :name="block.details.icon || 'riGlobalLine'" />
-    </span>
-    <div style="max-width: 200px">
-      <p
-        v-if="block.details.id"
-        class="font-semibold leading-none whitespace-nowrap"
+    <div class="flex items-center">
+      <span
+        :class="block.category.color"
+        class="inline-block p-2 mr-2 rounded-lg dark:text-black"
       >
-        {{ t(`workflow.blocks.${block.details.id}.name`) }}
-      </p>
-      <p class="text-gray-600 dark:text-gray-200 text-overflow leading-tight">
-        {{ block.data.description }}
-      </p>
-      <input
-        type="text"
-        class="hidden trigger"
-        disabled="true"
-        @change="handleDataChange"
-      />
+        <v-remixicon :name="block.details.icon || 'riGlobalLine'" />
+      </span>
+      <div style="max-width: 200px">
+        <p
+          v-if="block.details.id"
+          class="font-semibold leading-none whitespace-nowrap"
+        >
+          {{ t(`workflow.blocks.${block.details.id}.name`) }}
+        </p>
+        <p class="text-gray-600 dark:text-gray-200 text-overflow leading-tight">
+          {{ block.data.description }}
+        </p>
+        <input
+          type="text"
+          class="hidden trigger"
+          disabled="true"
+          @change="handleDataChange"
+        />
+      </div>
     </div>
+    <slot></slot>
     <template #prepend>
       <div
         v-if="block.details.id !== 'trigger'"
