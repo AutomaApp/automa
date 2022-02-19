@@ -227,6 +227,12 @@
           "title": "Value of the extra row"
         }
       },
+      "add-row": {
+        "name": "Add Row",
+        "description": "Add row to data column",
+        "placeholder": "Value",
+        "title": "Value of the row"
+      },
       "export-data": {
         "name": "Export data",
         "description": "Export workflow data",

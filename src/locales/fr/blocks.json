@@ -144,6 +144,12 @@
           "title": "Valeur de la ligne supplémentaire"
         }
       },
+      "add-row": {
+        "name": "Ajouter une ligne",
+        "description": "Ajouter une ligne à la colonne de données",
+        "placeholder": "Valeur",
+        "title": "Valeur de la ligne"
+      },
       "export-data": {
         "name": "Exporter les données",
         "description": "Exporte les colonnes de données du workflow"

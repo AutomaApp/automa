@@ -704,6 +704,23 @@ export const tasks = {
       filePaths: [],
     },
   },
+  'add-row': {
+    name: 'Add row',
+    description: 'Add row to data column',
+    icon: 'riTable2',
+    component: 'BlockBasic',
+    editComponent: 'EditAddRow',
+    category: 'general',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    refDataKeys: ['rowValue'],
+    data: {
+      rowValue: '',
+      rowDataColumn: '',
+    },
+  },
 };
 
 export const categories = {
