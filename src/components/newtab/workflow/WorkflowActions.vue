@@ -17,7 +17,12 @@
           <p>
             {{ t('workflow.host.set') }}
           </p>
-          <a :title="t('common.docs')" class="ml-1">
+          <a
+            :title="t('common.docs')"
+            href="https://docs.automa.site/guide/host-workflow.html"
+            target="_blank"
+            class="ml-1"
+          >
             <v-remixicon name="riInformationLine" size="20" />
           </a>
           <div class="flex-grow"></div>

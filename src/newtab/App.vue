@@ -115,7 +115,7 @@ async function fetchUserData() {
         'lastSync',
       ]);
 
-      if (username !== user.username) {
+      if (username !== user?.username) {
         await Workflow.update({
           where: ({ __id }) => __id !== null,
           data: { __id: null },

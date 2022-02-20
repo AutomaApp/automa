@@ -180,7 +180,7 @@ function recordWorkflow() {
         },
       });
       await browser.browserAction.setBadgeBackgroundColor({ color: '#ef4444' });
-      await browser.browserAction.setBadgeText({ text: ' ' });
+      await browser.browserAction.setBadgeText({ text: 'rec' });
 
       const tabs = (await browser.tabs.query({})).filter(({ url }) =>
         url.startsWith('http')

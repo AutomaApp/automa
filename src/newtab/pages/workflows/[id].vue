@@ -194,6 +194,15 @@
   >
     <template v-if="workflowModal.title" #header>
       {{ workflowModal.title }}
+      <a
+        v-if="workflowModal.docs"
+        :title="t('common.docs')"
+        :href="workflowModal.docs"
+        target="_blank"
+        class="inline-block align-middle"
+      >
+        <v-remixicon name="riInformationLine" size="20" />
+      </a>
     </template>
     <component
       :is="workflowModal.component"
@@ -332,6 +341,7 @@ const workflowModals = {
     icon: 'riKey2Line',
     component: WorkflowDataTable,
     title: t('workflow.table.title'),
+    docs: 'https://docs.automa.site/api-reference/table.html',
   },
   'workflow-share': {
     icon: 'riShareLine',
@@ -359,6 +369,7 @@ const workflowModals = {
     icon: 'riDatabase2Line',
     component: WorkflowGlobalData,
     title: t('common.globalData'),
+    docs: 'https://docs.automa.site/api-reference/global-data.html',
   },
   settings: {
     icon: 'riSettings3Line',

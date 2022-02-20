@@ -14,6 +14,8 @@
   "auth": {
     "title": "Auth",
     "signIn": "Sign in",
+    "username": "You need to set your username first",
+    "clickHere": "Click here",
     "text": "You need to be signed in before you can do that"
   },
   "settings": {

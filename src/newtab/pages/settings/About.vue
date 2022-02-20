@@ -20,7 +20,6 @@
         class="inline-block p-2 rounded-lg transition hoverable"
       >
         <v-remixicon :name="link.icon" />
-        <p class="ml-1 hidden">{{ link.name }}</p>
       </a>
     </div>
     <div class="border-b dark:border-gray-700 my-8"></div>
@@ -62,6 +61,16 @@ const links = [
     name: 'GitHub',
     icon: 'riGithubFill',
     url: 'https://github.com/kholid060/automa',
+  },
+  {
+    name: 'Twitter',
+    icon: 'riTwitterLine',
+    url: 'https://twitter.com/AutomaApp',
+  },
+  {
+    name: 'Discord',
+    icon: 'riDiscordLine',
+    url: 'https://discord.gg/C6khwwTE84',
   },
   { name: 'Website', icon: 'riGlobalLine', url: 'https://www.automa.site' },
   {

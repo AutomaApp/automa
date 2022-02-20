@@ -1,152 +1,174 @@
 <template>
   <ui-card class="w-full max-w-2xl share-workflow overflow-auto scroll">
-    <div v-if="!isUpdate" class="flex items-center mb-4">
-      <p>{{ t('workflow.share.title') }}</p>
-      <div class="flex-grow"></div>
-      <ui-button class="mr-2" @click="$emit('close')">
-        {{ t('common.cancel') }}
-      </ui-button>
-      <ui-button
-        :loading="state.isPublishing"
-        variant="accent"
-        @click="publishWorkflow"
-      >
-        {{ t('workflow.share.publish') }}
-      </ui-button>
-    </div>
-    <slot name="prepend"></slot>
-    <div class="flex mb-4">
-      <input
-        v-model="state.workflow.name"
-        :placeholder="t('workflow.name')"
-        type="text"
-        name="workflow name"
-        class="font-semibold leading-none text-2xl focus:ring-0 block w-full bg-transparent mr-4 flex-1"
-      />
-      <ui-select v-model="state.workflow.category">
-        <option value="">{{ t('common.category') }} (none)</option>
-        <option
-          v-for="(category, id) in workflowCategories"
-          :key="id"
-          :value="id"
+    <template v-if="!store.state.user?.username">
+      <div class="flex items-center mb-12">
+        <p>{{ t('workflow.share.title') }}</p>
+        <div class="flex-grow"></div>
+        <button @click="$emit('close')">
+          <v-remixicon name="riCloseLine" />
+        </button>
+      </div>
+      <p class="text-center">
+        {{ t('auth.username') }}.
+        <a
+          class="underline"
+          href="https://automa.site/profile?username=true"
+          target="_blank"
         >
-          {{ category }}
-        </option>
-      </ui-select>
-    </div>
-    <div class="relative mb-2">
-      <ui-textarea
-        v-model="state.workflow.description"
-        :max="300"
-        placeholder="Short description"
-        class="w-full h-32 scroll resize-none"
-      />
-      <p
-        class="text-sm text-gray-600 dark:text-gray-200 absolute bottom-2 right-2"
-      >
-        {{ state.workflow.description.length }}/300
+          {{ t('auth.clickHere') }}
+        </a>
       </p>
-    </div>
-    <shared-wysiwyg
-      v-model="state.workflow.content"
-      :placeholder="t('common.description')"
-      :limit="5000"
-      class="prose prose-zinc dark:prose-invert max-w-none content-editor p-4 bg-box-transparent rounded-lg relative"
-      @count="state.contentLength = $event"
-    >
-      <template #prepend="{ editor }">
-        <div
-          class="p-2 rounded-lg backdrop-blur flex items-center sticky top-0 z-50 bg-box-transparent space-x-1 mb-2"
+    </template>
+    <template v-else>
+      <div v-if="!isUpdate" class="flex items-center mb-4">
+        <p>{{ t('workflow.share.title') }}</p>
+        <div class="flex-grow"></div>
+        <ui-button class="mr-2" @click="$emit('close')">
+          {{ t('common.cancel') }}
+        </ui-button>
+        <ui-button
+          :loading="state.isPublishing"
+          variant="accent"
+          @click="publishWorkflow"
         >
-          <button
-            :class="{
-              'bg-box-transparent text-primary': editor.isActive('heading', {
-                level: 1,
-              }),
-            }"
-            title="Heading 1"
-            class="editor-menu-btn hoverable"
-            @click="editor.commands.toggleHeading({ level: 1 })"
+          {{ t('workflow.share.publish') }}
+        </ui-button>
+      </div>
+      <slot name="prepend"></slot>
+      <div class="flex mb-4">
+        <input
+          v-model="state.workflow.name"
+          :placeholder="t('workflow.name')"
+          type="text"
+          name="workflow name"
+          class="font-semibold leading-none text-2xl focus:ring-0 block w-full bg-transparent mr-4 flex-1"
+        />
+        <ui-select v-model="state.workflow.category">
+          <option value="">{{ t('common.category') }} (none)</option>
+          <option
+            v-for="(category, id) in workflowCategories"
+            :key="id"
+            :value="id"
           >
-            <v-remixicon name="riH1" />
-          </button>
-          <button
-            :class="{
-              'bg-box-transparent text-primary': editor.isActive('heading', {
-                level: 2,
-              }),
-            }"
-            title="Heading 2"
-            class="editor-menu-btn hoverable"
-            @click="editor.commands.toggleHeading({ level: 2 })"
-          >
-            <v-remixicon name="riH2" />
-          </button>
-          <span
-            class="w-px h-5 bg-gray-300 dark:bg-gray-600"
-            style="margin: 0 12px"
-          ></span>
-          <button
-            v-for="item in menuItems"
-            :key="item.id"
-            :title="item.name"
-            :class="{
-              'bg-box-transparent text-primary': editor.isActive(item.id),
-            }"
-            class="editor-menu-btn hoverable"
-            @click="editor.chain().focus()[item.action]().run()"
-          >
-            <v-remixicon :name="item.icon" />
-          </button>
-          <span
-            class="w-px h-5 bg-gray-300 dark:bg-gray-600"
-            style="margin: 0 12px"
-          ></span>
-          <button
-            :class="{
-              'bg-box-transparent text-primary': editor.isActive('blockquote'),
-            }"
-            title="Blockquote"
-            class="editor-menu-btn hoverable"
-            @click="editor.commands.toggleBlockquote()"
-          >
-            <v-remixicon name="riDoubleQuotesL" />
-          </button>
-          <button
-            title="Insert image"
-            class="editor-menu-btn hoverable"
-            @click="insertImage(editor)"
-          >
-            <v-remixicon name="riImageLine" />
-          </button>
-          <button
-            :class="{
-              'bg-box-transparent text-primary': editor.isActive('link'),
-            }"
-            title="Link"
-            class="editor-menu-btn hoverable"
-            @click="setLink(editor)"
-          >
-            <v-remixicon name="riLinkM" />
-          </button>
-          <button
-            v-show="editor.isActive('link')"
-            title="Remove link"
-            class="editor-menu-btn hoverable"
-            @click="editor.commands.unsetLink()"
-          >
-            <v-remixicon name="riLinkUnlinkM" />
-          </button>
-        </div>
-      </template>
-      <template #append>
+            {{ category }}
+          </option>
+        </ui-select>
+      </div>
+      <div class="relative mb-2">
+        <ui-textarea
+          v-model="state.workflow.description"
+          :max="300"
+          placeholder="Short description"
+          class="w-full h-32 scroll resize-none"
+        />
         <p
           class="text-sm text-gray-600 dark:text-gray-200 absolute bottom-2 right-2"
         >
-          {{ state.contentLength }}/5000
+          {{ state.workflow.description.length }}/300
         </p>
-      </template>
-    </shared-wysiwyg>
+      </div>
+      <shared-wysiwyg
+        v-model="state.workflow.content"
+        :placeholder="t('common.description')"
+        :limit="5000"
+        class="prose prose-zinc dark:prose-invert max-w-none content-editor p-4 bg-box-transparent rounded-lg relative"
+        @count="state.contentLength = $event"
+      >
+        <template #prepend="{ editor }">
+          <div
+            class="p-2 rounded-lg backdrop-blur flex items-center sticky top-0 z-50 bg-box-transparent space-x-1 mb-2"
+          >
+            <button
+              :class="{
+                'bg-box-transparent text-primary': editor.isActive('heading', {
+                  level: 1,
+                }),
+              }"
+              title="Heading 1"
+              class="editor-menu-btn hoverable"
+              @click="editor.commands.toggleHeading({ level: 1 })"
+            >
+              <v-remixicon name="riH1" />
+            </button>
+            <button
+              :class="{
+                'bg-box-transparent text-primary': editor.isActive('heading', {
+                  level: 2,
+                }),
+              }"
+              title="Heading 2"
+              class="editor-menu-btn hoverable"
+              @click="editor.commands.toggleHeading({ level: 2 })"
+            >
+              <v-remixicon name="riH2" />
+            </button>
+            <span
+              class="w-px h-5 bg-gray-300 dark:bg-gray-600"
+              style="margin: 0 12px"
+            ></span>
+            <button
+              v-for="item in menuItems"
+              :key="item.id"
+              :title="item.name"
+              :class="{
+                'bg-box-transparent text-primary': editor.isActive(item.id),
+              }"
+              class="editor-menu-btn hoverable"
+              @click="editor.chain().focus()[item.action]().run()"
+            >
+              <v-remixicon :name="item.icon" />
+            </button>
+            <span
+              class="w-px h-5 bg-gray-300 dark:bg-gray-600"
+              style="margin: 0 12px"
+            ></span>
+            <button
+              :class="{
+                'bg-box-transparent text-primary':
+                  editor.isActive('blockquote'),
+              }"
+              title="Blockquote"
+              class="editor-menu-btn hoverable"
+              @click="editor.commands.toggleBlockquote()"
+            >
+              <v-remixicon name="riDoubleQuotesL" />
+            </button>
+            <button
+              title="Insert image"
+              class="editor-menu-btn hoverable"
+              @click="insertImage(editor)"
+            >
+              <v-remixicon name="riImageLine" />
+            </button>
+            <button
+              :class="{
+                'bg-box-transparent text-primary': editor.isActive('link'),
+              }"
+              title="Link"
+              class="editor-menu-btn hoverable"
+              @click="setLink(editor)"
+            >
+              <v-remixicon name="riLinkM" />
+            </button>
+            <button
+              v-show="editor.isActive('link')"
+              title="Remove link"
+              class="editor-menu-btn hoverable"
+              @click="editor.commands.unsetLink()"
+            >
+              <v-remixicon name="riLinkUnlinkM" />
+            </button>
+          </div>
+        </template>
+        <template #append>
+          <p
+            class="text-sm text-gray-600 dark:text-gray-200 absolute bottom-2 right-2"
+          >
+            {{ state.contentLength }}/5000
+          </p>
+        </template>
+      </shared-wysiwyg>
+    </template>
   </ui-card>
 </template>
 <script setup>

@@ -100,7 +100,7 @@ export function registerSpecificDate(workflowId, data) {
 
   if (data.date) {
     const [hour, minute] = data.time.split(':');
-    date = dayjs(data.data).hour(hour).minute(minute).valueOf();
+    date = dayjs(data.data).hour(hour).minute(minute).second(0).valueOf();
   }
 
   return browser.alarms.create(workflowId, {

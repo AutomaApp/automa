@@ -180,7 +180,7 @@ function syncWorkflow() {
   state.loadingSync = true;
   const hostId = {
     hostId: workflow.value.hostId,
-    updatedAt: workflow.value.updatedAt,
+    updatedAt: null,
   };
 
   store
@@ -189,6 +189,8 @@ function syncWorkflow() {
       if (!workflow.value) {
         router.replace('/workflows');
       }
+      /* eslint-disable-next-line */
+      retrieveTriggerText();
       state.loadingSync = false;
     })
     .catch((error) => {
