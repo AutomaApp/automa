@@ -1,13 +1,5 @@
 import { sendMessage } from '@/utils/message';
 
-/*
-setVariable(name, value);
-
-init => set variables to sessionStorage
-invoked => update the variable in the sessionStorage
-nextBlock => include the variables in payload
-*/
-
 function getAutomaScript(blockId) {
   return `
 function automaSetVariable(name, value) {
