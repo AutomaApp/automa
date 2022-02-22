@@ -1,25 +1,39 @@
 <template>
-  <div class="mt-4 flex items-center">
-    <ui-input
-      :model-value="selector"
-      placeholder="Element selector"
-      class="leading-normal flex-1 h-full element-selector"
-      @change="updateSelector"
+  <div class="mt-4">
+    <ui-select
+      :model-value="selectorType"
+      class="w-full"
+      @change="$emit('selector', $event)"
     >
-      <template #prepend>
-        <button class="absolute ml-2 left-0" @click="copySelector">
-          <v-remixicon name="riFileCopyLine" />
+      <option value="css">CSS Selector</option>
+      <option value="xpath">XPath</option>
+    </ui-select>
+    <div class="mt-2 flex items-center">
+      <ui-input
+        :model-value="selector"
+        placeholder="Element selector"
+        class="leading-normal flex-1 h-full element-selector"
+        @change="updateSelector"
+      >
+        <template #prepend>
+          <button class="absolute ml-2 left-0" @click="copySelector">
+            <v-remixicon name="riFileCopyLine" />
+          </button>
+        </template>
+      </ui-input>
+      <template v-if="selectedCount === 1">
+        <button
+          class="mr-2 ml-4"
+          title="Parent element"
+          @click="$emit('parent')"
+        >
+          <v-remixicon rotate="90" name="riArrowLeftLine" />
+        </button>
+        <button title="Child element" @click="$emit('child')">
+          <v-remixicon rotate="-90" name="riArrowLeftLine" />
         </button>
       </template>
-    </ui-input>
-    <template v-if="selectedCount === 1">
-      <button class="mr-2 ml-4" title="Parent element" @click="$emit('parent')">
-        <v-remixicon rotate="90" name="riArrowLeftLine" />
-      </button>
-      <button title="Child element" @click="$emit('child')">
-        <v-remixicon rotate="-90" name="riArrowLeftLine" />
-      </button>
-    </template>
+    </div>
   </div>
 </template>
 <script setup>
@@ -36,8 +50,12 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  selectorType: {
+    type: String,
+    default: '',
+  },
 });
-const emit = defineEmits(['change', 'parent', 'child']);
+const emit = defineEmits(['change', 'parent', 'child', 'selector']);
 
 const rootElement = inject('rootElement');
 

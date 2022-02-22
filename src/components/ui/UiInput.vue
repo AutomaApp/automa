@@ -1,9 +1,11 @@
 <template>
   <div class="inline-block input-ui">
-    <label v-if="label || $slots.label" :for="componentId">
-      <span class="text-sm dark:text-gray-200 text-gray-600 mb-1 ml-1">
-        <slot name="label">{{ label }}</slot>
-      </span>
+    <label
+      v-if="label || $slots.label"
+      :for="componentId"
+      class="text-sm dark:text-gray-200 text-gray-600 ml-1 inline-block leading-none"
+    >
+      <slot name="label">{{ label }}</slot>
     </label>
     <div class="flex items-center relative w-full">
       <slot name="prepend">

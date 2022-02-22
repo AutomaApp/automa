@@ -62,13 +62,14 @@ async function executeWorkflow({ outputs, data }) {
         },
         onDestroyed: (engine) => {
           if (data.executeId) {
-            const { dataColumns, globalData, googleSheets } =
+            const { dataColumns, globalData, googleSheets, table } =
               engine.referenceData;
 
             this.referenceData.workflow[data.executeId] = {
               globalData,
               dataColumns,
               googleSheets,
+              table: table || dataColumns,
             };
           }
         },

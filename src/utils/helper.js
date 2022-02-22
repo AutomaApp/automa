@@ -1,3 +1,27 @@
+export function findTriggerBlock(drawflow = {}) {
+  if (!drawflow) return null;
+
+  const blocks = Object.values(drawflow.drawflow?.Home?.data);
+
+  if (!blocks) return null;
+
+  return blocks.find(({ name }) => name === 'trigger');
+}
+
+export function throttle(callback, limit) {
+  let waiting = false;
+
+  return (...args) => {
+    if (!waiting) {
+      callback.apply(this, args);
+      waiting = true;
+      setTimeout(() => {
+        waiting = false;
+      }, limit);
+    }
+  };
+}
+
 export function convertArrObjTo2DArr(arr) {
   const keyIndex = new Map();
   const values = [[]];

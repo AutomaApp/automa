@@ -3,7 +3,7 @@
     <div class="flex items-center mb-2">
       <div
         :class="block.category.color"
-        class="inline-block text-sm mr-4 p-2 rounded-lg"
+        class="inline-block text-sm mr-4 p-2 rounded-lg dark:text-black"
       >
         <v-remixicon name="riTimerLine" size="20" class="inline-block mr-1" />
         <span>{{ t('workflow.blocks.delay.name') }}</span>

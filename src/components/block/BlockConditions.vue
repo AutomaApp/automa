@@ -3,7 +3,7 @@
     <div class="flex items-center">
       <div
         :class="block.category.color"
-        class="inline-block text-sm mr-4 p-2 rounded-lg"
+        class="inline-block text-sm mr-4 p-2 rounded-lg dark:text-black"
       >
         <v-remixicon name="riAB" size="20" class="inline-block mr-1" />
         <span>{{ t('workflow.blocks.conditions.name') }}</span>
@@ -45,7 +45,7 @@
       </div>
       <p
         v-if="block.data.conditions && block.data.conditions.length !== 0"
-        class="text-right text-gray-600"
+        class="text-right text-gray-600 dark:text-gray-200"
       >
         <span :title="t('workflow.blocks.conditions.fallbackTitle')">
           &#9432;

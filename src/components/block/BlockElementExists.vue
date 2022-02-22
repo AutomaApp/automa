@@ -7,7 +7,7 @@
   >
     <div
       :class="block.category.color"
-      class="inline-block text-sm mb-2 p-2 rounded-lg"
+      class="inline-block text-sm mb-2 p-2 rounded-lg dark:text-black"
     >
       <v-remixicon name="riFocus3Line" size="20" class="inline-block mr-1" />
       <span>{{ t('workflow.blocks.element-exists.name') }}</span>
@@ -19,7 +19,7 @@
     >
       {{ block.data.selector || t('workflow.blocks.element-exists.selector') }}
     </p>
-    <p class="text-right text-gray-600">
+    <p class="text-right text-gray-600 dark:text-gray-200">
       <span :title="t('workflow.blocks.element-exists.fallbackTitle')">
         &#9432;
       </span>

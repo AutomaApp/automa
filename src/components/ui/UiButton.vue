@@ -22,7 +22,11 @@
     </span>
     <div v-if="loading" class="button-loading">
       <ui-spinner
-        :color="variant === 'default' ? 'text-primary' : 'text-white'"
+        :color="
+          variant === 'default'
+            ? 'text-primary'
+            : 'text-white dark:text-gray-900'
+        "
       ></ui-spinner>
     </div>
   </component>
@@ -54,11 +58,11 @@ export default {
     const variants = {
       default: 'bg-input',
       accent:
-        'bg-accent hover:bg-gray-700 dark:bg-gray-200 dark:text-gray-900 text-white',
+        'bg-accent hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-gray-200 dark:text-black text-white',
       primary:
         'bg-primary text-white dark:bg-secondary dark:hover:bg-primary hover:bg-secondary',
       danger:
-        'bg-red-500 text-white dark:bg-red-600 dark:hover:bg-red-500 hover:bg-red-400',
+        'bg-red-400 text-white dark:bg-red-500 dark:hover:bg-red-500 hover:bg-red-400',
     };
 
     return {

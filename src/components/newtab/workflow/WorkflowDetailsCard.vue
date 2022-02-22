@@ -1,6 +1,6 @@
 <template>
   <div class="px-4 flex items-start mb-2 mt-1">
-    <ui-popover class="mr-2 h-8">
+    <ui-popover :disabled="data.active === 'shared'" class="mr-2 h-8">
       <template #trigger>
         <span
           :title="t('workflow.sidebar.workflowIcon')"
@@ -47,20 +47,33 @@
   <ui-input
     id="search-input"
     v-model="query"
+    :disabled="data.active === 'shared'"
     :placeholder="`${t('common.search')}... (${
       shortcut['action:search'].readable
     })`"
     prepend-icon="riSearch2Line"
     class="px-4 mt-4 mb-2"
   />
-  <div class="scroll bg-scroll overflow-auto px-4 flex-1 overflow-auto">
+  <div
+    :class="[data.active === 'shared' ? 'overflow-hidden' : 'overflow-auto']"
+    class="scroll bg-scroll px-4 flex-1 relative"
+  >
+    <div
+      v-show="data.active === 'shared'"
+      class="absolute h-full w-full bg-white dark:bg-black bg-opacity-10 dark:bg-opacity-10 backdrop-blur rounded-lg z-10 flex items-center justify-center"
+      style="top: 0; left: 50%; transform: translateX(-50%); width: 95%"
+    >
+      <p>{{ t('workflow.cantEdit') }}</p>
+    </div>
     <template v-for="(items, catId) in blocks" :key="catId">
       <div class="flex items-center top-0 space-x-2 mb-2">
         <span
           :class="categories[catId].color"
           class="h-3 w-3 rounded-full"
         ></span>
-        <p class="capitalize text-gray-600">{{ categories[catId].name }}</p>
+        <p class="capitalize text-gray-600 dark:text-gray-200">
+          {{ categories[catId].name }}
+        </p>
       </div>
       <div class="grid grid-cols-2 gap-2 mb-4">
         <div
@@ -84,7 +97,7 @@
             :title="t('common.docs')"
             target="_blank"
             rel="noopener"
-            class="absolute top-px right-2 top-2 text-gray-600 invisible group-hover:visible"
+            class="absolute top-px right-2 top-2 text-gray-600 dark:text-gray-300 invisible group-hover:visible"
           >
             <v-remixicon name="riInformationLine" size="18" />
           </a>
@@ -105,6 +118,10 @@ import { tasks, categories } from '@/utils/shared';
 
 defineProps({
   workflow: {
+    type: Object,
+    default: () => ({}),
+  },
+  data: {
     type: Object,
     default: () => ({}),
   },

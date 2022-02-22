@@ -1,4 +1,4 @@
-import { handleElement } from '../helper';
+import handleSelector from '../handle-selector';
 
 function attributeValue(block) {
   return new Promise((resolve, reject) => {
@@ -10,12 +10,15 @@ function attributeValue(block) {
       return ['checkbox', 'radio'].includes(element.getAttribute('type'));
     };
 
-    handleElement(block, {
+    handleSelector(block, {
       onSelected(element) {
-        const value =
-          attributeName === 'checked' && isCheckboxOrRadio(element)
-            ? element.checked
-            : element.getAttribute(attributeName);
+        let value = element.getAttribute(attributeName);
+
+        if (attributeName === 'checked' && isCheckboxOrRadio(element)) {
+          value = element.checked;
+        } else if (attributeName === 'href' && element.tagName === 'A') {
+          value = element.href;
+        }
 
         if (multiple) result.push(value);
         else result = value;

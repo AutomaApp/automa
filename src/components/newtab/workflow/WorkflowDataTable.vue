@@ -3,7 +3,7 @@
     <ui-input
       v-model.lowercase="state.query"
       autofocus
-      :placeholder="t('workflow.dataColumns.placeholder')"
+      :placeholder="t('workflow.table.placeholder')"
       class="mr-2 flex-1"
       @keyup.enter="addColumn"
       @keyup.esc="$emit('close')"
@@ -25,12 +25,12 @@
         :model-value="columns[index].name"
         disabled
         class="flex-1"
-        :placeholder="t('workflow.dataColumns.column.name')"
+        :placeholder="t('workflow.table.column.name')"
       />
       <ui-select
         v-model="columns[index].type"
         class="flex-1"
-        :placeholder="t('workflow.dataColumns.column.type')"
+        :placeholder="t('workflow.table.column.type')"
       >
         <option v-for="type in dataTypes" :key="type.id" :value="type.id">
           {{ type.name }}
@@ -84,13 +84,13 @@ function addColumn() {
 watch(
   () => state.columns,
   debounce((newValue) => {
-    emit('update', { dataColumns: newValue });
+    emit('update', { table: newValue });
   }, 250),
   { deep: true }
 );
 
 onMounted(() => {
-  const tempColumns = props.workflow.dataColumns;
+  const tempColumns = props.workflow.table;
 
   state.columns = Array.isArray(tempColumns)
     ? tempColumns

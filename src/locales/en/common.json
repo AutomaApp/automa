@@ -7,6 +7,7 @@
     "block": "Block | Blocks",
     "docs": "Documentation",
     "search": "Search",
+    "example": "Example | Examples",
     "import": "Import",
     "export": "Export",
     "rename": "Rename",
@@ -33,7 +34,8 @@
     "fallback": "Fallback",
     "update": "Update",
     "duplicate": "Duplicate",
-    "password": "Password"
+    "password": "Password",
+    "category": "Category"
   },
   "message": {
     "noBlock": "No block",
@@ -42,8 +44,10 @@
     "useDynamicData": "Learn how to add dynamic data",
     "delete": "Are you sure want to delete \"{name}\"?",
     "empty": "Oppss... It's looks like you don't have any items",
-    "notSaved": "Do you really want to leave? you have unsaved changes!",
     "maxSizeExceeded": "The file size is the exceeded maximum allowed",
+    "notSaved": "Do you really want to leave? you have unsaved changes!",
+    "somethingWrong": "Something went wrong",
+    "limitExceeded": "You have exceeded the limit"
   },
   "sort": {
     "sortBy": "Sort by",

@@ -4,7 +4,7 @@
       <div class="flex-1 text-overflow mr-4">
         <p class="w-full mr-2 text-overflow">{{ data.state.name }}</p>
         <p
-          class="w-full mr-2 text-gray-600 leading-tight text-overflow"
+          class="w-full mr-2 text-gray-600 dark:text-gray-200 leading-tight text-overflow"
           :title="`Started at: ${formatDate(
             data.state.startedTimestamp,
             'DD MMM, hh:mm A'

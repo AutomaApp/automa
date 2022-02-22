@@ -3,7 +3,7 @@
     <div class="flex items-center mb-2">
       <div
         :class="block.category.color"
-        class="inline-block text-sm mr-4 p-2 rounded-lg"
+        class="inline-block text-sm mr-4 p-2 rounded-lg dark:text-black"
       >
         <v-remixicon name="riRepeat2Line" size="20" class="inline-block mr-1" />
         <span>{{ t('workflow.blocks.repeat-task.name') }}</span>
@@ -26,11 +26,11 @@
         required
         @input="handleInput"
       />
-      <span class="text-gray-600">{{
-        t('workflow.blocks.repeat-task.times')
-      }}</span>
+      <span class="text-gray-600 dark:text-gray-200">
+        {{ t('workflow.blocks.repeat-task.times') }}
+      </span>
     </label>
-    <p class="text-right text-gray-600">
+    <p class="text-right text-gray-600 dark:text-gray-200">
       {{ t('workflow.blocks.repeat-task.repeatFrom') }}
     </p>
   </div>

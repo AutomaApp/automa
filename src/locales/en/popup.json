@@ -1,5 +1,14 @@
 {
+  "recording": {
+    "stop": "Stop recording",
+    "title": "Recording"
+  },
   "home": {
+    "record": {
+      "title": "Record workflow",
+      "button": "Record",
+      "name": "Workflow name"
+    },
     "elementSelector": {
       "name": "Element selector",
       "noAccess": "Don't have access to this site"

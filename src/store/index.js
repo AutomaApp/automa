@@ -1,21 +1,37 @@
 import { createStore } from 'vuex';
+import objectPath from 'object-path';
 import browser from 'webextension-polyfill';
 import vuexORM from '@/lib/vuex-orm';
 import * as models from '@/models';
 import { firstWorkflows } from '@/utils/shared';
+import { fetchApi } from '@/utils/api';
+import { findTriggerBlock } from '@/utils/helper';
+import { registerWorkflowTrigger } from '@/utils/workflow-trigger';
 
 const store = createStore({
   plugins: [vuexORM(models)],
   state: () => ({
-    contributors: null,
+    user: null,
     workflowState: [],
+    backupIds: [],
+    contributors: null,
+    hostWorkflows: {},
+    sharedWorkflows: {},
+    workflowHosts: {},
     settings: {
       locale: 'en',
     },
+    userDataRetrieved: false,
   }),
   mutations: {
     updateState(state, { key, value }) {
       state[key] = value;
+    },
+    updateStateNested(state, { path, value }) {
+      objectPath.set(state, path, value);
+    },
+    deleteStateNested(state, path) {
+      objectPath.del(state, path);
     },
   },
   getters: {
@@ -50,14 +66,20 @@ const store = createStore({
           });
         });
 
-        const { isFirstTime, settings } = await browser.storage.local.get([
-          'isFirstTime',
-          'settings',
-        ]);
+        const { isFirstTime, settings, workflowHosts } =
+          await browser.storage.local.get([
+            'isFirstTime',
+            'settings',
+            'workflowHosts',
+          ]);
 
         commit('updateState', {
           key: 'settings',
           value: { ...state.settings, ...(settings || {}) },
+        });
+        commit('updateState', {
+          key: 'workflowHosts',
+          value: workflowHosts || {},
         });
 
         if (isFirstTime) {
@@ -108,6 +130,45 @@ const store = createStore({
             resolve();
           });
       });
+    },
+    async fetchWorkflowHosts({ commit, state }, hosts) {
+      if (!hosts || hosts.length === 0) return null;
+
+      const response = await fetchApi('/host', {
+        method: 'POST',
+        body: JSON.stringify({ hosts }),
+      });
+
+      if (!response.ok) throw new Error(response.statusText);
+
+      const result = await response.json();
+      const newValue = JSON.parse(JSON.stringify(state.workflowHosts));
+
+      result.forEach(({ hostId, status, data }) => {
+        if (status === 'deleted') {
+          delete newValue[hostId];
+          return;
+        }
+        if (status === 'updated') {
+          const triggerBlock = findTriggerBlock(data.drawflow);
+          registerWorkflowTrigger(hostId, triggerBlock);
+
+          data.drawflow = JSON.stringify(data.drawflow);
+        }
+
+        data.hostId = hostId;
+        newValue[hostId] = data;
+      });
+
+      commit('updateState', {
+        key: 'workflowHosts',
+        value: newValue,
+      });
+      await browser.storage.local.set({
+        workflowHosts: newValue,
+      });
+
+      return newValue;
     },
   },
 });

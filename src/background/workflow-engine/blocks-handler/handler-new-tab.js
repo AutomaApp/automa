@@ -26,17 +26,21 @@ async function newTab(block) {
       throw error;
     }
 
+    let tab = null;
+
     if (updatePrevTab && this.activeTab.id) {
-      await browser.tabs.update(this.activeTab.id, { url, active });
+      tab = await browser.tabs.update(this.activeTab.id, { url, active });
     } else {
-      const tab = await browser.tabs.create({
+      tab = await browser.tabs.create({
         url,
         active,
         windowId: this.windowId,
       });
+    }
 
+    this.activeTab.url = url;
+    if (tab) {
       this.activeTab.id = tab.id;
-      this.activeTab.url = url;
       this.windowId = tab.windowId;
     }
 
@@ -64,8 +68,6 @@ async function newTab(block) {
       nextBlockId,
     };
   } catch (error) {
-    console.error(error);
-    console.dir(error);
     error.nextBlockId = nextBlockId;
 
     throw error;

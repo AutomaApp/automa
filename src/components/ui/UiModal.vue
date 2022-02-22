@@ -7,7 +7,7 @@
       <transition name="modal" mode="out-in">
         <div
           v-if="show"
-          class="bg-black p-5 overflow-y-auto bg-opacity-20 modal-ui__content-container z-50 flex justify-center items-end md:items-center"
+          class="bg-black p-5 overflow-y-auto bg-opacity-20 dark:bg-opacity-60 modal-ui__content-container z-50 flex justify-center items-end md:items-center"
           :style="{ 'backdrop-filter': blur && 'blur(2px)' }"
           @click.self="closeModal"
         >
@@ -24,7 +24,7 @@
                 </span>
                 <v-remixicon
                   v-show="!persist"
-                  class="text-gray-600 cursor-pointer"
+                  class="text-gray-600 dark:text-gray-300 cursor-pointer"
                   name="riCloseLine"
                   size="20"
                   @click="closeModal"

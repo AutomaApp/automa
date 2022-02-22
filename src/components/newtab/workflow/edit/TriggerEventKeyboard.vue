@@ -42,7 +42,7 @@ const defaultParams = shallowReactive({
   code: '',
   key: '',
   keyCode: 0,
-  repat: false,
+  repeat: false,
 });
 
 watch(

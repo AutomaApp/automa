@@ -1,8 +1,9 @@
 import { onUnmounted, onMounted } from 'vue';
+import defu from 'defu';
 import Mousetrap from 'mousetrap';
-import { isObject } from '@/utils/helper';
+import { isObject, parseJSON } from '@/utils/helper';
 
-export const mapShortcuts = {
+const defaultShortcut = {
   'page:dashboard': {
     id: 'page:dashboard',
     combo: 'option+1',
@@ -48,6 +49,9 @@ export const mapShortcuts = {
     combo: 'mod+[',
   },
 };
+const customShortcut = parseJSON(localStorage.getItem('shortcuts', {})) || {};
+
+export const mapShortcuts = defu(customShortcut, defaultShortcut);
 
 const os = navigator.appVersion.indexOf('Win') !== -1 ? 'win' : 'mac';
 export function getReadableShortcut(str) {
@@ -61,7 +65,7 @@ export function getReadableShortcut(str) {
       mac: '⌘',
     },
   };
-  const regex = new RegExp(Object.keys(list).join('|'), 'g');
+  const regex = new RegExp('option|mod', 'g');
   const replacedStr = str.replace(regex, (match) => {
     return list[match][os];
   });

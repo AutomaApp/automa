@@ -1,5 +1,64 @@
 <template>
-  <ui-card padding="p-1">
+  <ui-card v-if="!workflow.isProtected" padding="p-1 flex items-center">
+    <ui-popover>
+      <template #trigger>
+        <button
+          v-tooltip.group="t('workflow.host.title')"
+          class="hoverable p-2 rounded-lg"
+        >
+          <v-remixicon
+            :class="{ 'text-primary': data.isHost }"
+            name="riBaseStationLine"
+          />
+        </button>
+      </template>
+      <div :class="{ 'text-center': data.loadingHost }" class="w-64">
+        <div class="flex items-center text-gray-600 dark:text-gray-200">
+          <p>
+            {{ t('workflow.host.set') }}
+          </p>
+          <a
+            :title="t('common.docs')"
+            href="https://docs.automa.site/guide/host-workflow.html"
+            target="_blank"
+            class="ml-1"
+          >
+            <v-remixicon name="riInformationLine" size="20" />
+          </a>
+          <div class="flex-grow"></div>
+          <template v-if="$store.state.user">
+            <ui-spinner v-if="data.loadingHost" color="text-accent" />
+            <ui-switch
+              v-else
+              :model-value="data.isHost"
+              @change="$emit('host', $event)"
+            />
+          </template>
+          <ui-switch v-else v-close-popover @click="$emit('host', 'auth')" />
+        </div>
+        <transition-expand>
+          <ui-input
+            v-if="data.isHost"
+            v-tooltip:bottom="t('workflow.host.id')"
+            :model-value="host.hostId"
+            prepend-icon="riLinkM"
+            readonly
+            class="mt-4 block w-full"
+            @click="$event.target.select()"
+          />
+        </transition-expand>
+      </div>
+    </ui-popover>
+    <button
+      v-tooltip.group="t('workflow.share.title')"
+      :class="{ 'text-primary': data.hasShared }"
+      class="hoverable p-2 rounded-lg"
+      @click="$emit('share')"
+    >
+      <v-remixicon name="riShareLine" />
+    </button>
+  </ui-card>
+  <ui-card padding="p-1 ml-4">
     <button
       v-for="item in modalActions"
       :key="item.id"
@@ -10,21 +69,14 @@
       <v-remixicon :name="item.icon" />
     </button>
   </ui-card>
-  <ui-card padding="p-1 ml-4">
-    <button
-      v-tooltip.group="
-        t(`workflow.protect.${workflow.isProtected ? 'remove' : 'title'}`)
-      "
-      :class="{ 'text-green-600': workflow.isProtected }"
-      class="hoverable p-2 rounded-lg"
-      @click="$emit('protect')"
-    >
-      <v-remixicon name="riShieldKeyholeLine" />
-    </button>
+  <ui-card padding="p-1 ml-4 flex items-center">
     <button
       v-if="!workflow.isDisabled"
-      v-tooltip.group="t('common.execute')"
-      :title="shortcuts['editor:execute-workflow'].readable"
+      v-tooltip.group="
+        `${t('common.execute')} (${
+          shortcuts['editor:execute-workflow'].readable
+        })`
+      "
       class="hoverable p-2 rounded-lg"
       @click="$emit('execute')"
     >
@@ -102,6 +154,14 @@ defineProps({
     type: Object,
     default: () => ({}),
   },
+  host: {
+    type: Object,
+    default: () => ({}),
+  },
+  data: {
+    type: Object,
+    default: () => ({}),
+  },
 });
 const emit = defineEmits([
   'showModal',
@@ -109,12 +169,14 @@ const emit = defineEmits([
   'rename',
   'delete',
   'save',
-  'protect',
   'export',
   'update',
+  'share',
+  'host',
 ]);
 
 useGroupTooltip();
+
 const { t } = useI18n();
 const shortcuts = useShortcut(
   [
@@ -128,9 +190,9 @@ const shortcuts = useShortcut(
 
 const modalActions = [
   {
-    id: 'data-columns',
-    name: t('workflow.dataColumns.title'),
-    icon: 'riKey2Line',
+    id: 'table',
+    name: t('workflow.table.title'),
+    icon: 'riTable2',
   },
   {
     id: 'global-data',

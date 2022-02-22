@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-2 mt-4 space-y-2">
+  <div class="mb-2 mt-4">
     <ui-textarea
       :model-value="data.description"
       class="w-full"
@@ -8,7 +8,7 @@
     />
     <ui-select
       :model-value="data.windowState"
-      class="w-full"
+      class="w-full mt-4"
       :placeholder="t('workflow.blocks.new-window.windowState.placeholder')"
       @change="updateData({ windowState: $event })"
     >
@@ -19,7 +19,7 @@
     <ui-checkbox
       :model-value="data.incognito"
       :disabled="!allowInIncognito"
-      class="mb-4"
+      class="mt-1"
       @change="updateData({ incognito: $event })"
     >
       {{ t('workflow.blocks.new-window.incognito.text') }}
@@ -27,8 +27,11 @@
         &#128712;
       </span>
     </ui-checkbox>
-    <template v-if="data.windowState === 'normal'">
-      <div class="flex items-center space-x-2">
+    <div v-if="data.windowState === 'normal'" class="mt-2">
+      <div
+        :title="t('workflow.blocks.new-window.position')"
+        class="flex items-center space-x-2 mb-1"
+      >
         <ui-input
           :model-value="data.top"
           :label="t('workflow.blocks.new-window.top')"
@@ -40,7 +43,10 @@
           @change="updateData({ left: +$event })"
         />
       </div>
-      <div class="flex items-center space-x-2">
+      <div
+        :title="t('workflow.blocks.new-window.size')"
+        class="flex items-center space-x-2"
+      >
         <ui-input
           :model-value="data.height"
           :label="t('workflow.blocks.new-window.height')"
@@ -52,10 +58,10 @@
           @change="updateData({ width: +$event })"
         />
       </div>
-      <p class="mt-4 text-gray-600">
+      <p class="mt-2 text-gray-600 dark:text-gray-200">
         {{ t('workflow.blocks.new-window.note') }}
       </p>
-    </template>
+    </div>
   </div>
 </template>
 <script setup>

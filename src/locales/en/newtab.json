@@ -11,20 +11,34 @@
     "text1": "Automa has been updated to v{version},",
     "text2": "see what's new."
   },
+  "auth": {
+    "title": "Auth",
+    "signIn": "Sign in",
+    "username": "You need to set your username first",
+    "clickHere": "Click here",
+    "text": "You need to be signed in before you can do that"
+  },
   "settings": {
+    "theme": "Theme",
+    "shortcuts": {
+      "duplicate": "Shortcut already use by \"{name}\""
+    },
     "language": {
       "label": "Language",
       "helpTranslate": "Can't find your language? Help translate.",
       "reloadPage": "Reload the page to take effect"
     },
     "menu": {
+      "backup": "Backup Workflows",
       "general": "General",
+      "shortcuts": "Shortcuts",
       "about": "About"
     },
     "backupWorkflows": {
-      "title": "Backup Workflows",
+      "title": "Local Backup",
       "invalidPassword": "Invalid password",
       "workflowsAdded": "{count} workflows have been added",
+      "name": "Backup workflows",
       "backup": {
         "button": "Backup",
         "encrypt": "Encrypt with password"
@@ -33,6 +47,24 @@
         "title": "Restore workflows",
         "button": "Restore",
         "update": "Update if the workflow exists"
+      },
+      "cloud": {
+        "buttons": {
+          "local": "Local",
+          "cloud": "Cloud"
+        },
+        "delete": "Delete backup",
+        "title": "Cloud Backup",
+        "sync": "Sync",
+        "lastSync": "Last sync",
+        "lastBackup": "Last backup",
+        "select": "Select workflows",
+        "storedWorkflows": "Workflows that are stored in the cloud",
+        "selected": "Selected",
+        "selectText": "Select workflows that you want to backup",
+        "selectAll": "Select all",
+        "deselectAll": "Deselect all",
+        "needSelectWorkflow": "You need to select workflows that you want to backup"
       }
     }
   },
@@ -46,6 +78,47 @@
     "add": "Add workflow",
     "clickToEnable": "Click to enable",
     "toggleSidebar": "Toggle sidebar",
+    "cantEdit": "Can't edit shared workflow",
+    "host": {
+      "title": "Host workflow",
+      "set": "Set as host workflow",
+      "id": "Host Id",
+      "add": "Add hosted workflow",
+      "sync": {
+        "title": "Sync",
+        "description": "Sync with host workflow"
+      },
+      "messages": {
+        "hostExist": "You already add this host",
+        "notFound": "Can't find hosted workflow with \"{id}\" id"
+      },
+    },
+    "type": {
+      "local": "Local",
+      "shared": "Shared",
+      "host": "Host",
+    },
+    "unpublish": {
+      "title": "Unpublish workflow",
+      "button": "Unpublish",
+      "body": "Are you sure want to unpublish \"{name}\" workflow?"
+    },
+    "share": {
+      "url": "Share URL",
+      "publish": "Publish",
+      "sharedAs": "Shared as \"{name}\"",
+      "title": "Share workflow",
+      "download": "Add workflow to local",
+      "edit": "Edit description",
+      "fetchLocal": "Fetch local workflow",
+      "update": "Update",
+      "unpublish": "Unpublish"
+    },
+    "variables": {
+      "title": "Variable | Variables",
+      "name": "Variable name",
+      "assign": "Assign to variable"
+    },
     "protect": {
       "title": "Protect workflow",
       "remove": "Remove protection",
@@ -63,9 +136,10 @@
     "state": {
       "executeBy": "Executed by: \"{name}\""
     },
-    "dataColumns": {
-      "title": "Data columns",
+    "table": {
+      "title": "Table",
       "placeholder": "Search or add column",
+      "select": "Select column",
       "column": {
         "name": "Column name",
         "type": "Data type"
@@ -146,6 +220,8 @@
       "stop-timeout": "Workflow is stopped because of timeout",
       "no-file-access": "Automa doesn't have access to the file",
       "no-workflow": "Can't find workflow with \"{workflowId}\" ID",
+      "no-match-tab": "Can't find a tab with \"{pattern}\" patterns",
+      "no-clipboard-acces": "Don't have permission to access clipboard",
       "element-not-found": "Can't find an element with \"{selector}\" selector.",
       "not-iframe": "Element with \"{selector}\" selector is not an Iframe element",
       "iframe-not-found": "Can't find an Iframe element with \"{selector}\" selector.",

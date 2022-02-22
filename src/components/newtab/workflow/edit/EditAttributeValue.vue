@@ -1,40 +1,55 @@
 <template>
   <edit-interaction-base v-bind="{ data }" @change="updateData">
+    <hr />
     <ui-input
       :model-value="data.attributeName"
-      :placeholder="t('workflow.blocks.attribute-value.forms.name')"
-      class="mt-3 w-full"
+      :label="t('workflow.blocks.attribute-value.forms.name')"
+      placeholder="name"
+      class="w-full"
       @change="updateData({ attributeName: $event })"
     />
     <ui-checkbox
+      :model-value="data.assignVariable"
+      block
+      class="mt-4"
+      @change="updateData({ assignVariable: $event })"
+    >
+      {{ t('workflow.variables.assign') }}
+    </ui-checkbox>
+    <ui-input
+      v-if="data.assignVariable"
+      :model-value="data.variableName"
+      :placeholder="t('workflow.variables.name')"
+      :title="t('workflow.variables.name')"
+      class="mt-2 w-full"
+      @change="updateData({ variableName: $event })"
+    />
+    <ui-checkbox
       :model-value="data.saveData"
-      class="mt-3"
+      class="mt-4"
       @change="updateData({ saveData: $event })"
     >
       {{ t('workflow.blocks.attribute-value.forms.checkbox') }}
     </ui-checkbox>
-    <div v-if="data.saveData" class="flex items-center mt-1">
-      <ui-select
-        :model-value="data.dataColumn"
-        :placeholder="t('workflow.blocks.attribute-value.forms.column')"
-        class="mr-2 flex-1"
-        @change="updateData({ dataColumn: $event })"
+    <ui-select
+      v-if="data.saveData"
+      :model-value="data.dataColumn"
+      :placeholder="t('workflow.blocks.attribute-value.forms.column')"
+      class="w-full mt-2"
+      @change="updateData({ dataColumn: $event })"
+    >
+      <option
+        v-for="column in workflow.data.value.table"
+        :key="column.name"
+        :value="column.name"
       >
-        <option
-          v-for="column in workflow.data.value.dataColumns"
-          :key="column.name"
-          :value="column.name"
-        >
-          {{ column.name }}
-        </option>
-      </ui-select>
-      <ui-button icon @click="workflow.showDataColumnsModal(true)">
-        <v-remixicon name="riKey2Line" />
-      </ui-button>
-    </div>
+        {{ column.name }}
+      </option>
+    </ui-select>
     <ui-checkbox
       :model-value="data.addExtraRow"
-      class="mt-3"
+      class="mt-4"
+      block
       @change="updateData({ addExtraRow: $event })"
     >
       {{ t('workflow.blocks.attribute-value.forms.extraRow.checkbox') }}
@@ -46,32 +61,24 @@
       :placeholder="
         t('workflow.blocks.attribute-value.forms.extraRow.placeholder')
       "
-      class="w-full mt-3 mb-2"
+      class="w-full mt-2 mb-2"
       @change="updateData({ extraRowValue: $event })"
     />
-    <div v-if="data.addExtraRow" class="flex items-center mt-1">
-      <ui-select
-        :model-value="data.extraRowDataColumn"
-        placeholder="Data column"
-        class="mr-2 flex-1"
-        @change="updateData({ extraRowDataColumn: $event })"
+    <ui-select
+      v-if="data.addExtraRow"
+      :model-value="data.extraRowDataColumn"
+      placeholder="Select column"
+      class="mt-1 w-full"
+      @change="updateData({ extraRowDataColumn: $event })"
+    >
+      <option
+        v-for="column in workflow.data.value.table"
+        :key="column.name"
+        :value="column.name"
       >
-        <option
-          v-for="column in workflow.data.value.dataColumns"
-          :key="column.name"
-          :value="column.name"
-        >
-          {{ column.name }}
-        </option>
-      </ui-select>
-      <ui-button
-        icon
-        title="Data columns"
-        @click="workflow.showDataColumnsModal(true)"
-      >
-        <v-remixicon name="riKey2Line" />
-      </ui-button>
-    </div>
+        {{ column.name }}
+      </option>
+    </ui-select>
   </edit-interaction-base>
 </template>
 <script setup>

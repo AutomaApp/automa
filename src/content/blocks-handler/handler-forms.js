@@ -1,48 +1,39 @@
-import { handleElement, markElement } from '../helper';
+import handleSelector, { markElement } from '../handle-selector';
 import handleFormElement from '@/utils/handle-form-element';
 
-function forms(block) {
-  return new Promise((resolve, reject) => {
-    const { data } = block;
-    const elements = handleElement(block, { returnElement: true });
+async function forms(block) {
+  const { data } = block;
+  const elements = await handleSelector(block, { returnElement: true });
 
-    if (!elements) {
-      reject(new Error('element-not-found'));
+  if (!elements) {
+    throw new Error('element-not-found');
+  }
 
-      return;
-    }
-
-    if (data.getValue) {
-      let result = '';
-
-      if (data.multiple) {
-        result = elements.map((element) => element.value || '');
-      } else {
-        result = elements.value || '';
-      }
-
-      resolve(result);
-      return;
-    }
+  if (data.getValue) {
+    let result = '';
 
     if (data.multiple) {
-      const promises = Array.from(elements).map((element) => {
-        return new Promise((eventResolve) => {
-          markElement(element, block);
-          handleFormElement(element, data, eventResolve);
-        });
-      });
-
-      Promise.allSettled(promises).then(() => {
-        resolve('');
-      });
-    } else if (elements) {
-      markElement(elements, block);
-      handleFormElement(elements, data, resolve);
+      result = elements.map((element) => element.value || '');
     } else {
-      resolve('');
+      result = elements.value || '';
     }
-  });
+
+    return result;
+  }
+
+  if (data.multiple) {
+    const promises = Array.from(elements).map(async (element) => {
+      markElement(element, block);
+      await handleFormElement(element, data, eventResolve);
+    });
+
+    await Promise.allSettled(promises);
+  } else {
+    markElement(elements, block);
+    await handleFormElement(elements, data);
+  }
+
+  return null;
 }
 
 export default forms;

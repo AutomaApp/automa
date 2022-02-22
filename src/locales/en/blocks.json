@@ -26,12 +26,27 @@
         "multiple": {
           "title": "Select multiple element",
           "text": "Multiple"
+        },
+        "waitSelector": {
+          "title": "Wait for selector",
+          "timeout": "Selector timeout (ms)"
         }
+      },
+      "insert-data": {
+        "name": "Insert data",
+        "description": "Insert data into table or variable"
+      },
+      "clipboard": {
+        "name": "Clipboard",
+        "description": "Get the copied text from the clipboard",
+        "data": "Clipboard data",
+        "noPermission": "Don't have permission to access the clipboard",
+        "grantPermission": "Grant permission"
       },
       "upload-file": {
         "name": "Upload file",
         "description": "Upload file into <input type=\"file\"> element",
-        "filePath": "File path",
+        "filePath": "URL or File path",
         "addFile": "Add file",
         "requirement": "See the requirement before using this block",
         "noFileAccess": "Automa doesn't have file access"
@@ -57,6 +72,7 @@
         "addTime": "Add time",
         "selectDay": "Select day",
         "timeExist": "You alread add {time} on {day}",
+        "fixedDelay": "Fixed delay",
         "days": [
           "Sunday",
           "Monday",
@@ -69,7 +85,7 @@
         "useRegex": "Use regex",
         "shortcut": {
           "tooltip": "Record shortcut",
-          "stopRecord": "Stop record",
+          "stopRecord": "Stop recording",
           "checkboxTitle": "Execute shortcut even when you're in an input element",
           "checkbox": "Active while in input",
           "note": "Note: keyboard shortcut only working when you're on a webpage"
@@ -111,7 +127,7 @@
         "dataFrom": {
           "label": "Data from",
           "options": {
-            "data-columns": "Data columns",
+            "data-columns": "Table",
             "custom": "Custom"
           }
         },
@@ -153,6 +169,8 @@
         "height": "Height",
         "width": "Width",
         "note": "Note: use 0 to disable",
+        "position": "Window position",
+        "size": "Window size",
         "windowState": {
           "placeholder": "Window state",
           "options": {
@@ -178,7 +196,7 @@
       "close-tab": {
         "name": "Close tab/window",
         "description": "",
-        "url": "URL or match pattern",
+        "url": "Match Patterns",
         "activeTab": "Close active tab",
         "allWindows": "Close all windows"
       },
@@ -197,7 +215,7 @@
       "get-text": {
         "name": "Get text",
         "description": "Get text from an element",
-        "checkbox": "Save data",
+        "checkbox": "Insert to table",
         "includeTags": "Include HTML tags",
         "prefixText": {
           "placeholder": "Text prefix",
@@ -215,13 +233,13 @@
       },
       "export-data": {
         "name": "Export data",
-        "description": "Export workflow data columns",
+        "description": "Export workflow data",
         "exportAs": "Export as",
         "refKey": "Reference key",
         "dataToExport": {
           "placeholder": "Data to export",
           "options": {
-            "data-columns": "Data columns",
+            "data-columns": "Table",
             "google-sheets": "Google sheets",
           },
         }
@@ -236,9 +254,17 @@
         "incScrollX": "Increment horizontal scroll",
         "incScrollY": "Increment vertical scroll"
       },
+      "switch-tab": {
+        "name": "Switch tab",
+        "description": "Switch between tab",
+        "matchPattern": "Match Patterns",
+        "url": "URL for the new tab",
+        "createIfNoMatch": "Create if there's no match"
+      },
       "new-tab": {
         "name": "New tab",
         "description": "",
+        "url": "New Tab URL",
         "activeTab": "Set as active tab",
         "tabToGroup": "Add tab to group",
         "updatePrevTab": {
@@ -255,7 +281,7 @@
         "description": "Get value of an element attribute",
         "forms": {
           "name": "Attribute name",
-          "checkbox": "Save data",
+          "checkbox": "Insert to table",
           "column": "Select column",
           "extraRow": {
             "checkbox": "Add extra row",
@@ -307,7 +333,7 @@
           }
         },
         "timeout": {
-          "placeholder": "Timeout",
+          "placeholder": "Timeout (milliseconds)",
           "title": "Javascript code execution timeout"
         }
       },
@@ -334,8 +360,9 @@
         "description": "Check if an element is exists",
         "selector": "Element selector",
         "fallbackTitle": "Execute when element doesn't exists",
+        "throwError": "Throw an error if doesn't exist",
         "tryFor": {
-          "title": "Try to check if element exist",
+          "title": "How many times to try to check if element exist",
           "label": "Try for"
         },
         "timeout": {
@@ -344,10 +371,13 @@
         }
       },
       "webhook": {
-        "name": "Webhook",
-        "description": "Webhook allow external service to be notified",
+        "name": "HTTP request",
+        "description": "Make an HTTP Request",
         "url": "The Post receive URL",
-        "contentType": "Select a content type",
+        "contentType": "Content type",
+        "method": "Request method",
+        "url": "Request URL",
+        "fallback": "Execute when failed or error making an HTTP request",
         "buttons": {
           "header": "Add header"
         },
@@ -357,13 +387,14 @@
         },
         "tabs": {
           "headers": "Headers",
-          "body": "Content body"
+          "body": "Body",
+          "response": "Response"
         }
       },
       "loop-data": {
         "name": "Loop data",
-        "description": "Iterate through data columns or your custom data",
-        "loopId": "Loop ID",
+        "description": "Iterate through table or your custom data",
+        "loopId": "Loop id",
         "refKey": "Reference key",
         "modal": {
           "fileTooLarge": "File too large to edit",
@@ -387,9 +418,12 @@
           "toNumber": "To number",
           "options": {
             "numbers": "Numbers",
-            "data-columns": "Data columns",
+            "variable": "Variable",
+            "data-columns": "Table",
+            "table": "Table",
             "custom-data": "Custom data",
-            "google-sheets": "Google sheets"
+            "google-sheets": "Google sheets",
+            "elements": "Elements"
           }
         }
       },
@@ -402,7 +436,7 @@
         "fullPage": "Take full page screenshot",
         "description": "Take a screenshot of current active tab",
         "imageQuality": "Image quality",
-        "saveToColumn": "Save screenshot to column",
+        "saveToColumn": "Insert screenshot to table",
         "saveToComputer": "Save screenshot to computer"
       },
       "switch-to": {

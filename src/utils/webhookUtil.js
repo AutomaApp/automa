@@ -1,14 +1,11 @@
-import { isObject, parseJSON } from './helper';
+import { isObject, parseJSON, isWhitespace } from './helper';
 
 const renderContent = (content, contentType) => {
-  // 1. render the content
-  // 2. if the content type is json then parse the json
-  // 3. else parse to form data
   const renderedJson = parseJSON(content, new Error('invalid-body'));
 
   if (renderedJson instanceof Error) throw renderedJson;
 
-  if (contentType === 'form') {
+  if (contentType === 'application/x-www-form-urlencoded') {
     return Object.keys(renderedJson)
       .map((key) => {
         const value = isObject(renderedJson[key])
@@ -33,11 +30,11 @@ const filterHeaders = (headers) => {
   return filteredHeaders;
 };
 
-const convertContentType = (contentType) => {
-  return contentType === 'json'
-    ? 'application/json'
-    : 'application/x-www-form-urlencoded';
+const contentTypes = {
+  json: 'application/json',
+  form: 'application/x-www-form-urlencoded',
 };
+const notHaveBody = ['GET', 'DELETE'];
 
 export async function executeWebhook({
   url,
@@ -45,29 +42,37 @@ export async function executeWebhook({
   headers,
   timeout,
   body,
+  method,
 }) {
   const controller = new AbortController();
-  const id = setTimeout(() => {
+  const timeoutId = setTimeout(() => {
     controller.abort();
   }, timeout);
 
   try {
     const finalHeaders = filterHeaders(headers);
-    const finalContent = renderContent(body, contentType);
+    const contentTypeHeader = contentTypes[contentType || 'json'];
 
-    await fetch(url, {
-      method: 'POST',
+    const payload = {
+      method: method || 'POST',
       headers: {
-        'Content-Type': convertContentType(contentType),
+        'Content-Type': contentTypeHeader,
         ...finalHeaders,
       },
-      body: finalContent,
       signal: controller.signal,
-    });
+    };
 
-    clearTimeout(id);
+    if (!notHaveBody.includes(method || 'POST') && !isWhitespace(body)) {
+      payload.body = renderContent(body, payload.headers['Content-Type']);
+    }
+
+    const response = await fetch(url, payload);
+
+    clearTimeout(timeoutId);
+
+    return response;
   } catch (error) {
-    clearTimeout(id);
+    clearTimeout(timeoutId);
     throw error;
   }
 }

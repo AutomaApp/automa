@@ -1,12 +1,12 @@
 <template>
-  <div class="flex items-center">
+  <div class="flex items-center mb-2">
     <ui-input
-      v-model="fileName"
+      v-model="state.fileName"
       :placeholder="t('common.fileName')"
       :title="t('common.fileName')"
     />
     <div class="flex-grow"></div>
-    <ui-popover>
+    <ui-popover trigger-width>
       <template #trigger>
         <ui-button variant="accent">
           <span>{{ t('log.exportData.title') }}</span>
@@ -26,19 +26,28 @@
       </ui-list>
     </ui-popover>
   </div>
+  <ui-tabs v-if="objectHasKey(log.data, 'table')" v-model="state.activeTab">
+    <ui-tab value="table">
+      {{ t('workflow.table.title') }}
+    </ui-tab>
+    <ui-tab value="variables">
+      {{ t('workflow.variables.title', 2) }}
+    </ui-tab>
+  </ui-tabs>
   <shared-codemirror
     :model-value="dataStr"
     :class="editorClass"
+    class="rounded-t-none"
     lang="json"
     readonly
-    class="mt-4"
   />
 </template>
 <script setup>
-import { ref, computed, defineAsyncComponent } from 'vue';
+import { shallowReactive, computed, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { dataExportTypes } from '@/utils/shared';
-import dataExporter, { generateJSON } from '@/utils/data-exporter';
+import { objectHasKey } from '@/utils/helper';
+import dataExporter from '@/utils/data-exporter';
 
 const SharedCodemirror = defineAsyncComponent(() =>
   import('@/components/newtab/shared/SharedCodemirror.vue')
@@ -57,17 +66,32 @@ const props = defineProps({
 
 const { t } = useI18n();
 
-const dataStr = computed(() => {
-  const data = Array.isArray(props.log.data)
-    ? props.log.data
-    : generateJSON(Object.keys(props.log.data), props.log.data);
+const state = shallowReactive({
+  activeTab: 'table',
+  fileName: props.log.name,
+});
+const cache = {
+  table: '',
+  variables: '',
+};
 
-  return JSON.stringify(data, null, 2);
+const dataStr = computed(() => {
+  if (cache[state.activeTab]) return cache[state.activeTab];
+
+  let { data } = props.log;
+
+  if (objectHasKey(props.log.data, 'table')) {
+    data = props.log.data[state.activeTab];
+  }
+
+  data = JSON.stringify(data, null, 2);
+  /* eslint-disable-next-line */
+  cache[state.activeTab] = data;
+
+  return data;
 });
 
-const fileName = ref(props.log.name);
-
 function exportData(type) {
-  dataExporter(data, { name: fileName.value, type }, true);
+  dataExporter(props.log.data, { name: state.fileName, type }, true);
 }
 </script>

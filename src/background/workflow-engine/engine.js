@@ -44,9 +44,10 @@ class WorkflowEngine {
       groupId: null,
     };
     this.referenceData = {
+      table: [],
       loopData: {},
       workflow: {},
-      dataColumns: [],
+      variables: {},
       googleSheets: {},
       globalData: parseJSON(globalDataValue, globalDataValue),
     };
@@ -84,9 +85,10 @@ class WorkflowEngine {
       return;
     }
 
-    const dataColumns = Array.isArray(this.workflow.dataColumns)
-      ? this.workflow.dataColumns
-      : Object.values(this.workflow.dataColumns);
+    const workflowTable = this.workflow.table || this.workflow.dataColumns;
+    const dataColumns = Array.isArray(workflowTable)
+      ? workflowTable
+      : Object.values(workflowTable);
 
     dataColumns.forEach(({ name, type }) => {
       this.columns[name] = { index: 0, type };
@@ -94,7 +96,7 @@ class WorkflowEngine {
 
     this.blocks = blocks;
     this.startedTimestamp = Date.now();
-    this.workflow.dataColumns = dataColumns;
+    this.workflow.table = dataColumns;
     this.currentBlock = currentBlock || triggerBlock;
 
     this.states.on('stop', this.onWorkflowStopped);
@@ -148,11 +150,11 @@ class WorkflowEngine {
     const currentColumn = this.columns[columnName];
     const convertedValue = convertData(value, currentColumn.type);
 
-    if (objectHasKey(this.referenceData.dataColumns, currentColumn.index)) {
-      this.referenceData.dataColumns[currentColumn.index][columnName] =
+    if (objectHasKey(this.referenceData.table, currentColumn.index)) {
+      this.referenceData.table[currentColumn.index][columnName] =
         convertedValue;
     } else {
-      this.referenceData.dataColumns.push({ [columnName]: convertedValue });
+      this.referenceData.table.push({ [columnName]: convertedValue });
     }
 
     currentColumn.index += 1;
@@ -170,12 +172,31 @@ class WorkflowEngine {
     }
   }
 
+  async executeQueue() {
+    const { workflowQueue } = await browser.storage.local.get('workflowQueue');
+    const queueIndex = (workflowQueue || []).indexOf(this.workflow.id);
+
+    if (!workflowQueue || queueIndex === -1) return;
+
+    const engine = new WorkflowEngine(this.workflow, {
+      logger: this.logger,
+      states: this.states,
+      blocksHandler: this.blocksHandler,
+    });
+    engine.init();
+
+    workflowQueue.splice(queueIndex, 1);
+
+    await browser.storage.local.set({ workflowQueue });
+  }
+
   async destroy(status, message) {
     try {
       if (this.isDestroyed) return;
       if (this.isUsingProxy) chrome.proxy.settings.clear({});
 
       const endedTimestamp = Date.now();
+      this.executeQueue();
 
       if (!this.workflow.isTesting && this.saveLog) {
         const { name, id } = this.workflow;
@@ -190,7 +211,10 @@ class WorkflowEngine {
           endedAt: endedTimestamp,
           parentLog: this.parentWorkflow,
           startedAt: this.startedTimestamp,
-          data: this.referenceData.dataColumns,
+          data: {
+            table: this.referenceData.table,
+            variables: this.referenceData.variables,
+          },
         });
       }
 

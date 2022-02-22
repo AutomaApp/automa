@@ -3,7 +3,7 @@
     <ui-select
       :model-value="data.findBy || 'cssSelector'"
       :placeholder="t('workflow.blocks.base.findElement.placeholder')"
-      class="w-full mb-2"
+      class="w-full mb-1"
       @change="updateData({ findBy: $event })"
     >
       <option v-for="type in selectorTypes" :key="type" :value="type">
@@ -13,6 +13,7 @@
     <ui-input
       :model-value="data.selector"
       :label="t('workflow.blocks.element-exists.selector')"
+      placeholder=".element"
       class="mb-1 w-full"
       @change="updateData({ selector: $event })"
     />
@@ -34,6 +35,14 @@
       min="200"
       @change="updateData({ timeout: +$event })"
     />
+    <label class="flex items-center mt-4">
+      <ui-switch
+        :model-value="data.throwError"
+        class="mr-2"
+        @change="updateData({ throwError: $event })"
+      />
+      <span>{{ t('workflow.blocks.element-exists.throwError') }}</span>
+    </label>
   </div>
 </template>
 <script setup>

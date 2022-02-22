@@ -4,7 +4,7 @@ import dataExporter from '@/utils/data-exporter';
 function exportData({ data, outputs }) {
   return new Promise((resolve) => {
     const dataToExport = data.dataToExport || 'data-columns';
-    let payload = this.referenceData.dataColumns;
+    let payload = this.referenceData.table;
 
     if (dataToExport === 'google-sheets') {
       payload = this.referenceData.googleSheets[data.refKey] || [];

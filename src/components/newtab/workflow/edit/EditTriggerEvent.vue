@@ -3,7 +3,7 @@
     <ui-select
       :model-value="data.eventName"
       :placeholder="t('workflow.blocks.trigger-event.selectEvent')"
-      class="w-full mt-2"
+      class="w-full mt-4"
       @change="handleSelectChange"
     >
       <option v-for="event in eventList" :key="event.id" :value="event.id">
@@ -11,7 +11,7 @@
       </option>
     </ui-select>
     <button
-      class="mb-2 block flex items-center w-full text-left mt-4 focus:ring-0"
+      class="mb-2 block flex items-center w-full text-left mt-2 focus:ring-0"
       @click="showOptions = !showOptions"
     >
       <v-remixicon
@@ -21,6 +21,7 @@
       />
       <span class="flex-1">{{ t('common.options') }}</span>
       <a
+        v-if="data.eventName"
         :href="getEventDetailsUrl()"
         rel="noopener"
         target="_blank"

@@ -1,6 +1,6 @@
 <template>
   <aside
-    class="fixed flex flex-col items-center h-screen left-0 top-0 w-16 py-6 bg-white z-50"
+    class="fixed flex flex-col items-center h-screen left-0 top-0 w-16 py-6 bg-white dark:bg-gray-800 z-50"
   >
     <img
       :title="`v${extensionVersion}`"
@@ -41,6 +41,24 @@
       </router-link>
     </div>
     <div class="flex-grow"></div>
+    <ui-popover
+      v-if="store.state.user"
+      trigger="mouseenter"
+      placement="right"
+      class="mb-4"
+    >
+      <template #trigger>
+        <span class="inline-block p-1 bg-box-transparent rounded-full">
+          <img
+            :src="store.state.user.avatar_url"
+            height="32"
+            width="32"
+            class="rounded-full"
+          />
+        </span>
+      </template>
+      {{ store.state.user.username }}
+    </ui-popover>
     <router-link v-tooltip:right.group="t('settings.menu.about')" to="/about">
       <v-remixicon class="cursor-pointer" name="riInformationLine" />
     </router-link>
@@ -48,13 +66,16 @@
 </template>
 <script setup>
 import { ref } from 'vue';
+import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 
 useGroupTooltip();
+
 const { t } = useI18n();
+const store = useStore();
 const router = useRouter();
 
 const extensionVersion = chrome.runtime.getManifest().version;
@@ -115,6 +136,6 @@ function hoverHandler({ target }) {
   top: 0;
   height: 100%;
   width: 4px;
-  @apply bg-accent;
+  @apply bg-accent dark:bg-gray-100;
 }
 </style>

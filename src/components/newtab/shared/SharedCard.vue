@@ -1,5 +1,7 @@
 <template>
-  <ui-card class="hover:ring-2 flex flex-col group hover:ring-accent">
+  <ui-card
+    class="hover:ring-2 flex flex-col group hover:ring-accent dark:hover:ring-gray-200"
+  >
     <slot name="header">
       <div class="flex items-center mb-4">
         <ui-img
@@ -51,11 +53,24 @@
         {{ data.description }}
       </p>
     </div>
-    <p class="text-gray-600 dark:text-gray-200">{{ formatDate() }}</p>
+    <div class="flex items-center text-gray-600 dark:text-gray-200">
+      <p class="flex-1">{{ state.date }}</p>
+      <slot name="footer-content" />
+      <v-remixicon
+        v-if="state.triggerText"
+        v-tooltip="state.triggerText"
+        :class="{ 'ml-2': $slots['footer-content'] }"
+        name="riFlashlightLine"
+        size="20"
+      />
+    </div>
   </ui-card>
 </template>
 <script setup>
+import { onMounted, shallowReactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 import dayjs from '@/lib/dayjs';
+import triggerText from '@/utils/trigger-text';
 
 const props = defineProps({
   data: {
@@ -78,12 +93,18 @@ const props = defineProps({
 
 defineEmits(['execute', 'click', 'menuSelected']);
 
-let formattedDate = null;
-const formatDate = () => {
-  if (formattedDate) return formattedDate;
+const { t } = useI18n();
 
-  formattedDate = dayjs(props.data.createdAt).fromNow();
+const state = shallowReactive({
+  triggerText: null,
+  date: dayjs(props.data.createdAt).fromNow(),
+});
 
-  return formattedDate;
-};
+onMounted(async () => {
+  const { trigger, id } = props.data;
+
+  if (!trigger) return;
+
+  state.triggerText = await triggerText(trigger, t, id);
+});
 </script>

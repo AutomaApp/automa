@@ -1,11 +1,11 @@
-import { handleElement } from '../helper';
+import handleSelector from '../handle-selector';
 import simulateEvent from '@/utils/simulate-event';
 
 function triggerEvent(block) {
   return new Promise((resolve, reject) => {
     const { data } = block;
 
-    handleElement(block, {
+    handleSelector(block, {
       onSelected(element) {
         simulateEvent(element, data.eventName, data.eventParams);
       },

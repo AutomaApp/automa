@@ -1,20 +1,32 @@
 <template>
+  <p class="text-sm text-gray-600 dark:text-gray-200 ml-2">Image quality</p>
+  <div class="bg-box-transparent px-4 mb-4 py-2 rounded-lg flex items-center">
+    <input
+      :value="data.quality"
+      :title="t('workflow.blocks.take-screenshot.imageQuality')"
+      class="focus:outline-none flex-1"
+      type="range"
+      min="0"
+      max="100"
+      @change="updateQuality"
+    />
+    <span class="w-12 text-right">{{ data.quality }}%</span>
+  </div>
   <div class="take-screenshot">
     <ui-checkbox
       :model-value="data.fullPage"
-      class="mb-2"
       @change="updateData({ fullPage: $event })"
     >
       {{ t('workflow.blocks.take-screenshot.fullPage') }}
     </ui-checkbox>
     <ui-checkbox
       :model-value="data.saveToComputer"
-      class="mb-2"
+      class="mt-4"
       @change="updateData({ saveToComputer: $event })"
     >
       {{ t('workflow.blocks.take-screenshot.saveToComputer') }}
     </ui-checkbox>
-    <div v-if="data.saveToComputer" class="flex items-center my-2">
+    <div v-if="data.saveToComputer" class="flex items-center mt-1">
       <ui-input
         :model-value="data.fileName"
         :placeholder="t('common.fileName')"
@@ -31,49 +43,44 @@
         <option value="jpeg">JPEG</option>
       </ui-select>
     </div>
-    <p class="text-sm text-gray-600 ml-2">Image quality:</p>
-    <div class="bg-box-transparent px-4 mb-2 py-2 rounded-lg flex items-center">
-      <input
-        :value="data.quality"
-        :title="t('workflow.blocks.take-screenshot.imageQuality')"
-        class="focus:outline-none flex-1"
-        type="range"
-        min="0"
-        max="100"
-        @change="updateQuality"
-      />
-      <span class="w-12 text-right">{{ data.quality }}%</span>
-    </div>
     <ui-checkbox
       :model-value="data.saveToColumn"
-      class="mt-3"
+      class="mt-4"
       @change="updateData({ saveToColumn: $event })"
     >
       {{ t('workflow.blocks.take-screenshot.saveToColumn') }}
     </ui-checkbox>
-    <div v-if="data.saveToColumn" class="flex items-center mt-1">
-      <ui-select
-        :model-value="data.dataColumn"
-        placeholder="Data column"
-        class="mr-2 flex-1"
-        @change="updateData({ dataColumn: $event })"
+    <ui-select
+      v-if="data.saveToColumn"
+      :model-value="data.dataColumn"
+      placeholder="Select column"
+      class="w-full mt-1"
+      @change="updateData({ dataColumn: $event })"
+    >
+      <option
+        v-for="column in workflow.data.value.table"
+        :key="column.name"
+        :value="column.name"
       >
-        <option
-          v-for="column in workflow.data.value.dataColumns"
-          :key="column.name"
-          :value="column.name"
-        >
-          {{ column.name }}
-        </option>
-      </ui-select>
-      <ui-button
-        icon
-        title="Data columns"
-        @click="workflow.showDataColumnsModal(true)"
-      >
-        <v-remixicon name="riKey2Line" />
-      </ui-button>
-    </div>
+        {{ column.name }}
+      </option>
+    </ui-select>
+    <ui-checkbox
+      :model-value="data.assignVariable"
+      block
+      class="mt-4"
+      @change="updateData({ assignVariable: $event })"
+    >
+      {{ t('workflow.variables.assign') }}
+    </ui-checkbox>
+    <ui-input
+      v-if="data.assignVariable"
+      :model-value="data.variableName"
+      :placeholder="t('workflow.variables.name')"
+      :title="t('workflow.variables.name')"
+      class="mt-1 w-full"
+      @change="updateData({ variableName: $event })"
+    />
   </div>
 </template>
 <script setup>

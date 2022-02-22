@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-2 mt-4 space-y-2">
+  <div>
     <ui-textarea
       :model-value="data.description"
       :placeholder="t('common.description')"
@@ -9,23 +9,14 @@
     <ui-input
       v-if="!data.activeTab"
       :model-value="data.url"
-      title="URL"
-      class="w-full"
+      :label="t('workflow.blocks.new-tab.url')"
+      class="w-full mt-2"
       placeholder="http://example.com/"
       @change="updateData({ url: $event })"
     />
-    <a
-      href="https://docs.automa.site/api-reference/reference-data.html"
-      rel="noopener"
-      class="text-primary inline-block text-sm"
-      target="_blank"
-      style="margin-top: 0"
-    >
-      {{ t('message.useDynamicData') }}
-    </a>
     <ui-checkbox
       :model-value="data.updatePrevTab"
-      class="leading-tight"
+      class="leading-tight mt-2"
       :title="t('workflow.blocks.new-tab.updatePrevTab.title')"
       @change="updateData({ updatePrevTab: $event })"
     >
@@ -33,6 +24,7 @@
     </ui-checkbox>
     <ui-checkbox
       :model-value="data.active"
+      class="my-2"
       @change="updateData({ active: $event })"
     >
       {{ t('workflow.blocks.new-tab.activeTab') }}

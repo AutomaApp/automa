@@ -14,6 +14,15 @@
   "icons": {
     "128": "icon-128.png"
   },
+  "commands": {
+    "open-dashboard": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+A",
+        "mac": "MacCtrl+Shift+A"
+      },
+      "description": "Open the Automa dashboard"
+    }
+  },
   "content_scripts": [
     {
       "matches": [
@@ -35,6 +44,9 @@
       ],
       "all_frames": false
     }
+  ],
+  "optional_permissions": [
+    "clipboardRead"
   ],
   "permissions": [
     "tabs",

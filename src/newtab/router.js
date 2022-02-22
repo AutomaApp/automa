@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import Home from './pages/Home.vue';
 import Welcome from './pages/Welcome.vue';
 import Workflows from './pages/Workflows.vue';
+import WorkflowHost from './pages/workflows/Host.vue';
 import WorkflowDetails from './pages/workflows/[id].vue';
 import Collections from './pages/Collections.vue';
 import CollectionsDetails from './pages/collections/[id].vue';
@@ -10,6 +11,8 @@ import LogsDetails from './pages/logs/[id].vue';
 import Settings from './pages/Settings.vue';
 import SettingsIndex from './pages/settings/index.vue';
 import SettingsAbout from './pages/settings/About.vue';
+import SettingsShortcuts from './pages/settings/Shortcuts.vue';
+import SettingsBackup from './pages/settings/Backup.vue';
 
 const routes = [
   {
@@ -31,6 +34,11 @@ const routes = [
     name: 'workflows-details',
     path: '/workflows/:id',
     component: WorkflowDetails,
+  },
+  {
+    name: 'workflow-host',
+    path: '/workflows/:id/host',
+    component: WorkflowHost,
   },
   {
     name: 'collections',
@@ -58,6 +66,8 @@ const routes = [
     children: [
       { path: '', component: SettingsIndex },
       { path: '/about', component: SettingsAbout },
+      { path: '/backup', component: SettingsBackup },
+      { path: '/shortcuts', component: SettingsShortcuts },
     ],
   },
 ];

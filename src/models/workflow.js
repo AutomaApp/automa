@@ -2,6 +2,9 @@ import { Model } from '@vuex-orm/core';
 import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
 import Log from './log';
+import { cleanWorkflowTriggers } from '@/utils/workflow-trigger';
+import { fetchApi } from '@/utils/api';
+import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
 
 class Workflow extends Model {
   static entity = 'workflows';
@@ -12,20 +15,21 @@ class Workflow extends Model {
 
   static fields() {
     return {
+      __id: this.attr(null),
       id: this.uid(() => nanoid()),
       name: this.string(''),
       icon: this.string('riGlobalLine'),
       data: this.attr(null),
       drawflow: this.attr(''),
+      table: this.attr([]),
       dataColumns: this.attr([]),
       description: this.string(''),
       pass: this.string(''),
       trigger: this.attr(null),
-      isProtected: this.boolean(false),
       version: this.string(''),
-      globalData: this.string('[{ "key": "value" }]'),
       createdAt: this.number(Date.now()),
       isDisabled: this.boolean(false),
+      isProtected: this.boolean(false),
       settings: this.attr({
         blockDelay: 0,
         saveLog: true,
@@ -34,7 +38,23 @@ class Workflow extends Model {
         executedBlockOnWeb: false,
       }),
       logs: this.hasMany(Log, 'workflowId'),
+      globalData: this.string('[{ "key": "value" }]'),
     };
+  }
+
+  static beforeCreate(model) {
+    if (model.dataColumns.length > 0) {
+      model.table = model.dataColumns;
+      model.dataColumns = [];
+    }
+    if (model.isProtected) {
+      const pass = getWorkflowPass(model.pass);
+
+      model.drawflow = decryptFlow(model, pass);
+      model.isProtected = false;
+    }
+
+    return model;
   }
 
   static async insert(payload) {
@@ -47,24 +67,27 @@ class Workflow extends Model {
 
   static async afterDelete({ id }) {
     try {
-      const { visitWebTriggers, shortcuts } = await browser.storage.local.get([
-        'visitWebTriggers',
-        'shortcuts',
-      ]);
-      const index = visitWebTriggers.findIndex((item) => item.id === id);
+      await cleanWorkflowTriggers(id);
+      const hostedWorkflow = this.store().state.hostWorkflows[id];
+      const { backupIds } = await browser.storage.local.get('backupIds');
+      const isBackup = (backupIds || []).includes(id);
 
-      if (index !== -1) {
-        visitWebTriggers.splice(index, 1);
+      if (hostedWorkflow || isBackup) {
+        const response = await fetchApi(`/me/workflows?id=${id}`, {
+          method: 'DELETE',
+        });
+
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+
+        if (isBackup) {
+          backupIds.splice(backupIds.indexOf(id), 1);
+          await browser.storage.local.set({ backupIds });
+        }
+
+        await browser.storage.local.set({ clearCache: true });
       }
-
-      const keyboardShortcuts = shortcuts || {};
-      delete keyboardShortcuts[id];
-
-      await browser.storage.local.set({
-        visitWebTriggers,
-        shortcuts: keyboardShortcuts,
-      });
-      await browser.alarms.clear(id);
     } catch (error) {
       console.error(error);
     }

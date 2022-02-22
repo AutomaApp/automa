@@ -1,4 +1,4 @@
-import { handleElement } from '../helper';
+import handleSelector from '../handle-selector';
 
 function getText(block) {
   return new Promise((resolve, reject) => {
@@ -17,7 +17,7 @@ function getText(block) {
       regex = new RegExp(regexData, regexExp.join(''));
     }
 
-    handleElement(block, {
+    handleSelector(block, {
       onSelected(element) {
         let text = includeTags ? element.outerHTML : element.innerText;
 

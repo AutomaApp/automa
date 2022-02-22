@@ -4,7 +4,7 @@
       'select-none': state.isDragging,
       'bg-black bg-opacity-30': !state.hide,
     }"
-    class="root fixed h-full w-full pointer-events-none top-0 text-gray-900 left-0"
+    class="root fixed h-full w-full pointer-events-none top-0 text-black left-0"
     style="z-index: 9999999999; font-family: Inter, sans-serif; font-size: 16px"
   >
     <div
@@ -35,6 +35,8 @@
       <app-selector
         :selector="state.elSelector"
         :selected-count="state.selectedElements.length"
+        :selector-type="state.selectorType"
+        @selector="state.selectorType = $event"
         @child="selectChildElement"
         @parent="selectParentElement"
         @change="updateSelectedElements"
@@ -50,7 +52,7 @@
         <ui-tab-panels
           v-model="state.activeTab"
           class="overflow-y-auto scroll"
-          style="max-height: calc(100vh - 15rem)"
+          style="max-height: calc(100vh - 17rem)"
         >
           <ui-tab-panel value="attributes">
             <app-element-list
@@ -69,9 +71,12 @@
                   >
                     {{ attribute.name }}
                   </p>
-                  <p title="Attribute value" class="text-overflow">
-                    {{ attribute.value }}
-                  </p>
+                  <input
+                    :value="attribute.value"
+                    readonly
+                    title="Attribute value"
+                    class="bg-transparent w-full"
+                  />
                 </div>
               </template>
             </app-element-list>
@@ -151,6 +156,7 @@ import { debounce } from '@/utils/helper';
 import AppBlocks from './AppBlocks.vue';
 import AppSelector from './AppSelector.vue';
 import AppElementList from './AppElementList.vue';
+import findElement from '@/utils/find-element';
 
 const selectedElement = {
   path: [],
@@ -168,6 +174,7 @@ const state = reactive({
   isDragging: false,
   isExecuting: false,
   selectElements: [],
+  selectorType: 'css',
   selectedElements: [],
   hide: window.self !== window.top,
 });
@@ -184,6 +191,34 @@ const cardRect = reactive({
   width: 0,
 });
 
+/* eslint-disable  no-use-before-define */
+const getElementSelector = (element) =>
+  state.selectorType === 'css' ? finder(element) : generateXPath(element);
+
+function generateXPath(element) {
+  if (!element) return null;
+  if (element.id !== '') return `id("${element.id}")`;
+  if (element === document.body) return `//${element.tagName}`;
+
+  let ix = 0;
+  const siblings = element.parentNode.childNodes;
+
+  for (let index = 0; index < siblings.length; index += 1) {
+    const sibling = siblings[index];
+
+    if (sibling === element) {
+      return `${generateXPath(element.parentNode)}/${element.tagName}[${
+        ix + 1
+      }]`;
+    }
+
+    if (sibling.nodeType === 1 && sibling.tagName === element.tagName) {
+      ix += 1;
+    }
+  }
+
+  return null;
+}
 function toggleHighlightElement({ index, highlight }) {
   state.selectedElements[index].highlight = highlight;
 }
@@ -203,8 +238,13 @@ function updateSelectedElements(selector) {
   state.elSelector = selector;
 
   try {
-    const elements = document.querySelectorAll(selector);
+    const selectorType = state.selectorType === 'css' ? 'cssSelector' : 'xpath';
+    let elements = findElement[selectorType]({ selector, multiple: true });
     const selectElements = [];
+
+    if (selectorType === 'xpath') {
+      elements = elements ? [elements] : [];
+    }
 
     state.selectedElements = Array.from(elements).map((element, index) => {
       const attributes = Array.from(element.attributes).map(
@@ -259,26 +299,30 @@ function handleMouseMove({ clientX, clientY, target }) {
   Object.assign(hoverElementRect, getElementRect(target));
 }
 function handleClick(event) {
-  if (event.target === rootElement || state.hide || state.isExecuting) return;
+  const { target, path } = event;
+
+  if (target === rootElement || state.hide || state.isExecuting) return;
 
   event.preventDefault();
   event.stopPropagation();
 
-  const attributes = Array.from(event.target.attributes).map(
-    ({ name, value }) => ({ name, value })
-  );
+  const attributes = Array.from(target.attributes).map(({ name, value }) => ({
+    name,
+    value,
+  }));
   state.selectedElements = [
     {
-      ...getElementRect(event.target),
+      ...getElementRect(target),
       attributes,
-      element: event.target,
+      element: target,
       highlight: false,
     },
   ];
-  state.elSelector = finder(event.target);
+
+  state.elSelector = getElementSelector(target);
 
   selectedElement.index = 0;
-  selectedElement.path = event.path;
+  selectedElement.path = path;
 }
 function selectChildElement() {
   if (selectedElement.path.length === 0 || state.hide) return;
@@ -300,7 +344,7 @@ function selectChildElement() {
     childElement = selectedElement.path[selectedElement.pathIndex];
   }
 
-  updateSelectedElements(finder(childElement));
+  updateSelectedElements(getElementSelector(childElement));
 }
 function selectParentElement() {
   if (selectedElement.path.length === 0 || state.hide) return;
@@ -311,7 +355,7 @@ function selectParentElement() {
 
   selectedElement.pathIndex += 1;
 
-  updateSelectedElements(finder(parentElement));
+  updateSelectedElements(getElementSelector(parentElement));
 }
 function handleMouseUp() {
   if (state.isDragging) state.isDragging = false;

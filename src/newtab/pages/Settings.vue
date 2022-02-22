@@ -15,7 +15,7 @@
             :class="[
               isExactActive
                 ? 'bg-box-transparent'
-                : 'text-gray-600 dark:text-gray-600',
+                : 'text-gray-600 dark:text-gray-200',
             ]"
             tag="a"
             @click="navigate"
@@ -38,6 +38,8 @@ const { t } = useI18n();
 
 const menus = [
   { id: 'general', path: '/settings', icon: 'riSettings3Line' },
+  { id: 'backup', path: '/backup', icon: 'riDatabase2Line' },
+  { id: 'shortcuts', path: '/shortcuts', icon: 'riKeyboardLine' },
   { id: 'about', path: '/about', icon: 'riInformationLine' },
 ];
 </script>

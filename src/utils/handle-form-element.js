@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import simulateEvent from './simulate-event';
 
 function formEvent(element, data) {
@@ -31,25 +30,33 @@ function formEvent(element, data) {
     new Event('change', { bubbles: true, cancelable: true })
   );
 }
-function inputText({ data, element, isEditable, index = 0, callback }) {
-  const noDelay = data.delay === 0;
-  const currentChar = data.value[index] ?? '';
+async function inputText({ data, element, isEditable }) {
   const elementKey = isEditable ? 'textContent' : 'value';
 
-  element[elementKey] += noDelay ? data.value : currentChar;
+  if (data.delay > 0) {
+    for (let index = 0; index < data.value.length; index += 1) {
+      const currentChar = data.value[index];
 
-  formEvent(element, { type: 'text-field', value: currentChar, isEditable });
+      element[elementKey] += currentChar;
+      formEvent(element, {
+        type: 'text-field',
+        value: currentChar,
+        isEditable,
+      });
 
-  if (!noDelay && index + 1 !== data.value.length) {
-    setTimeout(() => {
-      inputText({ data, element, callback, isEditable, index: index + 1 });
-    }, data.delay);
+      await new Promise((r) => setTimeout(r, data.delay));
+    }
   } else {
-    callback();
+    element[elementKey] += data.value;
+    formEvent(element, {
+      isEditable,
+      type: 'text-field',
+      value: data.value[0] ?? '',
+    });
   }
 }
 
-export default function (element, data, callback) {
+export default async function (element, data) {
   const textFields = ['INPUT', 'TEXTAREA'];
   const isEditable =
     element.hasAttribute('contenteditable') && element.isContentEditable;
@@ -57,30 +64,25 @@ export default function (element, data, callback) {
   if (isEditable) {
     if (data.clearValue) element.innerText = '';
 
-    inputText({ data, element, callback, isEditable });
+    await inputText({ data, element, isEditable });
     return;
   }
 
   if (data.type === 'text-field' && textFields.includes(element.tagName)) {
     if (data.clearValue) element.value = '';
 
-    inputText({ data, element, callback });
+    await inputText({ data, element });
     return;
   }
 
   if (data.type === 'checkbox' || data.type === 'radio') {
     element.checked = data.selected;
     formEvent(element, { type: data.type, value: data.selected });
-    callback(element.checked);
     return;
   }
 
   if (data.type === 'select') {
     element.value = data.value;
     formEvent(element, data);
-    callback(element.value);
-    return;
   }
-
-  callback('');
 }

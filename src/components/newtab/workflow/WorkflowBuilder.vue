@@ -5,32 +5,36 @@
     @drop="dropHandler"
     @dragover.prevent="handleDragOver"
   >
-    <slot></slot>
-    <div class="absolute z-10 p-4 bottom-0 left-0">
-      <button
-        v-tooltip.group="t('workflow.editor.resetZoom')"
-        class="p-2 rounded-lg bg-white mr-2"
-        @click="editor.zoom_reset()"
-      >
-        <v-remixicon name="riFullscreenLine" />
-      </button>
-      <div class="rounded-lg bg-white inline-block">
+    <div
+      class="flex items-end absolute w-full p-4 left-0 bottom-0 justify-between z-10"
+    >
+      <div id="zoom">
         <button
-          v-tooltip.group="t('workflow.editor.zoomOut')"
-          class="p-2 rounded-lg relative z-10"
-          @click="editor.zoom_out()"
+          v-tooltip.group="t('workflow.editor.resetZoom')"
+          class="p-2 rounded-lg bg-white dark:bg-gray-800 mr-2"
+          @click="editor.zoom_reset()"
         >
-          <v-remixicon name="riSubtractLine" />
+          <v-remixicon name="riFullscreenLine" />
         </button>
-        <hr class="h-6 border-r inline-block" />
-        <button
-          v-tooltip.group="t('workflow.editor.zoomIn')"
-          class="p-2 rounded-lg"
-          @click="editor.zoom_in()"
-        >
-          <v-remixicon name="riAddLine" />
-        </button>
+        <div class="rounded-lg bg-white dark:bg-gray-800 inline-block">
+          <button
+            v-tooltip.group="t('workflow.editor.zoomOut')"
+            class="p-2 rounded-lg relative z-10"
+            @click="editor.zoom_out()"
+          >
+            <v-remixicon name="riSubtractLine" />
+          </button>
+          <hr class="h-6 border-r inline-block" />
+          <button
+            v-tooltip.group="t('workflow.editor.zoomIn')"
+            class="p-2 rounded-lg"
+            @click="editor.zoom_in()"
+          >
+            <v-remixicon name="riAddLine" />
+          </button>
+        </div>
       </div>
+      <slot v-bind="{ editor }"></slot>
     </div>
     <ui-popover
       v-model="contextMenu.show"
@@ -61,7 +65,15 @@
 </template>
 <script>
 /* eslint-disable camelcase */
-import { onMounted, shallowRef, reactive, getCurrentInstance } from 'vue';
+import {
+  onMounted,
+  shallowRef,
+  reactive,
+  getCurrentInstance,
+  watch,
+  onBeforeUnmount,
+} from 'vue';
+import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { compare } from 'compare-versions';
 import defu from 'defu';
@@ -78,15 +90,25 @@ export default {
       type: [Object, String],
       default: null,
     },
+    isShared: {
+      type: Boolean,
+      default: false,
+    },
     version: {
-      type: String,
+      type: [String, Boolean],
       default: '',
+    },
+    mode: {
+      type: String,
+      default: 'edit',
     },
   },
   emits: ['load', 'deleteBlock', 'update', 'save'],
   setup(props, { emit }) {
     useGroupTooltip();
+
     const { t } = useI18n();
+    const route = useRoute();
 
     const contextMenuItems = {
       block: [
@@ -114,6 +136,8 @@ export default {
       show: false,
       position: {},
     });
+
+    const workflowId = route.params.id;
 
     const prevSelectedEl = {
       output: null,
@@ -301,6 +325,31 @@ export default {
         'vue'
       );
     }
+    function checkWorkflowData() {
+      if (!editor.value) return;
+
+      editor.value.editor_mode = props.isShared ? 'fixed' : 'edit';
+      editor.value.container.classList.toggle('is-shared', props.isShared);
+    }
+    function refreshConnection() {
+      const nodes = document.querySelectorAll('#drawflow .drawflow-node');
+      nodes.forEach((node) => {
+        if (!node.id) return;
+
+        editor.value.updateConnectionNodes(node.id);
+      });
+    }
+    function saveEditorState() {
+      const editorStates =
+        parseJSON(localStorage.getItem('editor-states'), {}) || {};
+      editorStates[workflowId] = {
+        zoom: editor.value.zoom,
+        canvas_x: editor.value.canvas_x,
+        canvas_y: editor.value.canvas_y,
+      };
+
+      localStorage.setItem('editor-states', JSON.stringify(editorStates));
+    }
 
     useShortcut('editor:duplicate-block', () => {
       const selectedElement = document.querySelector('.drawflow-node.selected');
@@ -310,11 +359,24 @@ export default {
       duplicateBlock(selectedElement.id.substr(5));
     });
 
+    watch(() => props.isShared, checkWorkflowData);
+
     onMounted(() => {
       const context = getCurrentInstance().appContext.app._context;
       const element = document.querySelector('#drawflow');
 
       editor.value = drawflow(element, { context, options: { reroute: true } });
+
+      const editorStates =
+        parseJSON(localStorage.getItem('editor-states'), {}) || {};
+      const editorState = editorStates[workflowId];
+
+      if (editorState) {
+        editor.value.zoom = editorState.zoom;
+        editor.value.canvas_x = editorState.canvas_x;
+        editor.value.canvas_y = editorState.canvas_y;
+      }
+
       editor.value.start();
 
       emit('load', editor.value);
@@ -325,7 +387,7 @@ export default {
             ? parseJSON(props.data, null)
             : props.data;
 
-        if (!data) return;
+        if (!data || !data?.drawflow?.Home) return;
 
         const currentExtVersion = chrome.runtime.getManifest().version;
         const isOldWorkflow = compare(
@@ -334,7 +396,7 @@ export default {
           '>'
         );
 
-        if (isOldWorkflow) {
+        if (isOldWorkflow && typeof props.version !== 'boolean') {
           const newDrawflowData = Object.entries(
             data.drawflow.Home.data
           ).reduce((obj, [key, value]) => {
@@ -361,7 +423,7 @@ export default {
             emit('save');
           }, 200);
         }
-      } else {
+      } else if (!props.isShared) {
         editor.value.addNode(
           'trigger',
           0,
@@ -403,6 +465,7 @@ export default {
       editor.value.on('connectionRemoved', () => {
         emitter.emit('editor:data-changed');
       });
+      editor.value.on('export', saveEditorState);
       editor.value.on('contextmenu', ({ clientY, clientX, target }) => {
         const isBlock = target.closest('.drawflow .drawflow-node');
 
@@ -425,10 +488,14 @@ export default {
         }
       });
 
+      checkWorkflowData();
+
       setTimeout(() => {
         editor.value.zoom_refresh();
+        refreshConnection();
       }, 500);
     });
+    onBeforeUnmount(saveEditorState);
 
     return {
       t,
@@ -448,5 +515,11 @@ export default {
 #drawflow {
   background-image: url('@/assets/images/tile.png');
   background-size: 35px;
+}
+.dark #drawflow {
+  background-image: url('@/assets/images/tile-white.png');
+}
+.drawflow .drawflow-node {
+  @apply dark:bg-gray-800;
 }
 </style>

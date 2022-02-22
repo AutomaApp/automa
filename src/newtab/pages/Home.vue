@@ -4,7 +4,10 @@
     <div class="flex items-start">
       <div class="w-8/12 mr-8">
         <div class="grid gap-4 mb-8 2xl:grid-cols-4 grid-cols-3">
-          <p v-if="workflows.length === 0" class="text-center text-gray-600">
+          <p
+            v-if="workflows.length === 0"
+            class="text-center text-gray-600 dark:text-gray-200"
+          >
             {{ t('message.noData') }}
           </p>
           <shared-card
@@ -22,19 +25,25 @@
             <p class="font-semibold inline-block">Logs</p>
             <router-link
               to="/logs"
-              class="text-gray-600 text-sm dark:text-gray-200"
+              class="text-gray-600 dark:text-gray-200 text-sm"
             >
               {{ t('home.viewAll') }}
             </router-link>
           </div>
-          <p v-if="logs.length === 0" class="text-center text-gray-600">
+          <p
+            v-if="logs.length === 0"
+            class="text-center text-gray-600 dark:text-gray-200"
+          >
             {{ t('message.noData') }}
           </p>
           <shared-logs-table :logs="logs" class="w-full" />
         </div>
       </div>
       <div class="w-4/12 space-y-4">
-        <p v-if="workflowState.length === 0" class="text-center text-gray-600">
+        <p
+          v-if="workflowState.length === 0"
+          class="text-center text-gray-600 dark:text-gray-200"
+        >
           {{ t('message.noData') }}
         </p>
         <shared-workflow-state

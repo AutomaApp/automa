@@ -1,4 +1,4 @@
-import { handleElement } from '../helper';
+import handleSelector from '../handle-selector';
 
 function elementScroll(block) {
   function incScrollPos(element, data, vertical = true) {
@@ -17,7 +17,7 @@ function elementScroll(block) {
     const { data } = block;
     const behavior = data.smooth ? 'smooth' : 'auto';
 
-    handleElement(block, {
+    handleSelector(block, {
       onSelected(element) {
         if (data.scrollIntoView) {
           element.scrollIntoView({ behavior, block: 'center' });

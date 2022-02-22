@@ -28,15 +28,15 @@ async function updateSpreadsheetValues(
     dataFrom,
     customData,
   },
-  dataColumns
+  columns
 ) {
   let values = [];
 
-  if (dataFrom === 'data-columns') {
+  if (['data-columns', 'table'].includes(dataFrom)) {
     if (keysAsFirstRow) {
-      values = convertArrObjTo2DArr(dataColumns);
+      values = convertArrObjTo2DArr(columns);
     } else {
-      values = dataColumns.map(Object.values);
+      values = columns.map(Object.values);
     }
   } else if (dataFrom === 'custom') {
     values = parseJSON(customData, customData);
@@ -75,10 +75,7 @@ export default async function ({ data, outputs }) {
         this.referenceData.googleSheets[data.refKey] = spreadsheetValues;
       }
     } else if (data.type === 'update') {
-      result = await updateSpreadsheetValues(
-        data,
-        this.referenceData.dataColumns
-      );
+      result = await updateSpreadsheetValues(data, this.referenceData.table);
     }
 
     return {

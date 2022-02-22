@@ -1,5 +1,5 @@
 class FindElement {
-  static cssSelector(data, documentCtx) {
+  static cssSelector(data, documentCtx = document) {
     const selector = data.markEl
       ? `${data.selector.trim()}:not([${data.blockIdAttr}])`
       : data.selector;
@@ -15,7 +15,7 @@ class FindElement {
     return documentCtx.querySelector(selector);
   }
 
-  static xpath(data, documentCtx) {
+  static xpath(data, documentCtx = document) {
     return documentCtx.evaluate(
       data.selector,
       documentCtx,

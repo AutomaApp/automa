@@ -4,17 +4,20 @@
       :model-value="data.description"
       autoresize
       :placeholder="t('common.description')"
-      class="w-full mb-2"
+      class="w-full mb-1"
       @change="updateData({ description: $event })"
     />
     <ui-input
-      type="number"
       :model-value="data.timeout"
-      class="mb-2 w-full"
-      :placeholder="t('workflow.blocks.javascript-code.timeout.placeholder')"
+      :label="t('workflow.blocks.javascript-code.timeout.placeholder')"
       :title="t('workflow.blocks.javascript-code.timeout.title')"
+      type="number"
+      class="mb-2 w-full"
       @change="updateData({ timeout: +$event })"
     />
+    <p class="text-sm ml-1 text-gray-600 dark:text-gray-200">
+      {{ t('workflow.blocks.javascript-code.name') }}
+    </p>
     <pre
       v-if="!state.showCodeModal"
       class="rounded-lg overflow-auto text-gray-200 p-4 max-h-80 bg-gray-900"
@@ -44,10 +47,12 @@
             class="overflow-auto"
             style="height: 87%"
           />
-          <p class="mt-1">
+          <p class="mt-1 text-sm">
             {{ t('workflow.blocks.javascript-code.availabeFuncs') }}
           </p>
-          <p class="space-x-1">
+          <p
+            class="space-x-1 whitespace-nowrap overflow-x-auto overflow-y-hidden pb-1 scroll"
+          >
             <a
               v-for="func in availableFuncs"
               :key="func.id"
@@ -111,9 +116,13 @@ const emit = defineEmits(['update:data']);
 const { t } = useI18n();
 
 const availableFuncs = [
-  { name: 'automaNextBlock(data)', id: 'automanextblock-data' },
-  { name: 'automaRefData(keyword, path)', id: 'automarefdata-keyword-path' },
-  { name: 'automaResetTimeout', id: 'automaresettimeout' },
+  { name: 'automaNextBlock(data, insert?)', id: 'automanextblock-data' },
+  { name: 'automaRefData(keyword, path?)', id: 'automarefdata-keyword-path' },
+  {
+    name: 'automaSetVariable(name, value)',
+    id: 'automasetvariable-name-value',
+  },
+  { name: 'automaResetTimeout()', id: 'automaresettimeout' },
 ];
 
 const state = reactive({
@@ -159,12 +168,29 @@ function automaFuncsCompletion(context) {
           const container = document.createElement('div');
 
           container.innerHTML = `
-            <code>automaNextBlock(<i>data</i>)</code>
+            <code>automaNextBlock(<i>data</i>, <i>insert?</i>)</code>
             <p class="mt-2">
               Execute the next block
               <a href="https://docs.automa.site/blocks/javascript-code.html#automanextblock-data" target="_blank" class="underline">
                 Read more
               </a>
+            </p>
+          `;
+
+          return container;
+        },
+      },
+      {
+        label: 'automaSetVariable',
+        type: 'function',
+        apply: snippet('automaSetVariable(${name}, ${value})'),
+        info: () => {
+          const container = document.createElement('div');
+
+          container.innerHTML = `
+            <code>automaRefData(<i>name</i>, <i>value</i>)</code>
+            <p class="mt-2">
+              Set the value of a variable
             </p>
           `;
 

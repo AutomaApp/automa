@@ -50,6 +50,9 @@ function initWebListener() {
           'workflows'
         );
 
+        workflow.table = workflow.table || workflow.dataColumns;
+        delete workflow.dataColumns;
+
         workflowsStorage.push({
           ...workflow,
           id: nanoid(),

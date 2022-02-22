@@ -18,31 +18,42 @@
       </option>
     </ui-select>
     <transition-expand mode="out-in">
-      <div v-if="data.type === 'interval'" class="flex items-center mt-1">
-        <ui-input
-          :model-value="data.interval"
-          :label="t('workflow.blocks.trigger.forms.interval')"
-          type="number"
-          class="w-full mr-2"
-          placeholder="1-120"
-          min="1"
-          max="120"
-          @change="
-            updateIntervalInput($event, { key: 'interval', min: 1, max: 120 })
-          "
-        />
-        <ui-input
-          :model-value="data.delay"
-          type="number"
-          class="w-full"
-          :label="t('workflow.blocks.trigger.forms.delay')"
-          min="0"
-          max="20"
-          placeholder="0-20"
-          @change="
-            updateIntervalInput($event, { key: 'delay', min: 0, max: 20 })
-          "
-        />
+      <div v-if="data.type === 'interval'">
+        <div class="flex items-center mt-1">
+          <ui-input
+            :model-value="data.interval"
+            :label="t('workflow.blocks.trigger.forms.interval')"
+            type="number"
+            class="w-full"
+            placeholder="1-120"
+            min="1"
+            max="120"
+            @change="
+              updateIntervalInput($event, { key: 'interval', min: 1, max: 120 })
+            "
+          />
+          <ui-input
+            v-if="!data.fixedDelay"
+            :model-value="data.delay"
+            type="number"
+            class="w-full ml-2"
+            :label="t('workflow.blocks.trigger.forms.delay')"
+            min="0"
+            max="20"
+            placeholder="0-20"
+            @change="
+              updateIntervalInput($event, { key: 'delay', min: 0, max: 20 })
+            "
+          />
+        </div>
+        <ui-checkbox
+          :model-value="data.fixedDelay"
+          block
+          class="mt-2"
+          @change="updateData({ fixedDelay: $event })"
+        >
+          {{ t('workflow.blocks.trigger.fixedDelay') }}
+        </ui-checkbox>
       </div>
       <div v-else-if="data.type === 'date'" class="mt-2">
         <ui-input
@@ -202,6 +213,7 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 import dayjs from 'dayjs';
 import { isObject } from '@/utils/helper';
+import recordShortcut from '@/utils/record-shortcut';
 
 const props = defineProps({
   data: {
@@ -234,17 +246,6 @@ const days = {
 };
 const maxDate = dayjs().add(30, 'day').format('YYYY-MM-DD');
 const minDate = dayjs().format('YYYY-MM-DD');
-const allowedKeys = {
-  '+': 'plus',
-  Delete: 'del',
-  Insert: 'ins',
-  ArrowDown: 'down',
-  ArrowLeft: 'left',
-  ArrowUp: 'up',
-  ArrowRight: 'right',
-  Escape: 'escape',
-  Enter: 'enter',
-};
 
 const recordKeys = reactive({
   isRecording: false,
@@ -312,26 +313,10 @@ function addTime() {
   });
 }
 function handleKeydownEvent(event) {
-  event.preventDefault();
-  event.stopPropagation();
-
-  if (event.repeat) return;
-
-  const keys = [];
-  const { ctrlKey, altKey, metaKey, shiftKey, key } = event;
-
-  if (ctrlKey || metaKey) keys.push('mod');
-  if (altKey) keys.push('option');
-  if (shiftKey) keys.push('shift');
-
-  const isValidKey = !!allowedKeys[key] || /^[a-z0-9,./;'[\]\-=`]$/i.test(key);
-
-  if (isValidKey) {
-    keys.push(allowedKeys[key] || key.toLowerCase());
-
+  recordShortcut(event, (keys) => {
     recordKeys.keys = keys.join('+');
     updateData({ shortcut: recordKeys.keys });
-  }
+  });
 }
 function toggleRecordKeys() {
   if (recordKeys.isRecording) {
