@@ -15,7 +15,7 @@ export default function ({ block, refKeys, data }) {
       currentData.forEach((str, index) => {
         currentData[index] = mustacheReplacer(str, data);
       });
-    } else {
+    } else if (typeof currentData === 'string') {
       copyBlock.data[blockDataKey] = mustacheReplacer(currentData, data);
     }
   });
