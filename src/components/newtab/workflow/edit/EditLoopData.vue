@@ -52,16 +52,6 @@
       class="mt-2 w-full"
       @change="updateData({ elementSelector: $event })"
     />
-    <ui-input
-      v-if="data.loopThrough !== 'numbers'"
-      :model-value="data.maxLoop"
-      :label="t('workflow.blocks.loop-data.maxLoop.label')"
-      :title="t('workflow.blocks.loop-data.maxLoop.title')"
-      class="w-full mt-2"
-      min="0"
-      type="number"
-      @change="updateData({ maxLoop: +$event || 0 })"
-    />
     <ui-button
       v-else-if="data.loopThrough === 'custom-data'"
       class="w-full mt-4"
@@ -96,6 +86,16 @@
         "
       />
     </div>
+    <ui-input
+      v-if="data.loopThrough !== 'numbers'"
+      :model-value="data.maxLoop"
+      :label="t('workflow.blocks.loop-data.maxLoop.label')"
+      :title="t('workflow.blocks.loop-data.maxLoop.title')"
+      class="w-full mt-2"
+      min="0"
+      type="number"
+      @change="updateData({ maxLoop: +$event || 0 })"
+    />
     <ui-modal
       v-model="state.showDataModal"
       title="Data"
