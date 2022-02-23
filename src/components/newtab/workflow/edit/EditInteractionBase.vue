@@ -26,7 +26,7 @@
         @change="updateData({ selector: $event })"
       />
       <ui-expand
-        v-if="!hideSelector && (data.findBy || 'cssSelector') === 'cssSelector'"
+        v-if="!hideSelector"
         hide-header-icon
         header-class="flex items-center w-full focus:ring-0"
       >
@@ -38,7 +38,10 @@
           />
           Selector options
         </template>
-        <div class="mt-1">
+        <div
+          v-if="(data.findBy || 'cssSelector') === 'cssSelector'"
+          class="mt-1"
+        >
           <ui-checkbox
             v-if="!data.disableMultiple && !hideMultiple"
             :title="t('workflow.blocks.base.multiple.title')"

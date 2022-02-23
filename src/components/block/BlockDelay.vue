@@ -21,7 +21,7 @@
       :title="t('workflow.blocks.delay.input.title')"
       :placeholder="t('workflow.blocks.delay.input.placeholder')"
       class="px-4 py-2 rounded-lg w-36 bg-input"
-      type="number"
+      type="text"
       required
       @input="handleInput"
     />
@@ -45,13 +45,7 @@ const componentId = useComponentId('block-delay');
 const block = useEditorBlock(`#${componentId}`, props.editor);
 
 function handleInput({ target }) {
-  target.reportValidity();
-
-  const time = +target.value || 0;
-
-  if (time < 0) return;
-
-  props.editor.updateNodeDataFromId(block.id, { time });
+  props.editor.updateNodeDataFromId(block.id, { time: target.value });
   emitter.emit('editor:data-changed', block.id);
 }
 </script>
