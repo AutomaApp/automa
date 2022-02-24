@@ -41,6 +41,14 @@
         {{ type.name }}
       </option>
     </ui-select>
+    <ui-checkbox
+      v-if="data.type === 'csv'"
+      :model-value="data.addBOMHeader"
+      class="mt-2"
+      @change="updateData({ addBOMHeader: $event })"
+    >
+      {{ t('workflow.blocks.export-data.bomHeader') }}
+    </ui-checkbox>
   </div>
 </template>
 <script setup>

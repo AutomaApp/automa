@@ -98,7 +98,7 @@ export function replaceMustache(str, replacer) {
 }
 
 export function openFilePicker(acceptedFileTypes = [], attrs = {}) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = Array.isArray(acceptedFileTypes)
@@ -110,14 +110,16 @@ export function openFilePicker(acceptedFileTypes = [], attrs = {}) {
     });
 
     input.onchange = (event) => {
-      const file = event.target.files[0];
+      const { files } = event.target;
+      const validFiles = [];
 
-      if (!file || !acceptedFileTypes.includes(file.type)) {
-        reject(new Error(`Invalid ${file.type} file type`));
-        return;
-      }
+      files.forEach((file) => {
+        if (!acceptedFileTypes.includes(file.type)) return;
 
-      resolve(file);
+        validFiles.push(file);
+      });
+
+      resolve(validFiles);
     };
 
     input.click();

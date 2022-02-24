@@ -14,7 +14,7 @@ function getText(block) {
     } = block.data;
 
     if (regexData) {
-      regex = new RegExp(regexData, regexExp.join(''));
+      regex = new RegExp(regexData, [...new Set(regexExp)].join(''));
     }
 
     handleSelector(block, {

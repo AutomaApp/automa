@@ -36,7 +36,7 @@ export function generateJSON(keys, data) {
   return result;
 }
 
-export default function (data, { name, type }, converted) {
+export default function (data, { name, type, addBOMHeader }, converted) {
   let result = data;
 
   if (type === 'csv' || type === 'json') {
@@ -54,8 +54,14 @@ export default function (data, { name, type }, converted) {
     ).join(' ');
   }
 
+  const payload = [result];
+
+  if (addBOMHeader) {
+    payload.unshift(new Uint8Array([0xef, 0xbb, 0xbf]));
+  }
+
   const { mime, ext } = files[type];
-  const blob = new Blob([result], {
+  const blob = new Blob(payload, {
     type: mime,
   });
 

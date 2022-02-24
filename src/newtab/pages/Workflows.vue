@@ -50,7 +50,7 @@
         <v-remixicon name="riCompass3Line" class="mr-2 -ml-1" />
         {{ t('workflow.browse') }}
       </ui-button>
-      <ui-button @click="importWorkflow">
+      <ui-button @click="importWorkflow({ multiple: true })">
         <v-remixicon name="riUploadLine" class="mr-2 -ml-1" />
         {{ t('workflow.import') }}
       </ui-button>

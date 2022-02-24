@@ -1,17 +1,15 @@
 import { parseJSON, fileSaver, openFilePicker, isObject } from './helper';
 import Workflow from '@/models/workflow';
 
-export function importWorkflow() {
-  openFilePicker(['application/json'])
-    .then((file) => {
-      const reader = new FileReader();
+export function importWorkflow(attrs = {}) {
+  openFilePicker(['application/json'], attrs)
+    .then((files) => {
       const getDrawflow = ({ drawflow }) => {
         if (isObject(drawflow)) return JSON.stringify(drawflow);
 
         return drawflow;
       };
-
-      reader.onload = ({ target }) => {
+      const handleOnLoadReader = ({ target }) => {
         const workflow = JSON.parse(target.result);
 
         if (workflow.includedWorkflows) {
@@ -52,7 +50,12 @@ export function importWorkflow() {
         });
       };
 
-      reader.readAsText(file);
+      files.forEach((file) => {
+        const reader = new FileReader();
+
+        reader.onload = handleOnLoadReader;
+        reader.readAsText(file);
+      });
     })
     .catch((error) => {
       console.error(error);
