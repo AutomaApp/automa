@@ -41,6 +41,14 @@
         {{ type.name }}
       </option>
     </ui-select>
+    <ui-checkbox
+      v-if="data.type === 'csv'"
+      :model-value="data.addBOMHeader"
+      class="mt-2"
+      @change="updateData({ addBOMHeader: $event })"
+    >
+      Add UTF-8 BOM
+    </ui-checkbox>
   </div>
 </template>
 <script setup>

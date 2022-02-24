@@ -318,6 +318,7 @@ export const tasks = {
       refKey: '',
       type: 'json',
       description: '',
+      addBOMHeader: false,
       dataToExport: 'data-columns',
     },
   },
