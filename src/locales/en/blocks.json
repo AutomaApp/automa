@@ -236,6 +236,7 @@
         "description": "Export workflow data",
         "exportAs": "Export as",
         "refKey": "Reference key",
+        "bomHeader": "Add UTF-8 BOM",
         "dataToExport": {
           "placeholder": "Data to export",
           "options": {

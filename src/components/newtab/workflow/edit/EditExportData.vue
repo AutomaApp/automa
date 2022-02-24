@@ -47,7 +47,7 @@
       class="mt-2"
       @change="updateData({ addBOMHeader: $event })"
     >
-      Add UTF-8 BOM
+      {{ t('workflow.blocks.export-data.bomHeader') }}
     </ui-checkbox>
   </div>
 </template>

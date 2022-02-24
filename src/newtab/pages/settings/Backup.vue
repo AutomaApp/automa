@@ -215,29 +215,16 @@ function backupWorkflows() {
 }
 async function restoreWorkflows() {
   try {
-    const file = await openFilePicker('application/json');
+    const [file] = await openFilePicker('application/json');
     const reader = new FileReader();
     const insertWorkflows = (workflows) => {
-      workflows.forEach((workflow) => {
-        const isWorkflowExists = Workflow.query()
-          .where('id', workflow.id)
-          .exists();
-
-        if (!state.updateIfExists || !isWorkflowExists) {
+      const newWorkflows = workflows.map((workflow) => {
+        if (!state.updateIfExists) {
           workflow.createdAt = Date.now();
           delete workflow.id;
-
-          Workflow.insert({
-            data: workflow,
-          });
-
-          return;
         }
 
-        Workflow.update({
-          where: workflow.id,
-          data: workflow,
-        });
+        return workflow;
       });
       const showMessage = (event) => {
         toast(

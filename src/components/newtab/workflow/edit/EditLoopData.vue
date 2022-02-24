@@ -207,7 +207,7 @@ function updateLoopID(id) {
 }
 function importFile() {
   openFilePicker(['application/json', 'text/csv', 'application/vnd.ms-excel'])
-    .then(async (fileObj) => {
+    .then(async ([fileObj]) => {
       if (fileObj.size > maxFileSize) {
         toast.error(t('message.maxSizeExceeded'));
         return;
