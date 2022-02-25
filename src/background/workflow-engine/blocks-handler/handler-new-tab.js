@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { getBlockConnection } from '../helper';
+import { getBlockConnection, attachDebugger } from '../helper';
 import { isWhitespace } from '@/utils/helper';
 
 async function newTab(block) {
@@ -40,6 +40,10 @@ async function newTab(block) {
 
     this.activeTab.url = url;
     if (tab) {
+      if (this.isDebugMode) {
+        await attachDebugger(tab.id, this.activeTab.id);
+      }
+
       this.activeTab.id = tab.id;
       this.windowId = tab.windowId;
     }

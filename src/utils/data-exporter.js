@@ -56,7 +56,7 @@ export default function (data, { name, type, addBOMHeader }, converted) {
 
   const payload = [result];
 
-  if (addBOMHeader) {
+  if (type === 'csv' && addBOMHeader) {
     payload.unshift(new Uint8Array([0xef, 0xbb, 0xbf]));
   }
 
