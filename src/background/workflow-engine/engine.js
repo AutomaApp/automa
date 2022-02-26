@@ -9,7 +9,7 @@ import executeContentScript from './execute-content-script';
 class WorkflowEngine {
   constructor(
     workflow,
-    { states, logger, blocksHandler, tabId, parentWorkflow, globalData }
+    { states, logger, blocksHandler, tabId, parentWorkflow, data }
   ) {
     this.id = nanoid();
     this.states = states;
@@ -34,7 +34,8 @@ class WorkflowEngine {
     this.eventListeners = {};
     this.columns = { column: { index: 0, type: 'any' } };
 
-    const globalDataValue = globalData || workflow.globalData;
+    const globalData = data?.globalData || workflow.globalData;
+    const variables = isObject(data?.variables) ? data.variables : {};
 
     this.activeTab = {
       url: '',
@@ -44,12 +45,12 @@ class WorkflowEngine {
       groupId: null,
     };
     this.referenceData = {
+      variables,
       table: [],
       loopData: {},
       workflow: {},
-      variables: {},
       googleSheets: {},
-      globalData: parseJSON(globalDataValue, globalDataValue),
+      globalData: parseJSON(globalData, globalData),
     };
 
     this.onWorkflowStopped = (id) => {

@@ -370,7 +370,7 @@ message.on('collection:execute', (collection) => {
 });
 
 message.on('workflow:execute', (workflowData) => {
-  workflow.execute(workflowData);
+  workflow.execute(workflowData, workflowData?.options || {});
 });
 message.on('workflow:stop', async (id) => {
   await workflow.states.stop(id);
