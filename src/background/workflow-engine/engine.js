@@ -198,7 +198,7 @@ class WorkflowEngine {
       const endedTimestamp = Date.now();
       this.executeQueue();
 
-      if (!this.workflow.isTesting && this.saveLog) {
+      if (!this.workflow.isTesting) {
         const { name, id } = this.workflow;
 
         await this.logger.add({
@@ -207,7 +207,7 @@ class WorkflowEngine {
           message,
           id: this.id,
           workflowId: id,
-          history: this.history,
+          history: this.saveLog ? this.history : [],
           endedAt: endedTimestamp,
           parentLog: this.parentWorkflow,
           startedAt: this.startedTimestamp,

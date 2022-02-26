@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { finder } from '@medv/finder';
+import { nanoid } from 'nanoid';
 import { toCamelCase } from '@/utils/helper';
 import elementSelector from './element-selector';
 import executedBlock from './executed-block';
@@ -52,12 +52,17 @@ import blocksHandler from './blocks-handler';
           break;
         case 'loop-elements': {
           const selectors = [];
+          const attrId = nanoid(5);
           const elements = document.body.querySelectorAll(data.selector);
 
-          elements.forEach((el) => {
+          elements.forEach((el, index) => {
             if (data.max > 0 && selectors.length - 1 > data.max) return;
 
-            selectors.push(finder(el));
+            const attrName = 'automa-loop';
+            const attrValue = `${attrId}--${index}`;
+
+            el.setAttribute(attrName, attrValue);
+            selectors.push(`[${attrName}="${attrValue}"]`);
           });
 
           resolve(selectors);

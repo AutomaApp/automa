@@ -37,6 +37,7 @@ async function loopData({ data, id, outputs }) {
         },
         elements: async () => {
           const elements = await this._sendMessageToTab({
+            blockId: id,
             isBlock: false,
             max: data.maxLoop,
             type: 'loop-elements',
