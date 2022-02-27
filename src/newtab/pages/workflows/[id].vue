@@ -1,43 +1,5 @@
 <template>
-  <div v-if="protectionState.needed" class="py-12 mx-auto max-w-md w-full">
-    <div
-      class="inline-block p-4 bg-green-200 dark:bg-green-400 mb-4 rounded-full"
-    >
-      <v-remixicon name="riShieldKeyholeLine" size="52" />
-    </div>
-    <h1 class="text-xl dark:text-gray-100 font-semibold">
-      {{ t('workflow.locked.title') }}
-    </h1>
-    <p class="text-gray-600 dark:text-gray-200">
-      {{ t('workflow.locked.body') }}
-    </p>
-    <form class="flex items-center mt-6" @submit.prevent="unlockWorkflow">
-      <ui-input
-        v-model="protectionState.password"
-        :placeholder="t('common.password')"
-        :type="protectionState.showPassword ? 'text' : 'password'"
-        autofocus
-        class="w-80 mr-4"
-      >
-        <template #append>
-          <v-remixicon
-            :name="protectionState.showPassword ? 'riEyeOffLine' : 'riEyeLine'"
-            class="absolute right-2"
-            @click="
-              protectionState.showPassword = !protectionState.showPassword
-            "
-          />
-        </template>
-      </ui-input>
-      <ui-button variant="accent">
-        {{ t('workflow.locked.unlock') }}
-      </ui-button>
-    </form>
-    <p v-if="protectionState.message" class="ml-2 text-red-500">
-      {{ t(`workflow.locked.messages.${protectionState.message}`) }}
-    </p>
-  </div>
-  <div v-else-if="workflow" class="flex h-screen">
+  <div v-if="workflow" class="flex h-screen">
     <div
       v-if="state.showSidebar"
       class="w-80 bg-white dark:bg-gray-800 py-6 relative border-l border-gray-100 dark:border-gray-700 dark:border-opacity-50 flex flex-col"
@@ -719,20 +681,6 @@ function workflowExporter() {
 
   exportWorkflow(currentWorkflow);
 }
-function unlockWorkflow() {
-  protectionState.message = '';
-
-  const decryptedFlow = decryptFlow(workflow.value, protectionState.password);
-
-  if (decryptedFlow.isError) {
-    protectionState.message = decryptedFlow.message;
-    return;
-  }
-
-  state.drawflow = decryptedFlow;
-  protectionState.password = '';
-  protectionState.needed = false;
-}
 function toggleSidebar() {
   state.showSidebar = !state.showSidebar;
   localStorage.setItem('workflow:sidebar', state.showSidebar);
@@ -908,12 +856,7 @@ onMounted(() => {
     return;
   }
 
-  if (workflow.value.isProtected) {
-    protectionState.needed = true;
-  } else {
-    state.drawflow = workflow.value.drawflow;
-  }
-
+  state.drawflow = workflow.value.drawflow;
   state.showSidebar =
     JSON.parse(localStorage.getItem('workflow:sidebar')) ?? true;
 

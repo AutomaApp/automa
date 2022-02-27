@@ -87,17 +87,17 @@ class WorkflowEngine {
     }
 
     const workflowTable = this.workflow.table || this.workflow.dataColumns;
-    const dataColumns = Array.isArray(workflowTable)
+    const columns = Array.isArray(workflowTable)
       ? workflowTable
       : Object.values(workflowTable);
 
-    dataColumns.forEach(({ name, type }) => {
-      this.columns[name] = { index: 0, type };
+    columns.forEach(({ name, type, id }) => {
+      this.columns[id || name] = { index: 0, name, type };
     });
 
     this.blocks = blocks;
     this.startedTimestamp = Date.now();
-    this.workflow.table = dataColumns;
+    this.workflow.table = columns;
     this.currentBlock = currentBlock || triggerBlock;
 
     this.states.on('stop', this.onWorkflowStopped);
@@ -147,8 +147,9 @@ class WorkflowEngine {
       return;
     }
 
-    const columnName = objectHasKey(this.columns, key) ? key : 'column';
-    const currentColumn = this.columns[columnName];
+    const columnKey = objectHasKey(this.columns, key) ? key : 'column';
+    const currentColumn = this.columns[columnKey];
+    const columnName = currentColumn.name || 'column';
     const convertedValue = convertData(value, currentColumn.type);
 
     if (objectHasKey(this.referenceData.table, currentColumn.index)) {

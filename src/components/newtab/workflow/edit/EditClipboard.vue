@@ -10,53 +10,7 @@
       <p class="mt-4">
         {{ t('workflow.blocks.clipboard.data') }}
       </p>
-      <ui-input
-        v-if="data.responseType === 'json'"
-        :model-value="data.dataPath"
-        placeholder="path.to.data"
-        label="Data path"
-        class="w-full mt-2"
-        @change="updateData({ dataPath: $event })"
-      />
-      <ui-checkbox
-        :model-value="data.assignVariable"
-        block
-        class="mt-4"
-        @change="updateData({ assignVariable: $event })"
-      >
-        {{ t('workflow.variables.assign') }}
-      </ui-checkbox>
-      <ui-input
-        v-if="data.assignVariable"
-        :model-value="data.variableName"
-        :placeholder="t('workflow.variables.name')"
-        :title="t('workflow.variables.name')"
-        class="mt-2 w-full"
-        @change="updateData({ variableName: $event })"
-      />
-      <ui-checkbox
-        :model-value="data.saveData"
-        block
-        class="mt-4"
-        @change="updateData({ saveData: $event })"
-      >
-        {{ t('workflow.blocks.get-text.checkbox') }}
-      </ui-checkbox>
-      <ui-select
-        v-if="data.saveData"
-        :model-value="data.dataColumn"
-        placeholder="Select column"
-        class="mt-2 w-full"
-        @change="updateData({ dataColumn: $event })"
-      >
-        <option
-          v-for="column in workflow.data.value.table"
-          :key="column.name"
-          :value="column.name"
-        >
-          {{ column.name }}
-        </option>
-      </ui-select>
+      <insert-workflow-data :data="data" variables @update="updateData" />
     </template>
     <template v-else>
       <p class="mt-4">
@@ -69,9 +23,10 @@
   </div>
 </template>
 <script setup>
-import { ref, inject, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import browser from 'webextension-polyfill';
+import InsertWorkflowData from './InsertWorkflowData.vue';
 
 const props = defineProps({
   data: {
@@ -84,7 +39,6 @@ const emit = defineEmits(['update:data']);
 const permission = { permissions: ['clipboardRead'] };
 const { t } = useI18n();
 
-const workflow = inject('workflow');
 const hasPermission = ref(false);
 
 function handlePermission(status) {

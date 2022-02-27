@@ -12,6 +12,15 @@
       "base": {
         "moveToGroup": "Move block to blocks group",
         "selector": "Element selector",
+        "table": {
+          "checkbox": "Insert to table",
+          "select": "Select column",
+          "extraRow": {
+            "checkbox": "Add extra row",
+            "placeholder": "Value",
+            "title": "Value of the extra row"
+          }
+        },
         "findElement": {
           "placeholder": "Find element by",
           "options": {
@@ -224,11 +233,6 @@
         "suffixText": {
           "placeholder": "Text suffix",
           "title": "Add suffix to the text"
-        },
-        "extraRow": {
-          "checkbox": "Add extra row",
-          "placeholder": "Value",
-          "title": "Value of the extra row"
         }
       },
       "export-data": {

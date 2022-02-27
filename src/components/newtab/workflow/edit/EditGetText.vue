@@ -7,7 +7,7 @@
         :value="data.regex"
         placeholder="Regex"
         class="w-11/12 bg-transparent p-2 focus:ring-0"
-        @change="updateData({ regex: $event.target.value })"
+        @input="updateData({ regex: $event.target.value })"
       />
       <ui-popover>
         <template #trigger>
@@ -52,80 +52,18 @@
       {{ t('workflow.blocks.get-text.includeTags') }}
     </ui-checkbox>
     <hr />
-    <ui-checkbox
-      :model-value="data.assignVariable"
-      block
-      @change="updateData({ assignVariable: $event })"
-    >
-      {{ t('workflow.variables.assign') }}
-    </ui-checkbox>
-    <ui-input
-      v-if="data.assignVariable"
-      :model-value="data.variableName"
-      :placeholder="t('workflow.variables.name')"
-      :title="t('workflow.variables.name')"
-      class="mt-2 w-full"
-      @change="updateData({ variableName: $event })"
+    <insert-workflow-data
+      :data="data"
+      variables
+      extra-row
+      @update="updateData"
     />
-    <ui-checkbox
-      :model-value="data.saveData"
-      block
-      class="mt-4"
-      @change="updateData({ saveData: $event })"
-    >
-      {{ t('workflow.blocks.get-text.checkbox') }}
-    </ui-checkbox>
-    <ui-select
-      v-if="data.saveData"
-      :model-value="data.dataColumn"
-      placeholder="Select column"
-      class="w-full mt-2 mb-4"
-      @change="updateData({ dataColumn: $event })"
-    >
-      <option
-        v-for="column in workflow.data.value.table"
-        :key="column.name"
-        :value="column.name"
-      >
-        {{ column.name }}
-      </option>
-    </ui-select>
-    <ui-checkbox
-      :model-value="data.addExtraRow"
-      block
-      class="mt-4"
-      @change="updateData({ addExtraRow: $event })"
-    >
-      {{ t('workflow.blocks.get-text.extraRow.checkbox') }}
-    </ui-checkbox>
-    <template v-if="data.addExtraRow">
-      <ui-input
-        :model-value="data.extraRowValue"
-        :title="t('workflow.blocks.get-text.extraRow.title')"
-        :placeholder="t('workflow.blocks.get-text.extraRow.placeholder')"
-        class="w-full my-2"
-        @change="updateData({ extraRowValue: $event })"
-      />
-      <ui-select
-        :model-value="data.extraRowDataColumn"
-        placeholder="Select column"
-        class="w-full"
-        @change="updateData({ extraRowDataColumn: $event })"
-      >
-        <option
-          v-for="column in workflow.data.value.table"
-          :key="column.name"
-          :value="column.name"
-        >
-          {{ column.name }}
-        </option>
-      </ui-select>
-    </template>
   </edit-interaction-base>
 </template>
 <script setup>
-import { inject, ref } from 'vue';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import InsertWorkflowData from './InsertWorkflowData.vue';
 import EditInteractionBase from './EditInteractionBase.vue';
 
 const props = defineProps({
@@ -138,7 +76,6 @@ const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
 
-const workflow = inject('workflow');
 const regexExp = ref([...new Set(props.data.regexExp)]);
 
 const exps = [

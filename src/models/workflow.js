@@ -53,6 +53,13 @@ class Workflow extends Model {
       model.drawflow = decryptFlow(model, pass);
       model.isProtected = false;
     }
+    if (model.table && !model.table[0]?.id) {
+      model.table = model.table.map((column) => {
+        if (!column.id) column.id = column.name;
+
+        return column;
+      });
+    }
 
     return model;
   }

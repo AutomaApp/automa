@@ -314,8 +314,6 @@ export default {
       const blockInputs = Object.keys(inputs).length || defInputs;
       const blockOutputs = Object.keys(outputs).length || defOutputs;
 
-      console.log(blockInputs, blockOutputs);
-
       editor.value.addNode(
         name,
         blockInputs,

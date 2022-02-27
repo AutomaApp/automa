@@ -116,45 +116,7 @@
           class="w-full mt-2"
           @change="updateData({ dataPath: $event })"
         />
-        <ui-checkbox
-          :model-value="data.assignVariable"
-          block
-          class="mt-2"
-          @change="updateData({ assignVariable: $event })"
-        >
-          {{ t('workflow.variables.assign') }}
-        </ui-checkbox>
-        <ui-input
-          v-if="data.assignVariable"
-          :model-value="data.variableName"
-          :placeholder="t('workflow.variables.name')"
-          :title="t('workflow.variables.name')"
-          class="mt-2 w-full mb-2"
-          @change="updateData({ variableName: $event })"
-        />
-        <ui-checkbox
-          :model-value="data.saveData"
-          block
-          class="mt-2"
-          @change="updateData({ saveData: $event })"
-        >
-          {{ t('workflow.blocks.get-text.checkbox') }}
-        </ui-checkbox>
-        <ui-select
-          v-if="data.saveData"
-          :model-value="data.dataColumn"
-          placeholder="Select column"
-          class="mt-2 w-full"
-          @change="updateData({ dataColumn: $event })"
-        >
-          <option
-            v-for="column in workflow.data.value.table"
-            :key="column.name"
-            :value="column.name"
-          >
-            {{ column.name }}
-          </option>
-        </ui-select>
+        <insert-workflow-data :data="data" variables @update="updateData" />
       </ui-tab-panel>
     </ui-tab-panels>
     <ui-modal
@@ -182,9 +144,10 @@
   </div>
 </template>
 <script setup>
-import { ref, watch, defineAsyncComponent, inject } from 'vue';
+import { ref, watch, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { contentTypes } from '@/utils/shared';
+import InsertWorkflowData from './InsertWorkflowData.vue';
 
 const SharedCodemirror = defineAsyncComponent(() =>
   import('@/components/newtab/shared/SharedCodemirror.vue')
@@ -203,7 +166,6 @@ const { t } = useI18n();
 const methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
 const notHaveBody = ['GET', 'DELETE'];
 
-const workflow = inject('workflow');
 const activeTab = ref('headers');
 const showBodyModal = ref(false);
 const headers = ref(JSON.parse(JSON.stringify(props.data.headers)));
