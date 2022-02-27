@@ -35,7 +35,9 @@ export function workflow(flow) {
         isCollection: true,
         name: this.collection.name,
       },
-      globalData: globalData.trim() === '' ? null : globalData,
+      data: {
+        globalData: globalData.trim() === '' ? null : globalData,
+      },
     });
 
     this.executedWorkflow.data = {

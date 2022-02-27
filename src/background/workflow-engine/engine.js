@@ -9,7 +9,7 @@ import executeContentScript from './execute-content-script';
 class WorkflowEngine {
   constructor(
     workflow,
-    { states, logger, blocksHandler, tabId, parentWorkflow, globalData }
+    { states, logger, blocksHandler, tabId, parentWorkflow, data }
   ) {
     this.id = nanoid();
     this.states = states;
@@ -34,7 +34,8 @@ class WorkflowEngine {
     this.eventListeners = {};
     this.columns = { column: { index: 0, type: 'any' } };
 
-    const globalDataValue = globalData || workflow.globalData;
+    const globalData = data?.globalData || workflow.globalData;
+    const variables = isObject(data?.variables) ? data.variables : {};
 
     this.activeTab = {
       url: '',
@@ -44,12 +45,12 @@ class WorkflowEngine {
       groupId: null,
     };
     this.referenceData = {
+      variables,
       table: [],
       loopData: {},
       workflow: {},
-      variables: {},
       googleSheets: {},
-      globalData: parseJSON(globalDataValue, globalDataValue),
+      globalData: parseJSON(globalData, globalData),
     };
 
     this.onWorkflowStopped = (id) => {
@@ -86,17 +87,17 @@ class WorkflowEngine {
     }
 
     const workflowTable = this.workflow.table || this.workflow.dataColumns;
-    const dataColumns = Array.isArray(workflowTable)
+    const columns = Array.isArray(workflowTable)
       ? workflowTable
       : Object.values(workflowTable);
 
-    dataColumns.forEach(({ name, type }) => {
-      this.columns[name] = { index: 0, type };
+    columns.forEach(({ name, type, id }) => {
+      this.columns[id || name] = { index: 0, name, type };
     });
 
     this.blocks = blocks;
     this.startedTimestamp = Date.now();
-    this.workflow.table = dataColumns;
+    this.workflow.table = columns;
     this.currentBlock = currentBlock || triggerBlock;
 
     this.states.on('stop', this.onWorkflowStopped);
@@ -146,8 +147,9 @@ class WorkflowEngine {
       return;
     }
 
-    const columnName = objectHasKey(this.columns, key) ? key : 'column';
-    const currentColumn = this.columns[columnName];
+    const columnKey = objectHasKey(this.columns, key) ? key : 'column';
+    const currentColumn = this.columns[columnKey];
+    const columnName = currentColumn.name || 'column';
     const convertedValue = convertData(value, currentColumn.type);
 
     if (objectHasKey(this.referenceData.table, currentColumn.index)) {
@@ -198,7 +200,7 @@ class WorkflowEngine {
       const endedTimestamp = Date.now();
       this.executeQueue();
 
-      if (!this.workflow.isTesting && this.saveLog) {
+      if (!this.workflow.isTesting) {
         const { name, id } = this.workflow;
 
         await this.logger.add({
@@ -207,7 +209,7 @@ class WorkflowEngine {
           message,
           id: this.id,
           workflowId: id,
-          history: this.history,
+          history: this.saveLog ? this.history : [],
           endedAt: endedTimestamp,
           parentLog: this.parentWorkflow,
           startedAt: this.startedTimestamp,

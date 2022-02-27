@@ -77,7 +77,9 @@ async function executeWorkflow({ outputs, data }) {
       states: this.states,
       logger: this.logger,
       blocksHandler: this.blocksHandler,
-      globalData: isWhitespace(data.globalData) ? null : data.globalData,
+      data: {
+        globalData: isWhitespace(data.globalData) ? null : data.globalData,
+      },
     };
 
     if (workflow.drawflow.includes(this.workflow.id)) {

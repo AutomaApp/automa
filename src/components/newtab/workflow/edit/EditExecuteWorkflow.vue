@@ -85,10 +85,12 @@ const state = shallowReactive({
 
 const workflows = computed(() =>
   Workflow.query()
-    .where(
-      ({ id, drawflow }) =>
-        id !== route.params.id && !drawflow.includes(route.params.id)
-    )
+    .where(({ id, drawflow }) => {
+      const flow =
+        typeof drawflow === 'string' ? drawflow : JSON.stringify(drawflow);
+
+      return id !== route.params.id && !flow.includes(route.params.id);
+    })
     .orderBy('name', 'asc')
     .get()
 );

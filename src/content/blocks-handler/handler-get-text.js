@@ -21,7 +21,7 @@ function getText(block) {
       onSelected(element) {
         let text = includeTags ? element.outerHTML : element.innerText;
 
-        if (regex) text = text.match(regex).join(' ');
+        if (regex) text = text.match(regex)?.join(' ') ?? text;
 
         text = (prefixText || '') + text + (suffixText || '');
 

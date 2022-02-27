@@ -1,7 +1,7 @@
 <template>
   <div class="flex mb-4">
     <ui-input
-      v-model.lowercase="state.query"
+      v-model="state.query"
       autofocus
       :placeholder="t('workflow.table.placeholder')"
       class="mr-2 flex-1"
@@ -18,14 +18,14 @@
   >
     <li
       v-for="(column, index) in columns"
-      :key="column.name"
+      :key="column.id"
       class="flex items-center space-x-2"
     >
       <ui-input
         :model-value="columns[index].name"
-        disabled
-        class="flex-1"
         :placeholder="t('workflow.table.column.name')"
+        class="flex-1"
+        @blur="updateColumnName(index, $event.target)"
       />
       <ui-select
         v-model="columns[index].type"
@@ -44,6 +44,7 @@
 </template>
 <script setup>
 import { computed, onMounted, watch, reactive } from 'vue';
+import { nanoid } from 'nanoid';
 import { useI18n } from 'vue-i18n';
 import { debounce } from '@/utils/helper';
 
@@ -72,28 +73,56 @@ const columns = computed(() =>
   state.columns.filter(({ name }) => name.includes(state.query))
 );
 
+function getColumnName(name) {
+  const columnName = name.replace(/[\s@[\]]/g, '');
+  const isColumnExists = state.columns.some(
+    (column) => column.name === columnName
+  );
+
+  if (isColumnExists || columnName.trim() === '') return '';
+
+  return columnName;
+}
+function updateColumnName(index, target) {
+  const columnName = getColumnName(target.value);
+
+  if (!columnName) {
+    target.value = state.columns[index].name;
+    return;
+  }
+
+  state.columns[index].name = columnName;
+}
 function addColumn() {
-  const isColumnExists = state.columns.some(({ name }) => name === state.query);
+  const columnName = getColumnName(state.query);
 
-  if (isColumnExists || state.query.trim() === '') return;
+  if (!columnName) return;
 
-  state.columns.push({ name: state.query, type: 'string' });
+  state.columns.push({ id: nanoid(5), name: columnName, type: 'string' });
   state.query = '';
 }
 
 watch(
   () => state.columns,
   debounce((newValue) => {
+    console.log(newValue);
     emit('update', { table: newValue });
   }, 250),
   { deep: true }
 );
 
 onMounted(() => {
-  const tempColumns = props.workflow.table;
+  let isChanged = false;
+  state.columns =
+    props.workflow.table?.map((column) => {
+      if (!column.id) {
+        isChanged = true;
+        column.id = column.name;
+      }
 
-  state.columns = Array.isArray(tempColumns)
-    ? tempColumns
-    : Object.values(tempColumns);
+      return column;
+    }) || props.workflow.table;
+
+  if (isChanged) emit('update', { table: state.columns });
 });
 </script>
