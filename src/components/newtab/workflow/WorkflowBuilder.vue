@@ -305,18 +305,21 @@ export default {
       editor.value.removeNodeId(contextMenu.data);
     }
     function duplicateBlock(id) {
-      const { name, pos_x, pos_y, data, html } = editor.value.getNodeFromId(
-        id || contextMenu.data.substr(5)
-      );
+      const { name, pos_x, pos_y, data, html, inputs, outputs } =
+        editor.value.getNodeFromId(id || contextMenu.data.substr(5));
 
       if (name === 'trigger') return;
 
-      const { outputs, inputs } = tasks[name];
+      const { outputs: defOutputs, inputs: defInputs } = tasks[name];
+      const blockInputs = Object.keys(inputs).length || defInputs;
+      const blockOutputs = Object.keys(outputs).length || defOutputs;
+
+      console.log(blockInputs, blockOutputs);
 
       editor.value.addNode(
         name,
-        inputs,
-        outputs,
+        blockInputs,
+        blockOutputs,
         pos_x + 50,
         pos_y + 100,
         name,
