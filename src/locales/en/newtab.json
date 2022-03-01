@@ -162,7 +162,8 @@
         "title": "On workflow error",
         "items": {
           "keepRunning": "Keep running",
-          "stopWorkflow": "Stop workflow"
+          "stopWorkflow": "Stop workflow",
+          "restartWorkflow": "Restart workflow"
         }
       },
       "timeout": {

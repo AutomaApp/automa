@@ -52,9 +52,14 @@ async function executeWorkflow({ outputs, data }) {
       throw errorInstance;
     }
     const options = {
-      parentWorkflow: {
-        id: this.id,
-        name: this.workflow.name,
+      options: {
+        data: {
+          globalData: isWhitespace(data.globalData) ? null : data.globalData,
+        },
+        parentWorkflow: {
+          id: this.id,
+          name: this.workflow.name,
+        },
       },
       events: {
         onInit: (engine) => {
@@ -77,9 +82,6 @@ async function executeWorkflow({ outputs, data }) {
       states: this.states,
       logger: this.logger,
       blocksHandler: this.blocksHandler,
-      data: {
-        globalData: isWhitespace(data.globalData) ? null : data.globalData,
-      },
     };
 
     if (workflow.drawflow.includes(this.workflow.id)) {

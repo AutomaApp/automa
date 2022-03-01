@@ -46,7 +46,9 @@
     }
   ],
   "optional_permissions": [
-    "clipboardRead"
+    "clipboardRead",
+    "webRequest",
+    "debugger"
   ],
   "permissions": [
     "tabs",

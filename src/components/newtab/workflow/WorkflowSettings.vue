@@ -4,23 +4,11 @@
       <p class="mb-1 capitalize">
         {{ t('workflow.settings.onError.title') }}
       </p>
-      <div class="space-x-4 flex w-full max-w-sm items-center">
-        <div
-          v-for="item in onError"
-          :key="item.id"
-          class="p-3 rounded-lg border transition-colors w-full hoverable"
-          @click="settings.onError = item.id"
-        >
-          <ui-radio
-            :model-value="settings.onError"
-            :value="item.id"
-            class="capitalize"
-            @change="settings.onError = $event"
-          >
-            {{ item.name }}
-          </ui-radio>
-        </div>
-      </div>
+      <ui-select v-model="settings.onError" class="w-full max-w-sm">
+        <option v-for="item in onError" :key="item.id" :value="item.id">
+          {{ t(`workflow.settings.onError.items.${item.name}`) }}
+        </option>
+      </ui-select>
     </div>
     <div>
       <p class="mb-1 capitalize">
@@ -67,11 +55,15 @@ const { t } = useI18n();
 const onError = [
   {
     id: 'keep-running',
-    name: t('workflow.settings.onError.items.keepRunning'),
+    name: 'keepRunning',
   },
   {
     id: 'stop-workflow',
-    name: t('workflow.settings.onError.items.stopWorkflow'),
+    name: 'stopWorkflow',
+  },
+  {
+    id: 'restart-workflow',
+    name: 'restartWorkflow',
   },
 ];
 

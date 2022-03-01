@@ -9,7 +9,7 @@ import executeContentScript from './execute-content-script';
 class WorkflowEngine {
   constructor(
     workflow,
-    { states, logger, blocksHandler, tabId, parentWorkflow, data }
+    { states, logger, blocksHandler, parentWorkflow, options }
   ) {
     this.id = nanoid();
     this.states = states;
@@ -23,6 +23,7 @@ class WorkflowEngine {
     this.repeatedTasks = {};
 
     this.windowId = null;
+    this.triggerBlock = null;
     this.currentBlock = null;
     this.childWorkflowId = null;
 
@@ -34,15 +35,20 @@ class WorkflowEngine {
     this.eventListeners = {};
     this.columns = { column: { index: 0, type: 'any' } };
 
-    const globalData = data?.globalData || workflow.globalData;
-    const variables = isObject(data?.variables) ? data.variables : {};
+    const globalData = options?.data?.globalData || workflow.globalData;
+    const variables = isObject(options?.data?.variables)
+      ? options?.data.variables
+      : {};
+
+    options.data = { globalData, variables };
+    this.options = options;
 
     this.activeTab = {
       url: '',
-      id: tabId,
       frameId: 0,
       frames: {},
       groupId: null,
+      id: options?.tabId,
     };
     this.referenceData = {
       variables,
@@ -59,7 +65,38 @@ class WorkflowEngine {
     };
   }
 
-  init(currentBlock) {
+  reset() {
+    this.loopList = {};
+    this.repeatedTasks = {};
+
+    this.windowId = null;
+    this.currentBlock = null;
+    this.childWorkflowId = null;
+
+    this.isDestroyed = false;
+    this.isUsingProxy = false;
+
+    this.history = [];
+    this.columns = { column: { index: 0, type: 'any' } };
+
+    this.activeTab = {
+      url: '',
+      frameId: 0,
+      frames: {},
+      groupId: null,
+      id: this.options?.tabId,
+    };
+    this.referenceData = {
+      table: [],
+      loopData: {},
+      workflow: {},
+      googleSheets: {},
+      variables: this.options.variables,
+      globalData: this.referenceData.globalData,
+    };
+  }
+
+  init() {
     if (this.workflow.isDisabled) return;
 
     if (!this.states) {
@@ -98,7 +135,7 @@ class WorkflowEngine {
     this.blocks = blocks;
     this.startedTimestamp = Date.now();
     this.workflow.table = columns;
-    this.currentBlock = currentBlock || triggerBlock;
+    this.currentBlock = triggerBlock;
 
     this.states.on('stop', this.onWorkflowStopped);
 
@@ -307,13 +344,19 @@ class WorkflowEngine {
         ...(error.data || {}),
       });
 
-      if (
-        this.workflow.settings.onError === 'keep-running' &&
-        error.nextBlockId
-      ) {
+      const { onError } = this.workflow.settings;
+
+      if (onError === 'keep-running' && error.nextBlockId) {
         setTimeout(() => {
           this.executeBlock(this.blocks[error.nextBlockId], error.data || '');
         }, blockDelay);
+      } else if (onError === 'restart-workflow' && !this.parentWorkflow) {
+        this.reset();
+
+        const triggerBlock = Object.values(this.blocks).find(
+          ({ name }) => name === 'trigger'
+        );
+        this.executeBlock(triggerBlock);
       } else {
         this.destroy('error', error.message);
       }

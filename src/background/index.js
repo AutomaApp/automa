@@ -64,7 +64,7 @@ const workflow = {
     }
 
     const engine = new WorkflowEngine(workflowData, {
-      ...options,
+      options,
       blocksHandler,
       logger: this.logger,
       states: this.states,
@@ -155,7 +155,7 @@ async function checkVisitWebTriggers(changeInfo, tab) {
   if (triggeredWorkflow) {
     const workflowData = await workflow.get(triggeredWorkflow.id);
 
-    if (workflowData) workflow.execute(workflowData);
+    if (workflowData) workflow.execute(workflowData, { tabId: tab.id });
   }
 }
 async function checkRecordingWorkflow({ status }, { url, id }) {
