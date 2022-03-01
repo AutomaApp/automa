@@ -18,6 +18,7 @@ class WorkflowEngine {
     this.blocksHandler = blocksHandler;
     this.parentWorkflow = parentWorkflow;
     this.saveLog = workflow.settings?.saveLog ?? true;
+    this.isDebugMode = workflow.settings?.debugMode ?? false;
 
     this.loopList = {};
     this.repeatedTasks = {};
@@ -292,11 +293,18 @@ class WorkflowEngine {
     this.dispatchEvent('update', { state: this.state });
 
     const startExecutedTime = Date.now();
-    const blockHandler = this.blocksHandler[toCamelCase(block?.name)];
-    const handler =
-      !blockHandler && tasks[block.name].category === 'interaction'
-        ? this.blocksHandler.interactionBlock
-        : blockHandler;
+    const blockName = toCamelCase(block.name);
+    const isInteractionBlock = tasks[block.name].category === 'interaction';
+
+    const blockHandler = this.blocksHandler[blockName];
+    const debugBlockHandler = this.blocksHandler.debug[blockName];
+    let handler = blockHandler;
+
+    if (this.isDebugMode && debugBlockHandler) {
+      handler = debugBlockHandler;
+    } else if (!blockHandler && isInteractionBlock) {
+      handler = this.blocksHandler.interactionBlock;
+    }
 
     if (!handler) {
       console.error(`"${block.name}" block doesn't have a handler`);

@@ -23,7 +23,7 @@
         class="w-full max-w-sm"
       />
     </div>
-    <div v-if="false" class="flex mt-6">
+    <div class="flex mt-6">
       <ui-switch v-model="settings.debugMode" class="mr-4" />
       <p class="capitalize">{{ t('workflow.settings.debugMode') }}</p>
     </div>

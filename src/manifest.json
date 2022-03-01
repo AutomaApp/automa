@@ -55,6 +55,7 @@
     "proxy",
     "alarms",
     "storage",
+    "debugger",
     "webNavigation",
     "unlimitedStorage",
     "<all_urls>"

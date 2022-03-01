@@ -1,12 +1,25 @@
 import { toCamelCase } from '@/utils/helper';
 
 const blocksHandler = require.context('./blocks-handler', false, /\.js$/);
-const handlers = blocksHandler.keys().reduce((acc, key) => {
-  const name = key.replace(/^\.\/handler-|\.js/g, '');
+const handlers = blocksHandler.keys().reduce(
+  (acc, fileName) => {
+    const isDebugHandler = fileName.includes('.debug');
+    const name = toCamelCase(
+      fileName.replace(/^\.\/handler-|\.debug|\.js/g, '')
+    );
 
-  acc[toCamelCase(name)] = blocksHandler(key).default;
+    const blockKey = toCamelCase(name);
+    const handler = blocksHandler(fileName).default;
 
-  return acc;
-}, {});
+    if (isDebugHandler) {
+      acc.debug[blockKey] = handler;
+    } else {
+      acc[blockKey] = handler;
+    }
+
+    return acc;
+  },
+  { debug: {} }
+);
 
 export default handlers;
