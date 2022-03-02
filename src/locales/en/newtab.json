@@ -158,6 +158,10 @@
       "saveLog": "Save workflow log",
       "executedBlockOnWeb": "Show executed block on web page",
       "debugMode": "Debug mode",
+      "restartWorkflow": {
+        "for": "Restart for",
+        "times": "Times"
+      },
       "onError": {
         "title": "On workflow error",
         "items": {

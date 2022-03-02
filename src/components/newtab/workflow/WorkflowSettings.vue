@@ -1,14 +1,31 @@
 <template>
   <div class="workflow-settings">
-    <div class="mb-4">
-      <p class="mb-1 capitalize">
-        {{ t('workflow.settings.onError.title') }}
-      </p>
-      <ui-select v-model="settings.onError" class="w-full max-w-sm">
-        <option v-for="item in onError" :key="item.id" :value="item.id">
-          {{ t(`workflow.settings.onError.items.${item.name}`) }}
-        </option>
-      </ui-select>
+    <div class="mb-4 flex">
+      <div class="flex-1">
+        <p class="mb-1 capitalize">
+          {{ t('workflow.settings.onError.title') }}
+        </p>
+        <ui-select v-model="settings.onError" class="w-full max-w-sm">
+          <option v-for="item in onError" :key="item.id" :value="item.id">
+            {{ t(`workflow.settings.onError.items.${item.name}`) }}
+          </option>
+        </ui-select>
+      </div>
+      <label v-if="settings.onError === 'restart-workflow'" class="ml-2">
+        <p class="mb-1 capitalize">
+          {{ t('workflow.settings.restartWorkflow.for') }}
+        </p>
+        <div class="flex items-center bg-input transition-colors rounded-lg">
+          <input
+            v-model.number="settings.restartTimes"
+            type="number"
+            class="py-2 px-4 w-32 rounded-lg bg-transparent"
+          />
+          <span class="px-2">
+            {{ t('workflow.settings.restartWorkflow.times') }}
+          </span>
+        </div>
+      </label>
     </div>
     <div>
       <p class="mb-1 capitalize">
@@ -67,7 +84,9 @@ const onError = [
   },
 ];
 
-const settings = reactive({});
+const settings = reactive({
+  restartTimes: 3,
+});
 
 watch(
   settings,

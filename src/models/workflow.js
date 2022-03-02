@@ -34,6 +34,7 @@ class Workflow extends Model {
         blockDelay: 0,
         saveLog: true,
         debugMode: false,
+        restartTimes: 3,
         onError: 'stop-workflow',
         executedBlockOnWeb: false,
       }),

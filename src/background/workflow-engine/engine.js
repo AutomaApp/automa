@@ -359,12 +359,24 @@ class WorkflowEngine {
           this.executeBlock(this.blocks[error.nextBlockId], error.data || '');
         }, blockDelay);
       } else if (onError === 'restart-workflow' && !this.parentWorkflow) {
+        const restartKey = `restart-count:${this.id}`;
+        const restartCount = parseJSON(localStorage.getItem(restartKey), 0);
+        const maxRestart = this.workflow.settings.restartTimes ?? 3;
+
+        if (restartCount >= maxRestart) {
+          localStorage.removeItem(restartKey);
+          this.destroy();
+          return;
+        }
+
         this.reset();
 
         const triggerBlock = Object.values(this.blocks).find(
           ({ name }) => name === 'trigger'
         );
         this.executeBlock(triggerBlock);
+
+        localStorage.setItem(restartKey, restartCount + 1);
       } else {
         this.destroy('error', error.message);
       }
