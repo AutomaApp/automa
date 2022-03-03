@@ -1,4 +1,4 @@
-import { eventList } from './shared';
+import { eventList } from '../shared';
 
 export function getEventObj(name, params) {
   const eventType = eventList.find(({ id }) => id === name)?.type ?? '';

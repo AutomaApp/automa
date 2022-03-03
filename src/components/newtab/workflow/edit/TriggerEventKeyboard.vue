@@ -8,9 +8,20 @@
       {{ item }}
     </ui-checkbox>
   </div>
-  <ui-input v-model="defaultParams.code" class="w-full mt-2" label="code" />
+  <ui-input
+    v-model="defaultParams.key"
+    class="w-full mt-2"
+    label="key"
+    placeholder="a"
+    @change="findKeyDefintion"
+  />
   <div class="flex items-center mt-1 space-x-2">
-    <ui-input v-model="defaultParams.key" class="flex-1" label="key" />
+    <ui-input
+      v-model="defaultParams.code"
+      class="flex-1"
+      label="code"
+      placeholder="KeyA"
+    />
     <ui-input
       v-model.number="defaultParams.keyCode"
       type="number"
@@ -25,6 +36,7 @@
 <script setup>
 import { shallowReactive, watch, onMounted } from 'vue';
 import { objectHasKey } from '@/utils/helper';
+import { keyDefinitions } from '@/utils/us-keyboard-layout';
 
 const props = defineProps({
   params: {
@@ -44,6 +56,15 @@ const defaultParams = shallowReactive({
   keyCode: 0,
   repeat: false,
 });
+
+function findKeyDefintion(value) {
+  const keyDefinition = keyDefinitions[value];
+
+  if (!keyDefinition) return;
+
+  defaultParams.code = keyDefinitions[value].code;
+  defaultParams.keyCode = keyDefinitions[value].keyCode;
+}
 
 watch(
   defaultParams,

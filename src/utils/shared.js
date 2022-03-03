@@ -495,7 +495,7 @@ export const tasks = {
       findBy: 'cssSelector',
       waitForSelector: false,
       waitSelectorTimeout: 5000,
-      selector: '',
+      selector: 'html',
       markEl: false,
       multiple: false,
       eventName: '',

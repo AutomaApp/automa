@@ -2,7 +2,13 @@ import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
 import { tasks } from '@/utils/shared';
 import { convertData, waitTabLoaded } from './helper';
-import { toCamelCase, parseJSON, isObject, objectHasKey } from '@/utils/helper';
+import {
+  toCamelCase,
+  sleep,
+  parseJSON,
+  isObject,
+  objectHasKey,
+} from '@/utils/helper';
 import referenceData from '@/utils/reference-data';
 import executeContentScript from './execute-content-script';
 
@@ -18,7 +24,6 @@ class WorkflowEngine {
     this.blocksHandler = blocksHandler;
     this.parentWorkflow = parentWorkflow;
     this.saveLog = workflow.settings?.saveLog ?? true;
-    this.isDebugMode = workflow.settings?.debugMode ?? false;
 
     this.loopList = {};
     this.repeatedTasks = {};
@@ -234,6 +239,11 @@ class WorkflowEngine {
     try {
       if (this.isDestroyed) return;
       if (this.isUsingProxy) chrome.proxy.settings.clear({});
+      if (this.workflow.settings.debugMode && this.activeTab.id) {
+        await sleep(1000);
+
+        chrome.debugger.detach({ tabId: this.activeTab.id });
+      }
 
       const endedTimestamp = Date.now();
       this.executeQueue();
@@ -293,18 +303,12 @@ class WorkflowEngine {
     this.dispatchEvent('update', { state: this.state });
 
     const startExecutedTime = Date.now();
-    const blockName = toCamelCase(block.name);
-    const isInteractionBlock = tasks[block.name].category === 'interaction';
 
-    const blockHandler = this.blocksHandler[blockName];
-    const debugBlockHandler = this.blocksHandler.debug[blockName];
-    let handler = blockHandler;
-
-    if (this.isDebugMode && debugBlockHandler) {
-      handler = debugBlockHandler;
-    } else if (!blockHandler && isInteractionBlock) {
-      handler = this.blocksHandler.interactionBlock;
-    }
+    const blockHandler = this.blocksHandler[toCamelCase(block.name)];
+    const handler =
+      !blockHandler && tasks[block.name].category === 'interaction'
+        ? this.blocksHandler.interactionBlock
+        : blockHandler;
 
     if (!handler) {
       console.error(`"${block.name}" block doesn't have a handler`);
@@ -360,7 +364,7 @@ class WorkflowEngine {
         }, blockDelay);
       } else if (onError === 'restart-workflow' && !this.parentWorkflow) {
         const restartKey = `restart-count:${this.id}`;
-        const restartCount = parseJSON(localStorage.getItem(restartKey), 0);
+        const restartCount = +localStorage.getItem(restartKey) || 0;
         const maxRestart = this.workflow.settings.restartTimes ?? 3;
 
         if (restartCount >= maxRestart) {

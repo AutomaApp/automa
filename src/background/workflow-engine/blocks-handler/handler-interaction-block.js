@@ -35,6 +35,7 @@ async function interactionHandler(block, { refData }) {
     refData,
     debugMode,
     executedBlockOnWeb,
+    activeTabId: this.activeTab.id,
     frameSelector: this.frameSelector,
   };
 
@@ -80,13 +81,7 @@ async function interactionHandler(block, { refData }) {
       }
     }
 
-    const isJavascriptBlock = block.name === 'javascript-code';
-
-    if (block.data.assignVariable && !isJavascriptBlock) {
-      this.referenceData.variables[block.data.variableName] = data;
-    }
-
-    if (isJavascriptBlock) {
+    if (block.name === 'javascript-code') {
       if (data?.variables) {
         Object.keys(data.variables).forEach((varName) => {
           this.referenceData.variables[varName] = data.variables[varName];
@@ -99,6 +94,8 @@ async function interactionHandler(block, { refData }) {
           : [data.columns.data];
         this.addDataToColumn(arrData);
       }
+    } else if (block.data.assignVariable) {
+      this.referenceData.variables[block.data.variableName] = data;
     }
 
     return {

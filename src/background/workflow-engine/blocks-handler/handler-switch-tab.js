@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { getBlockConnection } from '../helper';
+import { getBlockConnection, attachDebugger } from '../helper';
 
 export default async function ({ data, outputs }) {
   const nextBlockId = getBlockConnection({ outputs });
@@ -30,6 +30,10 @@ export default async function ({ data, outputs }) {
     }
   } else {
     await browser.tabs.update(tab.id, { active: true });
+  }
+
+  if (this.workflow.settings.debugMode) {
+    await attachDebugger(tab.id, this.activeTab.id);
   }
 
   this.activeTab.id = tab.id;

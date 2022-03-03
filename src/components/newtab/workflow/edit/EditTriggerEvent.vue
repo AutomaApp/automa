@@ -11,7 +11,7 @@
       </option>
     </ui-select>
     <button
-      class="mb-2 block flex items-center w-full text-left mt-2 focus:ring-0"
+      class="mb-2 block flex items-center w-full text-left mt-1 focus:ring-0"
       @click="showOptions = !showOptions"
     >
       <v-remixicon
@@ -49,6 +49,7 @@
         <component
           :is="eventComponents[data.eventType]"
           v-if="eventComponents[data.eventType]"
+          :key="data.eventName"
           :params="params"
           @update="updateParams({ ...params, ...$event })"
         />

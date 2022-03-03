@@ -1,22 +1,28 @@
+import { keyDefinitions } from '@/utils/us-keyboard-layout';
 import simulateEvent from './simulate-event';
 
 function formEvent(element, data) {
   if (data.type === 'text-field') {
-    const code = /\s/.test(data.value)
-      ? 'Space'
-      : `key${data.value.toUpperCase()}`;
+    const currentKey = /\s/.test(data.value) ? 'Space' : data.value;
+    const { key, keyCode, code } = keyDefinitions[currentKey] || {
+      key: currentKey,
+      keyCode: 0,
+      code: `Key${currentKey}`,
+    };
 
     simulateEvent(element, 'keydown', {
+      key,
       code,
+      keyCode,
       bubbles: true,
       cancelable: true,
-      key: data.value,
     });
     simulateEvent(element, 'keyup', {
+      key,
       code,
+      keyCode,
       bubbles: true,
       cancelable: true,
-      key: data.value,
     });
   }
 

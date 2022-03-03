@@ -40,7 +40,7 @@ async function newTab(block) {
 
     this.activeTab.url = url;
     if (tab) {
-      if (this.isDebugMode) {
+      if (this.workflow.settings.debugMode) {
         await attachDebugger(tab.id, this.activeTab.id);
       }
 
