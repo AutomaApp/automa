@@ -39,8 +39,8 @@
           >
             <option
               v-for="column in workflow.data.value.table"
-              :key="column.name"
-              :value="column.name"
+              :key="column.id"
+              :value="column.id"
             >
               {{ column.name }}
             </option>
