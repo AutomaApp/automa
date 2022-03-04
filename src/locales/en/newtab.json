@@ -204,6 +204,10 @@
     "selectAll": "Select all",
     "deselectAll": "Deselect all",
     "deleteSelected": "Delete selected logs",
+    "clearLogs": {
+      "title": "Clear logs",
+      "description": "Are you sure to clear all logs?"
+    },
     "types": {
       "stop": "Workflow is stopped",
       "finish": "Finish"

@@ -4,6 +4,7 @@
     <logs-filters
       :sorts="sortsBuilder"
       :filters="filtersBuilder"
+      @clear="clearLogs"
       @updateSorts="sortsBuilder[$event.key] = $event.value"
       @updateFilters="filtersBuilder[$event.key] = $event.value"
     />
@@ -178,6 +179,19 @@ function deleteSelectedLogs() {
       const promises = selectedLogs.value.map((logId) => Log.delete(logId));
 
       Promise.allSettled(promises).then(() => {
+        selectedLogs.value = [];
+        store.dispatch('saveToStorage', 'logs');
+      });
+    },
+  });
+}
+function clearLogs() {
+  dialog.confirm({
+    title: t('log.clearLogs.title'),
+    okVariant: 'danger',
+    body: t('log.clearLogs.description'),
+    onConfirm: () => {
+      Log.deleteAll().then(() => {
         selectedLogs.value = [];
         store.dispatch('saveToStorage', 'logs');
       });

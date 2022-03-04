@@ -68,6 +68,13 @@
         </ui-select>
       </div>
     </ui-popover>
+    <ui-button
+      v-tooltip:bottom="t('log.clearLogs.title')"
+      icon
+      @click="$emit('clear')"
+    >
+      <v-remixicon name="riDeleteBin7Line" />
+    </ui-button>
   </div>
 </template>
 <script setup>
@@ -84,7 +91,7 @@ defineProps({
     default: () => ({}),
   },
 });
-const emit = defineEmits(['updateSorts', 'updateFilters']);
+const emit = defineEmits(['updateSorts', 'updateFilters', 'clear']);
 
 const { t } = useI18n();
 const shortcut = useShortcut('action:search', () => {
