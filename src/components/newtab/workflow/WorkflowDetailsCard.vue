@@ -65,16 +65,23 @@
     >
       <p>{{ t('workflow.cantEdit') }}</p>
     </div>
-    <template v-for="(items, catId) in blocks" :key="catId">
-      <div class="flex items-center top-0 space-x-2 mb-2">
+    <ui-expand
+      v-for="(items, catId) in blocks"
+      :key="catId"
+      v-model="expandList[catId]"
+      hide-header-icon
+      header-class="flex items-center py-2 focus:ring-0 w-full text-left text-gray-600 dark:text-gray-200"
+    >
+      <template #header="{ show }">
         <span
           :class="categories[catId].color"
           class="h-3 w-3 rounded-full"
         ></span>
-        <p class="capitalize text-gray-600 dark:text-gray-200">
+        <p class="capitalize flex-1 ml-2">
           {{ categories[catId].name }}
         </p>
-      </div>
+        <v-remixicon :name="show ? 'riSubtractLine' : 'riAddLine'" size="20" />
+      </template>
       <div class="grid grid-cols-2 gap-2 mb-4">
         <div
           v-for="block in items"
@@ -107,7 +114,7 @@
           </p>
         </div>
       </div>
-    </template>
+    </ui-expand>
   </div>
 </template>
 <script setup>
@@ -159,13 +166,21 @@ const blocksArr = Object.entries(tasks).map(([key, block]) => ({
   id: key,
   name: t(`workflow.blocks.${key}.name`),
 }));
+const categoriesExpand = Object.keys(categories).reduce((acc, key) => {
+  acc[key] = true;
+
+  return acc;
+}, {});
 
 const query = ref('');
+const expandList = ref(categoriesExpand);
+
 const blocks = computed(() =>
   blocksArr.reduce((arr, block) => {
     if (
       block.name.toLocaleLowerCase().includes(query.value.toLocaleLowerCase())
     ) {
+      expandList.value[block.category] = true;
       (arr[block.category] = arr[block.category] || []).push(block);
     }
 
