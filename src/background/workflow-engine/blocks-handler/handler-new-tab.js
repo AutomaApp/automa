@@ -1,5 +1,9 @@
 import browser from 'webextension-polyfill';
-import { getBlockConnection, attachDebugger } from '../helper';
+import {
+  getBlockConnection,
+  attachDebugger,
+  sendDebugCommand,
+} from '../helper';
 import { isWhitespace } from '@/utils/helper';
 
 async function newTab(block) {
@@ -14,7 +18,8 @@ async function newTab(block) {
   const nextBlockId = getBlockConnection(block);
 
   try {
-    const { updatePrevTab, url, active, inGroup } = block.data;
+    const { updatePrevTab, url, active, inGroup, customUserAgent, userAgent } =
+      block.data;
     const isInvalidUrl = !/^https?/.test(url);
 
     if (isInvalidUrl) {
@@ -40,8 +45,19 @@ async function newTab(block) {
 
     this.activeTab.url = url;
     if (tab) {
-      if (this.workflow.settings.debugMode) {
+      if (this.workflow.settings.debugMode || customUserAgent) {
         await attachDebugger(tab.id, this.activeTab.id);
+
+        if (customUserAgent) {
+          const res = await sendDebugCommand(
+            tab.id,
+            'Network.setUserAgentOverride',
+            {
+              userAgent,
+            }
+          );
+          console.log('agent:', res);
+        }
       }
 
       this.activeTab.id = tab.id;
@@ -66,6 +82,10 @@ async function newTab(block) {
     }
 
     this.activeTab.frameId = 0;
+
+    if (!this.workflow.settings.debugMode && customUserAgent) {
+      chrome.debugger.detach({ tabId: tab.id });
+    }
 
     return {
       data: url,

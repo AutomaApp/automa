@@ -35,6 +35,22 @@
     >
       {{ t('workflow.blocks.new-tab.tabToGroup') }}
     </ui-checkbox>
+    <ui-checkbox
+      v-if="false"
+      :model-value="data.customUserAgent"
+      block
+      class="mt-2"
+      @change="updateData({ customUserAgent: $event })"
+    >
+      {{ t('workflow.blocks.new-tab.customUserAgent') }}
+    </ui-checkbox>
+    <ui-input
+      v-if="data.customUserAgent"
+      :model-value="data.userAgent"
+      placeholder="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+      class="mt-1 w-full"
+      @change="updateData({ userAgent: $event })"
+    />
   </div>
 </template>
 <script setup>

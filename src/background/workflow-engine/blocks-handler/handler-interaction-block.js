@@ -32,12 +32,13 @@ async function interactionHandler(block, { refData }) {
   const nextBlockId = getBlockConnection(block);
   const messagePayload = {
     ...block,
-    refData,
     debugMode,
     executedBlockOnWeb,
     activeTabId: this.activeTab.id,
     frameSelector: this.frameSelector,
   };
+
+  if (block.name === 'javascript-code') messagePayload.refData = refData;
 
   try {
     const data = await this._sendMessageToTab(messagePayload, {
