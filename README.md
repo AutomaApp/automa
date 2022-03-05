@@ -6,10 +6,10 @@
 [![Discord](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/C6khwwTE84)
 
 An extension for automating your browser by connecting blocks. <br />
-From auto-fill forms, doing a repetitive task, taking a screenshot, to scraping data of the website, it's up to you what you want to do with this extension. And you also can schedule when the automation will execute.
+Auto-fill forms, do a repetitive task, take a screenshot, or scrape website data — the choice is yours. You can even schedule when the automation will execute!
 
 ## Marketplace
-In this marketplace, you can share or download a workflow for Automa. Go to [marketplace](https://automa.vercel.app/workflows)
+Browse the Automa marketplace where you can share and download workflows with others. [Go to the marketplace &#187;](https://automa.vercel.app/workflows)
 
 ## Project setup
 ```bash
