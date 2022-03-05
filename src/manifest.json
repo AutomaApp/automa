@@ -47,7 +47,6 @@
   ],
   "optional_permissions": [
     "clipboardRead",
-    "webRequest",
     "debugger"
   ],
   "permissions": [
