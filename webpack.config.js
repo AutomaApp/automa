@@ -69,7 +69,7 @@ const options = {
       'src',
       'content',
       'element-selector',
-      'main.js'
+      'index.js'
     ),
   },
   chromeExtensionBoilerplate: {

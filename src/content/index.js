@@ -1,7 +1,6 @@
 import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
 import { toCamelCase } from '@/utils/helper';
-import elementSelector from './element-selector';
 import executedBlock from './executed-block';
 import blocksHandler from './blocks-handler';
 
@@ -38,10 +37,6 @@ import blocksHandler from './blocks-handler';
 
       switch (data.type) {
         case 'content-script-exists':
-          resolve(true);
-          break;
-        case 'select-element':
-          elementSelector();
           resolve(true);
           break;
         case 'give-me-the-frame-id':
