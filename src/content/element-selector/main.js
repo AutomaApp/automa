@@ -6,15 +6,16 @@ import icons from './icons';
 import vueI18n from './vue-i18n';
 import '@/assets/css/tailwind.css';
 
-const rootElement = document.querySelector('div.automa-element-selector');
-const appRoot = document.createElement('div');
-appRoot.setAttribute('id', 'app');
+export default function (rootElement) {
+  const appRoot = document.createElement('div');
+  appRoot.setAttribute('id', 'app');
 
-rootElement.shadowRoot.appendChild(appRoot);
+  rootElement.shadowRoot.appendChild(appRoot);
 
-createApp(App)
-  .provide('rootElement', rootElement)
-  .use(vueI18n)
-  .use(vRemixicon, icons)
-  .use(compsUi)
-  .mount(appRoot);
+  createApp(App)
+    .provide('rootElement', rootElement)
+    .use(vueI18n)
+    .use(vRemixicon, icons)
+    .use(compsUi)
+    .mount(appRoot);
+}

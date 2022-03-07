@@ -158,11 +158,16 @@
       "saveLog": "Save workflow log",
       "executedBlockOnWeb": "Show executed block on web page",
       "debugMode": "Debug mode",
+      "restartWorkflow": {
+        "for": "Restart for",
+        "times": "Times"
+      },
       "onError": {
         "title": "On workflow error",
         "items": {
           "keepRunning": "Keep running",
-          "stopWorkflow": "Stop workflow"
+          "stopWorkflow": "Stop workflow",
+          "restartWorkflow": "Restart workflow"
         }
       },
       "timeout": {
@@ -199,6 +204,10 @@
     "selectAll": "Select all",
     "deselectAll": "Deselect all",
     "deleteSelected": "Delete selected logs",
+    "clearLogs": {
+      "title": "Clear logs",
+      "description": "Are you sure to clear all logs?"
+    },
     "types": {
       "stop": "Workflow is stopped",
       "finish": "Finish"
@@ -226,6 +235,7 @@
       "not-iframe": "Element with \"{selector}\" selector is not an Iframe element",
       "iframe-not-found": "Can't find an Iframe element with \"{selector}\" selector.",
       "workflow-infinite-loop": "Can't execute the workflow to prevent an infinite loop",
+      "not-debug-mode": "The workflow must run in debug mode for this block to work properly",
       "no-iframe-id": "Can't find Frame ID for the iframe element with \"{selector}\" selector",
       "no-tab": "Can't connect to a tab, use \"New tab\" or \"Active tab\" block before using the \"{name}\" block."
     },

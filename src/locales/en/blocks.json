@@ -52,6 +52,10 @@
         "noPermission": "Don't have permission to access the clipboard",
         "grantPermission": "Grant permission"
       },
+      "hover-element": {
+        "name": "Hover element",
+        "description": "Hover over an element"
+      },
       "upload-file": {
         "name": "Upload file",
         "description": "Upload file into <input type=\"file\"> element",
@@ -270,6 +274,7 @@
         "name": "New tab",
         "description": "",
         "url": "New Tab URL",
+        "customUserAgent": "Use custom User-Agent",
         "activeTab": "Set as active tab",
         "tabToGroup": "Add tab to group",
         "updatePrevTab": {

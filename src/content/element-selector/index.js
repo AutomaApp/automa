@@ -1,3 +1,6 @@
+import browser from 'webextension-polyfill';
+import initElementSelector from './main';
+
 async function getStyles() {
   try {
     const response = await fetch(chrome.runtime.getURL('/elementSelector.css'));
@@ -24,17 +27,35 @@ async function getStyles() {
   }
 }
 
-export default async function () {
+function elementSelectorInstance() {
+  const rootElementExist = document.querySelector(
+    '#app-container.automa-element-selector'
+  );
+
+  if (rootElementExist) {
+    rootElementExist.style.display = 'block';
+
+    return true;
+  }
+
+  return false;
+}
+
+(async function () {
+  browser.runtime.onMessage.addListener((data) => {
+    return new Promise((resolve) => {
+      if (data.type === 'automa-element-selector') {
+        elementSelectorInstance();
+
+        resolve(true);
+      }
+    });
+  });
+
   try {
-    const rootElementExist = document.querySelector(
-      '#app-container.automa-element-selector'
-    );
+    const isAppExists = elementSelectorInstance();
 
-    if (rootElementExist) {
-      rootElementExist.style.display = 'block';
-
-      return;
-    }
+    if (isAppExists) return;
 
     const rootElement = document.createElement('div');
     rootElement.setAttribute('id', 'app-container');
@@ -45,22 +66,16 @@ export default async function () {
     automaStyle.classList.add('automa-element-selector');
     automaStyle.innerHTML = `.automa-element-selector { pointer-events: none } \n [automa-isDragging] { user-select: none }`;
 
-    const scriptEl = document.createElement('script');
-    scriptEl.setAttribute('type', 'module');
-    scriptEl.setAttribute(
-      'src',
-      chrome.runtime.getURL('/elementSelector.bundle.js')
-    );
+    initElementSelector(rootElement);
 
     const appStyle = document.createElement('style');
     appStyle.innerHTML = await getStyles();
 
     rootElement.shadowRoot.appendChild(appStyle);
-    rootElement.shadowRoot.appendChild(scriptEl);
 
     document.documentElement.appendChild(rootElement);
     document.documentElement.appendChild(automaStyle);
   } catch (error) {
     console.error(error);
   }
-}
+})();

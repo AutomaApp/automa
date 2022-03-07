@@ -91,13 +91,15 @@ export default async function (
     }
 
     if (data.multiple && selectorType === 'cssSelector') {
-      element.forEach((el) => {
-        markElement(el, { id, data });
-        onSelected(el);
-      });
+      await Promise.allSettled(
+        element.map((el) => {
+          markElement(el, { id, data });
+          return onSelected(el);
+        })
+      );
     } else if (element) {
       markElement(element, { id, data });
-      onSelected(element);
+      await onSelected(element);
     }
 
     if (onSuccess) onSuccess();

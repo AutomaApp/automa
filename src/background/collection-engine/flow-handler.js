@@ -30,13 +30,15 @@ export function workflow(flow) {
       blocksHandler,
       states: this.states,
       logger: this.logger,
-      parentWorkflow: {
-        id: this.id,
-        isCollection: true,
-        name: this.collection.name,
-      },
-      data: {
-        globalData: globalData.trim() === '' ? null : globalData,
+      options: {
+        parentWorkflow: {
+          id: this.id,
+          isCollection: true,
+          name: this.collection.name,
+        },
+        data: {
+          globalData: globalData.trim() === '' ? null : globalData,
+        },
       },
     });
 

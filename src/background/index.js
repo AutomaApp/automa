@@ -64,7 +64,7 @@ const workflow = {
     }
 
     const engine = new WorkflowEngine(workflowData, {
-      ...options,
+      options,
       blocksHandler,
       logger: this.logger,
       states: this.states,
@@ -155,7 +155,7 @@ async function checkVisitWebTriggers(changeInfo, tab) {
   if (triggeredWorkflow) {
     const workflowData = await workflow.get(triggeredWorkflow.id);
 
-    if (workflowData) workflow.execute(workflowData);
+    if (workflowData) workflow.execute(workflowData, { tabId: tab.id });
   }
 }
 async function checkRecordingWorkflow({ status }, { url, id }) {
@@ -353,13 +353,18 @@ message.on('set:active-tab', (tabId) => {
   return browser.tabs.update(tabId, { active: true });
 });
 
-message.on('get:sender', (_, sender) => {
-  return sender;
+message.on('debugger:send-command', ({ tabId, method, params }) => {
+  return new Promise((resolve) => {
+    console.log(tabId, method, params);
+    chrome.debugger.sendCommand({ tabId }, method, params, resolve);
+  });
 });
-message.on('get:tab-screenshot', (options) => {
-  return browser.tabs.captureVisibleTab(options);
-});
+
+message.on('get:sender', (_, sender) => sender);
 message.on('get:file', (path) => getFile(path));
+message.on('get:tab-screenshot', (options) =>
+  browser.tabs.captureVisibleTab(options)
+);
 
 message.on('collection:execute', (collection) => {
   const engine = new CollectionEngine(collection, {

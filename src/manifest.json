@@ -46,13 +46,15 @@
     }
   ],
   "optional_permissions": [
-    "clipboardRead"
+    "clipboardRead",
+    "debugger"
   ],
   "permissions": [
     "tabs",
     "proxy",
     "alarms",
     "storage",
+    "debugger",
     "webNavigation",
     "unlimitedStorage",
     "<all_urls>"

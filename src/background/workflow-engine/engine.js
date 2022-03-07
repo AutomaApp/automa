@@ -2,14 +2,20 @@ import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
 import { tasks } from '@/utils/shared';
 import { convertData, waitTabLoaded } from './helper';
-import { toCamelCase, parseJSON, isObject, objectHasKey } from '@/utils/helper';
+import {
+  toCamelCase,
+  sleep,
+  parseJSON,
+  isObject,
+  objectHasKey,
+} from '@/utils/helper';
 import referenceData from '@/utils/reference-data';
 import executeContentScript from './execute-content-script';
 
 class WorkflowEngine {
   constructor(
     workflow,
-    { states, logger, blocksHandler, tabId, parentWorkflow, data }
+    { states, logger, blocksHandler, parentWorkflow, options }
   ) {
     this.id = nanoid();
     this.states = states;
@@ -23,6 +29,7 @@ class WorkflowEngine {
     this.repeatedTasks = {};
 
     this.windowId = null;
+    this.triggerBlock = null;
     this.currentBlock = null;
     this.childWorkflowId = null;
 
@@ -34,15 +41,20 @@ class WorkflowEngine {
     this.eventListeners = {};
     this.columns = { column: { index: 0, type: 'any' } };
 
-    const globalData = data?.globalData || workflow.globalData;
-    const variables = isObject(data?.variables) ? data.variables : {};
+    const globalData = options?.data?.globalData || workflow.globalData;
+    const variables = isObject(options?.data?.variables)
+      ? options?.data.variables
+      : {};
+
+    options.data = { globalData, variables };
+    this.options = options;
 
     this.activeTab = {
       url: '',
-      id: tabId,
       frameId: 0,
       frames: {},
       groupId: null,
+      id: options?.tabId,
     };
     this.referenceData = {
       variables,
@@ -59,7 +71,38 @@ class WorkflowEngine {
     };
   }
 
-  init(currentBlock) {
+  reset() {
+    this.loopList = {};
+    this.repeatedTasks = {};
+
+    this.windowId = null;
+    this.currentBlock = null;
+    this.childWorkflowId = null;
+
+    this.isDestroyed = false;
+    this.isUsingProxy = false;
+
+    this.history = [];
+    this.columns = { column: { index: 0, type: 'any' } };
+
+    this.activeTab = {
+      url: '',
+      frameId: 0,
+      frames: {},
+      groupId: null,
+      id: this.options?.tabId,
+    };
+    this.referenceData = {
+      table: [],
+      loopData: {},
+      workflow: {},
+      googleSheets: {},
+      variables: this.options.variables,
+      globalData: this.referenceData.globalData,
+    };
+  }
+
+  init() {
     if (this.workflow.isDisabled) return;
 
     if (!this.states) {
@@ -98,7 +141,7 @@ class WorkflowEngine {
     this.blocks = blocks;
     this.startedTimestamp = Date.now();
     this.workflow.table = columns;
-    this.currentBlock = currentBlock || triggerBlock;
+    this.currentBlock = triggerBlock;
 
     this.states.on('stop', this.onWorkflowStopped);
 
@@ -196,6 +239,11 @@ class WorkflowEngine {
     try {
       if (this.isDestroyed) return;
       if (this.isUsingProxy) chrome.proxy.settings.clear({});
+      if (this.workflow.settings.debugMode && this.activeTab.id) {
+        await sleep(1000);
+
+        chrome.debugger.detach({ tabId: this.activeTab.id });
+      }
 
       const endedTimestamp = Date.now();
       this.executeQueue();
@@ -255,7 +303,8 @@ class WorkflowEngine {
     this.dispatchEvent('update', { state: this.state });
 
     const startExecutedTime = Date.now();
-    const blockHandler = this.blocksHandler[toCamelCase(block?.name)];
+
+    const blockHandler = this.blocksHandler[toCamelCase(block.name)];
     const handler =
       !blockHandler && tasks[block.name].category === 'interaction'
         ? this.blocksHandler.interactionBlock
@@ -307,13 +356,31 @@ class WorkflowEngine {
         ...(error.data || {}),
       });
 
-      if (
-        this.workflow.settings.onError === 'keep-running' &&
-        error.nextBlockId
-      ) {
+      const { onError } = this.workflow.settings;
+
+      if (onError === 'keep-running' && error.nextBlockId) {
         setTimeout(() => {
           this.executeBlock(this.blocks[error.nextBlockId], error.data || '');
         }, blockDelay);
+      } else if (onError === 'restart-workflow' && !this.parentWorkflow) {
+        const restartKey = `restart-count:${this.id}`;
+        const restartCount = +localStorage.getItem(restartKey) || 0;
+        const maxRestart = this.workflow.settings.restartTimes ?? 3;
+
+        if (restartCount >= maxRestart) {
+          localStorage.removeItem(restartKey);
+          this.destroy();
+          return;
+        }
+
+        this.reset();
+
+        const triggerBlock = Object.values(this.blocks).find(
+          ({ name }) => name === 'trigger'
+        );
+        this.executeBlock(triggerBlock);
+
+        localStorage.setItem(restartKey, restartCount + 1);
       } else {
         this.destroy('error', error.message);
       }

@@ -18,7 +18,7 @@
         "
         icon
         class="mr-2"
-        @click="selectElement"
+        @click="initElementSelector"
       >
         <v-remixicon name="riFocus3Line" />
       </ui-button>
@@ -124,25 +124,21 @@ function deleteWorkflow({ id, name }) {
 function openDashboard(url) {
   sendMessage('open:dashboard', url, 'background');
 }
-async function selectElement() {
+async function initElementSelector() {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
 
   try {
     await browser.tabs.sendMessage(tab.id, {
-      type: 'content-script-exists',
-    });
-
-    browser.tabs.sendMessage(tab.id, {
-      type: 'select-element',
+      type: 'automa-element-selector',
     });
   } catch (error) {
     if (error.message.includes('Could not establish connection.')) {
       await browser.tabs.executeScript(tab.id, {
         allFrames: true,
-        file: './contentScript.bundle.js',
+        file: './elementSelector.bundle.js',
       });
 
-      selectElement();
+      initElementSelector();
     }
 
     console.error(error);
