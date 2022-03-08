@@ -105,7 +105,6 @@ function addColumn() {
 watch(
   () => state.columns,
   debounce((newValue) => {
-    console.log(newValue);
     emit('update', { table: newValue });
   }, 250),
   { deep: true }

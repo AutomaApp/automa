@@ -355,7 +355,6 @@ message.on('set:active-tab', (tabId) => {
 
 message.on('debugger:send-command', ({ tabId, method, params }) => {
   return new Promise((resolve) => {
-    console.log(tabId, method, params);
     chrome.debugger.sendCommand({ tabId }, method, params, resolve);
   });
 });

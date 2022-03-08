@@ -4,7 +4,7 @@ import {
   attachDebugger,
   sendDebugCommand,
 } from '../helper';
-import { isWhitespace } from '@/utils/helper';
+import { isWhitespace, sleep } from '@/utils/helper';
 
 async function newTab(block) {
   if (this.windowId) {
@@ -49,14 +49,11 @@ async function newTab(block) {
         await attachDebugger(tab.id, this.activeTab.id);
 
         if (customUserAgent) {
-          const res = await sendDebugCommand(
-            tab.id,
-            'Network.setUserAgentOverride',
-            {
-              userAgent,
-            }
-          );
-          console.log('agent:', res);
+          await sendDebugCommand(tab.id, 'Network.setUserAgentOverride', {
+            userAgent,
+          });
+          await browser.tabs.reload(tab.id);
+          await sleep(1000);
         }
       }
 
