@@ -145,7 +145,7 @@
           }
         },
         "refKey": {
-          "label": "Reference key",
+          "label": "Reference key (optional)",
           "placeholder": "Key name"
         },
         "spreadsheetId": {
@@ -406,6 +406,8 @@
         "description": "Iterate through table or your custom data",
         "loopId": "Loop id",
         "refKey": "Reference key",
+        "startIndex": "Start from index",
+        "resumeLastWorkflow": "Resume last workflow",
         "modal": {
           "fileTooLarge": "File too large to edit",
           "maxFile": "Max file size is 1MB",

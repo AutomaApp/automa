@@ -401,6 +401,7 @@ export default {
           const newDrawflowData = Object.entries(
             data.drawflow.Home.data
           ).reduce((obj, [key, value]) => {
+            console.log(tasks[value.name], value.name);
             obj[key] = {
               ...value,
               html: tasks[value.name].component,
