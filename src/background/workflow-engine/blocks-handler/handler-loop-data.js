@@ -49,13 +49,22 @@ async function loopData({ data, id, outputs }) {
       };
 
       const currLoopData = await getLoopData[data.loopThrough]();
+      let index = 0;
 
-      if (data.loopThrough !== 'numbers' && !Array.isArray(currLoopData)) {
-        throw new Error('invalid-loop-data');
+      if (data.loopThrough !== 'numbers') {
+        if (!Array.isArray(currLoopData)) {
+          throw new Error('invalid-loop-data');
+        }
+
+        if (data.resumeLastWorkflow) {
+          index = JSON.parse(localStorage.getItem(`index:${id}`)) || 0;
+        } else if (data.startIndex > 0) {
+          index = data.startIndex;
+        }
       }
 
       this.loopList[data.loopId] = {
-        index: 0,
+        index,
         blockId: id,
         id: data.loopId,
         data: currLoopData,
@@ -68,10 +77,14 @@ async function loopData({ data, id, outputs }) {
       /* eslint-disable-next-line */
       this.referenceData.loopData[data.loopId] = {
         data:
-          data.loopThrough === 'numbers' ? data.fromNumber : currLoopData[0],
-        $index: 0,
+          data.loopThrough === 'numbers'
+            ? data.fromNumber
+            : currLoopData[index],
+        $index: index,
       };
     }
+
+    localStorage.setItem(`index:${id}`, this.loopList[data.loopId].index);
 
     return {
       nextBlockId,

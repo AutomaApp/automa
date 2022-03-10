@@ -92,7 +92,7 @@ export default async function (
 
     if (data.multiple && selectorType === 'cssSelector') {
       await Promise.allSettled(
-        element.map((el) => {
+        Array.from(element).map((el) => {
           markElement(el, { id, data });
           return onSelected(el);
         })

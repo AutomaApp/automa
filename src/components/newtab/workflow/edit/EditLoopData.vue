@@ -86,16 +86,34 @@
         "
       />
     </div>
-    <ui-input
-      v-if="data.loopThrough !== 'numbers'"
-      :model-value="data.maxLoop"
-      :label="t('workflow.blocks.loop-data.maxLoop.label')"
-      :title="t('workflow.blocks.loop-data.maxLoop.title')"
-      class="w-full mt-2"
-      min="0"
-      type="number"
-      @change="updateData({ maxLoop: +$event || 0 })"
-    />
+    <template v-if="data.loopThrough !== 'numbers'">
+      <ui-input
+        :model-value="data.maxLoop"
+        :label="t('workflow.blocks.loop-data.maxLoop.label')"
+        :title="t('workflow.blocks.loop-data.maxLoop.title')"
+        class="w-full mt-2"
+        min="0"
+        type="number"
+        @change="updateData({ maxLoop: +$event || 0 })"
+      />
+      <ui-input
+        v-if="!data.resumeLastWorkflow"
+        :model-value="data.startIndex"
+        :label="t('workflow.blocks.loop-data.startIndex')"
+        placeholder="0"
+        class="w-full mt-2"
+        min="0"
+        type="number"
+        @change="updateData({ startIndex: +$event || 0 })"
+      />
+      <ui-checkbox
+        :model-value="data.resumeLastWorkflow"
+        class="mt-1"
+        @change="updateData({ resumeLastWorkflow: $event })"
+      >
+        {{ t('workflow.blocks.loop-data.resumeLastWorkflow') }}
+      </ui-checkbox>
+    </template>
     <ui-modal
       v-model="state.showDataModal"
       title="Data"

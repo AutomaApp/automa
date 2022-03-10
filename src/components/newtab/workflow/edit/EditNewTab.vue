@@ -36,7 +36,6 @@
       {{ t('workflow.blocks.new-tab.tabToGroup') }}
     </ui-checkbox>
     <ui-checkbox
-      v-if="false"
       :model-value="data.customUserAgent"
       block
       class="mt-2"
