@@ -41,12 +41,17 @@ class WorkflowEngine {
     this.eventListeners = {};
     this.columns = { column: { index: 0, type: 'any' } };
 
-    const globalData = options?.data?.globalData || workflow.globalData;
-    const variables = isObject(options?.data?.variables)
-      ? options?.data.variables
-      : {};
+    let variables = {};
+    let globalData = {};
 
-    options.data = { globalData, variables };
+    if (options && options?.data) {
+      globalData = options.data.globalData || workflow.globalData;
+      variables = isObject(options.data.variables)
+        ? options?.data.variables
+        : {};
+
+      options.data = { globalData, variables };
+    }
     this.options = options;
 
     this.activeTab = {
