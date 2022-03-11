@@ -44,7 +44,7 @@ async function interactionHandler(block, { refData }) {
     const data = await this._sendMessageToTab(messagePayload, {
       frameId: this.activeTab.frameId || 0,
     });
-    console.log(data, block.data.saveData || block.data.getValue);
+
     if (block.data.saveData || block.data.getValue) {
       const currentColumnType =
         this.columns[block.data.dataColumn]?.type || 'any';
