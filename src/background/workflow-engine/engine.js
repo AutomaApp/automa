@@ -42,10 +42,10 @@ class WorkflowEngine {
     this.columns = { column: { index: 0, type: 'any' } };
 
     let variables = {};
-    let globalData = {};
+    let { globalData } = workflow;
 
     if (options && options?.data) {
-      globalData = options.data.globalData || workflow.globalData;
+      globalData = options.data.globalData;
       variables = isObject(options.data.variables)
         ? options?.data.variables
         : {};
