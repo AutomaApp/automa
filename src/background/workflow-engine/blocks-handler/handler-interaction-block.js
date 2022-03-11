@@ -44,19 +44,8 @@ async function interactionHandler(block, { refData }) {
     const data = await this._sendMessageToTab(messagePayload, {
       frameId: this.activeTab.frameId || 0,
     });
-
-    if (objectHasKey(block.data, 'dataColumn')) {
-      const dontSaveData =
-        (block.name === 'forms' && !block.data.getValue) ||
-        !block.data.saveData;
-
-      if (dontSaveData) {
-        return {
-          data,
-          nextBlockId,
-        };
-      }
-
+    console.log(data, block.data.saveData || block.data.getValue);
+    if (block.data.saveData || block.data.getValue) {
       const currentColumnType =
         this.columns[block.data.dataColumn]?.type || 'any';
       const insertDataToColumn = (value) => {
@@ -82,6 +71,10 @@ async function interactionHandler(block, { refData }) {
       }
     }
 
+    if (block.data.assignVariable) {
+      this.referenceData.variables[block.data.variableName] = data;
+    }
+
     if (block.name === 'javascript-code') {
       if (data?.variables) {
         Object.keys(data.variables).forEach((varName) => {
@@ -95,8 +88,6 @@ async function interactionHandler(block, { refData }) {
           : [data.columns.data];
         this.addDataToColumn(arrData);
       }
-    } else if (block.data.assignVariable) {
-      this.referenceData.variables[block.data.variableName] = data;
     }
 
     return {

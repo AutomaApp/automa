@@ -21,6 +21,7 @@ function findData(obj, path) {
   const isWhitespace = paths.length === 1 && !/\\S/.test(paths[0]);
 
   if (paths.length === 0 || isWhitespace) return obj;
+  else if (paths.length === 1) return obj[paths[0]];
 
   let result = obj;
 
