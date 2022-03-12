@@ -92,6 +92,10 @@ const dataStr = computed(() => {
 });
 
 function exportData(type) {
-  dataExporter(props.log.data, { name: state.fileName, type }, true);
+  dataExporter(
+    props.log.data?.table || props.log.data,
+    { name: state.fileName, type },
+    true
+  );
 }
 </script>
