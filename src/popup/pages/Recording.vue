@@ -160,7 +160,7 @@ async function stopRecording() {
     const tabs = (await browser.tabs.query({})).filter((tab) =>
       tab.url.startsWith('http')
     );
-    await Promise.allSettled(
+    Promise.allSettled(
       tabs.map(({ id }) =>
         browser.tabs.sendMessage(id, { type: 'recording:stop' })
       )

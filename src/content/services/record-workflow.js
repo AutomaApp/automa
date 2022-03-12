@@ -1,4 +1,4 @@
-import { finder } from '@medv/finder';
+import { getCssSelector } from 'css-selector-generator';
 import browser from 'webextension-polyfill';
 import { debounce } from '@/utils/helper';
 
@@ -27,7 +27,7 @@ function changeListener({ target }) {
   if (execludeInput) return;
 
   let block = null;
-  const selector = finder(target);
+  const selector = getCssSelector(target);
   const isSelectEl = target.tagName === 'SELECT';
   const elementName = target.ariaLabel || target.name;
 
@@ -94,7 +94,7 @@ function keyEventListener({
 
   if (isTextField) return;
 
-  const selector = finder(target);
+  const selector = getCssSelector(target);
 
   addBlock({
     id: 'trigger-event',
@@ -125,7 +125,7 @@ function clickListener(event) {
 
   if (isTextField) return;
 
-  const selector = finder(target);
+  const selector = getCssSelector(target);
 
   if (target.tagName === 'A') {
     if (event.ctrlKey || event.metaKey) return;
@@ -167,7 +167,7 @@ function clickListener(event) {
 const scrollListener = debounce(({ target }) => {
   const isDocument = target === document;
   const element = isDocument ? document.documentElement : target;
-  const selector = isDocument ? 'html' : finder(target);
+  const selector = isDocument ? 'html' : getCssSelector(target);
 
   addBlock((recording) => {
     const lastFlow = recording.flows[recording.flows.length - 1];

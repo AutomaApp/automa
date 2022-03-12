@@ -151,7 +151,7 @@
 </template>
 <script setup>
 import { reactive, ref, watch, inject, nextTick } from 'vue';
-import { finder } from '@medv/finder';
+import { getCssSelector } from 'css-selector-generator';
 import { debounce } from '@/utils/helper';
 import AppBlocks from './AppBlocks.vue';
 import AppSelector from './AppSelector.vue';
@@ -193,7 +193,9 @@ const cardRect = reactive({
 
 /* eslint-disable  no-use-before-define */
 const getElementSelector = (element) =>
-  state.selectorType === 'css' ? finder(element) : generateXPath(element);
+  state.selectorType === 'css'
+    ? getCssSelector(element)
+    : generateXPath(element);
 
 function generateXPath(element) {
   if (!element) return null;
@@ -299,7 +301,7 @@ function handleMouseMove({ clientX, clientY, target }) {
   Object.assign(hoverElementRect, getElementRect(target));
 }
 function handleClick(event) {
-  const { target, path } = event;
+  const { target, path, ctrlKey, shiftKey } = event;
 
   if (target === rootElement || state.hide || state.isExecuting) return;
 
@@ -310,16 +312,37 @@ function handleClick(event) {
     name,
     value,
   }));
-  state.selectedElements = [
-    {
-      ...getElementRect(target),
-      attributes,
-      element: target,
-      highlight: false,
-    },
-  ];
 
-  state.elSelector = getElementSelector(target);
+  let targetElement = target;
+  const targetElementDetail = {
+    ...getElementRect(target),
+    attributes,
+    element: target,
+    highlight: false,
+  };
+
+  if ((state.selectorType === 'css' && ctrlKey) || shiftKey) {
+    let elementIndex = -1;
+    const elements = state.selectedElements.map(({ element }, index) => {
+      if (element === targetElement) {
+        elementIndex = index;
+      }
+
+      return element;
+    });
+
+    if (elementIndex === -1) {
+      targetElement = [...elements, target];
+      state.selectedElements.push(targetElementDetail);
+    } else {
+      targetElement = elements.splice(elementIndex, 1);
+      state.selectedElements.splice(elementIndex, 1);
+    }
+  } else {
+    state.selectedElements = [targetElementDetail];
+  }
+
+  state.elSelector = getElementSelector(targetElement);
 
   selectedElement.index = 0;
   selectedElement.path = path;
