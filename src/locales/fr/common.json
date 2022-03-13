@@ -7,6 +7,7 @@
     "block": "Bloc | Blocs",
     "docs": "Documentation",
     "search": "Rechercher",
+    "example": "Example | Examples",
     "import": "Importer",
     "export": "Exporter",
     "rename": "Renommer",
@@ -31,7 +32,10 @@
     "disabled": "Désactivé",
     "enable": "Activer",
     "fallback": "Fallback",
-    "update": "Mettre à jour"
+    "update": "Mettre à jour",
+    "duplicate": "Dupliquer",
+    "password": "Mot de passe",
+    "category": "Catégorie"
   },
   "message": {
     "noBlock": "Pas de bloc",
@@ -40,8 +44,10 @@
     "useDynamicData": "Apprenez à ajouter des données dynamiques",
     "delete": "Voulez-vous vraiment supprimer \"{name}\"?",
     "empty": "Oupss... Il semble que vous n'ayez aucun élément",
+    "maxSizeExceeded": "La taille maximum autorisée du fichier est dépassée",
     "notSaved": "Voulez-vous vraiment partir ? Vous avez des changements non enregistrés !",
-    "maxSizeExceeded": "La taille maximum autorisée du fichier est dépassée"
+    "somethingWrong": "Quelque chose s'est mal passé",
+    "limitExceeded": "Vous avez dépassé la limite"
   },
   "sort": {
     "sortBy": "Trier par",
