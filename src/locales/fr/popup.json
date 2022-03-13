@@ -1,5 +1,14 @@
 {
+  "recording": {
+    "stop": "Arrêter d'enregistrer",
+    "title": "Enregistrer"
+  },
   "home": {
+    "record": {
+      "title": "Enregistrer un workflow",
+      "button": "Enregistrer",
+      "name": "Nom du workflow"
+    },
     "elementSelector": {
       "name": "Sélecteur d'éléments",
       "noAccess": "L'extension n'a pas accès à ce site"
