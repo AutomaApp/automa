@@ -491,7 +491,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['selector'],
+    refDataKeys: ['selector', 'eventParams.clientX', 'eventParams.clientY'],
     data: {
       description: '',
       findBy: 'cssSelector',

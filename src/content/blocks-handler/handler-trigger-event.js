@@ -20,8 +20,8 @@ const eventHandlers = {
       button: mouseButtons[params.button]?.name || 'left',
     };
 
-    if (params.clientX) commandParams.x = params.clientX;
-    if (params.clientY) commandParams.y = params.clientY;
+    if (params.clientX) commandParams.x = +params.clientX;
+    if (params.clientY) commandParams.y = +params.clientY;
 
     Object.keys(modifiers).forEach((key) => {
       if (commandParams.modifiers) return;
