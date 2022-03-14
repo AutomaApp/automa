@@ -194,7 +194,10 @@ const cardRect = reactive({
 /* eslint-disable  no-use-before-define */
 const getElementSelector = (element) =>
   state.selectorType === 'css'
-    ? getCssSelector(element)
+    ? getCssSelector(element, {
+        includeTag: true,
+        blacklist: ['[focused]', /focus/],
+      })
     : generateXPath(element);
 
 function generateXPath(element) {
@@ -305,8 +308,8 @@ function handleClick(event) {
 
   if (target === rootElement || state.hide || state.isExecuting) return;
 
-  event.preventDefault();
   event.stopPropagation();
+  event.preventDefault();
 
   const attributes = Array.from(target.attributes).map(({ name, value }) => ({
     name,
