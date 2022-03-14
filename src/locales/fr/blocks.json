@@ -10,7 +10,17 @@
   "workflow": {
     "blocks": {
       "base": {
+        "moveToGroup": "Déplacer le bloc vers le groupe de blocs",
         "selector": "Sélecteur d'éléments",
+        "table": {
+          "checkbox": "Insérer dans le tableau",
+          "select": "Selectionner une colonne",
+          "extraRow": {
+            "checkbox": "Ajouter une ligne supplémentaire",
+            "placeholder": "Valeur",
+            "title": "Valeur de la ligne supplémentaire"
+          }
+        },
         "findElement": {
           "placeholder": "Rechercher un élément par",
           "options": {
@@ -25,11 +35,57 @@
         "multiple": {
           "title": "Sélectionner plusieurs éléments",
           "text": "Multiple"
+        },
+        "waitSelector": {
+          "title": "Attendre le sélecteur",
+          "timeout": "Délai d'attente du sélecteur (ms)"
         }
+      },
+      "insert-data": {
+        "name": "Insérer des données",
+        "description": "Insérer des données dans la table ou une variable"
+      },
+      "clipboard": {
+        "name": "Presse-papiers",
+        "description": "Récupérer le texte copié à partir du presse-papiers",
+        "data": "Données du presse-papiers",
+        "noPermission": "Vous n'êtes pas autorisé à accéder au presse-papiers",
+        "grantPermission": "Donner la permission"
+      },
+      "hover-element": {
+        "name": "Survoler un élément",
+        "description": "Survolez un élément"
+      },
+      "upload-file": {
+        "name": "Envoyer un fichier",
+        "description": "Envoyer le fichier dans l'élément <input type=\"file\">",
+        "filePath": "URL ou chemin d'accès au fichier",
+        "addFile": "Ajouter un fichier",
+        "requirement": "Voir les exigences avant d'utiliser ce bloc",
+        "noFileAccess": "Automa n'a pas accès aux fichiers"
+      },
+      "browser-event": {
+        "name": "Événement du navigateur",
+        "description": "Exécuter le bloc suivant lorsque l'événement est déclenché",
+        "events": "Événements",
+        "timeout": "Délai d'attente (millisecondes)",
+        "activeTabLoaded": "Onglet actif",
+        "setAsActiveTab": "Définir comme onglet actif"
+      },
+      "blocks-group": {
+        "name": "Groupe de blocs",
+        "groupName": "Nom du groupe",
+        "description": "Regroupement de blocs",
+        "dropText": "Faites glisser et déposez un bloc ici",
+        "cantAdd": "Impossible d'ajouter le bloc \"{blockName}\" au groupe."
       },
       "trigger": {
         "name": "Déclencheur",
         "description": "Bloc où le workflow commencera à s'exécuter",
+        "addTime": "Ajouter une heure",
+        "selectDay": "Sélectionnez un jour",
+        "timeExist": "Vous avez déjà ajouté {time} le {day}",
+        "fixedDelay": "Délai fixe",
         "days": [
           "Dimanche",
           "Lundi",
@@ -42,6 +98,7 @@
         "useRegex": "Utiliser une Regex",
         "shortcut": {
           "tooltip": "Enregistrer un raccourci",
+          "stopRecord": "Arrête d'enregistrer",
           "checkboxTitle": "Exécuter le raccourci même lorsque vous êtes dans un élément de saisie",
           "checkbox": "Actif dans un élément de saisie",
           "note": "Note: le raccourci clavier ne fonctionne que lorsque vous êtes sur une page web"
@@ -61,6 +118,7 @@
           "date": "À une date précise",
           "specific-day": "À un jour précis",
           "visit-web": "Lorsque vous visitez un site Web",
+          "on-startup": "Au démarrage du navigateur",
           "keyboard-shortcut": "Raccourci clavier"
         }
       },
@@ -68,7 +126,40 @@
         "name": "Executer le workflow",
         "overwriteNote": "Cela écrasera les données globales du workflow sélectionné",
         "select": "Selectionner le workflow",
+        "executeId": "Executer l'id",
         "description": ""
+      },
+      "google-sheets": {
+        "name": "Google sheets",
+        "description": "Lire ou mettre à jour les données Google Sheets",
+        "previewData": "Aperçu des données",
+        "firstRow": "Utilisez la première ligne comme clés",
+        "keysAsFirstRow": "Utiliser les clés comme première ligne",
+        "insertData": "Insérer des données",
+        "valueInputOption": "Option de saisie de valeur",
+        "dataFrom": {
+          "label": "Données de",
+          "options": {
+            "data-columns": "Table",
+            "custom-data": "Données personnalisées"
+          }
+        },
+        "refKey": {
+          "label": "Clé de référence (facultatif)",
+          "placeholder": "Nom de la clé"
+        },
+        "spreadsheetId": {
+          "label": "Identifiant de la feuille de calcul",
+          "link": "Découvrez comment obtenir un identifiant de feuille de calcul"
+        },
+        "range": {
+          "label": "Plage",
+          "link": "Cliquez pour voir plus d'exemple"
+        },
+        "select": {
+          "get": "Obtenir les valeurs des cellules de la feuille de calcul",
+          "update": "Mettre à jour les valeurs des cellules de la feuille de calcul"
+        }
       },
       "active-tab": {
         "name": "Onglet actif",
@@ -86,6 +177,13 @@
       "new-window": {
         "name": "Nouvelle fenêtre",
         "description": "Créer une nouvelle fenêtre",
+        "top": "Haut",
+        "left": "Gauche",
+        "height": "Hauteur",
+        "width": "Largeur",
+        "note": "Remarque : utilisez 0 pour désactiver",
+        "position": "Position de la fenêtre",
+        "size": "Taille de la fenêtre",
         "windowState": {
           "placeholder": "État de la fenêtre",
           "options": {
@@ -112,7 +210,8 @@
         "name": "Fermer l'onglet",
         "description": "",
         "activeTab": "Ferme l'onglet actif",
-        "url": "URL ou modèle de correspondance"
+        "url": "URL ou modèle de correspondance",
+        "allWindows": "Fermez toutes les fenêtres"
       },
       "event-click": {
         "name": "Cliquer sur l'élément",
@@ -130,6 +229,7 @@
         "name": "Obtenir le texte",
         "description": "Obtenir le texte d'un élément",
         "checkbox": "Enregistrer les données",
+        "includeTags": "Inclure les balises HTML",
         "prefixText": {
           "placeholder": "Préfixe du texte",
           "title": "Ajouter un préfixe au texte"
@@ -137,16 +237,21 @@
         "suffixText": {
           "placeholder": "Suffixe du texte",
           "title": "Ajouter un suffixe au texte"
-        },
-        "extraRow": {
-          "checkbox": "Ajouter une ligne supplémentaire",
-          "placeholder": "Valeur",
-          "title": "Valeur de la ligne supplémentaire"
         }
       },
       "export-data": {
         "name": "Exporter les données",
-        "description": "Exporte les colonnes de données du workflow"
+        "description": "Exporte les colonnes de données du workflow",
+        "exportAs": "Exporter en tant que",
+        "refKey": "Clé de référence",
+        "bomHeader": "Ajouter la nomenclature UTF-8",
+        "dataToExport": {
+          "placeholder": "Données à exporter",
+          "options": {
+            "data-columns": "Table",
+            "google-sheets": "Google sheets"
+          }
+        }
       },
       "element-scroll": {
         "name": "Défiler l'élément",
@@ -158,9 +263,18 @@
         "incScrollX": "Incrémenter le défilement horizontal",
         "incScrollY": "Incrémenter le défilement vertical"
       },
+      "switch-tab": {
+        "name": "Changer d'onglet",
+        "description": "Basculer entre les onglets",
+        "matchPattern": "Modèles de correspondance",
+        "url": "URL du nouvel onglet",
+        "createIfNoMatch": "Créer s'il n'y a pas de correspondance"
+      },
       "new-tab": {
         "name": "Nouvel onglet",
         "description": "",
+        "url": "URL du nouvel onglet",
+        "customUserAgent": "Utiliser un User-Agent personnalisé",
         "activeTab": "Définir comme onglet actif",
         "tabToGroup": "Ajouter l'onglet au groupe",
         "updatePrevTab": {
@@ -240,6 +354,7 @@
       },
       "conditions": {
         "name": "Conditions",
+        "add": "Ajouter une condition",
         "description": "Bloc conditionnel",
         "fallbackTitle": "Exécuté lorsque toutes les comparaisons ne répondent pas aux exigences",
         "equals": "Égale à",
@@ -255,6 +370,7 @@
         "description": "Vérifie si un élément existe",
         "selector": "Sélecteur d'éléments",
         "fallbackTitle": "Exécuté lorsque l'élément n'existe pas",
+        "throwError": "Activer une erreur si n'existe pas",
         "tryFor": {
           "title": "Essaye de vérifier si l'élément existe",
           "label": "Nombre d'essai"
@@ -265,26 +381,32 @@
         }
       },
       "webhook": {
-        "name": "Webhook",
-        "description": "Un Webhook permet à un service externe d'être notifié",
-        "url": "L'URL de réception de la requête",
-        "contentType": "Sélectionnez un type de contenu",
+        "name": "Requête HTTP",
+        "description": "Faire une requête HTTP",
+        "contentType": "Type de contenu",
+        "method": "Méthode de la requête",
+        "url": "URL de la requête",
+        "fallback": "Exécuter en cas d'échec ou d'erreur lors de la création de la requête HTTP",
         "buttons": {
           "header": "Ajouter un en-tête"
         },
         "timeout": {
-          "placeholder": "Délai d'attente",
+          "placeholder": "Délai d'exécution",
           "title": "Délai d'exécution de la requête HTTP (ms)"
         },
         "tabs": {
           "headers": "En-têtes",
-          "body": "Corps du contenu"
+          "body": "Corps",
+          "response": "Réponse"
         }
       },
       "loop-data": {
         "name": "Boucle de données",
         "description": "Itérer depuis les colonnes de données ou vos données personnalisées",
         "loopId": "ID de la boucle",
+        "refKey": "Clé de référence",
+        "startIndex": "Commencer à partir de l'index",
+        "resumeLastWorkflow": "Reprendre la où la dernière éxecution s'est arrêté",
         "modal": {
           "fileTooLarge": "Fichier trop volumineux pour être modifié",
           "maxFile": "La taille maximale du fichier est de 1 Mo",
@@ -307,8 +429,12 @@
           "toNumber": "Vers le nombre",
           "options": {
             "numbers": "Nombres",
-            "data-columns": "Colonnes de données",
-            "custom-data": "Données personnalisées"
+            "variable": "Variable",
+            "data-columns": "Table",
+            "table": "Table",
+            "custom-data": "Données personnalisées",
+            "google-sheets": "Google sheets",
+            "elements": "Elements"
           }
         }
       },
@@ -318,8 +444,11 @@
       },
       "take-screenshot": {
         "name": "Prendre une capture d'écran",
+        "fullPage": "Prendre une capture d'écran pleine page",
         "description": "Prend une capture d'écran de l'onglet actif",
-        "imageQuality": "Qualité de l'image"
+        "imageQuality": "Qualité de l'image",
+        "saveToColumn": "Insérer une capture d'écran dans la Table",
+        "saveToComputer": "Enregistrer la capture d'écran sur l'ordinateur"
       },
       "switch-to": {
         "name": "Basculer de cadre",
