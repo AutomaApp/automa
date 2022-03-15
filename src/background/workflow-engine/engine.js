@@ -71,6 +71,13 @@ class WorkflowEngine {
       globalData: parseJSON(globalData, globalData),
     };
 
+    this.onDebugEvent = ({ tabId }, method, params) => {
+      if (tabId !== this.activeTab.id) return;
+
+      (this.eventListeners[method] || []).forEach((listener) => {
+        listener(params);
+      });
+    };
     this.onWorkflowStopped = (id) => {
       if (this.id !== id || this.isDestroyed) return;
       this.stop();
@@ -125,6 +132,10 @@ class WorkflowEngine {
     if (!blocks) {
       console.error(`${this.workflow.name} doesn't have blocks`);
       return;
+    }
+
+    if (this.workflow.settings.debugMode) {
+      chrome.debugger.onEvent.addListener(this.onDebugEvent);
     }
 
     const triggerBlock = Object.values(blocks).find(
@@ -249,10 +260,13 @@ class WorkflowEngine {
     try {
       if (this.isDestroyed) return;
       if (this.isUsingProxy) chrome.proxy.settings.clear({});
-      if (this.workflow.settings.debugMode && this.activeTab.id) {
-        await sleep(1000);
+      if (this.workflow.settings.debugMode) {
+        chrome.debugger.onEvent.removeListener(this.onDebugEvent);
 
-        chrome.debugger.detach({ tabId: this.activeTab.id });
+        if (this.activeTab.id) {
+          await sleep(1000);
+          chrome.debugger.detach({ tabId: this.activeTab.id });
+        }
       }
 
       const endedTimestamp = Date.now();

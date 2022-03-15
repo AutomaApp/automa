@@ -9,7 +9,9 @@ export function attachDebugger(tabId, prevTab) {
     if (prevTab && tabId !== prevTab)
       chrome.debugger.detach({ tabId: prevTab });
 
-    chrome.debugger.attach({ tabId }, '1.3', resolve);
+    chrome.debugger.attach({ tabId }, '1.3', () => {
+      chrome.debugger.sendCommand({ tabId }, 'Page.enable', resolve);
+    });
   });
 }
 

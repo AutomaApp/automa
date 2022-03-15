@@ -41,6 +41,15 @@
           "timeout": "Selector timeout (ms)"
         }
       },
+      "handle-dialog": {
+        "name": "Handle dialog",
+        "description": "Accepts or dismisses a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload).",
+        "accept": "Accept dialog",
+        "promptText": {
+          "label": "Prompt text",
+          "description": "The text to enter into the dialog prompt before accepting"
+        }
+      },
       "insert-data": {
         "name": "Insert data",
         "description": "Insert data into table or variable"

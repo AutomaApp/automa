@@ -746,6 +746,25 @@ export const tasks = {
       multiple: false,
     },
   },
+  'handle-dialog': {
+    name: 'Handle dialog',
+    description:
+      'Accepts or dismisses a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload).',
+    icon: 'riChat3Line',
+    component: 'BlockBasic',
+    editComponent: 'EditHandleDialog',
+    category: 'browser',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    refDataKeys: ['promptText'],
+    data: {
+      description: '',
+      accept: true,
+      promptText: '',
+    },
+  },
 };
 
 export const categories = {
