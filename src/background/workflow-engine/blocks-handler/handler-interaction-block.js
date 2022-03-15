@@ -45,7 +45,10 @@ async function interactionHandler(block, { refData }) {
       frameId: this.activeTab.frameId || 0,
     });
 
-    if (block.data.saveData || block.data.getValue) {
+    if (
+      (block.data.saveData && block.name !== 'forms') ||
+      block.data.getValue
+    ) {
       const currentColumnType =
         this.columns[block.data.dataColumn]?.type || 'any';
       const insertDataToColumn = (value) => {
