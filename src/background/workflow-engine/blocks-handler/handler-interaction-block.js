@@ -86,10 +86,11 @@ async function interactionHandler(block, { refData }) {
       }
 
       if (data?.columns.insert) {
-        const arrData = Array.isArray(data.columns.data)
+        const params = Array.isArray(data.columns.data)
           ? data.columns.data
           : [data.columns.data];
-        this.addDataToColumn(arrData);
+
+        this.addDataToColumn(params);
       }
     }
 

@@ -38,8 +38,9 @@ class WorkflowEngine {
 
     this.blocks = {};
     this.history = [];
+    this.columnsId = {};
     this.eventListeners = {};
-    this.columns = { column: { index: 0, type: 'any' } };
+    this.columns = { column: { index: 0, name: 'column', type: 'any' } };
 
     let variables = {};
     let { globalData } = workflow;
@@ -88,7 +89,7 @@ class WorkflowEngine {
     this.isUsingProxy = false;
 
     this.history = [];
-    this.columns = { column: { index: 0, type: 'any' } };
+    this.columns = { column: { index: 0, name: 'column', type: 'any' } };
 
     this.activeTab = {
       url: '',
@@ -140,7 +141,10 @@ class WorkflowEngine {
       : Object.values(workflowTable);
 
     columns.forEach(({ name, type, id }) => {
-      this.columns[id || name] = { index: 0, name, type };
+      const columnId = id || name;
+
+      this.columnsId[name] = columnId;
+      this.columns[columnId] = { index: 0, name, type };
     });
 
     this.blocks = blocks;
@@ -195,8 +199,9 @@ class WorkflowEngine {
       return;
     }
 
-    const columnKey = objectHasKey(this.columns, key) ? key : 'column';
-    const currentColumn = this.columns[columnKey];
+    const columnId =
+      (this.columns[key] ? key : this.columnsId[key]) || 'column';
+    const currentColumn = this.columns[columnId];
     const columnName = currentColumn.name || 'column';
     const convertedValue = convertData(value, currentColumn.type);
 
