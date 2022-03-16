@@ -124,18 +124,13 @@ class WorkflowEngine {
       return;
     }
 
-    const { drawflow } = this.workflow;
-    const flow =
-      typeof drawflow === 'string' ? parseJSON(drawflow, {}) : drawflow;
-    const blocks = flow?.drawflow?.Home.data;
+    const flow = this.workflow.drawflow;
+    const parsedFlow = typeof flow === 'string' ? parseJSON(flow, {}) : flow;
+    const blocks = parsedFlow?.drawflow?.Home.data;
 
     if (!blocks) {
       console.error(`${this.workflow.name} doesn't have blocks`);
       return;
-    }
-
-    if (this.workflow.settings.debugMode) {
-      chrome.debugger.onEvent.addListener(this.onDebugEvent);
     }
 
     const triggerBlock = Object.values(blocks).find(
@@ -157,6 +152,21 @@ class WorkflowEngine {
       this.columnsId[name] = columnId;
       this.columns[columnId] = { index: 0, name, type };
     });
+
+    if (this.workflow.settings.debugMode) {
+      chrome.debugger.onEvent.addListener(this.onDebugEvent);
+    }
+    if (this.workflow.settings.reuseLastState) {
+      const lastStateKey = `last-state:${this.workflow.id}`;
+      browser.storage.local.get(lastStateKey).then((value) => {
+        const lastState = value[lastStateKey];
+
+        if (!lastState) return;
+
+        this.columns = lastState.columns;
+        Object.assign(this.referenceData, lastState.referenceData);
+      });
+    }
 
     this.blocks = blocks;
     this.startedTimestamp = Date.now();
@@ -302,6 +312,17 @@ class WorkflowEngine {
         currentBlock: this.currentBlock,
       });
 
+      browser.storage.local.set({
+        [`last-state:${this.workflow.id}`]: {
+          columns: this.columns,
+          referenceData: {
+            table: this.referenceData.table,
+            variables: this.referenceData.variables,
+            globalData: this.referenceData.globalData,
+          },
+        },
+      });
+
       this.isDestroyed = true;
       this.eventListeners = {};
     } catch (error) {
@@ -326,7 +347,7 @@ class WorkflowEngine {
     await this.states.update(this.id, { state: this.state });
     this.dispatchEvent('update', { state: this.state });
 
-    const startExecutedTime = Date.now();
+    const startExecuteTime = Date.now();
 
     const blockHandler = this.blocksHandler[toCamelCase(block.name)];
     const handler =
@@ -357,7 +378,7 @@ class WorkflowEngine {
         name: block.name,
         logId: result.logId,
         type: result.status || 'success',
-        duration: Math.round(Date.now() - startExecutedTime),
+        duration: Math.round(Date.now() - startExecuteTime),
       });
 
       if (result.nextBlockId) {

@@ -156,6 +156,7 @@
     },
     "settings": {
       "saveLog": "Save workflow log",
+      "reuseLastState": "Reuse last workflow state",
       "executedBlockOnWeb": "Show executed block on web page",
       "debugMode": "Debug mode",
       "restartWorkflow": {

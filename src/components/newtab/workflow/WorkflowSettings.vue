@@ -45,6 +45,10 @@
       <p class="capitalize">{{ t('workflow.settings.debugMode') }}</p>
     </div>
     <div class="flex mt-6">
+      <ui-switch v-model="settings.reuseLastState" class="mr-4" />
+      <p class="capitalize">{{ t('workflow.settings.reuseLastState') }}</p>
+    </div>
+    <div class="flex mt-6">
       <ui-switch v-model="settings.saveLog" class="mr-4" />
       <p class="capitalize">{{ t('workflow.settings.saveLog') }}</p>
     </div>
