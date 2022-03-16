@@ -34,13 +34,17 @@ export const functions = {
   randint(min = 0, max = 100) {
     return Math.round(Math.random() * (+max - +min) + +min);
   },
+  getLength(str) {
+    return str.length ?? str;
+  },
 };
 
 export function extractStrFunction(str) {
-  const extractedStr = /^\$\s*(\w+)\s*\((.*)\)/.exec(str.trim());
+  const extractedStr = /^\$\s*(\w+)\s*\((.*)\)/.exec(
+    str.trim().replace(/\r?\n|\r/g, '')
+  );
 
   if (!extractedStr) return null;
-
   const { 1: name, 2: funcParams } = extractedStr;
   const params = funcParams
     .split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/)
