@@ -100,10 +100,6 @@ const browserEvents = {
     { id: 'tab:loaded', name: 'Tab loaded' },
     { id: 'tab:create', name: 'Tab created' },
   ],
-  // 'Downloads': [
-  //   { id: 'download:start', name: 'Download started' },
-  //   { id: 'download:complete', name: 'Download complete' },
-  // ],
   Window: [
     { id: 'window:create', name: 'Window created' },
     { id: 'window:close', name: 'Window closed' },

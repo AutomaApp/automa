@@ -47,7 +47,7 @@
   ],
   "optional_permissions": [
     "clipboardRead",
-    "debugger"
+    "downloads"
   ],
   "permissions": [
     "tabs",

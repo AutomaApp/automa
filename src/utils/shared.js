@@ -765,6 +765,30 @@ export const tasks = {
       promptText: '',
     },
   },
+  'handle-download': {
+    name: 'Handle download',
+    description: 'Handle downloaded file',
+    icon: 'riFileDownloadLine',
+    component: 'BlockBasic',
+    editComponent: 'EditHandleDownload',
+    category: 'browser',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    refDataKeys: ['promptText'],
+    data: {
+      description: '',
+      filename: '',
+      timeout: 20000,
+      onConflict: 'uniquify',
+      waitForDownload: true,
+      dataColumn: '',
+      saveData: true,
+      assignVariable: false,
+      variableName: '',
+    },
+  },
 };
 
 export const categories = {

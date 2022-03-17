@@ -39,6 +39,13 @@
         "waitSelector": {
           "title": "Wait for selector",
           "timeout": "Selector timeout (ms)"
+        },
+        "downloads": {
+          "onConflict": {
+            "uniquify": "Uniquify",
+            "overwrite": "Overwrite",
+            "prompt": "Prompt"
+          }
         }
       },
       "handle-dialog": {
@@ -49,6 +56,14 @@
           "label": "Prompt text",
           "description": "The text to enter into the dialog prompt before accepting"
         }
+      },
+      "handle-download": {
+        "name": "Handle download",
+        "description": "Handle downloaded file",
+        "timeout": "Timeout (milliseconds)",
+        "noPermission": "Don't have permission to access the downloads",
+        "onConflict": "On conflict",
+        "waitFile": "Wait for the file to be downloaded"
       },
       "insert-data": {
         "name": "Insert data",
