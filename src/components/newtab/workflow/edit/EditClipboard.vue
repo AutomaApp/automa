@@ -6,7 +6,7 @@
       :placeholder="t('common.description')"
       @change="updateData({ description: $event })"
     />
-    <template v-if="hasPermission">
+    <template v-if="permission.has.clipboardRead">
       <p class="mt-4">
         {{ t('workflow.blocks.clipboard.data') }}
       </p>
@@ -16,17 +16,16 @@
       <p class="mt-4">
         {{ t('workflow.blocks.clipboard.noPermission') }}
       </p>
-      <ui-button variant="accent" class="mt-2" @click="requestPermission">
+      <ui-button variant="accent" class="mt-2" @click="permission.request">
         {{ t('workflow.blocks.clipboard.grantPermission') }}
       </ui-button>
     </template>
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import browser from 'webextension-polyfill';
 import InsertWorkflowData from './InsertWorkflowData.vue';
+import { useHasPermissions } from '@/composable/hasPermissions';
 
 const props = defineProps({
   data: {
@@ -36,22 +35,10 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:data']);
 
-const permission = { permissions: ['clipboardRead'] };
 const { t } = useI18n();
+const permission = useHasPermissions(['clipboardRead']);
 
-const hasPermission = ref(false);
-
-function handlePermission(status) {
-  hasPermission.value = status;
-}
-function requestPermission() {
-  browser.permissions.request(permission).then(handlePermission);
-}
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }
-
-onMounted(() => {
-  browser.permissions.contains(permission).then(handlePermission);
-});
 </script>

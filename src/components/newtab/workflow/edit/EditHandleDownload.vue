@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="hasPermission">
+    <template v-if="permission.has.downloads">
       <ui-textarea
         :model-value="data.description"
         class="w-full"
@@ -50,16 +50,15 @@
       <p class="mt-4">
         {{ t('workflow.blocks.handle-download.noPermission') }}
       </p>
-      <ui-button variant="accent" class="mt-2" @click="requestPermission">
+      <ui-button variant="accent" class="mt-2" @click="permission.request">
         {{ t('workflow.blocks.clipboard.grantPermission') }}
       </ui-button>
     </template>
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import browser from 'webextension-polyfill';
+import { useHasPermissions } from '@/composable/hasPermissions';
 import InsertWorkflowData from './InsertWorkflowData.vue';
 
 const props = defineProps({
@@ -70,26 +69,12 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:data']);
 
-const permission = { permissions: ['downloads'] };
+const permission = useHasPermissions(['downloads']);
 const onConflict = ['uniquify', 'overwrite', 'prompt'];
 
 const { t } = useI18n();
 
-const hasPermission = ref(false);
-
-function handlePermission(status) {
-  hasPermission.value = status;
-}
-function requestPermission() {
-  browser.permissions.request(permission).then((isGranted) => {
-    if (isGranted) chrome.runtime.reload();
-  });
-}
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }
-
-onMounted(() => {
-  browser.permissions.contains(permission).then(handlePermission);
-});
 </script>

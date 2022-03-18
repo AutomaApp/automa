@@ -34,6 +34,7 @@ module.exports = {
     'no-console': ['warn', { allow: ['warn', 'error'] }],
     'no-underscore-dangle': 'off',
     'func-names': 'off',
+    'import/no-named-default': 'off',
     'import/extensions': [
       'error',
       'always',

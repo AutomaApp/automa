@@ -321,6 +321,7 @@ export const tasks = {
       type: 'json',
       description: '',
       addBOMHeader: false,
+      onConflict: 'uniquify',
       dataToExport: 'data-columns',
     },
   },
