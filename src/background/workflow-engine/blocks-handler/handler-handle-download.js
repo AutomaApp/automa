@@ -9,11 +9,19 @@ function handleDownload({ data, outputs }) {
   return new Promise((resolve) => {
     if (!this.activeTab.id) throw new Error('no-tab');
 
-    const names = getFilesname();
-    const { origin } = new URL(this.activeTab.url);
+    let downloadId = null;
+    const handleCreated = ({ id }) => {
+      if (downloadId) return;
 
-    names[origin] = data;
-    sessionStorage.setItem('rename-downloaded-files', JSON.stringify(names));
+      const names = getFilesname();
+
+      downloadId = id;
+      names[id] = data;
+      sessionStorage.setItem('rename-downloaded-files', JSON.stringify(names));
+
+      browser.downloads.onCreated.removeListener(handleCreated);
+    };
+    browser.downloads.onCreated.addListener(handleCreated);
 
     if (!data.waitForDownload) {
       resolve({
@@ -26,6 +34,7 @@ function handleDownload({ data, outputs }) {
 
     let isResolved = false;
     let currentFilename = data.filename;
+
     const timeout = setTimeout(() => {
       if (isResolved) return;
 
@@ -37,7 +46,7 @@ function handleDownload({ data, outputs }) {
       });
     }, data.timeout);
 
-    const resolvePromise = () => {
+    const resolvePromise = (id) => {
       if (data.saveData) {
         this.addDataToColumn(data.dataColumn, currentFilename);
       }
@@ -49,7 +58,7 @@ function handleDownload({ data, outputs }) {
       isResolved = true;
 
       const filesname = getFilesname();
-      delete filesname[origin];
+      delete filesname[id];
       sessionStorage.setItem(
         'rename-downloaded-files',
         JSON.stringify(filesname)
@@ -67,21 +76,21 @@ function handleDownload({ data, outputs }) {
         return;
       }
 
-      const file = getFilesname()[origin];
-      if (!file || file.id !== id) return;
+      if (downloadId !== id) return;
 
       if (filename) currentFilename = filename.current;
 
       if (state && state.current === 'complete') {
-        resolvePromise();
+        resolvePromise(id);
       } else {
         browser.downloads.search({ id }).then(([download]) => {
           if (!download || !download.endTime) return;
 
-          resolvePromise();
+          resolvePromise(id);
         });
       }
     };
+
     browser.downloads.onChanged.addListener(handleChanged);
   });
 }

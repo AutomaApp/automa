@@ -344,8 +344,7 @@ if (chrome.downloads) {
   chrome.downloads.onDeterminingFilename.addListener((item, suggest) => {
     const filesname =
       JSON.parse(sessionStorage.getItem('rename-downloaded-files')) || {};
-    const referrer = new URL(item.referrer).origin.replace(/\/$/, '');
-    const suggestion = filesname[referrer];
+    const suggestion = filesname[item.id];
 
     if (!suggestion) return;
 
@@ -356,8 +355,7 @@ if (chrome.downloads) {
       suggestion.filename += `.${filExtension}`;
     }
 
-    suggestion.id = item.id;
-    if (!suggestion.waitForDownload) delete filesname[referrer];
+    if (!suggestion.waitForDownload) delete filesname[item.id];
     sessionStorage.setItem(
       'rename-downloaded-files',
       JSON.stringify(filesname)
