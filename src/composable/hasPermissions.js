@@ -8,7 +8,7 @@ export function useHasPermissions(permissions) {
     hasPermissions[name] = status;
   }
   function request() {
-    const reqPermissions = permissions.map(
+    const reqPermissions = permissions.filter(
       (permission) => !hasPermissions[permission]
     );
 
