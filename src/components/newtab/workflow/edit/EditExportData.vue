@@ -23,6 +23,17 @@
       placeholder="unnamed"
       @change="updateData({ name: $event })"
     />
+    <ui-select
+      v-if="permission.has.downloads"
+      :model-value="data.onConflict"
+      :label="t('workflow.blocks.handle-download.onConflict')"
+      class="mt-2 w-full"
+      @change="updateData({ onConflict: $event })"
+    >
+      <option v-for="item in onConflict" :key="item" :value="item">
+        {{ t(`workflow.blocks.base.downloads.onConflict.${item}`) }}
+      </option>
+    </ui-select>
     <ui-input
       v-if="data.dataToExport === 'google-sheets'"
       :model-value="data.refKey"
@@ -54,6 +65,7 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { dataExportTypes } from '@/utils/shared';
+import { useHasPermissions } from '@/composable/hasPermissions';
 
 const props = defineProps({
   data: {
@@ -63,8 +75,11 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:data']);
 
-const { t } = useI18n();
 const dataToExport = ['data-columns', 'google-sheets'];
+const onConflict = ['uniquify', 'overwrite', 'prompt'];
+
+const { t } = useI18n();
+const permission = useHasPermissions(['downloads']);
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });

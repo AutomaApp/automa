@@ -125,7 +125,6 @@ function javascriptCode(block) {
         preloadScripts.forEach((item) => {
           if (item.removeAfterExec) item.script.remove();
         });
-        sessionStorage.removeItem(storageKey);
 
         resolve({ columns, variables: storageRefData?.variables });
       };

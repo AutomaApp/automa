@@ -1,4 +1,4 @@
-import { objectHasKey } from '@/utils/helper';
+import objectPath from 'object-path';
 import mustacheReplacer from './mustache-replacer';
 
 export default function ({ block, refKeys, data }) {
@@ -7,16 +7,24 @@ export default function ({ block, refKeys, data }) {
   const copyBlock = JSON.parse(JSON.stringify(block));
 
   refKeys.forEach((blockDataKey) => {
-    if (!objectHasKey(block.data, blockDataKey)) return;
+    const currentData = objectPath.get(copyBlock.data, blockDataKey);
 
-    const currentData = copyBlock.data[blockDataKey];
+    if (!currentData) return;
 
     if (Array.isArray(currentData)) {
       currentData.forEach((str, index) => {
-        currentData[index] = mustacheReplacer(str, data);
+        objectPath.set(
+          copyBlock.data,
+          `${blockDataKey}.${index}`,
+          mustacheReplacer(str, data)
+        );
       });
     } else if (typeof currentData === 'string') {
-      copyBlock.data[blockDataKey] = mustacheReplacer(currentData, data);
+      objectPath.set(
+        copyBlock.data,
+        blockDataKey,
+        mustacheReplacer(currentData, data)
+      );
     }
   });
 

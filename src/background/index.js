@@ -339,6 +339,51 @@ chrome.runtime.onStartup.addListener(async () => {
   await browser.storage.local.set({ onStartupTriggers });
 });
 
+if (chrome.downloads) {
+  const getFileExtension = (str) => /(?:\.([^.]+))?$/.exec(str)[1];
+  chrome.downloads.onDeterminingFilename.addListener((item, suggest) => {
+    if (item.byExtensionId === chrome.runtime.id) {
+      const filesname =
+        JSON.parse(sessionStorage.getItem('export-filesname')) || {};
+      const blobId = item.url.replace('blob:chrome-extension://', '');
+      const suggestion = filesname[blobId];
+
+      if (suggestion) {
+        delete filesname[blobId];
+
+        suggest(suggestion);
+        sessionStorage.setItem('export-filesname', JSON.stringify(filesname));
+      }
+
+      return;
+    }
+
+    const filesname =
+      JSON.parse(sessionStorage.getItem('rename-downloaded-files')) || {};
+    const suggestion = filesname[item.id];
+
+    if (!suggestion) return;
+
+    const hasFileExt = getFileExtension(suggestion.filename);
+
+    if (!hasFileExt) {
+      const filExtension = getFileExtension(item.filename);
+      suggestion.filename += `.${filExtension}`;
+    }
+
+    if (!suggestion.waitForDownload) delete filesname[item.id];
+    sessionStorage.setItem(
+      'rename-downloaded-files',
+      JSON.stringify(filesname)
+    );
+
+    suggest({
+      filename: suggestion.filename,
+      conflictAction: suggestion.onConflict,
+    });
+  });
+}
+
 const message = new MessageListener('background');
 
 message.on('fetch:text', (url) => {

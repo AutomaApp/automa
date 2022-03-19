@@ -22,18 +22,26 @@
     :key="items[0]"
     class="flex items-center space-x-2 mt-2"
   >
-    <ui-input
-      v-model.number="defaultParams[items[0]]"
-      type="number"
-      class="flex-1"
-      :label="items[0]"
-    />
-    <ui-input
-      v-model.number="defaultParams[items[1]]"
-      type="number"
-      class="flex-1"
-      :label="items[1]"
-    />
+    <template v-if="items[0].startsWith('client')">
+      <ui-input
+        v-for="item in items"
+        :key="item"
+        :model-value="defaultParams[item]"
+        :label="item"
+        class="flex-1"
+        @change="defaultParams[item] = +$event || $event"
+      />
+    </template>
+    <template v-else>
+      <ui-input
+        v-for="item in items"
+        :key="item"
+        v-model.number="defaultParams[item]"
+        type="number"
+        class="flex-1"
+        :label="item"
+      />
+    </template>
   </div>
 </template>
 <script setup>

@@ -36,8 +36,23 @@ export function waitForSelector({
   });
 }
 
+function scrollIfNeeded(debugMode, element) {
+  if (!debugMode) return;
+
+  const { top, left, bottom, right } = element.getBoundingClientRect();
+  const isInViewport =
+    top >= 0 &&
+    left >= 0 &&
+    bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+    right <= (window.innerWidth || document.documentElement.clientWidth);
+
+  if (!isInViewport) {
+    element.scrollIntoView();
+  }
+}
+
 export default async function (
-  { data, id, frameSelector },
+  { data, id, frameSelector, debugMode },
   { onSelected, onError, onSuccess, returnElement }
 ) {
   if (!data || !data.selector) {
@@ -94,11 +109,13 @@ export default async function (
       await Promise.allSettled(
         Array.from(element).map((el) => {
           markElement(el, { id, data });
+          scrollIfNeeded(debugMode, el);
           return onSelected(el);
         })
       );
     } else if (element) {
       markElement(element, { id, data });
+      scrollIfNeeded(debugMode, element);
       await onSelected(element);
     }
 

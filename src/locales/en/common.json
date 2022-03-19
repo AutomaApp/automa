@@ -35,7 +35,8 @@
     "update": "Update",
     "duplicate": "Duplicate",
     "password": "Password",
-    "category": "Category"
+    "category": "Category",
+    "optional": "Optional"
   },
   "message": {
     "noBlock": "No block",

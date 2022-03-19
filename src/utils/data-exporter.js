@@ -1,7 +1,7 @@
 import Papa from 'papaparse';
 import { fileSaver } from './helper';
 
-const files = {
+export const files = {
   'plain-text': {
     mime: 'text/plain',
     ext: '.txt',
@@ -36,7 +36,11 @@ export function generateJSON(keys, data) {
   return result;
 }
 
-export default function (data, { name, type, addBOMHeader }, converted) {
+export default function (
+  data,
+  { name, type, addBOMHeader, returnUrl },
+  converted
+) {
   let result = data;
 
   if (type === 'csv' || type === 'json') {
@@ -61,9 +65,9 @@ export default function (data, { name, type, addBOMHeader }, converted) {
   }
 
   const { mime, ext } = files[type];
-  const blob = new Blob(payload, {
-    type: mime,
-  });
+  const blobUrl = URL.createObjectURL(new Blob(payload, { type: mime }));
 
-  fileSaver(`${name || 'unnamed'}${ext}`, URL.createObjectURL(blob));
+  if (!returnUrl) fileSaver(`${name || 'unnamed'}${ext}`, blobUrl);
+
+  return blobUrl;
 }

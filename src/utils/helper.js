@@ -130,9 +130,9 @@ export function openFilePicker(acceptedFileTypes = [], attrs = {}) {
   });
 }
 
-export function fileSaver(fileName, data) {
+export function fileSaver(filename, data) {
   const anchor = document.createElement('a');
-  anchor.download = fileName;
+  anchor.download = filename;
   anchor.href = data;
 
   anchor.dispatchEvent(new MouseEvent('click'));

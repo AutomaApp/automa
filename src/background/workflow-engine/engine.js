@@ -38,8 +38,9 @@ class WorkflowEngine {
 
     this.blocks = {};
     this.history = [];
+    this.columnsId = {};
     this.eventListeners = {};
-    this.columns = { column: { index: 0, type: 'any' } };
+    this.columns = { column: { index: 0, name: 'column', type: 'any' } };
 
     let variables = {};
     let { globalData } = workflow;
@@ -70,6 +71,13 @@ class WorkflowEngine {
       globalData: parseJSON(globalData, globalData),
     };
 
+    this.onDebugEvent = ({ tabId }, method, params) => {
+      if (tabId !== this.activeTab.id) return;
+
+      (this.eventListeners[method] || []).forEach((listener) => {
+        listener(params);
+      });
+    };
     this.onWorkflowStopped = (id) => {
       if (this.id !== id || this.isDestroyed) return;
       this.stop();
@@ -88,7 +96,7 @@ class WorkflowEngine {
     this.isUsingProxy = false;
 
     this.history = [];
-    this.columns = { column: { index: 0, type: 'any' } };
+    this.columns = { column: { index: 0, name: 'column', type: 'any' } };
 
     this.activeTab = {
       url: '',
@@ -116,10 +124,9 @@ class WorkflowEngine {
       return;
     }
 
-    const { drawflow } = this.workflow;
-    const flow =
-      typeof drawflow === 'string' ? parseJSON(drawflow, {}) : drawflow;
-    const blocks = flow?.drawflow?.Home.data;
+    const flow = this.workflow.drawflow;
+    const parsedFlow = typeof flow === 'string' ? parseJSON(flow, {}) : flow;
+    const blocks = parsedFlow?.drawflow?.Home.data;
 
     if (!blocks) {
       console.error(`${this.workflow.name} doesn't have blocks`);
@@ -140,8 +147,26 @@ class WorkflowEngine {
       : Object.values(workflowTable);
 
     columns.forEach(({ name, type, id }) => {
-      this.columns[id || name] = { index: 0, name, type };
+      const columnId = id || name;
+
+      this.columnsId[name] = columnId;
+      this.columns[columnId] = { index: 0, name, type };
     });
+
+    if (this.workflow.settings.debugMode) {
+      chrome.debugger.onEvent.addListener(this.onDebugEvent);
+    }
+    if (this.workflow.settings.reuseLastState) {
+      const lastStateKey = `last-state:${this.workflow.id}`;
+      browser.storage.local.get(lastStateKey).then((value) => {
+        const lastState = value[lastStateKey];
+
+        if (!lastState) return;
+
+        this.columns = lastState.columns;
+        Object.assign(this.referenceData, lastState.referenceData);
+      });
+    }
 
     this.blocks = blocks;
     this.startedTimestamp = Date.now();
@@ -195,8 +220,9 @@ class WorkflowEngine {
       return;
     }
 
-    const columnKey = objectHasKey(this.columns, key) ? key : 'column';
-    const currentColumn = this.columns[columnKey];
+    const columnId =
+      (this.columns[key] ? key : this.columnsId[key]) || 'column';
+    const currentColumn = this.columns[columnId];
     const columnName = currentColumn.name || 'column';
     const convertedValue = convertData(value, currentColumn.type);
 
@@ -244,10 +270,13 @@ class WorkflowEngine {
     try {
       if (this.isDestroyed) return;
       if (this.isUsingProxy) chrome.proxy.settings.clear({});
-      if (this.workflow.settings.debugMode && this.activeTab.id) {
-        await sleep(1000);
+      if (this.workflow.settings.debugMode) {
+        chrome.debugger.onEvent.removeListener(this.onDebugEvent);
 
-        chrome.debugger.detach({ tabId: this.activeTab.id });
+        if (this.activeTab.id) {
+          await sleep(1000);
+          chrome.debugger.detach({ tabId: this.activeTab.id });
+        }
       }
 
       const endedTimestamp = Date.now();
@@ -283,6 +312,17 @@ class WorkflowEngine {
         currentBlock: this.currentBlock,
       });
 
+      browser.storage.local.set({
+        [`last-state:${this.workflow.id}`]: {
+          columns: this.columns,
+          referenceData: {
+            table: this.referenceData.table,
+            variables: this.referenceData.variables,
+            globalData: this.referenceData.globalData,
+          },
+        },
+      });
+
       this.isDestroyed = true;
       this.eventListeners = {};
     } catch (error) {
@@ -307,7 +347,7 @@ class WorkflowEngine {
     await this.states.update(this.id, { state: this.state });
     this.dispatchEvent('update', { state: this.state });
 
-    const startExecutedTime = Date.now();
+    const startExecuteTime = Date.now();
 
     const blockHandler = this.blocksHandler[toCamelCase(block.name)];
     const handler =
@@ -338,7 +378,7 @@ class WorkflowEngine {
         name: block.name,
         logId: result.logId,
         type: result.status || 'success',
-        duration: Math.round(Date.now() - startExecutedTime),
+        duration: Math.round(Date.now() - startExecuteTime),
       });
 
       if (result.nextBlockId) {
