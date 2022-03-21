@@ -1,17 +1,19 @@
 <template>
-  <p class="text-sm text-gray-600 dark:text-gray-200 ml-2">Image quality</p>
-  <div class="bg-box-transparent px-4 mb-4 py-2 rounded-lg flex items-center">
-    <input
-      :value="data.quality"
-      :title="t('workflow.blocks.take-screenshot.imageQuality')"
-      class="focus:outline-none flex-1"
-      type="range"
-      min="0"
-      max="100"
-      @change="updateQuality"
-    />
-    <span class="w-12 text-right">{{ data.quality }}%</span>
-  </div>
+  <template v-if="data.ext === 'jpeg'">
+    <p class="text-sm text-gray-600 dark:text-gray-200 ml-2">Image quality</p>
+    <div class="bg-box-transparent px-4 mb-4 py-2 rounded-lg flex items-center">
+      <input
+        :value="data.quality"
+        :title="t('workflow.blocks.take-screenshot.imageQuality')"
+        class="focus:outline-none flex-1"
+        type="range"
+        min="0"
+        max="100"
+        @change="updateQuality"
+      />
+      <span class="w-12 text-right">{{ data.quality }}%</span>
+    </div>
+  </template>
   <div class="take-screenshot">
     <ui-checkbox
       :model-value="data.fullPage"
