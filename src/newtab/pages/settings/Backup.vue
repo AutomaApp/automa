@@ -42,7 +42,7 @@
           </ui-button>
         </div>
       </template>
-      <p v-else>
+      <p v-if="false">
         Upgrade to the
         <a
           href="https://automa.site/pricing"

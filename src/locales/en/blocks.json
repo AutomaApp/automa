@@ -53,7 +53,7 @@
         "description": "Accepts or dismisses a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload).",
         "accept": "Accept dialog",
         "promptText": {
-          "label": "Prompt text",
+          "label": "Prompt text (optional)",
           "description": "The text to enter into the dialog prompt before accepting"
         }
       },

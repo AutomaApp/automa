@@ -39,14 +39,14 @@
             >
               <v-remixicon :name="logsType[item.type]?.icon" size="20" />
             </span>
-            <div class="flex-1 text-overflow pr-2">
+            <div class="flex-1 line-clamp pr-2">
               <p class="w-full text-overflow leading-tight">
                 {{ item.name }}
               </p>
               <p
                 v-if="item.message"
                 :title="item.message"
-                class="text-sm leading-tight text-overflow text-gray-600 dark:text-gray-200"
+                class="text-sm line-clamp text-gray-600 dark:text-gray-200"
               >
                 {{ item.message }}
               </p>
