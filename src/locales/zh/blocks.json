@@ -107,7 +107,7 @@
         "name": "触发器",
         "description": "工作流从这里开始执行",
         "addTime": "添加时间",
-        "selectDay": "选择日",
+        "selectDay": "选择星期几",
         "timeExist": "你已经添加 {time} 在 {day}",
         "fixedDelay": "固定延迟",
         "days": [
@@ -128,19 +128,19 @@
           "note": "注意：键盘快捷键仅在您访问网页时有效"
         },
         "forms": {
-          "triggerWorkflow": "Trigger workflow",
-          "interval": "Interval (minutes)",
-          "delay": "Delay (minutes)",
-          "date": "Date",
-          "time": "Time",
-          "url": "URL or Regex",
-          "shortcut": "Shortcut"
+          "triggerWorkflow": "触发工作流",
+          "interval": "间隔 (分钟)",
+          "delay": "延迟 (分钟)",
+          "date": "日期",
+          "time": "时间",
+          "url": "URL 或 正则表达式",
+          "shortcut": "快捷键"
         },
         "items": {
-          "manual": "Manually",
-          "interval": "Interval",
-          "date": "On a specific date",
-          "specific-day": "On a specific day",
+          "manual": "手动",
+          "interval": "间隔",
+          "date": "在特定日期",
+          "specific-day": "在特定的星期几",
           "visit-web": "When visit a website",
           "on-startup": "On browser startup",
           "keyboard-shortcut": "Keyboard shortcut"
