@@ -93,8 +93,8 @@
         "description": "触发事件时执行下一个模块",
         "events": "事件",
         "timeout": "超时 (毫秒)",
-        "activeTabLoaded": "激活标签",
-        "setAsActiveTab": "设为激活标签"
+        "activeTabLoaded": "活动标签页",
+        "setAsActiveTab": "设为活动标签页"
       },
       "blocks-group": {
         "name": "模块组",
@@ -141,302 +141,302 @@
           "interval": "间隔",
           "date": "在特定日期",
           "specific-day": "在特定的星期几",
-          "visit-web": "When visit a website",
-          "on-startup": "On browser startup",
-          "keyboard-shortcut": "Keyboard shortcut"
+          "visit-web": "访问网页时",
+          "on-startup": "浏览器启动时",
+          "keyboard-shortcut": "键盘快捷键"
         }
       },
       "execute-workflow": {
-        "name": "Execute workflow",
-        "overwriteNote": "This will overwrite the global data of the selected workflow",
-        "select": "Select workflow",
-        "executeId": "Execute Id",
+        "name": "执行工作流",
+        "overwriteNote": "这将覆盖所选工作流的全局数据",
+        "select": "选择工作流",
+        "executeId": "执行 Id",
         "description": ""
       },
       "google-sheets": {
         "name": "Google sheets",
-        "description": "Read or update Google Sheets data",
-        "previewData": "Preview data",
-        "firstRow": "Use the first row as keys",
-        "keysAsFirstRow": "Use keys as the first row",
-        "insertData": "Insert data",
-        "valueInputOption": "Value input option",
+        "description": "读取或更新 Google sheets 数据",
+        "previewData": "预览数据",
+        "firstRow": "使用第一行作为主键",
+        "keysAsFirstRow": "使用主键作为第一行",
+        "insertData": "插入数据",
+        "valueInputOption": "输入选项值",
         "dataFrom": {
-          "label": "Data from",
+          "label": "数据来自",
           "options": {
-            "data-columns": "Table",
-            "custom": "Custom"
+            "data-columns": "表格",
+            "custom": "自定义"
           }
         },
         "refKey": {
-          "label": "Reference key (optional)",
-          "placeholder": "Key name"
+          "label": "参考键 (可选项)",
+          "placeholder": "键名称"
         },
         "spreadsheetId": {
-          "label": "Spreadsheet Id",
-          "link": "See how to get spreadsheet Id"
+          "label": "电子表格 Id",
+          "link": "查看如何获取电子表格 ID"
         },
         "range": {
-          "label": "Range",
-          "link": "Click to see more example"
+          "label": "范围",
+          "link": "点击查看更多示例"
         },
         "select": {
-          "get": "Get spreadsheet cell values",
-          "update": "Update spreadsheet cell values"
+          "get": "获取电子表格单元格值",
+          "update": "更新电子表格单元格值"
         }
       },
       "active-tab": {
-        "name": "Active tab",
-        "description": "Set current tab that you're in as an active tab"
+        "name": "活动标签页",
+        "description": "将您所在的当前标签页设置为活动标签页"
       },
       "proxy": {
         "name": "Proxy",
-        "description": "Set the proxy of the browser",
-        "clear": "Clear all proxy",
+        "description": "设置浏览器的代理",
+        "clear": "清除所有代理",
         "bypass": {
-          "label": "Bypass list",
-          "note": "Use commas (,) to separate URL"
+          "label": "免过滤清单",
+          "note": "使用英文逗号 (,) 分隔 URL"
         }
       },
       "new-window": {
-        "name": "New window",
-        "description": "Create a new window",
-        "top": "Top",
-        "left": "Left",
-        "height": "Height",
-        "width": "Width",
-        "note": "Note: use 0 to disable",
-        "position": "Window position",
-        "size": "Window size",
+        "name": "新建窗口",
+        "description": "创建一个新窗口",
+        "top": "上",
+        "left": "左",
+        "height": "高度",
+        "width": "宽度",
+        "note": "注意：使用 0 禁用",
+        "position": "窗口位置",
+        "size": "窗口尺寸",
         "windowState": {
-          "placeholder": "Window state",
+          "placeholder": "窗口状态",
           "options": {
-            "normal": "Normal",
-            "minimized": "Minimized",
-            "maximized": "Maximized",
-            "fullscreen": "Fullscreen"
+            "normal": "常规",
+            "minimized": "最小化",
+            "maximized": "最大化",
+            "fullscreen": "全屏"
           }
         },
         "incognito": {
-          "text": "Set as incognito window",
-          "note": "You must enable 'Allow in incognito' for this extension to use the option"
+          "text": "设置为无痕窗口",
+          "note": "您必须为此扩展启用“在无痕模式下启用”才能使用该选项"
         }
       },
       "go-back": {
-        "name": "Go back",
-        "description": "Go back to the previous page"
+        "name": "返回",
+        "description": "返回到上一页"
       },
       "forward-page": {
-        "name": "Go forward",
-        "description": "Go forward to the next page"
+        "name": "前进",
+        "description": "前进到下一页"
       },
       "close-tab": {
-        "name": "Close tab/window",
+        "name": "关闭 标签页/窗口",
         "description": "",
-        "url": "Match Patterns",
-        "activeTab": "Close active tab",
-        "allWindows": "Close all windows"
+        "url": "匹配模式",
+        "activeTab": "关闭活动标签页",
+        "allWindows": "关闭所有窗口"
       },
       "event-click": {
-        "name": "Click element",
+        "name": "点击元素",
         "description": ""
       },
       "delay": {
-        "name": "Delay",
-        "description": "Add delay before executing the next block",
+        "name": "延迟",
+        "description": "在执行下一个模块之前添加延迟",
         "input": {
-          "title": "Delay in millisecond",
-          "placeholder": "(millisecond)"
+          "title": "延迟毫秒",
+          "placeholder": "(毫秒)"
         }
       },
       "get-text": {
-        "name": "Get text",
-        "description": "Get text from an element",
-        "checkbox": "Insert to table",
-        "includeTags": "Include HTML tags",
+        "name": "获取文本",
+        "description": "从元素中获取文本",
+        "checkbox": "插入到表格",
+        "includeTags": "包含 HTML 标记",
         "prefixText": {
-          "placeholder": "Text prefix",
-          "title": "Add prefix to the text"
+          "placeholder": "文本前缀",
+          "title": "为文本添加前缀"
         },
         "suffixText": {
-          "placeholder": "Text suffix",
-          "title": "Add suffix to the text"
+          "placeholder": "文本后缀",
+          "title": "为文本添加后缀"
         }
       },
       "export-data": {
-        "name": "Export data",
-        "description": "Export workflow data",
-        "exportAs": "Export as",
-        "refKey": "Reference key",
-        "bomHeader": "Add UTF-8 BOM",
+        "name": "导出数据",
+        "description": "导出工作流数据",
+        "exportAs": "导出为",
+        "refKey": "参考键",
+        "bomHeader": "添加 UTF-8 BOM",
         "dataToExport": {
-          "placeholder": "Data to export",
+          "placeholder": "要导出的数据",
           "options": {
-            "data-columns": "Table",
+            "data-columns": "表格",
             "google-sheets": "Google sheets",
           },
         }
       },
       "element-scroll": {
-        "name": "Scroll element",
+        "name": "滚动元素",
         "description": "",
-        "scrollY": "Scroll vertical",
-        "scrollX": "Scroll horizontal",
-        "intoView": "Scroll into view",
-        "smooth": "Smooth scroll",
-        "incScrollX": "Increment horizontal scroll",
-        "incScrollY": "Increment vertical scroll"
+        "scrollY": "垂直滚动",
+        "scrollX": "水平滚动",
+        "intoView": "滚动查看",
+        "smooth": "平滑滚动",
+        "incScrollX": "增加水平滚动",
+        "incScrollY": "递增垂直滚动"
       },
       "switch-tab": {
-        "name": "Switch tab",
-        "description": "Switch between tab",
-        "matchPattern": "Match Patterns",
-        "url": "URL for the new tab",
-        "createIfNoMatch": "Create if there's no match"
+        "name": "切换标签页",
+        "description": "在标签页之间切换",
+        "matchPattern": "匹配模式",
+        "url": "新建标签页的 URL",
+        "createIfNoMatch": "如果没有匹配则创建"
       },
       "new-tab": {
-        "name": "New tab",
+        "name": "新建标签页",
         "description": "",
-        "url": "New Tab URL",
-        "customUserAgent": "Use custom User-Agent",
-        "activeTab": "Set as active tab",
-        "tabToGroup": "Add tab to group",
+        "url": "新建标签页 URL",
+        "customUserAgent": "使用自定义 User-Agent",
+        "activeTab": "设为活动标签页",
+        "tabToGroup": "标签页分组",
         "updatePrevTab": {
-          "title": "Use the previously opened new tab instead of creating a new one",
-          "text": "Update previously opened tab"
+          "title": "使用之前打开的新标签页而不是新建标签页",
+          "text": "更新之前打开的标签页"
         }
       },
       "link": {
-        "name": "Link",
-        "description": "Open link element"
+        "name": "链接",
+        "description": "打开链接元素"
       },
       "attribute-value": {
-        "name": "Attribute value",
-        "description": "Get value of an element attribute",
+        "name": "属性值",
+        "description": "获取元素属性的值",
         "forms": {
-          "name": "Attribute name",
-          "checkbox": "Insert to table",
-          "column": "Select column",
+          "name": "属性名称",
+          "checkbox": "插入到表格",
+          "column": "选择列",
           "extraRow": {
-            "checkbox": "Add extra row",
-            "placeholder": "Value",
-            "title": "Value of the extra row"
+            "checkbox": "添加额外的行",
+            "placeholder": "值",
+            "title": "额外行的值"
           }
         }
       },
       "forms": {
-        "name": "Forms",
+        "name": "表单",
         "description": "",
-        "selected": "Selected",
-        "type": "Form type",
-        "getValue": "Get form value",
+        "selected": "已选择",
+        "type": "表单类型",
+        "getValue": "获取表单值",
         "text-field": {
-          "name": "Text field",
-          "value": "Value",
-          "clearValue": "Clear form value",
+          "name": "文本域",
+          "value": "值",
+          "clearValue": "清除表单值",
           "delay": {
-            "placeholder": "Delay",
-            "label": "Typing delay (millisecond)(0 to disable)"
+            "placeholder": "延迟",
+            "label": "输入延迟（毫秒）（0 为禁用）"
           }
         },
         "select": {
-          "name": "Select"
+          "name": "下拉列表"
         },
         "radio": {
-          "name": "Radio"
+          "name": "单选框"
         },
         "checkbox": {
-          "name": "Checkbox"
+          "name": "复选框"
         }
       },
       "repeat-task": {
-        "name": "Repeat task",
+        "name": "重复任务",
         "description": "",
-        "times": "times",
-        "repeatFrom": "Repeat from"
+        "times": "次数",
+        "repeatFrom": "重复自"
       },
       "javascript-code": {
-        "name": "JavaScript code",
-        "description": "Execute your javascript code in the web page",
-        "availabeFuncs": "Available functions:",
-        "removeAfterExec": "Remove after block executed",
+        "name": "JavaScript 代码",
+        "description": "在网页中执行您的 javascript 代码",
+        "availabeFuncs": "可用函数:",
+        "removeAfterExec": "模块执行后移除",
         "modal": {
           "tabs": {
-            "code": "JavaScript code",
-            "preloadScript": "Preload script"
+            "code": "JavaScript 代码",
+            "preloadScript": "预加载脚本"
           }
         },
         "timeout": {
-          "placeholder": "Timeout (milliseconds)",
-          "title": "Javascript code execution timeout"
+          "placeholder": "超时（毫秒）",
+          "title": "Javascript 代码执行超时"
         }
       },
       "trigger-event": {
-        "name": "Trigger event",
+        "name": "触发器事件",
         "description": "",
-        "selectEvent": "Select event"
+        "selectEvent": "选择事件"
       },
       "conditions": {
-        "name": "Conditions",
-        "add": "Add condition",
-        "description": "Conditional block",
-        "fallbackTitle": "Execute when all comparisons don't meet the requirement",
-        "equals": "Equals",
-        "gt": "Greater than",
-        "gte": "Greater than or equal",
-        "lt": "Less than",
-        "lte": "Less than or equal",
-        "ne": "Not equals",
-        "contains": "Contains"
+        "name": "条件",
+        "add": "添加条件",
+        "description": "条件模块",
+        "fallbackTitle": "当所有比较不满足要求时执行",
+        "equals": "等于",
+        "gt": "大于",
+        "gte": "大于或等于",
+        "lt": "小于",
+        "lte": "小于或等于",
+        "ne": "不等于",
+        "contains": "包含"
       },
       "element-exists": {
-        "name": "Element exists",
-        "description": "Check if an element is exists",
-        "selector": "Element selector",
-        "fallbackTitle": "Execute when element doesn't exists",
-        "throwError": "Throw an error if doesn't exist",
+        "name": "元素存在",
+        "description": "检查元素是否存在",
+        "selector": "元素选择器",
+        "fallbackTitle": "当元素不存在时执行",
+        "throwError": "如果不存在抛出一个错误",
         "tryFor": {
-          "title": "How many times to try to check if element exist",
-          "label": "Try for"
+          "title": "检查元素是否存在的尝试次数",
+          "label": "尝试"
         },
         "timeout": {
-          "label": "Timeout (milliseconds)",
-          "title": "Timeout for each try"
+          "label": "超时（毫秒）",
+          "title": "每次尝试超时"
         }
       },
       "webhook": {
-        "name": "HTTP request",
-        "description": "Make an HTTP Request",
-        "url": "The Post receive URL",
-        "contentType": "Content type",
-        "method": "Request method",
-        "url": "Request URL",
-        "fallback": "Execute when failed or error making an HTTP request",
+        "name": "HTTP 请求",
+        "description": "发出 HTTP 请求",
+        "url": "接收 POST 请求的 URL",
+        "contentType": "内容类型",
+        "method": "请求方法",
+        "url": "请求 URL",
+        "fallback": "在发出 HTTP 请求失败或错误时执行",
         "buttons": {
-          "header": "Add header"
+          "header": "添加 header"
         },
         "timeout": {
-          "placeholder": "Timeout",
-          "title": "Http request execution timeout(ms)"
+          "placeholder": "超时",
+          "title": "Http 请求执行超时(ms)"
         },
         "tabs": {
           "headers": "Headers",
           "body": "Body",
-          "response": "Response"
+          "response": "响应"
         }
       },
       "loop-data": {
-        "name": "Loop data",
-        "description": "Iterate through table or your custom data",
-        "loopId": "Loop id",
-        "refKey": "Reference key",
-        "startIndex": "Start from index",
-        "resumeLastWorkflow": "Resume last workflow",
+        "name": "循环数据",
+        "description": "遍历表格或您的自定义数据",
+        "loopId": "循环 id",
+        "refKey": "参考键",
+        "startIndex": "从索引开始",
+        "resumeLastWorkflow": "恢复上次工作流",
         "modal": {
-          "fileTooLarge": "File too large to edit",
-          "maxFile": "Max file size is 1MB",
+          "fileTooLarge": "文件太大，无法编辑",
+          "maxFile": "最大文件尺寸为 1MB",
           "options": {
-            "firstRow": "Use the first row as keys"
+            "firstRow": "使用第一行作为主键"
           }
         },
         "buttons": {
