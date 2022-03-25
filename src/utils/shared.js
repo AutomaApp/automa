@@ -479,6 +479,7 @@ export const tasks = {
       timeout: 20000,
       code: 'console.log("Hello world!");\nautomaNextBlock()',
       preloadScripts: [],
+      everyNewTab: false,
     },
   },
   'trigger-event': {

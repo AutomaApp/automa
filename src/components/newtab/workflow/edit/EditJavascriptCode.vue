@@ -8,6 +8,7 @@
       @change="updateData({ description: $event })"
     />
     <ui-input
+      v-if="!data.everyNewTab"
       :model-value="data.timeout"
       :label="t('workflow.blocks.javascript-code.timeout.placeholder')"
       :title="t('workflow.blocks.javascript-code.timeout.title')"
@@ -24,6 +25,13 @@
       @click="state.showCodeModal = true"
       v-text="data.code"
     />
+    <ui-checkbox
+      :model-value="data.everyNewTab"
+      class="mt-2"
+      @change="updateData({ everyNewTab: $event })"
+    >
+      {{ t('workflow.blocks.javascript-code.everyNewTab') }}
+    </ui-checkbox>
     <ui-modal v-model="state.showCodeModal" content-class="max-w-3xl">
       <template #header>
         <ui-tabs v-model="state.activeTab" class="border-none">
@@ -44,28 +52,30 @@
           <shared-codemirror
             v-model="state.code"
             :extensions="codemirrorExts"
+            :style="{ height: data.everyNewTab ? '100%' : '87%' }"
             class="overflow-auto"
-            style="height: 87%"
           />
-          <p class="mt-1 text-sm">
-            {{ t('workflow.blocks.javascript-code.availabeFuncs') }}
-          </p>
-          <p
-            class="space-x-1 whitespace-nowrap overflow-x-auto overflow-y-hidden pb-1 scroll"
-          >
-            <a
-              v-for="func in availableFuncs"
-              :key="func.id"
-              :href="`https://docs.automa.site/blocks/javascript-code.html#${func.id}`"
-              target="_blank"
-              rel="noopener"
-              class="inline-block"
+          <template v-if="!data.everyNewTab">
+            <p class="mt-1 text-sm">
+              {{ t('workflow.blocks.javascript-code.availabeFuncs') }}
+            </p>
+            <p
+              class="space-x-1 whitespace-nowrap overflow-x-auto overflow-y-hidden pb-1 scroll"
             >
-              <code>
-                {{ func.name }}
-              </code>
-            </a>
-          </p>
+              <a
+                v-for="func in availableFuncs"
+                :key="func.id"
+                :href="`https://docs.automa.site/blocks/javascript-code.html#${func.id}`"
+                target="_blank"
+                rel="noopener"
+                class="inline-block"
+              >
+                <code>
+                  {{ func.name }}
+                </code>
+              </a>
+            </p>
+          </template>
         </ui-tab-panel>
         <ui-tab-panel value="preloadScript">
           <div
@@ -83,7 +93,10 @@
               placeholder="http://example.com/script.js"
               class="flex-1 mr-4"
             />
-            <ui-checkbox v-model="state.preloadScripts[index].removeAfterExec">
+            <ui-checkbox
+              v-if="!data.everyNewTab"
+              v-model="state.preloadScripts[index].removeAfterExec"
+            >
               {{ t('workflow.blocks.javascript-code.removeAfterExec') }}
             </ui-checkbox>
           </div>

@@ -1,7 +1,6 @@
 import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
 import { tasks } from '@/utils/shared';
-import { convertData, waitTabLoaded } from './helper';
 import {
   toCamelCase,
   sleep,
@@ -10,6 +9,7 @@ import {
   objectHasKey,
 } from '@/utils/helper';
 import referenceData from '@/utils/reference-data';
+import { convertData, waitTabLoaded } from './helper';
 import executeContentScript from './execute-content-script';
 
 class WorkflowEngine {
@@ -40,6 +40,7 @@ class WorkflowEngine {
     this.history = [];
     this.columnsId = {};
     this.eventListeners = {};
+    this.preloadScripts = [];
     this.columns = { column: { index: 0, name: 'column', type: 'any' } };
 
     let variables = {};
@@ -483,12 +484,24 @@ class WorkflowEngine {
       }
 
       await waitTabLoaded(this.activeTab.id);
-      await executeContentScript(this.activeTab.id, options.frameId || 0);
+      await executeContentScript(
+        this.activeTab.id,
+        this.activeTab.frameId || 0
+      );
 
+      const { executedBlockOnWeb, debugMode } = this.workflow.settings;
+      const messagePayload = {
+        isBlock: true,
+        debugMode,
+        executedBlockOnWeb,
+        activeTabId: this.activeTab.id,
+        frameSelector: this.frameSelector,
+        ...payload,
+      };
       const data = await browser.tabs.sendMessage(
         this.activeTab.id,
-        { isBlock: true, ...payload },
-        options
+        messagePayload,
+        { ...options, frameId: this.activeTab.frameId }
       );
 
       return data;

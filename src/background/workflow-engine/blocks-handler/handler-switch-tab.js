@@ -41,6 +41,13 @@ export default async function ({ data, outputs }) {
   this.activeTab.url = tab.url;
   this.windowId = tab.windowId;
 
+  if (this.preloadScripts.length > 0) {
+    const preloadScripts = this.preloadScripts.map((script) =>
+      this._sendMessageToTab(script)
+    );
+    await Promise.allSettled(preloadScripts);
+  }
+
   return {
     nextBlockId,
     data: tab.url,

@@ -360,6 +360,7 @@
         "description": "Execute your javascript code in the web page",
         "availabeFuncs": "Available functions:",
         "removeAfterExec": "Remove after block executed",
+        "everyNewTab": "Execute every new tab",
         "modal": {
           "tabs": {
             "code": "JavaScript code",

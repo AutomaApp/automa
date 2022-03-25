@@ -1,7 +1,7 @@
 import { sendMessage } from '@/utils/message';
 
-function getAutomaScript(blockId) {
-  return `
+function getAutomaScript(blockId, everyNewTab) {
+  const str = `
 function automaSetVariable(name, value) {
   const data = JSON.parse(sessionStorage.getItem('automa--${blockId}')) || null;
 
@@ -43,11 +43,19 @@ function automaRefData(keyword, path = '') {
   return findData(data[keyword], path);
 }
   `;
+
+  if (everyNewTab) return '';
+
+  return str;
 }
 
 function javascriptCode(block) {
-  sessionStorage.setItem(`automa--${block.id}`, JSON.stringify(block.refData));
-  const automaScript = getAutomaScript(block.id);
+  if (!block.data.everyNewTab)
+    sessionStorage.setItem(
+      `automa--${block.id}`,
+      JSON.stringify(block.refData)
+    );
+  const automaScript = getAutomaScript(block.id, block.data.everyNewTab);
 
   return new Promise((resolve, reject) => {
     let documentCtx = document;
@@ -65,10 +73,12 @@ function javascriptCode(block) {
       documentCtx = iframeCtx;
     }
 
-    const isScriptExists = documentCtx.getElementById('automa-custom-js');
     const scriptAttr = `block--${block.id}`;
+    const isScriptExists = documentCtx.querySelector(
+      `.automa-custom-js[${scriptAttr}]`
+    );
 
-    if (isScriptExists && isScriptExists.hasAttribute(scriptAttr)) {
+    if (isScriptExists) {
       resolve('');
       return;
     }
@@ -111,37 +121,41 @@ function javascriptCode(block) {
       }, []);
 
       const script = document.createElement('script');
-      let timeout;
 
       script.setAttribute(scriptAttr, '');
-      script.id = 'automa-custom-js';
+      script.classList.add('automa-custom-js');
       script.innerHTML = `(() => {\n${automaScript} ${block.data.code}\n})()`;
 
-      const cleanUp = (columns = '') => {
-        const storageKey = `automa--${block.id}`;
-        const storageRefData = JSON.parse(sessionStorage.getItem(storageKey));
+      if (!block.data.everyNewTab) {
+        let timeout;
+        const cleanUp = (columns = '') => {
+          const storageKey = `automa--${block.id}`;
+          const storageRefData = JSON.parse(sessionStorage.getItem(storageKey));
 
-        script.remove();
-        preloadScripts.forEach((item) => {
-          if (item.removeAfterExec) item.script.remove();
+          script.remove();
+          preloadScripts.forEach((item) => {
+            if (item.removeAfterExec) item.script.remove();
+          });
+
+          resolve({ columns, variables: storageRefData?.variables });
+        };
+
+        window.addEventListener('__automa-next-block__', ({ detail }) => {
+          clearTimeout(timeout);
+          cleanUp(detail || {});
+        });
+        window.addEventListener('__automa-reset-timeout__', () => {
+          clearTimeout(timeout);
+
+          timeout = setTimeout(cleanUp, block.data.timeout);
         });
 
-        resolve({ columns, variables: storageRefData?.variables });
-      };
-
-      window.addEventListener('__automa-next-block__', ({ detail }) => {
-        clearTimeout(timeout);
-        cleanUp(detail || {});
-      });
-      window.addEventListener('__automa-reset-timeout__', () => {
-        clearTimeout(timeout);
-
         timeout = setTimeout(cleanUp, block.data.timeout);
-      });
+      } else {
+        resolve();
+      }
 
       documentCtx.body.appendChild(script);
-
-      timeout = setTimeout(cleanUp, block.data.timeout);
     });
   });
 }
