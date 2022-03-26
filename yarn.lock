@@ -961,7 +961,7 @@
     "@codemirror/text" "^0.19.0"
     "@codemirror/view" "^0.19.0"
 
-"@codemirror/fold@^0.19.0":
+"@codemirror/fold@^0.19.0", "@codemirror/fold@^0.19.3":
   version "0.19.3"
   resolved "https://registry.yarnpkg.com/@codemirror/fold/-/fold-0.19.3.tgz#de55d44a7313f2a8920aefb6ebf9eff34715d8d4"
   integrity sha512-8hT+Eq2G68mL0yPRvSD2ewhnLQAX6sbUJmtGVKFcj8oAXtfpYCX8LIcfXsuI19Qs7gZkOSpqZvn+KKj8IhZoAw==

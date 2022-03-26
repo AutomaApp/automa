@@ -1,4 +1,3 @@
-import { getBlockConnection } from '../helper';
 import { googleSheets } from '@/utils/api';
 import {
   convert2DArrayToArrayObj,
@@ -6,6 +5,7 @@ import {
   isWhitespace,
   parseJSON,
 } from '@/utils/helper';
+import { getBlockConnection } from '../helper';
 
 async function getSpreadsheetValues({ spreadsheetId, range, firstRowAsKey }) {
   const response = await googleSheets.getValues({ spreadsheetId, range });

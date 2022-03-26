@@ -22,10 +22,10 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
     }
 
     const result = await this._sendMessageToTab({ ...block, data, refData });
-    console.log(result);
+
     if (result?.variables) {
       Object.keys(result.variables).forEach((varName) => {
-        this.referenceData.variables[varName] = result.variables[varName];
+        this.setVariable(varName, result.variables[varName]);
       });
     }
     if (result?.columns.insert) {

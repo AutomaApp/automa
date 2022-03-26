@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
-import { getBlockConnection } from '../helper';
 import { fileSaver } from '@/utils/helper';
+import { getBlockConnection } from '../helper';
 
 function saveImage({ fileName, uri, ext }) {
   const image = new Image();
@@ -35,8 +35,7 @@ async function takeScreenshot({ data, outputs, name }) {
       if (data.saveToColumn) this.addDataToColumn(data.dataColumn, dataUrl);
       if (saveToComputer)
         saveImage({ fileName: data.fileName, uri: dataUrl, ext: data.ext });
-      if (data.assignVariable)
-        this.referenceData.variables[data.variableName] = dataUrl;
+      if (data.assignVariable) this.setVariable(data.variableName, dataUrl);
     };
 
     if (data.captureActiveTab) {

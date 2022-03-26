@@ -1,10 +1,10 @@
 import { Model } from '@vuex-orm/core';
 import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
-import Log from './log';
 import { cleanWorkflowTriggers } from '@/utils/workflow-trigger';
 import { fetchApi } from '@/utils/api';
 import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
+import Log from './log';
 
 class Workflow extends Model {
   static entity = 'workflows';

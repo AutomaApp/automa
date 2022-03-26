@@ -153,10 +153,10 @@
 import { reactive, ref, watch, inject, nextTick } from 'vue';
 import { getCssSelector } from 'css-selector-generator';
 import { debounce } from '@/utils/helper';
+import findElement from '@/utils/find-element';
 import AppBlocks from './AppBlocks.vue';
 import AppSelector from './AppSelector.vue';
 import AppElementList from './AppElementList.vue';
-import findElement from '@/utils/find-element';
 
 const selectedElement = {
   path: [],

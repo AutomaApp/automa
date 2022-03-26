@@ -36,14 +36,14 @@
 <script setup>
 import { shallowReactive } from 'vue';
 import { tasks } from '@/utils/shared';
+import EditForms from '@/components/newtab/workflow/edit/EditForms.vue';
+import EditTriggerEvent from '@/components/newtab/workflow/edit/EditTriggerEvent.vue';
+import EditScrollElement from '@/components/newtab/workflow/edit/EditScrollElement.vue';
 import handleForms from '../blocks-handler/handler-forms';
 import handleGetText from '../blocks-handler/handler-get-text';
 import handleEventClick from '../blocks-handler/handler-event-click';
 import handelTriggerEvent from '../blocks-handler/handler-trigger-event';
 import handleElementScroll from '../blocks-handler/handler-element-scroll';
-import EditForms from '@/components/newtab/workflow/edit/EditForms.vue';
-import EditTriggerEvent from '@/components/newtab/workflow/edit/EditTriggerEvent.vue';
-import EditScrollElement from '@/components/newtab/workflow/edit/EditScrollElement.vue';
 
 const props = defineProps({
   selector: {

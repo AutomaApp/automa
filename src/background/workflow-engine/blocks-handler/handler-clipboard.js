@@ -21,7 +21,7 @@ export default async function ({ data, outputs }) {
     const copiedText = textarea.value;
 
     if (data.assignVariable) {
-      this.referenceData.variables[data.variableName] = copiedText;
+      this.setVariable(data.variableName, copiedText);
     }
     if (data.saveData) {
       this.addDataToColumn(data.dataColumn, copiedText);

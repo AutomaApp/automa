@@ -208,7 +208,6 @@ window.addEventListener('beforeunload', () => {
 (async () => {
   try {
     const { isFirstTime } = await browser.storage.local.get('isFirstTime');
-
     isUpdated.value = !isFirstTime && compare(currentVersion, prevVersion, '>');
 
     await Promise.allSettled([

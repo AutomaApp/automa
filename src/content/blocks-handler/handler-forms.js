@@ -1,5 +1,5 @@
-import handleSelector, { markElement } from '../handle-selector';
 import handleFormElement from '@/utils/handle-form-element';
+import handleSelector, { markElement } from '../handle-selector';
 
 async function forms(block) {
   const { data } = block;

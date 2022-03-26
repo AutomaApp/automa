@@ -92,7 +92,12 @@ export function keyParser(key, data) {
 }
 
 function replacer(str, { regex, tagLen, modifyPath, data }) {
-  return str.replace(regex, (match) => {
+  const replaceResult = {
+    list: {},
+    value: str,
+  };
+
+  replaceResult.value = str.replace(regex, (match) => {
     let key = match.slice(tagLen, -tagLen).trim();
 
     if (!key) return '';
@@ -114,25 +119,38 @@ function replacer(str, { regex, tagLen, modifyPath, data }) {
       result = objectPath.get(data[dataKey], path) ?? match;
     }
 
-    return typeof result === 'string' ? result : JSON.stringify(result);
+    result = typeof result === 'string' ? result : JSON.stringify(result);
+    replaceResult.list[match] = result;
+
+    return result;
   });
+
+  return replaceResult;
 }
 
 export default function (str, refData) {
   if (!str || typeof str !== 'string') return '';
 
   const data = { ...refData, functions };
+  const replacedList = {};
+
   const replacedStr = replacer(`${str}`, {
     data,
     tagLen: 2,
     regex: /\{\{(.*?)\}\}/g,
-    modifyPath: (path) =>
-      replacer(path, {
+    modifyPath: (path) => {
+      const { value, list } = replacer(path, {
         data,
         tagLen: 1,
         regex: /\[(.*?)\]/g,
-      }),
+      });
+      Object.assign(replacedList, list);
+
+      return value;
+    },
   });
+
+  Object.assign(replacedStr.list, replacedList);
 
   return replacedStr;
 }

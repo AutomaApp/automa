@@ -1,7 +1,7 @@
-import handleSelector from '../handle-selector';
 import { sendMessage } from '@/utils/message';
 import simulateEvent from '@/utils/simulate-event';
 import simulateMouseEvent from '@/utils/simulate-event/mouse-event';
+import handleSelector from '../handle-selector';
 
 const modifiers = {
   altKey: 1,

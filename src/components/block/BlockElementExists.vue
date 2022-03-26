@@ -36,9 +36,9 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
 import emitter from '@/lib/mitt';
-import BlockBase from './BlockBase.vue';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
+import BlockBase from './BlockBase.vue';
 
 const props = defineProps({
   editor: {

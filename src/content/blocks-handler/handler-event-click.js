@@ -1,5 +1,5 @@
-import handleSelector from '../handle-selector';
 import { sendMessage } from '@/utils/message';
+import handleSelector from '../handle-selector';
 
 function eventClick(block) {
   return new Promise((resolve, reject) => {

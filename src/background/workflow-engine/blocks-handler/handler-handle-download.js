@@ -51,7 +51,7 @@ function handleDownload({ data, outputs }) {
         this.addDataToColumn(data.dataColumn, currentFilename);
       }
       if (data.assignVariable) {
-        this.referenceData.variables[data.variableName] = currentFilename;
+        this.setVariable(data.variableName, currentFilename);
       }
 
       clearTimeout(timeout);

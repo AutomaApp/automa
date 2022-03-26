@@ -64,7 +64,7 @@ async function interactionHandler(block) {
     }
 
     if (block.data.assignVariable) {
-      this.referenceData.variables[block.data.variableName] = data;
+      this.setVariable(block.data.variableName, data);
     }
 
     return {

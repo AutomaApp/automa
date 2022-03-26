@@ -1,5 +1,5 @@
-import { getBlockConnection } from '../helper';
 import { parseJSON } from '@/utils/helper';
+import { getBlockConnection } from '../helper';
 
 async function loopData({ data, id, outputs }) {
   const nextBlockId = getBlockConnection({ outputs });

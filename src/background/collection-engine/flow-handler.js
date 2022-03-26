@@ -1,6 +1,6 @@
+import dataExporter from '@/utils/data-exporter';
 import WorkflowEngine from '../workflow-engine/engine';
 import blocksHandler from '../workflow-engine/blocks-handler';
-import dataExporter from '@/utils/data-exporter';
 
 export function workflow(flow) {
   return new Promise((resolve, reject) => {
