@@ -24,7 +24,7 @@
         "findElement": {
           "placeholder": "查找元素依据",
           "options": {
-            "cssSelector": "CSS Selector",
+            "cssSelector": "CSS 选择器",
             "xpath": "XPath"
           }
         },
@@ -440,47 +440,47 @@
           }
         },
         "buttons": {
-          "clear": "Clear data",
-          "insert": "Insert data",
-          "import": "Import file"
+          "clear": "清除数据",
+          "insert": "插入数据",
+          "import": "导入文件"
         },
         "maxLoop": {
-          "title": "Max numbers of data to loop",
-          "label": "Max data to loop (0 to disable)"
+          "title": "要循环的最大数据数",
+          "label": "要循环的最大数据（0 禁用）"
         },
         "loopThrough": {
-          "placeholder": "Loop through",
-          "fromNumber": "From number",
-          "toNumber": "To number",
+          "placeholder": "依次通过",
+          "fromNumber": "从数字",
+          "toNumber": "到数字",
           "options": {
-            "numbers": "Numbers",
-            "variable": "Variable",
-            "data-columns": "Table",
-            "table": "Table",
-            "custom-data": "Custom data",
+            "numbers": "数字",
+            "variable": "变量",
+            "data-columns": "表格",
+            "table": "表格",
+            "custom-data": "自定义数据",
             "google-sheets": "Google sheets",
-            "elements": "Elements"
+            "elements": "元素"
           }
         }
       },
       "loop-breakpoint": {
-        "name": "Loop breakpoint",
-        "description": "To tell where loop data block must stop"
+        "name": "循环断点",
+        "description": "告诉循环数据块必须在哪里停止"
       },
       "take-screenshot": {
-        "name": "Take screenshot",
-        "fullPage": "Take full page screenshot",
-        "description": "Take a screenshot of current active tab",
-        "imageQuality": "Image quality",
-        "saveToColumn": "Insert screenshot to table",
-        "saveToComputer": "Save screenshot to computer"
+        "name": "截屏",
+        "fullPage": "截取整页截图",
+        "description": "截取当前活动标签页的屏幕截图",
+        "imageQuality": "图像质量",
+        "saveToColumn": "将屏幕截图插入表格",
+        "saveToComputer": "将屏幕截图保存到计算机"
       },
       "switch-to": {
-        "name": "Switch frame",
-        "description": "Switch between main window and iframe",
-        "iframeSelector": "Iframe element selector",
+        "name": "切换框架",
+        "description": "在主窗口和 iframe 之间切换",
+        "iframeSelector": "iframe 元素选择器",
         "windowTypes": {
-          "main": "Main window",
+          "main": "主窗口",
           "iframe": "Iframe"
         }
       }
