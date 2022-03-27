@@ -32,7 +32,7 @@
         />
       </div>
     </div>
-    <slot></slot>
+    <slot :block="block"></slot>
     <template #prepend>
       <div
         v-if="block.details.id !== 'trigger'"

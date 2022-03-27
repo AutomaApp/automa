@@ -572,7 +572,7 @@ export const tasks = {
     name: 'HTTP Request',
     description: 'make an HTTP request',
     icon: 'riEarthLine',
-    component: 'BlockWebhook',
+    component: 'BlockBasicWithFallback',
     editComponent: 'EditWebhook',
     category: 'general',
     inputs: 1,
@@ -594,6 +594,22 @@ export const tasks = {
       saveData: false,
       dataColumn: '',
       responseType: 'json',
+    },
+  },
+  'while-loop': {
+    name: 'While loop',
+    description: 'Execute blocks while the condition is met',
+    icon: 'riRefreshFill',
+    component: 'BlockBasicWithFallback',
+    editComponent: 'EditWhileLoop',
+    category: 'general',
+    inputs: 1,
+    outputs: 2,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      description: '',
+      conditions: null,
     },
   },
   'loop-data': {
@@ -880,3 +896,68 @@ export const supportLocales = [
   { id: 'vi', name: 'Tiếng Việt' },
   { id: 'fr', name: 'Français' },
 ];
+
+export const conditionBuilder = {
+  valueTypes: [
+    {
+      id: 'value',
+      category: 'value',
+      name: 'Value',
+      compareable: true,
+      data: { value: '' },
+    },
+    {
+      id: 'element#text',
+      category: 'element',
+      name: 'Element text',
+      compareable: true,
+      data: { selector: '' },
+    },
+    {
+      id: 'element#visible',
+      category: 'element',
+      name: 'Element visible',
+      compareable: false,
+      data: { selector: '' },
+    },
+    {
+      id: 'element#invisible',
+      category: 'element',
+      name: 'Element invisible',
+      compareable: false,
+      data: { selector: '' },
+    },
+    {
+      id: 'element#attribute',
+      category: 'element',
+      name: 'Element attribute value',
+      compareable: true,
+      data: { selector: '', attrName: '' },
+    },
+  ],
+  compareTypes: [
+    { id: 'eq', name: 'Equals', needValue: true },
+    { id: 'nq', name: 'Not equals', needValue: true },
+    { id: 'gt', name: 'Greater than', needValue: true },
+    { id: 'gte', name: 'Greater than or equal', needValue: true },
+    { id: 'lt', name: 'Less than', needValue: true },
+    { id: 'lte', name: 'Less than or equal', needValue: true },
+    { id: 'cnt', name: 'Contains', needValue: true },
+    { id: 'itr', name: 'Is truthy', needValue: false },
+    { id: 'ifl', name: 'Is falsy', needValue: false },
+  ],
+  inputTypes: {
+    selector: {
+      placeholder: '.class',
+      label: 'CSS selector',
+    },
+    value: {
+      label: 'Value',
+      placeholder: 'abc123',
+    },
+    attrName: {
+      label: 'Attribute name',
+      placeholder: 'name',
+    },
+  },
+};

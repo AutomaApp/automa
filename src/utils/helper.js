@@ -1,3 +1,16 @@
+export function scrollIfNeeded(element) {
+  const { top, left, bottom, right } = element.getBoundingClientRect();
+  const isInViewport =
+    top >= 0 &&
+    left >= 0 &&
+    bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+    right <= (window.innerWidth || document.documentElement.clientWidth);
+
+  if (!isInViewport) {
+    element.scrollIntoView();
+  }
+}
+
 export function sleep(timeout = 500) {
   return new Promise((resolve) => setTimeout(resolve, timeout));
 }

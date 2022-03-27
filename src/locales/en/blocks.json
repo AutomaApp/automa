@@ -426,6 +426,12 @@
           "response": "Response"
         }
       },
+      "while-loop": {
+        "name": "While loop",
+        "description": "Execute blocks while the condition is met",
+        "editCondition": "Edit condition",
+        "fallback": "Execute when the condition is false"
+      },
       "loop-data": {
         "name": "Loop data",
         "description": "Iterate through table or your custom data",

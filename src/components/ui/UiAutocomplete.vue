@@ -138,14 +138,14 @@ function selectItem(index) {
 
 watch(
   () => state.activeIndex,
-  debounce((activeIndex, prevIndex) => {
+  debounce((activeIndex) => {
     const container = document.querySelector(`.${componentId}`);
     const element = container.querySelector(`#list-item-${activeIndex}`);
 
     if (element && !checkInView(container, element)) {
       element.scrollIntoView({
+        block: 'nearest',
         behavior: 'smooth',
-        block: activeIndex > prevIndex ? 'end' : 'start',
       });
     }
   }, 100)

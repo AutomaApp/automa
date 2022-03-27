@@ -7,7 +7,7 @@
       <transition name="modal" mode="out-in">
         <div
           v-if="show"
-          class="bg-black p-5 overflow-y-auto bg-opacity-20 dark:bg-opacity-60 modal-ui__content-container z-50 flex justify-center items-end md:items-center"
+          class="bg-black overflow-y-auto bg-opacity-20 dark:bg-opacity-60 modal-ui__content-container z-50 flex justify-center items-end md:items-center"
           :style="{ 'backdrop-filter': blur && 'blur(2px)' }"
           @click.self="closeModal"
         >
@@ -15,6 +15,7 @@
           <ui-card
             v-else
             class="modal-ui__content shadow-lg w-full"
+            :padding="padding"
             :class="[contentClass]"
           >
             <div class="mb-4">
@@ -58,6 +59,10 @@ export default {
     title: {
       type: String,
       default: '',
+    },
+    padding: {
+      type: String,
+      default: 'p-4',
     },
     customContent: Boolean,
     persist: Boolean,

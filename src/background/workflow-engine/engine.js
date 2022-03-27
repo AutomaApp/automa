@@ -210,7 +210,10 @@ class WorkflowEngine {
     const historyId = nanoid();
     detail.id = historyId;
 
-    if (tasks[detail.name]?.refDataKeys && this.saveLog) {
+    if (
+      detail.replacedValue ||
+      (tasks[detail.name]?.refDataKeys && this.saveLog)
+    ) {
       const { activeTabUrl, loopData, prevBlockData } = JSON.parse(
         JSON.stringify(this.referenceData)
       );
@@ -538,6 +541,7 @@ class WorkflowEngine {
         frameSelector: this.frameSelector,
         ...payload,
       };
+
       const data = await browser.tabs.sendMessage(
         this.activeTab.id,
         messagePayload,

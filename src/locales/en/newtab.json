@@ -79,6 +79,12 @@
     "clickToEnable": "Click to enable",
     "toggleSidebar": "Toggle sidebar",
     "cantEdit": "Can't edit shared workflow",
+    "conditionBuilder": {
+      "title": "Condition builder",
+      "add": "Add condition",
+      "and": "AND",
+      "or": "OR"
+    },
     "host": {
       "title": "Host workflow",
       "set": "Set as host workflow",
