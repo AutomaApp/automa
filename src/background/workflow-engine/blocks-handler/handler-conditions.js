@@ -1,22 +1,47 @@
 import compareBlockValue from '@/utils/compare-block-value';
 import mustacheReplacer from '@/utils/reference-data/mustache-replacer';
+import testConditions from '@/utils/test-conditions';
 import { getBlockConnection } from '../helper';
 
-function conditions({ data, outputs }, { prevBlockData, refData }) {
-  return new Promise((resolve, reject) => {
-    if (data.conditions.length === 0) {
-      reject(new Error('conditions-empty'));
-      return;
+async function conditions({ data, outputs }, { prevBlockData, refData }) {
+  if (data.conditions.length === 0) {
+    throw new Error('conditions-empty');
+  }
+
+  let resultData = '';
+  let isConditionMatch = false;
+  let outputIndex = data.conditions.length + 1;
+
+  const replacedValue = {};
+  const condition = data.conditions[0];
+  const prevData = Array.isArray(prevBlockData)
+    ? prevBlockData[0]
+    : prevBlockData;
+
+  if (condition && condition.conditions) {
+    const conditionPayload = {
+      refData,
+      activeTab: this.activeTab.id,
+      sendMessage: (payload) =>
+        this._sendMessageToTab({ ...payload, isBlock: false }),
+    };
+
+    for (let index = 0; index < data.conditions.length; index += 1) {
+      const result = await testConditions(
+        data.conditions[index].conditions,
+        conditionPayload
+      );
+
+      Object.assign(replacedValue, result?.replacedValue || {});
+
+      if (result.isMatch) {
+        isConditionMatch = true;
+        outputIndex = index + 1;
+
+        break;
+      }
     }
-
-    let resultData = '';
-    let isConditionMatch = false;
-    let outputIndex = data.conditions.length + 1;
-    const replacedValue = {};
-    const prevData = Array.isArray(prevBlockData)
-      ? prevBlockData[0]
-      : prevBlockData;
-
+  } else {
     data.conditions.forEach(({ type, value, compareValue }, index) => {
       if (isConditionMatch) return;
 
@@ -37,13 +62,13 @@ function conditions({ data, outputs }, { prevBlockData, refData }) {
         isConditionMatch = true;
       }
     });
+  }
 
-    resolve({
-      replacedValue,
-      data: resultData,
-      nextBlockId: getBlockConnection({ outputs }, outputIndex),
-    });
-  });
+  return {
+    replacedValue,
+    data: resultData,
+    nextBlockId: getBlockConnection({ outputs }, outputIndex),
+  };
 }
 
 export default conditions;

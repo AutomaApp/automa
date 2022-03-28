@@ -2,16 +2,23 @@
 import mustacheReplacer from './reference-data/mustache-replacer';
 import { conditionBuilder } from './shared';
 
+const isBoolStr = (str) => {
+  if (str === 'true') return true;
+  if (str === 'false') return false;
+
+  return str;
+};
+const isNumStr = (str) => (Number.isNaN(+str) ? str : +str);
 const comparisons = {
   eq: (a, b) => a === b,
   nq: (a, b) => a !== b,
-  gt: (a, b) => a > b,
-  gte: (a, b) => a >= b,
-  lt: (a, b) => a < b,
-  lte: (a, b) => a <= b,
+  gt: (a, b) => isNumStr(a) > isNumStr(b),
+  gte: (a, b) => isNumStr(a) >= isNumStr(b),
+  lt: (a, b) => isNumStr(a) < isNumStr(b),
+  lte: (a, b) => isNumStr(a) <= isNumStr(b),
   cnt: (a, b) => a?.includes(b) ?? false,
-  itr: (a) => Boolean(a),
-  ifl: (a) => !a,
+  itr: (a) => Boolean(isBoolStr(a)),
+  ifl: (a) => !isBoolStr(a),
 };
 
 export default async function (conditionsArr, workflowData) {

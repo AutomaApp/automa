@@ -8,55 +8,65 @@
     >
       {{ t('workflow.blocks.conditions.add') }}
     </ui-button>
-    <ul class="space-y-2">
-      <li
-        v-for="(condition, index) in conditions"
-        :key="index"
-        class="relative rounded-lg bg-input transition-colors group"
+    <ui-list class="space-y-1">
+      <ui-list-item
+        v-for="(item, index) in conditions"
+        :key="item.id"
+        class="group"
       >
-        <input
-          v-model="condition.compareValue"
-          type="text"
-          placeholder="value"
-          class="py-2 px-4 w-full transition rounded-lg bg-transparent"
+        <v-remixicon name="riGuideLine" size="20" class="mr-2 -ml-1" />
+        <p class="flex-1 text-overflow" :title="item.name">
+          {{ item.name }}
+        </p>
+        <v-remixicon
+          class="cursor-pointer group-hover:visible invisible"
+          name="riPencilLine"
+          size="20"
+          @click="editCondition(index)"
         />
-        <button
-          class="bg-white dark:bg-gray-700 absolute top-1/2 right-4 p-2 rounded-lg -translate-y-1/2 group-hover:right-14"
+        <v-remixicon
+          name="riDeleteBin7Line"
+          size="20"
+          class="ml-2 -mr-1 cursor-pointer"
           @click="deleteCondition(index)"
-        >
-          <v-remixicon size="20" name="riDeleteBin7Line" />
-        </button>
-        <select
-          v-model="condition.type"
-          :title="getTitle(index)"
-          class="bg-white dark:bg-gray-700 absolute right-4 font-mono z-10 p-2 top-1/2 leading-tight -translate-y-1/2 text-center transition rounded-lg appearance-none"
-        >
-          <option
-            v-for="(name, type) in conditionTypes"
-            :key="type"
-            :value="type"
-          >
-            {{ type }}
-          </option>
-        </select>
-        <div
-          class="w-full bg-gray-300 dark:bg-gray-700 h-px mx-auto"
-          style="max-width: 89%"
-        ></div>
-        <input
-          v-model="condition.value"
-          type="text"
-          placeholder="value"
-          class="py-2 px-4 w-full transition rounded-lg bg-transparent"
         />
-      </li>
-    </ul>
+      </ui-list-item>
+    </ui-list>
+    <ui-modal v-model="state.showModal" custom-content>
+      <ui-card padding="p-0" class="w-full max-w-3xl">
+        <div class="px-4 pt-4 flex items-center">
+          <p class="flex-1">
+            {{ t('workflow.conditionBuilder.title') }}
+          </p>
+          <v-remixicon
+            name="riCloseLine"
+            class="cursor-pointer"
+            @click="state.showModal = false"
+          />
+        </div>
+        <div
+          class="overflow-auto p-4 mt-4 scroll"
+          style="height: calc(100vh - 8rem)"
+        >
+          <input
+            v-model="conditions[state.conditionsIndex].name"
+            class="text-xl font-semibold mb-4 bg-transparent focus:ring-0"
+          />
+          <shared-condition-builder
+            :model-value="conditions[state.conditionsIndex].conditions"
+            @change="conditions[state.conditionsIndex].conditions = $event"
+          />
+        </div>
+      </ui-card>
+    </ui-modal>
   </div>
 </template>
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted, shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { nanoid } from 'nanoid';
 import emitter from '@/lib/mitt';
+import SharedConditionBuilder from '@/components/newtab/shared/SharedConditionBuilder/index.vue';
 
 const props = defineProps({
   data: {
@@ -71,22 +81,25 @@ const props = defineProps({
 const emit = defineEmits(['update:data']);
 
 const conditionTypes = {
-  '==': 'equals',
-  '!=': 'ne',
+  '==': 'eq',
+  '!=': 'nq',
   '>': 'gt',
   '>=': 'gte',
   '<': 'lt',
   '<=': 'lte',
-  '()': 'contains',
+  '()': 'cnt',
 };
 const { t } = useI18n();
 
 const conditions = ref(props.data.conditions);
+const state = shallowReactive({
+  showModal: false,
+  conditionsIndex: 0,
+});
 
-function getTitle(index) {
-  const type = conditionTypes[conditions.value[index]?.type] || 'equals';
-
-  return t(`workflow.blocks.conditions.${type}`);
+function editCondition(index) {
+  state.conditionsIndex = index;
+  state.showModal = true;
 }
 function addCondition() {
   if (conditions.value.length >= 10) return;
@@ -95,10 +108,15 @@ function addCondition() {
     id: props.blockId,
   });
 
-  conditions.value.unshift({
-    compareValue: '',
-    value: '',
-    type: '==',
+  conditions.value.push({
+    id: nanoid(),
+    name: `Path ${conditions.value.length + 1}`,
+    conditions: [
+      {
+        id: nanoid(),
+        conditions: [],
+      },
+    ],
   });
 }
 function deleteCondition(index) {
@@ -119,4 +137,41 @@ watch(
   },
   { deep: true }
 );
+
+onMounted(() => {
+  const condition = props.data.conditions[0];
+
+  if (condition && condition.conditions) return;
+
+  const generateConditionItem = (type, data) => {
+    if (type === 'value') {
+      return {
+        id: nanoid(),
+        type: 'value',
+        category: 'value',
+        data: { value: data },
+      };
+    }
+
+    return { id: nanoid(), category: 'compare', type: data };
+  };
+  conditions.value = conditions.value.map((item, index) => {
+    const items = [
+      generateConditionItem('value', item.compareValue),
+      generateConditionItem('compare', conditionTypes[item.type]),
+      generateConditionItem('value', item.value),
+    ];
+
+    return {
+      id: nanoid(),
+      name: `Path ${index + 1}`,
+      conditions: [
+        {
+          id: nanoid(),
+          conditions: [{ id: nanoid(), items }],
+        },
+      ],
+    };
+  });
+});
 </script>

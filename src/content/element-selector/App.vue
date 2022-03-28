@@ -196,7 +196,7 @@ const getElementSelector = (element) =>
   state.selectorType === 'css'
     ? getCssSelector(element, {
         includeTag: true,
-        blacklist: ['[focused]', /focus/, /href/],
+        blacklist: ['[focused]', /focus/, /href/, /src/],
       })
     : generateXPath(element);
 
