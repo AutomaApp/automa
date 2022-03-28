@@ -1,5 +1,14 @@
 {
+  "recording": {
+    "stop": "停止录制",
+    "title": "录制中"
+  },
   "home": {
+    "record": {
+      "title": "录制工作流",
+      "button": "录制",
+      "name": "工作流名称"
+    },
     "elementSelector": {
       "name": "元素选择器",
       "noAccess": "您没有权限访问此站点"
@@ -8,6 +17,6 @@
       "new": "新建工作流",
       "rename": "重命名工作流",
       "delete": "删除工作流"
-    }
+    },
   }
 }

@@ -3,26 +3,113 @@
     "blocks": {
       "export-result": {
         "name": "导出结果",
-        "description": "将集合结果导出为JSON"
+        "description": "将集合结果导出为 JSON"
       }
     }
   },
   "workflow": {
     "blocks": {
       "base": {
+        "moveToGroup": "移动模块到模块组",
         "selector": "元素选择器",
+        "table": {
+          "checkbox": "插入表格",
+          "select": "选择列",
+          "extraRow": {
+            "checkbox": "添加额外的行",
+            "placeholder": "值",
+            "title": "额外行的值"
+          }
+        },
+        "findElement": {
+          "placeholder": "查找元素依据",
+          "options": {
+            "cssSelector": "CSS 选择器",
+            "xpath": "XPath"
+          }
+        },
         "markElement": {
-          "title": "一个元素如果之前被标记过，则不再标记",
+          "title": "如果之前已经选择过元素，则不会被选择",
           "text": "标记元素"
         },
         "multiple": {
           "title": "选择多个元素",
-          "text": "选择多个元素"
+          "text": "多选"
+        },
+        "waitSelector": {
+          "title": "等待选择器",
+          "timeout": "选择器超时 (ms)"
+        },
+        "downloads": {
+          "onConflict": {
+            "uniquify": "唯一",
+            "overwrite": "覆盖",
+            "prompt": "询问"
+          }
         }
+      },
+      "handle-dialog": {
+        "name": "处理对话框",
+        "description": "接受或取消JavaScript启动的对话框(警报、确认、提示或卸载前)。",
+        "accept": "接受对话框",
+        "promptText": {
+          "label": "提示文本 (可选项)",
+          "description": "接受前要输入对话框提示的文本"
+        }
+      },
+      "handle-download": {
+        "name": "处理下载",
+        "description": "处理下载文件",
+        "timeout": "超时 (毫秒)",
+        "noPermission": "没有访问下载的权限",
+        "onConflict": "冲突时",
+        "waitFile": "等待下载文件"
+      },
+      "insert-data": {
+        "name": "插入数据",
+        "description": "将数据插入表或变量"
+      },
+      "clipboard": {
+        "name": "剪贴板",
+        "description": "从剪贴板获取复制的文本",
+        "data": "剪贴板数据",
+        "noPermission": "没有访问剪贴板的权限",
+        "grantPermission": "授予权限"
+      },
+      "hover-element": {
+        "name": "悬停元素",
+        "description": "悬停在一个元素上"
+      },
+      "upload-file": {
+        "name": "上传文件",
+        "description": "上传文件到 <input type=\"file\"> 元素",
+        "filePath": "URL 或 文件路径",
+        "addFile": "添加文件",
+        "requirement": "使用本模块前，请参看要求",
+        "noFileAccess": "Automa 没有文件访问权限"
+      },
+      "browser-event": {
+        "name": "浏览器事件",
+        "description": "触发事件时执行下一个模块",
+        "events": "事件",
+        "timeout": "超时 (毫秒)",
+        "activeTabLoaded": "活动标签页",
+        "setAsActiveTab": "设为活动标签页"
+      },
+      "blocks-group": {
+        "name": "模块组",
+        "groupName": "组名",
+        "description": "分组模块",
+        "dropText": "拖放模块到此处",
+        "cantAdd": "无法添加 \"{blockName}\" 模块到此组."
       },
       "trigger": {
         "name": "触发器",
         "description": "工作流从这里开始执行",
+        "addTime": "添加时间",
+        "selectDay": "选择星期几",
+        "timeExist": "你已经添加 {time} 在 {day}",
+        "fixedDelay": "固定延迟",
         "days": [
           "星期日",
           "星期一",
@@ -35,9 +122,10 @@
         "useRegex": "使用正则表达式",
         "shortcut": {
           "tooltip": "录制快捷键",
-          "checkboxTitle": "即使在输入框中也执行快捷键",
-          "checkbox": "在输入框中执行快捷键",
-          "note": "提示: 键盘快捷键仅在你访问网页时有效"
+          "stopRecord": "停止录制",
+          "checkboxTitle": "即使在输入元素中也执行快捷键",
+          "checkbox": "输入时激活",
+          "note": "注意：键盘快捷键仅在您访问网页时有效"
         },
         "forms": {
           "triggerWorkflow": "触发工作流",
@@ -45,37 +133,93 @@
           "delay": "延迟 (分钟)",
           "date": "日期",
           "time": "时间",
-          "url": "网址或正则表达式",
+          "url": "URL 或 正则表达式",
           "shortcut": "快捷键"
         },
         "items": {
           "manual": "手动",
-          "interval": "一定时间间隔",
+          "interval": "间隔",
           "date": "在特定日期",
           "specific-day": "在特定的星期几",
-          "visit-web": "当你访问一个网页",
+          "visit-web": "访问网页时",
+          "on-startup": "浏览器启动时",
           "keyboard-shortcut": "键盘快捷键"
         }
       },
+      "execute-workflow": {
+        "name": "执行工作流",
+        "overwriteNote": "这将覆盖所选工作流的全局数据",
+        "select": "选择工作流",
+        "executeId": "执行 Id",
+        "description": ""
+      },
+      "google-sheets": {
+        "name": "Google sheets",
+        "description": "读取或更新 Google sheets 数据",
+        "previewData": "预览数据",
+        "firstRow": "使用第一行作为主键",
+        "keysAsFirstRow": "使用主键作为第一行",
+        "insertData": "插入数据",
+        "valueInputOption": "输入选项值",
+        "dataFrom": {
+          "label": "数据来自",
+          "options": {
+            "data-columns": "表格",
+            "custom": "自定义"
+          }
+        },
+        "refKey": {
+          "label": "参考键 (可选项)",
+          "placeholder": "键名称"
+        },
+        "spreadsheetId": {
+          "label": "电子表格 Id",
+          "link": "查看如何获取电子表格 ID"
+        },
+        "range": {
+          "label": "范围",
+          "link": "点击查看更多示例"
+        },
+        "select": {
+          "get": "获取电子表格单元格值",
+          "update": "更新电子表格单元格值"
+        }
+      },
       "active-tab": {
-        "name": "活动选项卡",
-        "description": "将您所在的当前选项卡设置为活动选项卡"
+        "name": "活动标签页",
+        "description": "将您所在的当前标签页设置为活动标签页"
+      },
+      "proxy": {
+        "name": "Proxy",
+        "description": "设置浏览器的代理",
+        "clear": "清除所有代理",
+        "bypass": {
+          "label": "免过滤清单",
+          "note": "使用英文逗号 (,) 分隔 URL"
+        }
       },
       "new-window": {
-        "name": "新窗口",
+        "name": "新建窗口",
         "description": "创建一个新窗口",
+        "top": "上",
+        "left": "左",
+        "height": "高度",
+        "width": "宽度",
+        "note": "注意：使用 0 禁用",
+        "position": "窗口位置",
+        "size": "窗口尺寸",
         "windowState": {
           "placeholder": "窗口状态",
           "options": {
-            "normal": "标准",
+            "normal": "常规",
             "minimized": "最小化",
             "maximized": "最大化",
             "fullscreen": "全屏"
           }
         },
         "incognito": {
-          "text": "设为无痕窗口",
-          "note": "您必须为此扩展程序启用“在无痕模式下启用”才能使用该选项"
+          "text": "设置为无痕窗口",
+          "note": "您必须为此扩展启用“在无痕模式下启用”才能使用该选项"
         }
       },
       "go-back": {
@@ -87,10 +231,11 @@
         "description": "前进到下一页"
       },
       "close-tab": {
-        "name": "关闭选项卡",
+        "name": "关闭 标签页/窗口",
         "description": "",
-        "activeTab": "关闭活动选项卡",
-        "url": "网址或匹配模式"
+        "url": "匹配模式",
+        "activeTab": "关闭活动标签页",
+        "allWindows": "关闭所有窗口"
       },
       "event-click": {
         "name": "点击元素",
@@ -98,11 +243,17 @@
       },
       "delay": {
         "name": "延迟",
-        "description": "在执行下一个块之前添加延迟"
+        "description": "在执行下一个模块之前添加延迟",
+        "input": {
+          "title": "延迟毫秒",
+          "placeholder": "(毫秒)"
+        }
       },
       "get-text": {
         "name": "获取文本",
         "description": "从元素中获取文本",
+        "checkbox": "插入到表格",
+        "includeTags": "包含 HTML 标记",
         "prefixText": {
           "placeholder": "文本前缀",
           "title": "为文本添加前缀"
@@ -114,26 +265,45 @@
       },
       "export-data": {
         "name": "导出数据",
-        "description": "导出工作流数据列"
+        "description": "导出工作流数据",
+        "exportAs": "导出为",
+        "refKey": "参考键",
+        "bomHeader": "添加 UTF-8 BOM",
+        "dataToExport": {
+          "placeholder": "要导出的数据",
+          "options": {
+            "data-columns": "表格",
+            "google-sheets": "Google sheets",
+          },
+        }
       },
       "element-scroll": {
         "name": "滚动元素",
         "description": "",
         "scrollY": "垂直滚动",
         "scrollX": "水平滚动",
-        "intoView": "滚动到视图中",
+        "intoView": "滚动查看",
         "smooth": "平滑滚动",
-        "incScrollX": "递增水平滚动",
+        "incScrollX": "增加水平滚动",
         "incScrollY": "递增垂直滚动"
       },
+      "switch-tab": {
+        "name": "切换标签页",
+        "description": "在标签页之间切换",
+        "matchPattern": "匹配模式",
+        "url": "新建标签页的 URL",
+        "createIfNoMatch": "如果没有匹配则创建"
+      },
       "new-tab": {
-        "name": "新建选项卡",
+        "name": "新建标签页",
         "description": "",
-        "activeTab": "设置为活动选项卡",
-        "tabToGroup": "添加到选项卡组",
+        "url": "新建标签页 URL",
+        "customUserAgent": "使用自定义 User-Agent",
+        "activeTab": "设为活动标签页",
+        "tabToGroup": "标签页分组",
         "updatePrevTab": {
-          "title": "使用之前打开的新选项卡而不是创建一个选项卡",
-          "text": "更新之前打开的选项卡"
+          "title": "使用之前打开的新标签页而不是新建标签页",
+          "text": "更新之前打开的标签页"
         }
       },
       "link": {
@@ -142,98 +312,131 @@
       },
       "attribute-value": {
         "name": "属性值",
-        "description": "获取一个元素属性的值",
+        "description": "获取元素属性的值",
         "forms": {
           "name": "属性名称",
-          "checkbox": "保存数据",
-          "column": "选择列"
+          "checkbox": "插入到表格",
+          "column": "选择列",
+          "extraRow": {
+            "checkbox": "添加额外的行",
+            "placeholder": "值",
+            "title": "额外行的值"
+          }
         }
       },
       "forms": {
         "name": "表单",
         "description": "",
-        "selected": "选中",
+        "selected": "已选择",
         "type": "表单类型",
+        "getValue": "获取表单值",
         "text-field": {
-          "name": "文本框",
+          "name": "文本域",
           "value": "值",
           "clearValue": "清除表单值",
           "delay": {
             "placeholder": "延迟",
-            "label": "输入延迟（ms）（0为禁用）"
+            "label": "输入延迟（毫秒）（0 为禁用）"
           }
         },
-        "select": { "name": "下拉列表" },
-        "radio": { "name": "单选框" },
-        "checkbox": { "name": "复选框" }
+        "select": {
+          "name": "下拉列表"
+        },
+        "radio": {
+          "name": "单选框"
+        },
+        "checkbox": {
+          "name": "复选框"
+        }
       },
       "repeat-task": {
         "name": "重复任务",
-        "description": ""
+        "description": "",
+        "times": "次数",
+        "repeatFrom": "重复自"
       },
       "javascript-code": {
         "name": "JavaScript 代码",
-        "description": "在网页中执行你的 javascript 代码",
+        "description": "在网页中执行您的 javascript 代码",
+        "availabeFuncs": "可用函数:",
+        "removeAfterExec": "模块执行后移除",
         "modal": {
           "tabs": {
             "code": "JavaScript 代码",
-            "preloadScript": "Preload script"
+            "preloadScript": "预加载脚本"
           }
         },
-        "availabeFuncs": "可用的函数:",
         "timeout": {
-          "placeholder": "超时",
-          "title": "Javascript代码执行超时"
+          "placeholder": "超时（毫秒）",
+          "title": "Javascript 代码执行超时"
         }
       },
       "trigger-event": {
-        "name": "触发事件",
+        "name": "触发器事件",
         "description": "",
         "selectEvent": "选择事件"
       },
       "conditions": {
         "name": "条件",
-        "description": "条件单元"
+        "add": "添加条件",
+        "description": "条件模块",
+        "fallbackTitle": "当所有比较不满足要求时执行",
+        "equals": "等于",
+        "gt": "大于",
+        "gte": "大于或等于",
+        "lt": "小于",
+        "lte": "小于或等于",
+        "ne": "不等于",
+        "contains": "包含"
       },
       "element-exists": {
         "name": "元素存在",
         "description": "检查元素是否存在",
         "selector": "元素选择器",
+        "fallbackTitle": "当元素不存在时执行",
+        "throwError": "如果不存在抛出一个错误",
         "tryFor": {
-          "title": "检查元素是否存在",
-          "label": "检查"
+          "title": "检查元素是否存在的尝试次数",
+          "label": "尝试"
         },
         "timeout": {
-          "label": "超时 (毫秒)",
-          "title": "每次检查元素的超时时间"
+          "label": "超时（毫秒）",
+          "title": "每次尝试超时"
         }
       },
       "webhook": {
-        "name": "Webhook",
-        "description": "Webhook 允许通知外部服务",
-        "url": "接收POST请求的URL",
-        "contentType": "选择content type",
+        "name": "HTTP 请求",
+        "description": "发出 HTTP 请求",
+        "url": "接收 POST 请求的 URL",
+        "contentType": "内容类型",
+        "method": "请求方法",
+        "url": "请求 URL",
+        "fallback": "在发出 HTTP 请求失败或错误时执行",
         "buttons": {
-          "header": "添加请求头"
+          "header": "添加 header"
         },
         "timeout": {
           "placeholder": "超时",
-          "title": "Http请求执行超时(ms)"
+          "title": "Http 请求执行超时(ms)"
         },
         "tabs": {
           "headers": "Headers",
-          "body": "Content body"
+          "body": "Body",
+          "response": "响应"
         }
       },
       "loop-data": {
         "name": "循环数据",
-        "description": "遍历数据列或你的自定义数据",
-        "loopId": "循环 ID",
+        "description": "遍历表格或您的自定义数据",
+        "loopId": "循环 id",
+        "refKey": "参考键",
+        "startIndex": "从索引开始",
+        "resumeLastWorkflow": "恢复上次工作流",
         "modal": {
-          "fileTooLarge": "文件太大无法编辑",
-          "maxFile": "最大文件大小为 1MB",
+          "fileTooLarge": "文件太大，无法编辑",
+          "maxFile": "最大文件尺寸为 1MB",
           "options": {
-            "firstRow": "使用第一个 row 作为 keys"
+            "firstRow": "使用第一行作为主键"
           }
         },
         "buttons": {
@@ -242,33 +445,43 @@
           "import": "导入文件"
         },
         "maxLoop": {
-          "title": "循环数据的最大值",
-          "label": "循环数据的最大值(0为禁用)"
+          "title": "要循环的最大数据数",
+          "label": "要循环的最大数据（0 禁用）"
         },
         "loopThrough": {
-          "placeholder": "循环数据源",
+          "placeholder": "依次通过",
+          "fromNumber": "从数字",
+          "toNumber": "到数字",
           "options": {
-            "data-columns": "数据列",
-            "custom-data": "自定义数据"
+            "numbers": "数字",
+            "variable": "变量",
+            "data-columns": "表格",
+            "table": "表格",
+            "custom-data": "自定义数据",
+            "google-sheets": "Google sheets",
+            "elements": "元素"
           }
         }
       },
       "loop-breakpoint": {
         "name": "循环断点",
-        "description": "告诉循环数据单元在哪里停止"
+        "description": "告诉循环数据块必须在哪里停止"
       },
       "take-screenshot": {
         "name": "截屏",
-        "description": "对当前活动选项卡截屏",
-        "imageQuality": "图像质量"
+        "fullPage": "截取整页截图",
+        "description": "截取当前活动标签页的屏幕截图",
+        "imageQuality": "图像质量",
+        "saveToColumn": "将屏幕截图插入表格",
+        "saveToComputer": "将屏幕截图保存到计算机"
       },
       "switch-to": {
-        "name": "切换到",
-        "description": "在主窗口和iframe之间切换",
-        "iframeSelector": "iframe元素选择器",
+        "name": "切换框架",
+        "description": "在主窗口和 iframe 之间切换",
+        "iframeSelector": "iframe 元素选择器",
         "windowTypes": {
           "main": "主窗口",
-          "iframe": "iframe"
+          "iframe": "Iframe"
         }
       }
     }
