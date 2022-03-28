@@ -40,6 +40,13 @@ async function activeTab(block) {
     };
     this.windowId = tab.windowId;
 
+    if (this.preloadScripts.length > 0) {
+      const preloadScripts = this.preloadScripts.map((script) =>
+        this._sendMessageToTab(script)
+      );
+      await Promise.allSettled(preloadScripts);
+    }
+
     return data;
   } catch (error) {
     console.error(error);

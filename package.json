@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "1.5.1",
+  "version": "1.5.4",
   "description": "An extension for automating your browser by connecting blocks",
   "license": "MIT",
   "repository": {
@@ -23,8 +23,9 @@
   },
   "dependencies": {
     "@codemirror/basic-setup": "^0.19.1",
-    "@codemirror/lang-javascript": "0.19.1",
-    "@codemirror/lang-json": "^0.19.1",
+    "@codemirror/fold": "^0.19.3",
+    "@codemirror/lang-javascript": "^0.19.7",
+    "@codemirror/lang-json": "^0.19.2",
     "@codemirror/theme-one-dark": "^0.19.1",
     "@medv/finder": "^2.1.0",
     "@tiptap/extension-character-count": "^2.0.0-beta.24",

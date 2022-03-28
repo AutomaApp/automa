@@ -20,6 +20,7 @@
           readonly: disabled || readonly || null,
           placeholder,
           type,
+          autocomplete,
           autofocus,
           min,
           max,
@@ -38,7 +39,9 @@
         :value="modelValue"
         class="py-2 px-4 rounded-lg w-full bg-input bg-transparent transition"
         @keydown="$emit('keydown', $event)"
+        @keyup="$emit('keyup', $event)"
         @blur="$emit('blur', $event)"
+        @focus="$emit('focus', $event)"
         @input="emitValue"
       />
       <slot name="append" />
@@ -101,8 +104,12 @@ export default {
       type: [String, Number],
       default: null,
     },
+    autocomplete: {
+      type: String,
+      default: null,
+    },
   },
-  emits: ['update:modelValue', 'change', 'keydown', 'blur'],
+  emits: ['update:modelValue', 'change', 'keydown', 'blur', 'keyup', 'focus'],
   setup(props, { emit }) {
     const componentId = useComponentId('ui-input');
 

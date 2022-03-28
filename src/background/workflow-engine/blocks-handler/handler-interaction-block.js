@@ -24,24 +24,13 @@ async function checkAccess(blockName) {
   return true;
 }
 
-async function interactionHandler(block, { refData }) {
+async function interactionHandler(block) {
   await checkAccess(block.name);
 
-  const { executedBlockOnWeb, debugMode } = this.workflow.settings;
-
   const nextBlockId = getBlockConnection(block);
-  const messagePayload = {
-    ...block,
-    debugMode,
-    executedBlockOnWeb,
-    activeTabId: this.activeTab.id,
-    frameSelector: this.frameSelector,
-  };
-
-  if (block.name === 'javascript-code') messagePayload.refData = refData;
 
   try {
-    const data = await this._sendMessageToTab(messagePayload, {
+    const data = await this._sendMessageToTab(block, {
       frameId: this.activeTab.frameId || 0,
     });
 
@@ -75,23 +64,7 @@ async function interactionHandler(block, { refData }) {
     }
 
     if (block.data.assignVariable) {
-      this.referenceData.variables[block.data.variableName] = data;
-    }
-
-    if (block.name === 'javascript-code') {
-      if (data?.variables) {
-        Object.keys(data.variables).forEach((varName) => {
-          this.referenceData.variables[varName] = data.variables[varName];
-        });
-      }
-
-      if (data?.columns.insert) {
-        const params = Array.isArray(data.columns.data)
-          ? data.columns.data
-          : [data.columns.data];
-
-        this.addDataToColumn(params);
-      }
+      this.setVariable(block.data.variableName, data);
     }
 
     return {

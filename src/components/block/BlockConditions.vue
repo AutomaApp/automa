@@ -20,18 +20,23 @@
         @click="editBlock"
       />
     </div>
-    <div
+    <ul
       v-if="block.data.conditions && block.data.conditions.length !== 0"
       class="mt-4 space-y-2"
     >
-      <div
+      <li
         v-for="item in block.data.conditions"
         :key="item.id"
-        class="flex items-center justify-end"
+        class="flex items-center flex-1 p-2 bg-box-transparent rounded-lg overflow-hidden w-44"
       >
-        <div
-          class="flex items-center flex-1 p-2 bg-box-transparent rounded-lg overflow-hidden w-44"
+        <p
+          v-if="item.name"
+          class="text-overflow w-full text-right"
+          :title="item.name"
         >
+          {{ item.name }}
+        </p>
+        <template v-else>
           <p class="w-5/12 text-overflow text-right">
             {{ item.compareValue || '_____' }}
           </p>
@@ -41,18 +46,16 @@
           <p class="w-5/12 text-overflow">
             {{ item.value || '_____' }}
           </p>
-        </div>
-      </div>
+        </template>
+      </li>
       <p
         v-if="block.data.conditions && block.data.conditions.length !== 0"
         class="text-right text-gray-600 dark:text-gray-200"
       >
-        <span :title="t('workflow.blocks.conditions.fallbackTitle')">
-          &#9432;
-        </span>
-        {{ t('common.fallback') }}
+        <span title="Fallback"> &#9432; </span>
+        Fallback
       </p>
-    </div>
+    </ul>
     <input class="trigger hidden" @change="onChange" />
   </div>
 </template>

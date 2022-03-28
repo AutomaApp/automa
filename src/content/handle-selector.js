@@ -1,4 +1,5 @@
 import FindElement from '@/utils/find-element';
+import { scrollIfNeeded } from '@/utils/helper';
 
 /* eslint-disable consistent-return */
 
@@ -34,21 +35,6 @@ export function waitForSelector({
       resolve(null);
     }, timeout);
   });
-}
-
-function scrollIfNeeded(debugMode, element) {
-  if (!debugMode) return;
-
-  const { top, left, bottom, right } = element.getBoundingClientRect();
-  const isInViewport =
-    top >= 0 &&
-    left >= 0 &&
-    bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-    right <= (window.innerWidth || document.documentElement.clientWidth);
-
-  if (!isInViewport) {
-    element.scrollIntoView();
-  }
 }
 
 export default async function (
@@ -109,13 +95,13 @@ export default async function (
       await Promise.allSettled(
         Array.from(element).map((el) => {
           markElement(el, { id, data });
-          scrollIfNeeded(debugMode, el);
+          if (debugMode) scrollIfNeeded(el);
           return onSelected(el);
         })
       );
     } else if (element) {
       markElement(element, { id, data });
-      scrollIfNeeded(debugMode, element);
+      if (debugMode) scrollIfNeeded(element);
       await onSelected(element);
     }
 

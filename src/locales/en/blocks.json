@@ -360,6 +360,7 @@
         "description": "Execute your javascript code in the web page",
         "availabeFuncs": "Available functions:",
         "removeAfterExec": "Remove after block executed",
+        "everyNewTab": "Execute every new tab",
         "modal": {
           "tabs": {
             "code": "JavaScript code",
@@ -424,6 +425,12 @@
           "body": "Body",
           "response": "Response"
         }
+      },
+      "while-loop": {
+        "name": "While loop",
+        "description": "Execute blocks while the condition is met",
+        "editCondition": "Edit condition",
+        "fallback": "Execute when the condition is false"
       },
       "loop-data": {
         "name": "Loop data",

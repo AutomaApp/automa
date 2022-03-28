@@ -4,6 +4,35 @@ import { toCamelCase } from '@/utils/helper';
 import executedBlock from './executed-block';
 import blocksHandler from './blocks-handler';
 
+const elementActions = {
+  text: (element) => element.innerText,
+  visible: (element) => {
+    const { visibility, display } = getComputedStyle(element);
+
+    return visibility !== 'hidden' || display !== 'none';
+  },
+  invisible: (element) => !elementActions.visible(element),
+  attribute: (element, { attrName }) => {
+    if (!element.hasAttribute(attrName)) return null;
+
+    return element.getAttribute(attrName);
+  },
+};
+function handleConditionBuilder({ data, type }) {
+  if (!type.startsWith('element')) return null;
+
+  const element = document.querySelector(data.selector);
+  const { 1: actionType } = type.split('#');
+
+  if (!element) {
+    if (actionType === 'visible' || actionType === 'invisible') return false;
+
+    return null;
+  }
+
+  return elementActions[actionType](element, data);
+}
+
 (() => {
   if (window.isAutomaInjected) return;
 
@@ -36,6 +65,9 @@ import blocksHandler from './blocks-handler';
       }
 
       switch (data.type) {
+        case 'condition-builder':
+          resolve(handleConditionBuilder(data.data));
+          break;
         case 'content-script-exists':
           resolve(true);
           break;

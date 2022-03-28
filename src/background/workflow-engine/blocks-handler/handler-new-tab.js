@@ -1,10 +1,10 @@
 import browser from 'webextension-polyfill';
+import { isWhitespace, sleep } from '@/utils/helper';
 import {
   getBlockConnection,
   attachDebugger,
   sendDebugCommand,
 } from '../helper';
-import { isWhitespace, sleep } from '@/utils/helper';
 
 async function newTab(block) {
   if (this.windowId) {
@@ -82,6 +82,13 @@ async function newTab(block) {
 
     if (!this.workflow.settings.debugMode && customUserAgent) {
       chrome.debugger.detach({ tabId: tab.id });
+    }
+
+    if (this.preloadScripts.length > 0) {
+      const preloadScripts = this.preloadScripts.map((script) =>
+        this._sendMessageToTab(script)
+      );
+      await Promise.allSettled(preloadScripts);
     }
 
     return {

@@ -32,37 +32,63 @@
             <v-remixicon name="riArrowLeftLine" class="mr-2" />
             {{ t('log.goBack', { name: collectionLog.name }) }}
           </router-link>
-          <ui-list-item v-for="(item, index) in history" :key="index">
-            <span
-              :class="logsType[item.type]?.color"
-              class="p-1 rounded-lg align-middle inline-block mr-2 dark:text-black"
-            >
-              <v-remixicon :name="logsType[item.type]?.icon" size="20" />
-            </span>
-            <div class="flex-1 line-clamp pr-2">
-              <p class="w-full text-overflow leading-tight">
-                {{ item.name }}
-              </p>
-              <p
-                v-if="item.message"
-                :title="item.message"
-                class="text-sm line-clamp text-gray-600 dark:text-gray-200"
+          <ui-expand
+            v-for="(item, index) in history"
+            :key="item.id || index"
+            hide-header-icon
+            class="mb-1"
+            header-active-class="bg-box-transparent rounded-b-none"
+            header-class="flex items-center px-4 py-2 hoverable rounded-lg w-full text-left history-item focus:ring-0"
+          >
+            <template #header="{ show }">
+              <v-remixicon
+                :rotate="show ? 270 : 180"
+                size="20"
+                name="riArrowLeftSLine"
+                class="transition-transform dark:text-gray-200 text-gray-600 -ml-1 mr-2"
+              />
+              <span
+                :class="logsType[item.type]?.color"
+                class="p-1 rounded-lg align-middle inline-block mr-2 dark:text-black"
               >
-                {{ item.message }}
+                <v-remixicon :name="logsType[item.type]?.icon" size="20" />
+              </span>
+              <div class="flex-1 line-clamp pr-2">
+                <p class="w-full text-overflow leading-tight">
+                  {{ item.name }}
+                  <span
+                    v-show="item.description"
+                    :title="item.description"
+                    class="text-overflow text-gray-600 dark:text-gray-200 text-sm"
+                  >
+                    ({{ item.description }})
+                  </span>
+                </p>
+                <p
+                  v-if="item.message"
+                  :title="item.message"
+                  class="text-sm line-clamp text-gray-600 dark:text-gray-200"
+                >
+                  {{ item.message }}
+                </p>
+              </div>
+              <router-link
+                v-if="item.logId"
+                :to="'/logs/' + item.logId"
+                class="mr-4"
+                title="Open log detail"
+              >
+                <v-remixicon name="riExternalLinkLine" />
+              </router-link>
+              <p class="text-gray-600 dark:text-gray-200">
+                {{ countDuration(0, item.duration || 0) }}
               </p>
-            </div>
-            <router-link
-              v-if="item.logId"
-              :to="'/logs/' + item.logId"
-              class="mr-4"
-              title="Open log detail"
+            </template>
+            <pre
+              class="text-sm px-4 max-h-52 overflow-auto scroll bg-box-transparent pb-2 rounded-b-lg"
+              >{{ ctxData[item.id] }}</pre
             >
-              <v-remixicon name="riExternalLinkLine" />
-            </router-link>
-            <p class="text-gray-600 dark:text-gray-200">
-              {{ countDuration(0, item.duration || 0) }}
-            </p>
-          </ui-list-item>
+          </ui-expand>
         </ui-list>
         <div
           v-if="activeLog.history.length >= 10"
@@ -102,9 +128,10 @@
   </div>
 </template>
 <script setup>
-import { computed, onMounted, shallowReactive } from 'vue';
+import { computed, onMounted, shallowReactive, shallowRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import browser from 'webextension-polyfill';
 import Log from '@/models/log';
 import dayjs from '@/lib/dayjs';
 import { countDuration } from '@/utils/helper';
@@ -137,6 +164,7 @@ const { t, te } = useI18n();
 const route = useRoute();
 const router = useRouter();
 
+const ctxData = shallowRef({});
 const pagination = shallowReactive({
   perPage: 10,
   currentPage: 1,
@@ -191,8 +219,14 @@ function deleteLog() {
   });
 }
 
-onMounted(() => {
+onMounted(async () => {
   if (!activeLog.value) router.replace('/logs');
+
+  const { logsCtxData } = await browser.storage.local.get('logsCtxData');
+  const logCtxData = logsCtxData && logsCtxData[route.params.id];
+  if (logCtxData) {
+    ctxData.value = logCtxData;
+  }
 });
 </script>
 <style>

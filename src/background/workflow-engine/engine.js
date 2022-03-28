@@ -1,7 +1,6 @@
 import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
 import { tasks } from '@/utils/shared';
-import { convertData, waitTabLoaded } from './helper';
 import {
   toCamelCase,
   sleep,
@@ -10,6 +9,7 @@ import {
   objectHasKey,
 } from '@/utils/helper';
 import referenceData from '@/utils/reference-data';
+import { convertData, waitTabLoaded } from './helper';
 import executeContentScript from './execute-content-script';
 
 class WorkflowEngine {
@@ -39,7 +39,9 @@ class WorkflowEngine {
     this.blocks = {};
     this.history = [];
     this.columnsId = {};
+    this.historyCtxData = {};
     this.eventListeners = {};
+    this.preloadScripts = [];
     this.columns = { column: { index: 0, name: 'column', type: 'any' } };
 
     let variables = {};
@@ -96,6 +98,7 @@ class WorkflowEngine {
     this.isUsingProxy = false;
 
     this.history = [];
+    this.preloadScripts = [];
     this.columns = { column: { index: 0, name: 'column', type: 'any' } };
 
     this.activeTab = {
@@ -204,6 +207,29 @@ class WorkflowEngine {
     )
       return;
 
+    const historyId = nanoid();
+    detail.id = historyId;
+
+    if (
+      detail.replacedValue ||
+      (tasks[detail.name]?.refDataKeys && this.saveLog)
+    ) {
+      const { activeTabUrl, loopData, prevBlockData } = JSON.parse(
+        JSON.stringify(this.referenceData)
+      );
+
+      this.historyCtxData[historyId] = {
+        referenceData: {
+          loopData,
+          activeTabUrl,
+          prevBlockData,
+        },
+        replacedValue: detail.replacedValue,
+      };
+
+      delete detail.replacedValue;
+    }
+
     this.history.push(detail);
   }
 
@@ -234,6 +260,10 @@ class WorkflowEngine {
     }
 
     currentColumn.index += 1;
+  }
+
+  setVariable(name, value) {
+    this.referenceData.variables[name] = value;
   }
 
   async stop() {
@@ -285,6 +315,11 @@ class WorkflowEngine {
       if (!this.workflow.isTesting) {
         const { name, id } = this.workflow;
 
+        let { logsCtxData } = await browser.storage.local.get('logsCtxData');
+        if (!logsCtxData) logsCtxData = {};
+        logsCtxData[this.id] = this.historyCtxData;
+        await browser.storage.local.set({ logsCtxData });
+
         await this.logger.add({
           name,
           status,
@@ -312,16 +347,18 @@ class WorkflowEngine {
         currentBlock: this.currentBlock,
       });
 
-      browser.storage.local.set({
-        [`last-state:${this.workflow.id}`]: {
-          columns: this.columns,
-          referenceData: {
-            table: this.referenceData.table,
-            variables: this.referenceData.variables,
-            globalData: this.referenceData.globalData,
+      if (this.workflow.settings.reuseLastState) {
+        browser.storage.local.set({
+          [`last-state:${this.workflow.id}`]: {
+            columns: this.columns,
+            referenceData: {
+              table: this.referenceData.table,
+              variables: this.referenceData.variables,
+              globalData: this.referenceData.globalData,
+            },
           },
-        },
-      });
+        });
+      }
 
       this.isDestroyed = true;
       this.eventListeners = {};
@@ -374,10 +411,15 @@ class WorkflowEngine {
         refData: this.referenceData,
       });
 
+      if (result.replacedValue)
+        replacedBlock.replacedValue = result.replacedValue;
+
       this.addLogHistory({
         name: block.name,
         logId: result.logId,
         type: result.status || 'success',
+        description: block.data.description,
+        replacedValue: replacedBlock.replacedValue,
         duration: Math.round(Date.now() - startExecuteTime),
       });
 
@@ -398,6 +440,8 @@ class WorkflowEngine {
         type: 'error',
         message: error.message,
         name: block.name,
+        description: block.data.description,
+        replacedValue: replacedBlock.replacedValue,
         ...(error.data || {}),
       });
 
@@ -483,12 +527,25 @@ class WorkflowEngine {
       }
 
       await waitTabLoaded(this.activeTab.id);
-      await executeContentScript(this.activeTab.id, options.frameId || 0);
+      await executeContentScript(
+        this.activeTab.id,
+        this.activeTab.frameId || 0
+      );
+
+      const { executedBlockOnWeb, debugMode } = this.workflow.settings;
+      const messagePayload = {
+        isBlock: true,
+        debugMode,
+        executedBlockOnWeb,
+        activeTabId: this.activeTab.id,
+        frameSelector: this.frameSelector,
+        ...payload,
+      };
 
       const data = await browser.tabs.sendMessage(
         this.activeTab.id,
-        { isBlock: true, ...payload },
-        options
+        messagePayload,
+        { ...options, frameId: this.activeTab.frameId }
       );
 
       return data;

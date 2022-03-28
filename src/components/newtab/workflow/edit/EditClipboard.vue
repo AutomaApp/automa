@@ -24,8 +24,8 @@
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
-import InsertWorkflowData from './InsertWorkflowData.vue';
 import { useHasPermissions } from '@/composable/hasPermissions';
+import InsertWorkflowData from './InsertWorkflowData.vue';
 
 const props = defineProps({
   data: {

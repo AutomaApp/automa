@@ -1,8 +1,8 @@
 import browser from 'webextension-polyfill';
-import WorkflowEngine from '../engine';
-import { getBlockConnection } from '../helper';
 import { isWhitespace, parseJSON } from '@/utils/helper';
 import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
+import WorkflowEngine from '../engine';
+import { getBlockConnection } from '../helper';
 
 function workflowListener(workflow, options) {
   return new Promise((resolve, reject) => {

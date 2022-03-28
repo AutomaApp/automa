@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
-import { getBlockConnection } from '../helper';
 import { default as dataExporter, files } from '@/utils/data-exporter';
+import { getBlockConnection } from '../helper';
 
 async function exportData({ data, outputs }) {
   const nextBlockId = getBlockConnection({ outputs });

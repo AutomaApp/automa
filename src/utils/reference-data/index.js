@@ -5,6 +5,11 @@ export default function ({ block, refKeys, data }) {
   if (!refKeys || refKeys.length === 0) return block;
 
   const copyBlock = JSON.parse(JSON.stringify(block));
+  const addReplacedValue = (value) => {
+    if (!copyBlock.replacedValue) copyBlock.replacedValue = {};
+
+    copyBlock.replacedValue = { ...copyBlock.replacedValue, ...value };
+  };
 
   refKeys.forEach((blockDataKey) => {
     const currentData = objectPath.get(copyBlock.data, blockDataKey);
@@ -13,18 +18,20 @@ export default function ({ block, refKeys, data }) {
 
     if (Array.isArray(currentData)) {
       currentData.forEach((str, index) => {
+        const replacedStr = mustacheReplacer(str, data);
+
+        addReplacedValue(replacedStr.list);
         objectPath.set(
           copyBlock.data,
           `${blockDataKey}.${index}`,
-          mustacheReplacer(str, data)
+          replacedStr.value
         );
       });
     } else if (typeof currentData === 'string') {
-      objectPath.set(
-        copyBlock.data,
-        blockDataKey,
-        mustacheReplacer(currentData, data)
-      );
+      const replacedStr = mustacheReplacer(currentData, data);
+
+      addReplacedValue(replacedStr.list);
+      objectPath.set(copyBlock.data, blockDataKey, replacedStr.value);
     }
   });
 

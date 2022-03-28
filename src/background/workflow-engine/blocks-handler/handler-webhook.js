@@ -1,7 +1,7 @@
 import objectPath from 'object-path';
-import { getBlockConnection } from '../helper';
 import { isWhitespace } from '@/utils/helper';
 import { executeWebhook } from '@/utils/webhookUtil';
+import { getBlockConnection } from '../helper';
 
 export async function webhook({ data, outputs }) {
   const nextBlockId = getBlockConnection({ outputs });
@@ -42,7 +42,7 @@ export async function webhook({ data, outputs }) {
     }
 
     if (data.assignVariable) {
-      this.referenceData.variables[data.variableName] = returnData;
+      this.setVariable(data.variableName, returnData);
     }
     if (data.saveData) {
       this.addDataToColumn(data.dataColumn, returnData);

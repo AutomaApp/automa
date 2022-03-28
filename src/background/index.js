@@ -1,14 +1,14 @@
 import browser from 'webextension-polyfill';
 import { MessageListener } from '@/utils/message';
-import { registerSpecificDay } from '../utils/workflow-trigger';
 import { parseJSON, findTriggerBlock } from '@/utils/helper';
 import getFile from '@/utils/get-file';
+import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
+import { registerSpecificDay } from '../utils/workflow-trigger';
 import WorkflowState from './workflow-state';
 import CollectionEngine from './collection-engine';
 import WorkflowEngine from './workflow-engine/engine';
 import blocksHandler from './workflow-engine/blocks-handler';
 import WorkflowLogger from './workflow-logger';
-import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
 
 const validateUrl = (str) => str?.startsWith('http');
 const storage = {

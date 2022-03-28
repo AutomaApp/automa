@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
-import { getBlockConnection } from '../helper';
 import { isWhitespace } from '@/utils/helper';
+import { getBlockConnection } from '../helper';
 
 function handleEventListener(target, validate) {
   return (data, activeTab) => {

@@ -1,5 +1,5 @@
-import { parseJSON, fileSaver, openFilePicker, isObject } from './helper';
 import Workflow from '@/models/workflow';
+import { parseJSON, fileSaver, openFilePicker, isObject } from './helper';
 
 export function importWorkflow(attrs = {}) {
   openFilePicker(['application/json'], attrs)
