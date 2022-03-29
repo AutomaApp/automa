@@ -569,7 +569,7 @@ function fetchLocalWorkflow() {
 }
 function insertToLocal() {
   const copy = {
-    ...props.workflow,
+    ...workflow.value,
     createdAt: Date.now(),
     version: chrome.runtime.getManifest().version,
   };
