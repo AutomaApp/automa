@@ -3,7 +3,10 @@ import { MessageListener } from '@/utils/message';
 import { parseJSON, findTriggerBlock } from '@/utils/helper';
 import getFile from '@/utils/get-file';
 import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
-import { registerSpecificDay } from '../utils/workflow-trigger';
+import {
+  registerSpecificDay,
+  registerWorkflowTrigger,
+} from '../utils/workflow-trigger';
 import WorkflowState from './workflow-state';
 import CollectionEngine from './collection-engine';
 import WorkflowEngine from './workflow-engine/engine';
@@ -297,10 +300,10 @@ browser.alarms.onAlarm.addListener(async ({ name }) => {
   }
 });
 
-chrome.runtime.onInstalled.addListener((details) => {
-  if (details.reason === 'install') {
-    browser.storage.local
-      .set({
+chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+  try {
+    if (reason === 'install') {
+      await browser.storage.local.set({
         logs: [],
         shortcuts: {},
         workflows: [],
@@ -308,17 +311,34 @@ chrome.runtime.onInstalled.addListener((details) => {
         workflowState: {},
         isFirstTime: true,
         visitWebTriggers: [],
-      })
-      .then(() => {
-        browser.tabs
-          .create({
-            active: true,
-            url: browser.runtime.getURL('newtab.html#/welcome'),
-          })
-          .catch((error) => {
-            console.error(error);
-          });
       });
+      await browser.tabs.create({
+        active: true,
+        url: browser.runtime.getURL('newtab.html#/welcome'),
+      });
+
+      return;
+    }
+
+    if (reason === 'update') {
+      const { workflows } = await browser.storage.local.get('workflows');
+      const alarmTypes = ['specific-day', 'date', 'interval'];
+
+      for (const { trigger, drawflow, id } of workflows) {
+        let workflowTrigger = trigger?.data || trigger;
+
+        if (!trigger) {
+          const flows = parseJSON(drawflow, drawflow);
+          workflowTrigger = findTriggerBlock(flows)?.data;
+        }
+
+        if (!alarmTypes.includes(workflowTrigger.type)) return;
+
+        registerWorkflowTrigger(id, { data: workflowTrigger });
+      }
+    }
+  } catch (error) {
+    console.error(error);
   }
 });
 chrome.runtime.onStartup.addListener(async () => {

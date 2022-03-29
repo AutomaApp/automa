@@ -111,12 +111,7 @@ function addCondition() {
   conditions.value.push({
     id: nanoid(),
     name: `Path ${conditions.value.length + 1}`,
-    conditions: [
-      {
-        id: nanoid(),
-        conditions: [],
-      },
-    ],
+    conditions: [],
   });
 }
 function deleteCondition(index) {

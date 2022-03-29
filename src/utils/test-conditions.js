@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 import mustacheReplacer from './reference-data/mustache-replacer';
 import { conditionBuilder } from './shared';
 

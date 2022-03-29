@@ -103,43 +103,6 @@ const { t } = useI18n();
 
 const conditions = ref(JSON.parse(JSON.stringify(props.modelValue)));
 
-// const conditions = ref([
-//   {
-//     id: nanoid(),
-//     conditions: [
-//       {
-//         id: nanoid(),
-//         items: [
-//           { id: nanoid(), type: 'value', category: 'value', data: { value: '' } },
-//           { id: nanoid(), category: 'compare', type: 'eq' },
-//           { id: nanoid(), type: 'value', category: 'value', data: { value: '' } },
-//         ],
-//       },
-//       {
-//         id: nanoid(),
-//         items: [
-//           { id: nanoid(), type: 'value', category: 'value', data: { value: '' } },
-//           { id: nanoid(), category: 'compare', type: 'lt' },
-//           { id: nanoid(), type: 'value', category: 'value', data: { value: '' } },
-//         ]
-//       }
-//     ],
-//   },
-//   {
-//     id: nanoid(),
-//     conditions: [
-//       {
-//         id: nanoid(),
-//         items: [
-//           { id: nanoid(), type: 'value', category: 'value', data: { value: '' } },
-//           { id: nanoid(), category: 'compare', type: 'eq' },
-//           { id: nanoid(), type: 'value', category: 'value', data: { value: '' } },
-//         ],
-//       }
-//     ]
-//   }
-// ]);
-
 function getDefaultValues(items = ['value', 'compare', 'value']) {
   const defaultValues = {
     value: {
