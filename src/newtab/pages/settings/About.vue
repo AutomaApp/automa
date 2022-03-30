@@ -51,27 +51,14 @@
 import { onMounted } from 'vue';
 import { useStore } from 'vuex';
 import { useGroupTooltip } from '@/composable/groupTooltip';
+import { communities } from '@/utils/shared';
 
 useGroupTooltip();
 const store = useStore();
 
 const extensionVersion = chrome.runtime.getManifest().version;
 const links = [
-  {
-    name: 'GitHub',
-    icon: 'riGithubFill',
-    url: 'https://github.com/kholid060/automa',
-  },
-  {
-    name: 'Twitter',
-    icon: 'riTwitterLine',
-    url: 'https://twitter.com/AutomaApp',
-  },
-  {
-    name: 'Discord',
-    icon: 'riDiscordLine',
-    url: 'https://discord.gg/C6khwwTE84',
-  },
+  ...communities,
   { name: 'Website', icon: 'riGlobalLine', url: 'https://www.automa.site' },
   {
     name: 'Documentation',

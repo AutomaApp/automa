@@ -924,6 +924,24 @@ export const supportLocales = [
   { id: 'fr', name: 'Français' },
 ];
 
+export const communities = [
+  {
+    name: 'GitHub',
+    icon: 'riGithubFill',
+    url: 'https://github.com/kholid060/automa',
+  },
+  {
+    name: 'Twitter',
+    icon: 'riTwitterLine',
+    url: 'https://twitter.com/AutomaApp',
+  },
+  {
+    name: 'Discord',
+    icon: 'riDiscordLine',
+    url: 'https://discord.gg/C6khwwTE84',
+  },
+];
+
 export const conditionBuilder = {
   valueTypes: [
     {
