@@ -48,6 +48,16 @@
           }
         }
       },
+      "save-assets": {
+        "name": "Save assets",
+        "description": "Save assets (image, video, audio, or file) from an element or URL",
+        "filename": "Filename (optional)",
+        "contentTypes": {
+          "title": "Type",
+          "element": "Media element (image, audio, or video)",
+          "url": "URL"
+        }
+      },
       "handle-dialog": {
         "name": "Handle dialog",
         "description": "Accepts or dismisses a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload).",

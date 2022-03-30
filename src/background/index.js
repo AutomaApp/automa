@@ -362,27 +362,11 @@ chrome.runtime.onStartup.addListener(async () => {
 if (chrome.downloads) {
   const getFileExtension = (str) => /(?:\.([^.]+))?$/.exec(str)[1];
   chrome.downloads.onDeterminingFilename.addListener((item, suggest) => {
-    if (item.byExtensionId === chrome.runtime.id) {
-      const filesname =
-        JSON.parse(sessionStorage.getItem('export-filesname')) || {};
-      const blobId = item.url.replace('blob:chrome-extension://', '');
-      const suggestion = filesname[blobId];
-
-      if (suggestion) {
-        delete filesname[blobId];
-
-        suggest(suggestion);
-        sessionStorage.setItem('export-filesname', JSON.stringify(filesname));
-      }
-
-      return;
-    }
-
     const filesname =
       JSON.parse(sessionStorage.getItem('rename-downloaded-files')) || {};
     const suggestion = filesname[item.id];
 
-    if (!suggestion) return;
+    if (!suggestion) return true;
 
     const hasFileExt = getFileExtension(suggestion.filename);
 
@@ -392,6 +376,7 @@ if (chrome.downloads) {
     }
 
     if (!suggestion.waitForDownload) delete filesname[item.id];
+
     sessionStorage.setItem(
       'rename-downloaded-files',
       JSON.stringify(filesname)
@@ -401,6 +386,8 @@ if (chrome.downloads) {
       filename: suggestion.filename,
       conflictAction: suggestion.onConflict,
     });
+
+    return false;
   });
 }
 

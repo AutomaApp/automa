@@ -545,7 +545,7 @@ class WorkflowEngine {
       const data = await browser.tabs.sendMessage(
         this.activeTab.id,
         messagePayload,
-        { ...options, frameId: this.activeTab.frameId }
+        { frameId: this.activeTab.frameId, ...options }
       );
 
       return data;

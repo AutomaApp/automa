@@ -86,13 +86,7 @@
         <div
           v-for="block in items"
           :key="block.id"
-          :title="
-            t(
-              `workflow.blocks.${block.id}.${
-                block.description ? 'description' : 'name'
-              }`
-            )
-          "
+          :title="getBlockTitle(block)"
           draggable="true"
           class="transform select-none cursor-move relative p-4 rounded-lg bg-input transition group"
           @dragstart="
@@ -194,5 +188,17 @@ function updateWorkflowIcon(value) {
   const iconUrl = value.slice(0, 1024);
 
   emit('update', { icon: iconUrl });
+}
+function getBlockTitle({ description, id }) {
+  const blockPath = `workflow.blocks.${id}`;
+  let blockDescription = t(
+    `${blockPath}.${description ? 'description' : 'name'}`
+  );
+
+  if (description) {
+    blockDescription = `[${t(`${blockPath}.name`)}]\n${blockDescription}`;
+  }
+
+  return blockDescription;
 }
 </script>

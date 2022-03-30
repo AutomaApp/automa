@@ -222,6 +222,7 @@
     "messages": {
       "url-empty": "URL is empty",
       "invalid-url": "URL is not valid",
+      "no-permission": "Don't have permission",
       "conditions-empty": "Conditions is empty",
       "invalid-proxy-host": "Invalid proxy host",
       "workflow-disabled": "Workflow is disabled",
