@@ -214,13 +214,14 @@ class WorkflowEngine {
       detail.replacedValue ||
       (tasks[detail.name]?.refDataKeys && this.saveLog)
     ) {
-      const { activeTabUrl, loopData, prevBlockData } = JSON.parse(
+      const { activeTabUrl, variables, loopData, prevBlockData } = JSON.parse(
         JSON.stringify(this.referenceData)
       );
 
       this.historyCtxData[historyId] = {
         referenceData: {
           loopData,
+          variables,
           activeTabUrl,
           prevBlockData,
         },

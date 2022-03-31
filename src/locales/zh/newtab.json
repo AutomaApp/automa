@@ -156,9 +156,15 @@
     },
     "settings": {
       "saveLog": "保存工作流日志",
-      "reuseLastState": "重用上一个工作流状态",
+      "reuseLastState": {
+        "title": "重用上一个工作流状态",
+        "description": "Use the state data (table, variables, and global data) from the last executed"
+      },
       "executedBlockOnWeb": "在网页上显示已执行的模块",
-      "debugMode": "调试模式",
+      "debugMode": {
+        "title": "调试模式",
+        "description": "Execute the workflow using the Chrome DevTools Protocol"
+      },
       "restartWorkflow": {
         "for": "重新启动",
         "times": "次数"

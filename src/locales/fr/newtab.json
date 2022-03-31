@@ -157,7 +157,10 @@
     "settings": {
       "saveLog": "Enregistrer les logs du workflow",
       "executedBlockOnWeb": "Afficher le bloc exécuté sur la page Web",
-      "debugMode": "Mode debug",
+      "debugMode": {
+        "title": "Mode debug",
+        "description": "Execute the workflow using the Chrome DevTools Protocol"
+      },
       "restartWorkflow": {
         "for": "Redémarrez pour",
         "times": "Fois"
