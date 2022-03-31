@@ -35,7 +35,7 @@
       placeholder="https://example.com/picture.png"
       @change="updateData({ url: $event })"
     />
-    <template v-if="true">
+    <template v-if="permission.has.downloads">
       <ui-input
         :model-value="data.filename"
         :label="t('workflow.blocks.save-assets.filename')"
