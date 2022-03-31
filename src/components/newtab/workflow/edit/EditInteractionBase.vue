@@ -8,7 +8,9 @@
         class="w-full mb-2"
         @change="updateData({ description: $event })"
       />
+      <slot name="prepend:selector" />
       <ui-select
+        v-if="!hideSelector"
         :model-value="data.findBy || 'cssSelector'"
         :placeholder="t('workflow.blocks.base.findElement.placeholder')"
         class="w-full mb-2"

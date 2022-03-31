@@ -1,6 +1,7 @@
 {
   "home": {
-    "viewAll": "View all"
+    "viewAll": "View all",
+    "communities": "Communities"
   },
   "welcome": {
     "title": "Welcome to Automa! 🎉",
@@ -162,15 +163,29 @@
     },
     "settings": {
       "saveLog": "Save workflow log",
-      "reuseLastState": "Reuse last workflow state",
       "executedBlockOnWeb": "Show executed block on web page",
-      "debugMode": "Debug mode",
+      "clearCache": {
+        "title": "Clear cache",
+        "description": "Clear cache (state and loop index) of the workflow",
+        "info": "Successful clear workflow cache",
+        "btn": "Clear"
+      },
+      "reuseLastState": {
+        "title": "Reuse last workflow state",
+        "description": "Use the state data (table, variables, and global data) from the last executed workflow"
+      },
+      "debugMode": {
+        "title": "Debug mode",
+        "description": "Execute the workflow using the Chrome DevTools Protocol"
+      },
       "restartWorkflow": {
         "for": "Restart for",
-        "times": "Times"
+        "times": "Times",
+        "description": "Max how many times the workflow will restart"
       },
       "onError": {
         "title": "On workflow error",
+        "description": "Set what to do when an error occurs in the workflow",
         "items": {
           "keepRunning": "Keep running",
           "stopWorkflow": "Stop workflow",
@@ -222,6 +237,7 @@
     "messages": {
       "url-empty": "URL is empty",
       "invalid-url": "URL is not valid",
+      "no-permission": "Don't have permission",
       "conditions-empty": "Conditions is empty",
       "invalid-proxy-host": "Invalid proxy host",
       "workflow-disabled": "Workflow is disabled",

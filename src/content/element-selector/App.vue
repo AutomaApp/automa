@@ -164,6 +164,7 @@ const selectedElement = {
 };
 let lastScrollPosY = window.scrollY;
 let lastScrollPosX = window.scrollX;
+const originalFontSize = document.documentElement.style.fontSize;
 
 const rootElement = inject('rootElement');
 
@@ -425,6 +426,8 @@ function destroy() {
     height: 0,
     width: 0,
   });
+
+  document.documentElement.style.fontSize = originalFontSize;
 }
 
 window.addEventListener('scroll', handleScroll);
@@ -448,6 +451,12 @@ nextTick(() => {
     cardRect.y = 20;
     cardRect.width = width;
     cardRect.height = height;
+
+    document.documentElement.style.setProperty(
+      'font-size',
+      '16px',
+      'important'
+    );
   }, 250);
 });
 </script>

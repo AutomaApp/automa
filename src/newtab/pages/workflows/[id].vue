@@ -334,6 +334,7 @@ const workflowModals = {
     docs: 'https://docs.automa.site/api-reference/global-data.html',
   },
   settings: {
+    width: 'max-w-2xl',
     icon: 'riSettings3Line',
     component: WorkflowSettings,
     title: t('common.settings'),
@@ -569,7 +570,7 @@ function fetchLocalWorkflow() {
 }
 function insertToLocal() {
   const copy = {
-    ...props.workflow,
+    ...workflow.value,
     createdAt: Date.now(),
     version: chrome.runtime.getManifest().version,
   };

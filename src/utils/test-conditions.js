@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 import mustacheReplacer from './reference-data/mustache-replacer';
 import { conditionBuilder } from './shared';
 
@@ -36,7 +35,7 @@ export default async function (conditionsArr, workflowData) {
         workflowData.refData
       );
 
-      copyData[key] = value;
+      copyData[key] = value ?? '';
       Object.assign(result.replacedValue, list);
     });
 
@@ -67,11 +66,11 @@ export default async function (conditionsArr, workflowData) {
       if (!conditionResult) return conditionResult;
 
       if (category === 'compare') {
-        const isNeedValue = conditionBuilder.compareTypes.find(
+        const { needValue } = conditionBuilder.compareTypes.find(
           ({ id }) => id === type
-        ).needValue;
+        );
 
-        if (!isNeedValue) {
+        if (!needValue) {
           conditionResult = comparisons[type](condition.value);
 
           return conditionResult;
@@ -80,11 +79,11 @@ export default async function (conditionsArr, workflowData) {
         condition.operator = type;
       } else if (category === 'value') {
         const conditionValue = await getConditionItemValue({ data, type });
-        const isCompareable = conditionBuilder.valueTypes.find(
+        const { compareable } = conditionBuilder.valueTypes.find(
           ({ id }) => id === type
-        ).compareable;
+        );
 
-        if (!isCompareable) {
+        if (!compareable) {
           conditionResult = conditionValue;
         } else if (condition.operator) {
           conditionResult = comparisons[condition.operator](

@@ -23,17 +23,10 @@ async function exportData({ data, outputs }) {
 
     if (hasDownloadAccess) {
       const filename = `${data.name}${files[data.type].ext}`;
-      const blobId = blobUrl.replace('blob:chrome-extension://', '');
-      const filesname =
-        JSON.parse(sessionStorage.getItem('export-filesname')) || {};
-
       const options = {
         filename,
         conflictAction: data.onConflict || 'uniquify',
       };
-
-      filesname[blobId] = options;
-      sessionStorage.setItem('export-filesname', JSON.stringify(filesname));
 
       await browser.downloads.download({
         ...options,

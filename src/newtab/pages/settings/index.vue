@@ -1,15 +1,29 @@
 <template>
   <div class="mb-8">
     <p class="font-semibold mb-1">{{ t('settings.theme') }}</p>
-    <ui-select
-      :model-value="theme.activeTheme.value"
-      class="w-80"
-      @change="theme.set($event)"
-    >
-      <option v-for="item in theme.themes" :key="item.id" :value="item.id">
-        {{ item.name }}
-      </option>
-    </ui-select>
+    <div class="flex items-center space-x-4">
+      <div
+        v-for="item in theme.themes"
+        :key="item.id"
+        class="cursor-pointer"
+        role="button"
+        @click="theme.set(item.id)"
+      >
+        <div
+          :class="{ 'ring ring-accent': item.id === theme.activeTheme.value }"
+          class="p-0.5 rounded-lg"
+        >
+          <img
+            :src="require(`@/assets/images/theme-${item.id}.png`).default"
+            width="140"
+            class="rounded-lg"
+          />
+        </div>
+        <span class="text-sm text-gray-600 dark:text-gray-200 ml-1">
+          {{ item.name }}
+        </span>
+      </div>
+    </div>
   </div>
   <div class="flex items-center">
     <div id="languages">

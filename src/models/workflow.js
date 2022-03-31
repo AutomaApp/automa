@@ -45,7 +45,7 @@ class Workflow extends Model {
   }
 
   static beforeCreate(model) {
-    if (model.dataColumns.length > 0) {
+    if (model.dataColumns?.length > 0) {
       model.table = model.dataColumns;
       model.dataColumns = [];
     }

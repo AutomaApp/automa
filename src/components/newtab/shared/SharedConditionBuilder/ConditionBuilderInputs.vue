@@ -6,7 +6,7 @@
   >
     <div
       v-if="item.category === 'value'"
-      class="space-y-1 flex items-end space-x-2 flex-wrap"
+      class="flex items-end space-x-2 flex-wrap"
     >
       <ui-select
         :model-value="item.type"

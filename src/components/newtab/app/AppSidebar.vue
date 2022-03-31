@@ -41,12 +41,7 @@
       </router-link>
     </div>
     <div class="flex-grow"></div>
-    <ui-popover
-      v-if="store.state.user"
-      trigger="mouseenter"
-      placement="right"
-      class="mb-4"
-    >
+    <ui-popover v-if="store.state.user" trigger="mouseenter" placement="right">
       <template #trigger>
         <span class="inline-block p-1 bg-box-transparent rounded-full">
           <img
@@ -58,6 +53,26 @@
         </span>
       </template>
       {{ store.state.user.username }}
+    </ui-popover>
+    <ui-popover trigger="mouseenter" placement="right" class="my-4">
+      <template #trigger>
+        <v-remixicon name="riGroupLine" />
+      </template>
+      <p class="mb-2">{{ t('home.communities') }}</p>
+      <ui-list class="w-40">
+        <ui-list-item
+          v-for="item in communities"
+          :key="item.name"
+          :href="item.url"
+          small
+          tag="a"
+          target="_blank"
+          rel="noopener"
+        >
+          <v-remixicon :name="item.icon" class="mr-2" />
+          {{ item.name }}
+        </ui-list-item>
+      </ui-list>
     </ui-popover>
     <router-link v-tooltip:right.group="t('settings.menu.about')" to="/about">
       <v-remixicon class="cursor-pointer" name="riInformationLine" />
@@ -71,6 +86,7 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { useGroupTooltip } from '@/composable/groupTooltip';
+import { communities } from '@/utils/shared';
 
 useGroupTooltip();
 

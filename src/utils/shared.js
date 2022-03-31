@@ -527,7 +527,7 @@ export const tasks = {
       description: '',
       spreadsheetId: '',
       firstRowAsKey: false,
-      keysAsFirstRow: false,
+      keysAsFirstRow: true,
       valueInputOption: 'RAW',
       dataFrom: 'data-columns',
     },
@@ -764,6 +764,33 @@ export const tasks = {
       multiple: false,
     },
   },
+  'save-assets': {
+    name: 'Save assets',
+    description:
+      'Save assets (image, video, audio, or file) from an element or URL',
+    icon: 'riImageLine',
+    component: 'BlockBasic',
+    editComponent: 'EditSaveAssets',
+    category: 'interaction',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    refDataKeys: ['selector', 'url'],
+    data: {
+      description: '',
+      findBy: 'cssSelector',
+      waitForSelector: false,
+      waitSelectorTimeout: 5000,
+      selector: '',
+      markEl: false,
+      multiple: false,
+      type: 'element',
+      url: '',
+      filename: '',
+      onConflict: 'uniquify',
+    },
+  },
   'handle-dialog': {
     name: 'Handle dialog',
     description:
@@ -895,6 +922,24 @@ export const supportLocales = [
   { id: 'zh-tw', name: '繁體中文' },
   { id: 'vi', name: 'Tiếng Việt' },
   { id: 'fr', name: 'Français' },
+];
+
+export const communities = [
+  {
+    name: 'GitHub',
+    icon: 'riGithubFill',
+    url: 'https://github.com/kholid060/automa',
+  },
+  {
+    name: 'Twitter',
+    icon: 'riTwitterLine',
+    url: 'https://twitter.com/AutomaApp',
+  },
+  {
+    name: 'Discord',
+    icon: 'riDiscordLine',
+    url: 'https://discord.gg/C6khwwTE84',
+  },
 ];
 
 export const conditionBuilder = {
