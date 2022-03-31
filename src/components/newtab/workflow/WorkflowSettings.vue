@@ -66,7 +66,7 @@
           {{ t('workflow.settings.clearCache.description') }}
         </p>
       </div>
-      <ui-button @click="clearCache">
+      <ui-button @click="onClearCacheClick">
         {{ t('workflow.settings.clearCache.btn') }}
       </ui-button>
     </div>
@@ -76,8 +76,7 @@
 import { onMounted, reactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
-import browser from 'webextension-polyfill';
-import { debounce, parseJSON } from '@/utils/helper';
+import { clearCache, debounce } from '@/utils/helper';
 
 const props = defineProps({
   workflow: {
@@ -131,25 +130,9 @@ const settings = reactive({
   restartTimes: 3,
 });
 
-async function clearCache() {
-  try {
-    await browser.storage.local.remove(`last-state:${props.workflow.id}`);
-
-    const flows = parseJSON(props.workflow.drawflow, null);
-    const blocks = flows && flows.drawflow.Home.data;
-
-    if (blocks) {
-      Object.values(blocks).forEach(({ name, id }) => {
-        if (name !== 'loop-data') return;
-
-        localStorage.removeItem(`index:${id}`);
-      });
-    }
-
-    toast(t('workflow.settings.clearCache.info'));
-  } catch (error) {
-    console.error(error);
-  }
+async function onClearCacheClick() {
+  const cacheCleared = await clearCache(props.workflow);
+  if (cacheCleared) toast(t('workflow.settings.clearCache.info'));
 }
 
 watch(

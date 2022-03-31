@@ -1,3 +1,5 @@
+import browser from 'webextension-polyfill';
+
 export function scrollIfNeeded(element) {
   const { top, left, bottom, right } = element.getBoundingClientRect();
   const isInViewport =
@@ -197,4 +199,26 @@ export function debounce(callback, time = 200) {
       }, time);
     });
   };
+}
+
+export async function clearCache(workflow) {
+  try {
+    await browser.storage.local.remove(`last-state:${workflow.id}`);
+
+    const flows = parseJSON(workflow.drawflow, null);
+    const blocks = flows && flows.drawflow.Home.data;
+
+    if (blocks) {
+      Object.values(blocks).forEach(({ name, id }) => {
+        if (name !== 'loop-data') return;
+
+        localStorage.removeItem(`index:${id}`);
+      });
+    }
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
 }

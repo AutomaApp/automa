@@ -2,6 +2,7 @@ import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
 import { tasks } from '@/utils/shared';
 import {
+  clearCache,
   toCamelCase,
   sleep,
   parseJSON,
@@ -360,6 +361,8 @@ class WorkflowEngine {
           },
         });
       }
+
+      if (status === 'success') clearCache(this.workflow);
 
       this.isDestroyed = true;
       this.eventListeners = {};
