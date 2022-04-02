@@ -1,6 +1,7 @@
 {
   "home": {
-    "viewAll": "查看全部"
+    "viewAll": "查看全部",
+    "communities": "社区"
   },
   "welcome": {
     "title": "欢迎使用 Automa! 🎉",
@@ -79,6 +80,12 @@
     "clickToEnable": "单击启用",
     "toggleSidebar": "切换侧栏",
     "cantEdit": "无法编辑共享的工作流",
+    "conditionBuilder": {
+      "title": "条件生成器",
+      "add": "附加条件",
+      "and": "AND",
+      "or": "OR"
+    },
     "host": {
       "title": "主机工作流程",
       "set": "设为主机工作流",
@@ -156,21 +163,29 @@
     },
     "settings": {
       "saveLog": "保存工作流日志",
+      "executedBlockOnWeb": "在网页上显示已执行的模块",
+      "clearCache": {
+        "title": "清理缓存",
+        "description": "清除工作流的缓存（状态和循环索引）",
+        "info": "成功清除工作流缓存",
+        "btn": "清理"
+      },
       "reuseLastState": {
         "title": "重用上一个工作流状态",
-        "description": "Use the state data (table, variables, and global data) from the last executed"
+        "description": "使用上次执行的工作流状态数据（表、变量和全局数据）"
       },
-      "executedBlockOnWeb": "在网页上显示已执行的模块",
       "debugMode": {
         "title": "调试模式",
-        "description": "Execute the workflow using the Chrome DevTools Protocol"
+        "description": "使用 Chrome DevTools 协议执行工作流"
       },
       "restartWorkflow": {
         "for": "重新启动",
         "times": "次数"
+        "description": "工作流可以重启的最大次数"
       },
       "onError": {
         "title": "工作流出错时",
+        "description": "设置当工作流发生错误时要执行的操作",
         "items": {
           "keepRunning": "继续运行",
           "stopWorkflow": "停止工作流",
@@ -222,6 +237,7 @@
     "messages": {
       "url-empty": "URL 为空",
       "invalid-url": "URL 无效",
+      "no-permission": "没有权限",
       "conditions-empty": "条件为空",
       "invalid-proxy-host": "无效的代理主机",
       "workflow-disabled": "工作流已禁用",
