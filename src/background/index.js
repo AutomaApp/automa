@@ -296,7 +296,7 @@ browser.alarms.onAlarm.addListener(async ({ name }) => {
   workflow.execute(currentWorkflow);
 
   if (data && data.type === 'specific-day') {
-    registerSpecificDay(currentWorkflow.id, triggerBlock.data);
+    registerSpecificDay(currentWorkflow.id, data);
   }
 });
 
