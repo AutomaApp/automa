@@ -131,7 +131,9 @@
       class="h-full w-full absolute top-0 pointer-events-none left-0 z-10"
     >
       <rect
-        v-bind="hoverElementRect"
+        v-for="(item, index) in state.hoveredElements"
+        v-bind="item"
+        :key="index"
         stroke-width="2"
         stroke="#fbbf24"
         fill="rgba(251, 191, 36, 0.2)"
@@ -176,14 +178,9 @@ const state = reactive({
   isExecuting: false,
   selectElements: [],
   selectorType: 'css',
+  hoveredElements: [],
   selectedElements: [],
   hide: window.self !== window.top,
-});
-const hoverElementRect = reactive({
-  x: 0,
-  y: 0,
-  height: 0,
-  width: 0,
 });
 const cardRect = reactive({
   x: 0,
@@ -193,11 +190,14 @@ const cardRect = reactive({
 });
 
 /* eslint-disable  no-use-before-define */
-const getElementSelector = (element) =>
+const getElementSelector = (element, options = {}) =>
   state.selectorType === 'css'
     ? getCssSelector(element, {
+        root: document.body,
+        blacklist: ['[focused]', /focus/, /^data-/, '[href=*]', '[src=*]'],
+        selectors: ['id', 'class', 'tag', 'attribute'],
         includeTag: true,
-        blacklist: ['[focused]', /focus/, /href/, /src/],
+        ...options,
       })
     : generateXPath(element);
 
@@ -302,10 +302,10 @@ function handleMouseMove({ clientX, clientY, target }) {
 
   if (state.hide || rootElement === target) return;
 
-  Object.assign(hoverElementRect, getElementRect(target));
+  state.hoveredElements = [getElementRect(target)];
 }
 function handleClick(event) {
-  const { target, path, ctrlKey, shiftKey } = event;
+  const { target, path, ctrlKey } = event;
 
   if (target === rootElement || state.hide || state.isExecuting) return;
 
@@ -325,8 +325,9 @@ function handleClick(event) {
     highlight: false,
   };
 
-  if ((state.selectorType === 'css' && ctrlKey) || shiftKey) {
+  if (state.selectorType === 'css' && ctrlKey) {
     let elementIndex = -1;
+
     const elements = state.selectedElements.map(({ element }, index) => {
       if (element === targetElement) {
         elementIndex = index;
@@ -397,14 +398,15 @@ const handleScroll = debounce(() => {
 
   const yPos = window.scrollY - lastScrollPosY;
   const xPos = window.scrollX - lastScrollPosX;
+  const updateState = (key) => {
+    state[key].forEach((_, index) => {
+      state[key][index].x -= xPos;
+      state[key][index].y -= yPos;
+    });
+  };
 
-  state.selectedElements.forEach((_, index) => {
-    state.selectedElements[index].x -= xPos;
-    state.selectedElements[index].y -= yPos;
-  });
-
-  hoverElementRect.x -= xPos;
-  hoverElementRect.y -= yPos;
+  updateState('hoveredElements');
+  updateState('selectedElements');
 
   lastScrollPosX = window.scrollX;
   lastScrollPosY = window.scrollY;
@@ -418,13 +420,8 @@ function destroy() {
     elSelector: '',
     isDragging: false,
     isExecuting: false,
+    hoveredElements: [],
     selectedElements: [],
-  });
-  Object.assign(hoverElementRect, {
-    x: 0,
-    y: 0,
-    height: 0,
-    width: 0,
   });
 
   document.documentElement.style.fontSize = originalFontSize;
