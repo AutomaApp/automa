@@ -194,7 +194,14 @@ const getElementSelector = (element, options = {}) =>
   state.selectorType === 'css'
     ? getCssSelector(element, {
         root: document.body,
-        blacklist: ['[focused]', /focus/, /^data-/, '[href=*]', '[src=*]'],
+        blacklist: [
+          '[focused]',
+          /focus/,
+          '[data-*]',
+          '[href=*]',
+          '[src=*]',
+          '[value=*]',
+        ],
         selectors: ['id', 'class', 'tag', 'attribute'],
         includeTag: true,
         ...options,
