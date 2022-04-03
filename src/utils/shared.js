@@ -775,7 +775,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['selector', 'url'],
+    refDataKeys: ['selector', 'url', 'filename'],
     data: {
       description: '',
       findBy: 'cssSelector',
