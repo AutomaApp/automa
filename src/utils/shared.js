@@ -1,4 +1,3 @@
-/* to-do execute multiple blocks simultaneously, keyboard shortcut */
 import { nanoid } from 'nanoid';
 
 export const tasks = {
@@ -994,7 +993,7 @@ export const conditionBuilder = {
   inputTypes: {
     selector: {
       placeholder: '.class',
-      label: 'CSS selector',
+      label: 'CSS selector or XPath',
     },
     value: {
       label: 'Value',
