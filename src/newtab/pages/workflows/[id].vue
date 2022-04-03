@@ -759,6 +759,7 @@ function editBlock(data) {
   if (workflowData.active === 'shared') return;
 
   state.isEditBlock = true;
+  state.showSidebar = true;
   state.blockData = defu(data, tasks[data.id] || {});
 }
 function handleEditorDataChanged() {

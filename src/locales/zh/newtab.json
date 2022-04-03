@@ -180,7 +180,7 @@
       },
       "restartWorkflow": {
         "for": "重新启动",
-        "times": "次数"
+        "times": "次数",
         "description": "工作流可以重启的最大次数"
       },
       "onError": {
