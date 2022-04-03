@@ -48,6 +48,16 @@
           }
         }
       },
+      "save-assets": {
+        "name": "保存资源",
+        "description": "保存资源 (图像, 视频, 音频, 或文件) 从一个元素或 URL",
+        "filename": "文件名 (可选项)",
+        "contentTypes": {
+          "title": "类型",
+          "element": "多媒体元素 (图像, 音频, 或视频)",
+          "url": "URL"
+        }
+      },
       "handle-dialog": {
         "name": "处理对话框",
         "description": "接受或取消JavaScript启动的对话框(警报、确认、提示或卸载前)。",
@@ -424,6 +434,12 @@
           "body": "Body",
           "response": "响应"
         }
+      },
+      "while-loop": {
+        "name": "While 循环",
+        "description": "在满足条件时执行模块",
+        "editCondition": "编辑条件",
+        "fallback": "当条件为 false 时执行"
       },
       "loop-data": {
         "name": "循环数据",
