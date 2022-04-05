@@ -24,9 +24,13 @@ function handleConditionBuilder({ data, type }) {
     visible: () => {
       const { visibility, display } = getComputedStyle(element);
 
-      return visibility !== 'hidden' || display !== 'none';
+      return visibility !== 'hidden' && display !== 'none';
     },
-    invisible: () => !elementActions.visible(element),
+    invisible: () => {
+      const { visibility, display } = getComputedStyle(element);
+
+      return visibility === 'hidden' || display === 'none';
+    },
     attribute: ({ attrName }) => {
       if (!element.hasAttribute(attrName)) return null;
 
