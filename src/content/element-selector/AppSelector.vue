@@ -1,13 +1,25 @@
 <template>
   <div class="mt-4">
-    <ui-select
-      :model-value="selectorType"
-      class="w-full"
-      @change="$emit('selector', $event)"
-    >
-      <option value="css">CSS Selector</option>
-      <option value="xpath">XPath</option>
-    </ui-select>
+    <div class="flex items-center">
+      <ui-select
+        :model-value="selectorType"
+        class="w-full"
+        @change="$emit('update:selectorType', $event)"
+      >
+        <option value="css">CSS Selector</option>
+        <option value="xpath">XPath</option>
+      </ui-select>
+      <ui-button
+        v-if="selectorType === 'css'"
+        :class="{ 'text-primary': selectList }"
+        icon
+        class="ml-2"
+        title="Select a list of elements"
+        @click="$emit('update:selectList', !selectList)"
+      >
+        <v-remixicon name="riListUnordered" />
+      </ui-button>
+    </div>
     <div class="mt-2 flex items-center">
       <ui-input
         :model-value="selector"
@@ -54,8 +66,19 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  selectList: {
+    type: Boolean,
+    default: false,
+  },
 });
-const emit = defineEmits(['change', 'parent', 'child', 'selector']);
+const emit = defineEmits([
+  'change',
+  'list',
+  'parent',
+  'child',
+  'update:selectorType',
+  'update:selectList',
+]);
 
 const rootElement = inject('rootElement');
 

@@ -33,10 +33,10 @@
         </ui-button>
       </div>
       <app-selector
+        v-model:selectorType="state.selectorType"
+        v-model:selectList="state.selectList"
         :selector="state.elSelector"
         :selected-count="state.selectedElements.length"
-        :selector-type="state.selectorType"
-        @selector="state.selectorType = $event"
         @child="selectChildElement"
         @parent="selectParentElement"
         @change="updateSelectedElements"
@@ -159,6 +159,7 @@ import findElement from '@/utils/find-element';
 import AppBlocks from './AppBlocks.vue';
 import AppSelector from './AppSelector.vue';
 import AppElementList from './AppElementList.vue';
+import { getAllSiblings } from './list-selector';
 
 const selectedElement = {
   path: [],
@@ -175,6 +176,7 @@ const state = reactive({
   activeTab: '',
   elSelector: '',
   isDragging: false,
+  selectList: false,
   isExecuting: false,
   selectElements: [],
   selectorType: 'css',
@@ -197,10 +199,11 @@ const getElementSelector = (element, options = {}) =>
         blacklist: [
           '[focused]',
           /focus/,
+          '[src=*]',
           '[data-*]',
           '[href=*]',
-          '[src=*]',
           '[value=*]',
+          '[automa-*]',
         ],
         selectors: ['id', 'class', 'tag', 'attribute'],
         includeTag: true,
@@ -235,17 +238,20 @@ function generateXPath(element) {
 function toggleHighlightElement({ index, highlight }) {
   state.selectedElements[index].highlight = highlight;
 }
-function getElementRect(target) {
+function getElementRect(target, withElement = false) {
   if (!target) return {};
 
   const { x, y, height, width } = target.getBoundingClientRect();
-
-  return {
+  const result = {
     width: width + 4,
     height: height + 4,
     x: x - 2,
     y: y - 2,
   };
+
+  if (withElement) result.element = target;
+
+  return result;
 }
 function updateSelectedElements(selector) {
   state.elSelector = selector;
@@ -289,7 +295,37 @@ function updateSelectedElements(selector) {
     state.selectedElements = [];
   }
 }
-function handleMouseMove({ clientX, clientY, target }) {
+function elementList(target, path) {
+  // if (target.closest('[automa-el-list]')) return;
+
+  const hasMostChildren = path.reduce((el, acc) => {
+    if (el.childElementCount < acc.childElementCount) return acc;
+
+    return el;
+  }, path[0]);
+
+  if (target.parentElement === hasMostChildren) {
+    return getAllSiblings(target).elements;
+  }
+
+  const findElementList = (el) => {
+    let { elements } = getAllSiblings(el);
+
+    if (elements.length <= 1 && el?.parentElement) {
+      elements = findElementList(el.parentElement);
+    }
+
+    return elements;
+  };
+
+  return findElementList(target);
+}
+let prevHoverElement = null;
+function handleMouseMove({ clientX, clientY, target, path }) {
+  if (prevHoverElement === target) return;
+
+  prevHoverElement = target;
+
   if (state.isDragging) {
     const height = window.innerHeight;
     const width = document.documentElement.clientWidth;
@@ -309,28 +345,53 @@ function handleMouseMove({ clientX, clientY, target }) {
 
   if (state.hide || rootElement === target) return;
 
-  state.hoveredElements = [getElementRect(target)];
+  state.hoveredElements = state.selectList
+    ? elementList(target, path.slice(0, -4)).map((el) =>
+        getElementRect(el, true)
+      )
+    : [getElementRect(target)];
 }
 function handleClick(event) {
   const { target, path, ctrlKey } = event;
 
   if (target === rootElement || state.hide || state.isExecuting) return;
-
   event.stopPropagation();
   event.preventDefault();
 
-  const attributes = Array.from(target.attributes).map(({ name, value }) => ({
-    name,
-    value,
-  }));
+  const getElementDetail = (element) => {
+    const attributes = Array.from(element.attributes).map(
+      ({ name, value }) => ({
+        name,
+        value,
+      })
+    );
+
+    return {
+      ...getElementRect(element),
+      element,
+      attributes,
+      highlight: false,
+    };
+  };
+
+  if (state.selectList) {
+    const firstElement = state.hoveredElements[0].element;
+
+    if (!firstElement) return;
+
+    const parentSelector = getCssSelector(firstElement.parentElement, {
+      includeTag: true,
+    });
+
+    updateSelectedElements(
+      `${parentSelector} > ${firstElement.tagName.toLowerCase()}`
+    );
+
+    return;
+  }
 
   let targetElement = target;
-  const targetElementDetail = {
-    ...getElementRect(target),
-    attributes,
-    element: target,
-    highlight: false,
-  };
+  const targetElementDetail = getElementDetail(target);
 
   if (state.selectorType === 'css' && ctrlKey) {
     let elementIndex = -1;
