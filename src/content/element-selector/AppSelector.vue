@@ -3,6 +3,7 @@
     <div class="flex items-center">
       <ui-select
         :model-value="selectorType"
+        :disabled="selectList"
         class="w-full"
         @change="$emit('update:selectorType', $event)"
       >

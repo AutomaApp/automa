@@ -61,18 +61,18 @@
             >
               <template #item="{ element }">
                 <div
-                  v-for="attribute in element.attributes"
-                  :key="attribute.name"
+                  v-for="(value, name) in element.attributes"
+                  :key="name"
                   class="bg-box-transparent mb-1 rounded-lg py-2 px-3"
                 >
                   <p
                     class="text-sm text-overflow leading-tight text-gray-600"
                     title="Attribute name"
                   >
-                    {{ attribute.name }}
+                    {{ name }}
                   </p>
                   <input
-                    :value="attribute.value"
+                    :value="value"
                     readonly
                     title="Attribute value"
                     class="bg-transparent w-full"
@@ -130,24 +130,18 @@
       v-if="!state.hide"
       class="h-full w-full absolute top-0 pointer-events-none left-0 z-10"
     >
-      <rect
-        v-for="(item, index) in state.hoveredElements"
-        v-bind="item"
-        :key="index"
-        stroke-width="2"
+      <app-element-highlighter
+        :items="state.hoveredElements"
         stroke="#fbbf24"
-        fill="rgba(251, 191, 36, 0.2)"
-      ></rect>
-      <rect
-        v-for="(item, index) in state.selectedElements"
-        v-bind="item"
-        :key="index"
-        :stroke="item.highlight ? '#2563EB' : '#f87171'"
-        :fill="
-          item.highlight ? 'rgb(37, 99, 235, 0.2)' : 'rgba(248, 113, 113, 0.2)'
-        "
-        stroke-width="2"
-      ></rect>
+        fill="rgba(251, 191, 36, 0.1)"
+      />
+      <app-element-highlighter
+        :items="state.selectedElements"
+        stroke="#2563EB"
+        active-stroke="#f87171"
+        fill="rgba(37, 99, 235, 0.1)"
+        active-fill="rgba(248, 113, 113, 0.1)"
+      />
     </svg>
   </div>
 </template>
@@ -155,11 +149,13 @@
 import { reactive, ref, watch, inject, nextTick } from 'vue';
 import { getCssSelector } from 'css-selector-generator';
 import { debounce } from '@/utils/helper';
+import { finder } from '@medv/finder';
 import findElement from '@/utils/find-element';
 import AppBlocks from './AppBlocks.vue';
 import AppSelector from './AppSelector.vue';
 import AppElementList from './AppElementList.vue';
-import { getAllSiblings } from './list-selector';
+import AppElementHighlighter from './AppElementHighlighter.vue';
+import findElementList from './list-selector';
 
 const selectedElement = {
   path: [],
@@ -175,12 +171,13 @@ const cardEl = ref('cardEl');
 const state = reactive({
   activeTab: '',
   elSelector: '',
+  listSelector: '',
   isDragging: false,
   selectList: false,
   isExecuting: false,
   selectElements: [],
-  selectorType: 'css',
   hoveredElements: [],
+  selectorType: 'css',
   selectedElements: [],
   hide: window.self !== window.top,
 });
@@ -205,7 +202,6 @@ const getElementSelector = (element, options = {}) =>
           '[value=*]',
           '[automa-*]',
         ],
-        selectors: ['id', 'class', 'tag', 'attribute'],
         includeTag: true,
         ...options,
       })
@@ -265,10 +261,18 @@ function updateSelectedElements(selector) {
       elements = elements ? [elements] : [];
     }
 
-    state.selectedElements = Array.from(elements).map((element, index) => {
-      const attributes = Array.from(element.attributes).map(
-        ({ name, value }) => ({ name, value })
+    const elementsDetail = Array.from(elements).map((element, index) => {
+      const attributes = Array.from(element.attributes).reduce(
+        (acc, { name, value }) => {
+          if (name === 'automa-el-list') return acc;
+
+          acc[name] = value;
+
+          return acc;
+        },
+        {}
       );
+
       const elementProps = {
         element,
         attributes,
@@ -289,39 +293,32 @@ function updateSelectedElements(selector) {
 
       return elementProps;
     });
+
     state.selectElements = selectElements;
+    state.selectedElements = elementsDetail;
   } catch (error) {
     state.selectElements = [];
     state.selectedElements = [];
   }
 }
-function elementList(target, path) {
-  // if (target.closest('[automa-el-list]')) return;
+function getElementList(target) {
+  const automaListEl = target.closest('[automa-el-list]');
 
-  const hasMostChildren = path.reduce((el, acc) => {
-    if (el.childElementCount < acc.childElementCount) return acc;
+  if (automaListEl) {
+    if (target.hasAttribute('automa-el-list')) return [];
 
-    return el;
-  }, path[0]);
+    const childSelector = finder(target, { root: automaListEl });
+    const elements = document.querySelectorAll(
+      `${state.listSelector} ${childSelector}`
+    );
 
-  if (target.parentElement === hasMostChildren) {
-    return getAllSiblings(target).elements;
+    return Array.from(elements);
   }
 
-  const findElementList = (el) => {
-    let { elements } = getAllSiblings(el);
-
-    if (elements.length <= 1 && el?.parentElement) {
-      elements = findElementList(el.parentElement);
-    }
-
-    return elements;
-  };
-
-  return findElementList(target);
+  return findElementList(target) || [target];
 }
 let prevHoverElement = null;
-function handleMouseMove({ clientX, clientY, target, path }) {
+function handleMouseMove({ clientX, clientY, target }) {
   if (prevHoverElement === target) return;
 
   prevHoverElement = target;
@@ -345,11 +342,17 @@ function handleMouseMove({ clientX, clientY, target, path }) {
 
   if (state.hide || rootElement === target) return;
 
-  state.hoveredElements = state.selectList
-    ? elementList(target, path.slice(0, -4)).map((el) =>
-        getElementRect(el, true)
-      )
-    : [getElementRect(target)];
+  let elementsRect = [];
+
+  if (state.selectList) {
+    const elements = getElementList(target) || [];
+
+    elementsRect = elements.map((el) => getElementRect(el, true));
+  } else {
+    elementsRect = [getElementRect(target)];
+  }
+
+  state.hoveredElements = elementsRect;
 }
 function handleClick(event) {
   const { target, path, ctrlKey } = event;
@@ -358,37 +361,56 @@ function handleClick(event) {
   event.stopPropagation();
   event.preventDefault();
 
+  if (state.selectList) {
+    const firstElement = state.hoveredElements[0].element;
+
+    if (!firstElement) return;
+
+    const isInList = target.closest('[automa-el-list]');
+    if (isInList) {
+      const childSelector = finder(target, { root: isInList });
+      updateSelectedElements(`${state.listSelector} ${childSelector}`, true);
+
+      return;
+    }
+
+    const prevSelectedList = document.querySelectorAll('[automa-el-list]');
+    prevSelectedList.forEach((element) => {
+      element.removeAttribute('automa-el-list');
+    });
+
+    state.hoveredElements.forEach(({ element }) => {
+      element.setAttribute('automa-el-list', '');
+    });
+
+    const parentSelector = getCssSelector(firstElement.parentElement, {
+      includeTag: true,
+    });
+    const elementSelector = `${parentSelector} > ${firstElement.tagName.toLowerCase()}`;
+
+    state.listSelector = elementSelector;
+    updateSelectedElements(elementSelector);
+
+    return;
+  }
+
   const getElementDetail = (element) => {
-    const attributes = Array.from(element.attributes).map(
-      ({ name, value }) => ({
-        name,
-        value,
-      })
-    );
+    const attributes = {};
+
+    Array.from(element.attributes).forEach(({ name, value }) => {
+      if (name === 'automa-el-list') return;
+
+      attributes[name] = value;
+    });
 
     return {
       ...getElementRect(element),
       element,
       attributes,
       highlight: false,
+      outline: state.selectList && state.selectedElements.length,
     };
   };
-
-  if (state.selectList) {
-    const firstElement = state.hoveredElements[0].element;
-
-    if (!firstElement) return;
-
-    const parentSelector = getCssSelector(firstElement.parentElement, {
-      includeTag: true,
-    });
-
-    updateSelectedElements(
-      `${parentSelector} > ${firstElement.tagName.toLowerCase()}`
-    );
-
-    return;
-  }
 
   let targetElement = target;
   const targetElementDetail = getElementDetail(target);
@@ -507,6 +529,19 @@ watch(
   }
 );
 watch(() => [state.elSelector, state.activeTab, state.hide], updateCardSize);
+watch(
+  () => state.selectList,
+  (value) => {
+    if (value) {
+      state.selectedElements = [];
+    } else {
+      const prevSelectedList = document.querySelectorAll('[automa-el-list]');
+      prevSelectedList.forEach((element) => {
+        element.removeAttribute('automa-el-list');
+      });
+    }
+  }
+);
 
 nextTick(() => {
   setTimeout(() => {

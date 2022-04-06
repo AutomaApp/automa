@@ -1,8 +1,7 @@
 /* eslint-disable  no-cond-assign */
-import { getCssSelector } from 'css-selector-generator';
-
 export function getAllSiblings(el, selector) {
   const siblings = [el];
+
   const validateElement = (element) => {
     const isValidSelector = selector ? element.querySelector(selector) : true;
     const isSameTag = el.tagName === element.tagName;
@@ -22,7 +21,9 @@ export function getAllSiblings(el, selector) {
     }
   }
   while ((nextSibling = nextSibling?.nextElementSibling)) {
-    if (validateElement(nextSibling)) siblings.push(nextSibling);
+    if (validateElement(nextSibling)) {
+      siblings.push(nextSibling);
+    }
   }
 
   return {
@@ -31,23 +32,53 @@ export function getAllSiblings(el, selector) {
   };
 }
 
-export default function (el, maxDepth = 50, paths = []) {
-  if (maxDepth === 0) return null;
+export function getCssPath(el, root = document.body) {
+  if (!(el instanceof Element)) return null;
+
+  const path = [];
+
+  while (el.nodeType === Node.ELEMENT_NODE && !el.isSameNode(root)) {
+    let selector = el.nodeName.toLowerCase();
+
+    if (el.id) {
+      selector += `#${el.id}`;
+
+      path.unshift(selector);
+    } else {
+      let nth = 1;
+      let sib = el;
+
+      while ((sib = sib.previousElementSibling)) {
+        if (sib.nodeName.toLowerCase() === selector) nth += 1;
+      }
+
+      if (nth !== 1) selector += `:nth-of-type(${nth})`;
+
+      path.unshift(selector);
+    }
+
+    el = el.parentNode;
+  }
+
+  return path.join(' > ');
+}
+
+export function getElementList(el, maxDepth = 50, paths = []) {
+  if (maxDepth === 0 || el.tagName === 'BODY') return null;
 
   let selector = el.tagName.toLowerCase();
-  const { elements: siblings, index } = getAllSiblings(el, paths.join(' > '));
+  const { elements, index } = getAllSiblings(el, paths.join(' > '));
+  let siblings = elements;
 
-  if (siblings.length > 1 && index > 1) selector += `:nth-of-type(${index})`;
+  if (index !== 1) selector += `:nth-of-type(${index})`;
 
   paths.unshift(selector);
 
   if (siblings.length === 1) {
-    el = el.parentElement;
-    getElementList(el, maxDepth - 1, paths);
+    siblings = getElementList(el.parentElement, maxDepth - 1, paths);
   }
 
-  const parentSelector = getCssSelector(el);
-  const listSelector = `${parentSelector} ${paths.join(' > ')}`;
-
-  return listSelector;
+  return siblings;
 }
+
+export default getElementList;
