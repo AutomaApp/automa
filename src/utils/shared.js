@@ -621,7 +621,12 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['loopData'],
+    refDataKeys: [
+      'loopData',
+      'variableName',
+      'referenceKey',
+      'elementSelector',
+    ],
     data: {
       loopId: '',
       maxLoop: 0,
