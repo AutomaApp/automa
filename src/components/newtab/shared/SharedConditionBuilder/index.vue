@@ -45,6 +45,7 @@
             </template>
             <div class="space-y-2 px-4 py-2">
               <condition-builder-inputs
+                :autocomplete="autocomplete"
                 :data="inputs.items"
                 @update="
                   conditions[index].conditions[inputsIndex].items = $event
@@ -93,6 +94,10 @@ import ConditionBuilderInputs from './ConditionBuilderInputs.vue';
 
 const props = defineProps({
   modelValue: {
+    type: Array,
+    default: () => [],
+  },
+  autocomplete: {
     type: Array,
     default: () => [],
   },

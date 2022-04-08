@@ -7,6 +7,10 @@
     :class="{ 'overflow-hidden resize-none': autoresize }"
     :style="{ height }"
     @input="emitValue"
+    @keyup="$emit('keyup', $event)"
+    @keydown="$emit('keydown', $event)"
+    @focus="$emit('focus', $event)"
+    @blur="$emit('blur', $event)"
   ></textarea>
 </template>
 <script>
@@ -41,7 +45,7 @@ export default {
     },
     block: Boolean,
   },
-  emits: ['update:modelValue', 'change'],
+  emits: ['update:modelValue', 'change', 'focus', 'blur', 'keyup', 'keydown'],
   setup(props, { emit }) {
     const textareaId = useComponentId('textarea');
     const textarea = ref(null);

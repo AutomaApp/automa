@@ -1,5 +1,8 @@
 <template>
-  <edit-interaction-base v-bind="{ data, hide: hideBase }" @change="updateData">
+  <edit-interaction-base
+    v-bind="{ data, hide: hideBase, autocomplete }"
+    @change="updateData"
+  >
     <hr />
     <ui-checkbox
       :model-value="data.getValue"
@@ -32,12 +35,19 @@
         {{ t('workflow.blocks.forms.selected') }}
       </ui-checkbox>
       <template v-if="data.type === 'text-field' || data.type === 'select'">
-        <ui-textarea
-          :model-value="data.value"
-          :placeholder="t('workflow.blocks.forms.text-field.value')"
+        <ui-autocomplete
+          :items="autocomplete"
+          :trigger-char="['{{', '}}']"
+          block
           class="w-full mb-1"
-          @change="updateData({ value: $event })"
-        />
+        >
+          <ui-textarea
+            :model-value="data.value"
+            :placeholder="t('workflow.blocks.forms.text-field.value')"
+            class="w-full"
+            @change="updateData({ value: $event })"
+          />
+        </ui-autocomplete>
         <ui-checkbox
           :model-value="data.clearValue"
           @change="updateData({ clearValue: $event })"
@@ -71,6 +81,10 @@ const props = defineProps({
   hideBase: {
     type: Boolean,
     default: false,
+  },
+  autocomplete: {
+    type: Array,
+    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

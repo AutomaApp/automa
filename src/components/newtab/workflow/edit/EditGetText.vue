@@ -1,5 +1,5 @@
 <template>
-  <edit-interaction-base v-bind="{ data }" @change="updateData">
+  <edit-interaction-base v-bind="{ data, autocomplete }" @change="updateData">
     <hr />
     <div class="flex rounded-lg bg-input px-4 items-center transition">
       <span>/</span>
@@ -27,22 +27,38 @@
       </ui-popover>
     </div>
     <div class="mt-2 flex space-x-2">
-      <ui-input
-        :model-value="data.prefixText"
-        :title="t('workflow.blocks.get-text.prefixText.title')"
-        :label="t('workflow.blocks.get-text.prefixText.placeholder')"
-        placeholder="Text"
+      <ui-autocomplete
+        :items="autocomplete"
+        :trigger-char="['{{', '}}']"
+        block
         class="w-full"
-        @change="updateData({ prefixText: $event })"
-      />
-      <ui-input
-        :model-value="data.suffixText"
-        :title="t('workflow.blocks.get-text.suffixText.title')"
-        :label="t('workflow.blocks.get-text.suffixText.placeholder')"
-        placeholder="Text"
+      >
+        <ui-input
+          :model-value="data.prefixText"
+          :title="t('workflow.blocks.get-text.prefixText.title')"
+          :label="t('workflow.blocks.get-text.prefixText.placeholder')"
+          autocomplete="off"
+          placeholder="Text"
+          class="w-full"
+          @change="updateData({ prefixText: $event })"
+        />
+      </ui-autocomplete>
+      <ui-autocomplete
+        :items="autocomplete"
+        :trigger-char="['{{', '}}']"
+        block
         class="w-full"
-        @change="updateData({ suffixText: $event })"
-      />
+      >
+        <ui-input
+          :model-value="data.suffixText"
+          :title="t('workflow.blocks.get-text.suffixText.title')"
+          :label="t('workflow.blocks.get-text.suffixText.placeholder')"
+          autocomplete="off"
+          placeholder="Text"
+          class="w-full"
+          @change="updateData({ suffixText: $event })"
+        />
+      </ui-autocomplete>
     </div>
     <ui-checkbox
       :model-value="data.includeTags"
@@ -70,6 +86,10 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  autocomplete: {
+    type: Array,
+    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

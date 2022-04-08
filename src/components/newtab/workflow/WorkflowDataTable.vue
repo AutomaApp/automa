@@ -105,7 +105,10 @@ function addColumn() {
 watch(
   () => state.columns,
   debounce((newValue) => {
-    emit('update', { table: newValue });
+    const data = { table: newValue };
+
+    emit('update', data);
+    emit('change', data);
   }, 250),
   { deep: true }
 );
@@ -122,6 +125,11 @@ onMounted(() => {
       return column;
     }) || props.workflow.table;
 
-  if (isChanged) emit('update', { table: state.columns });
+  if (isChanged) {
+    const data = { table: state.columns };
+
+    emit('change', data);
+    emit('update', data);
+  }
 });
 </script>

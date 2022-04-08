@@ -2,6 +2,7 @@
   <edit-interaction-base
     :data="data"
     :hide="!permission.has.downloads"
+    :autocomplete="autocomplete"
     :hide-selector="data.type !== 'element'"
     @change="updateData"
   >
@@ -27,22 +28,37 @@
         </ui-button>
       </template>
     </template>
-    <ui-input
+    <ui-autocomplete
       v-if="data.type === 'url'"
-      :model-value="data.url"
-      label="URL"
-      class="w-full"
-      placeholder="https://example.com/picture.png"
-      @change="updateData({ url: $event })"
-    />
-    <template v-if="permission.has.downloads">
+      :items="autocomplete"
+      :trigger-char="['{{', '}}']"
+      block
+    >
       <ui-input
-        :model-value="data.filename"
-        :label="t('workflow.blocks.save-assets.filename')"
-        class="w-full mt-4"
-        placeholder="image.jpeg"
-        @change="updateData({ filename: $event })"
+        :model-value="data.url"
+        label="URL"
+        class="w-full"
+        autocomplete="off"
+        placeholder="https://example.com/picture.png"
+        @change="updateData({ url: $event })"
       />
+    </ui-autocomplete>
+    <template v-if="permission.has.downloads">
+      <ui-autocomplete
+        :items="autocomplete"
+        :trigger-char="['{{', '}}']"
+        block
+        class="mt-4"
+      >
+        <ui-input
+          :model-value="data.filename"
+          :label="t('workflow.blocks.save-assets.filename')"
+          class="w-full"
+          autocomplete="off"
+          placeholder="image.jpeg"
+          @change="updateData({ filename: $event })"
+        />
+      </ui-autocomplete>
       <ui-select
         :model-value="data.onConflict"
         :label="t('workflow.blocks.handle-download.onConflict')"
@@ -65,6 +81,10 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  autocomplete: {
+    type: Array,
+    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

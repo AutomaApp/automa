@@ -19,13 +19,21 @@
         {{ t('workflow.blocks.switch-to.windowTypes.iframe') }}
       </option>
     </ui-select>
-    <ui-input
+    <ui-autocomplete
       v-if="data.windowType === 'iframe'"
-      :model-value="data.selector"
-      :placeholder="t('workflow.blocks.switch-to.iframeSelector')"
-      class="mb-1 w-full"
-      @change="updateData({ selector: $event })"
-    />
+      :items="autocomplete"
+      :trigger-char="['{{', '}}']"
+      block
+      class="mt-2"
+    >
+      <ui-input
+        :model-value="data.selector"
+        :placeholder="t('workflow.blocks.switch-to.iframeSelector')"
+        autocomplete="off"
+        class="mb-1 w-full"
+        @change="updateData({ selector: $event })"
+      />
+    </ui-autocomplete>
   </div>
 </template>
 <script setup>
@@ -35,6 +43,10 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  autocomplete: {
+    type: Array,
+    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

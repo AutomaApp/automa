@@ -14,15 +14,23 @@
     >
       {{ t('workflow.blocks.handle-dialog.accept') }}
     </ui-checkbox>
-    <ui-input
+    <ui-autocomplete
       v-if="data.accept"
-      :model-value="data.promptText"
-      :label="t('workflow.blocks.handle-dialog.promptText.label')"
-      :title="t('workflow.blocks.handle-dialog.promptText.description')"
-      placeholder="Text"
-      class="w-full mt-1"
-      @change="updateData({ promptText: $event })"
-    />
+      :items="autocomplete"
+      :trigger-char="['{{', '}}']"
+      block
+      class="mt-1"
+    >
+      <ui-input
+        :model-value="data.promptText"
+        :label="t('workflow.blocks.handle-dialog.promptText.label')"
+        :title="t('workflow.blocks.handle-dialog.promptText.description')"
+        autocomplete="off"
+        placeholder="Text"
+        class="w-full"
+        @change="updateData({ promptText: $event })"
+      />
+    </ui-autocomplete>
   </div>
 </template>
 <script setup>
@@ -32,6 +40,10 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  autocomplete: {
+    type: Array,
+    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

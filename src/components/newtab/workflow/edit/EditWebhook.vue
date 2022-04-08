@@ -16,15 +16,23 @@
         {{ method }}
       </option>
     </ui-select>
-    <ui-input
-      :model-value="data.url"
-      :label="`${t('workflow.blocks.webhook.url')}*`"
-      placeholder="http://api.example.com"
-      class="mb-2 w-full"
-      required
-      type="url"
-      @change="updateData({ url: $event })"
-    />
+    <ui-autocomplete
+      :items="autocomplete"
+      :trigger-char="['{{', '}}']"
+      block
+      class="mb-2"
+    >
+      <ui-input
+        :model-value="data.url"
+        :label="`${t('workflow.blocks.webhook.url')}*`"
+        placeholder="http://api.example.com"
+        class="w-full"
+        autocomplete="off"
+        required
+        type="url"
+        @change="updateData({ url: $event })"
+      />
+    </ui-autocomplete>
     <ui-select
       :model-value="data.contentType"
       :label="t('workflow.blocks.webhook.contentType')"
@@ -157,6 +165,10 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  autocomplete: {
+    type: Array,
+    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

@@ -44,14 +44,22 @@
       class="w-full mt-2"
       @change="updateData({ variableName: $event })"
     />
-    <ui-input
+    <ui-autocomplete
       v-else-if="data.loopThrough === 'elements'"
-      :model-value="data.elementSelector"
-      :label="t('workflow.blocks.base.selector')"
-      placeholder=".selector"
-      class="mt-2 w-full"
-      @change="updateData({ elementSelector: $event })"
-    />
+      :items="autocomplete"
+      :trigger-char="['{{', '}}']"
+      block
+      class="mt-2"
+    >
+      <ui-input
+        :model-value="data.elementSelector"
+        :label="t('workflow.blocks.base.selector')"
+        autocomplete="off"
+        placeholder=".selector"
+        class="w-full"
+        @change="updateData({ elementSelector: $event })"
+      />
+    </ui-autocomplete>
     <ui-button
       v-else-if="data.loopThrough === 'custom-data'"
       class="w-full mt-4"
@@ -173,6 +181,10 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  autocomplete: {
+    type: Array,
+    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

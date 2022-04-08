@@ -6,14 +6,22 @@
       class="w-full"
       @change="updateData({ description: $event })"
     />
-    <ui-input
+    <ui-autocomplete
       v-if="!data.activeTab"
-      :model-value="data.url"
-      :label="t('workflow.blocks.new-tab.url')"
-      class="w-full mt-2"
-      placeholder="http://example.com/"
-      @change="updateData({ url: $event })"
-    />
+      :items="autocomplete"
+      :trigger-char="['{{', '}}']"
+      block
+      class="mt-2"
+    >
+      <ui-input
+        :model-value="data.url"
+        :label="t('workflow.blocks.new-tab.url')"
+        class="w-full"
+        autocomplete="off"
+        placeholder="http://example.com/"
+        @change="updateData({ url: $event })"
+      />
+    </ui-autocomplete>
     <ui-checkbox
       :model-value="data.updatePrevTab"
       class="leading-tight mt-2"
@@ -59,6 +67,10 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  autocomplete: {
+    type: Array,
+    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

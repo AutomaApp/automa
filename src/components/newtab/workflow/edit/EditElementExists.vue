@@ -10,13 +10,21 @@
         {{ t(`workflow.blocks.base.findElement.options.${type}`) }}
       </option>
     </ui-select>
-    <ui-input
-      :model-value="data.selector"
-      :label="t('workflow.blocks.element-exists.selector')"
-      placeholder=".element"
-      class="mb-1 w-full"
-      @change="updateData({ selector: $event })"
-    />
+    <ui-autocomplete
+      :items="autocomplete"
+      :trigger-char="['{{', '}}']"
+      block
+      class="mb-1"
+    >
+      <ui-input
+        :model-value="data.selector"
+        :label="t('workflow.blocks.element-exists.selector')"
+        autocomplete="off"
+        placeholder=".element"
+        class="w-full"
+        @change="updateData({ selector: $event })"
+      />
+    </ui-autocomplete>
     <ui-input
       :model-value="data.tryCount"
       :title="t('workflow.blocks.element-exists.tryFor.title')"
@@ -53,6 +61,10 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  autocomplete: {
+    type: Array,
+    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

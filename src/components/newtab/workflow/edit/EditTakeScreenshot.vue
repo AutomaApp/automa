@@ -29,13 +29,21 @@
       {{ t('workflow.blocks.take-screenshot.saveToComputer') }}
     </ui-checkbox>
     <div v-if="data.saveToComputer" class="flex items-center mt-1">
-      <ui-input
-        :model-value="data.fileName"
-        :placeholder="t('common.fileName')"
+      <ui-autocomplete
+        :items="autocomplete"
+        :trigger-char="['{{', '}}']"
+        block
         class="flex-1 mr-2"
-        title="File name"
-        @change="updateData({ fileName: $event })"
-      />
+      >
+        <ui-input
+          :model-value="data.fileName"
+          :placeholder="t('common.fileName')"
+          autocomplete="off"
+          class="flex-1 mr-2"
+          title="File name"
+          @change="updateData({ fileName: $event })"
+        />
+      </ui-autocomplete>
       <ui-select
         :model-value="data.ext || 'png'"
         placeholder="Type"
@@ -94,6 +102,10 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  autocomplete: {
+    type: Array,
+    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

@@ -307,7 +307,10 @@ function getElementList(target) {
   if (automaListEl) {
     if (target.hasAttribute('automa-el-list')) return [];
 
-    const childSelector = finder(target, { root: automaListEl });
+    const childSelector = finder(target, {
+      root: automaListEl,
+      idName: () => false,
+    });
     const elements = document.querySelectorAll(
       `${state.listSelector} ${childSelector}`
     );
@@ -368,7 +371,10 @@ function handleClick(event) {
 
     const isInList = target.closest('[automa-el-list]');
     if (isInList) {
-      const childSelector = finder(target, { root: isInList });
+      const childSelector = finder(target, {
+        root: isInList,
+        idName: () => false,
+      });
       updateSelectedElements(`${state.listSelector} ${childSelector}`, true);
 
       return;
@@ -512,6 +518,11 @@ function destroy() {
     isExecuting: false,
     hoveredElements: [],
     selectedElements: [],
+  });
+
+  const prevSelectedList = document.querySelectorAll('[automa-el-list]');
+  prevSelectedList.forEach((element) => {
+    element.removeAttribute('automa-el-list');
   });
 
   document.documentElement.style.fontSize = originalFontSize;
