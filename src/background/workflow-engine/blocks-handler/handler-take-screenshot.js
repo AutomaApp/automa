@@ -2,11 +2,24 @@ import browser from 'webextension-polyfill';
 import { fileSaver } from '@/utils/helper';
 import { getBlockConnection } from '../helper';
 
-function saveImage({ fileName, uri, ext }) {
+async function saveImage({ filename, uri, ext }) {
+  const hasDownloadAccess = await browser.permissions.contains({
+    permissions: ['downloads'],
+  });
+  const name = `${filename || 'Screenshot'}.${ext || 'png'}`;
+
+  if (hasDownloadAccess) {
+    await browser.downloads.download({
+      url: uri,
+      filename: name,
+    });
+
+    return;
+  }
+
   const image = new Image();
 
   image.onload = () => {
-    const name = `${fileName || 'Screenshot'}.${ext || 'png'}`;
     const canvas = document.createElement('canvas');
     canvas.width = image.width;
     canvas.height = image.height;
@@ -31,10 +44,14 @@ async function takeScreenshot({ data, outputs, name }) {
       quality: data.quality,
       format: data.ext || 'png',
     };
-    const saveScreenshot = (dataUrl) => {
+    const saveScreenshot = async (dataUrl) => {
       if (data.saveToColumn) this.addDataToColumn(data.dataColumn, dataUrl);
       if (saveToComputer)
-        saveImage({ fileName: data.fileName, uri: dataUrl, ext: data.ext });
+        await saveImage({
+          filename: data.fileName,
+          uri: dataUrl,
+          ext: data.ext,
+        });
       if (data.assignVariable) this.setVariable(data.variableName, dataUrl);
     };
 
@@ -67,11 +84,11 @@ async function takeScreenshot({ data, outputs, name }) {
         await browser.tabs.update(tab.id, { active: true });
       }
 
-      saveScreenshot(screenshot);
+      await saveScreenshot(screenshot);
     } else {
       screenshot = await browser.tabs.captureVisibleTab(options);
 
-      saveScreenshot(screenshot);
+      await saveScreenshot(screenshot);
     }
 
     return { data: screenshot, nextBlockId };
