@@ -148,6 +148,11 @@ checkWorkflowStates();
 async function checkVisitWebTriggers(changeInfo, tab) {
   if (!changeInfo.status || changeInfo.status !== 'complete') return;
 
+  const tabIsUsed = await workflow.states.get(
+    ({ state }) => state.activeTab.id === tab.id
+  );
+  if (tabIsUsed) return;
+
   const visitWebTriggers = await storage.get('visitWebTriggers');
   const triggeredWorkflow = visitWebTriggers.find(({ url, isRegex }) => {
     if (url.trim() === '') return false;

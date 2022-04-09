@@ -48,7 +48,8 @@ async function takeScreenshot({ data, outputs, name }) {
         currentWindow: true,
       });
 
-      await browser.windows.update(this.windowId, { focused: true });
+      if (this.windowId)
+        await browser.windows.update(this.windowId, { focused: true });
       await browser.tabs.update(this.activeTab.id, { active: true });
 
       await new Promise((resolve) => setTimeout(resolve, 500));
