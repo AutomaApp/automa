@@ -31,6 +31,7 @@
     },
     "menu": {
       "backup": "Backup Workflows",
+      "editor": "Editor",
       "general": "General",
       "shortcuts": "Shortcuts",
       "about": "About"

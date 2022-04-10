@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-8">
+  <div class="mb-12">
     <p class="font-semibold mb-1">{{ t('settings.theme') }}</p>
     <div class="flex items-center space-x-4">
       <div
@@ -54,11 +54,54 @@
       {{ t('settings.language.reloadPage') }}
     </p>
   </div>
+  <div class="mt-12 max-w-2xl">
+    <p class="font-semibold">Editor Curvature</p>
+    <div class="flex space-x-2 items-end">
+      <ui-input
+        :model-value="settings.editor.curvature"
+        label="Line"
+        type="number"
+        min="0"
+        max="2"
+        class="w-full"
+        placeholder="0.5"
+        @change="updateSetting('editor.curvature', curvatureLimit($event))"
+      />
+      <ui-input
+        :model-value="settings.editor.reroute_curvature"
+        label="Reroute"
+        type="number"
+        class="w-full"
+        min="0"
+        max="2"
+        placeholder="0.5"
+        @change="
+          updateSetting('editor.reroute_curvature', curvatureLimit($event))
+        "
+      />
+      <ui-input
+        :model-value="settings.editor.reroute_curvature_start_end"
+        label="Reroute first & last point"
+        type="number"
+        class="w-full"
+        min="0"
+        max="2"
+        placeholder="0.5"
+        @change="
+          updateSetting(
+            'editor.reroute_curvature_start_end',
+            curvatureLimit($event)
+          )
+        "
+      />
+    </div>
+  </div>
 </template>
 <script setup>
 import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
+import browser from 'webextension-polyfill';
 import { useTheme } from '@/composable/theme';
 import { supportLocales } from '@/utils/shared';
 
@@ -69,9 +112,23 @@ const theme = useTheme();
 const isLangChange = ref(false);
 const settings = computed(() => store.state.settings);
 
-async function updateLanguage(value) {
+function curvatureLimit(value) {
+  if (value > 2) return 2;
+  if (value < 0) return 0;
+
+  return value;
+}
+function updateSetting(path, value) {
+  store.commit('updateStateNested', {
+    value,
+    path: `settings.${path}`,
+  });
+
+  browser.storage.local.set({ settings: settings.value });
+}
+function updateLanguage(value) {
   isLangChange.value = true;
 
-  store.dispatch('updateSettings', { locale: value });
+  updateSetting('locale', value);
 }
 </script>
