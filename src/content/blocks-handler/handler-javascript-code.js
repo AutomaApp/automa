@@ -124,11 +124,20 @@ function javascriptCode(block) {
 
       script.setAttribute(scriptAttr, '');
       script.classList.add('automa-custom-js');
-      script.innerHTML = `(() => {\n${automaScript} ${block.data.code}\n})()`;
+      script.innerHTML = `(() => {
+        ${automaScript}
+
+        try {
+          ${block.data.code}
+        } catch (error) {
+          console.error(error);
+          automaNextBlock({ $error: true, message: error.message });
+        }
+      })()`;
 
       if (!block.data.everyNewTab) {
         let timeout;
-        const cleanUp = (columns = '') => {
+        const cleanUp = (columns = {}) => {
           const storageKey = `automa--${block.id}`;
           const storageRefData = JSON.parse(sessionStorage.getItem(storageKey));
 

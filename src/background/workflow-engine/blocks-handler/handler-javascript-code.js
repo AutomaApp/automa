@@ -23,6 +23,9 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
 
     const result = await this._sendMessageToTab({ ...block, data, refData });
 
+    if (result?.columns.data.$error) {
+      throw new Error(result?.columns.data.message);
+    }
     if (result?.variables) {
       Object.keys(result.variables).forEach((varName) => {
         this.setVariable(varName, result.variables[varName]);
