@@ -35,6 +35,7 @@
         :items="autocomplete"
         :trigger-char="['{{', '}}']"
         block
+        hide-empty
       >
         <ui-input
           :model-value="data.url"

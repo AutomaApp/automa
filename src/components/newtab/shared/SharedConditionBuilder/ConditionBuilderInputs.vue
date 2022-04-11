@@ -26,6 +26,7 @@
         :items="autocomplete"
         :trigger-char="['{{', '}}']"
         block
+        hide-empty
         class="flex-1"
       >
         <ui-input

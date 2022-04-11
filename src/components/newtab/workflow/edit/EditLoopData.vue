@@ -49,6 +49,7 @@
       :items="autocomplete"
       :trigger-char="['{{', '}}']"
       block
+      hide-empty
       class="mt-2"
     >
       <ui-input

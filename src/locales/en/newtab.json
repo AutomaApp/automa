@@ -24,6 +24,14 @@
     "shortcuts": {
       "duplicate": "Shortcut already use by \"{name}\""
     },
+    "editor": {
+      "curvature": {
+        "title": "Editor Line Curvature",
+        "line": "Line",
+        "reroute": "Reroute",
+        "rerouteFirstLast": "Reroute first & last point"
+      },
+    },
     "language": {
       "label": "Language",
       "helpTranslate": "Can't find your language? Help translate.",

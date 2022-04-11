@@ -8,6 +8,7 @@ export function useEditorBlock(selector, editor) {
     details: {},
     category: {},
     retrieved: false,
+    containerEl: null,
   });
 
   nextTick(() => {
@@ -15,7 +16,8 @@ export function useEditorBlock(selector, editor) {
 
     if (block.id || !element) return;
 
-    block.id = element.parentElement.parentElement.id.replace('node-', '');
+    block.containerEl = element.parentElement.parentElement;
+    block.id = block.containerEl.id.replace('node-', '');
 
     if (block.id) {
       const { name, data } = editor.getNodeFromId(block.id);

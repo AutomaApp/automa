@@ -33,6 +33,7 @@
       :items="autocomplete"
       :trigger-char="['{{', '}}']"
       block
+      hide-empty
     >
       <ui-input
         :model-value="data.url"
@@ -48,6 +49,7 @@
         :items="autocomplete"
         :trigger-char="['{{', '}}']"
         block
+        hide-empty
         class="mt-4"
       >
         <ui-input

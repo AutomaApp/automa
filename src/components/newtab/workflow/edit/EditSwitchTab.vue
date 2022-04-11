@@ -1,6 +1,11 @@
 <template>
   <div>
-    <ui-autocomplete :items="autocomplete" :trigger-char="['{{', '}}']" block>
+    <ui-autocomplete
+      :items="autocomplete"
+      :trigger-char="['{{', '}}']"
+      block
+      hide-empty
+    >
       <ui-input
         :model-value="data.matchPattern"
         placeholder="https://example.com/*"
@@ -37,6 +42,7 @@
       :items="autocomplete"
       :trigger-char="['{{', '}}']"
       block
+      hide-empty
       class="mt-2"
       @change="updateData({ url: $event })"
     >

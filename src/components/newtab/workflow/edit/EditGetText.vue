@@ -31,6 +31,7 @@
         :items="autocomplete"
         :trigger-char="['{{', '}}']"
         block
+        hide-empty
         class="w-full"
       >
         <ui-input
@@ -47,6 +48,7 @@
         :items="autocomplete"
         :trigger-char="['{{', '}}']"
         block
+        hide-empty
         class="w-full"
       >
         <ui-input

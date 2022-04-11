@@ -26,12 +26,20 @@
       :block-id="data.blockId"
       :autocomplete="autocompleteList"
     />
+    <on-block-error
+      v-if="!excludeOnError.includes(data.id)"
+      :key="data.blockId"
+      :data="data"
+      class="mt-4"
+      @change="$emit('update', { ...blockData, onError: $event })"
+    />
   </div>
 </template>
 <script>
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { tasks } from '@/utils/shared';
+import OnBlockError from './edit/OnBlockError.vue';
 
 const editComponents = require.context(
   './edit',
@@ -50,7 +58,7 @@ const components = editComponents.keys().reduce((acc, key) => {
 }, {});
 
 export default {
-  components,
+  components: { ...components, OnBlockError },
   props: {
     data: {
       type: Object,
@@ -72,6 +80,21 @@ export default {
   },
   emits: ['close', 'update', 'update:autocomplete'],
   setup(props, { emit }) {
+    const defaultAutocomplete = [
+      'activeTabUrl',
+      '$date',
+      '$randint',
+      '$getLength',
+      'globalData',
+    ];
+    const excludeOnError = [
+      'webhook',
+      'while-loop',
+      'element-exists',
+      'conditions',
+      'trigger',
+    ];
+
     const { t } = useI18n();
     const autocompleteData = ref({});
 
@@ -86,6 +109,7 @@ export default {
     const autocompleteList = computed(() => {
       const blockId = props.data.itemId || props.data.blockId;
       const arr = [
+        defaultAutocomplete,
         autocompleteData.value.table,
         autocompleteData.value[blockId],
       ];
@@ -179,6 +203,7 @@ export default {
     return {
       t,
       blockData,
+      excludeOnError,
       autocompleteList,
     };
   },

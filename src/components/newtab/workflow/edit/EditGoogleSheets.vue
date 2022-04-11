@@ -18,7 +18,12 @@
         {{ t('workflow.blocks.google-sheets.select.update') }}
       </option>
     </ui-select>
-    <ui-autocomplete :items="autocomplete" :trigger-char="['{{', '}}']" block>
+    <ui-autocomplete
+      :items="autocomplete"
+      :trigger-char="['{{', '}}']"
+      block
+      hide-empty
+    >
       <ui-input
         :model-value="data.spreadsheetId"
         class="w-full"
@@ -38,7 +43,12 @@
         </template>
       </ui-input>
     </ui-autocomplete>
-    <ui-autocomplete :items="autocomplete" :trigger-char="['{{', '}}']" block>
+    <ui-autocomplete
+      :items="autocomplete"
+      :trigger-char="['{{', '}}']"
+      block
+      hide-empty
+    >
       <ui-input
         :model-value="data.range"
         class="w-full mt-1"

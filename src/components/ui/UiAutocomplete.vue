@@ -53,33 +53,17 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  label: {
-    type: String,
-    default: '',
-  },
-  placeholder: {
-    type: String,
-    default: '',
-  },
-  prependIcon: {
-    type: String,
-    default: null,
-  },
   triggerChar: {
     type: Array,
     default: () => [],
-  },
-  inputClass: {
-    type: String,
-    default: '',
   },
   block: {
     type: Boolean,
     default: false,
   },
-  component: {
-    type: String,
-    default: 'UiInput',
+  hideEmpty: {
+    type: Boolean,
+    default: false,
   },
 });
 const emit = defineEmits(['update:modelValue', 'change']);
@@ -213,8 +197,9 @@ function selectItem(itemIndex) {
   if (isTriggerChar) {
     setTimeout(() => {
       input.selectionEnd = caretPosition;
+      const isNotTextarea = input.tagName !== 'TEXTAREA';
 
-      if (!/textarea/i.test(props.component)) {
+      if (isNotTextarea) {
         input.blur();
         input.focus();
       }
@@ -285,6 +270,10 @@ watch(
   () => state.showPopover,
   (value) => {
     if (!value) state.inputChanged = false;
+
+    if (props.hideEmpty && filteredItems.value.length === 0) {
+      state.showPopover = false;
+    }
   }
 );
 

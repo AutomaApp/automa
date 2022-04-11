@@ -39,6 +39,7 @@
           :items="autocomplete"
           :trigger-char="['{{', '}}']"
           block
+          hide-empty
           class="w-full mb-1"
         >
           <ui-textarea

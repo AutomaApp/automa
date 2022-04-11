@@ -1,7 +1,12 @@
 <template>
   <edit-interaction-base v-bind="{ data, autocomplete }" @change="updateData">
     <hr />
-    <ui-autocomplete :items="autocomplete" :trigger-char="['{{', '}}']" block>
+    <ui-autocomplete
+      :items="autocomplete"
+      :trigger-char="['{{', '}}']"
+      block
+      hide-empty
+    >
       <ui-input
         :model-value="data.attributeName"
         :label="t('workflow.blocks.attribute-value.forms.name')"

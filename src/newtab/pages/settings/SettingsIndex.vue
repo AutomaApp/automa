@@ -55,44 +55,21 @@
     </p>
   </div>
   <div class="mt-12 max-w-2xl">
-    <p class="font-semibold">Editor Curvature</p>
+    <p class="font-semibold">
+      {{ t('settings.editor.curvature.title') }}
+    </p>
     <div class="flex space-x-2 items-end">
       <ui-input
-        :model-value="settings.editor.curvature"
-        label="Line"
+        v-for="item in curvatureSettings"
+        :key="item.id"
+        :model-value="settings.editor[item.key]"
+        :label="t(`settings.editor.curvature.${item.id}`)"
         type="number"
         min="0"
-        max="2"
+        max="1"
         class="w-full"
         placeholder="0.5"
-        @change="updateSetting('editor.curvature', curvatureLimit($event))"
-      />
-      <ui-input
-        :model-value="settings.editor.reroute_curvature"
-        label="Reroute"
-        type="number"
-        class="w-full"
-        min="0"
-        max="2"
-        placeholder="0.5"
-        @change="
-          updateSetting('editor.reroute_curvature', curvatureLimit($event))
-        "
-      />
-      <ui-input
-        :model-value="settings.editor.reroute_curvature_start_end"
-        label="Reroute first & last point"
-        type="number"
-        class="w-full"
-        min="0"
-        max="2"
-        placeholder="0.5"
-        @change="
-          updateSetting(
-            'editor.reroute_curvature_start_end',
-            curvatureLimit($event)
-          )
-        "
+        @change="updateSetting(`editor.${item.key}`, curvatureLimit($event))"
       />
     </div>
   </div>
@@ -105,6 +82,12 @@ import browser from 'webextension-polyfill';
 import { useTheme } from '@/composable/theme';
 import { supportLocales } from '@/utils/shared';
 
+const curvatureSettings = [
+  { id: 'line', key: 'curvature' },
+  { id: 'reroute', key: 'reroute_curvature' },
+  { id: 'rerouteFirstLast', key: 'reroute_curvature_start_end' },
+];
+
 const { t } = useI18n();
 const store = useStore();
 const theme = useTheme();
@@ -113,7 +96,7 @@ const isLangChange = ref(false);
 const settings = computed(() => store.state.settings);
 
 function curvatureLimit(value) {
-  if (value > 2) return 2;
+  if (value > 1) return 1;
   if (value < 0) return 0;
 
   return value;
