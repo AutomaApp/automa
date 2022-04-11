@@ -97,8 +97,9 @@
       <shared-codemirror
         v-if="previewDataState.data && previewDataState.status !== 'error'"
         :model-value="previewDataState.data"
+        :line-numbers="false"
         readonly
-        class="mt-4 max-h-96"
+        class="mt-4 max-h-96 scroll"
       />
     </template>
     <template v-else-if="data.type === 'update'">

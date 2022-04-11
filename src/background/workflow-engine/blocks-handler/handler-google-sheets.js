@@ -9,13 +9,15 @@ import { getBlockConnection } from '../helper';
 
 async function getSpreadsheetValues({ spreadsheetId, range, firstRowAsKey }) {
   const response = await googleSheets.getValues({ spreadsheetId, range });
+  const result = await response.json();
 
-  if (response.status !== 200) {
-    throw new Error(response.statusText);
+  if (!response.ok) {
+    throw new Error(result.statusMessage);
   }
 
-  const { values } = await response.json();
-  const sheetsData = firstRowAsKey ? convert2DArrayToArrayObj(values) : values;
+  const sheetsData = firstRowAsKey
+    ? convert2DArrayToArrayObj(result.values)
+    : result.values;
 
   return sheetsData;
 }
@@ -51,8 +53,10 @@ async function updateSpreadsheetValues(
     },
   });
 
-  if (response.status !== 200) {
-    throw new Error(response.statusText);
+  if (!response.ok) {
+    const error = await response.json();
+
+    throw new Error(error.statusMessage);
   }
 }
 
