@@ -20,6 +20,11 @@ const store = createStore({
     workflowHosts: {},
     settings: {
       locale: 'en',
+      editor: {
+        curvature: 0.5,
+        reroute_curvature: 0.5,
+        reroute_curvature_start_end: 0.5,
+      },
     },
     userDataRetrieved: false,
   }),
@@ -41,17 +46,6 @@ const store = createStore({
       ),
   },
   actions: {
-    updateSettings({ state, commit }, data) {
-      commit('updateState', {
-        key: 'settings',
-        value: {
-          ...state.settings,
-          ...data,
-        },
-      });
-
-      browser.storage.local.set({ settings: state.settings });
-    },
     async retrieve({ dispatch, getters, commit, state }, keys = 'workflows') {
       try {
         const data = await browser.storage.local.get(keys);

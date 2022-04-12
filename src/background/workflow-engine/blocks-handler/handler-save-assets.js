@@ -52,7 +52,7 @@ export default async function ({ data, id, name, outputs }) {
         tabId: this.activeTab.id,
       });
 
-      await Promise.allSettled(sources.map((url) => downloadFile(url)));
+      await Promise.all(sources.map((url) => downloadFile(url)));
     } else if (data.type === 'url') {
       await downloadFile(data.url);
     }

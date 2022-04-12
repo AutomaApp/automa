@@ -1,9 +1,17 @@
 <template>
   <div class="grid gap-2 grid-cols-2">
-    <ui-input v-model="defaultParams.deltaX" type="number" label="deltaX" />
-    <ui-input v-model="defaultParams.deltaY" type="number" label="deltaY" />
     <ui-input
-      v-model="defaultParams.deltaX"
+      v-model.number="defaultParams.deltaX"
+      type="number"
+      label="deltaX"
+    />
+    <ui-input
+      v-model.number="defaultParams.deltaY"
+      type="number"
+      label="deltaY"
+    />
+    <ui-input
+      v-model.number="defaultParams.deltaZ"
       type="number"
       class="col-span-2"
       label="deltaZ"

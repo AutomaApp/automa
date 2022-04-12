@@ -18,42 +18,56 @@
         {{ t('workflow.blocks.google-sheets.select.update') }}
       </option>
     </ui-select>
-    <ui-input
-      :model-value="data.spreadsheetId"
-      class="w-full"
-      placeholder="abcd123"
-      @change="updateData({ spreadsheetId: $event })"
+    <ui-autocomplete
+      :items="autocomplete"
+      :trigger-char="['{{', '}}']"
+      block
+      hide-empty
     >
-      <template #label>
-        {{ t('workflow.blocks.google-sheets.spreadsheetId.label') }}*
-        <a
-          href="https://docs.automa.site/blocks/google-sheets.html#spreadsheet-id"
-          target="_blank"
-          rel="noopener"
-          :title="t('workflow.blocks.google-sheets.spreadsheetId.link')"
-        >
-          <v-remixicon name="riInformationLine" size="18" class="inline" />
-        </a>
-      </template>
-    </ui-input>
-    <ui-input
-      :model-value="data.range"
-      class="w-full mt-1"
-      placeholder="Sheet1!A1:B2"
-      @change="updateData({ range: $event })"
+      <ui-input
+        :model-value="data.spreadsheetId"
+        class="w-full"
+        placeholder="abcd123"
+        @change="updateData({ spreadsheetId: $event })"
+      >
+        <template #label>
+          {{ t('workflow.blocks.google-sheets.spreadsheetId.label') }}*
+          <a
+            href="https://docs.automa.site/blocks/google-sheets.html#spreadsheet-id"
+            target="_blank"
+            rel="noopener"
+            :title="t('workflow.blocks.google-sheets.spreadsheetId.link')"
+          >
+            <v-remixicon name="riInformationLine" size="18" class="inline" />
+          </a>
+        </template>
+      </ui-input>
+    </ui-autocomplete>
+    <ui-autocomplete
+      :items="autocomplete"
+      :trigger-char="['{{', '}}']"
+      block
+      hide-empty
     >
-      <template #label>
-        {{ t('workflow.blocks.google-sheets.range.label') }}*
-        <a
-          href="https://docs.automa.site/blocks/google-sheets.html#range"
-          target="_blank"
-          rel="noopener"
-          :title="t('workflow.blocks.google-sheets.range.link')"
-        >
-          <v-remixicon name="riInformationLine" size="18" class="inline" />
-        </a>
-      </template>
-    </ui-input>
+      <ui-input
+        :model-value="data.range"
+        class="w-full mt-1"
+        placeholder="Sheet1!A1:B2"
+        @change="updateData({ range: $event })"
+      >
+        <template #label>
+          {{ t('workflow.blocks.google-sheets.range.label') }}*
+          <a
+            href="https://docs.automa.site/blocks/google-sheets.html#range"
+            target="_blank"
+            rel="noopener"
+            :title="t('workflow.blocks.google-sheets.range.link')"
+          >
+            <v-remixicon name="riInformationLine" size="18" class="inline" />
+          </a>
+        </template>
+      </ui-input>
+    </ui-autocomplete>
     <template v-if="data.type === 'get'">
       <ui-input
         :model-value="data.refKey"
@@ -83,8 +97,9 @@
       <shared-codemirror
         v-if="previewDataState.data && previewDataState.status !== 'error'"
         :model-value="previewDataState.data"
+        :line-numbers="false"
         readonly
-        class="mt-4 max-h-96"
+        class="mt-4 max-h-96 scroll"
       />
     </template>
     <template v-else-if="data.type === 'update'">
@@ -167,6 +182,10 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  autocomplete: {
+    type: Array,
+    default: () => [],
+  },
 });
 const emit = defineEmits(['update:data']);
 
@@ -196,10 +215,10 @@ async function previewData() {
       range: props.data.range,
     });
 
-    if (response.status !== 200) {
+    if (!response.ok) {
       const error = await response.json();
 
-      throw new Error(response.statusText || error.statusMessage);
+      throw new Error(error.statusMessage || response.statusText);
     }
 
     const { values } = await response.json();

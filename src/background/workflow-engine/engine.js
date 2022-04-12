@@ -10,7 +10,7 @@ import {
   objectHasKey,
 } from '@/utils/helper';
 import referenceData from '@/utils/reference-data';
-import { convertData, waitTabLoaded } from './helper';
+import { convertData, waitTabLoaded, getBlockConnection } from './helper';
 import executeContentScript from './execute-content-script';
 
 class WorkflowEngine {
@@ -371,7 +371,7 @@ class WorkflowEngine {
     }
   }
 
-  async executeBlock(block, prevBlockData) {
+  async executeBlock(block, prevBlockData, isRetry) {
     const currentState = await this.states.get(this.id);
 
     if (!currentState || currentState.isDestroyed) {
@@ -385,8 +385,10 @@ class WorkflowEngine {
     this.referenceData.prevBlockData = prevBlockData;
     this.referenceData.activeTabUrl = this.activeTab.url || '';
 
-    await this.states.update(this.id, { state: this.state });
-    this.dispatchEvent('update', { state: this.state });
+    if (!isRetry) {
+      await this.states.update(this.id, { state: this.state });
+      this.dispatchEvent('update', { state: this.state });
+    }
 
     const startExecuteTime = Date.now();
 
@@ -405,9 +407,19 @@ class WorkflowEngine {
     const replacedBlock = referenceData({
       block,
       data: this.referenceData,
-      refKeys: tasks[block.name].refDataKeys,
+      refKeys: isRetry ? null : tasks[block.name].refDataKeys,
     });
     const blockDelay = this.workflow.settings?.blockDelay || 0;
+    const addBlockLog = (status, obj = {}) => {
+      this.addLogHistory({
+        type: status,
+        name: block.name,
+        description: block.data.description,
+        replacedValue: replacedBlock.replacedValue,
+        duration: Math.round(Date.now() - startExecuteTime),
+        ...obj,
+      });
+    };
 
     try {
       const result = await handler.call(this, replacedBlock, {
@@ -418,13 +430,8 @@ class WorkflowEngine {
       if (result.replacedValue)
         replacedBlock.replacedValue = result.replacedValue;
 
-      this.addLogHistory({
-        name: block.name,
+      addBlockLog(result.status || 'success', {
         logId: result.logId,
-        type: result.status || 'success',
-        description: block.data.description,
-        replacedValue: replacedBlock.replacedValue,
-        duration: Math.round(Date.now() - startExecuteTime),
       });
 
       if (result.nextBlockId) {
@@ -440,12 +447,28 @@ class WorkflowEngine {
         this.destroy('success');
       }
     } catch (error) {
-      this.addLogHistory({
-        type: 'error',
+      const { onError: blockOnError } = replacedBlock.data;
+      if (blockOnError && blockOnError.enable) {
+        if (blockOnError.retry && blockOnError.retryTimes) {
+          await sleep(blockOnError.retryInterval * 1000);
+          blockOnError.retryTimes -= 1;
+          await this.executeBlock(replacedBlock, prevBlockData, true);
+
+          return;
+        }
+
+        const nextBlockId = getBlockConnection(
+          block,
+          blockOnError.toDo === 'continue' ? 1 : 2
+        );
+        if (blockOnError.toDo !== 'error' && nextBlockId) {
+          this.executeBlock(this.blocks[nextBlockId], '');
+          return;
+        }
+      }
+
+      addBlockLog('error', {
         message: error.message,
-        name: block.name,
-        description: block.data.description,
-        replacedValue: replacedBlock.replacedValue,
         ...(error.data || {}),
       });
 

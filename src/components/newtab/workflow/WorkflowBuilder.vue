@@ -73,6 +73,7 @@ import {
   watch,
   onBeforeUnmount,
 } from 'vue';
+import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { compare } from 'compare-versions';
@@ -109,6 +110,7 @@ export default {
 
     const { t } = useI18n();
     const route = useRoute();
+    const store = useStore();
 
     const contextMenuItems = {
       block: [
@@ -366,7 +368,13 @@ export default {
       const context = getCurrentInstance().appContext.app._context;
       const element = document.querySelector('#drawflow');
 
-      editor.value = drawflow(element, { context, options: { reroute: true } });
+      editor.value = drawflow(element, {
+        context,
+        options: {
+          reroute: true,
+          ...store.state.settings.editor,
+        },
+      });
 
       const editorStates =
         parseJSON(localStorage.getItem('editor-states'), {}) || {};

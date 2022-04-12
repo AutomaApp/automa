@@ -33,10 +33,10 @@
         </ui-button>
       </div>
       <app-selector
+        v-model:selectorType="state.selectorType"
+        v-model:selectList="state.selectList"
         :selector="state.elSelector"
         :selected-count="state.selectedElements.length"
-        :selector-type="state.selectorType"
-        @selector="state.selectorType = $event"
         @child="selectChildElement"
         @parent="selectParentElement"
         @change="updateSelectedElements"
@@ -61,18 +61,18 @@
             >
               <template #item="{ element }">
                 <div
-                  v-for="attribute in element.attributes"
-                  :key="attribute.name"
+                  v-for="(value, name) in element.attributes"
+                  :key="name"
                   class="bg-box-transparent mb-1 rounded-lg py-2 px-3"
                 >
                   <p
                     class="text-sm text-overflow leading-tight text-gray-600"
                     title="Attribute name"
                   >
-                    {{ attribute.name }}
+                    {{ name }}
                   </p>
                   <input
-                    :value="attribute.value"
+                    :value="value"
                     readonly
                     title="Attribute value"
                     class="bg-transparent w-full"
@@ -130,24 +130,18 @@
       v-if="!state.hide"
       class="h-full w-full absolute top-0 pointer-events-none left-0 z-10"
     >
-      <rect
-        v-for="(item, index) in state.hoveredElements"
-        v-bind="item"
-        :key="index"
-        stroke-width="2"
+      <app-element-highlighter
+        :items="state.hoveredElements"
         stroke="#fbbf24"
-        fill="rgba(251, 191, 36, 0.2)"
-      ></rect>
-      <rect
-        v-for="(item, index) in state.selectedElements"
-        v-bind="item"
-        :key="index"
-        :stroke="item.highlight ? '#2563EB' : '#f87171'"
-        :fill="
-          item.highlight ? 'rgb(37, 99, 235, 0.2)' : 'rgba(248, 113, 113, 0.2)'
-        "
-        stroke-width="2"
-      ></rect>
+        fill="rgba(251, 191, 36, 0.1)"
+      />
+      <app-element-highlighter
+        :items="state.selectedElements"
+        stroke="#2563EB"
+        active-stroke="#f87171"
+        fill="rgba(37, 99, 235, 0.1)"
+        active-fill="rgba(248, 113, 113, 0.1)"
+      />
     </svg>
   </div>
 </template>
@@ -155,10 +149,13 @@
 import { reactive, ref, watch, inject, nextTick } from 'vue';
 import { getCssSelector } from 'css-selector-generator';
 import { debounce } from '@/utils/helper';
+import { finder } from '@medv/finder';
 import findElement from '@/utils/find-element';
 import AppBlocks from './AppBlocks.vue';
 import AppSelector from './AppSelector.vue';
 import AppElementList from './AppElementList.vue';
+import AppElementHighlighter from './AppElementHighlighter.vue';
+import findElementList from './list-selector';
 
 const selectedElement = {
   path: [],
@@ -174,11 +171,13 @@ const cardEl = ref('cardEl');
 const state = reactive({
   activeTab: '',
   elSelector: '',
+  listSelector: '',
   isDragging: false,
+  selectList: false,
   isExecuting: false,
   selectElements: [],
-  selectorType: 'css',
   hoveredElements: [],
+  selectorType: 'css',
   selectedElements: [],
   hide: window.self !== window.top,
 });
@@ -197,12 +196,12 @@ const getElementSelector = (element, options = {}) =>
         blacklist: [
           '[focused]',
           /focus/,
+          '[src=*]',
           '[data-*]',
           '[href=*]',
-          '[src=*]',
           '[value=*]',
+          '[automa-*]',
         ],
-        selectors: ['id', 'class', 'tag', 'attribute'],
         includeTag: true,
         ...options,
       })
@@ -235,17 +234,20 @@ function generateXPath(element) {
 function toggleHighlightElement({ index, highlight }) {
   state.selectedElements[index].highlight = highlight;
 }
-function getElementRect(target) {
+function getElementRect(target, withElement = false) {
   if (!target) return {};
 
   const { x, y, height, width } = target.getBoundingClientRect();
-
-  return {
+  const result = {
     width: width + 4,
     height: height + 4,
     x: x - 2,
     y: y - 2,
   };
+
+  if (withElement) result.element = target;
+
+  return result;
 }
 function updateSelectedElements(selector) {
   state.elSelector = selector;
@@ -259,10 +261,18 @@ function updateSelectedElements(selector) {
       elements = elements ? [elements] : [];
     }
 
-    state.selectedElements = Array.from(elements).map((element, index) => {
-      const attributes = Array.from(element.attributes).map(
-        ({ name, value }) => ({ name, value })
+    const elementsDetail = Array.from(elements).map((element, index) => {
+      const attributes = Array.from(element.attributes).reduce(
+        (acc, { name, value }) => {
+          if (name === 'automa-el-list') return acc;
+
+          acc[name] = value;
+
+          return acc;
+        },
+        {}
       );
+
       const elementProps = {
         element,
         attributes,
@@ -283,13 +293,39 @@ function updateSelectedElements(selector) {
 
       return elementProps;
     });
+
     state.selectElements = selectElements;
+    state.selectedElements = elementsDetail;
   } catch (error) {
     state.selectElements = [];
     state.selectedElements = [];
   }
 }
+function getElementList(target) {
+  const automaListEl = target.closest('[automa-el-list]');
+
+  if (automaListEl) {
+    if (target.hasAttribute('automa-el-list')) return [];
+
+    const childSelector = finder(target, {
+      root: automaListEl,
+      idName: () => false,
+    });
+    const elements = document.querySelectorAll(
+      `${state.listSelector} ${childSelector}`
+    );
+
+    return Array.from(elements);
+  }
+
+  return findElementList(target) || [target];
+}
+let prevHoverElement = null;
 function handleMouseMove({ clientX, clientY, target }) {
+  if (prevHoverElement === target) return;
+
+  prevHoverElement = target;
+
   if (state.isDragging) {
     const height = window.innerHeight;
     const width = document.documentElement.clientWidth;
@@ -309,28 +345,81 @@ function handleMouseMove({ clientX, clientY, target }) {
 
   if (state.hide || rootElement === target) return;
 
-  state.hoveredElements = [getElementRect(target)];
+  let elementsRect = [];
+
+  if (state.selectList) {
+    const elements = getElementList(target) || [];
+
+    elementsRect = elements.map((el) => getElementRect(el, true));
+  } else {
+    elementsRect = [getElementRect(target)];
+  }
+
+  state.hoveredElements = elementsRect;
 }
 function handleClick(event) {
   const { target, path, ctrlKey } = event;
 
   if (target === rootElement || state.hide || state.isExecuting) return;
-
   event.stopPropagation();
   event.preventDefault();
 
-  const attributes = Array.from(target.attributes).map(({ name, value }) => ({
-    name,
-    value,
-  }));
+  if (state.selectList) {
+    const firstElement = state.hoveredElements[0].element;
+
+    if (!firstElement) return;
+
+    const isInList = target.closest('[automa-el-list]');
+    if (isInList) {
+      const childSelector = finder(target, {
+        root: isInList,
+        idName: () => false,
+      });
+      updateSelectedElements(`${state.listSelector} ${childSelector}`, true);
+
+      return;
+    }
+
+    const prevSelectedList = document.querySelectorAll('[automa-el-list]');
+    prevSelectedList.forEach((element) => {
+      element.removeAttribute('automa-el-list');
+    });
+
+    state.hoveredElements.forEach(({ element }) => {
+      element.setAttribute('automa-el-list', '');
+    });
+
+    const parentSelector = getCssSelector(firstElement.parentElement, {
+      includeTag: true,
+    });
+    const elementSelector = `${parentSelector} > ${firstElement.tagName.toLowerCase()}`;
+
+    state.listSelector = elementSelector;
+    updateSelectedElements(elementSelector);
+
+    return;
+  }
+
+  const getElementDetail = (element) => {
+    const attributes = {};
+
+    Array.from(element.attributes).forEach(({ name, value }) => {
+      if (name === 'automa-el-list') return;
+
+      attributes[name] = value;
+    });
+
+    return {
+      ...getElementRect(element),
+      element,
+      attributes,
+      highlight: false,
+      outline: state.selectList && state.selectedElements.length,
+    };
+  };
 
   let targetElement = target;
-  const targetElementDetail = {
-    ...getElementRect(target),
-    attributes,
-    element: target,
-    highlight: false,
-  };
+  const targetElementDetail = getElementDetail(target);
 
   if (state.selectorType === 'css' && ctrlKey) {
     let elementIndex = -1;
@@ -431,6 +520,11 @@ function destroy() {
     selectedElements: [],
   });
 
+  const prevSelectedList = document.querySelectorAll('[automa-el-list]');
+  prevSelectedList.forEach((element) => {
+    element.removeAttribute('automa-el-list');
+  });
+
   document.documentElement.style.fontSize = originalFontSize;
 }
 
@@ -446,6 +540,19 @@ watch(
   }
 );
 watch(() => [state.elSelector, state.activeTab, state.hide], updateCardSize);
+watch(
+  () => state.selectList,
+  (value) => {
+    if (value) {
+      state.selectedElements = [];
+    } else {
+      const prevSelectedList = document.querySelectorAll('[automa-el-list]');
+      prevSelectedList.forEach((element) => {
+        element.removeAttribute('automa-el-list');
+      });
+    }
+  }
+);
 
 nextTick(() => {
   setTimeout(() => {

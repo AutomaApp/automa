@@ -6,7 +6,11 @@
     >
       <workflow-edit-block
         v-if="state.isEditBlock && workflowData.active !== 'shared'"
+        v-model:autocomplete="autocomplete.cache"
         :data="state.blockData"
+        :data-changed="autocomplete.dataChanged"
+        :editor="editor"
+        :workflow="workflow"
         @update="updateBlockData"
         @close="(state.isEditBlock = false), (state.blockData = {})"
       />
@@ -260,6 +264,11 @@ const shortcut = useShortcut('editor:toggle-sidebar', toggleSidebar);
 
 const editor = shallowRef(null);
 const activeTab = shallowRef('editor');
+
+const autocomplete = reactive({
+  cache: null,
+  dataChanged: false,
+});
 const workflowPayload = reactive({
   data: {},
   isUpdating: false,
@@ -304,6 +313,11 @@ const workflowModals = {
     component: WorkflowDataTable,
     title: t('workflow.table.title'),
     docs: 'https://docs.automa.site/api-reference/table.html',
+    events: {
+      change() {
+        autocomplete.dataChanged = true;
+      },
+    },
   },
   'workflow-share': {
     icon: 'riShareLine',
@@ -368,6 +382,7 @@ const updateBlockData = debounce((data) => {
 
   state.blockData.data = data;
   state.isDataChanged = true;
+  autocomplete.dataChanged = true;
 
   if (state.blockData.isInGroup) {
     payload = { itemId: state.blockData.itemId, data };
@@ -699,6 +714,7 @@ function deleteBlock(id) {
   }
 
   state.isDataChanged = true;
+  autocomplete.dataChanged = true;
 }
 function updateWorkflow(data) {
   if (workflowData.active === 'shared') return;
@@ -764,6 +780,7 @@ function editBlock(data) {
 }
 function handleEditorDataChanged() {
   state.isDataChanged = true;
+  autocomplete.dataChanged = true;
 }
 function deleteWorkflow() {
   dialog.confirm({

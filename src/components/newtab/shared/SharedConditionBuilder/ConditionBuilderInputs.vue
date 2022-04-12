@@ -22,14 +22,23 @@
           </option>
         </optgroup>
       </ui-select>
-      <ui-input
-        v-for="(_, name) in item.data"
-        :key="item.id + name + index"
-        v-model="inputsData[index].data[name]"
-        :title="conditionBuilder.inputTypes[name].label"
-        :placeholder="conditionBuilder.inputTypes[name].label"
+      <ui-autocomplete
+        :items="autocomplete"
+        :trigger-char="['{{', '}}']"
+        block
+        hide-empty
         class="flex-1"
-      />
+      >
+        <ui-input
+          v-for="(_, name) in item.data"
+          :key="item.id + name + index"
+          v-model="inputsData[index].data[name]"
+          :title="conditionBuilder.inputTypes[name].label"
+          :placeholder="conditionBuilder.inputTypes[name].label"
+          autocomplete="off"
+          class="w-full"
+        />
+      </ui-autocomplete>
     </div>
     <ui-select
       v-else-if="item.category === 'compare'"
@@ -53,6 +62,10 @@ import { conditionBuilder } from '@/utils/shared';
 
 const props = defineProps({
   data: {
+    type: Array,
+    default: () => [],
+  },
+  autocomplete: {
     type: Array,
     default: () => [],
   },

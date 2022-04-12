@@ -1,13 +1,21 @@
 <template>
-  <edit-interaction-base v-bind="{ data }" @change="updateData">
+  <edit-interaction-base v-bind="{ data, autocomplete }" @change="updateData">
     <hr />
-    <ui-input
-      :model-value="data.attributeName"
-      :label="t('workflow.blocks.attribute-value.forms.name')"
-      placeholder="name"
-      class="w-full"
-      @change="updateData({ attributeName: $event })"
-    />
+    <ui-autocomplete
+      :items="autocomplete"
+      :trigger-char="['{{', '}}']"
+      block
+      hide-empty
+    >
+      <ui-input
+        :model-value="data.attributeName"
+        :label="t('workflow.blocks.attribute-value.forms.name')"
+        autocomplete="off"
+        placeholder="name"
+        class="w-full"
+        @change="updateData({ attributeName: $event })"
+      />
+    </ui-autocomplete>
     <insert-workflow-data
       :data="data"
       extra-row
@@ -25,6 +33,10 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  autocomplete: {
+    type: Array,
+    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

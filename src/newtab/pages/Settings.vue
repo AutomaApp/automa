@@ -2,7 +2,7 @@
   <div class="container pt-8 pb-4">
     <h1 class="text-2xl font-semibold mb-10">{{ t('common.settings') }}</h1>
     <div class="flex items-start">
-      <ui-list class="w-64 mr-12 space-y-2">
+      <ui-list class="w-64 mr-12 space-y-2 sticky top-8">
         <router-link
           v-for="menu in menus"
           :key="menu.id"

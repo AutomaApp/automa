@@ -30,29 +30,36 @@
           {{ t('workflow.blocks.close-tab.activeTab') }}
         </ui-checkbox>
       </div>
-      <ui-input
+      <ui-autocomplete
         v-if="!data.activeTab"
-        :model-value="data.url"
-        class="w-full mt-1"
-        placeholder="http://example.com/*"
-        @change="updateData({ url: $event })"
+        :items="autocomplete"
+        :trigger-char="['{{', '}}']"
+        block
+        hide-empty
       >
-        <template #label>
-          {{ t('workflow.blocks.close-tab.url') }}
-          <a
-            :title="t('common.example', 2)"
-            rel="noopener"
-            target="_blank"
-            href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns#examples"
-          >
-            <v-remixicon
-              name="riInformationLine"
-              size="18"
-              class="inline-block"
-            />
-          </a>
-        </template>
-      </ui-input>
+        <ui-input
+          :model-value="data.url"
+          class="w-full mt-1"
+          placeholder="http://example.com/*"
+          @change="updateData({ url: $event })"
+        >
+          <template #label>
+            {{ t('workflow.blocks.close-tab.url') }}
+            <a
+              :title="t('common.example', 2)"
+              rel="noopener"
+              target="_blank"
+              href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns#examples"
+            >
+              <v-remixicon
+                name="riInformationLine"
+                size="18"
+                class="inline-block"
+              />
+            </a>
+          </template>
+        </ui-input>
+      </ui-autocomplete>
     </template>
     <ui-checkbox
       v-else
@@ -71,6 +78,10 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  autocomplete: {
+    type: Array,
+    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

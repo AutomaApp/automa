@@ -1,10 +1,11 @@
 import objectPath from 'object-path';
+import cloneDeep from 'lodash.clonedeep';
 import mustacheReplacer from './mustache-replacer';
 
 export default function ({ block, refKeys, data }) {
   if (!refKeys || refKeys.length === 0) return block;
 
-  const copyBlock = JSON.parse(JSON.stringify(block));
+  const copyBlock = cloneDeep(block);
   const addReplacedValue = (value) => {
     if (!copyBlock.replacedValue) copyBlock.replacedValue = {};
 

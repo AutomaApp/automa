@@ -32,6 +32,22 @@
         />
       </div>
     </div>
+    <div
+      v-if="
+        block.data.onError?.enable && block.data.onError?.toDo === 'fallback'
+      "
+      class="fallback flex items-center justify-end"
+    >
+      <v-remixicon
+        v-if="block"
+        :title="t('workflow.blocks.base.onError.fallbackTitle')"
+        name="riInformationLine"
+        size="18"
+      />
+      <span class="ml-1">
+        {{ t('common.fallback') }}
+      </span>
+    </div>
     <slot :block="block"></slot>
     <template #prepend>
       <div
@@ -48,6 +64,7 @@
   </block-base>
 </template>
 <script setup>
+import { watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import emitter from '@/lib/mitt';
 import { useEditorBlock } from '@/composable/editorBlock';
@@ -87,10 +104,40 @@ function handleStartDrag(event) {
 
   event.dataTransfer.setData('block', JSON.stringify(payload));
 }
+
+watch(
+  () => block.data.onError,
+  (onError) => {
+    if (!onError) return;
+
+    const blockDetail = props.editor.getNodeFromId(block.id);
+    const outputLen = Object.keys(blockDetail.outputs).length;
+
+    if (!onError.enable || onError.toDo !== 'fallback') {
+      block.containerEl.classList.toggle('block-basic-fallback', false);
+
+      if (outputLen > 1) props.editor.removeNodeOutput(block.id, 'output_2');
+
+      return;
+    }
+
+    block.containerEl.classList.toggle('block-basic-fallback', true);
+
+    if (outputLen < 2) {
+      props.editor.addNodeOutput(block.id);
+    }
+
+    props.editor.updateConnectionNodes(`node-${block.id}`);
+  },
+  { deep: true }
+);
 </script>
 <style>
 .drawflow-node.selected .move-to-group,
 .block-basic:hover .move-to-group {
   visibility: visible;
+}
+.block-basic-fallback .output_2 {
+  top: 11px;
 }
 </style>

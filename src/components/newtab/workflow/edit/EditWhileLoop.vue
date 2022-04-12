@@ -27,6 +27,7 @@
         </div>
         <shared-condition-builder
           :model-value="data.conditions"
+          :autocomplete="autocomplete"
           class="overflow-auto p-4 mt-4 scroll"
           style="height: calc(100vh - 8rem)"
           @change="updateData({ conditions: $event })"
@@ -45,6 +46,10 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  autocomplete: {
+    type: Array,
+    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

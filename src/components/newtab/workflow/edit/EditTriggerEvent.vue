@@ -1,5 +1,8 @@
 <template>
-  <edit-interaction-base v-bind="{ data, hide: hideBase }" @change="updateData">
+  <edit-interaction-base
+    v-bind="{ data, autocomplete, hide: hideBase }"
+    @change="updateData"
+  >
     <ui-select
       :model-value="data.eventName"
       :placeholder="t('workflow.blocks.trigger-event.selectEvent')"
@@ -77,6 +80,10 @@ const props = defineProps({
   hideBase: {
     type: Boolean,
     default: false,
+  },
+  autocomplete: {
+    type: Array,
+    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

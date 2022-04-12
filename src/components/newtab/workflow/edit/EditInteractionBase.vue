@@ -20,13 +20,23 @@
           {{ t(`workflow.blocks.base.findElement.options.${type}`) }}
         </option>
       </ui-select>
-      <ui-input
+      <ui-autocomplete
         v-if="!hideSelector"
-        :model-value="data.selector"
-        :placeholder="t('workflow.blocks.base.selector')"
-        class="mb-1 w-full"
-        @change="updateData({ selector: $event })"
-      />
+        :items="autocomplete"
+        :trigger-char="['{{', '}}']"
+        block
+        hide-empty
+        class="mb-1"
+      >
+        <ui-input
+          v-if="!hideSelector"
+          :model-value="data.selector"
+          :placeholder="t('workflow.blocks.base.selector')"
+          autocomplete="off"
+          class="w-full"
+          @change="updateData({ selector: $event })"
+        />
+      </ui-autocomplete>
       <ui-expand
         v-if="!hideSelector"
         hide-header-icon
@@ -101,6 +111,10 @@ const props = defineProps({
   hideMultiple: {
     type: Boolean,
     default: false,
+  },
+  autocomplete: {
+    type: Array,
+    default: () => [],
   },
 });
 const emit = defineEmits(['update:data', 'change']);

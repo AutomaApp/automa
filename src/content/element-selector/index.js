@@ -64,7 +64,7 @@ function elementSelectorInstance() {
 
     const automaStyle = document.createElement('style');
     automaStyle.classList.add('automa-element-selector');
-    automaStyle.innerHTML = `.automa-element-selector { pointer-events: none; direction: ltr } \n [automa-isDragging] { user-select: none }`;
+    automaStyle.innerHTML = `.automa-element-selector { pointer-events: none; direction: ltr } \n [automa-isDragging] { user-select: none } \n [automa-el-list] {outline: 2px dashed #6366f1;}`;
 
     initElementSelector(rootElement);
 

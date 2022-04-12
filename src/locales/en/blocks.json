@@ -12,6 +12,28 @@
       "base": {
         "moveToGroup": "Move block to blocks group",
         "selector": "Element selector",
+        "onError": {
+          "info": "These rules will apply when an error occurs on the block",
+          "button": "On error",
+          "title": "On error occurs",
+          "retry": "Retry action",
+          "fallbackTitle": "Will execute when an error occurs in the block",
+          "times": {
+            "name": "Times",
+            "description": "The number of times to retry the action",
+          },
+          "interval": {
+            "name": "Interval",
+            "description": "The time interval to wait between each try",
+            "second": "second"
+          },
+          "toDo": {
+            "error": "Throw error",
+            "continue": "Continue flow",
+            "fallback": "Execute fallback",
+            "restart": "Restart flow"
+          }
+        },
         "table": {
           "checkbox": "Insert to table",
           "select": "Select column",

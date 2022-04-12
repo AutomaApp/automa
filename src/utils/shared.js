@@ -197,6 +197,7 @@ export const tasks = {
     maxConnection: 1,
     allowedInputs: true,
     refDataKeys: ['fileName'],
+    autocomplete: ['variableName'],
     data: {
       fileName: '',
       ext: 'png',
@@ -281,6 +282,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     refDataKeys: ['selector', 'prefixText', 'suffixText', 'extraRowValue'],
+    autocomplete: ['variableName'],
     data: {
       description: '',
       findBy: 'cssSelector',
@@ -385,6 +387,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     refDataKeys: ['selector', 'attributeName', 'extraRowValue'],
+    autocomplete: ['variableName'],
     data: {
       description: '',
       findBy: 'cssSelector',
@@ -415,6 +418,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     refDataKeys: ['selector', 'value'],
+    autocomplete: ['variableName'],
     data: {
       description: '',
       findBy: 'cssSelector',
@@ -518,6 +522,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     refDataKeys: ['customData', 'range', 'spreadsheetId'],
+    autocomplete: ['refKey'],
     data: {
       range: '',
       refKey: '',
@@ -579,6 +584,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     refDataKeys: ['body', 'url'],
+    autocomplete: ['variableName'],
     data: {
       description: '',
       url: '',
@@ -627,6 +633,7 @@ export const tasks = {
       'referenceKey',
       'elementSelector',
     ],
+    autocomplete: ['variableName', 'loopId'],
     data: {
       loopId: '',
       maxLoop: 0,
@@ -684,6 +691,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    autocomplete: ['variableName'],
     data: {
       description: '',
       assignVariable: false,
@@ -825,7 +833,8 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['promptText'],
+    refDataKeys: ['filename'],
+    autocomplete: ['variableName'],
     data: {
       description: '',
       filename: '',

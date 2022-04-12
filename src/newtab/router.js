@@ -9,10 +9,10 @@ import CollectionsDetails from './pages/collections/[id].vue';
 import Logs from './pages/Logs.vue';
 import LogsDetails from './pages/logs/[id].vue';
 import Settings from './pages/Settings.vue';
-import SettingsIndex from './pages/settings/index.vue';
-import SettingsAbout from './pages/settings/About.vue';
-import SettingsShortcuts from './pages/settings/Shortcuts.vue';
-import SettingsBackup from './pages/settings/Backup.vue';
+import SettingsIndex from './pages/settings/SettingsIndex.vue';
+import SettingsAbout from './pages/settings/SettingsAbout.vue';
+import SettingsShortcuts from './pages/settings/SettingsShortcuts.vue';
+import SettingsBackup from './pages/settings/SettingsBackup.vue';
 
 const routes = [
   {

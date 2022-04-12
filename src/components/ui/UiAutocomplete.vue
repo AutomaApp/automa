@@ -1,21 +1,15 @@
 <template>
   <ui-popover
+    :id="componentId"
     v-model="state.showPopover"
+    :class="{ block }"
+    :padding="`p-2 max-h-56 overflow-auto scroll ${componentId}`"
     trigger-width
     trigger="manual"
-    :padding="`p-2 max-h-56 overflow-auto scroll ${componentId}`"
+    class="ui-autocomplete"
   >
     <template #trigger>
-      <ui-input
-        v-bind="{ modelValue, placeholder, label, prependIcon }"
-        autocomplete="off"
-        @focus="state.showPopover = true"
-        @blur="state.showPopover = false"
-        @keydown="handleKeydown"
-        @change="updateValue"
-        @keyup.enter="selectItem(state.activeIndex)"
-        @keyup.esc="state.showPopover = false"
-      />
+      <slot />
     </template>
     <p v-if="filteredItems.length === 0" class="text-center">No data to show</p>
     <ui-list v-else class="space-y-1">
@@ -36,7 +30,13 @@
   </ui-popover>
 </template>
 <script setup>
-import { computed, onMounted, shallowReactive, watch } from 'vue';
+import {
+  computed,
+  onMounted,
+  onBeforeUnmount,
+  shallowReactive,
+  watch,
+} from 'vue';
 import { useComponentId } from '@/composable/componentId';
 import { debounce } from '@/utils/helper';
 
@@ -53,24 +53,27 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  label: {
-    type: String,
-    default: '',
+  triggerChar: {
+    type: Array,
+    default: () => [],
   },
-  placeholder: {
-    type: String,
-    default: '',
+  block: {
+    type: Boolean,
+    default: false,
   },
-  prependIcon: {
-    type: String,
-    default: '',
+  hideEmpty: {
+    type: Boolean,
+    default: false,
   },
 });
 const emit = defineEmits(['update:modelValue', 'change']);
 
+let input = null;
 const componentId = useComponentId('autocomplete');
 
 const state = shallowReactive({
+  charIndex: -1,
+  searchText: '',
   activeIndex: -1,
   showPopover: false,
   inputChanged: false,
@@ -78,32 +81,71 @@ const state = shallowReactive({
 
 const getItem = (item) => item[props.itemLabel] || item;
 
-const filteredItems = computed(() =>
-  props.items.filter(
+const filteredItems = computed(() => {
+  if (!state.showPopover) return [];
+
+  const triggerChar = props.triggerChar.length > 0;
+  const searchText = (
+    triggerChar ? state.searchText : props.modelValue
+  ).toLocaleLowerCase();
+
+  return props.items.filter(
     (item) =>
       !state.inputChanged ||
-      getItem(item)
-        ?.toLocaleLowerCase()
-        .includes(props.modelValue.toLocaleLowerCase())
-  )
-);
+      getItem(item)?.toLocaleLowerCase().includes(searchText)
+  );
+});
 
-function handleKeydown(event) {
-  if (!state.showPopover) state.showPopover = true;
+function getLastKeyBeforeCaret(caretIndex) {
+  const getPosition = (val, index) => ({
+    index,
+    charIndex: input.value.lastIndexOf(val, caretIndex - 1),
+  });
+  const [charData] = props.triggerChar
+    .map(getPosition)
+    .sort((a, b) => b.charIndex - a.charIndex);
 
-  const itemsLength = filteredItems.value.length - 1;
+  if (charData.index > 0) return -1;
 
-  if (event.key === 'ArrowUp') {
-    if (state.activeIndex <= 0) state.activeIndex = itemsLength;
-    else state.activeIndex -= 1;
+  return charData.charIndex;
+}
+function getSearchText(caretIndex, charIndex) {
+  if (charIndex !== -1) {
+    const charsLength = props.triggerChar.length;
+    const text = input.value.substring(charIndex + charsLength, caretIndex);
 
-    event.preventDefault();
-  } else if (event.key === 'ArrowDown') {
-    if (state.activeIndex >= itemsLength) state.activeIndex = 0;
-    else state.activeIndex += 1;
-
-    event.preventDefault();
+    if (!/\s/.test(text)) {
+      return text;
+    }
   }
+
+  return null;
+}
+function showPopover() {
+  if (props.triggerChar.length < 1) {
+    state.showPopover = true;
+    return;
+  }
+
+  const { selectionStart } = input;
+
+  if (selectionStart >= 0) {
+    const charIndex = getLastKeyBeforeCaret(selectionStart);
+    const text = getSearchText(selectionStart, charIndex);
+
+    if (charIndex >= 0 && text) {
+      state.inputChanged = true;
+      state.showPopover = true;
+      state.searchText = text;
+      state.charIndex = charIndex;
+
+      return;
+    }
+  }
+
+  state.charIndex = -1;
+  state.searchText = '';
+  state.showPopover = false;
 }
 function checkInView(container, element, partial = false) {
   const cTop = container.scrollTop;
@@ -120,20 +162,94 @@ function checkInView(container, element, partial = false) {
   return isTotal || isPartial;
 }
 function updateValue(value) {
-  if (!state.showPopover) state.showPopover = true;
-
   state.inputChanged = true;
 
   emit('change', value);
   emit('update:modelValue', value);
+
+  input.value = value;
+  input.dispatchEvent(new Event('input'));
 }
-function selectItem(index) {
-  const selectedItem = filteredItems.value[index];
+function selectItem(itemIndex) {
+  let selectedItem = filteredItems.value[itemIndex];
 
   if (!selectedItem) return;
 
-  updateValue(getItem(selectedItem));
+  selectedItem = getItem(selectedItem);
+
+  let caretPosition;
+  const isTriggerChar = state.charIndex >= 0 && state.searchText;
+
+  if (isTriggerChar) {
+    const val = input.value;
+    const index = state.charIndex;
+    const charLength = props.triggerChar[0].length;
+
+    caretPosition = index + charLength + selectedItem.length;
+    selectedItem =
+      val.slice(0, index + charLength) +
+      selectedItem +
+      val.slice(state.searchText.length + index + charLength, val.length);
+  }
+
+  updateValue(selectedItem);
+
+  if (isTriggerChar) {
+    setTimeout(() => {
+      input.selectionEnd = caretPosition;
+      const isNotTextarea = input.tagName !== 'TEXTAREA';
+
+      if (isNotTextarea) {
+        input.blur();
+        input.focus();
+      }
+    }, 300);
+  }
+}
+function handleKeydown(event) {
+  const itemsLength = filteredItems.value.length - 1;
+
+  if (event.key === 'ArrowUp') {
+    if (state.activeIndex <= 0) state.activeIndex = itemsLength;
+    else state.activeIndex -= 1;
+
+    event.preventDefault();
+  } else if (event.key === 'ArrowDown') {
+    if (state.activeIndex >= itemsLength) state.activeIndex = 0;
+    else state.activeIndex += 1;
+
+    event.preventDefault();
+  } else if (event.key === 'Enter' && state.showPopover) {
+    selectItem(state.activeIndex);
+
+    event.preventDefault();
+  } else if (event.key === 'Escape') {
+    state.showPopover = false;
+  }
+}
+function handleBlur() {
   state.showPopover = false;
+}
+function handleFocus() {
+  if (props.triggerChar.length < 1) return;
+
+  showPopover();
+}
+function attachEvents() {
+  if (!input) return;
+
+  input.addEventListener('blur', handleBlur);
+  input.addEventListener('focus', handleFocus);
+  input.addEventListener('input', showPopover);
+  input.addEventListener('keydown', handleKeydown);
+}
+function detachEvents() {
+  if (!input) return;
+
+  input.removeEventListener('blur', handleBlur);
+  input.removeEventListener('focus', handleFocus);
+  input.removeEventListener('input', showPopover);
+  input.removeEventListener('keydown', handleKeydown);
 }
 
 watch(
@@ -154,16 +270,36 @@ watch(
   () => state.showPopover,
   (value) => {
     if (!value) state.inputChanged = false;
+
+    if (props.hideEmpty && filteredItems.value.length === 0) {
+      state.showPopover = false;
+    }
   }
 );
 
 onMounted(() => {
   if (props.modelValue) {
-    const activeIndex = props.items(
+    const activeIndex = props.items.findIndex(
       (item) => getItem(item) === props.modelValue
     );
 
     if (activeIndex !== -1) state.activeIndex = activeIndex;
   }
+
+  input = document.querySelector(
+    `#${componentId} input, #${componentId} textarea`
+  );
+
+  attachEvents();
+});
+onBeforeUnmount(() => {
+  detachEvents();
 });
 </script>
+<style>
+.ui-autocomplete.block,
+.ui-autocomplete.block .ui-popover__trigger {
+  width: 100%;
+  display: block;
+}
+</style>

@@ -16,13 +16,22 @@
         {{ t(`workflow.blocks.export-data.dataToExport.options.${option}`) }}
       </option>
     </ui-select>
-    <ui-input
-      :model-value="data.name"
-      label="File name"
-      class="w-full mt-2"
-      placeholder="unnamed"
-      @change="updateData({ name: $event })"
-    />
+    <ui-autocomplete
+      :items="autocomplete"
+      :trigger-char="['{{', '}}']"
+      block
+      hide-empty
+      class="mt-2"
+    >
+      <ui-input
+        :model-value="data.name"
+        autocomplete="off"
+        label="File name"
+        class="w-full"
+        placeholder="unnamed"
+        @change="updateData({ name: $event })"
+      />
+    </ui-autocomplete>
     <ui-select
       v-if="permission.has.downloads"
       :model-value="data.onConflict"
@@ -71,6 +80,10 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  autocomplete: {
+    type: Array,
+    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);
