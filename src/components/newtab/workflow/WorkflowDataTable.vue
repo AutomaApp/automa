@@ -54,7 +54,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-const emit = defineEmits(['update', 'close']);
+const emit = defineEmits(['update', 'close', 'change']);
 
 const { t } = useI18n();
 
@@ -123,7 +123,7 @@ onMounted(() => {
       }
 
       return column;
-    }) || props.workflow.table;
+    }) || [];
 
   if (isChanged) {
     const data = { table: state.columns };

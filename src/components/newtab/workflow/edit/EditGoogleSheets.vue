@@ -215,10 +215,10 @@ async function previewData() {
       range: props.data.range,
     });
 
-    if (response.status !== 200) {
+    if (!response.ok) {
       const error = await response.json();
 
-      throw new Error(response.statusText || error.statusMessage);
+      throw new Error(error.statusMessage || response.statusText);
     }
 
     const { values } = await response.json();
