@@ -184,11 +184,12 @@ export default {
           traceBlockData(props.data.blockId, currentBlock, blocks);
         }
 
-        if (!autocompleteData.value.table)
+        if (!autocompleteData.value.table) {
           autocompleteData.value.table = new Set();
-        props.workflow.table.forEach((column) => {
-          autocompleteData.value.table.add(`table@${column.name}`);
-        });
+          props.workflow.table?.forEach((column) => {
+            autocompleteData.value.table.add(`table@${column.name}`);
+          });
+        }
       },
       { immediate: true }
     );
