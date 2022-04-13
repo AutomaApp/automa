@@ -199,6 +199,7 @@ const getElementSelector = (element, options = {}) =>
           '[src=*]',
           '[data-*]',
           '[href=*]',
+          '[style=*]',
           '[value=*]',
           '[automa-*]',
         ],

@@ -23,20 +23,24 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
 
     const result = await this._sendMessageToTab({ ...block, data, refData });
 
-    if (result?.columns.data.$error) {
-      throw new Error(result?.columns.data.message);
-    }
-    if (result?.variables) {
-      Object.keys(result.variables).forEach((varName) => {
-        this.setVariable(varName, result.variables[varName]);
-      });
-    }
-    if (result?.columns.insert) {
-      const params = Array.isArray(result.columns.data)
-        ? result.columns.data
-        : [result.columns.data];
+    if (result) {
+      if (result.columns.data?.$error) {
+        throw new Error(result.columns.data.message);
+      }
 
-      this.addDataToColumn(params);
+      if (result.variables) {
+        Object.keys(result.variables).forEach((varName) => {
+          this.setVariable(varName, result.variables[varName]);
+        });
+      }
+
+      if (result.columns.insert && result.columns.data) {
+        const params = Array.isArray(result.columns.data)
+          ? result.columns.data
+          : [result.columns.data];
+
+        this.addDataToColumn(params);
+      }
     }
 
     return {

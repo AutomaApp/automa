@@ -28,7 +28,7 @@
     />
     <on-block-error
       v-if="!excludeOnError.includes(data.id)"
-      :key="data.blockId"
+      :key="data.itemId || data.blockId"
       :data="data"
       class="mt-4"
       @change="$emit('update', { ...blockData, onError: $event })"
