@@ -12,6 +12,28 @@
       "base": {
         "moveToGroup": "移动模块到模块组",
         "selector": "元素选择器",
+        "onError": {
+          "info": "这些规则适用于模块发生错误时",
+          "button": "出错时",
+          "title": "发生错误时",
+          "retry": "重试操作",
+          "fallbackTitle": "当模块发生错误时将执行",
+          "times": {
+            "name": "次数",
+            "description": "重试操作的次数",
+          },
+          "interval": {
+            "name": "间隔",
+            "description": "每次尝试等待的时间",
+            "second": "秒"
+          },
+          "toDo": {
+            "error": "抛出错误",
+            "continue": "继续流程",
+            "fallback": "执行回退",
+            "restart": "重启流程"
+          }
+        },
         "table": {
           "checkbox": "插入表格",
           "select": "选择列",

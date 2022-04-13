@@ -110,6 +110,11 @@ const settingItems = [
     description: t('workflow.settings.debugMode.description'),
   },
   {
+    id: 'inputAutocomplete',
+    name: t('workflow.settings.autocomplete.title'),
+    description: t('workflow.settings.autocomplete.description'),
+  },
+  {
     id: 'reuseLastState',
     name: t('workflow.settings.reuseLastState.title'),
     description: t('workflow.settings.reuseLastState.description'),
@@ -128,6 +133,7 @@ const settingItems = [
 
 const settings = reactive({
   restartTimes: 3,
+  inputAutocomplete: true,
 });
 
 async function onClearCacheClick() {

@@ -134,6 +134,7 @@ async function fetchUserData() {
       getSharedWorkflows(),
       getUserWorkflows(),
     ]);
+
     localStorage.setItem('username', user.username);
 
     if (sharedWorkflows.status === 'fulfilled') {
@@ -148,10 +149,10 @@ async function fetchUserData() {
 
       store.commit('updateState', {
         key: 'hostWorkflows',
-        value: hosted,
+        value: hosted || {},
       });
 
-      if (backup.length > 0) {
+      if (backup?.length > 0) {
         const { lastBackup } = browser.storage.local.get('lastBackup');
         if (!lastBackup) {
           const backupIds = backup.map(({ id }) => id);

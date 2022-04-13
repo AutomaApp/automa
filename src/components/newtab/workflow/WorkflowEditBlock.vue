@@ -28,7 +28,7 @@
     />
     <on-block-error
       v-if="!excludeOnError.includes(data.id)"
-      :key="data.blockId"
+      :key="data.itemId || data.blockId"
       :data="data"
       class="mt-4"
       @change="$emit('update', { ...blockData, onError: $event })"
@@ -148,35 +148,41 @@ export default {
       }
     }
     function traceBlockData(
-      id,
-      { name, inputs, data },
+      blockId,
+      { name, inputs, data, id },
       blocks,
-      maxDepth = 100
+      maxDepth = 20
     ) {
-      if (maxDepth === 0) return;
+      const notFirstDepth = maxDepth !== 20;
 
-      if (maxDepth !== 100) {
+      if (maxDepth === 0 || (blockId === id && notFirstDepth)) return;
+
+      if (notFirstDepth) {
         if (name === 'blocks-group') getGroupBlockData(data.blocks);
         else addAutocompleteData(props.data.blockId, name, data);
       }
 
       inputs?.input_1?.connections.forEach(({ node }) => {
-        traceBlockData(id, blocks[node], blocks, maxDepth - 1);
+        traceBlockData(blockId, blocks[node], blocks, maxDepth - 1);
       });
     }
 
     watch(
       () => [props.data.blockId, props.data.itemId],
       () => {
-        const id = props.data.blockId;
+        const enableAutocomplete =
+          props.workflow.settings?.inputAutocomplete ?? true;
 
-        if (
-          !props.autocomplete ||
-          !props.autocomplete[id] ||
-          props.dataChanged
-        ) {
+        if (!enableAutocomplete) return;
+
+        const id = props.data.blockId;
+        const isDataChanging =
+          !props.autocomplete || !props.autocomplete[id] || props.dataChanged;
+        if (isDataChanging) {
           const blocks = props.editor.export().drawflow.Home.data;
           const currentBlock = blocks[id];
+
+          if (Object.keys(blocks).length > 32) return;
 
           if (props.data.isInGroup)
             getGroupBlockData(currentBlock.data.blocks, props.data.itemId);

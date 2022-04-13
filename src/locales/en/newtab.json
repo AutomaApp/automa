@@ -173,6 +173,10 @@
     "settings": {
       "saveLog": "Save workflow log",
       "executedBlockOnWeb": "Show executed block on web page",
+      "autocomplete": {
+        "title": "Autocomplete",
+        "description": "Enable autocomplete in the input block (disable if it makes Automa unstable)"
+      },
       "clearCache": {
         "title": "Clear cache",
         "description": "Clear cache (state and loop index) of the workflow",
