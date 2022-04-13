@@ -24,6 +24,14 @@
     "shortcuts": {
       "duplicate": "快捷方式已被 \"{name}\" 占用"
     },
+    "editor": {
+      "curvature": {
+        "title": "编辑器线条曲率",
+        "line": "线条",
+        "reroute": "重绘路线",
+        "rerouteFirstLast": "重绘首尾点"
+      },
+    },
     "language": {
       "label": "语言",
       "helpTranslate": "找不到您的语言？ 帮助翻译.",
