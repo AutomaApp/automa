@@ -25,12 +25,17 @@
       "duplicate": "Shortcut already use by \"{name}\""
     },
     "editor": {
+      "title": "Title",
       "curvature": {
-        "title": "Editor Line Curvature",
+        "title": "Line Curvature",
         "line": "Line",
         "reroute": "Reroute",
         "rerouteFirstLast": "Reroute first & last point"
       },
+      "arrow": {
+        "title": "Line arrow",
+        "description": "Add an arrow at the end of the line"
+      }
     },
     "language": {
       "label": "Language",

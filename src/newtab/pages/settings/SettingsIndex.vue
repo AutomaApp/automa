@@ -54,25 +54,6 @@
       {{ t('settings.language.reloadPage') }}
     </p>
   </div>
-  <div class="mt-12 max-w-2xl">
-    <p class="font-semibold">
-      {{ t('settings.editor.curvature.title') }}
-    </p>
-    <div class="flex space-x-2 items-end">
-      <ui-input
-        v-for="item in curvatureSettings"
-        :key="item.id"
-        :model-value="settings.editor[item.key]"
-        :label="t(`settings.editor.curvature.${item.id}`)"
-        type="number"
-        min="0"
-        max="1"
-        class="w-full"
-        placeholder="0.5"
-        @change="updateSetting(`editor.${item.key}`, curvatureLimit($event))"
-      />
-    </div>
-  </div>
 </template>
 <script setup>
 import { computed, ref } from 'vue';
@@ -82,12 +63,6 @@ import browser from 'webextension-polyfill';
 import { useTheme } from '@/composable/theme';
 import { supportLocales } from '@/utils/shared';
 
-const curvatureSettings = [
-  { id: 'line', key: 'curvature' },
-  { id: 'reroute', key: 'reroute_curvature' },
-  { id: 'rerouteFirstLast', key: 'reroute_curvature_start_end' },
-];
-
 const { t } = useI18n();
 const store = useStore();
 const theme = useTheme();
@@ -95,12 +70,6 @@ const theme = useTheme();
 const isLangChange = ref(false);
 const settings = computed(() => store.state.settings);
 
-function curvatureLimit(value) {
-  if (value > 1) return 1;
-  if (value < 0) return 0;
-
-  return value;
-}
 function updateSetting(path, value) {
   store.commit('updateStateNested', {
     value,

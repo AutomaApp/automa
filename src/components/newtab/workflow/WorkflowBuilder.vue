@@ -1,6 +1,7 @@
 <template>
   <div
     id="drawflow"
+    :class="{ 'with-arrow': $store.state.settings.editor.arrow }"
     class="parent-drawflow relative"
     @drop="dropHandler"
     @dragover.prevent="handleDragOver"
@@ -530,5 +531,13 @@ export default {
 }
 .drawflow .drawflow-node {
   @apply dark:bg-gray-800;
+}
+#drawflow.with-arrow .drawflow-node .input {
+  background-color: transparent !important;
+  border-top: 10px solid transparent;
+  border-radius: 0;
+  border-left: 10px solid white;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid transparent;
 }
 </style>
