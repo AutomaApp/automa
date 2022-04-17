@@ -79,6 +79,7 @@ import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { compare } from 'compare-versions';
 import defu from 'defu';
+import SelectionArea from '@viselect/vanilla';
 import emitter from '@/lib/mitt';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { tasks } from '@/utils/shared';
@@ -131,6 +132,11 @@ export default {
         },
       ],
     };
+
+    let activeNode = null;
+    let hasDragged = false;
+    let isDragging = false;
+    let selectedElements = [];
 
     const editor = shallowRef(null);
     const contextMenu = reactive({
@@ -354,6 +360,60 @@ export default {
 
       localStorage.setItem('editor-states', JSON.stringify(editorStates));
     }
+    function initSelectArea() {
+      const selection = new SelectionArea({
+        container: '#drawflow',
+        startareas: ['#drawflow'],
+        boundaries: ['#drawflow'],
+        selectables: ['.drawflow-node'],
+        features: {
+          singleTap: {
+            allow: false,
+          },
+        },
+      });
+
+      selection.on('beforestart', ({ event }) => {
+        if (!event.ctrlKey) return false;
+
+        editor.value.editor_mode = 'fixed';
+        editor.value.editor_selected = false;
+
+        return true;
+      });
+      selection.on('move', () => {
+        hasDragged = true;
+      });
+      selection.on('stop', (event) => {
+        event.store.selected.forEach((el) => {
+          const isExists = selectedElements.some((item) =>
+            item.el.isEqualNode(el)
+          );
+
+          if (isExists) return;
+
+          el.classList.toggle('selected-list', true);
+
+          selectedElements.push({
+            el,
+            id: el.id.slice(5),
+            posY: parseInt(el.style.top, 10),
+            posX: parseInt(el.style.left, 10),
+          });
+        });
+
+        setTimeout(() => {
+          hasDragged = false;
+        }, 500);
+      });
+    }
+    function clearSelectedElements() {
+      selectedElements.forEach(({ el }) => {
+        el.classList.remove('selected-list');
+      });
+      selectedElements = [];
+      activeNode = null;
+    }
 
     useShortcut('editor:duplicate-block', () => {
       const selectedElement = document.querySelector('.drawflow-node.selected');
@@ -368,6 +428,84 @@ export default {
     onMounted(() => {
       const context = getCurrentInstance().appContext.app._context;
       const element = document.querySelector('#drawflow');
+
+      element.addEventListener('mousedown', ({ target }) => {
+        const nodeEl = target.closest('.drawflow-node');
+        if (!nodeEl) return;
+
+        if (nodeEl.classList.contains('selected-list')) {
+          activeNode = {
+            el: nodeEl,
+            id: nodeEl.id.slice(5),
+            posY: parseInt(nodeEl.style.top, 10),
+            posX: parseInt(nodeEl.style.left, 10),
+          };
+        }
+
+        isDragging = true;
+      });
+      element.addEventListener('mouseup', ({ target }) => {
+        editor.value.editor_mode = 'edit';
+
+        const isNodeEl = target.closest('.drawflow-node');
+        if (!isNodeEl) return;
+
+        const getPosition = (el) => {
+          return {
+            posY: parseInt(el.style.top, 10),
+            posX: parseInt(el.style.left, 10),
+          };
+        };
+
+        selectedElements.forEach(({ el }, index) => {
+          Object.assign(selectedElements[index], getPosition(el));
+        });
+
+        if (activeNode) Object.assign(activeNode, getPosition(activeNode.el));
+
+        isDragging = false;
+      });
+      element.addEventListener('click', ({ ctrlKey, target }) => {
+        const nodeEl = target.closest('.drawflow-node');
+        if (!nodeEl) {
+          if (!hasDragged) clearSelectedElements();
+          return;
+        }
+
+        const nodeProperties = {
+          el: nodeEl,
+          id: nodeEl.id.slice(5),
+          posY: parseInt(nodeEl.style.top, 10),
+          posX: parseInt(nodeEl.style.left, 10),
+        };
+
+        if (!ctrlKey && !hasDragged) {
+          clearSelectedElements();
+
+          activeNode = nodeProperties;
+          nodeEl.classList.add('selected-list');
+          selectedElements = [nodeProperties];
+          hasDragged = false;
+
+          return;
+        }
+        hasDragged = false;
+
+        if (!ctrlKey) return;
+
+        const nodeIndex = selectedElements.findIndex(({ el }) =>
+          nodeEl.isEqualNode(el)
+        );
+        if (nodeIndex !== -1) {
+          setTimeout(() => {
+            nodeEl.classList.remove('selected-list', 'selected');
+          }, 400);
+          selectedElements.splice(nodeIndex, 1);
+        } else {
+          nodeEl.classList.add('selected-list');
+          selectedElements.push(nodeProperties);
+        }
+      });
 
       editor.value = drawflow(element, {
         context,
@@ -447,6 +585,33 @@ export default {
         );
       }
 
+      editor.value.on('mouseMove', () => {
+        if (!activeNode || !isDragging) return;
+
+        const xDistance =
+          parseInt(activeNode.el.style.left, 10) - activeNode.posX;
+        const yDistance =
+          parseInt(activeNode.el.style.top, 10) - activeNode.posY;
+
+        selectedElements.forEach(({ el, posX, posY }) => {
+          if (el.isEqualNode(activeNode.el)) return;
+
+          const nodeId = el.id.slice(5);
+          const node = editor.value.drawflow.drawflow.Home.data[nodeId];
+
+          const newPosX = posX + xDistance;
+          const newPosY = posY + yDistance;
+
+          node.pos_x = newPosX;
+          node.pos_y = newPosY;
+          el.style.top = `${newPosY}px`;
+          el.style.left = `${newPosX}px`;
+
+          editor.value.updateConnectionNodes(el.id);
+        });
+
+        hasDragged = true;
+      });
       editor.value.on('nodeRemoved', (id) => {
         emit('deleteBlock', id);
       });
@@ -499,6 +664,7 @@ export default {
       });
 
       checkWorkflowData();
+      initSelectArea();
 
       setTimeout(() => {
         editor.value.zoom_refresh();
@@ -525,6 +691,7 @@ export default {
 #drawflow {
   background-image: url('@/assets/images/tile.png');
   background-size: 35px;
+  user-select: none;
 }
 .dark #drawflow {
   background-image: url('@/assets/images/tile-white.png');
@@ -539,5 +706,10 @@ export default {
   border-left: 10px solid white;
   border-right: 10px solid transparent;
   border-bottom: 10px solid transparent;
+}
+.selection-area {
+  background: rgba(46, 115, 252, 0.11);
+  border: 2px solid rgba(98, 155, 255, 0.81);
+  border-radius: 0.1em;
 }
 </style>

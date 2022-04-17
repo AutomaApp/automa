@@ -1,3 +1,4 @@
+.drawflow-node.selected-list .menu,
 .drawflow-node.selected .menu,
 .drawflow-node .block-base:hover .menu {
   @apply translate-y-11;
@@ -34,7 +35,8 @@
   @apply rounded-lg transition ring-2 ring-transparent duration-200 shadow-lg;
 }
 
-.drawflow .drawflow-node.selected {
+.drawflow .drawflow-node.selected,
+.drawflow .drawflow-node.selected-list {
   @apply ring-accent;
 }
 

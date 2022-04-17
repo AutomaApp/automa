@@ -34,6 +34,7 @@
     "@tiptap/extension-placeholder": "^2.0.0-beta.48",
     "@tiptap/starter-kit": "^2.0.0-beta.181",
     "@tiptap/vue-3": "^2.0.0-beta.90",
+    "@viselect/vanilla": "^3.0.0-beta.13",
     "@vuex-orm/core": "^0.36.4",
     "compare-versions": "^4.1.2",
     "crypto-js": "^4.1.1",
