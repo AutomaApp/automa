@@ -430,7 +430,7 @@ export const tasks = {
       selected: true,
       clearValue: true,
       getValue: false,
-      saveData: true,
+      saveData: false,
       dataColumn: '',
       assignVariable: false,
       variableName: '',
