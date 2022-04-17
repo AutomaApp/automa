@@ -506,6 +506,20 @@ export default {
           selectedElements.push(nodeProperties);
         }
       });
+      element.addEventListener('keyup', ({ key, target }) => {
+        const isAnInput =
+          ['INPUT', 'TEXTAREA'].includes(target.tagName) &&
+          target.isContentEditable;
+
+        if (key !== 'Delete' || isAnInput) return;
+
+        selectedElements.forEach(({ id }) => {
+          editor.value.removeNodeId(`node-${id}`);
+        });
+
+        selectedElements = [];
+        activeNode = null;
+      });
 
       editor.value = drawflow(element, {
         context,
