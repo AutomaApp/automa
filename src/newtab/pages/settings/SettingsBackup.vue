@@ -4,44 +4,40 @@
       <h2 class="font-semibold mb-2">
         {{ t('settings.backupWorkflows.cloud.title') }}
       </h2>
-      <template v-if="$store.state.user.subscription !== 'free'">
-        <div
-          class="border dark:border-gray-700 p-4 rounded-lg flex items-center"
-        >
-          <span class="inline-block p-2 rounded-full bg-box-transparent">
-            <v-remixicon name="riUploadLine" />
-          </span>
-          <div class="flex-1 ml-4 leading-tight">
-            <p class="text-sm text-gray-600 dark:text-gray-200">
-              {{ t('settings.backupWorkflows.cloud.lastBackup') }}
-            </p>
-            <p>{{ formatDate(state.lastBackup) }}</p>
-          </div>
-          <ui-button
-            :loading="backupState.loading"
-            @click="backupState.modal = true"
-          >
-            {{ t('settings.backupWorkflows.backup.button') }}
-          </ui-button>
-        </div>
-        <div
-          class="border dark:border-gray-700 p-4 rounded-lg flex items-center mt-2"
-        >
-          <span class="inline-block p-2 rounded-full bg-box-transparent">
-            <v-remixicon name="riDownloadLine" />
-          </span>
-          <p class="flex-1 ml-4">
-            {{ t('settings.backupWorkflows.cloud.sync') }}
+      <div class="border dark:border-gray-700 p-4 rounded-lg flex items-center">
+        <span class="inline-block p-2 rounded-full bg-box-transparent">
+          <v-remixicon name="riUploadLine" />
+        </span>
+        <div class="flex-1 ml-4 leading-tight">
+          <p class="text-sm text-gray-600 dark:text-gray-200">
+            {{ t('settings.backupWorkflows.cloud.lastBackup') }}
           </p>
-          <ui-button
-            :loading="state.loadingSync"
-            class="ml-2"
-            @click="syncBackupWorkflows"
-          >
-            {{ t('settings.backupWorkflows.cloud.sync') }}
-          </ui-button>
+          <p>{{ formatDate(state.lastBackup) }}</p>
         </div>
-      </template>
+        <ui-button
+          :loading="backupState.loading"
+          @click="backupState.modal = true"
+        >
+          {{ t('settings.backupWorkflows.backup.button') }}
+        </ui-button>
+      </div>
+      <div
+        class="border dark:border-gray-700 p-4 rounded-lg flex items-center mt-2"
+      >
+        <span class="inline-block p-2 rounded-full bg-box-transparent">
+          <v-remixicon name="riDownloadLine" />
+        </span>
+        <p class="flex-1 ml-4">
+          {{ t('settings.backupWorkflows.cloud.sync') }}
+        </p>
+        <ui-button
+          :loading="state.loadingSync"
+          class="ml-2"
+          @click="syncBackupWorkflows"
+        >
+          {{ t('settings.backupWorkflows.cloud.sync') }}
+        </ui-button>
+      </div>
       <p v-if="false">
         Upgrade to the
         <a
@@ -88,10 +84,8 @@
   </div>
   <ui-modal
     v-model="backupState.modal"
+    :title="t('settings.backupWorkflows.cloud.title')"
     content-class="max-w-4xl"
-    persist
-    blur
-    custom-content
   >
     <settings-cloud-backup
       v-model:ids="backupState.ids"

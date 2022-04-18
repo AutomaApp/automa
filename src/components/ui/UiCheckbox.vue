@@ -4,10 +4,13 @@
     :class="[block ? 'flex' : 'inline-flex']"
   >
     <div
-      :class="{ 'pointer-events-none opacity-75': disabled }"
+      :class="{
+        'pointer-events-none opacity-75': disabled,
+      }"
       class="relative h-5 w-5 inline-block focus-within:ring-2 focus-within:ring-accent rounded"
     >
       <input
+        :class="{ indeterminate }"
         type="checkbox"
         class="opacity-0 checkbox-ui__input"
         :value="modelValue"
@@ -18,7 +21,7 @@
         class="border dark:border-gray-700 rounded absolute top-0 left-0 bg-input checkbox-ui__mark cursor-pointer"
       >
         <v-remixicon
-          name="riCheckLine"
+          :name="indeterminate ? 'riSubtractLine' : 'riCheckLine'"
           size="20"
           class="text-white dark:text-black"
         ></v-remixicon>
@@ -33,6 +36,10 @@
 export default {
   props: {
     modelValue: {
+      type: Boolean,
+      default: false,
+    },
+    indeterminate: {
       type: Boolean,
       default: false,
     },
@@ -59,13 +66,15 @@ export default {
 };
 </script>
 <style scoped>
-.checkbox-ui__input:checked ~ .checkbox-ui__mark .v-remixicon {
+.checkbox-ui__input:checked ~ .checkbox-ui__mark .v-remixicon,
+.checkbox-ui__input.indeterminate ~ .checkbox-ui__mark .v-remixicon {
   transform: scale(1) !important;
 }
 .checkbox-ui .v-remixicon {
   transform: scale(0);
 }
-.checkbox-ui__input:checked ~ .checkbox-ui__mark {
+.checkbox-ui__input:checked ~ .checkbox-ui__mark,
+.checkbox-ui__input.indeterminate ~ .checkbox-ui__mark {
   @apply bg-accent border-accent bg-opacity-100;
 }
 .checkbox-ui__mark {
