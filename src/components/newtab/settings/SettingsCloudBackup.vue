@@ -19,6 +19,13 @@
           @click="state.activeTab = location"
         >
           {{ t(`settings.backupWorkflows.cloud.buttons.${location}`) }}
+          <span
+            v-if="location === 'cloud'"
+            class="ml-2 text-sm rounded-full bg-accent dark:text-black text-gray-100 text-center"
+            style="height: 29px; width: 29px; line-height: 29px"
+          >
+            {{ state.cloudWorkflows.length }}
+          </span>
         </ui-list-item>
       </ui-list>
       <ui-button

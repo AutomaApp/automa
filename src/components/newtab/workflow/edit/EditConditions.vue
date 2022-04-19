@@ -8,30 +8,33 @@
     >
       {{ t('workflow.blocks.conditions.add') }}
     </ui-button>
-    <ui-list class="space-y-1">
-      <ui-list-item
-        v-for="(item, index) in conditions"
-        :key="item.id"
-        class="group"
-      >
-        <v-remixicon name="riGuideLine" size="20" class="mr-2 -ml-1" />
-        <p class="flex-1 text-overflow" :title="item.name">
-          {{ item.name }}
-        </p>
-        <v-remixicon
-          class="cursor-pointer group-hover:visible invisible"
-          name="riPencilLine"
-          size="20"
-          @click="editCondition(index)"
-        />
-        <v-remixicon
-          name="riDeleteBin7Line"
-          size="20"
-          class="ml-2 -mr-1 cursor-pointer"
-          @click="deleteCondition(index)"
-        />
-      </ui-list-item>
-    </ui-list>
+    <draggable
+      v-model="conditions"
+      item-key="id"
+      tag="ui-list"
+      class="space-y-1"
+    >
+      <template #item="{ element, index }">
+        <ui-list-item class="group cursor-move">
+          <v-remixicon name="riGuideLine" size="20" class="mr-2 -ml-1" />
+          <p class="flex-1 text-overflow" :title="element.name">
+            {{ element.name }}
+          </p>
+          <v-remixicon
+            class="cursor-pointer group-hover:visible invisible"
+            name="riPencilLine"
+            size="20"
+            @click="editCondition(index)"
+          />
+          <v-remixicon
+            name="riDeleteBin7Line"
+            size="20"
+            class="ml-2 -mr-1 cursor-pointer"
+            @click="deleteCondition(index)"
+          />
+        </ui-list-item>
+      </template>
+    </draggable>
     <ui-modal v-model="state.showModal" custom-content>
       <ui-card padding="p-0" class="w-full max-w-3xl">
         <div class="px-4 pt-4 flex items-center">
@@ -66,6 +69,7 @@
 import { ref, watch, onMounted, shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid';
+import Draggable from 'vuedraggable';
 import emitter from '@/lib/mitt';
 import SharedConditionBuilder from '@/components/newtab/shared/SharedConditionBuilder/index.vue';
 
