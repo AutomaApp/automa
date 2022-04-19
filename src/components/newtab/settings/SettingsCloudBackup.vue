@@ -14,6 +14,7 @@
           :key="location"
           :active="location === state.activeTab"
           :disabled="backupState.uploading || backupState.deleting"
+          color="bg-box-transparent"
           class="mb-1 cursor-pointer"
           @click="state.activeTab = location"
         >

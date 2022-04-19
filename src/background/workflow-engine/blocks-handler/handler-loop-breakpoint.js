@@ -4,10 +4,14 @@ function loopBreakpoint(block, { prevBlockData }) {
   const currentLoop = this.loopList[block.data.loopId];
 
   return new Promise((resolve) => {
-    const validLoopData =
-      currentLoop.type === 'numbers'
-        ? true
-        : currentLoop.index <= currentLoop.data.length - 1;
+    let validLoopData = false;
+
+    if (currentLoop) {
+      validLoopData =
+        currentLoop.type === 'numbers'
+          ? true
+          : currentLoop.index <= currentLoop.data.length - 1;
+    }
 
     if (
       currentLoop &&

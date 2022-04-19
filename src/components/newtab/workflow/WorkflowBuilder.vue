@@ -717,7 +717,7 @@ export default {
   background-color: transparent !important;
   border-top: 10px solid transparent;
   border-radius: 0;
-  border-left: 10px solid white;
+  border-left: 10px solid theme('colors.accent');
   border-right: 10px solid transparent;
   border-bottom: 10px solid transparent;
 }
