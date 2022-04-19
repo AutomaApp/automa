@@ -321,6 +321,7 @@ export const tasks = {
       refKey: '',
       type: 'json',
       description: '',
+      variableName: '',
       addBOMHeader: false,
       onConflict: 'uniquify',
       dataToExport: 'data-columns',

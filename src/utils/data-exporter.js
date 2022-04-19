@@ -51,10 +51,16 @@ export default function (
         ? Papa.unparse(jsonData)
         : JSON.stringify(jsonData, null, 2);
   } else if (type === 'plain-text') {
+    const extractObj = (obj) => {
+      if (typeof obj !== 'object') return [obj];
+
+      return Object.values(obj);
+    };
+
     result = (
       Array.isArray(data)
-        ? data.map((item) => Object.values(item)).flat()
-        : Object.values(data)
+        ? data.flatMap((item) => extractObj(item))
+        : extractObj(data)
     ).join(' ');
   }
 

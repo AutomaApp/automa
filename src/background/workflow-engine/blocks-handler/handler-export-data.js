@@ -11,6 +11,15 @@ async function exportData({ data, outputs }) {
 
     if (dataToExport === 'google-sheets') {
       payload = this.referenceData.googleSheets[data.refKey] || [];
+    } else if (dataToExport === 'variable') {
+      payload = this.referenceData.variables[data.variableName] || [];
+
+      if (!Array.isArray(payload)) {
+        payload = [payload];
+
+        if (data.type === 'csv' && typeof payload[0] !== 'object')
+          payload = [payload];
+      }
     }
 
     const hasDownloadAccess = await browser.permissions.contains({

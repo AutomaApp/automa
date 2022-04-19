@@ -13,14 +13,13 @@ export default function (element, { context, options = {} }) {
     startPosY,
     endPosX,
     endPosY,
-    curvature,
+    curvatureValue,
     type
   ) => {
+    const curvature = options.disableCurvature ? 0 : curvatureValue;
     const generateCurvature = (start = false) => {
-      const curvatureVal = options.disableCurvature ? 0 : curvature;
-
       if (start) {
-        return startPosX + Math.abs(endPosX - startPosX) * curvatureVal;
+        return startPosX + Math.abs(endPosX - startPosX) * curvature;
       }
 
       return endPosX - Math.abs(endPosX - startPosX) * curvature;
