@@ -239,6 +239,7 @@
   },
   "log": {
     "goBack": "Go back to \"{name}\" log",
+    "goWorkflow": "Go to workflow",
     "startedDate": "Started date",
     "duration": "Duration",
     "selectAll": "Select all",

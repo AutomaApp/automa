@@ -1,5 +1,5 @@
 <template>
-  <div class="container pt-8 pb-4">
+  <div v-if="activeLog" class="container pt-8 pb-4">
     <div class="flex items-center mb-8">
       <div>
         <h1 class="text-2xl max-w-md text-overflow font-semibold">
@@ -16,6 +16,15 @@
         </p>
       </div>
       <div class="flex-grow"></div>
+      <ui-button
+        v-if="workflowExists"
+        v-tooltip="t('log.goWorkflow')"
+        icon
+        class="mr-4"
+        @click="goToWorkflow"
+      >
+        <v-remixicon name="riExternalLinkLine" />
+      </ui-button>
       <ui-button class="text-red-500 dark:text-red-400" @click="deleteLog">
         {{ t('common.delete') }}
       </ui-button>
@@ -133,6 +142,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import browser from 'webextension-polyfill';
 import Log from '@/models/log';
+import Workflow from '@/models/workflow';
 import dayjs from '@/lib/dayjs';
 import { countDuration } from '@/utils/helper';
 import LogsDataViewer from '@/components/newtab/logs/LogsDataViewer.vue';
@@ -204,7 +214,6 @@ const history = computed(() =>
     )
     .map(translateLog)
 );
-
 const collectionLog = computed(() => {
   if (activeLog.value.parentLog) {
     return Log.find(activeLog.value.parentLog.id);
@@ -212,11 +221,31 @@ const collectionLog = computed(() => {
 
   return Log.find(activeLog.value.collectionLogId);
 });
+const workflowExists = computed(() =>
+  Workflow.find(activeLog.value.workflowId)
+);
 
 function deleteLog() {
   Log.delete(route.params.id).then(() => {
+    const backHistory = window.history.state.back;
+
+    if (backHistory.startsWith('/workflows')) {
+      router.replace(backHistory);
+      return;
+    }
+
     router.replace('/logs');
   });
+}
+function goToWorkflow() {
+  const backHistory = window.history.state.back;
+  let path = `/workflows/${activeLog.value.workflowId}`;
+
+  if (backHistory.startsWith(path)) {
+    path = backHistory;
+  }
+
+  router.push(path);
 }
 
 onMounted(async () => {

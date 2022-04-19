@@ -262,8 +262,10 @@ const router = useRouter();
 const dialog = useDialog();
 const shortcut = useShortcut('editor:toggle-sidebar', toggleSidebar);
 
+const activeTabQuery = route.query.tab || 'editor';
+
 const editor = shallowRef(null);
-const activeTab = shallowRef('editor');
+const activeTab = shallowRef(activeTabQuery);
 
 const autocomplete = reactive({
   cache: null,
@@ -811,6 +813,9 @@ provide('workflow', {
   },
 });
 
+watch(activeTab, (value) => {
+  router.replace({ ...route, query: { tab: value } });
+});
 watch(() => workflowPayload.data, throttle(updateHostedWorkflow, 5000), {
   deep: true,
 });
