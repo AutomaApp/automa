@@ -553,7 +553,12 @@ export default {
       if (key !== 'Delete' || isAnInput) return;
 
       selectedElements.forEach(({ id }) => {
-        editor.value.removeNodeId(`node-${id}`);
+        const nodeId = `node-${id}`;
+        const isNodeExists = document.querySelector(`#${nodeId}`);
+
+        if (!isNodeExists) return;
+
+        editor.value.removeNodeId(nodeId);
       });
 
       selectedElements = [];
