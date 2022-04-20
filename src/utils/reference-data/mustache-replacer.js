@@ -1,5 +1,6 @@
 import objectPath from 'object-path';
 import dayjs from '@/lib/dayjs';
+import { parseJSON } from '@/utils/helper';
 
 const refKeys = {
   table: 'table',
@@ -35,7 +36,9 @@ export const functions = {
     return Math.round(Math.random() * (+max - +min) + +min);
   },
   getLength(str) {
-    return str.length ?? str;
+    const value = parseJSON(str, str);
+
+    return value.length ?? value;
   },
 };
 

@@ -749,10 +749,12 @@ export default {
     onBeforeUnmount(() => {
       const element = document.querySelector('#drawflow');
 
-      element.removeEventListener('mousedown', onMousedown);
-      element.removeEventListener('mouseup', onMouseup);
-      element.removeEventListener('click', onClick);
-      element.removeEventListener('keyup', onKeyup);
+      if (element) {
+        element.removeEventListener('mousedown', onMousedown);
+        element.removeEventListener('mouseup', onMouseup);
+        element.removeEventListener('click', onClick);
+        element.removeEventListener('keyup', onKeyup);
+      }
 
       saveEditorState();
     });
