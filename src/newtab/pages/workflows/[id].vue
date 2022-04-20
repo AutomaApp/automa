@@ -262,8 +262,10 @@ const router = useRouter();
 const dialog = useDialog();
 const shortcut = useShortcut('editor:toggle-sidebar', toggleSidebar);
 
+const activeTabQuery = route.query.tab || 'editor';
+
 const editor = shallowRef(null);
-const activeTab = shallowRef('editor');
+const activeTab = shallowRef(activeTabQuery);
 
 const autocomplete = reactive({
   cache: null,
@@ -658,9 +660,7 @@ async function setAsHostWorkflow(isHost) {
   } catch (error) {
     console.error(error);
     workflowData.loadingHost = false;
-    toast.error(
-      error?.data?.show ? error.message : t('message.somethingWrong')
-    );
+    toast.error(error.message);
   }
 }
 function shareWorkflow() {
@@ -811,6 +811,9 @@ provide('workflow', {
   },
 });
 
+watch(activeTab, (value) => {
+  router.replace({ ...route, query: { tab: value } });
+});
 watch(() => workflowPayload.data, throttle(updateHostedWorkflow, 5000), {
   deep: true,
 });

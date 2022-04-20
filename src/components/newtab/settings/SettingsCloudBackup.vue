@@ -1,194 +1,124 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-lg py-4 w-full max-w-3xl">
-    <div class="px-4 flex items-center">
-      <div class="flex-1 leading-tight">
-        <h1 class="text-xl font-semibold">
-          {{ t('settings.backupWorkflows.cloud.title') }}
-        </h1>
-        <p>
-          {{
-            t(
-              `settings.backupWorkflows.cloud.${
-                state.activeTab === 'local' ? 'selectText' : 'storedWorkflows'
-              }`
-            )
-          }}
-        </p>
-      </div>
-      <ui-button @click="$emit('close')">
-        {{ t('common.cancel') }}
-      </ui-button>
+  <div class="flex items-start mt-4 cloud-backup">
+    <div class="w-56">
+      <ui-input
+        v-model="state.query"
+        :placeholder="t('common.search')"
+        autocomplete="off"
+        prepend-icon="riSearch2Line"
+      />
+      <ui-list class="mt-4">
+        <p class="mb-1 text-sm text-gray-600 dark:text-gray-200">Location</p>
+        <ui-list-item
+          v-for="location in ['local', 'cloud']"
+          :key="location"
+          :active="location === state.activeTab"
+          :disabled="backupState.uploading || backupState.deleting"
+          color="bg-box-transparent"
+          class="mb-1 cursor-pointer"
+          @click="state.activeTab = location"
+        >
+          {{ t(`settings.backupWorkflows.cloud.buttons.${location}`) }}
+          <span
+            v-if="location === 'cloud'"
+            class="ml-2 text-sm rounded-full bg-accent dark:text-black text-gray-100 text-center"
+            style="height: 29px; width: 29px; line-height: 29px"
+          >
+            {{ state.cloudWorkflows.length }}
+          </span>
+        </ui-list-item>
+      </ui-list>
       <ui-button
-        v-if="state.activeTab === 'local'"
-        :loading="state.isBackingUp"
+        v-if="state.selectedWorkflows.length > 0 && state.activeTab === 'local'"
+        :loading="backupState.uploading"
         variant="accent"
-        class="ml-2"
-        @click="backupWorkflowsToCloud"
+        class="mt-4 w-8/12"
+        @click="backupWorkflowsToCloud()"
       >
         {{ t('settings.backupWorkflows.backup.button') }}
+        ({{ state.selectedWorkflows.length }})
       </ui-button>
       <ui-button
-        v-else
-        :disabled="state.deleteIds.length <= 0"
-        :loading="state.isDeletingBackup"
-        class="ml-2"
+        v-if="state.deleteIds.length > 0 && state.activeTab === 'cloud'"
+        :loading="backupState.deleting"
         variant="danger"
-        @click="deleteBackup(null)"
+        class="mt-4"
+        @click="deleteBackup()"
       >
         {{ t('settings.backupWorkflows.cloud.delete') }}
         ({{ state.deleteIds.length }})
       </ui-button>
     </div>
-    <div class="flex items-center px-4 mt-6">
-      <ui-tabs
-        v-model="state.activeTab"
-        type="fill"
-        style="background-color: transparent; padding: 0"
-        @change="onTabChange"
-      >
-        <ui-tab v-for="type in ['local', 'cloud']" :key="type" :value="type">
-          {{ t(`settings.backupWorkflows.cloud.buttons.${type}`) }}
-        </ui-tab>
-      </ui-tabs>
-      <div class="flex-grow"></div>
-      <ui-input
-        v-model="state.query"
-        :placeholder="t('common.search')"
-        prepend-icon="riSearch2Line"
-      />
+    <div v-if="!state.backupRetrieved" class="text-center block flex-1 content">
+      <ui-spinner color="text-accent" />
     </div>
-    <ui-tab-panels
-      v-model="state.activeTab"
-      class="overflow-auto scroll p-1 mt-2 px-4"
-      style="height: calc(100vh - 14rem)"
-    >
-      <ui-tab-panel value="local" class="grid grid-cols-2 gap-2">
-        <div
-          v-for="workflow in workflows"
-          :key="workflow.id"
-          :class="{
-            'is-selected bg-box-transparent': state.backupIds.includes(
-              workflow.id
-            ),
-          }"
-          class="border rounded-lg select-workflow p-4 cursor-pointer leading-tight hoverable flex items-start relative transition"
-          @click="toggleSelectWorkflow(workflow.id)"
+    <div v-else class="flex-1 ml-4 overflow-hidden">
+      <template v-if="state.activeTab === 'cloud'">
+        <settings-backup-items
+          v-slot="{ workflow }"
+          v-model="state.deleteIds"
+          :workflows="backupWorkflows"
+          :limit="state.cloudWorkflows.length"
+          :query="state.query"
+          @select="selectAllCloud"
         >
-          <ui-img
-            v-if="workflow.icon?.startsWith('http')"
-            :src="workflow.icon"
-            style="height: 24px; width: 24px"
-            alt="Can not display"
-          />
-          <v-remixicon v-else :name="workflow.icon" />
-          <div class="flex-1 ml-2 overflow-hidden">
-            <p class="text-overflow">{{ workflow.name }}</p>
-            <p class="text-gray-600 dark:text-gray-200 text-overflow">
-              {{ workflow.description }}
-            </p>
-          </div>
-          <span
-            class="hidden select-icon p-1 rounded-full bg-accent dark:text-black text-gray-100"
+          <p
+            :title="`Last updated: ${formatDate(
+              workflow,
+              'DD MMMM YYYY, hh:mm A'
+            )}`"
+            class="ml-4 mr-8"
           >
-            <v-remixicon name="riCheckboxCircleLine" size="20" />
-          </span>
-        </div>
-      </ui-tab-panel>
-      <ui-tab-panel value="cloud">
-        <div v-if="state.loadingBackup" class="text-center py-4 col-span-2">
-          <ui-spinner color="text-accent" />
-        </div>
-        <template v-else>
-          <ui-list class="space-y-1">
-            <ui-list-item
-              v-for="workflow in backupWorkflows"
-              :key="workflow.id"
-              :class="{
-                'bg-box-transparent': state.deleteIds.includes(workflow.id),
-              }"
-              class="overflow-hidden"
-            >
-              <ui-checkbox
-                :model-value="state.deleteIds.includes(workflow.id)"
-                class="mr-4"
-                @change="toggleDeleteWorkflow($event, workflow.id)"
-              />
-              <ui-img
-                v-if="workflow.icon?.startsWith('http')"
-                :src="workflow.icon"
-                style="height: 24px; width: 24px"
-                alt="Can not display"
-              />
-              <v-remixicon v-else :name="workflow.icon" />
-              <p class="text-overflow flex-1 ml-2">{{ workflow.name }}</p>
-              <p
-                :title="`Last updated: ${formatDate(
-                  workflow,
-                  'DD MMMM YYYY, hh:mm A'
-                )}`"
-                class="ml-4 mr-8"
-              >
-                {{ formatDate(workflow, 'DD MMM YYYY') }}
-              </p>
-              <button
-                v-if="!state.isDeletingBackup"
-                :aria-label="t('settings.backupWorkflows.cloud.delete')"
-                @click="deleteBackup(workflow.id)"
-              >
-                <v-remixicon name="riDeleteBin7Line" />
-              </button>
-            </ui-list-item>
-          </ui-list>
-        </template>
-      </ui-tab-panel>
-    </ui-tab-panels>
-    <div class="mt-2 flex items-center px-4">
-      <button
-        v-if="state.activeTab === 'local'"
-        class="mr-2 flex items-center"
-        @click="selectAll"
-      >
-        <v-remixicon name="riCheckboxCircleLine" />
-        <p class="ml-2">
-          {{
-            t(
-              `settings.backupWorkflows.cloud.${
-                state.backupIds.length >= 40 ? 'deselectAll' : 'selectAll'
-              }`
-            )
-          }}
-        </p>
-      </button>
-      <label v-else class="mr-2 flex items-center">
-        <ui-checkbox
-          :model-value="state.deleteIds.length >= 40"
-          @change="selectAllDelIds"
-        />
-        <p class="ml-2">
-          {{
-            t(
-              `settings.backupWorkflows.cloud.${
-                state.deleteIds.length >= 40 ? 'deselectAll' : 'selectAll'
-              }`
-            )
-          }}
-        </p>
-      </label>
-      <div class="flex-grow"></div>
-      <p>
-        {{
-          state.activeTab === 'local'
-            ? state.backupIds.length
-            : state.cloudWorkflows.length
-        }}/40 {{ t('common.workflow', 2) }}
-      </p>
+            {{ formatDate(workflow, 'DD MMM YYYY') }}
+          </p>
+          <ui-spinner
+            v-if="backupState.workflowId === workflow.id"
+            color="text-accent"
+            class="ml-4"
+          />
+          <button
+            v-else-if="!backupState.deleting"
+            class="ml-4 invisible group-hover:visible"
+            :aria-label="t('settings.backupWorkflows.cloud.delete')"
+            @click="deleteBackup(workflow.id)"
+          >
+            <v-remixicon name="riDeleteBin7Line" />
+          </button>
+        </settings-backup-items>
+      </template>
+      <template v-else>
+        <settings-backup-items
+          v-slot="{ workflow }"
+          v-model="state.selectedWorkflows"
+          :workflows="workflows"
+          :limit="workflowLimit"
+          :query="state.query"
+          @select="selectAllLocal"
+        >
+          <ui-spinner
+            v-if="backupState.workflowId === workflow.id"
+            color="text-accent"
+            class="ml-4"
+          />
+          <button
+            v-else-if="
+              !backupState.uploading &&
+              state.selectedWorkflows.length <= workflowLimit
+            "
+            class="ml-4 invisible group-hover:visible"
+            @click="backupWorkflowsToCloud(workflow.id)"
+          >
+            <v-remixicon name="riUploadCloud2Line" />
+          </button>
+        </settings-backup-items>
+      </template>
     </div>
   </div>
 </template>
 <script setup>
-import { computed, reactive, watch } from 'vue';
-import { useStore } from 'vuex';
+import { computed, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
 import browser from 'webextension-polyfill';
 import { fetchApi, cacheApi } from '@/utils/api';
@@ -196,6 +126,7 @@ import { convertWorkflow } from '@/utils/workflow-data';
 import { parseJSON } from '@/utils/helper';
 import dayjs from '@/lib/dayjs';
 import Workflow from '@/models/workflow';
+import SettingsBackupItems from './SettingsBackupItems.vue';
 
 defineEmits(['close']);
 
@@ -206,20 +137,29 @@ const toast = useToast();
 const state = reactive({
   query: '',
   deleteIds: [],
-  backupIds: [],
   activeTab: 'local',
   cloudWorkflows: [],
-  isBackingUp: false,
-  loadingBackup: false,
+  selectedWorkflows: [],
   backupRetrieved: false,
-  isDeletingBackup: false,
+});
+const backupState = reactive({
+  workflowId: '',
+  deleting: false,
+  uploading: false,
 });
 
 const workflows = computed(() =>
   Workflow.query()
-    .where(({ name }) =>
-      name.toLocaleLowerCase().includes(state.query.toLowerCase())
-    )
+    .where(({ name, id }) => {
+      const isInCloud = state.cloudWorkflows.some(
+        (workflow) => workflow.id === id
+      );
+
+      return (
+        name.toLocaleLowerCase().includes(state.query.toLowerCase()) &&
+        !isInCloud
+      );
+    })
     .orderBy('createdAt', 'desc')
     .get()
 );
@@ -228,22 +168,44 @@ const backupWorkflows = computed(() =>
     name.toLocaleLowerCase().includes(state.query.toLowerCase())
   )
 );
+const workflowLimit = computed(() => {
+  const maxWorkflow = store.state.user.limit.backupWorkflow;
+
+  return maxWorkflow - state.cloudWorkflows.length;
+});
 
 function formatDate(workflow, format) {
   return dayjs(workflow.updatedAt || Date.now()).format(format);
 }
-function toggleDeleteWorkflow(value, workflowId) {
+function selectAllCloud(value) {
   if (value) {
-    state.deleteIds.push(workflowId);
+    state.deleteIds = state.cloudWorkflows.map(({ id }) => id);
   } else {
-    const index = state.deleteIds.indexOf(workflowId);
-
-    if (index !== -1) state.deleteIds.splice(index, 1);
+    state.deleteIds = [];
   }
+}
+function selectAllLocal() {
+  let limit = state.selectedWorkflows.length;
+
+  if (limit >= workflowLimit.value) {
+    state.selectedWorkflows = [];
+    return;
+  }
+
+  workflows.value.forEach(({ id }) => {
+    if (limit >= workflowLimit.value || state.selectedWorkflows.includes(id))
+      return;
+
+    state.selectedWorkflows.push(id);
+
+    limit += 1;
+  });
 }
 async function deleteBackup(workflowId) {
   try {
-    state.isDeletingBackup = true;
+    backupState.deleting = true;
+
+    if (workflowId) backupState.workflowId = workflowId;
 
     const ids = workflowId ? [workflowId] : state.deleteIds;
     const response = await fetchApi(
@@ -255,35 +217,34 @@ async function deleteBackup(workflowId) {
 
     if (!response.ok) throw new Error(response.statusText);
 
-    const { backupIds } = await browser.storage.local.get('backupIds');
-
     ids.forEach((id) => {
       const index = state.cloudWorkflows.findIndex((item) => item.id === id);
-      if (index !== -1) state.cloudWorkflows.splice(index, 1);
 
-      const backupIndex = backupIds.indexOf(id);
-      if (backupIndex !== -1) backupIds.splice(backupIndex, 1);
+      if (index !== -1) state.cloudWorkflows.splice(index, 1);
     });
 
-    await browser.storage.local.set({ backupIds });
+    await browser.storage.local.set({
+      backupIds: state.cloudWorkflows.map(({ id }) => id),
+    });
 
-    state.backupIds = backupIds;
-    state.isDeletingBackup = false;
+    state.deleteIds = [];
+    backupState.workflowId = '';
+    backupState.deleting = false;
     sessionStorage.removeItem('backup-workflows');
   } catch (error) {
     console.error(error);
-    state.isDeletingBackup = false;
+    backupState.workflowId = '';
+    backupState.deleting = false;
     toast.error(t('message.somethingWrong'));
-    state.isBackingUp = false;
+    backupState.uploading = false;
   }
 }
-async function onTabChange(value) {
-  if (value !== 'cloud' || state.backupRetrieved || state.loadingBackup) return;
+async function fetchCloudWorkflows() {
+  if (state.backupRetrieved) return;
 
   state.deleteIds = [];
 
   try {
-    state.loadingBackup = true;
     const data = await cacheApi('backup-workflows', async () => {
       const response = await fetchApi('/me/workflows?type=backup');
 
@@ -295,61 +256,22 @@ async function onTabChange(value) {
     });
 
     state.cloudWorkflows = data;
-    state.loadingBackup = false;
+    state.backupRetrieved = true;
   } catch (error) {
     console.error(error);
     state.loadingBackup = false;
   }
 }
-function toggleSelectWorkflow(workflowId) {
-  if (state.backupIds.length >= 40) return;
-
-  const index = state.backupIds.indexOf(workflowId);
-
-  if (index !== -1) state.backupIds.splice(index, 1);
-  else state.backupIds.push(workflowId);
-}
-function selectAllDelIds(value) {
-  if (value) {
-    state.deleteIds = state.cloudWorkflows.map(({ id }) => id);
-  } else {
-    state.deleteIds = [];
-  }
-}
-function selectAll() {
-  let limit = state.backupIds.length;
-
-  if (limit >= 40) {
-    state.backupIds = [];
-    return;
-  }
-
-  Workflow.query()
-    .orderBy('createdAt', 'desc')
-    .get()
-    .forEach(({ id }) => {
-      if (limit >= 40 || state.backupIds.includes(id)) return;
-
-      state.backupIds.push(id);
-
-      limit += 1;
-    });
-}
-async function backupWorkflowsToCloud() {
-  if (state.isBackingUp) return;
-
-  if (state.backupIds.length === 0) {
-    toast.error(t('settings.backupWorkflows.cloud.needSelectWorkflow'), {
-      timeout: 7000,
-    });
-
-    return;
-  }
+async function backupWorkflowsToCloud(workflowId) {
+  if (backupState.uploading) return;
 
   try {
-    state.isBackingUp = true;
+    backupState.uploading = true;
 
-    const workflowsPayload = state.backupIds.reduce((acc, id) => {
+    if (workflowId) backupState.workflowId = workflowId;
+
+    const workflowIds = workflowId ? [workflowId] : state.selectedWorkflows;
+    const workflowsPayload = workflowIds.reduce((acc, id) => {
       const findWorkflow = Workflow.find(id);
 
       if (!findWorkflow) return acc;
@@ -360,6 +282,8 @@ async function backupWorkflowsToCloud() {
         '__id',
       ]);
       delete workflow.extVersion;
+
+      if (!workflow.__id) delete workflow.__id;
 
       acc.push(workflow);
 
@@ -377,24 +301,34 @@ async function backupWorkflowsToCloud() {
 
     const { lastBackup, data, ids } = await response.json();
 
-    state.isBackingUp = false;
-    state.lastBackup = lastBackup;
+    backupState.uploading = false;
+    backupState.workflowId = '';
+
+    ids.forEach((id) => {
+      const isExists = state.cloudWorkflows.some(
+        (workflow) => workflow.id === id
+      );
+      if (isExists) return;
+
+      state.cloudWorkflows.push(Workflow.find(id));
+    });
+
     state.lastSync = lastBackup;
+    state.selectedWorkflows = [];
+    state.lastBackup = lastBackup;
 
     const userWorkflows = parseJSON('user-workflows', {
       backup: [],
       hosted: {},
     });
-    userWorkflows.backup = data;
+    userWorkflows.backup = state.cloudWorkflows;
     sessionStorage.setItem('user-workflows', JSON.stringify(userWorkflows));
-
-    state.cloudWorkflows = ids.map((id) => Workflow.find(id));
 
     await Workflow.insertOrUpdate({ data });
     await browser.storage.local.set({
       lastBackup,
-      lastSync: lastBackup,
       backupIds: ids,
+      lastSync: lastBackup,
     });
 
     sessionStorage.removeItem('backup-workflows');
@@ -402,23 +336,19 @@ async function backupWorkflowsToCloud() {
     sessionStorage.removeItem('cache-time:backup-workflows');
   } catch (error) {
     console.error(error);
-    toast.error(t('message.somethingWrong'));
-    state.isBackingUp = false;
+    toast.error(error.message);
+    backupState.workflowId = '';
+    backupState.uploading = false;
   }
 }
 
-watch(
-  () => store.state.userDataRetrieved,
-  async () => {
-    const { backupIds } = await browser.storage.local.get('backupIds');
-
-    state.backupIds = backupIds || [];
-  },
-  { immediate: true }
-);
+onMounted(async () => {
+  await fetchCloudWorkflows();
+});
 </script>
-<style scoped>
-.select-workflow.is-selected .select-icon {
-  display: block;
+<style>
+.cloud-backup .content {
+  height: calc(100vh - 10rem);
+  max-height: 1200px;
 }
 </style>

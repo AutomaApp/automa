@@ -16,6 +16,22 @@
         {{ t(`workflow.blocks.export-data.dataToExport.options.${option}`) }}
       </option>
     </ui-select>
+    <ui-input
+      v-if="data.dataToExport === 'google-sheets'"
+      :model-value="data.refKey"
+      :title="t('workflow.blocks.export-data.refKey')"
+      :placeholder="t('workflow.blocks.export-data.refKey')"
+      class="w-full mt-2"
+      @change="updateData({ refKey: $event })"
+    />
+    <ui-input
+      v-if="data.dataToExport === 'variable'"
+      :model-value="data.variableName"
+      :title="t('workflow.variables.name')"
+      :placeholder="t('workflow.variables.name')"
+      class="w-full mt-2"
+      @change="updateData({ variableName: $event })"
+    />
     <ui-autocomplete
       :items="autocomplete"
       :trigger-char="['{{', '}}']"
@@ -43,14 +59,6 @@
         {{ t(`workflow.blocks.base.downloads.onConflict.${item}`) }}
       </option>
     </ui-select>
-    <ui-input
-      v-if="data.dataToExport === 'google-sheets'"
-      :model-value="data.refKey"
-      :title="t('workflow.blocks.export-data.refKey')"
-      :placeholder="t('workflow.blocks.export-data.refKey')"
-      class="w-full mt-2"
-      @change="updateData({ refKey: $event })"
-    />
     <ui-select
       :model-value="data.type"
       :label="t('workflow.blocks.export-data.exportAs')"
@@ -88,7 +96,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:data']);
 
-const dataToExport = ['data-columns', 'google-sheets'];
+const dataToExport = ['data-columns', 'google-sheets', 'variable'];
 const onConflict = ['uniquify', 'overwrite', 'prompt'];
 
 const { t } = useI18n();

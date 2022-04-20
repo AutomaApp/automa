@@ -306,6 +306,7 @@
           "options": {
             "data-columns": "Table",
             "google-sheets": "Google sheets",
+            "variable": "Variable"
           },
         }
       },

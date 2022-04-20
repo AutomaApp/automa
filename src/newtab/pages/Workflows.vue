@@ -133,103 +133,133 @@
             </ui-button>
           </div>
         </div>
-        <div v-else class="grid gap-4 grid-cols-4 2xl:grid-cols-5">
-          <shared-card
-            v-for="workflow in workflows"
-            :key="workflow.id"
-            :data="workflow"
-            @click="$router.push(`/workflows/${$event.id}`)"
-          >
-            <template #header>
-              <div class="flex items-center mb-4">
-                <template v-if="!workflow.isDisabled">
-                  <ui-img
-                    v-if="workflow.icon.startsWith('http')"
-                    :src="workflow.icon"
-                    class="rounded-lg overflow-hidden"
-                    style="height: 40px; width: 40px"
-                    alt="Can not display"
-                  />
-                  <span v-else class="p-2 rounded-lg bg-box-transparent">
-                    <v-remixicon :name="workflow.icon" />
-                  </span>
-                </template>
-                <p v-else class="py-2">{{ t('common.disabled') }}</p>
-                <div class="flex-grow"></div>
-                <button
-                  v-if="!workflow.isDisabled"
-                  class="invisible group-hover:visible"
-                  @click="executeWorkflow(workflow)"
-                >
-                  <v-remixicon name="riPlayLine" />
-                </button>
-                <v-remixicon
-                  v-if="workflow.isProtected"
-                  name="riShieldKeyholeLine"
-                  class="text-green-600 dark:text-green-400 ml-2"
-                />
-                <ui-popover v-if="!workflow.isProtected" class="h-6 ml-2">
-                  <template #trigger>
-                    <button>
-                      <v-remixicon name="riMoreLine" />
-                    </button>
+        <template v-else>
+          <div class="grid gap-4 grid-cols-4 2xl:grid-cols-5">
+            <shared-card
+              v-for="workflow in localWorkflows"
+              :key="workflow.id"
+              :data="workflow"
+              @click="$router.push(`/workflows/${$event.id}`)"
+            >
+              <template #header>
+                <div class="flex items-center mb-4">
+                  <template v-if="!workflow.isDisabled">
+                    <ui-img
+                      v-if="workflow.icon.startsWith('http')"
+                      :src="workflow.icon"
+                      class="rounded-lg overflow-hidden"
+                      style="height: 40px; width: 40px"
+                      alt="Can not display"
+                    />
+                    <span v-else class="p-2 rounded-lg bg-box-transparent">
+                      <v-remixicon :name="workflow.icon" />
+                    </span>
                   </template>
-                  <ui-list class="space-y-1" style="min-width: 150px">
-                    <ui-list-item
-                      class="cursor-pointer"
-                      @click="
-                        updateWorkflow(workflow.id, {
-                          isDisabled: !workflow.isDisabled,
-                        })
-                      "
-                    >
-                      <v-remixicon name="riToggleLine" class="mr-2 -ml-1" />
-                      <span class="capitalize">
-                        {{
-                          t(
-                            `common.${
-                              workflow.isDisabled ? 'enable' : 'disable'
-                            }`
-                          )
-                        }}
-                      </span>
-                    </ui-list-item>
-                    <ui-list-item
-                      v-for="item in menu"
-                      :key="item.id"
-                      v-close-popover
-                      class="cursor-pointer"
-                      @click="menuHandlers[item.id](workflow)"
-                    >
-                      <v-remixicon :name="item.icon" class="mr-2 -ml-1" />
-                      <span class="capitalize">{{ item.name }}</span>
-                    </ui-list-item>
-                  </ui-list>
-                </ui-popover>
-              </div>
-            </template>
-            <template #footer-content>
-              <v-remixicon
-                v-if="sharedWorkflows[workflow.id]"
-                v-tooltip="
-                  t('workflow.share.sharedAs', {
-                    name: sharedWorkflows[workflow.id]?.name.slice(0, 64),
-                  })
-                "
-                name="riShareLine"
-                size="20"
-                class="ml-2"
-              />
-              <v-remixicon
-                v-if="hostWorkflows[workflow.id]"
-                v-tooltip="t('workflow.host.title')"
-                name="riBaseStationLine"
-                size="20"
-                class="ml-2"
-              />
-            </template>
-          </shared-card>
-        </div>
+                  <p v-else class="py-2">{{ t('common.disabled') }}</p>
+                  <div class="flex-grow"></div>
+                  <button
+                    v-if="!workflow.isDisabled"
+                    class="invisible group-hover:visible"
+                    @click="executeWorkflow(workflow)"
+                  >
+                    <v-remixicon name="riPlayLine" />
+                  </button>
+                  <v-remixicon
+                    v-if="workflow.isProtected"
+                    name="riShieldKeyholeLine"
+                    class="text-green-600 dark:text-green-400 ml-2"
+                  />
+                  <ui-popover v-if="!workflow.isProtected" class="h-6 ml-2">
+                    <template #trigger>
+                      <button>
+                        <v-remixicon name="riMoreLine" />
+                      </button>
+                    </template>
+                    <ui-list class="space-y-1" style="min-width: 150px">
+                      <ui-list-item
+                        class="cursor-pointer"
+                        @click="
+                          updateWorkflow(workflow.id, {
+                            isDisabled: !workflow.isDisabled,
+                          })
+                        "
+                      >
+                        <v-remixicon name="riToggleLine" class="mr-2 -ml-1" />
+                        <span class="capitalize">
+                          {{
+                            t(
+                              `common.${
+                                workflow.isDisabled ? 'enable' : 'disable'
+                              }`
+                            )
+                          }}
+                        </span>
+                      </ui-list-item>
+                      <ui-list-item
+                        v-for="item in menu"
+                        :key="item.id"
+                        v-close-popover
+                        class="cursor-pointer"
+                        @click="menuHandlers[item.id](workflow)"
+                      >
+                        <v-remixicon :name="item.icon" class="mr-2 -ml-1" />
+                        <span class="capitalize">{{ item.name }}</span>
+                      </ui-list-item>
+                    </ui-list>
+                  </ui-popover>
+                </div>
+              </template>
+              <template #footer-content>
+                <v-remixicon
+                  v-if="sharedWorkflows[workflow.id]"
+                  v-tooltip="
+                    t('workflow.share.sharedAs', {
+                      name: sharedWorkflows[workflow.id]?.name.slice(0, 64),
+                    })
+                  "
+                  name="riShareLine"
+                  size="20"
+                  class="ml-2"
+                />
+                <v-remixicon
+                  v-if="hostWorkflows[workflow.id]"
+                  v-tooltip="t('workflow.host.title')"
+                  name="riBaseStationLine"
+                  size="20"
+                  class="ml-2"
+                />
+              </template>
+            </shared-card>
+          </div>
+          <div
+            v-if="workflows.length > 16"
+            class="flex items-center justify-between mt-8"
+          >
+            <div>
+              {{ t('components.pagination.text1') }}
+              <select
+                v-model="pagination.perPage"
+                class="p-1 rounded-md bg-input"
+              >
+                <option
+                  v-for="num in [16, 32, 64, 128]"
+                  :key="num"
+                  :value="num"
+                >
+                  {{ num }}
+                </option>
+              </select>
+              {{
+                t('components.pagination.text2', { count: workflows.length })
+              }}
+            </div>
+            <ui-pagination
+              v-model="pagination.currentPage"
+              :per-page="pagination.perPage"
+              :records="workflows.length"
+            />
+          </div>
+        </template>
       </ui-tab-panel>
     </ui-tab-panels>
     <ui-modal v-model="workflowModal.show" title="Workflow">
@@ -313,6 +343,10 @@ const workflowModal = shallowReactive({
   type: 'update',
   description: '',
 });
+const pagination = shallowReactive({
+  currentPage: 1,
+  perPage: savedSorts.perPage || 16,
+});
 
 const hostWorkflows = computed(() => store.state.hostWorkflows || {});
 const workflowHosts = computed(() => Object.values(store.state.workflowHosts));
@@ -324,6 +358,12 @@ const workflows = computed(() =>
     )
     .orderBy(state.sortBy, state.sortOrder)
     .get()
+);
+const localWorkflows = computed(() =>
+  workflows.value.slice(
+    (pagination.currentPage - 1) * pagination.perPage,
+    pagination.currentPage * pagination.perPage
+  )
 );
 
 async function deleteWorkflowHost(workflow) {
@@ -529,11 +569,11 @@ const menuHandlers = {
 };
 
 watch(
-  () => [state.sortOrder, state.sortBy],
-  ([sortOrder, sortBy]) => {
+  () => [state.sortOrder, state.sortBy, pagination.perPage],
+  ([sortOrder, sortBy, perPage]) => {
     localStorage.setItem(
       'workflow-sorts',
-      JSON.stringify({ sortOrder, sortBy })
+      JSON.stringify({ sortOrder, sortBy, perPage })
     );
   }
 );

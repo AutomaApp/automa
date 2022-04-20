@@ -8,10 +8,86 @@ export default function (element, { context, options = {} }) {
   const editor = new Drawflow(element, { render, version: 3, h }, context);
 
   editor.useuuid = true;
-  editor.curvature = 0;
-  editor.reroute_curvature = 0;
-  editor.reroute_curvature_start_end = 0;
-  editor.reroute_fix_curvature = true;
+  editor.createCurvature = (
+    startPosX,
+    startPosY,
+    endPosX,
+    endPosY,
+    curvatureValue,
+    type
+  ) => {
+    const curvature = options.disableCurvature ? 0 : curvatureValue;
+    const generateCurvature = (start = false) => {
+      if (start) {
+        return startPosX + Math.abs(endPosX - startPosX) * curvature;
+      }
+
+      return endPosX - Math.abs(endPosX - startPosX) * curvature;
+    };
+
+    switch (type) {
+      case 'open': {
+        const hx1 = generateCurvature(true);
+        let hx2 = generateCurvature();
+
+        if (startPosX >= endPosX) {
+          hx2 = endPosX - Math.abs(endPosX - startPosX) * (curvature * -1);
+        }
+
+        return ` M ${startPosX} ${startPosY} C ${hx1} ${startPosY} ${hx2} ${endPosY} ${endPosX}  ${endPosY}`;
+      }
+      case 'close': {
+        let hx1 = generateCurvature(true);
+        const hx2 = generateCurvature();
+
+        if (startPosX >= endPosX) {
+          hx1 = startPosX + Math.abs(endPosX - startPosX) * (curvature * -1);
+        }
+
+        const posX = options.arrow ? endPosX - 10 : endPosX;
+
+        return ` M ${startPosX} ${startPosY} C ${hx1} ${startPosY} ${hx2} ${endPosY} ${posX} ${endPosY}`;
+      }
+      case 'other': {
+        let hx1 = generateCurvature(true);
+        let hx2 = generateCurvature();
+
+        if (startPosX >= endPosX) {
+          hx1 = startPosX + Math.abs(endPosX - startPosX) * (curvature * -1);
+          hx2 = endPosX - Math.abs(endPosX - startPosX) * (curvature * -1);
+        }
+
+        return ` M ${startPosX} ${startPosY} C ${hx1} ${startPosY} ${hx2} ${endPosY} ${endPosX} ${endPosY}`;
+      }
+      default: {
+        let line = '';
+        const posX = options.arrow ? endPosX - 10 : endPosX;
+
+        if (!options.disableCurvature) {
+          const hx1 = generateCurvature(true);
+          const hx2 = generateCurvature();
+
+          line = `M${startPosX} ${startPosY} C${hx1} ${startPosY} ${hx2} ${endPosY} ${posX} ${endPosY}`;
+        } else {
+          const centerX =
+            Math.abs(endPosX - startPosX) < 300
+              ? (endPosX - startPosX) / 2 + startPosX
+              : startPosX + 150;
+          let firstLine = `L${centerX} ${startPosY} L${centerX} ${endPosY}`;
+
+          if (startPosX >= endPosX) {
+            const centerY = (endPosY - startPosY) / 2 + startPosY;
+
+            firstLine = ` L${startPosX} ${startPosY} L${startPosX} ${centerY} L${posX} ${centerY}`;
+          }
+
+          line = `M ${startPosX} ${startPosY} ${firstLine} L${posX} ${endPosY}`;
+        }
+
+        return line;
+      }
+    }
+  };
 
   Object.entries(options).forEach(([key, value]) => {
     editor[key] = value;

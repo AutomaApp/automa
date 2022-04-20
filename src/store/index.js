@@ -2,6 +2,7 @@ import { createStore } from 'vuex';
 import objectPath from 'object-path';
 import browser from 'webextension-polyfill';
 import vuexORM from '@/lib/vuex-orm';
+import defu from 'defu';
 import * as models from '@/models';
 import { firstWorkflows } from '@/utils/shared';
 import { fetchApi } from '@/utils/api';
@@ -21,6 +22,8 @@ const store = createStore({
     settings: {
       locale: 'en',
       editor: {
+        arrow: false,
+        disableCurvature: false,
         curvature: 0.5,
         reroute_curvature: 0.5,
         reroute_curvature_start_end: 0.5,
@@ -69,7 +72,7 @@ const store = createStore({
 
         commit('updateState', {
           key: 'settings',
-          value: { ...state.settings, ...(settings || {}) },
+          value: defu(settings || {}, state.settings),
         });
         commit('updateState', {
           key: 'workflowHosts',

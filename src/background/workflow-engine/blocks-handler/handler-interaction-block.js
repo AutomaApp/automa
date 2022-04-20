@@ -36,7 +36,7 @@ async function interactionHandler(block) {
 
     if (
       (block.data.saveData && block.name !== 'forms') ||
-      block.data.getValue
+      (block.data.getValue && block.data.saveData)
     ) {
       const currentColumnType =
         this.columns[block.data.dataColumn]?.type || 'any';

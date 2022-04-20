@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "1.7.2",
+  "version": "1.8.0",
   "description": "An extension for automating your browser by connecting blocks",
   "license": "MIT",
   "repository": {
@@ -34,12 +34,13 @@
     "@tiptap/extension-placeholder": "^2.0.0-beta.48",
     "@tiptap/starter-kit": "^2.0.0-beta.181",
     "@tiptap/vue-3": "^2.0.0-beta.90",
+    "@viselect/vanilla": "^3.0.0-beta.13",
     "@vuex-orm/core": "^0.36.4",
     "compare-versions": "^4.1.2",
     "crypto-js": "^4.1.1",
     "css-selector-generator": "^3.6.0",
     "dayjs": "^1.10.7",
-    "defu": "^5.0.1",
+    "defu": "^6.0.0",
     "drawflow": "^0.0.51",
     "idb": "^7.0.0",
     "lodash.clonedeep": "^4.5.0",

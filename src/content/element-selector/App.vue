@@ -189,9 +189,10 @@ const cardRect = reactive({
 });
 
 /* eslint-disable  no-use-before-define */
-const getElementSelector = (element, options = {}) =>
-  state.selectorType === 'css'
-    ? getCssSelector(element, {
+const getElementSelector = (element, options = {}) => {
+  if (state.selectorType === 'css') {
+    if (Array.isArray(element)) {
+      return getCssSelector(element, {
         root: document.body,
         blacklist: [
           '[focused]',
@@ -205,8 +206,14 @@ const getElementSelector = (element, options = {}) =>
         ],
         includeTag: true,
         ...options,
-      })
-    : generateXPath(element);
+      });
+    }
+
+    return finder(element);
+  }
+
+  return generateXPath(element);
+};
 
 function generateXPath(element) {
   if (!element) return null;
