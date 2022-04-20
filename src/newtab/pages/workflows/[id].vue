@@ -660,9 +660,7 @@ async function setAsHostWorkflow(isHost) {
   } catch (error) {
     console.error(error);
     workflowData.loadingHost = false;
-    toast.error(
-      error?.data?.show ? error.message : t('message.somethingWrong')
-    );
+    toast.error(error.message);
   }
 }
 function shareWorkflow() {

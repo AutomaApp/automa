@@ -283,6 +283,8 @@ async function backupWorkflowsToCloud(workflowId) {
       ]);
       delete workflow.extVersion;
 
+      if (!workflow.__id) delete workflow.__id;
+
       acc.push(workflow);
 
       return acc;
