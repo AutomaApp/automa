@@ -128,7 +128,9 @@ export default {
       if (!tasks[name].autocomplete) return;
 
       tasks[name].autocomplete.forEach((key) => {
-        if (!data[key]) return;
+        const variableNotAssigned =
+          key === 'variableName' && !data.assignVariable;
+        if (!data[key] || variableNotAssigned) return;
 
         autocompleteData.value[id].add(`${dataKeywords[key]}@${data[key]}`);
       });

@@ -138,6 +138,7 @@ export default {
     let isDragging = false;
     let selectedElements = [];
 
+    const selection = shallowRef(null);
     const editor = shallowRef(null);
     const contextMenu = reactive({
       items: [],
@@ -313,27 +314,87 @@ export default {
     function deleteBlock() {
       editor.value.removeNodeId(contextMenu.data);
     }
-    function duplicateBlock(id) {
-      const { name, pos_x, pos_y, data, html, inputs, outputs } =
-        editor.value.getNodeFromId(id || contextMenu.data.substr(5));
+    function clearSelectedElements() {
+      selection.value.clearSelection();
+      selectedElements.forEach(({ el }) => {
+        el.classList.remove('selected-list');
+      });
+      selectedElements = [];
+      activeNode = null;
+    }
+    function duplicateBlock(nodeId) {
+      const nodes = new Map();
+      const addNode = (id) => {
+        const node = editor.value.getNodeFromId(id);
 
-      if (name === 'trigger') return;
+        if (node.name === 'trigger') return;
 
-      const { outputs: defOutputs, inputs: defInputs } = tasks[name];
-      const blockInputs = Object.keys(inputs).length || defInputs;
-      const blockOutputs = Object.keys(outputs).length || defOutputs;
+        nodes.set(node.id, node);
+      };
 
-      editor.value.addNode(
-        name,
-        blockInputs,
-        blockOutputs,
-        pos_x + 50,
-        pos_y + 100,
-        name,
-        data,
-        html,
-        'vue'
-      );
+      if (nodeId) addNode(nodeId);
+      else if (activeNode) addNode(activeNode.id);
+
+      selectedElements.forEach((node) => {
+        if (activeNode?.id === node.id || nodeId === node.id) return;
+
+        addNode(node.id);
+      });
+
+      const nodesOutputs = [];
+
+      clearSelectedElements();
+
+      nodes.forEach((node) => {
+        const { outputs, inputs } = tasks[node.name];
+
+        const inputsLen = Object.keys(node.inputs).length;
+        const outputsLen = Object.keys(node.outputs).length;
+
+        const blockInputs = inputsLen || inputs;
+        const blockOutputs = outputsLen || outputs;
+
+        const newNodeId = editor.value.addNode(
+          node.name,
+          blockInputs,
+          blockOutputs,
+          node.pos_x + 25,
+          node.pos_y + 70,
+          node.name,
+          node.data,
+          node.html,
+          'vue'
+        );
+
+        nodes.set(node.id, { ...nodes.get(node.id), newId: newNodeId });
+
+        const nodeElement = document.querySelector(`#node-${newNodeId}`);
+        nodeElement.classList.add('selected-list');
+        selectedElements.push({
+          id: newNodeId,
+          el: nodeElement,
+          posY: parseInt(nodeElement.style.top, 10),
+          posX: parseInt(nodeElement.style.left, 10),
+        });
+
+        if (outputsLen > 0) {
+          nodesOutputs.push({ id: newNodeId, outputs: node.outputs });
+        }
+      });
+
+      if (nodesOutputs.length < 1) return;
+
+      nodesOutputs.forEach(({ id, outputs }) => {
+        Object.keys(outputs).forEach((key) => {
+          outputs[key].connections.forEach((connection) => {
+            const node = nodes.get(connection.node);
+
+            if (!node) return;
+
+            editor.value.addConnection(id, node.newId, key, 'input_1');
+          });
+        });
+      });
     }
     function checkWorkflowData() {
       if (!editor.value) return;
@@ -361,7 +422,7 @@ export default {
       localStorage.setItem('editor-states', JSON.stringify(editorStates));
     }
     function initSelectArea() {
-      const selection = new SelectionArea({
+      selection.value = new SelectionArea({
         container: '#drawflow',
         startareas: ['#drawflow'],
         boundaries: ['#drawflow'],
@@ -373,7 +434,7 @@ export default {
         },
       });
 
-      selection.on('beforestart', ({ event }) => {
+      selection.value.on('beforestart', ({ event }) => {
         if (!event.ctrlKey) return false;
 
         editor.value.editor_mode = 'fixed';
@@ -381,10 +442,10 @@ export default {
 
         return true;
       });
-      selection.on('move', () => {
+      selection.value.on('move', () => {
         hasDragged = true;
       });
-      selection.on('stop', (event) => {
+      selection.value.on('stop', (event) => {
         event.store.selected.forEach((el) => {
           const isExists = selectedElements.some((item) =>
             item.el.isEqualNode(el)
@@ -407,20 +468,102 @@ export default {
         }, 500);
       });
     }
-    function clearSelectedElements() {
-      selectedElements.forEach(({ el }) => {
-        el.classList.remove('selected-list');
+    function onMouseup({ target }) {
+      editor.value.editor_mode = 'edit';
+
+      const isNodeEl = target.closest('.drawflow-node');
+      if (!isNodeEl) return;
+
+      const getPosition = (el) => {
+        return {
+          posY: parseInt(el.style.top, 10),
+          posX: parseInt(el.style.left, 10),
+        };
+      };
+
+      selectedElements.forEach(({ el }, index) => {
+        Object.assign(selectedElements[index], getPosition(el));
       });
+
+      if (activeNode) Object.assign(activeNode, getPosition(activeNode.el));
+
+      isDragging = false;
+    }
+    function onMousedown({ target }) {
+      const nodeEl = target.closest('.drawflow-node');
+      if (!nodeEl) return;
+
+      if (nodeEl.classList.contains('selected-list')) {
+        activeNode = {
+          el: nodeEl,
+          id: nodeEl.id.slice(5),
+          posY: parseInt(nodeEl.style.top, 10),
+          posX: parseInt(nodeEl.style.left, 10),
+        };
+      }
+
+      isDragging = true;
+    }
+    function onClick({ ctrlKey, target }) {
+      const nodeEl = target.closest('.drawflow-node');
+      if (!nodeEl) {
+        if (!hasDragged) clearSelectedElements();
+        return;
+      }
+
+      const nodeProperties = {
+        el: nodeEl,
+        id: nodeEl.id.slice(5),
+        posY: parseInt(nodeEl.style.top, 10),
+        posX: parseInt(nodeEl.style.left, 10),
+      };
+
+      if (!ctrlKey && !hasDragged) {
+        clearSelectedElements();
+
+        activeNode = nodeProperties;
+        nodeEl.classList.add('selected-list');
+        selectedElements = [nodeProperties];
+        hasDragged = false;
+
+        return;
+      }
+      hasDragged = false;
+
+      if (!ctrlKey) return;
+
+      const nodeIndex = selectedElements.findIndex(({ el }) =>
+        nodeEl.isEqualNode(el)
+      );
+      if (nodeIndex !== -1) {
+        setTimeout(() => {
+          nodeEl.classList.remove('selected-list', 'selected');
+        }, 400);
+        selectedElements.splice(nodeIndex, 1);
+      } else {
+        nodeEl.classList.add('selected-list');
+        selectedElements.push(nodeProperties);
+      }
+    }
+    function onKeyup({ key, target }) {
+      const isAnInput =
+        ['INPUT', 'TEXTAREA'].includes(target.tagName) &&
+        target.isContentEditable;
+
+      if (key !== 'Delete' || isAnInput) return;
+
+      selectedElements.forEach(({ id }) => {
+        editor.value.removeNodeId(`node-${id}`);
+      });
+
       selectedElements = [];
       activeNode = null;
     }
 
     useShortcut('editor:duplicate-block', () => {
-      const selectedElement = document.querySelector('.drawflow-node.selected');
+      if (!activeNode && selectedElements.length <= 0) return;
 
-      if (!selectedElement) return;
-
-      duplicateBlock(selectedElement.id.substr(5));
+      duplicateBlock();
     });
 
     watch(() => props.isShared, checkWorkflowData);
@@ -429,97 +572,10 @@ export default {
       const context = getCurrentInstance().appContext.app._context;
       const element = document.querySelector('#drawflow');
 
-      element.addEventListener('mousedown', ({ target }) => {
-        const nodeEl = target.closest('.drawflow-node');
-        if (!nodeEl) return;
-
-        if (nodeEl.classList.contains('selected-list')) {
-          activeNode = {
-            el: nodeEl,
-            id: nodeEl.id.slice(5),
-            posY: parseInt(nodeEl.style.top, 10),
-            posX: parseInt(nodeEl.style.left, 10),
-          };
-        }
-
-        isDragging = true;
-      });
-      element.addEventListener('mouseup', ({ target }) => {
-        editor.value.editor_mode = 'edit';
-
-        const isNodeEl = target.closest('.drawflow-node');
-        if (!isNodeEl) return;
-
-        const getPosition = (el) => {
-          return {
-            posY: parseInt(el.style.top, 10),
-            posX: parseInt(el.style.left, 10),
-          };
-        };
-
-        selectedElements.forEach(({ el }, index) => {
-          Object.assign(selectedElements[index], getPosition(el));
-        });
-
-        if (activeNode) Object.assign(activeNode, getPosition(activeNode.el));
-
-        isDragging = false;
-      });
-      element.addEventListener('click', ({ ctrlKey, target }) => {
-        const nodeEl = target.closest('.drawflow-node');
-        if (!nodeEl) {
-          if (!hasDragged) clearSelectedElements();
-          return;
-        }
-
-        const nodeProperties = {
-          el: nodeEl,
-          id: nodeEl.id.slice(5),
-          posY: parseInt(nodeEl.style.top, 10),
-          posX: parseInt(nodeEl.style.left, 10),
-        };
-
-        if (!ctrlKey && !hasDragged) {
-          clearSelectedElements();
-
-          activeNode = nodeProperties;
-          nodeEl.classList.add('selected-list');
-          selectedElements = [nodeProperties];
-          hasDragged = false;
-
-          return;
-        }
-        hasDragged = false;
-
-        if (!ctrlKey) return;
-
-        const nodeIndex = selectedElements.findIndex(({ el }) =>
-          nodeEl.isEqualNode(el)
-        );
-        if (nodeIndex !== -1) {
-          setTimeout(() => {
-            nodeEl.classList.remove('selected-list', 'selected');
-          }, 400);
-          selectedElements.splice(nodeIndex, 1);
-        } else {
-          nodeEl.classList.add('selected-list');
-          selectedElements.push(nodeProperties);
-        }
-      });
-      element.addEventListener('keyup', ({ key, target }) => {
-        const isAnInput =
-          ['INPUT', 'TEXTAREA'].includes(target.tagName) &&
-          target.isContentEditable;
-
-        if (key !== 'Delete' || isAnInput) return;
-
-        selectedElements.forEach(({ id }) => {
-          editor.value.removeNodeId(`node-${id}`);
-        });
-
-        selectedElements = [];
-        activeNode = null;
-      });
+      element.addEventListener('mousedown', onMousedown);
+      element.addEventListener('mouseup', onMouseup);
+      element.addEventListener('click', onClick);
+      element.addEventListener('keyup', onKeyup);
 
       editor.value = drawflow(element, {
         context,
@@ -685,7 +741,16 @@ export default {
         refreshConnection();
       }, 500);
     });
-    onBeforeUnmount(saveEditorState);
+    onBeforeUnmount(() => {
+      const element = document.querySelector('#drawflow');
+
+      element.removeEventListener('mousedown', onMousedown);
+      element.removeEventListener('mouseup', onMouseup);
+      element.removeEventListener('click', onClick);
+      element.removeEventListener('keyup', onKeyup);
+
+      saveEditorState();
+    });
 
     return {
       t,
@@ -695,7 +760,7 @@ export default {
       handleDragOver,
       contextMenuHandler: {
         deleteBlock,
-        duplicateBlock: () => duplicateBlock(),
+        duplicateBlock: () => duplicateBlock(contextMenu.data.substr(5)),
       },
     };
   },

@@ -880,8 +880,7 @@ onMounted(() => {
     return;
   }
 
-  state.drawflow =
-    workflow.value.drawflow || '{drawflow: {Home: { data: {} }}}';
+  state.drawflow = workflow.value.drawflow;
   state.showSidebar =
     JSON.parse(localStorage.getItem('workflow:sidebar')) ?? true;
 
