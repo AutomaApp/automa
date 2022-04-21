@@ -306,6 +306,7 @@
           "options": {
             "data-columns": "表格",
             "google-sheets": "Google sheets",
+            "variable": "变量"
           },
         }
       },
@@ -392,6 +393,7 @@
         "description": "在网页中执行您的 javascript 代码",
         "availabeFuncs": "可用函数:",
         "removeAfterExec": "模块执行后移除",
+        "everyNewTab": "每次新建标签都执行",
         "modal": {
           "tabs": {
             "code": "JavaScript 代码",
