@@ -70,6 +70,10 @@
           }
         }
       },
+      "reload-tab": {
+        "name": "Reload tab",
+        "description": "Reload the active tab"
+      },
       "save-assets": {
         "name": "Save assets",
         "description": "Save assets (image, video, audio, or file) from an element or URL",

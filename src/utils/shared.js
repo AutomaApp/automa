@@ -455,18 +455,6 @@ export const tasks = {
       repeatFor: 1,
     },
   },
-  // 'reload-page': {
-  //   name: 'Reload page',
-  //   icon: 'riRestartLine',
-  //   component: 'BlockBasic',
-  //   category: 'interaction',
-  //   inputs: 1,
-  //   outputs: 1,
-  //   allowedInputs: true,
-  //   maxConnection: 1,
-  //   disableEdit: true,
-  //   data: {},
-  // },
   'javascript-code': {
     name: 'JavaScript code',
     description: 'Execute your custom javascript code in a webpage',
@@ -847,6 +835,19 @@ export const tasks = {
       assignVariable: false,
       variableName: '',
     },
+  },
+  'reload-tab': {
+    name: 'Reload tab',
+    description: 'Reload the active tab',
+    icon: 'riRestartLine',
+    component: 'BlockBasic',
+    category: 'browser',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    disableEdit: true,
+    data: {},
   },
 };
 

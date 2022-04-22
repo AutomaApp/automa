@@ -1,7 +1,7 @@
 <template>
   <div
+    v-bind="{ arrow: $store.state.settings.editor.arrow }"
     id="drawflow"
-    :class="{ 'with-arrow': $store.state.settings.editor.arrow }"
     class="parent-drawflow relative"
     @drop="dropHandler"
     @dragover.prevent="handleDragOver"
@@ -785,7 +785,7 @@ export default {
 .drawflow .drawflow-node {
   @apply dark:bg-gray-800;
 }
-#drawflow.with-arrow .drawflow-node .input {
+#drawflow[arrow='true'] .drawflow-node .input {
   background-color: transparent !important;
   border-top: 10px solid transparent;
   border-radius: 0;
