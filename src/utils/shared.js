@@ -849,6 +849,23 @@ export const tasks = {
     disableEdit: true,
     data: {},
   },
+  'delete-data': {
+    name: 'Delete data',
+    description: 'Delete table or variable data',
+    icon: 'riDeleteBin7Line',
+    editComponent: 'EditDeleteData',
+    component: 'BlockBasic',
+    category: 'general',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    disableEdit: true,
+    data: {
+      description: '',
+      deleteList: [],
+    },
+  },
 };
 
 export const categories = {

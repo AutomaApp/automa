@@ -70,6 +70,12 @@
           }
         }
       },
+      "delete-data": {
+        "name": "Delete data",
+        "description": "Delete table or variable data",
+        "from": "Data from",
+        "allColumns": "[All columns]"
+      },
       "reload-tab": {
         "name": "Reload tab",
         "description": "Reload the active tab"
