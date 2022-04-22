@@ -547,7 +547,7 @@ export default {
     }
     function onKeyup({ key, target }) {
       const isAnInput =
-        ['INPUT', 'TEXTAREA'].includes(target.tagName) &&
+        ['INPUT', 'TEXTAREA'].includes(target.tagName) ||
         target.isContentEditable;
 
       if (key !== 'Delete' || isAnInput) return;
