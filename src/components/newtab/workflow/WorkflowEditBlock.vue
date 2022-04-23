@@ -112,7 +112,7 @@ export default {
       ...autocompleteData.value.common,
       ...autocompleteData.value[props.data.itemId || props.data.blockId],
     }));
-    console.log(autocompleteList.value);
+
     provide('autocompleteData', autocompleteList);
 
     const dataKeywords = {

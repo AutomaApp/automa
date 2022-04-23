@@ -31,7 +31,7 @@ function onSearch(value) {
   const path = (value ?? '').replace('@', '.');
   const pathArr = path.split('.');
 
-  if (pathArr.length < 1) {
+  if (pathArr.length <= 1) {
     state.path = '';
     state.pathLen = 0;
 
@@ -55,8 +55,6 @@ const autocompleteList = computed(() => {
       : objectPath.get(autocompleteData.value, state.path);
 
   const list = typeof data === 'string' ? [] : Object.keys(data || {});
-
-  console.log(cache);
 
   cache.set(state.path, list);
 

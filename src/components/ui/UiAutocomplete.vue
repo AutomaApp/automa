@@ -192,22 +192,27 @@ function selectItem(itemIndex) {
   selectedItem = getItem(selectedItem);
 
   let caretPosition;
-  let charLastIndex = 0;
   const isTriggerChar = state.charIndex >= 0 && state.searchText;
 
   if (isTriggerChar) {
     const val = input.value;
     const index = state.charIndex;
     const charLength = props.triggerChar[0].length;
+    const lastSearchIndex = state.searchText.length + index + charLength;
+
+    let charLastIndex = 0;
 
     if (props.replaceAfter) {
       const lastChars = Array.isArray(props.replaceAfter)
         ? props.replaceAfter
         : [props.replaceAfter];
       lastChars.forEach((char) => {
-        const lastIndex = val.lastIndexOf(char);
+        const searchText = val.slice(0, lastSearchIndex);
+        const lastIndex = searchText.lastIndexOf(char);
 
-        if (lastIndex > charLastIndex) charLastIndex = lastIndex - 1;
+        if (lastIndex > charLastIndex && lastIndex > index) {
+          charLastIndex = lastIndex - 1;
+        }
       });
     }
 
@@ -215,7 +220,7 @@ function selectItem(itemIndex) {
     selectedItem =
       val.slice(0, index + charLength + charLastIndex) +
       selectedItem +
-      val.slice(state.searchText.length + index + charLength, val.length);
+      val.slice(lastSearchIndex, val.length);
   }
 
   updateValue(selectedItem);
