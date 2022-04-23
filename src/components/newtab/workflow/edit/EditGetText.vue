@@ -1,5 +1,5 @@
 <template>
-  <edit-interaction-base v-bind="{ data, autocomplete }" @change="updateData">
+  <edit-interaction-base v-bind="{ data }" @change="updateData">
     <hr />
     <div class="flex rounded-lg bg-input px-4 items-center transition">
       <span>/</span>
@@ -27,13 +27,7 @@
       </ui-popover>
     </div>
     <div class="mt-2 flex space-x-2">
-      <ui-autocomplete
-        :items="autocomplete"
-        :trigger-char="['{{', '}}']"
-        block
-        hide-empty
-        class="w-full"
-      >
+      <edit-autocomplete class="w-full">
         <ui-input
           :model-value="data.prefixText"
           :title="t('workflow.blocks.get-text.prefixText.title')"
@@ -43,14 +37,8 @@
           class="w-full"
           @change="updateData({ prefixText: $event })"
         />
-      </ui-autocomplete>
-      <ui-autocomplete
-        :items="autocomplete"
-        :trigger-char="['{{', '}}']"
-        block
-        hide-empty
-        class="w-full"
-      >
+      </edit-autocomplete>
+      <edit-autocomplete class="w-full">
         <ui-input
           :model-value="data.suffixText"
           :title="t('workflow.blocks.get-text.suffixText.title')"
@@ -60,7 +48,7 @@
           class="w-full"
           @change="updateData({ suffixText: $event })"
         />
-      </ui-autocomplete>
+      </edit-autocomplete>
     </div>
     <ui-checkbox
       :model-value="data.includeTags"
@@ -83,15 +71,12 @@ import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import InsertWorkflowData from './InsertWorkflowData.vue';
 import EditInteractionBase from './EditInteractionBase.vue';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
-  },
-  autocomplete: {
-    type: Array,
-    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

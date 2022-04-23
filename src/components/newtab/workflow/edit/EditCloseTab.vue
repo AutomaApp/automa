@@ -30,13 +30,7 @@
           {{ t('workflow.blocks.close-tab.activeTab') }}
         </ui-checkbox>
       </div>
-      <ui-autocomplete
-        v-if="!data.activeTab"
-        :items="autocomplete"
-        :trigger-char="['{{', '}}']"
-        block
-        hide-empty
-      >
+      <edit-autocomplete v-if="!data.activeTab">
         <ui-input
           :model-value="data.url"
           class="w-full mt-1"
@@ -59,7 +53,7 @@
             </a>
           </template>
         </ui-input>
-      </ui-autocomplete>
+      </edit-autocomplete>
     </template>
     <ui-checkbox
       v-else
@@ -73,15 +67,12 @@
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
-  },
-  autocomplete: {
-    type: Array,
-    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

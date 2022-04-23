@@ -20,14 +20,7 @@
           {{ t(`workflow.blocks.base.findElement.options.${type}`) }}
         </option>
       </ui-select>
-      <ui-autocomplete
-        v-if="!hideSelector"
-        :items="autocomplete"
-        :trigger-char="['{{', '}}']"
-        block
-        hide-empty
-        class="mb-1"
-      >
+      <edit-autocomplete v-if="!hideSelector" class="mb-1">
         <ui-input
           v-if="!hideSelector"
           :model-value="data.selector"
@@ -36,7 +29,7 @@
           class="w-full"
           @change="updateData({ selector: $event })"
         />
-      </ui-autocomplete>
+      </edit-autocomplete>
       <ui-expand
         v-if="!hideSelector"
         hide-header-icon
@@ -94,6 +87,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({
   data: {
@@ -111,10 +105,6 @@ const props = defineProps({
   hideMultiple: {
     type: Boolean,
     default: false,
-  },
-  autocomplete: {
-    type: Array,
-    default: () => [],
   },
 });
 const emit = defineEmits(['update:data', 'change']);

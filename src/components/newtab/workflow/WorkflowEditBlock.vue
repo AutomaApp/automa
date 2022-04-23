@@ -24,7 +24,6 @@
       :key="data.blockId"
       v-model:data="blockData"
       :block-id="data.blockId"
-      :autocomplete="autocompleteList"
     />
     <on-block-error
       v-if="!excludeOnError.includes(data.id)"
@@ -36,9 +35,10 @@
   </div>
 </template>
 <script>
-import { computed, ref, watch } from 'vue';
+import { computed, provide, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { tasks } from '@/utils/shared';
+import { parseJSON } from '@/utils/helper';
 import OnBlockError from './edit/OnBlockError.vue';
 
 const editComponents = require.context(
@@ -80,13 +80,6 @@ export default {
   },
   emits: ['close', 'update', 'update:autocomplete'],
   setup(props, { emit }) {
-    const defaultAutocomplete = [
-      'activeTabUrl',
-      '$date',
-      '$randint',
-      '$getLength',
-      'globalData',
-    ];
     const excludeOnError = [
       'webhook',
       'while-loop',
@@ -96,7 +89,16 @@ export default {
     ];
 
     const { t } = useI18n();
-    const autocompleteData = ref({});
+    const autocompleteData = ref({
+      common: {
+        table: {},
+        globalData: [],
+        activeTabUrl: '',
+        $date: '',
+        $randint: '',
+        $getLength: '',
+      },
+    });
 
     const blockData = computed({
       get() {
@@ -106,16 +108,12 @@ export default {
         emit('update', value);
       },
     });
-    const autocompleteList = computed(() => {
-      const blockId = props.data.itemId || props.data.blockId;
-      const arr = [
-        defaultAutocomplete,
-        autocompleteData.value.table,
-        autocompleteData.value[blockId],
-      ];
-
-      return arr.flatMap((items) => [...(items || [])]);
-    });
+    const autocompleteList = computed(() => ({
+      ...autocompleteData.value.common,
+      ...autocompleteData.value[props.data.itemId || props.data.blockId],
+    }));
+    console.log(autocompleteList.value);
+    provide('autocompleteData', autocompleteList);
 
     const dataKeywords = {
       loopId: 'loopData',
@@ -123,7 +121,7 @@ export default {
       variableName: 'variables',
     };
     function addAutocompleteData(id, name, data) {
-      if (!autocompleteData.value[id]) autocompleteData.value[id] = new Set();
+      if (!autocompleteData.value[id]) autocompleteData.value[id] = {};
 
       if (!tasks[name].autocomplete) return;
 
@@ -132,7 +130,12 @@ export default {
           key === 'variableName' && !data.assignVariable;
         if (!data[key] || variableNotAssigned) return;
 
-        autocompleteData.value[id].add(`${dataKeywords[key]}@${data[key]}`);
+        const keyword = dataKeywords[key];
+        if (!autocompleteData.value[id][keyword]) {
+          autocompleteData.value[id][keyword] = {};
+        }
+
+        autocompleteData.value[id][keyword][data[key]] = '';
       });
     }
     function getGroupBlockData(blocks, currentItemId) {
@@ -192,18 +195,24 @@ export default {
           traceBlockData(props.data.blockId, currentBlock, blocks);
         }
 
-        if (!autocompleteData.value.table) {
-          autocompleteData.value.table = new Set();
-          props.workflow.table?.forEach((column) => {
-            autocompleteData.value.table.add(`table@${column.name}`);
-          });
-        }
+        props.workflow.table?.forEach((column) => {
+          autocompleteData.value.common.table[column.name] = '';
+        });
+
+        const workflowGlobalData = props.workflow.globalData;
+        autocompleteData.value.common.globalData = parseJSON(
+          workflowGlobalData,
+          workflowGlobalData
+        );
+
+        console.log(autocompleteData.value);
       },
       { immediate: true }
     );
     watch(
       autocompleteData,
       () => {
+        console.log(autocompleteData.value);
         emit('update:autocomplete', autocompleteData.value);
       },
       { deep: true }
@@ -213,7 +222,6 @@ export default {
       t,
       blockData,
       excludeOnError,
-      autocompleteList,
     };
   },
 };

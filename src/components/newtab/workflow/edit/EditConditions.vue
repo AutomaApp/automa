@@ -56,7 +56,6 @@
             class="text-xl font-semibold mb-4 bg-transparent focus:ring-0"
           />
           <shared-condition-builder
-            :autocomplete="autocomplete"
             :model-value="conditions[state.conditionsIndex].conditions"
             @change="conditions[state.conditionsIndex].conditions = $event"
           />
@@ -81,10 +80,6 @@ const props = defineProps({
   blockId: {
     type: String,
     default: '',
-  },
-  autocomplete: {
-    type: Array,
-    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

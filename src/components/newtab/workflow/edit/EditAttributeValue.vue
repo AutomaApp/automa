@@ -1,12 +1,7 @@
 <template>
-  <edit-interaction-base v-bind="{ data, autocomplete }" @change="updateData">
+  <edit-interaction-base v-bind="{ data }" @change="updateData">
     <hr />
-    <ui-autocomplete
-      :items="autocomplete"
-      :trigger-char="['{{', '}}']"
-      block
-      hide-empty
-    >
+    <edit-autocomplete>
       <ui-input
         :model-value="data.attributeName"
         :label="t('workflow.blocks.attribute-value.forms.name')"
@@ -15,7 +10,7 @@
         class="w-full"
         @change="updateData({ attributeName: $event })"
       />
-    </ui-autocomplete>
+    </edit-autocomplete>
     <insert-workflow-data
       :data="data"
       extra-row
@@ -28,15 +23,12 @@
 import { useI18n } from 'vue-i18n';
 import EditInteractionBase from './EditInteractionBase.vue';
 import InsertWorkflowData from './InsertWorkflowData.vue';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
-  },
-  autocomplete: {
-    type: Array,
-    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

@@ -44,14 +44,7 @@
       class="w-full mt-2"
       @change="updateData({ variableName: $event })"
     />
-    <ui-autocomplete
-      v-else-if="data.loopThrough === 'elements'"
-      :items="autocomplete"
-      :trigger-char="['{{', '}}']"
-      block
-      hide-empty
-      class="mt-2"
-    >
+    <edit-autocomplete v-else-if="data.loopThrough === 'elements'" class="mt-2">
       <ui-input
         :model-value="data.elementSelector"
         :label="t('workflow.blocks.base.selector')"
@@ -60,7 +53,7 @@
         class="w-full"
         @change="updateData({ elementSelector: $event })"
       />
-    </ui-autocomplete>
+    </edit-autocomplete>
     <ui-button
       v-else-if="data.loopThrough === 'custom-data'"
       class="w-full mt-4"
@@ -169,6 +162,7 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 import Papa from 'papaparse';
 import { openFilePicker } from '@/utils/helper';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const SharedCodemirror = defineAsyncComponent(() =>
   import('@/components/newtab/shared/SharedCodemirror.vue')
@@ -182,10 +176,6 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
-  },
-  autocomplete: {
-    type: Array,
-    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

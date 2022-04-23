@@ -29,13 +29,7 @@
       {{ t('workflow.blocks.take-screenshot.saveToComputer') }}
     </ui-checkbox>
     <div v-if="data.saveToComputer" class="flex items-center mt-1">
-      <ui-autocomplete
-        :items="autocomplete"
-        :trigger-char="['{{', '}}']"
-        block
-        hide-empty
-        class="flex-1 mr-2"
-      >
+      <edit-autocomplete class="flex-1 mr-2">
         <ui-input
           :model-value="data.fileName"
           :placeholder="t('common.fileName')"
@@ -44,7 +38,7 @@
           title="File name"
           @change="updateData({ fileName: $event })"
         />
-      </ui-autocomplete>
+      </edit-autocomplete>
       <ui-select
         :model-value="data.ext || 'png'"
         placeholder="Type"
@@ -98,15 +92,12 @@
 import { inject, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { objectHasKey } from '@/utils/helper';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
-  },
-  autocomplete: {
-    type: Array,
-    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

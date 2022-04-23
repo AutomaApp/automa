@@ -18,12 +18,7 @@
         {{ t('workflow.blocks.google-sheets.select.update') }}
       </option>
     </ui-select>
-    <ui-autocomplete
-      :items="autocomplete"
-      :trigger-char="['{{', '}}']"
-      block
-      hide-empty
-    >
+    <edit-autocomplete>
       <ui-input
         :model-value="data.spreadsheetId"
         class="w-full"
@@ -42,13 +37,8 @@
           </a>
         </template>
       </ui-input>
-    </ui-autocomplete>
-    <ui-autocomplete
-      :items="autocomplete"
-      :trigger-char="['{{', '}}']"
-      block
-      hide-empty
-    >
+    </edit-autocomplete>
+    <edit-autocomplete>
       <ui-input
         :model-value="data.range"
         class="w-full mt-1"
@@ -67,7 +57,7 @@
           </a>
         </template>
       </ui-input>
-    </ui-autocomplete>
+    </edit-autocomplete>
     <template v-if="data.type === 'get'">
       <ui-input
         :model-value="data.refKey"
@@ -172,6 +162,7 @@ import { shallowReactive, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { googleSheets } from '@/utils/api';
 import { convert2DArrayToArrayObj } from '@/utils/helper';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const SharedCodemirror = defineAsyncComponent(() =>
   import('@/components/newtab/shared/SharedCodemirror.vue')
@@ -181,10 +172,6 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
-  },
-  autocomplete: {
-    type: Array,
-    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

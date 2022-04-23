@@ -32,13 +32,7 @@
       class="w-full mt-2"
       @change="updateData({ variableName: $event })"
     />
-    <ui-autocomplete
-      :items="autocomplete"
-      :trigger-char="['{{', '}}']"
-      block
-      hide-empty
-      class="mt-2"
-    >
+    <edit-autocomplete class="mt-2">
       <ui-input
         :model-value="data.name"
         autocomplete="off"
@@ -47,7 +41,7 @@
         placeholder="unnamed"
         @change="updateData({ name: $event })"
       />
-    </ui-autocomplete>
+    </edit-autocomplete>
     <ui-select
       v-if="permission.has.downloads"
       :model-value="data.onConflict"
@@ -83,15 +77,12 @@
 import { useI18n } from 'vue-i18n';
 import { dataExportTypes } from '@/utils/shared';
 import { useHasPermissions } from '@/composable/hasPermissions';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
-  },
-  autocomplete: {
-    type: Array,
-    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

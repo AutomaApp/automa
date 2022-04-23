@@ -1,8 +1,5 @@
 <template>
-  <edit-interaction-base
-    v-bind="{ data, autocomplete, hide: hideBase }"
-    @change="updateData"
-  >
+  <edit-interaction-base v-bind="{ data, hide: hideBase }" @change="updateData">
     <template v-if="hasFileAccess">
       <div class="mt-4 space-y-2">
         <div
@@ -10,20 +7,14 @@
           :key="index"
           class="flex items-center group"
         >
-          <ui-autocomplete
-            :items="autocomplete"
-            :trigger-char="['{{', '}}']"
-            block
-            hide-empty
-            class="mr-2"
-          >
+          <edit-autocomplete class="mr-2">
             <ui-input
               v-model="filePaths[index]"
               :placeholder="t('workflow.blocks.upload-file.filePath')"
               autocomplete="off"
               class="w-full"
             />
-          </ui-autocomplete>
+          </edit-autocomplete>
           <v-remixicon
             name="riDeleteBin7Line"
             class="invisible cursor-pointer group-hover:visible"
@@ -57,6 +48,7 @@
 import { useI18n } from 'vue-i18n';
 import { ref, watch } from 'vue';
 import EditInteractionBase from './EditInteractionBase.vue';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({
   data: {
@@ -66,10 +58,6 @@ const props = defineProps({
   hideBase: {
     type: Boolean,
     default: false,
-  },
-  autocomplete: {
-    type: Array,
-    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

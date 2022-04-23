@@ -69,10 +69,6 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
-  autocomplete: {
-    type: Array,
-    default: () => [],
-  },
 });
 const emit = defineEmits(['update:data']);
 

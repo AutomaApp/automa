@@ -16,13 +16,7 @@
         {{ method }}
       </option>
     </ui-select>
-    <ui-autocomplete
-      :items="autocomplete"
-      :trigger-char="['{{', '}}']"
-      block
-      hide-empty
-      class="mb-2"
-    >
+    <edit-autocomplete class="mb-2">
       <ui-input
         :model-value="data.url"
         :label="`${t('workflow.blocks.webhook.url')}*`"
@@ -33,7 +27,7 @@
         type="url"
         @change="updateData({ url: $event })"
       />
-    </ui-autocomplete>
+    </edit-autocomplete>
     <ui-select
       :model-value="data.contentType"
       :label="t('workflow.blocks.webhook.contentType')"
@@ -157,6 +151,7 @@ import { ref, watch, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { contentTypes } from '@/utils/shared';
 import InsertWorkflowData from './InsertWorkflowData.vue';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const SharedCodemirror = defineAsyncComponent(() =>
   import('@/components/newtab/shared/SharedCodemirror.vue')
@@ -166,10 +161,6 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
-  },
-  autocomplete: {
-    type: Array,
-    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);
