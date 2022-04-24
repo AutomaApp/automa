@@ -528,7 +528,13 @@
         "description": "Take a screenshot of current active tab",
         "imageQuality": "Image quality",
         "saveToColumn": "Insert screenshot to table",
-        "saveToComputer": "Save screenshot to computer"
+        "saveToComputer": "Save screenshot to computer",
+        "types": {
+          "title": "Take a screenshot of",
+          "page": "Page",
+          "fullpage": "Full page",
+          "element": "An element"
+        }
       },
       "switch-to": {
         "name": "Switch frame",

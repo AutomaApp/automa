@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 import { fileSaver } from '@/utils/helper';
-import { getBlockConnection } from '../helper';
+import { getBlockConnection, waitTabLoaded } from '../helper';
 
 async function saveImage({ filename, uri, ext }) {
   const hasDownloadAccess = await browser.permissions.contains({
@@ -65,16 +65,20 @@ async function takeScreenshot({ data, outputs, name }) {
         currentWindow: true,
       });
 
-      if (this.windowId)
+      if (this.windowId) {
         await browser.windows.update(this.windowId, { focused: true });
+      }
+
       await browser.tabs.update(this.activeTab.id, { active: true });
+      await waitTabLoaded(this.activeTab.id);
 
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      screenshot = await (data.fullPage
+      screenshot = await (data.fullPage ||
+      ['element', 'fullpage'].includes(data.type)
         ? this._sendMessageToTab({
             name,
             options,
+            type: data.type,
+            selector: data.selector,
             tabId: this.activeTab.id,
           })
         : browser.tabs.captureVisibleTab(options));
@@ -94,6 +98,8 @@ async function takeScreenshot({ data, outputs, name }) {
     return { data: screenshot, nextBlockId };
   } catch (error) {
     error.nextBlockId = nextBlockId;
+
+    if (data.type === 'element') error.data = { selector: data.selector };
 
     throw error;
   }
