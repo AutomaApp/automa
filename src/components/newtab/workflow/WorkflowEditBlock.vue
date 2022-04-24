@@ -1,12 +1,12 @@
 <template>
   <div id="workflow-edit-block" class="px-4 overflow-auto scroll pb-1">
     <div
-      class="sticky top-0 z-20 bg-white dark:bg-gray-800 pb-4 mb-2 flex items-center"
+      class="sticky top-0 z-20 bg-white dark:bg-gray-800 pb-4 mb-2 flex items-center space-x-2"
     >
-      <button class="mr-2" @click="$emit('close')">
+      <button @click="$emit('close')">
         <v-remixicon name="riArrowLeftLine" />
       </button>
-      <p class="font-semibold inline-block flex-1 capitalize">
+      <p class="font-semibold inline-block capitalize">
         {{ t(`workflow.blocks.${data.id}.name`) }}
       </p>
       <a
@@ -14,9 +14,23 @@
         :href="`https://docs.automa.site/blocks/${data.id}.html`"
         rel="noopener"
         target="_blank"
+        class="text-gray-600 dark:text-gray-200"
       >
-        <v-remixicon name="riInformationLine" />
+        <v-remixicon name="riInformationLine" size="20" />
       </a>
+      <div class="flex-grow"></div>
+      <ui-switch
+        v-if="data.id !== 'trigger'"
+        v-tooltip="
+          t(
+            `workflow.blocks.base.toggle.${
+              blockData.disableBlock ? 'enable' : 'disable'
+            }`
+          )
+        "
+        :model-value="!blockData.disableBlock"
+        @change="$emit('update', { ...blockData, disableBlock: !$event })"
+      />
     </div>
     <component
       :is="data.editComponent"
@@ -204,15 +218,12 @@ export default {
           workflowGlobalData,
           workflowGlobalData
         );
-
-        console.log(autocompleteData.value);
       },
       { immediate: true }
     );
     watch(
       autocompleteData,
       () => {
-        console.log(autocompleteData.value);
         emit('update:autocomplete', autocompleteData.value);
       },
       { deep: true }

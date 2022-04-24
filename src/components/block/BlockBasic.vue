@@ -9,7 +9,9 @@
   >
     <div class="flex items-center">
       <span
-        :class="block.category.color"
+        :class="
+          block.data.disableBlock ? 'bg-box-transparent' : block.category.color
+        "
         class="inline-block p-2 mr-2 rounded-lg dark:text-black"
       >
         <v-remixicon :name="block.details.icon || 'riGlobalLine'" />

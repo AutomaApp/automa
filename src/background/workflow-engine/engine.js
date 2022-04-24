@@ -407,7 +407,10 @@ class WorkflowEngine {
     const replacedBlock = referenceData({
       block,
       data: this.referenceData,
-      refKeys: isRetry ? null : tasks[block.name].refDataKeys,
+      refKeys:
+        isRetry || block.data.disableBlock
+          ? null
+          : tasks[block.name].refDataKeys,
     });
     const blockDelay = this.workflow.settings?.blockDelay || 0;
     const addBlockLog = (status, obj = {}) => {
@@ -422,17 +425,26 @@ class WorkflowEngine {
     };
 
     try {
-      const result = await handler.call(this, replacedBlock, {
-        prevBlockData,
-        refData: this.referenceData,
-      });
+      let result;
+
+      if (block.data.disableBlock) {
+        result = {
+          data: '',
+          nextBlockId: getBlockConnection(block),
+        };
+      } else {
+        result = await handler.call(this, replacedBlock, {
+          prevBlockData,
+          refData: this.referenceData,
+        });
+
+        addBlockLog(result.status || 'success', {
+          logId: result.logId,
+        });
+      }
 
       if (result.replacedValue)
         replacedBlock.replacedValue = result.replacedValue;
-
-      addBlockLog(result.status || 'success', {
-        logId: result.logId,
-      });
 
       if (result.nextBlockId) {
         setTimeout(() => {
