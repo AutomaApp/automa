@@ -161,13 +161,12 @@ class WorkflowEngine {
       chrome.debugger.onEvent.addListener(this.onDebugEvent);
     }
     if (this.workflow.settings.reuseLastState) {
-      const lastStateKey = `last-state:${this.workflow.id}`;
+      const lastStateKey = `state:${this.workflow.id}`;
       browser.storage.local.get(lastStateKey).then((value) => {
         const lastState = value[lastStateKey];
-
         if (!lastState) return;
 
-        this.columns = lastState.columns;
+        Object.assign(this.columns, lastState.columns);
         Object.assign(this.referenceData, lastState.referenceData);
       });
     }
@@ -350,19 +349,20 @@ class WorkflowEngine {
       });
 
       if (this.workflow.settings.reuseLastState) {
-        browser.storage.local.set({
-          [`last-state:${this.workflow.id}`]: {
+        const workflowState = {
+          [`state:${this.workflow.id}`]: {
             columns: this.columns,
             referenceData: {
               table: this.referenceData.table,
               variables: this.referenceData.variables,
-              globalData: this.referenceData.globalData,
             },
           },
-        });
-      }
+        };
 
-      if (status === 'success') clearCache(this.workflow);
+        browser.storage.local.set(workflowState);
+      } else if (status === 'success') {
+        clearCache(this.workflow);
+      }
 
       this.isDestroyed = true;
       this.eventListeners = {};

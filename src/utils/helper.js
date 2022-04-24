@@ -203,7 +203,7 @@ export function debounce(callback, time = 200) {
 
 export async function clearCache(workflow) {
   try {
-    await browser.storage.local.remove(`last-state:${workflow.id}`);
+    await browser.storage.local.remove(`state:${workflow.id}`);
 
     const flows = parseJSON(workflow.drawflow, null);
     const blocks = flows && flows.drawflow.Home.data;

@@ -1,5 +1,6 @@
 import { Model } from '@vuex-orm/core';
 import { nanoid } from 'nanoid';
+import browser from 'webextension-polyfill';
 
 class Log extends Model {
   static entity = 'logs';
@@ -26,6 +27,14 @@ class Log extends Model {
 
   static afterDelete(item) {
     const logs = this.query().where('collectionLogId', item.id).get();
+
+    browser.storage.local.get('logsCtxData').then((data) => {
+      const logsCtxData = data.logsCtxData || {};
+
+      delete logsCtxData[item.id];
+
+      browser.storage.local.set({ logsCtxData });
+    });
 
     if (logs.length !== 0) {
       Promise.allSettled(logs.map(({ id }) => this.delete(id))).then(() => {

@@ -59,6 +59,7 @@ import browser from 'webextension-polyfill';
 import { useTheme } from '@/composable/theme';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vue-i18n';
 import { fetchApi, getSharedWorkflows, getUserWorkflows } from '@/utils/api';
+import Log from '@/models/log';
 import Workflow from '@/models/workflow';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 
@@ -182,9 +183,8 @@ async function fetchUserData() {
   }
 }
 function handleStorageChanged(change) {
-  if (change.logs) {
-    store.dispatch('entities/create', {
-      entity: 'logs',
+  if (change.logs && Log.all().length !== change.logs.newValue.length) {
+    Log.insertOrUpdate({
       data: change.logs.newValue,
     });
   }
