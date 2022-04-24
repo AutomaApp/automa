@@ -1,13 +1,22 @@
 <template>
   <div>
-    <ui-button
-      :disabled="conditions.length >= 10"
-      variant="accent"
-      class="mb-4"
-      @click="addCondition"
-    >
-      {{ t('workflow.blocks.conditions.add') }}
-    </ui-button>
+    <div class="mb-4 flex items-center justify-between">
+      <ui-button
+        :disabled="conditions.length >= 10"
+        variant="accent"
+        class="mr-2"
+        @click="addCondition"
+      >
+        {{ t('workflow.blocks.conditions.add') }}
+      </ui-button>
+      <ui-button
+        v-tooltip:bottom="t('workflow.blocks.conditions.refresh')"
+        icon
+        @click="refreshConnections"
+      >
+        <v-remixicon name="riRefreshLine" />
+      </ui-button>
+    </div>
     <draggable
       v-model="conditions"
       item-key="id"
@@ -123,6 +132,11 @@ function deleteCondition(index) {
 
   emitter.emit('conditions-block:delete', {
     index,
+    id: props.blockId,
+  });
+}
+function refreshConnections() {
+  emitter.emit('conditions-block:refresh', {
     id: props.blockId,
   });
 }

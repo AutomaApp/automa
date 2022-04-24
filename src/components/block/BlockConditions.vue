@@ -2,7 +2,9 @@
   <div :id="componentId" class="p-4" @dblclick="editBlock">
     <div class="flex items-center">
       <div
-        :class="block.category.color"
+        :class="
+          block.data.disableBlock ? 'bg-box-transparent' : block.category.color
+        "
         class="inline-block text-sm mr-4 p-2 rounded-lg dark:text-black"
       >
         <v-remixicon name="riAB" size="20" class="inline-block mr-1" />
@@ -79,7 +81,11 @@ const componentId = useComponentId('block-conditions');
 const block = useEditorBlock(`#${componentId}`, props.editor);
 
 function onChange({ detail }) {
-  if (detail.conditions) block.data.conditions = detail.conditions;
+  block.data.disableBlock = detail.disableBlock;
+
+  if (detail.conditions) {
+    block.data.conditions = detail.conditions;
+  }
 }
 function editBlock() {
   emitter.emit('editor:edit-block', {
@@ -106,6 +112,23 @@ function deleteConditionEmit({ index, id }) {
   if (block.data.conditions.length === 0)
     props.editor.removeNodeOutput(block.id, `output_1`);
 }
+function refreshConnections({ id }) {
+  if (id !== block.id) return;
+
+  const node = props.editor.getNodeFromId(block.id);
+  const outputs = Object.keys(node.outputs);
+  const conditionsLen = block.data.conditions.length + 1;
+
+  if (outputs.length > conditionsLen) {
+    const diff = outputs.length - conditionsLen;
+
+    for (let index = 0; index < diff; index += 1) {
+      const output = outputs[outputs.length - 2 - index];
+
+      props.editor.removeNodeOutput(block.id, output);
+    }
+  }
+}
 
 watch(
   () => block.data.conditions,
@@ -125,10 +148,12 @@ watch(
 
 emitter.on('conditions-block:add', addConditionEmit);
 emitter.on('conditions-block:delete', deleteConditionEmit);
+emitter.on('conditions-block:refresh', refreshConnections);
 
 onBeforeUnmount(() => {
   emitter.off('conditions-block:add', addConditionEmit);
   emitter.off('conditions-block:delete', deleteConditionEmit);
+  emitter.off('conditions-block:refresh', refreshConnections);
 });
 </script>
 <style>

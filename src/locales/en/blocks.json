@@ -428,6 +428,7 @@
         "name": "Conditions",
         "add": "Add condition",
         "description": "Conditional block",
+        "refresh": "Refresh conditions connections",
         "fallbackTitle": "Execute when all comparisons don't meet the requirement",
         "equals": "Equals",
         "gt": "Greater than",
