@@ -1,41 +1,58 @@
 <template>
   <div class="max-w-xl">
-    <ui-card v-if="$store.state.user" class="mb-12">
+    <ui-card class="mb-12">
       <h2 class="font-semibold mb-2">
         {{ t('settings.backupWorkflows.cloud.title') }}
       </h2>
-      <div class="border dark:border-gray-700 p-4 rounded-lg flex items-center">
-        <span class="inline-block p-2 rounded-full bg-box-transparent">
-          <v-remixicon name="riUploadLine" />
-        </span>
-        <div class="flex-1 ml-4 leading-tight">
-          <p class="text-sm text-gray-600 dark:text-gray-200">
-            {{ t('settings.backupWorkflows.cloud.lastBackup') }}
-          </p>
-          <p>{{ formatDate(state.lastBackup) }}</p>
-        </div>
-        <ui-button
-          :loading="backupState.loading"
-          @click="backupState.modal = true"
+      <template v-if="$store.state.user">
+        <div
+          class="border dark:border-gray-700 p-4 rounded-lg flex items-center"
         >
-          {{ t('settings.backupWorkflows.backup.button') }}
-        </ui-button>
-      </div>
-      <div
-        class="border dark:border-gray-700 p-4 rounded-lg flex items-center mt-2"
-      >
-        <span class="inline-block p-2 rounded-full bg-box-transparent">
-          <v-remixicon name="riDownloadLine" />
-        </span>
-        <p class="flex-1 ml-4">
-          {{ t('settings.backupWorkflows.cloud.sync') }}
+          <span class="inline-block p-2 rounded-full bg-box-transparent">
+            <v-remixicon name="riUploadLine" />
+          </span>
+          <div class="flex-1 ml-4 leading-tight">
+            <p class="text-sm text-gray-600 dark:text-gray-200">
+              {{ t('settings.backupWorkflows.cloud.lastBackup') }}
+            </p>
+            <p>{{ formatDate(state.lastBackup) }}</p>
+          </div>
+          <ui-button
+            :loading="backupState.loading"
+            @click="backupState.modal = true"
+          >
+            {{ t('settings.backupWorkflows.backup.button') }}
+          </ui-button>
+        </div>
+        <div
+          class="border dark:border-gray-700 p-4 rounded-lg flex items-center mt-2"
+        >
+          <span class="inline-block p-2 rounded-full bg-box-transparent">
+            <v-remixicon name="riDownloadLine" />
+          </span>
+          <p class="flex-1 ml-4">
+            {{ t('settings.backupWorkflows.cloud.sync') }}
+          </p>
+          <ui-button
+            :loading="state.loadingSync"
+            class="ml-2"
+            @click="syncBackupWorkflows"
+          >
+            {{ t('settings.backupWorkflows.cloud.sync') }}
+          </ui-button>
+        </div>
+      </template>
+      <div v-else class="text-center py-4">
+        <p>
+          {{ t('settings.backupWorkflows.needSignin') }}
         </p>
         <ui-button
-          :loading="state.loadingSync"
-          class="ml-2"
-          @click="syncBackupWorkflows"
+          tag="a"
+          href="https://automa.site/auth"
+          target="_blank"
+          class="mt-4 w-44 inline-block"
         >
-          {{ t('settings.backupWorkflows.cloud.sync') }}
+          {{ t('auth.signIn') }}
         </ui-button>
       </div>
       <p v-if="false">

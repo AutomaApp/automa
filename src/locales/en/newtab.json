@@ -54,6 +54,7 @@
       "invalidPassword": "Invalid password",
       "workflowsAdded": "{count} workflows have been added",
       "name": "Backup workflows",
+      "needSignin": "You need to sign in to your account first",
       "backup": {
         "button": "Backup",
         "encrypt": "Encrypt with password"
@@ -68,6 +69,7 @@
           "local": "Local",
           "cloud": "Cloud"
         },
+        "location": "Location",
         "delete": "Delete backup",
         "title": "Cloud Backup",
         "sync": "Sync",
@@ -90,6 +92,7 @@
     "browse": "Browse workflows",
     "name": "Workflow name",
     "rename": "Rename workflow",
+    "backupCloud": "Backup workflow to cloud",
     "add": "Add workflow",
     "clickToEnable": "Click to enable",
     "toggleSidebar": "Toggle sidebar",
