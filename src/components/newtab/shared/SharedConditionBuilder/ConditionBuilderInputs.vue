@@ -22,23 +22,19 @@
           </option>
         </optgroup>
       </ui-select>
-      <ui-autocomplete
-        :items="autocomplete"
-        :trigger-char="['{{', '}}']"
-        block
-        hide-empty
+      <edit-autocomplete
+        v-for="(_, name) in item.data"
+        :key="item.id + name + index"
         class="flex-1"
       >
         <ui-input
-          v-for="(_, name) in item.data"
-          :key="item.id + name + index"
           v-model="inputsData[index].data[name]"
           :title="conditionBuilder.inputTypes[name].label"
           :placeholder="conditionBuilder.inputTypes[name].label"
           autocomplete="off"
           class="w-full"
         />
-      </ui-autocomplete>
+      </edit-autocomplete>
     </div>
     <ui-select
       v-else-if="item.category === 'compare'"
@@ -59,6 +55,7 @@
 import { ref, watch } from 'vue';
 import { nanoid } from 'nanoid';
 import { conditionBuilder } from '@/utils/shared';
+import EditAutocomplete from '../../workflow/edit/EditAutocomplete.vue';
 
 const props = defineProps({
   data: {
