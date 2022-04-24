@@ -21,6 +21,7 @@ const store = createStore({
     workflowHosts: {},
     settings: {
       locale: 'en',
+      deleteLogAfter: 30,
       editor: {
         arrow: false,
         disableCurvature: false,

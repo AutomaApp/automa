@@ -54,6 +54,28 @@
       {{ t('settings.language.reloadPage') }}
     </p>
   </div>
+  <div id="delete-logs" class="mt-12">
+    <p class="font-semibold mb-1">
+      {{ t('settings.deleteLog.title') }}
+    </p>
+    <ui-select
+      label="Delete after"
+      class="w-80"
+      :model-value="settings.deleteLogAfter"
+      @change="
+        updateSetting('deleteLogAfter', $event === 'never' ? 'never' : +$event)
+      "
+    >
+      <option v-for="day in deleteLogDays" :key="day" :value="day">
+        <template v-if="typeof day === 'string'">
+          {{ t('settings.deleteLog.deleteAfter.never') }}
+        </template>
+        <template v-else>
+          {{ t('settings.deleteLog.deleteAfter.days', { day }) }}
+        </template>
+      </option>
+    </ui-select>
+  </div>
 </template>
 <script setup>
 import { computed, ref } from 'vue';
@@ -62,6 +84,8 @@ import { useI18n } from 'vue-i18n';
 import browser from 'webextension-polyfill';
 import { useTheme } from '@/composable/theme';
 import { supportLocales } from '@/utils/shared';
+
+const deleteLogDays = ['never', 7, 14, 30, 60, 120];
 
 const { t } = useI18n();
 const store = useStore();

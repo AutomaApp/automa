@@ -37,6 +37,14 @@
         "description": "Add an arrow at the end of the line"
       }
     },
+    "deleteLog": {
+      "title": "Auto delete workflow logs",
+      "after": "Delete after",
+      "deleteAfter": {
+        "never": "Never",
+        "days": "{day} days"
+      }
+    },
     "language": {
       "label": "Language",
       "helpTranslate": "Can't find your language? Help translate.",
