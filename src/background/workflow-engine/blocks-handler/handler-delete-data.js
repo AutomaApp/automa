@@ -5,24 +5,26 @@ function deleteData({ data, outputs }) {
     data.deleteList.forEach((item) => {
       if (item.type === 'table') {
         if (item.columnId === '[all]') {
-          this.referenceData.table = [];
-          this.columns = { column: { index: 0, name: 'column', type: 'any' } };
+          this.engine.referenceData.table = [];
+          this.engine.columns = {
+            column: { index: 0, name: 'column', type: 'any' },
+          };
         } else {
-          const columnName = this.columns[item.columnId].name;
+          const columnName = this.engine.columns[item.columnId].name;
 
-          this.referenceData.table.forEach((_, index) => {
-            const row = this.referenceData.table[index];
+          this.engine.referenceData.table.forEach((_, index) => {
+            const row = this.engine.referenceData.table[index];
             delete row[columnName];
 
             if (!row || Object.keys(row).length === 0) {
-              this.referenceData.table[index] = {};
+              this.engine.referenceData.table[index] = {};
             }
           });
 
-          this.columns[item.columnId].index = 0;
+          this.engine.columns[item.columnId].index = 0;
         }
       } else if (item.variableName) {
-        delete this.referenceData.variables[item.variableName];
+        delete this.engine.referenceData.variables[item.variableName];
       }
     });
 

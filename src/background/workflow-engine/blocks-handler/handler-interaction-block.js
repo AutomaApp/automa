@@ -39,7 +39,7 @@ async function interactionHandler(block) {
       (block.data.getValue && block.data.saveData)
     ) {
       const currentColumnType =
-        this.columns[block.data.dataColumn]?.type || 'any';
+        this.engine.columns[block.data.dataColumn]?.type || 'any';
       const insertDataToColumn = (value) => {
         this.addDataToColumn(block.data.dataColumn, value);
 

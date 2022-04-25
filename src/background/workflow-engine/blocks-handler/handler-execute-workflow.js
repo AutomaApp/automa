@@ -57,8 +57,8 @@ async function executeWorkflow({ outputs, data }) {
           globalData: isWhitespace(data.globalData) ? null : data.globalData,
         },
         parentWorkflow: {
-          id: this.id,
-          name: this.workflow.name,
+          id: this.engine.id,
+          name: this.engine.workflow.name,
         },
       },
       events: {
@@ -70,7 +70,7 @@ async function executeWorkflow({ outputs, data }) {
             const { dataColumns, globalData, googleSheets, table } =
               engine.referenceData;
 
-            this.referenceData.workflow[data.executeId] = {
+            this.engine.referenceData.workflow[data.executeId] = {
               globalData,
               dataColumns,
               googleSheets,
@@ -79,12 +79,12 @@ async function executeWorkflow({ outputs, data }) {
           }
         },
       },
-      states: this.states,
-      logger: this.logger,
-      blocksHandler: this.blocksHandler,
+      states: this.engine.states,
+      logger: this.engine.logger,
+      blocksHandler: this.engine.blocksHandler,
     };
 
-    if (workflow.drawflow.includes(this.workflow.id)) {
+    if (workflow.drawflow.includes(this.engine.workflow.id)) {
       throw new Error('workflow-infinite-loop');
     }
 

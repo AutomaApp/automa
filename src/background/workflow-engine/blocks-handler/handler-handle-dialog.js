@@ -4,7 +4,7 @@ function handleDialog({ data, outputs }) {
   const nextBlockId = getBlockConnection({ outputs });
 
   return new Promise((resolve, reject) => {
-    if (!this.workflow.settings.debugMode) {
+    if (!this.settings.debugMode) {
       const error = new Error('not-debug-mode');
       error.nextBlockId = nextBlockId;
 
@@ -18,8 +18,8 @@ function handleDialog({ data, outputs }) {
     };
 
     const methodName = 'Page.javascriptDialogOpening';
-    if (!this.eventListeners[methodName]) {
-      this.on(methodName, () => {
+    if (!this.engine.eventListeners[methodName]) {
+      this.engine.on(methodName, () => {
         sendDebugCommand(
           this.activeTab.id,
           'Page.handleJavaScriptDialog',

@@ -60,7 +60,7 @@ async function updateSpreadsheetValues(
   }
 }
 
-export default async function ({ data, outputs }) {
+export default async function ({ data, outputs }, { refData }) {
   const nextBlockId = getBlockConnection({ outputs });
 
   try {
@@ -76,10 +76,10 @@ export default async function ({ data, outputs }) {
       result = spreadsheetValues;
 
       if (data.refKey && !isWhitespace(data.refKey)) {
-        this.referenceData.googleSheets[data.refKey] = spreadsheetValues;
+        refData.googleSheets[data.refKey] = spreadsheetValues;
       }
     } else if (data.type === 'update') {
-      result = await updateSpreadsheetValues(data, this.referenceData.table);
+      result = await updateSpreadsheetValues(data, refData.table);
     }
 
     return {

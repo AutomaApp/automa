@@ -749,14 +749,11 @@ export default {
       editor.value.on(
         'connectionCreated',
         ({ output_id, input_id, output_class, input_class }) => {
-          const { outputs } = editor.value.getNodeFromId(output_id);
           const { name: inputName } = editor.value.getNodeFromId(input_id);
-          const { allowedInputs, maxConnection } = tasks[inputName];
+          const { allowedInputs } = tasks[inputName];
           const isAllowed = isInputAllowed(allowedInputs, inputName);
-          const isMaxConnections =
-            outputs[output_class]?.connections.length > maxConnection;
 
-          if (!isAllowed || isMaxConnections) {
+          if (!isAllowed) {
             editor.value.removeSingleConnection(
               output_id,
               input_id,

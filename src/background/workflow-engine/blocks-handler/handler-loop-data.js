@@ -1,7 +1,7 @@
 import { parseJSON } from '@/utils/helper';
 import { getBlockConnection } from '../helper';
 
-async function loopData({ data, id, outputs }) {
+async function loopData({ data, id, outputs }, { refData }) {
   const nextBlockId = getBlockConnection({ outputs });
 
   try {
@@ -13,25 +13,24 @@ async function loopData({ data, id, outputs }) {
       let currentLoopData;
 
       if (data.loopThrough === 'numbers') {
-        currentLoopData = this.referenceData.loopData[data.loopId].data + 1;
+        currentLoopData = refData.loopData[data.loopId].data + 1;
       } else {
         currentLoopData = this.loopList[data.loopId].data[index];
       }
 
-      this.referenceData.loopData[data.loopId] = {
+      refData.loopData[data.loopId] = {
         data: currentLoopData,
         $index: index,
       };
     } else {
       const getLoopData = {
         numbers: () => data.fromNumber,
-        table: () => this.referenceData.table,
+        table: () => refData.table,
         'custom-data': () => JSON.parse(data.loopData),
-        'data-columns': () => this.referenceData.table,
-        'google-sheets': () =>
-          this.referenceData.googleSheets[data.referenceKey],
+        'data-columns': () => refData.table,
+        'google-sheets': () => refData.googleSheets[data.referenceKey],
         variable: () => {
-          const variableVal = this.referenceData.variables[data.variableName];
+          const variableVal = refData.variables[data.variableName];
 
           return parseJSON(variableVal, variableVal);
         },
@@ -75,7 +74,7 @@ async function loopData({ data, id, outputs }) {
             : data.maxLoop || currLoopData.length,
       };
       /* eslint-disable-next-line */
-      this.referenceData.loopData[data.loopId] = {
+      refData.loopData[data.loopId] = {
         data:
           data.loopThrough === 'numbers'
             ? data.fromNumber
@@ -88,7 +87,7 @@ async function loopData({ data, id, outputs }) {
 
     return {
       nextBlockId,
-      data: this.referenceData.loopData[data.loopId],
+      data: refData.loopData[data.loopId],
     };
   } catch (error) {
     error.nextBlockId = nextBlockId;

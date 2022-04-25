@@ -6,7 +6,7 @@ export async function hoverElement(block) {
   try {
     if (!this.activeTab.id) throw new Error('no-tab');
 
-    const { debugMode, executedBlockOnWeb } = this.workflow.settings;
+    const { debugMode, executedBlockOnWeb } = this.settings;
 
     if (!debugMode) {
       await attachDebugger(this.activeTab.id);

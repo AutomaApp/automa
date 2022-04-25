@@ -45,7 +45,7 @@ async function newTab(block) {
 
     this.activeTab.url = url;
     if (tab) {
-      if (this.workflow.settings.debugMode || customUserAgent) {
+      if (this.settings.debugMode || customUserAgent) {
         await attachDebugger(tab.id, this.activeTab.id);
 
         if (customUserAgent) {
@@ -80,7 +80,7 @@ async function newTab(block) {
 
     this.activeTab.frameId = 0;
 
-    if (!this.workflow.settings.debugMode && customUserAgent) {
+    if (!this.settings.debugMode && customUserAgent) {
       chrome.debugger.detach({ tabId: tab.id });
     }
 

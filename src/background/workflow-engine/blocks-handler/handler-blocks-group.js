@@ -14,7 +14,9 @@ function blocksGroup({ data, outputs }, { prevBlockData }) {
     }
 
     const blocks = data.blocks.reduce((acc, block, index) => {
-      let nextBlock = data.blocks[index + 1]?.itemId;
+      let nextBlock = {
+        connections: [{ node: data.blocks[index + 1]?.itemId }],
+      };
 
       if (index === data.blocks.length - 1) {
         nextBlock = nextBlockId;
@@ -25,20 +27,20 @@ function blocksGroup({ data, outputs }, { prevBlockData }) {
         id: block.itemId,
         name: block.id,
         outputs: {
-          output_1: {
-            connections: [{ node: nextBlock }],
-          },
+          output_1: nextBlock,
         },
       };
 
       return acc;
     }, {});
 
-    Object.assign(this.blocks, blocks);
+    Object.assign(this.engine.blocks, blocks);
 
     resolve({
       data: prevBlockData,
-      nextBlockId: data.blocks[0].itemId,
+      nextBlockId: {
+        connections: [{ node: data.blocks[0].itemId }],
+      },
     });
   });
 }
