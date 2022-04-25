@@ -465,7 +465,7 @@ export default {
       });
 
       selection.value.on('beforestart', ({ event }) => {
-        if (!event.ctrlKey || !event.metaKey) return false;
+        if (!event.ctrlKey && !event.metaKey) return false;
 
         editor.value.editor_mode = 'fixed';
         editor.value.editor_selected = false;

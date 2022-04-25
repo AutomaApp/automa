@@ -438,13 +438,14 @@ class WorkflowEngine {
           refData: this.referenceData,
         });
 
+        if (result.replacedValue) {
+          replacedBlock.replacedValue = result.replacedValue;
+        }
+
         addBlockLog(result.status || 'success', {
           logId: result.logId,
         });
       }
-
-      if (result.replacedValue)
-        replacedBlock.replacedValue = result.replacedValue;
 
       if (result.nextBlockId) {
         setTimeout(() => {
