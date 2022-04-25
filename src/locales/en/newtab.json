@@ -184,7 +184,9 @@
       "zoomIn": "Zoom in",
       "zoomOut": "Zoom out",
       "resetZoom": "Reset zoom",
-      "duplicate": "Duplicate"
+      "duplicate": "Duplicate",
+      "copy": "Copy",
+      "paste": "Paste"
     },
     "settings": {
       "saveLog": "Save workflow log",
