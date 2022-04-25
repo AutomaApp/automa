@@ -322,7 +322,7 @@ export default {
       selectedElements = [];
       activeNode = null;
     }
-    function duplicateBlock(nodeId) {
+    function duplicateBlock(nodeId, isPaste = false) {
       const nodes = new Map();
       const addNode = (id) => {
         const node = editor.value.getNodeFromId(id);
@@ -332,14 +332,20 @@ export default {
         nodes.set(node.id, node);
       };
 
-      if (nodeId) addNode(nodeId);
-      else if (activeNode) addNode(activeNode.id);
+      if (isPaste) {
+        store.state.copiedNodes.forEach((node) => {
+          nodes.set(node.id, node);
+        });
+      } else {
+        if (nodeId) addNode(nodeId);
+        else if (activeNode) addNode(activeNode.id);
 
-      selectedElements.forEach((node) => {
-        if (activeNode?.id === node.id || nodeId === node.id) return;
+        selectedElements.forEach((node) => {
+          if (activeNode?.id === node.id || nodeId === node.id) return;
 
-        addNode(node.id);
-      });
+          addNode(node.id);
+        });
+      }
 
       const nodesOutputs = [];
 
@@ -545,7 +551,22 @@ export default {
         selectedElements.push(nodeProperties);
       }
     }
-    function onKeyup({ key, target }) {
+    function onKeyup({ key, target, ctrlKey }) {
+      if (ctrlKey) {
+        if (key === 'c') {
+          const nodes = selectedElements.map((node) =>
+            editor.value.getNodeFromId(node.id)
+          );
+
+          store.commit('updateState', {
+            key: 'copiedNodes',
+            value: nodes,
+          });
+        } else if (key === 'v') {
+          duplicateBlock(null, true);
+        }
+      }
+
       const isAnInput =
         ['INPUT', 'TEXTAREA'].includes(target.tagName) ||
         target.isContentEditable;
