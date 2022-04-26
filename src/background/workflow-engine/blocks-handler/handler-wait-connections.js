@@ -7,7 +7,7 @@ async function waitConnections({ data, outputs, inputs, id }, { prevBlock }) {
 
     const nextBlockId = getBlockConnection({ outputs });
     const destroyWorker =
-      data.specificFlow && prevBlock.id !== data.flowBlockId;
+      data.specificFlow && prevBlock?.id !== data.flowBlockId;
 
     const registerConnections = () => {
       inputs.input_1.connections.forEach(({ node }) => {

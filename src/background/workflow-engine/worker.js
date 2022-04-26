@@ -83,6 +83,7 @@ class Worker {
           windowId: this.windowId,
           loopList: this.loopList,
           activeTab: this.activeTab,
+          currentBlock: this.currentBlock,
           repeatedTasks: this.repeatedTasks,
           preloadScripts: this.preloadScripts,
         });
