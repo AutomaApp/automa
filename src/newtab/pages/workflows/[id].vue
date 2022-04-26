@@ -777,6 +777,25 @@ function editBlock(data) {
   state.isEditBlock = true;
   state.showSidebar = true;
   state.blockData = defu(data, tasks[data.id] || {});
+
+  if (data.id === 'wait-connections') {
+    const node = editor.value.getNodeFromId(data.blockId);
+    const connections = node.inputs.input_1.connections.map((input) => {
+      const inputNode = editor.value.getNodeFromId(input.node);
+      const nodeDesc = inputNode.data.description;
+
+      let name = t(`workflow.blocks.${inputNode.name}.name`);
+
+      if (nodeDesc) name += ` (${nodeDesc})`;
+
+      return {
+        name,
+        id: input.node,
+      };
+    });
+
+    state.blockData.connections = connections;
+  }
 }
 function handleEditorDataChanged() {
   state.isDataChanged = true;

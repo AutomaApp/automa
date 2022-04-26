@@ -18,6 +18,7 @@ class WorkflowEngine {
     this.saveLog = workflow.settings?.saveLog ?? true;
 
     this.workers = new Map();
+    this.waitConnections = {};
 
     this.isDestroyed = false;
     this.isUsingProxy = false;

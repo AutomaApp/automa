@@ -9,7 +9,7 @@ import executeContentScript from './execute-content-script';
 
 class Worker {
   constructor(engine) {
-    this.id = nanoid();
+    this.id = nanoid(5);
     this.engine = engine;
     this.settings = engine.workflow.settings;
 
@@ -79,16 +79,13 @@ class Worker {
       if (index === 0) {
         this.executeBlock(this.engine.blocks[node], prevBlockData);
       } else {
-        const cloneState = cloneDeep({
+        const state = cloneDeep({
           windowId: this.windowId,
+          loopList: this.loopList,
           activeTab: this.activeTab,
+          repeatedTasks: this.repeatedTasks,
           preloadScripts: this.preloadScripts,
         });
-        const state = {
-          ...cloneState,
-          loopList: this.loopList,
-          repeatedTasks: this.repeatedTasks,
-        };
 
         this.engine.addWorker({
           state,
@@ -109,6 +106,7 @@ class Worker {
       return;
     }
 
+    const prevBlock = this.currentBlock;
     this.currentBlock = block;
 
     if (!isRetry) {
@@ -150,6 +148,7 @@ class Worker {
         prevBlockData,
         type: status,
         name: block.name,
+        workerId: this.id,
         description: block.data.description,
         replacedValue: replacedBlock.replacedValue,
         duration: Math.round(Date.now() - startExecuteTime),
@@ -168,6 +167,7 @@ class Worker {
       } else {
         result = await handler.call(this, replacedBlock, {
           refData,
+          prevBlock,
           prevBlockData,
         });
 
@@ -188,7 +188,7 @@ class Worker {
         nodeConnections = result.nextBlockId.connections;
       }
 
-      if (nodeConnections.length > 0) {
+      if (nodeConnections.length > 0 && !result.destroyWorker) {
         setTimeout(() => {
           this.executeNextBlocks(nodeConnections);
         }, blockDelay);

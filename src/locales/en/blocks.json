@@ -12,6 +12,7 @@
       "base": {
         "moveToGroup": "Move block to blocks group",
         "selector": "Element selector",
+        "timeout": "Timeout (milliseconds)",
         "toggle": {
           "enable": "Enable block",
           "disable": "Disable block",
@@ -73,6 +74,12 @@
             "prompt": "Prompt"
           }
         }
+      },
+      "wait-connections": {
+        "name": "Wait connections",
+        "description": "Wait for all connections before continuing to the next block",
+        "specificFlow": "Only continue a specific flow",
+        "selectFlow": "Select flow"
       },
       "delete-data": {
         "name": "Delete data",

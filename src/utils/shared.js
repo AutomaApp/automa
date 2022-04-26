@@ -913,6 +913,26 @@ export const tasks = {
       deleteList: [],
     },
   },
+  'wait-connections': {
+    name: 'Wait connections',
+    description: 'Wait for all connections before continuing to the next block',
+    icon: 'riTimerFlashLine',
+    editComponent: 'EditWaitConnections',
+    component: 'BlockBasic',
+    category: 'general',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    disableEdit: true,
+    data: {
+      disableBlock: false,
+      description: '',
+      timeout: 10000,
+      specificFlow: false,
+      flowBlockId: '',
+    },
+  },
 };
 
 export const categories = {

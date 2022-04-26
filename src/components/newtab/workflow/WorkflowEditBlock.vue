@@ -38,6 +38,9 @@
       :key="data.blockId"
       v-model:data="blockData"
       :block-id="data.blockId"
+      v-bind="{
+        connections: data.id === 'wait-connections' ? data.connections : null,
+      }"
     />
     <on-block-error
       v-if="!excludeOnError.includes(data.id)"
