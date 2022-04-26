@@ -251,6 +251,7 @@
     }
   },
   "log": {
+    "flowId": "Flow Id",
     "goBack": "Go back to \"{name}\" log",
     "goWorkflow": "Go to workflow",
     "startedDate": "Started date",

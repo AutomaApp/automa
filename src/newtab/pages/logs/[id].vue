@@ -89,6 +89,13 @@
               >
                 <v-remixicon name="riExternalLinkLine" />
               </router-link>
+              <code
+                v-show="item.workerId"
+                :title="t('log.flowId')"
+                class="text-xs mr-4 bg-box-transparent rounded-lg p-1 rounded-md"
+              >
+                {{ item.workerId }}
+              </code>
               <p class="text-gray-600 dark:text-gray-200">
                 {{ countDuration(0, item.duration || 0) }}
               </p>

@@ -261,10 +261,10 @@ class WorkflowEngine {
           message,
           id: this.id,
           workflowId: id,
-          history: this.saveLog ? this.history : [],
           endedAt: endedTimestamp,
           parentLog: this.parentWorkflow,
           startedAt: this.startedTimestamp,
+          history: this.saveLog ? this.history : [],
           data: {
             table: this.referenceData.table,
             variables: this.referenceData.variables,
