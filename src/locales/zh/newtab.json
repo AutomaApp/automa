@@ -25,12 +25,17 @@
       "duplicate": "快捷方式已被 \"{name}\" 占用"
     },
     "editor": {
+      "title": "标题",
       "curvature": {
         "title": "编辑器线条曲率",
         "line": "线条",
         "reroute": "重绘路线",
         "rerouteFirstLast": "重绘首尾点"
       },
+      "arrow": {
+        "title": "箭头线",
+        "description": "添加箭头到线的尾端"
+      }
     },
     "language": {
       "label": "语言",
@@ -39,6 +44,7 @@
     },
     "menu": {
       "backup": "备份工作流",
+      "editor": "编辑器",
       "general": "常规",
       "shortcuts": "快捷键",
       "about": "关于"
@@ -172,6 +178,10 @@
     "settings": {
       "saveLog": "保存工作流日志",
       "executedBlockOnWeb": "在网页上显示已执行的模块",
+      "autocomplete": {
+        "title": "自动完成",
+        "description": "在输入块中启用自动完成（如果造成 Automa 不稳定请禁用）"
+      },
       "clearCache": {
         "title": "清理缓存",
         "description": "清除工作流的缓存（状态和循环索引）",
@@ -229,6 +239,7 @@
   },
   "log": {
     "goBack": "返回到 \"{name}\" 日志",
+    "goWorkflow": "转到工作流",
     "startedDate": "启动日期",
     "duration": "期间",
     "selectAll": "选择全部",

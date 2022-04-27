@@ -25,10 +25,10 @@ export const functions = {
     const isValidDate = date instanceof Date && !isNaN(date);
     const dayjsDate = dayjs(isValidDate ? date : Date.now());
 
-    const result =
-      dateFormat === 'relative'
-        ? dayjsDate.fromNow()
-        : dayjsDate.format(dateFormat);
+    let result = dayjsDate.format(dateFormat);
+
+    if (dateFormat === 'relative') result = dayjsDate.fromNow();
+    else if (dateFormat === 'timestamp') result = dayjsDate.valueOf();
 
     return result;
   },

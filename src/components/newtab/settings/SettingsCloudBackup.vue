@@ -8,7 +8,9 @@
         prepend-icon="riSearch2Line"
       />
       <ui-list class="mt-4">
-        <p class="mb-1 text-sm text-gray-600 dark:text-gray-200">Location</p>
+        <p class="mb-1 text-sm text-gray-600 dark:text-gray-200">
+          {{ t('settings.backupWorkflows.cloud.location') }}
+        </p>
         <ui-list-item
           v-for="location in ['local', 'cloud']"
           :key="location"
@@ -87,6 +89,9 @@
         </settings-backup-items>
       </template>
       <template v-else>
+        <p class="mb-2">
+          {{ t('settings.backupWorkflows.cloud.selectText') }}
+        </p>
         <settings-backup-items
           v-slot="{ workflow }"
           v-model="state.selectedWorkflows"

@@ -1,26 +1,46 @@
 <template>
-  <template v-if="data.ext === 'jpeg'">
-    <p class="text-sm text-gray-600 dark:text-gray-200 ml-2">Image quality</p>
-    <div class="bg-box-transparent px-4 mb-4 py-2 rounded-lg flex items-center">
-      <input
-        :value="data.quality"
-        :title="t('workflow.blocks.take-screenshot.imageQuality')"
-        class="focus:outline-none flex-1"
-        type="range"
-        min="0"
-        max="100"
-        @change="updateQuality"
-      />
-      <span class="w-12 text-right">{{ data.quality }}%</span>
-    </div>
-  </template>
   <div class="take-screenshot">
-    <ui-checkbox
-      :model-value="data.fullPage"
-      @change="updateData({ fullPage: $event })"
+    <ui-textarea
+      :model-value="data.description"
+      :placeholder="t('common.description')"
+      class="w-full"
+      @change="updateData({ description: $event })"
+    />
+    <ui-select
+      :model-value="data.type"
+      :label="t('workflow.blocks.take-screenshot.types.title')"
+      class="w-full mt-2"
+      @change="updateData({ type: $event })"
     >
-      {{ t('workflow.blocks.take-screenshot.fullPage') }}
-    </ui-checkbox>
+      <option v-for="type in types" :key="type" :value="type">
+        {{ t(`workflow.blocks.take-screenshot.types.${type}`) }}
+      </option>
+    </ui-select>
+    <ui-input
+      v-if="data.type === 'element'"
+      :model-value="data.selector"
+      :label="t(`workflow.blocks.base.findElement.options.cssSelector`)"
+      class="mt-2 w-full"
+      placeholder=".element"
+      @change="updateData({ selector: $event })"
+    />
+    <template v-if="data.ext === 'jpeg'">
+      <p class="text-sm text-gray-600 dark:text-gray-200 ml-2 mt-4">
+        {{ t('workflow.blocks.take-screenshot.imageQuality') }}
+      </p>
+      <div class="bg-box-transparent px-4 py-2 rounded-lg flex items-center">
+        <input
+          :value="data.quality"
+          :title="t('workflow.blocks.take-screenshot.imageQuality')"
+          class="focus:outline-none flex-1"
+          type="range"
+          min="0"
+          max="100"
+          @change="updateQuality"
+        />
+        <span class="w-12 text-right">{{ data.quality }}%</span>
+      </div>
+    </template>
     <ui-checkbox
       :model-value="data.saveToComputer"
       class="mt-4"
@@ -29,13 +49,7 @@
       {{ t('workflow.blocks.take-screenshot.saveToComputer') }}
     </ui-checkbox>
     <div v-if="data.saveToComputer" class="flex items-center mt-1">
-      <ui-autocomplete
-        :items="autocomplete"
-        :trigger-char="['{{', '}}']"
-        block
-        hide-empty
-        class="flex-1 mr-2"
-      >
+      <edit-autocomplete class="flex-1 mr-2">
         <ui-input
           :model-value="data.fileName"
           :placeholder="t('common.fileName')"
@@ -44,7 +58,7 @@
           title="File name"
           @change="updateData({ fileName: $event })"
         />
-      </ui-autocomplete>
+      </edit-autocomplete>
       <ui-select
         :model-value="data.ext || 'png'"
         placeholder="Type"
@@ -95,24 +109,24 @@
   </div>
 </template>
 <script setup>
+/* eslint-disable no-unused-expressions */
 import { inject, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { objectHasKey } from '@/utils/helper';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
   },
-  autocomplete: {
-    type: Array,
-    default: () => [],
-  },
 });
 const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
 const workflow = inject('workflow');
+
+const types = ['page', 'fullpage', 'element'];
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
@@ -127,8 +141,18 @@ function updateQuality({ target }) {
 }
 
 onMounted(() => {
-  if (objectHasKey(props.data, 'saveToComputer')) return;
+  if (!objectHasKey(props.data, 'saveToComputer')) {
+    updateData({ saveToComputer: true, saveToColumn: false });
+  }
 
-  updateData({ saveToComputer: true, saveToColumn: false });
+  if (!objectHasKey(props.data, 'type')) {
+    const type = 'page';
+
+    if (props.data.fullPage) {
+      type === 'fullpage';
+    }
+
+    updateData({ type, fullPage: false });
+  }
 });
 </script>

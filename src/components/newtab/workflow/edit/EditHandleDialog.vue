@@ -14,14 +14,7 @@
     >
       {{ t('workflow.blocks.handle-dialog.accept') }}
     </ui-checkbox>
-    <ui-autocomplete
-      v-if="data.accept"
-      :items="autocomplete"
-      :trigger-char="['{{', '}}']"
-      block
-      hide-empty
-      class="mt-1"
-    >
+    <edit-autocomplete v-if="data.accept" class="mt-1">
       <ui-input
         :model-value="data.promptText"
         :label="t('workflow.blocks.handle-dialog.promptText.label')"
@@ -31,20 +24,17 @@
         class="w-full"
         @change="updateData({ promptText: $event })"
       />
-    </ui-autocomplete>
+    </edit-autocomplete>
   </div>
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
-  },
-  autocomplete: {
-    type: Array,
-    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

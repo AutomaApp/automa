@@ -1,8 +1,5 @@
 <template>
-  <edit-interaction-base
-    v-bind="{ data, autocomplete, hide: hideBase }"
-    @change="updateData"
-  >
+  <edit-interaction-base v-bind="{ data, hide: hideBase }" @change="updateData">
     <div v-if="!data.scrollIntoView" class="flex items-center mt-3 space-x-2">
       <ui-input
         :model-value="data.scrollX || 0"
@@ -60,10 +57,6 @@ const props = defineProps({
   hideBase: {
     type: Boolean,
     default: false,
-  },
-  autocomplete: {
-    type: Array,
-    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

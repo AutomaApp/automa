@@ -10,13 +10,7 @@
         {{ t(`workflow.blocks.base.findElement.options.${type}`) }}
       </option>
     </ui-select>
-    <ui-autocomplete
-      :items="autocomplete"
-      :trigger-char="['{{', '}}']"
-      block
-      hide-empty
-      class="mb-1"
-    >
+    <edit-autocomplete class="mb-1">
       <ui-input
         :model-value="data.selector"
         :label="t('workflow.blocks.element-exists.selector')"
@@ -25,7 +19,7 @@
         class="w-full"
         @change="updateData({ selector: $event })"
       />
-    </ui-autocomplete>
+    </edit-autocomplete>
     <ui-input
       :model-value="data.tryCount"
       :title="t('workflow.blocks.element-exists.tryFor.title')"
@@ -57,15 +51,12 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
-  },
-  autocomplete: {
-    type: Array,
-    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

@@ -98,6 +98,8 @@ class Workflow extends Model {
 
         await browser.storage.local.set({ clearCache: true });
       }
+
+      browser.storage.local.remove(`state:${id}`);
     } catch (error) {
       console.error(error);
     }

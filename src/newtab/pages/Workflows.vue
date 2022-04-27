@@ -29,30 +29,40 @@
           </option>
         </ui-select>
       </div>
-      <ui-button
-        tag="a"
-        href="https://automa.site/workflows"
-        target="_blank"
-        class="inline-block relative"
-        @click="browseWorkflow"
-      >
-        <span
-          v-if="state.highlightBrowse"
-          class="flex h-3 w-3 absolute top-0 right-0 -mr-1 -mt-1"
+      <span v-tooltip:bottom.group="t('workflow.browse')">
+        <ui-button
+          icon
+          tag="a"
+          href="https://automa.site/workflows"
+          target="_blank"
+          class="inline-block relative"
+          @click="browseWorkflow"
         >
           <span
-            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"
-          ></span>
-          <span
-            class="relative inline-flex rounded-full h-3 w-3 bg-blue-600"
-          ></span>
-        </span>
-        <v-remixicon name="riCompass3Line" class="mr-2 -ml-1" />
-        {{ t('workflow.browse') }}
-      </ui-button>
-      <ui-button @click="importWorkflow({ multiple: true })">
-        <v-remixicon name="riUploadLine" class="mr-2 -ml-1" />
-        {{ t('workflow.import') }}
+            v-if="state.highlightBrowse"
+            class="flex h-3 w-3 absolute top-0 right-0 -mr-1 -mt-1"
+          >
+            <span
+              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"
+            ></span>
+            <span
+              class="relative inline-flex rounded-full h-3 w-3 bg-blue-600"
+            ></span>
+          </span>
+          <v-remixicon name="riCompass3Line" />
+        </ui-button>
+      </span>
+      <span v-tooltip:bottom.group="t('workflow.backupCloud')">
+        <ui-button tag="router-link" to="/backup" class="inline-block" icon>
+          <v-remixicon name="riUploadCloud2Line" />
+        </ui-button>
+      </span>
+      <ui-button
+        v-tooltip:bottom.group="t('workflow.import')"
+        icon
+        @click="importWorkflow({ multiple: true })"
+      >
+        <v-remixicon name="riUploadLine" />
       </ui-button>
       <div class="flex">
         <ui-button
@@ -212,7 +222,7 @@
               <template #footer-content>
                 <v-remixicon
                   v-if="sharedWorkflows[workflow.id]"
-                  v-tooltip="
+                  v-tooltip:bottom.group="
                     t('workflow.share.sharedAs', {
                       name: sharedWorkflows[workflow.id]?.name.slice(0, 64),
                     })
@@ -223,7 +233,7 @@
                 />
                 <v-remixicon
                   v-if="hostWorkflows[workflow.id]"
-                  v-tooltip="t('workflow.host.title')"
+                  v-tooltip:bottom.group="t('workflow.host.title')"
                   name="riBaseStationLine"
                   size="20"
                   class="ml-2"
@@ -303,6 +313,7 @@ import { useToast } from 'vue-toastification';
 import browser from 'webextension-polyfill';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
+import { useGroupTooltip } from '@/composable/groupTooltip';
 import { sendMessage } from '@/utils/message';
 import { fetchApi } from '@/utils/api';
 import { exportWorkflow, importWorkflow } from '@/utils/workflow-data';
@@ -314,6 +325,7 @@ import { findTriggerBlock, isWhitespace } from '@/utils/helper';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 import Workflow from '@/models/workflow';
 
+useGroupTooltip();
 const { t } = useI18n();
 const toast = useToast();
 const store = useStore();

@@ -14,6 +14,7 @@ export const tasks = {
     maxConnection: 1,
     refDataKeys: ['url'],
     data: {
+      disableBlock: false,
       description: '',
       type: 'manual',
       interval: 60,
@@ -40,6 +41,7 @@ export const tasks = {
     maxConnection: 1,
     refDataKeys: ['globalData'],
     data: {
+      disableBlock: false,
       executeId: '',
       workflowId: '',
       globalData: '',
@@ -57,7 +59,9 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    data: {},
+    data: {
+      disableBlock: false,
+    },
   },
   'new-tab': {
     name: 'New tab',
@@ -72,6 +76,7 @@ export const tasks = {
     maxConnection: 1,
     refDataKeys: ['url'],
     data: {
+      disableBlock: false,
       description: '',
       url: '',
       userAgent: '',
@@ -94,6 +99,7 @@ export const tasks = {
     maxConnection: 1,
     refDataKeys: ['url', 'matchPattern'],
     data: {
+      disableBlock: false,
       description: '',
       url: '',
       matchPattern: '',
@@ -112,6 +118,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     data: {
+      disableBlock: false,
       description: '',
       top: 0,
       left: 0,
@@ -133,6 +140,7 @@ export const tasks = {
     maxConnection: 1,
     allowedInputs: true,
     data: {
+      disableBlock: false,
       scheme: 'https',
       host: '',
       port: 443,
@@ -151,7 +159,9 @@ export const tasks = {
     maxConnection: 1,
     disableEdit: true,
     allowedInputs: true,
-    data: {},
+    data: {
+      disableBlock: false,
+    },
   },
   'forward-page': {
     name: 'Go forward',
@@ -164,7 +174,9 @@ export const tasks = {
     maxConnection: 1,
     disableEdit: true,
     allowedInputs: true,
-    data: {},
+    data: {
+      disableBlock: false,
+    },
   },
   'close-tab': {
     name: 'Close tab/window',
@@ -178,6 +190,7 @@ export const tasks = {
     allowedInputs: true,
     refDataKeys: ['url'],
     data: {
+      disableBlock: false,
       url: '',
       description: '',
       activeTab: true,
@@ -199,11 +212,14 @@ export const tasks = {
     refDataKeys: ['fileName'],
     autocomplete: ['variableName'],
     data: {
+      description: '',
+      disableBlock: false,
       fileName: '',
       ext: 'png',
       quality: 100,
       dataColumn: '',
       variableName: '',
+      selector: '',
       fullPage: false,
       saveToColumn: false,
       saveToComputer: true,
@@ -223,6 +239,7 @@ export const tasks = {
     maxConnection: 1,
     allowedInputs: true,
     data: {
+      disableBlock: false,
       description: '',
       timeout: 10000,
       eventName: 'tab:loaded',
@@ -245,6 +262,7 @@ export const tasks = {
     maxConnection: 1,
     refDataKeys: ['selector'],
     data: {
+      disableBlock: false,
       description: '',
       findBy: 'cssSelector',
       waitForSelector: false,
@@ -267,6 +285,7 @@ export const tasks = {
     maxConnection: 1,
     refDataKeys: ['time'],
     data: {
+      disableBlock: false,
       time: 500,
     },
   },
@@ -284,6 +303,7 @@ export const tasks = {
     refDataKeys: ['selector', 'prefixText', 'suffixText', 'extraRowValue'],
     autocomplete: ['variableName'],
     data: {
+      disableBlock: false,
       description: '',
       findBy: 'cssSelector',
       waitForSelector: false,
@@ -317,6 +337,7 @@ export const tasks = {
     maxConnection: 1,
     refDataKeys: ['name'],
     data: {
+      disableBlock: false,
       name: '',
       refKey: '',
       type: 'json',
@@ -339,6 +360,7 @@ export const tasks = {
     maxConnection: 1,
     refDataKeys: ['selector'],
     data: {
+      disableBlock: false,
       description: '',
       findBy: 'cssSelector',
       waitForSelector: false,
@@ -367,6 +389,7 @@ export const tasks = {
     maxConnection: 1,
     refDataKeys: ['selector'],
     data: {
+      disableBlock: false,
       description: '',
       findBy: 'cssSelector',
       waitForSelector: false,
@@ -390,6 +413,7 @@ export const tasks = {
     refDataKeys: ['selector', 'attributeName', 'extraRowValue'],
     autocomplete: ['variableName'],
     data: {
+      disableBlock: false,
       description: '',
       findBy: 'cssSelector',
       waitForSelector: false,
@@ -421,6 +445,7 @@ export const tasks = {
     refDataKeys: ['selector', 'value'],
     autocomplete: ['variableName'],
     data: {
+      disableBlock: false,
       description: '',
       findBy: 'cssSelector',
       waitForSelector: false,
@@ -452,21 +477,10 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     data: {
+      disableBlock: false,
       repeatFor: 1,
     },
   },
-  // 'reload-page': {
-  //   name: 'Reload page',
-  //   icon: 'riRestartLine',
-  //   component: 'BlockBasic',
-  //   category: 'interaction',
-  //   inputs: 1,
-  //   outputs: 1,
-  //   allowedInputs: true,
-  //   maxConnection: 1,
-  //   disableEdit: true,
-  //   data: {},
-  // },
   'javascript-code': {
     name: 'JavaScript code',
     description: 'Execute your custom javascript code in a webpage',
@@ -479,6 +493,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     data: {
+      disableBlock: false,
       description: '',
       timeout: 20000,
       code: 'console.log("Hello world!");\nautomaNextBlock()',
@@ -499,6 +514,7 @@ export const tasks = {
     maxConnection: 1,
     refDataKeys: ['selector', 'eventParams.clientX', 'eventParams.clientY'],
     data: {
+      disableBlock: false,
       description: '',
       findBy: 'cssSelector',
       waitForSelector: false,
@@ -525,6 +541,7 @@ export const tasks = {
     refDataKeys: ['customData', 'range', 'spreadsheetId'],
     autocomplete: ['refKey'],
     data: {
+      disableBlock: false,
       range: '',
       refKey: '',
       type: 'get',
@@ -549,6 +566,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     data: {
+      disableBlock: false,
       conditions: [],
     },
   },
@@ -565,6 +583,7 @@ export const tasks = {
     maxConnection: 1,
     refDataKeys: ['selector'],
     data: {
+      disableBlock: false,
       findBy: 'cssSelector',
       selector: '',
       tryCount: 1,
@@ -587,6 +606,7 @@ export const tasks = {
     refDataKeys: ['body', 'url'],
     autocomplete: ['variableName'],
     data: {
+      disableBlock: false,
       description: '',
       url: '',
       body: '{}',
@@ -614,6 +634,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     data: {
+      disableBlock: false,
       description: '',
       conditions: null,
     },
@@ -636,6 +657,7 @@ export const tasks = {
     ],
     autocomplete: ['variableName', 'loopId'],
     data: {
+      disableBlock: false,
       loopId: '',
       maxLoop: 0,
       toNumber: 10,
@@ -662,6 +684,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     data: {
+      disableBlock: false,
       loopId: '',
     },
   },
@@ -677,6 +700,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     data: {
+      disableBlock: false,
       name: '',
       blocks: [],
     },
@@ -694,6 +718,7 @@ export const tasks = {
     maxConnection: 1,
     autocomplete: ['variableName'],
     data: {
+      disableBlock: false,
       description: '',
       assignVariable: false,
       variableName: '',
@@ -713,6 +738,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     data: {
+      disableBlock: false,
       description: '',
       dataList: [],
     },
@@ -730,6 +756,7 @@ export const tasks = {
     maxConnection: 1,
     refDataKeys: ['selector'],
     data: {
+      disableBlock: false,
       findBy: 'cssSelector',
       selector: '',
       windowType: 'main-window',
@@ -748,6 +775,7 @@ export const tasks = {
     maxConnection: 1,
     refDataKeys: ['selector', 'filePaths'],
     data: {
+      disableBlock: false,
       findBy: 'cssSelector',
       waitForSelector: false,
       waitSelectorTimeout: 5000,
@@ -768,6 +796,7 @@ export const tasks = {
     maxConnection: 1,
     refDataKeys: ['selector'],
     data: {
+      disableBlock: false,
       description: '',
       findBy: 'cssSelector',
       waitForSelector: false,
@@ -791,6 +820,7 @@ export const tasks = {
     maxConnection: 1,
     refDataKeys: ['selector', 'url', 'filename'],
     data: {
+      disableBlock: false,
       description: '',
       findBy: 'cssSelector',
       waitForSelector: false,
@@ -818,6 +848,7 @@ export const tasks = {
     maxConnection: 1,
     refDataKeys: ['promptText'],
     data: {
+      disableBlock: false,
       description: '',
       accept: true,
       promptText: '',
@@ -837,6 +868,7 @@ export const tasks = {
     refDataKeys: ['filename'],
     autocomplete: ['variableName'],
     data: {
+      disableBlock: false,
       description: '',
       filename: '',
       timeout: 20000,
@@ -846,6 +878,58 @@ export const tasks = {
       saveData: true,
       assignVariable: false,
       variableName: '',
+    },
+  },
+  'reload-tab': {
+    name: 'Reload tab',
+    description: 'Reload the active tab',
+    icon: 'riRestartLine',
+    component: 'BlockBasic',
+    category: 'browser',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    disableEdit: true,
+    data: {
+      disableBlock: false,
+    },
+  },
+  'delete-data': {
+    name: 'Delete data',
+    description: 'Delete table or variable data',
+    icon: 'riDeleteBin7Line',
+    editComponent: 'EditDeleteData',
+    component: 'BlockBasic',
+    category: 'general',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    disableEdit: true,
+    data: {
+      disableBlock: false,
+      description: '',
+      deleteList: [],
+    },
+  },
+  'wait-connections': {
+    name: 'Wait connections',
+    description: 'Wait for all connections before continuing to the next block',
+    icon: 'riTimerFlashLine',
+    editComponent: 'EditWaitConnections',
+    component: 'BlockBasic',
+    category: 'general',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      disableBlock: false,
+      description: '',
+      timeout: 10000,
+      specificFlow: false,
+      flowBlockId: '',
     },
   },
 };

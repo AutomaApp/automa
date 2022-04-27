@@ -46,7 +46,7 @@ const props = defineProps({
     default: '',
   },
   items: {
-    type: Array,
+    type: [Array, Object],
     default: () => [],
   },
   itemKey: {
@@ -65,8 +65,16 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  customFilter: {
+    type: Function,
+    default: null,
+  },
+  replaceAfter: {
+    type: [String, Array],
+    default: null,
+  },
 });
-const emit = defineEmits(['update:modelValue', 'change']);
+const emit = defineEmits(['update:modelValue', 'change', 'search']);
 
 let input = null;
 const componentId = useComponentId('autocomplete');
@@ -89,10 +97,14 @@ const filteredItems = computed(() => {
     triggerChar ? state.searchText : props.modelValue
   ).toLocaleLowerCase();
 
+  const defaultFilter = ({ item, text }) => {
+    return getItem(item)?.toLocaleLowerCase().includes(text);
+  };
+  const filterFunction = props.customFilter || defaultFilter;
+
   return props.items.filter(
-    (item) =>
-      !state.inputChanged ||
-      getItem(item)?.toLocaleLowerCase().includes(searchText)
+    (item, index) =>
+      !state.inputChanged || filterFunction({ item, index, text: searchText })
   );
 });
 
@@ -132,6 +144,8 @@ function showPopover() {
   if (selectionStart >= 0) {
     const charIndex = getLastKeyBeforeCaret(selectionStart);
     const text = getSearchText(selectionStart, charIndex);
+
+    emit('search', text);
 
     if (charIndex >= 0 && text) {
       state.inputChanged = true;
@@ -184,26 +198,41 @@ function selectItem(itemIndex) {
     const val = input.value;
     const index = state.charIndex;
     const charLength = props.triggerChar[0].length;
+    const lastSearchIndex = state.searchText.length + index + charLength;
 
-    caretPosition = index + charLength + selectedItem.length;
+    let charLastIndex = 0;
+
+    if (props.replaceAfter) {
+      const lastChars = Array.isArray(props.replaceAfter)
+        ? props.replaceAfter
+        : [props.replaceAfter];
+      lastChars.forEach((char) => {
+        const searchText = val.slice(0, lastSearchIndex);
+        const lastIndex = searchText.lastIndexOf(char);
+
+        if (lastIndex > charLastIndex && lastIndex > index) {
+          charLastIndex = lastIndex - 1;
+        }
+      });
+    }
+
+    caretPosition = index + charLength + selectedItem.length + charLastIndex;
     selectedItem =
-      val.slice(0, index + charLength) +
+      val.slice(0, index + charLength + charLastIndex) +
       selectedItem +
-      val.slice(state.searchText.length + index + charLength, val.length);
+      val.slice(lastSearchIndex, val.length);
   }
 
   updateValue(selectedItem);
 
   if (isTriggerChar) {
-    setTimeout(() => {
-      input.selectionEnd = caretPosition;
-      const isNotTextarea = input.tagName !== 'TEXTAREA';
+    input.selectionEnd = caretPosition;
+    const isNotTextarea = input.tagName !== 'TEXTAREA';
 
-      if (isNotTextarea) {
-        input.blur();
-        input.focus();
-      }
-    }, 300);
+    if (isNotTextarea) {
+      input.blur();
+      input.focus();
+    }
   }
 }
 function handleKeydown(event) {

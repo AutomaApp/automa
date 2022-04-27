@@ -71,7 +71,7 @@ function handleDownload({ data, outputs }) {
     };
 
     const handleChanged = ({ state, id, filename }) => {
-      if (this.isDestroyed || isResolved) {
+      if (this.engine.isDestroyed || isResolved) {
         browser.downloads.onChanged.removeListener(handleChanged);
         return;
       }

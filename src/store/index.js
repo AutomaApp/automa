@@ -19,8 +19,10 @@ const store = createStore({
     hostWorkflows: {},
     sharedWorkflows: {},
     workflowHosts: {},
+    copiedNodes: [],
     settings: {
       locale: 'en',
+      deleteLogAfter: 30,
       editor: {
         arrow: false,
         disableCurvature: false,

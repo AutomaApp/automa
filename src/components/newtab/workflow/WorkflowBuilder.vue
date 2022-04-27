@@ -1,7 +1,7 @@
 <template>
   <div
+    v-bind="{ arrow: $store.state.settings.editor.arrow }"
     id="drawflow"
-    :class="{ 'with-arrow': $store.state.settings.editor.arrow }"
     class="parent-drawflow relative"
     @drop="dropHandler"
     @dragover.prevent="handleDragOver"
@@ -81,7 +81,11 @@ import { compare } from 'compare-versions';
 import defu from 'defu';
 import SelectionArea from '@viselect/vanilla';
 import emitter from '@/lib/mitt';
-import { useShortcut, getShortcut } from '@/composable/shortcut';
+import {
+  useShortcut,
+  getShortcut,
+  getReadableShortcut,
+} from '@/composable/shortcut';
 import { tasks } from '@/utils/shared';
 import { parseJSON } from '@/utils/helper';
 import { useGroupTooltip } from '@/composable/groupTooltip';
@@ -115,7 +119,23 @@ export default {
     const store = useStore();
 
     const contextMenuItems = {
+      common: [
+        {
+          id: 'paste',
+          name: t('workflow.editor.paste'),
+          icon: 'riFileCopyLine',
+          event: 'pasteBlocks',
+          shortcut: getReadableShortcut('mod+v'),
+        },
+      ],
       block: [
+        {
+          id: 'copy',
+          name: t('workflow.editor.copy'),
+          icon: 'riFileCopyLine',
+          event: 'copyBlocks',
+          shortcut: getReadableShortcut('mod+c'),
+        },
         {
           id: 'duplicate',
           name: t('workflow.editor.duplicate'),
@@ -317,12 +337,14 @@ export default {
     function clearSelectedElements() {
       selection.value.clearSelection();
       selectedElements.forEach(({ el }) => {
+        if (!el) return;
+
         el.classList.remove('selected-list');
       });
       selectedElements = [];
       activeNode = null;
     }
-    function duplicateBlock(nodeId) {
+    function duplicateBlock(nodeId, isPaste = false) {
       const nodes = new Map();
       const addNode = (id) => {
         const node = editor.value.getNodeFromId(id);
@@ -332,14 +354,20 @@ export default {
         nodes.set(node.id, node);
       };
 
-      if (nodeId) addNode(nodeId);
-      else if (activeNode) addNode(activeNode.id);
+      if (isPaste) {
+        store.state.copiedNodes.forEach((node) => {
+          nodes.set(node.id, node);
+        });
+      } else {
+        if (nodeId) addNode(nodeId);
+        else if (activeNode) addNode(activeNode.id);
 
-      selectedElements.forEach((node) => {
-        if (activeNode?.id === node.id || nodeId === node.id) return;
+        selectedElements.forEach((node) => {
+          if (activeNode?.id === node.id || nodeId === node.id) return;
 
-        addNode(node.id);
-      });
+          addNode(node.id);
+        });
+      }
 
       const nodesOutputs = [];
 
@@ -376,6 +404,8 @@ export default {
           posY: parseInt(nodeElement.style.top, 10),
           posX: parseInt(nodeElement.style.left, 10),
         });
+
+        emitter.emit('editor:data-changed');
 
         if (outputsLen > 0) {
           nodesOutputs.push({ id: newNodeId, outputs: node.outputs });
@@ -435,7 +465,7 @@ export default {
       });
 
       selection.value.on('beforestart', ({ event }) => {
-        if (!event.ctrlKey) return false;
+        if (!event.ctrlKey && !event.metaKey) return false;
 
         editor.value.editor_mode = 'fixed';
         editor.value.editor_selected = false;
@@ -504,7 +534,7 @@ export default {
 
       isDragging = true;
     }
-    function onClick({ ctrlKey, target }) {
+    function onClick({ ctrlKey, metaKey, target }) {
       const nodeEl = target.closest('.drawflow-node');
       if (!nodeEl) {
         if (!hasDragged) clearSelectedElements();
@@ -518,7 +548,7 @@ export default {
         posX: parseInt(nodeEl.style.left, 10),
       };
 
-      if (!ctrlKey && !hasDragged) {
+      if (!ctrlKey && !metaKey && !hasDragged) {
         clearSelectedElements();
 
         activeNode = nodeProperties;
@@ -530,7 +560,7 @@ export default {
       }
       hasDragged = false;
 
-      if (!ctrlKey) return;
+      if (!ctrlKey && !metaKey) return;
 
       const nodeIndex = selectedElements.findIndex(({ el }) =>
         nodeEl.isEqualNode(el)
@@ -545,9 +575,35 @@ export default {
         selectedElements.push(nodeProperties);
       }
     }
-    function onKeyup({ key, target }) {
+    function copyBlocks() {
+      let nodes = selectedElements;
+
+      if (nodes.length === 0) {
+        const selectedEl = document.querySelector('.drawflow-node.selected');
+
+        if (selectedEl) {
+          nodes.push({ id: selectedEl.id.substr(5) });
+        }
+      }
+
+      nodes = nodes.map((node) => editor.value.getNodeFromId(node.id));
+
+      store.commit('updateState', {
+        key: 'copiedNodes',
+        value: nodes,
+      });
+    }
+    function onKeyup({ key, target, ctrlKey, metaKey }) {
+      if (ctrlKey || metaKey) {
+        if (key === 'c') {
+          copyBlocks();
+        } else if (key === 'v') {
+          duplicateBlock(null, true);
+        }
+      }
+
       const isAnInput =
-        ['INPUT', 'TEXTAREA'].includes(target.tagName) &&
+        ['INPUT', 'TEXTAREA'].includes(target.tagName) ||
         target.isContentEditable;
 
       if (key !== 'Delete' || isAnInput) return;
@@ -693,14 +749,11 @@ export default {
       editor.value.on(
         'connectionCreated',
         ({ output_id, input_id, output_class, input_class }) => {
-          const { outputs } = editor.value.getNodeFromId(output_id);
           const { name: inputName } = editor.value.getNodeFromId(input_id);
-          const { allowedInputs, maxConnection } = tasks[inputName];
+          const { allowedInputs } = tasks[inputName];
           const isAllowed = isInputAllowed(allowedInputs, inputName);
-          const isMaxConnections =
-            outputs[output_class]?.connections.length > maxConnection;
 
-          if (!isAllowed || isMaxConnections) {
+          if (!isAllowed) {
             editor.value.removeSingleConnection(
               output_id,
               input_id,
@@ -718,22 +771,33 @@ export default {
       editor.value.on('export', saveEditorState);
       editor.value.on('contextmenu', ({ clientY, clientX, target }) => {
         const isBlock = target.closest('.drawflow .drawflow-node');
+        const virtualEl = {
+          getReferenceClientRect: () => ({
+            width: 0,
+            height: 0,
+            top: clientY,
+            right: clientX,
+            bottom: clientY,
+            left: clientX,
+          }),
+        };
 
         if (isBlock) {
-          const virtualEl = {
-            getReferenceClientRect: () => ({
-              width: 0,
-              height: 0,
-              top: clientY,
-              right: clientX,
-              bottom: clientY,
-              left: clientX,
-            }),
-          };
-
           contextMenu.data = isBlock.id;
           contextMenu.position = virtualEl;
           contextMenu.items = contextMenuItems.block;
+          contextMenu.show = true;
+        }
+
+        const copiedNodesLen = store.state.copiedNodes.length;
+        if (copiedNodesLen > 0) {
+          if (isBlock) {
+            contextMenu.items.unshift(...contextMenuItems.common);
+          } else {
+            contextMenu.items = contextMenuItems.common;
+          }
+
+          contextMenu.position = virtualEl;
           contextMenu.show = true;
         }
       });
@@ -766,7 +830,9 @@ export default {
       dropHandler,
       handleDragOver,
       contextMenuHandler: {
+        copyBlocks,
         deleteBlock,
+        pasteBlocks: () => duplicateBlock(null, true),
         duplicateBlock: () => duplicateBlock(contextMenu.data.substr(5)),
       },
     };
@@ -785,7 +851,7 @@ export default {
 .drawflow .drawflow-node {
   @apply dark:bg-gray-800;
 }
-#drawflow.with-arrow .drawflow-node .input {
+#drawflow[arrow='true'] .drawflow-node .input {
   background-color: transparent !important;
   border-top: 10px solid transparent;
   border-radius: 0;

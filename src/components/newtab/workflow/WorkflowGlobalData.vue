@@ -1,14 +1,6 @@
 <template>
   <div class="global-data">
-    <a
-      href="https://docs.automa.site/api-reference/reference-data.html"
-      target="_blank"
-      rel="noopener"
-      class="inline-block text-primary"
-    >
-      {{ t('message.useDynamicData') }}
-    </a>
-    <p class="float-right clear-both" title="Characters limit">
+    <p class="text-right" title="Characters limit">
       {{ globalData.length }}/{{ maxLength.toLocaleString() }}
     </p>
     <shared-codemirror
@@ -20,7 +12,6 @@
 </template>
 <script setup>
 import { ref, watch, defineAsyncComponent } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { debounce } from '@/utils/helper';
 
 const SharedCodemirror = defineAsyncComponent(() =>
@@ -34,8 +25,6 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update']);
-
-const { t } = useI18n();
 
 const maxLength = 1e4;
 const globalData = ref(`${props.workflow.globalData}`);

@@ -59,6 +59,8 @@ import browser from 'webextension-polyfill';
 import { useTheme } from '@/composable/theme';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vue-i18n';
 import { fetchApi, getSharedWorkflows, getUserWorkflows } from '@/utils/api';
+import dayjs from '@/lib/dayjs';
+import Log from '@/models/log';
 import Workflow from '@/models/workflow';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 
@@ -181,6 +183,18 @@ async function fetchUserData() {
     console.error(error);
   }
 }
+/* eslint-disable-next-line */
+function autoDeleteLogs() {
+  const deleteAfter = store.state.settings.deleteLogAfter;
+
+  if (deleteAfter === 'never') return;
+
+  Log.delete(({ endedAt }) => {
+    const diff = dayjs().diff(dayjs(endedAt), 'day');
+
+    return diff >= deleteAfter;
+  });
+}
 function handleStorageChanged(change) {
   if (change.logs) {
     store.dispatch('entities/create', {
@@ -223,6 +237,8 @@ window.addEventListener('beforeunload', () => {
 
     await fetchUserData();
     await syncHostWorkflow();
+
+    // autoDeleteLogs();
   } catch (error) {
     retrieved.value = true;
     console.error(error);

@@ -19,7 +19,7 @@
         {{ t('workflow.blocks.switch-to.windowTypes.iframe') }}
       </option>
     </ui-select>
-    <ui-autocomplete
+    <edit-autocomplete
       v-if="data.windowType === 'iframe'"
       :items="autocomplete"
       :trigger-char="['{{', '}}']"
@@ -34,20 +34,17 @@
         class="mb-1 w-full"
         @change="updateData({ selector: $event })"
       />
-    </ui-autocomplete>
+    </edit-autocomplete>
   </div>
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
-  },
-  autocomplete: {
-    type: Array,
-    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

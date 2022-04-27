@@ -1,5 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { sendMessage } from '@/utils/message';
+import { sleep } from '@/utils/helper';
 
 function findScrollableElement(
   element = document.documentElement,
@@ -39,17 +40,67 @@ function injectStyle() {
 
   return style;
 }
-
-const loadAsyncImg = (src) =>
-  new Promise((resolve) => {
+function canvasToBase64(canvas, { format, quality }) {
+  return canvas.toDataURL(`image/${format}`, quality / 100);
+}
+function loadAsyncImg(src) {
+  return new Promise((resolve) => {
     const image = new Image();
     image.onload = () => {
       resolve(image);
     };
     image.src = src;
   });
+}
+async function takeScreenshot(tabId, options) {
+  await sendMessage('set:active-tab', tabId, 'background');
+  const imageUrl = await sendMessage(
+    'get:tab-screenshot',
+    options,
+    'background'
+  );
 
-export default async function ({ tabId, options }) {
+  return imageUrl;
+}
+async function captureElementScreenshot({ selector, tabId, options }) {
+  const element = document.querySelector(selector);
+
+  if (!element) {
+    const error = new Error('element-not-found');
+
+    throw error;
+  }
+
+  element.scrollIntoView();
+
+  await sleep(500);
+
+  const imageUrl = await takeScreenshot(tabId, options);
+  const image = await loadAsyncImg(imageUrl);
+
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  const { height, width, x, y } = element.getBoundingClientRect();
+
+  canvas.width = width;
+  canvas.height = height;
+
+  context.drawImage(image, x, y, width, height, 0, 0, width, height);
+
+  return canvasToBase64(canvas, options);
+}
+
+export default async function ({ tabId, options, type, selector }) {
+  if (type === 'element') {
+    const imageUrl = await captureElementScreenshot({
+      tabId,
+      options,
+      selector,
+    });
+
+    return imageUrl;
+  }
+
   document.body.classList.add('is-screenshotting');
 
   const canvas = document.createElement('canvas');
@@ -59,19 +110,8 @@ export default async function ({ tabId, options }) {
   const scrollElement = document.querySelector('.automa-scrollable-el');
   let scrollableElement = scrollElement || findScrollableElement();
 
-  const takeScreenshot = async () => {
-    await sendMessage('set:active-tab', tabId, 'background');
-    const imageUrl = await sendMessage(
-      'get:tab-screenshot',
-      options,
-      'background'
-    );
-
-    return imageUrl;
-  };
-
   if (!scrollableElement) {
-    const imageUrl = await takeScreenshot();
+    const imageUrl = await takeScreenshot(tabId, options);
 
     return imageUrl;
   }
@@ -102,7 +142,7 @@ export default async function ({ tabId, options }) {
   if (scrollableElement.tagName === 'HTML') scrollableElement = window;
 
   while (scrollPosition <= originalScrollHeight) {
-    const imageUrl = await takeScreenshot();
+    const imageUrl = await takeScreenshot(tabId, options);
 
     if (scrollPosition > 0 && !document.body.classList.contains('hide-fixed')) {
       document.body.classList.add('hide-fixed');
@@ -139,5 +179,5 @@ export default async function ({ tabId, options }) {
 
   scrollableElement.scrollTo(0, originalYPosition);
 
-  return canvas.toDataURL(`image/${options.format}`, options.quality / 100);
+  return canvasToBase64(canvas, options);
 }

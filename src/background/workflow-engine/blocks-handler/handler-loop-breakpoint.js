@@ -24,7 +24,7 @@ function loopBreakpoint(block, { prevBlockData }) {
       });
     } else {
       delete this.loopList[block.data.loopId];
-      delete this.referenceData.loopData[block.data.loopId];
+      delete this.engine.referenceData.loopData[block.data.loopId];
 
       resolve({
         data: prevBlockData,

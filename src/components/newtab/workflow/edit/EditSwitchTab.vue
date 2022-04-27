@@ -1,11 +1,6 @@
 <template>
   <div>
-    <ui-autocomplete
-      :items="autocomplete"
-      :trigger-char="['{{', '}}']"
-      block
-      hide-empty
-    >
+    <edit-autocomplete>
       <ui-input
         :model-value="data.matchPattern"
         placeholder="https://example.com/*"
@@ -29,7 +24,7 @@
           </a>
         </template>
       </ui-input>
-    </ui-autocomplete>
+    </edit-autocomplete>
     <ui-checkbox
       :model-value="data.createIfNoMatch"
       class="mt-1"
@@ -37,15 +32,7 @@
     >
       {{ t('workflow.blocks.switch-tab.createIfNoMatch') }}
     </ui-checkbox>
-    <ui-autocomplete
-      v-if="data.createIfNoMatch"
-      :items="autocomplete"
-      :trigger-char="['{{', '}}']"
-      block
-      hide-empty
-      class="mt-2"
-      @change="updateData({ url: $event })"
-    >
+    <edit-autocomplete v-if="data.createIfNoMatch" class="mt-2">
       <ui-input
         :model-value="data.url"
         :label="t('workflow.blocks.switch-tab.url')"
@@ -53,20 +40,17 @@
         class="w-full"
         @change="updateData({ url: $event })"
       />
-    </ui-autocomplete>
+    </edit-autocomplete>
   </div>
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({
   data: {
     type: Object,
     default: () => ({}),
-  },
-  autocomplete: {
-    type: Array,
-    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);

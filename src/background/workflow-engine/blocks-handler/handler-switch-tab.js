@@ -32,7 +32,7 @@ export default async function ({ data, outputs }) {
     await browser.tabs.update(tab.id, { active: true });
   }
 
-  if (this.workflow.settings.debugMode) {
+  if (this.settings.debugMode) {
     await attachDebugger(tab.id, this.activeTab.id);
   }
 

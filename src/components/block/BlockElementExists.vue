@@ -6,7 +6,9 @@
     @delete="editor.removeNodeId(`node-${block.id}`)"
   >
     <div
-      :class="block.category.color"
+      :class="
+        block.data.disableBlock ? 'bg-box-transparent' : block.category.color
+      "
       class="inline-block text-sm mb-2 p-2 rounded-lg dark:text-black"
     >
       <v-remixicon name="riFocus3Line" size="20" class="inline-block mr-1" />

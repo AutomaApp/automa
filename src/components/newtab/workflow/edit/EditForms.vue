@@ -1,8 +1,5 @@
 <template>
-  <edit-interaction-base
-    v-bind="{ data, hide: hideBase, autocomplete }"
-    @change="updateData"
-  >
+  <edit-interaction-base v-bind="{ data, hide: hideBase }" @change="updateData">
     <hr />
     <ui-checkbox
       :model-value="data.getValue"
@@ -35,20 +32,14 @@
         {{ t('workflow.blocks.forms.selected') }}
       </ui-checkbox>
       <template v-if="data.type === 'text-field' || data.type === 'select'">
-        <ui-autocomplete
-          :items="autocomplete"
-          :trigger-char="['{{', '}}']"
-          block
-          hide-empty
-          class="w-full mb-1"
-        >
+        <edit-autocomplete class="w-full mb-1">
           <ui-textarea
             :model-value="data.value"
             :placeholder="t('workflow.blocks.forms.text-field.value')"
             class="w-full"
             @change="updateData({ value: $event })"
           />
-        </ui-autocomplete>
+        </edit-autocomplete>
         <ui-checkbox
           :model-value="data.clearValue"
           @change="updateData({ clearValue: $event })"
@@ -73,6 +64,7 @@
 import { useI18n } from 'vue-i18n';
 import InsertWorkflowData from './InsertWorkflowData.vue';
 import EditInteractionBase from './EditInteractionBase.vue';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({
   data: {
@@ -82,10 +74,6 @@ const props = defineProps({
   hideBase: {
     type: Boolean,
     default: false,
-  },
-  autocomplete: {
-    type: Array,
-    default: () => [],
   },
 });
 const emit = defineEmits(['update:data']);
