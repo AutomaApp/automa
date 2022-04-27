@@ -20,6 +20,10 @@ function findData(obj, path) {
   const paths = path.split('.');
   const isWhitespace = paths.length === 1 && !/\\S/.test(paths[0]);
 
+  if (path.startsWith('$last') && Array.isArray(obj)) {
+    paths[0] = obj.length - 1;
+  }
+
   if (paths.length === 0 || isWhitespace) return obj;
   else if (paths.length === 1) return obj[paths[0]];
 
