@@ -183,6 +183,7 @@ async function fetchUserData() {
     console.error(error);
   }
 }
+/* eslint-disable-next-line */
 function autoDeleteLogs() {
   const deleteAfter = store.state.settings.deleteLogAfter;
 
@@ -195,8 +196,9 @@ function autoDeleteLogs() {
   });
 }
 function handleStorageChanged(change) {
-  if (change.logs && Log.all().length !== change.logs.newValue.length) {
-    Log.insertOrUpdate({
+  if (change.logs) {
+    store.dispatch('entities/create', {
+      entity: 'logs',
       data: change.logs.newValue,
     });
   }
@@ -236,7 +238,7 @@ window.addEventListener('beforeunload', () => {
     await fetchUserData();
     await syncHostWorkflow();
 
-    autoDeleteLogs();
+    // autoDeleteLogs();
   } catch (error) {
     retrieved.value = true;
     console.error(error);
