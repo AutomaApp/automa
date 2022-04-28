@@ -111,6 +111,7 @@ export default {
         table: {},
         globalData: [],
         activeTabUrl: '',
+        prevBlockData: '',
         $date: '',
         $randint: '',
         $getLength: '',

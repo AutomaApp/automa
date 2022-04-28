@@ -191,7 +191,7 @@ class Worker {
 
       if (nodeConnections.length > 0 && !result.destroyWorker) {
         setTimeout(() => {
-          this.executeNextBlocks(nodeConnections);
+          this.executeNextBlocks(nodeConnections, result.data);
         }, blockDelay);
       } else {
         this.engine.destroyWorker(this.id);
