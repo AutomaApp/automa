@@ -31,7 +31,7 @@ async function exportData({ data, outputs }, { refData }) {
     });
 
     if (hasDownloadAccess) {
-      const filename = `${data.name}${files[data.type].ext}`;
+      const filename = `${data.name || 'unnamed'}${files[data.type].ext}`;
       const options = {
         filename,
         conflictAction: data.onConflict || 'uniquify',

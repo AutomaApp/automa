@@ -1,6 +1,33 @@
 import browser from 'webextension-polyfill';
 import { getBlockConnection } from '../helper';
 
+const getFileExtension = (str) => /(?:\.([^.]+))?$/.exec(str)[1];
+function determineFilenameListener(item, suggest) {
+  const filesname =
+    JSON.parse(sessionStorage.getItem('rename-downloaded-files')) || {};
+  const suggestion = filesname[item.id];
+
+  if (!suggestion) return true;
+
+  const hasFileExt = getFileExtension(suggestion.filename);
+
+  if (!hasFileExt) {
+    const filExtension = getFileExtension(item.filename);
+    suggestion.filename += `.${filExtension}`;
+  }
+
+  if (!suggestion.waitForDownload) delete filesname[item.id];
+
+  sessionStorage.setItem('rename-downloaded-files', JSON.stringify(filesname));
+
+  suggest({
+    filename: suggestion.filename,
+    conflictAction: suggestion.onConflict,
+  });
+
+  return false;
+}
+
 function handleDownload({ data, outputs }) {
   const nextBlockId = getBlockConnection({ outputs });
   const getFilesname = () =>
@@ -8,6 +35,15 @@ function handleDownload({ data, outputs }) {
 
   return new Promise((resolve) => {
     if (!this.activeTab.id) throw new Error('no-tab');
+
+    const hasListener = chrome.downloads.onDeterminingFilename.hasListeners(
+      () => {}
+    );
+    if (!hasListener) {
+      chrome.downloads.onDeterminingFilename.addListener(
+        determineFilenameListener
+      );
+    }
 
     let downloadId = null;
     const handleCreated = ({ id }) => {
@@ -62,6 +98,10 @@ function handleDownload({ data, outputs }) {
       sessionStorage.setItem(
         'rename-downloaded-files',
         JSON.stringify(filesname)
+      );
+
+      chrome.downloads.onDeterminingFilename.removeListener(
+        determineFilenameListener
       );
 
       resolve({

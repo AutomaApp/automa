@@ -365,38 +365,6 @@ chrome.runtime.onStartup.addListener(async () => {
   await browser.storage.local.set({ onStartupTriggers });
 });
 
-if (chrome.downloads) {
-  const getFileExtension = (str) => /(?:\.([^.]+))?$/.exec(str)[1];
-  chrome.downloads.onDeterminingFilename.addListener((item, suggest) => {
-    const filesname =
-      JSON.parse(sessionStorage.getItem('rename-downloaded-files')) || {};
-    const suggestion = filesname[item.id];
-
-    if (!suggestion) return true;
-
-    const hasFileExt = getFileExtension(suggestion.filename);
-
-    if (!hasFileExt) {
-      const filExtension = getFileExtension(item.filename);
-      suggestion.filename += `.${filExtension}`;
-    }
-
-    if (!suggestion.waitForDownload) delete filesname[item.id];
-
-    sessionStorage.setItem(
-      'rename-downloaded-files',
-      JSON.stringify(filesname)
-    );
-
-    suggest({
-      filename: suggestion.filename,
-      conflictAction: suggestion.onConflict,
-    });
-
-    return false;
-  });
-}
-
 const message = new MessageListener('background');
 
 message.on('fetch:text', (url) => {
