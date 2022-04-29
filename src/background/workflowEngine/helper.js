@@ -40,6 +40,8 @@ export function waitTabLoaded(tabId) {
 }
 
 export function convertData(data, type) {
+  if (type === 'any') return data;
+
   let result = data;
 
   switch (type) {
