@@ -119,7 +119,12 @@
           class="w-full mt-2"
           @change="updateData({ dataPath: $event })"
         />
-        <insert-workflow-data :data="data" variables @update="updateData" />
+        <insert-workflow-data
+          :data="data"
+          :columns="[{ name: '[Assign columns]', id: '$assignColumns' }]"
+          variables
+          @update="updateData"
+        />
       </ui-tab-panel>
     </ui-tab-panels>
     <ui-modal

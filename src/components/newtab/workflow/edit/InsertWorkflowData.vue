@@ -33,7 +33,7 @@
     @change="updateData({ dataColumn: $event })"
   >
     <option
-      v-for="column in workflow.data.value.table"
+      v-for="column in [...columns, ...workflow.data.value.table]"
       :key="column.id"
       :value="column.id"
     >
@@ -85,6 +85,10 @@ defineProps({
   },
   extraRow: Boolean,
   variables: Boolean,
+  columns: {
+    type: Array,
+    default: () => [],
+  },
 });
 const emit = defineEmits(['update']);
 

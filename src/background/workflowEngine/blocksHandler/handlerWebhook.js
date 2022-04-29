@@ -45,7 +45,11 @@ export async function webhook({ data, outputs }) {
       this.setVariable(data.variableName, returnData);
     }
     if (data.saveData) {
-      this.addDataToColumn(data.dataColumn, returnData);
+      if (data.dataColumn === '$assignColumns' && Array.isArray(returnData)) {
+        this.addDataToColumn(returnData);
+      } else {
+        this.addDataToColumn(data.dataColumn, returnData);
+      }
     }
 
     return {
