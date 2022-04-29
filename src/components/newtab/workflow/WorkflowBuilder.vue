@@ -792,7 +792,14 @@ export default {
         const copiedNodesLen = store.state.copiedNodes.length;
         if (copiedNodesLen > 0) {
           if (isBlock) {
-            contextMenu.items.unshift(...contextMenuItems.common);
+            contextMenuItems.common.forEach((item) => {
+              const isExists = contextMenu.items.some(
+                (menu) => menu.id === item.id
+              );
+              if (isExists) return;
+
+              contextMenu.items.unshift(item);
+            });
           } else {
             contextMenu.items = contextMenuItems.common;
           }
