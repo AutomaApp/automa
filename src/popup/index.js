@@ -2,9 +2,9 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from '../store';
-import compsUi from '../lib/comps-ui';
-import vueI18n from '../lib/vue-i18n';
-import vRemixicon, { icons } from '../lib/v-remixicon';
+import compsUi from '../lib/compsUi';
+import vueI18n from '../lib/vueI18n';
+import vRemixicon, { icons } from '../lib/vRemixicon';
 import '../assets/css/tailwind.css';
 import '../assets/css/fonts.css';
 

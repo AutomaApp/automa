@@ -136,7 +136,7 @@ import { useGroupTooltip } from '@/composable/groupTooltip';
 import { parseJSON, findTriggerBlock } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
 import Log from '@/models/log';
-import getTriggerText from '@/utils/trigger-text';
+import getTriggerText from '@/utils/triggerText';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
 import SharedWorkflowState from '@/components/newtab/shared/SharedWorkflowState.vue';

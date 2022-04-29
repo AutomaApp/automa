@@ -1,9 +1,9 @@
 import { Model } from '@vuex-orm/core';
 import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
-import { cleanWorkflowTriggers } from '@/utils/workflow-trigger';
+import { cleanWorkflowTriggers } from '@/utils/workflowTrigger';
 import { fetchApi } from '@/utils/api';
-import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
+import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
 import Log from './log';
 
 class Workflow extends Model {

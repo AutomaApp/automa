@@ -179,7 +179,7 @@ import { useToast } from 'vue-toastification';
 import { fetchApi } from '@/utils/api';
 import { workflowCategories } from '@/utils/shared';
 import { parseJSON, debounce } from '@/utils/helper';
-import { convertWorkflow } from '@/utils/workflow-data';
+import { convertWorkflow } from '@/utils/workflowData';
 import SharedWysiwyg from '@/components/newtab/shared/SharedWysiwyg.vue';
 
 const props = defineProps({

@@ -1,13 +1,13 @@
 import { createStore } from 'vuex';
 import objectPath from 'object-path';
 import browser from 'webextension-polyfill';
-import vuexORM from '@/lib/vuex-orm';
+import vuexORM from '@/lib/vuexOrm';
 import defu from 'defu';
 import * as models from '@/models';
 import { firstWorkflows } from '@/utils/shared';
 import { fetchApi } from '@/utils/api';
 import { findTriggerBlock } from '@/utils/helper';
-import { registerWorkflowTrigger } from '@/utils/workflow-trigger';
+import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
 
 const store = createStore({
   plugins: [vuexORM(models)],

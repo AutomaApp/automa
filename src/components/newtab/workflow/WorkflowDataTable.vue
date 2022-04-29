@@ -59,6 +59,7 @@ const emit = defineEmits(['update', 'close', 'change']);
 const { t } = useI18n();
 
 const dataTypes = [
+  { id: 'any', name: 'Any' },
   { id: 'string', name: 'Text' },
   { id: 'integer', name: 'Number' },
   { id: 'boolean', name: 'Boolean' },

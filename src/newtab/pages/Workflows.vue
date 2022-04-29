@@ -316,11 +316,11 @@ import { useShortcut } from '@/composable/shortcut';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { sendMessage } from '@/utils/message';
 import { fetchApi } from '@/utils/api';
-import { exportWorkflow, importWorkflow } from '@/utils/workflow-data';
+import { exportWorkflow, importWorkflow } from '@/utils/workflowData';
 import {
   registerWorkflowTrigger,
   cleanWorkflowTriggers,
-} from '@/utils/workflow-trigger';
+} from '@/utils/workflowTrigger';
 import { findTriggerBlock, isWhitespace } from '@/utils/helper';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 import Workflow from '@/models/workflow';
