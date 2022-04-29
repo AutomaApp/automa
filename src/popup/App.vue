@@ -9,7 +9,7 @@ import { ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import browser from 'webextension-polyfill';
-import { loadLocaleMessages, setI18nLanguage } from '@/lib/vue-i18n';
+import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
 
 const store = useStore();
 const router = useRouter();

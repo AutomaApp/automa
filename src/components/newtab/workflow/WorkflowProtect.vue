@@ -35,7 +35,7 @@ import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid';
 import AES from 'crypto-js/aes';
 import hmacSHA256 from 'crypto-js/hmac-sha256';
-import getPassKey from '@/utils/get-pass-key';
+import getPassKey from '@/utils/getPassKey';
 
 const props = defineProps({
   workflow: {

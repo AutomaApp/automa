@@ -127,7 +127,7 @@ import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
 import browser from 'webextension-polyfill';
 import { fetchApi, cacheApi } from '@/utils/api';
-import { convertWorkflow } from '@/utils/workflow-data';
+import { convertWorkflow } from '@/utils/workflowData';
 import { parseJSON } from '@/utils/helper';
 import dayjs from '@/lib/dayjs';
 import Workflow from '@/models/workflow';

@@ -1,9 +1,9 @@
 import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
 import { toCamelCase } from '@/utils/helper';
-import FindElement from '@/utils/find-element';
-import executedBlock from './executed-block';
-import blocksHandler from './blocks-handler';
+import FindElement from '@/utils/FindElement';
+import executedBlock from './executedBlock';
+import blocksHandler from './blocksHandler';
 
 function handleConditionBuilder({ data, type }) {
   if (!type.startsWith('element')) return null;

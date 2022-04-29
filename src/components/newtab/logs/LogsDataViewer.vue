@@ -47,7 +47,7 @@ import { shallowReactive, computed, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { dataExportTypes } from '@/utils/shared';
 import { objectHasKey } from '@/utils/helper';
-import dataExporter from '@/utils/data-exporter';
+import dataExporter from '@/utils/dataExporter';
 
 const SharedCodemirror = defineAsyncComponent(() =>
   import('@/components/newtab/shared/SharedCodemirror.vue')

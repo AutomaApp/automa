@@ -24,5 +24,6 @@
 secrets.production.js
 secrets.development.js
 get-pass-key.js
+getPassKey.js
 
 .idea

@@ -1,17 +1,17 @@
 import browser from 'webextension-polyfill';
 import { MessageListener } from '@/utils/message';
 import { parseJSON, findTriggerBlock } from '@/utils/helper';
-import getFile from '@/utils/get-file';
-import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
+import getFile from '@/utils/getFile';
+import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
 import {
   registerSpecificDay,
   registerWorkflowTrigger,
-} from '../utils/workflow-trigger';
-import WorkflowState from './workflow-state';
-import CollectionEngine from './collection-engine';
-import WorkflowEngine from './workflow-engine/engine';
-import blocksHandler from './workflow-engine/blocks-handler';
-import WorkflowLogger from './workflow-logger';
+} from '../utils/workflowTrigger';
+import WorkflowState from './WorkflowState';
+import CollectionEngine from './collectionEngine';
+import WorkflowEngine from './workflowEngine/engine';
+import blocksHandler from './workflowEngine/blocksHandler';
+import WorkflowLogger from './WorkflowLogger';
 
 const validateUrl = (str) => str?.startsWith('http');
 const storage = {

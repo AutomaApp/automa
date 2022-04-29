@@ -36,7 +36,7 @@
 <script setup>
 import { shallowReactive, watch, onMounted } from 'vue';
 import { objectHasKey } from '@/utils/helper';
-import { keyDefinitions } from '@/utils/us-keyboard-layout';
+import { keyDefinitions } from '@/utils/USKeyboardLayout';
 
 const props = defineProps({
   params: {

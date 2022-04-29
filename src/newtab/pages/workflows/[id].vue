@@ -228,7 +228,7 @@ import emitter from '@/lib/mitt';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
 import { sendMessage } from '@/utils/message';
-import { exportWorkflow, convertWorkflow } from '@/utils/workflow-data';
+import { exportWorkflow, convertWorkflow } from '@/utils/workflowData';
 import { tasks } from '@/utils/shared';
 import { fetchApi } from '@/utils/api';
 import {
@@ -239,9 +239,9 @@ import {
   throttle,
 } from '@/utils/helper';
 import Log from '@/models/log';
-import decryptFlow, { getWorkflowPass } from '@/utils/decrypt-flow';
+import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
 import Workflow from '@/models/workflow';
-import workflowTrigger from '@/utils/workflow-trigger';
+import workflowTrigger from '@/utils/workflowTrigger';
 import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
 import WorkflowActions from '@/components/newtab/workflow/WorkflowActions.vue';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';

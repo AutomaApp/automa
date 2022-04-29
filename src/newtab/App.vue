@@ -57,7 +57,7 @@ import { useI18n } from 'vue-i18n';
 import { compare } from 'compare-versions';
 import browser from 'webextension-polyfill';
 import { useTheme } from '@/composable/theme';
-import { loadLocaleMessages, setI18nLanguage } from '@/lib/vue-i18n';
+import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
 import { fetchApi, getSharedWorkflows, getUserWorkflows } from '@/utils/api';
 import dayjs from '@/lib/dayjs';
 import Log from '@/models/log';

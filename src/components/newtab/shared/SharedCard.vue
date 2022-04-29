@@ -70,7 +70,7 @@
 import { onMounted, shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import dayjs from '@/lib/dayjs';
-import triggerText from '@/utils/trigger-text';
+import triggerText from '@/utils/triggerText';
 
 const props = defineProps({
   data: {
