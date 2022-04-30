@@ -21,6 +21,8 @@ class Worker {
     this.currentBlock = null;
     this.childWorkflowId = null;
 
+    this.debugAttached = false;
+
     this.activeTab = {
       url: '',
       frameId: 0,

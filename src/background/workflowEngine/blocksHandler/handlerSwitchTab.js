@@ -34,6 +34,7 @@ export default async function ({ data, outputs }) {
 
   if (this.settings.debugMode) {
     await attachDebugger(tab.id, this.activeTab.id);
+    this.debugAttached = true;
   }
 
   this.activeTab.id = tab.id;

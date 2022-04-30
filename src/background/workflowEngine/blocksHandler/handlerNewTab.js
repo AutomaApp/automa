@@ -47,6 +47,7 @@ async function newTab(block) {
     if (tab) {
       if (this.settings.debugMode || customUserAgent) {
         await attachDebugger(tab.id, this.activeTab.id);
+        this.debugAttached = true;
 
         if (customUserAgent) {
           await sendDebugCommand(tab.id, 'Network.setUserAgentOverride', {
