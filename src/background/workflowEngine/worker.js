@@ -21,6 +21,8 @@ class Worker {
     this.currentBlock = null;
     this.childWorkflowId = null;
 
+    this.debugAttached = false;
+
     this.activeTab = {
       url: '',
       frameId: 0,
@@ -212,7 +214,13 @@ class Worker {
           blockOnError.toDo === 'continue' ? 1 : 2
         );
         if (blockOnError.toDo !== 'error' && nextBlocks.connections) {
+          addBlockLog('error', {
+            message: error.message,
+            ...(error.data || {}),
+          });
+
           this.executeNextBlocks(nextBlocks.connections, prevBlockData);
+
           return;
         }
       }

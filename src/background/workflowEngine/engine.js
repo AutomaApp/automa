@@ -54,7 +54,14 @@ class WorkflowEngine {
     };
 
     this.onDebugEvent = ({ tabId }, method, params) => {
-      if (tabId !== this.activeTab.id) return;
+      let isActiveTabEvent = false;
+      this.workers.forEach((worker) => {
+        if (isActiveTabEvent) return;
+
+        isActiveTabEvent = worker.activeTab.id === tabId;
+      });
+
+      if (!isActiveTabEvent) return;
 
       (this.eventListeners[method] || []).forEach((listener) => {
         listener(params);
@@ -237,10 +244,13 @@ class WorkflowEngine {
       if (this.workflow.settings.debugMode) {
         chrome.debugger.onEvent.removeListener(this.onDebugEvent);
 
-        if (this.activeTab.id) {
-          await sleep(1000);
-          chrome.debugger.detach({ tabId: this.activeTab.id });
-        }
+        await sleep(1000);
+
+        this.workers.forEach((worker) => {
+          if (!worker.debugAttached) return;
+
+          chrome.debugger.detach({ tabId: worker.activeTab.id });
+        });
       }
 
       const endedTimestamp = Date.now();

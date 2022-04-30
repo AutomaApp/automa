@@ -75,7 +75,7 @@ function onTabLoaded({ tabLoadedUrl, activeTabLoaded, timeout }, { id }) {
 
     setTimeout(() => {
       resolved = true;
-      resolve('');
+      reject(new Error('timeout'));
     }, timeout || 10000);
   });
 }
