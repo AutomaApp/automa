@@ -214,7 +214,13 @@ class Worker {
           blockOnError.toDo === 'continue' ? 1 : 2
         );
         if (blockOnError.toDo !== 'error' && nextBlocks.connections) {
+          addBlockLog('error', {
+            message: error.message,
+            ...(error.data || {}),
+          });
+
           this.executeNextBlocks(nextBlocks.connections, prevBlockData);
+
           return;
         }
       }

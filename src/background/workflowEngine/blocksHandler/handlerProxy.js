@@ -25,7 +25,7 @@ function setProxy({ data, outputs }) {
       config.rules.singleProxy.host = data.host;
     } else {
       if (data.clearProxy) {
-        this.isUsingProxy = false;
+        this.engine.isUsingProxy = false;
 
         resolve({
           data: '',
@@ -47,7 +47,7 @@ function setProxy({ data, outputs }) {
     }
 
     chrome.proxy.settings.set({ value: config, scope: 'regular' }, () => {
-      this.isUsingProxy = true;
+      this.engine.isUsingProxy = true;
 
       resolve({
         data: data.host,
