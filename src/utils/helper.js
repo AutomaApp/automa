@@ -55,8 +55,10 @@ export function convertArrObjTo2DArr(arr) {
         values[0].push(key);
       }
 
+      const value = obj[key];
+
       const rowIndex = keyIndex.get(key);
-      row[rowIndex] = obj[key];
+      row[rowIndex] = typeof value === 'object' ? JSON.stringify(value) : value;
     });
 
     values.push([...row]);

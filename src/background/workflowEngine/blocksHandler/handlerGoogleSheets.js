@@ -38,7 +38,11 @@ async function updateSpreadsheetValues(
     if (keysAsFirstRow) {
       values = convertArrObjTo2DArr(columns);
     } else {
-      values = columns.map(Object.values);
+      values = columns.map((item) =>
+        Object.values(item).map((value) =>
+          typeof value === 'object' ? JSON.stringify(value) : value
+        )
+      );
     }
   } else if (dataFrom === 'custom') {
     values = parseJSON(customData, customData);
