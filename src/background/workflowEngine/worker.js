@@ -199,6 +199,7 @@ class Worker {
         this.engine.destroyWorker(this.id);
       }
     } catch (error) {
+      console.error(error);
       const { onError: blockOnError } = replacedBlock.data;
       if (blockOnError && blockOnError.enable) {
         if (blockOnError.retry && blockOnError.retryTimes) {

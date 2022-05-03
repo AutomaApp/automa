@@ -1,3 +1,5 @@
+import browser from 'webextension-polyfill';
+
 export function sendDebugCommand(tabId, method, params = {}) {
   return new Promise((resolve) => {
     chrome.debugger.sendCommand({ tabId }, method, params, resolve);
@@ -18,7 +20,7 @@ export function attachDebugger(tabId, prevTab) {
 export function waitTabLoaded(tabId) {
   return new Promise((resolve, reject) => {
     const activeTabStatus = () => {
-      chrome.tabs.get(tabId, (tab) => {
+      browser.tabs.get(tabId).then((tab) => {
         if (!tab) {
           reject(new Error('no-tab'));
           return;

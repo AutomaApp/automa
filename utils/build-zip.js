@@ -4,10 +4,12 @@ const path = require('path');
 const archiver = require('archiver');
 const packageJSON = require('../package.json');
 
-const fileName = `${packageJSON.name}-v${packageJSON.version}.zip`;
+const browser = process.env.BROWSER || 'chrome';
+const appVersion = packageJSON.version;
+const fileName = `${packageJSON.name}-${browser}-v${appVersion}.zip`;
 
 const destDir = path.join(__dirname, '../build');
-const zipDir = path.join(__dirname, '../build-zip');
+const zipDir = path.join(__dirname, '../build-zip', appVersion);
 
 if (!fs.existsSync(zipDir)) {
   fs.mkdirSync(zipDir);

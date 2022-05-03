@@ -1,3 +1,4 @@
+import browser from 'webextension-polyfill';
 import { isWhitespace } from '@/utils/helper';
 import { getBlockConnection } from '../helper';
 
@@ -6,7 +7,7 @@ function setProxy({ data, outputs }) {
 
   return new Promise((resolve, reject) => {
     if (data.clearProxy) {
-      chrome.proxy.settings.clear({});
+      browser.proxy.settings.clear({});
     }
 
     const config = {
@@ -46,7 +47,7 @@ function setProxy({ data, outputs }) {
       config.rules.singleProxy.port = data.port;
     }
 
-    chrome.proxy.settings.set({ value: config, scope: 'regular' }, () => {
+    browser.proxy.settings.set({ value: config, scope: 'regular' }).then(() => {
       this.engine.isUsingProxy = true;
 
       resolve({

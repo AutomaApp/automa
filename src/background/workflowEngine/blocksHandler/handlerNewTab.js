@@ -32,6 +32,7 @@ async function newTab(block) {
     }
 
     let tab = null;
+    const isChrome = BROWSER_TYPE === 'chrome';
 
     if (updatePrevTab && this.activeTab.id) {
       tab = await browser.tabs.update(this.activeTab.id, { url, active });
@@ -49,7 +50,7 @@ async function newTab(block) {
         await attachDebugger(tab.id, this.activeTab.id);
         this.debugAttached = true;
 
-        if (customUserAgent) {
+        if (customUserAgent && isChrome) {
           await sendDebugCommand(tab.id, 'Network.setUserAgentOverride', {
             userAgent,
           });
@@ -74,14 +75,16 @@ async function newTab(block) {
         };
       }
 
-      chrome.tabs.group(options, (tabGroupId) => {
-        this.activeTab.groupId = tabGroupId;
-      });
+      if (isChrome) {
+        chrome.tabs.group(options, (tabGroupId) => {
+          this.activeTab.groupId = tabGroupId;
+        });
+      }
     }
 
     this.activeTab.frameId = 0;
 
-    if (!this.settings.debugMode && customUserAgent) {
+    if (isChrome && !this.settings.debugMode && customUserAgent) {
       chrome.debugger.detach({ tabId: tab.id });
     }
 

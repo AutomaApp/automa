@@ -306,7 +306,7 @@ browser.alarms.onAlarm.addListener(async ({ name }) => {
   }
 });
 
-chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+browser.runtime.onInstalled.addListener(async ({ reason }) => {
   try {
     if (reason === 'install') {
       await browser.storage.local.set({
@@ -347,7 +347,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
     console.error(error);
   }
 });
-chrome.runtime.onStartup.addListener(async () => {
+browser.runtime.onStartup.addListener(async () => {
   const { onStartupTriggers, workflows } = await browser.storage.local.get([
     'onStartupTriggers',
     'workflows',

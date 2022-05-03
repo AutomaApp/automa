@@ -36,9 +36,9 @@ function handleDownload({ data, outputs }) {
   return new Promise((resolve) => {
     if (!this.activeTab.id) throw new Error('no-tab');
 
-    const hasListener = chrome.downloads.onDeterminingFilename.hasListeners(
-      () => {}
-    );
+    const hasListener =
+      BROWSER_TYPE === 'chrome' &&
+      chrome.downloads.onDeterminingFilename.hasListeners(() => {});
     if (!hasListener) {
       chrome.downloads.onDeterminingFilename.addListener(
         determineFilenameListener

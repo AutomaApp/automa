@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "1.9.4",
+  "version": "1.9.4-beta",
   "description": "An extension for automating your browser by connecting blocks",
   "license": "MIT",
   "repository": {
@@ -9,11 +9,18 @@
   },
   "scripts": {
     "build": "node utils/build.js",
+    "build:firefox": "cross-env BROWSER=firefox yarn build",
     "build:zip": "node utils/build-zip.js",
-    "build:prod": "yarn build && yarn build:zip",
+    "build:prod": "yarn build:prod-chrome && yarn build:prod-firefox",
+    "build:prod-chrome": "yarn build && yarn build:zip",
+    "build:prod-firefox": "yarn build:firefox && cross-env BROWSER=firefox yarn build:zip",
     "dev": "node utils/webserver.js",
+    "dev:firefox": "cross-env BROWSER=firefox yarn dev",
     "prettier": "prettier --write '**/*.{js,jsx,css,html}'",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
+  },
+  "engines": {
+    "node": ">=14.18.1"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
@@ -57,7 +64,7 @@
     "vue-toastification": "^2.0.0-rc.5",
     "vuedraggable": "^4.1.0",
     "vuex": "^4.0.2",
-    "webextension-polyfill": "^0.8.0"
+    "webextension-polyfill": "^0.9.0"
   },
   "devDependencies": {
     "@babel/core": "7.15.5",
@@ -72,6 +79,7 @@
     "clean-webpack-plugin": "4.0.0",
     "copy-webpack-plugin": "9.0.1",
     "core-js": "3",
+    "cross-env": "^7.0.3",
     "css-loader": "5.2.7",
     "eslint": "7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",

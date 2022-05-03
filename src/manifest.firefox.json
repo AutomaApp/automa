@@ -1,0 +1,72 @@
+{
+  "manifest_version": 2,
+  "name": "Automa",
+  "browser_specific_settings": {
+    "gecko": {
+      "strict_min_version": "91.1.0"
+    }
+  },
+  "background": {
+    "scripts": [
+      "background.bundle.js"
+    ],
+    "persistent": false
+  },
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon-128.png"
+  },
+  "icons": {
+    "128": "icon-128.png"
+  },
+  "commands": {
+    "open-dashboard": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+A",
+        "mac": "MacCtrl+Shift+A"
+      },
+      "description": "Open the Automa dashboard"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "shortcutListener.bundle.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "*://*.automa.site/*",
+        "*://automa.vercel.app/*"
+      ],
+      "js": [
+        "webService.bundle.js"
+      ],
+      "all_frames": false
+    }
+  ],
+  "optional_permissions": [
+    "clipboardRead",
+    "downloads"
+  ],
+  "permissions": [
+    "tabs",
+    "proxy",
+    "alarms",
+    "storage",
+    "webNavigation",
+    "unlimitedStorage",
+    "<all_urls>"
+  ],
+  "web_accessible_resources": [
+    "/elementSelector.css",
+    "/Inter-roman-latin.var.woff2",
+    "/locales/*",
+    "elementSelector.bundle.js"
+  ]
+}

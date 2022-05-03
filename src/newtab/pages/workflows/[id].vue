@@ -312,6 +312,7 @@ const workflowId = route.params.id;
 const workflowModals = {
   table: {
     icon: 'riKey2Line',
+    width: 'max-w-2xl',
     component: WorkflowDataTable,
     title: t('workflow.table.title'),
     docs: 'https://docs.automa.site/api-reference/table.html',
@@ -589,7 +590,7 @@ function insertToLocal() {
   const copy = {
     ...workflow.value,
     createdAt: Date.now(),
-    version: chrome.runtime.getManifest().version,
+    version: browser.runtime.getManifest().version,
   };
 
   Workflow.insert({

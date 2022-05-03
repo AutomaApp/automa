@@ -51,11 +51,26 @@
         <p>
           {{ item.name }}
         </p>
-        <p class="text-gray-600 dark:text-gray-200 text-sm leading-tight">
+        <p
+          v-if="item.notSupport?.includes(browserType)"
+          class="text-sm leading-tight text-red-400 dark:text-red-300"
+        >
+          {{
+            t('log.messages.browser-not-supported', { browser: browserType })
+          }}
+        </p>
+        <p
+          v-else
+          class="text-gray-600 dark:text-gray-200 text-sm leading-tight"
+        >
           {{ item.description }}
         </p>
       </div>
-      <ui-switch v-model="settings[item.id]" class="mr-4" />
+      <ui-switch
+        v-if="!item.notSupport?.includes(browserType)"
+        v-model="settings[item.id]"
+        class="mr-4"
+      />
     </div>
     <div class="flex items-center pt-4">
       <div class="mr-4 flex-1">
@@ -89,6 +104,7 @@ const emit = defineEmits(['update']);
 const { t } = useI18n();
 const toast = useToast();
 
+const browserType = BROWSER_TYPE;
 const onError = [
   {
     id: 'keep-running',
@@ -106,6 +122,7 @@ const onError = [
 const settingItems = [
   {
     id: 'debugMode',
+    notSupport: ['firefox'],
     name: t('workflow.settings.debugMode.title'),
     description: t('workflow.settings.debugMode.description'),
   },

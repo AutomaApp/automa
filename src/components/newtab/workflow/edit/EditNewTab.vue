@@ -31,20 +31,22 @@
     >
       {{ t('workflow.blocks.new-tab.activeTab') }}
     </ui-checkbox>
-    <ui-checkbox
-      :model-value="data.inGroup"
-      @change="updateData({ inGroup: $event })"
-    >
-      {{ t('workflow.blocks.new-tab.tabToGroup') }}
-    </ui-checkbox>
-    <ui-checkbox
-      :model-value="data.customUserAgent"
-      block
-      class="mt-2"
-      @change="updateData({ customUserAgent: $event })"
-    >
-      {{ t('workflow.blocks.new-tab.customUserAgent') }}
-    </ui-checkbox>
+    <template v-if="browserType === 'chrome'">
+      <ui-checkbox
+        :model-value="data.inGroup"
+        @change="updateData({ inGroup: $event })"
+      >
+        {{ t('workflow.blocks.new-tab.tabToGroup') }}
+      </ui-checkbox>
+      <ui-checkbox
+        :model-value="data.customUserAgent"
+        block
+        class="mt-2"
+        @change="updateData({ customUserAgent: $event })"
+      >
+        {{ t('workflow.blocks.new-tab.customUserAgent') }}
+      </ui-checkbox>
+    </template>
     <ui-input
       v-if="data.customUserAgent"
       :model-value="data.userAgent"
@@ -67,6 +69,7 @@ const props = defineProps({
 const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
+const browserType = BROWSER_TYPE;
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });

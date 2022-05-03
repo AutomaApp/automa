@@ -111,6 +111,9 @@ class WorkflowEngine {
       this.columns[columnId] = { index: 0, name, type };
     });
 
+    if (BROWSER_TYPE !== 'chrome') {
+      this.workflow.settings.debugMode = false;
+    }
     if (this.workflow.settings.debugMode) {
       chrome.debugger.onEvent.addListener(this.onDebugEvent);
     }
@@ -240,8 +243,8 @@ class WorkflowEngine {
   async destroy(status, message) {
     try {
       if (this.isDestroyed) return;
-      if (this.isUsingProxy) chrome.proxy.settings.clear({});
-      if (this.workflow.settings.debugMode) {
+      if (this.isUsingProxy) browser.proxy.settings.clear({});
+      if (this.workflow.settings.debugMode && BROWSER_TYPE === 'chrome') {
         chrome.debugger.onEvent.removeListener(this.onDebugEvent);
 
         await sleep(1000);

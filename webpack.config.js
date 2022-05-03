@@ -143,6 +143,9 @@ const options = {
   plugins: [
     new MiniCssExtractPlugin(),
     new VueLoaderPlugin(),
+    new webpack.DefinePlugin({
+      BROWSER_TYPE: JSON.stringify(env.BROWSER),
+    }),
     new webpack.ProgressPlugin(),
     // clean the build folder
     new CleanWebpackPlugin({
@@ -154,18 +157,34 @@ const options = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: 'src/manifest.json',
-          to: path.join(__dirname, 'build'),
+          from: `src/manifest.${env.BROWSER}.json`,
+          to: path.join(__dirname, 'build', 'manifest.json'),
           force: true,
+          toType: 'file',
           transform(content) {
-            // generates the manifest file using the package.json informations
-            return Buffer.from(
-              JSON.stringify({
-                description: process.env.npm_package_description,
-                version: process.env.npm_package_version,
-                ...JSON.parse(content.toString()),
-              })
-            );
+            const manifestObj = {
+              description: process.env.npm_package_description,
+              version: process.env.npm_package_version,
+              ...JSON.parse(content.toString()),
+            };
+            const isChrome = env.BROWSER === 'chrome';
+
+            if (env.NODE_ENV === 'development' && !isChrome) {
+              manifestObj.content_security_policy =
+                "script-src 'self' 'unsafe-eval'; object-src 'self'";
+            }
+            if (manifestObj.version.includes('-')) {
+              const [version, preRelease] = manifestObj.version.split('-');
+
+              if (isChrome) {
+                manifestObj.version = version;
+                manifestObj.version_name = `${version} ${preRelease}`;
+              } else {
+                manifestObj.version = `${version}${preRelease}`;
+              }
+            }
+
+            return Buffer.from(JSON.stringify(manifestObj));
           },
         },
         {

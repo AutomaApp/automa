@@ -2,6 +2,7 @@ import browser from 'webextension-polyfill';
 import { objectHasKey } from './helper';
 
 const nameBuilder = (prefix, name) => (prefix ? `${prefix}--${name}` : name);
+const isFirefox = BROWSER_TYPE === 'firefox';
 
 export class MessageListener {
   constructor(prefix = '') {
@@ -26,6 +27,8 @@ export class MessageListener {
 
   listen(message, sender) {
     try {
+      if (isFirefox) message = JSON.parse(message);
+
       const listener = this.listeners[message.name];
       const response =
         listener && listener.call({ message, sender }, message.data, sender);
@@ -46,10 +49,14 @@ export class MessageListener {
 }
 
 export function sendMessage(name = '', data = {}, prefix = '') {
-  const payload = {
+  let payload = {
     name: nameBuilder(prefix, name),
     data,
   };
+
+  if (isFirefox) {
+    payload = JSON.stringify(payload);
+  }
 
   return browser.runtime.sendMessage(payload);
 }

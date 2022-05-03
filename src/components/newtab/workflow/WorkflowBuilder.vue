@@ -80,6 +80,7 @@ import { useI18n } from 'vue-i18n';
 import { compare } from 'compare-versions';
 import defu from 'defu';
 import SelectionArea from '@viselect/vanilla';
+import browser from 'webextension-polyfill';
 import emitter from '@/lib/mitt';
 import {
   useShortcut,
@@ -668,7 +669,7 @@ export default {
 
         if (!data || !data?.drawflow?.Home) return;
 
-        const currentExtVersion = chrome.runtime.getManifest().version;
+        const currentExtVersion = browser.runtime.getManifest().version;
         const isOldWorkflow = compare(
           currentExtVersion,
           props.version || '0.0.0',

@@ -3,7 +3,9 @@ import initElementSelector from './main';
 
 async function getStyles() {
   try {
-    const response = await fetch(chrome.runtime.getURL('/elementSelector.css'));
+    const response = await fetch(
+      browser.runtime.getURL('/elementSelector.css')
+    );
     const mainCSS = await response.text();
 
     const fontCSS = `
@@ -14,7 +16,7 @@ async function getStyles() {
         font-display: swap;
         font-style: normal;
         font-named-instance: "Regular";
-        src: url('${chrome.runtime.getURL(
+        src: url('${browser.runtime.getURL(
           '/Inter-roman-latin.var.woff2'
         )}') format("woff2");
       }

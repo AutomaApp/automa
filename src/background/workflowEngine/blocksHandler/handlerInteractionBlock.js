@@ -4,9 +4,7 @@ import { getBlockConnection } from '../helper';
 
 async function checkAccess(blockName) {
   if (blockName === 'upload-file') {
-    const hasFileAccess = await new Promise((resolve) =>
-      chrome.extension.isAllowedFileSchemeAccess(resolve)
-    );
+    const hasFileAccess = await browser.extension.isAllowedFileSchemeAccess();
 
     if (hasFileAccess) return true;
 

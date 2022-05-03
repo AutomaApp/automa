@@ -50,13 +50,14 @@
 /* eslint-disable camelcase */
 import { onMounted } from 'vue';
 import { useStore } from 'vuex';
+import browser from 'webextension-polyfill';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { communities } from '@/utils/shared';
 
 useGroupTooltip();
 const store = useStore();
 
-const extensionVersion = chrome.runtime.getManifest().version;
+const extensionVersion = browser.runtime.getManifest().version;
 const links = [
   ...communities,
   { name: 'Website', icon: 'riGlobalLine', url: 'https://www.automa.site' },

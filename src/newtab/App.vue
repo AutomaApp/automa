@@ -214,10 +214,10 @@ function handleStorageChanged(change) {
   }
 }
 
-browser.storage.local.onChanged.addListener(handleStorageChanged);
+browser.storage.onChanged.addListener(handleStorageChanged);
 
 window.addEventListener('beforeunload', () => {
-  browser.storage.local.onChanged.removeListener(handleStorageChanged);
+  browser.storage.onChanged.removeListener(handleStorageChanged);
 });
 
 (async () => {

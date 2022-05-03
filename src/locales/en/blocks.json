@@ -138,6 +138,7 @@
         "description": "Upload file into <input type=\"file\"> element",
         "filePath": "URL or File path",
         "addFile": "Add file",
+        "onlyURL": "Only support upload files from an URL in the Firefox browser",
         "requirement": "See the requirement before using this block",
         "noFileAccess": "Automa doesn't have file access"
       },
