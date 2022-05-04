@@ -56,6 +56,9 @@ export function convertData(data, type) {
     case 'array':
       result = Array.from(data);
       break;
+    case 'string':
+      result = String(data);
+      break;
     default:
   }
 

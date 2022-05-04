@@ -193,7 +193,7 @@
       "executedBlockOnWeb": "Show executed block on web page",
       "defaultColumn": {
         "title": "Insert into the default column",
-        "description": "Insert data to the default column when there's no column selected in the block",
+        "description": "Insert data to the default column if there's no column selected in the block",
         "name": "Default column name"
       },
       "autocomplete": {

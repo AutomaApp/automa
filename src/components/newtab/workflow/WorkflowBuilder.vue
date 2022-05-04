@@ -297,19 +297,6 @@ export default {
           .closest('.drawflow-node')
           .id.replace(/node-/, '');
         const outputClass = target.classList[1];
-        const blockData = editor.value.getNodeFromId(targetBlockId);
-        const { connections } = blockData.outputs[outputClass];
-
-        if (connections[0]) {
-          const { output, node } = connections[0];
-
-          editor.value.removeSingleConnection(
-            targetBlockId,
-            node,
-            outputClass,
-            output
-          );
-        }
 
         editor.value.addConnection(
           targetBlockId,
