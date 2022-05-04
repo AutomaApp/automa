@@ -355,6 +355,15 @@ const workflowModals = {
     icon: 'riSettings3Line',
     component: WorkflowSettings,
     title: t('common.settings'),
+    attrs: {
+      customContent: true,
+    },
+    events: {
+      close() {
+        state.showModal = false;
+        state.modalName = '';
+      },
+    },
   },
 };
 

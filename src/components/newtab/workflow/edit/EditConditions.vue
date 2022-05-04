@@ -57,7 +57,7 @@
           />
         </div>
         <div
-          class="overflow-auto p-4 mt-4 scroll"
+          class="overflow-auto p-4 scroll"
           style="height: calc(100vh - 8rem)"
         >
           <input

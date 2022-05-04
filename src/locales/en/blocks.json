@@ -10,6 +10,7 @@
   "workflow": {
     "blocks": {
       "base": {
+        "title": "Blocks",
         "moveToGroup": "Move block to blocks group",
         "selector": "Element selector",
         "timeout": "Timeout (milliseconds)",

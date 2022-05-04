@@ -56,8 +56,13 @@ class Worker {
       return;
     }
 
+    const insertDefault = this.settings.insertDefaultColumn ?? true;
     const columnId =
       (this.engine.columns[key] ? key : this.engine.columnsId[key]) || 'column';
+
+    console.log(columnId);
+    if (columnId === 'column' && !insertDefault) return;
+
     const currentColumn = this.engine.columns[columnId];
     const columnName = currentColumn.name || 'column';
     const convertedValue = convertData(value, currentColumn.type);
@@ -273,7 +278,13 @@ class Worker {
 
     this.engine.history = [];
     this.engine.preloadScripts = [];
-    this.engine.columns = { column: { index: 0, name: 'column', type: 'any' } };
+    this.engine.columns = {
+      column: {
+        index: 0,
+        type: 'any',
+        name: this.settings?.defaultColumnName || 'column',
+      },
+    };
 
     this.activeTab = {
       url: '',

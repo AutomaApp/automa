@@ -29,7 +29,14 @@ class WorkflowEngine {
     this.historyCtxData = {};
     this.eventListeners = {};
     this.preloadScripts = [];
-    this.columns = { column: { index: 0, name: 'column', type: 'any' } };
+    console.log(this.workflow.settings);
+    this.columns = {
+      column: {
+        index: 0,
+        type: 'any',
+        name: this.workflow.settings?.defaultColumnName || 'column',
+      },
+    };
 
     let variables = {};
     let { globalData } = workflow;

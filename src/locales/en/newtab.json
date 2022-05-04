@@ -191,6 +191,11 @@
     "settings": {
       "saveLog": "Save workflow log",
       "executedBlockOnWeb": "Show executed block on web page",
+      "defaultColumn": {
+        "title": "Insert into the default column",
+        "description": "Insert data to the default column when there's no column selected in the block",
+        "name": "Default column name"
+      },
       "autocomplete": {
         "title": "Autocomplete",
         "description": "Enable autocomplete in the input block (disable if it makes Automa unstable)"

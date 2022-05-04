@@ -12,35 +12,40 @@
       {{ t('common.add') }}
     </ui-button>
   </div>
-  <ul
-    class="space-y-2 overflow-y-auto scroll py-1"
-    style="max-height: calc(100vh - 11rem)"
+  <div
+    class="overflow-y-auto scroll"
+    style="max-height: 600px; height: calc(100vh - 13rem)"
   >
-    <li
-      v-for="(column, index) in columns"
-      :key="column.id"
-      class="flex items-center space-x-2"
-    >
-      <ui-input
-        :model-value="columns[index].name"
-        :placeholder="t('workflow.table.column.name')"
-        class="flex-1"
-        @blur="updateColumnName(index, $event.target)"
-      />
-      <ui-select
-        v-model="columns[index].type"
-        class="flex-1"
-        :placeholder="t('workflow.table.column.type')"
+    <p v-if="columns.length === 0" class="text-center mt-4">
+      {{ t('message.noData') }}
+    </p>
+    <ul v-else class="space-y-2 py-1">
+      <li
+        v-for="(column, index) in columns"
+        :key="column.id"
+        class="flex items-center space-x-2"
       >
-        <option v-for="type in dataTypes" :key="type.id" :value="type.id">
-          {{ type.name }}
-        </option>
-      </ui-select>
-      <button @click="state.columns.splice(index, 1)">
-        <v-remixicon name="riDeleteBin7Line" />
-      </button>
-    </li>
-  </ul>
+        <ui-input
+          :model-value="columns[index].name"
+          :placeholder="t('workflow.table.column.name')"
+          class="flex-1"
+          @blur="updateColumnName(index, $event.target)"
+        />
+        <ui-select
+          v-model="columns[index].type"
+          class="flex-1"
+          :placeholder="t('workflow.table.column.type')"
+        >
+          <option v-for="type in dataTypes" :key="type.id" :value="type.id">
+            {{ type.name }}
+          </option>
+        </ui-select>
+        <button @click="state.columns.splice(index, 1)">
+          <v-remixicon name="riDeleteBin7Line" />
+        </button>
+      </li>
+    </ul>
+  </div>
 </template>
 <script setup>
 import { computed, onMounted, watch, reactive } from 'vue';
