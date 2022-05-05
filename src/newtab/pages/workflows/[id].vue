@@ -301,12 +301,6 @@ const renameModal = reactive({
   name: '',
   description: '',
 });
-const protectionState = reactive({
-  message: '',
-  password: '',
-  needed: false,
-  showPassword: false,
-});
 
 const workflowId = route.params.id;
 const workflowModals = {
@@ -852,9 +846,6 @@ watch(
     if (value === 'shared') {
       state.isEditBlock = false;
       state.blockData = {};
-    } else if (workflow.value.isProtected) {
-      protectionState.needed = true;
-      return;
     }
 
     let drawflow = parseJSON(workflow.value.drawflow, null);

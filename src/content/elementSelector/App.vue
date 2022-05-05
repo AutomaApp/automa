@@ -5,7 +5,6 @@
       'bg-black bg-opacity-30': !state.hide,
     }"
     class="root fixed h-full w-full pointer-events-none top-0 text-black left-0"
-    style="z-index: 9999999999; font-family: Inter, sans-serif; font-size: 16px"
   >
     <div
       ref="cardEl"
@@ -32,99 +31,35 @@
           <v-remixicon name="riCloseLine" />
         </ui-button>
       </div>
-      <app-selector
-        v-model:selectorType="state.selectorType"
-        v-model:selectList="state.selectList"
-        :selector="state.elSelector"
-        :selected-count="state.selectedElements.length"
-        @child="selectChildElement"
-        @parent="selectParentElement"
-        @change="updateSelectedElements"
-      />
-      <template v-if="!state.hide && state.selectedElements.length > 0">
-        <ui-tabs v-model="state.activeTab" class="mt-2" fill>
-          <ui-tab value="attributes"> Attributes </ui-tab>
-          <ui-tab v-if="state.selectElements.length > 0" value="options">
-            Options
-          </ui-tab>
-          <ui-tab value="blocks"> Blocks </ui-tab>
-        </ui-tabs>
-        <ui-tab-panels
-          v-model="state.activeTab"
-          class="overflow-y-auto scroll"
-          style="max-height: calc(100vh - 17rem)"
-        >
-          <ui-tab-panel value="attributes">
-            <app-element-list
-              :elements="state.selectedElements"
-              @highlight="toggleHighlightElement"
-            >
-              <template #item="{ element }">
-                <div
-                  v-for="(value, name) in element.attributes"
-                  :key="name"
-                  class="bg-box-transparent mb-1 rounded-lg py-2 px-3"
-                >
-                  <p
-                    class="text-sm text-overflow leading-tight text-gray-600"
-                    title="Attribute name"
-                  >
-                    {{ name }}
-                  </p>
-                  <input
-                    :value="value"
-                    readonly
-                    title="Attribute value"
-                    class="bg-transparent w-full"
-                  />
-                </div>
-              </template>
-            </app-element-list>
-          </ui-tab-panel>
-          <ui-tab-panel value="options">
-            <app-element-list
-              :elements="state.selectElements"
-              element-name="Select element options"
-              @highlight="
-                toggleHighlightElement({
-                  index: $event.element.index,
-                  highlight: $event.highlight,
-                })
-              "
-            >
-              <template #item="{ element }">
-                <div
-                  v-for="option in element.options"
-                  :key="option.name"
-                  class="bg-box-transparent mb-1 rounded-lg py-2 px-3"
-                >
-                  <p
-                    class="text-sm text-overflow leading-tight text-gray-600"
-                    title="Option name"
-                  >
-                    {{ option.name }}
-                  </p>
-                  <input
-                    :value="option.value"
-                    title="Option value"
-                    class="text-overflow focus:ring-0 w-full bg-transparent"
-                    readonly
-                    @click="$event.target.select()"
-                  />
-                </div>
-              </template>
-            </app-element-list>
-          </ui-tab-panel>
-          <ui-tab-panel value="blocks">
-            <app-blocks
-              :elements="state.selectedElements"
-              :selector="state.elSelector"
-              @execute="state.isExecuting = $event"
-              @update="updateCardSize"
-            />
-          </ui-tab-panel>
-        </ui-tab-panels>
-      </template>
+      <ui-tabs v-model="mainActiveTab" fill class="mt-2">
+        <ui-tab value="selector"> Selector </ui-tab>
+        <ui-tab value="workflow"> Workflow </ui-tab>
+      </ui-tabs>
+      <ui-tab-panels :model-value="mainActiveTab">
+        <ui-tab-panel value="selector">
+          <app-selector
+            v-model:selectorType="state.selectorType"
+            v-model:selectList="state.selectList"
+            :selector="state.elSelector"
+            :selected-count="state.selectedElements.length"
+            @child="selectChildElement"
+            @parent="selectParentElement"
+            @change="updateSelectedElements"
+          />
+          <app-elements-detail
+            v-if="!state.hide && state.selectedElements.length > 0"
+            v-model:active-tab="state.activeTab"
+            v-bind="{
+              elSelector: state.elSelector,
+              selectElements: state.selectElements,
+              selectedElements: state.selectedElements,
+            }"
+            @update="updateCardSize"
+            @highlight="toggleHighlightElement"
+            @execute="state.isExecuting = $event"
+          />
+        </ui-tab-panel>
+      </ui-tab-panels>
     </div>
     <svg
       v-if="!state.hide"
@@ -151,9 +86,8 @@ import { getCssSelector } from 'css-selector-generator';
 import { debounce } from '@/utils/helper';
 import { finder } from '@medv/finder';
 import findElement from '@/utils/FindElement';
-import AppBlocks from './AppBlocks.vue';
 import AppSelector from './AppSelector.vue';
-import AppElementList from './AppElementList.vue';
+import AppElementsDetail from './AppElementsDetail.vue';
 import AppElementHighlighter from './AppElementHighlighter.vue';
 import findElementList from './listSelector';
 
@@ -168,6 +102,7 @@ const originalFontSize = document.documentElement.style.fontSize;
 const rootElement = inject('rootElement');
 
 const cardEl = ref('cardEl');
+const mainActiveTab = ref('selector');
 const state = reactive({
   activeTab: '',
   elSelector: '',
@@ -580,6 +515,13 @@ nextTick(() => {
 });
 </script>
 <style>
+.root {
+  font-size: 16px;
+  z-index: 9999999999;
+  line-height: 1.5 !important;
+  font-family: 'Inter var', sans-serif;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
 .drag-button {
   transform: scale(0);
   transition: transform 200ms ease-in-out;
