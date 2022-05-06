@@ -1,6 +1,7 @@
 <template>
   <block-base
     :id="componentId"
+    :minimap="editor.minimap"
     class="element-exists"
     @edit="editBlock"
     @delete="editor.removeNodeId(`node-${block.id}`)"

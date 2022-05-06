@@ -10,6 +10,7 @@
       </div>
       <div class="flex-grow"></div>
       <v-remixicon
+        v-if="!editor.minimap"
         name="riDeleteBin7Line"
         class="cursor-pointer"
         @click="editor.removeNodeId(`node-${block.id}`)"

@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-4">
+  <div>
     <div class="flex items-center">
       <ui-select
         :model-value="selectorType"
@@ -36,7 +36,7 @@
       </ui-input>
       <template v-if="selectedCount === 1">
         <button
-          class="mr-2 ml-4"
+          class="mr-1 ml-2"
           title="Parent element"
           @click="$emit('parent')"
         >

@@ -3,6 +3,7 @@
     :id="componentId"
     :hide-edit="block.details.disableEdit"
     :hide-delete="block.details.disableDelete"
+    :minimap="editor.minimap"
     class="block-basic"
     @edit="editBlock"
     @delete="editor.removeNodeId(`node-${block.id}`)"
@@ -53,7 +54,7 @@
     <slot :block="block"></slot>
     <template #prepend>
       <div
-        v-if="block.details.id !== 'trigger'"
+        v-if="!editor.minimap && block.details.id !== 'trigger'"
         :title="t('workflow.blocks.base.moveToGroup')"
         draggable="true"
         class="bg-white dark:bg-gray-700 invisible move-to-group z-50 absolute -top-2 -right-2 rounded-md p-1 shadow-md"

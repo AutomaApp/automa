@@ -9,8 +9,8 @@
     <div
       ref="cardEl"
       :style="{ transform: `translate(${cardRect.x}px, ${cardRect.y}px)` }"
-      style="width: 320px"
-      class="absolute root-card bg-white shadow-xl z-50 p-4 pointer-events-auto rounded-lg"
+      style="width: 320px; min-height: 175px"
+      class="absolute root-card bg-white shadow-xl z-50 pointer-events-auto rounded-lg"
     >
       <div
         class="absolute p-2 drag-button shadow-xl bg-white p-1 cursor-move rounded-lg"
@@ -21,22 +21,35 @@
           @mousedown="state.isDragging = true"
         />
       </div>
-      <div class="flex items-center">
-        <p class="ml-1 text-lg font-semibold">Automa</p>
+      <div class="flex px-4 pt-4 items-center">
+        <ui-tabs
+          v-if="false"
+          v-model="mainActiveTab"
+          type="fill"
+          class="main-tab"
+        >
+          <ui-tab value="selector"> Selector </ui-tab>
+          <ui-tab value="workflow"> Workflow </ui-tab>
+        </ui-tabs>
+        <p class="text-lg font-semibold">Automa</p>
         <div class="flex-grow"></div>
-        <ui-button icon class="mr-2" @click="state.hide = !state.hide">
+        <button
+          class="mr-1 hoverable p-1 rounded-md transition"
+          size="20"
+          @click="state.hide = !state.hide"
+        >
           <v-remixicon :name="state.hide ? 'riEyeOffLine' : 'riEyeLine'" />
-        </ui-button>
-        <ui-button icon @click="destroy">
+        </button>
+        <button
+          class="hoverable p-1 rounded-md transition"
+          size="20"
+          @click="destroy"
+        >
           <v-remixicon name="riCloseLine" />
-        </ui-button>
+        </button>
       </div>
-      <ui-tabs v-model="mainActiveTab" fill class="mt-2">
-        <ui-tab value="selector"> Selector </ui-tab>
-        <ui-tab value="workflow"> Workflow </ui-tab>
-      </ui-tabs>
       <ui-tab-panels :model-value="mainActiveTab">
-        <ui-tab-panel value="selector">
+        <ui-tab-panel value="selector" class="p-4">
           <app-selector
             v-model:selectorType="state.selectorType"
             v-model:selectList="state.selectList"
@@ -54,7 +67,6 @@
               selectElements: state.selectElements,
               selectedElements: state.selectedElements,
             }"
-            @update="updateCardSize"
             @highlight="toggleHighlightElement"
             @execute="state.isExecuting = $event"
           />
@@ -81,7 +93,7 @@
   </div>
 </template>
 <script setup>
-import { reactive, ref, watch, inject, nextTick } from 'vue';
+import { reactive, ref, watch, inject, onMounted, onBeforeUnmount } from 'vue';
 import { getCssSelector } from 'css-selector-generator';
 import { debounce } from '@/utils/helper';
 import { finder } from '@medv/finder';
@@ -104,7 +116,6 @@ const rootElement = inject('rootElement');
 const cardEl = ref('cardEl');
 const mainActiveTab = ref('selector');
 const state = reactive({
-  activeTab: '',
   elSelector: '',
   listSelector: '',
   isDragging: false,
@@ -114,6 +125,7 @@ const state = reactive({
   hoveredElements: [],
   selectorType: 'css',
   selectedElements: [],
+  activeTab: 'attributes',
   hide: window.self !== window.top,
 });
 const cardRect = reactive({
@@ -121,6 +133,13 @@ const cardRect = reactive({
   y: 0,
   height: 0,
   width: 0,
+});
+
+const cardElementObserver = new ResizeObserver(([entry]) => {
+  const { height, width } = entry.contentRect;
+
+  cardRect.width = width;
+  cardRect.height = height;
 });
 
 /* eslint-disable  no-use-before-define */
@@ -265,19 +284,15 @@ function getElementList(target) {
 }
 let prevHoverElement = null;
 function handleMouseMove({ clientX, clientY, target }) {
-  if (prevHoverElement === target) return;
-
-  prevHoverElement = target;
-
   if (state.isDragging) {
     const height = window.innerHeight;
     const width = document.documentElement.clientWidth;
 
-    if (clientY < 10) clientY = 0;
+    if (clientY < 10) clientY = 10;
     else if (cardRect.height + clientY > height)
       clientY = height - cardRect.height;
 
-    if (clientX < 10) clientX = 0;
+    if (clientX < 10) clientX = 10;
     else if (cardRect.width + clientX > width) clientX = width - cardRect.width;
 
     cardRect.x = clientX;
@@ -285,6 +300,9 @@ function handleMouseMove({ clientX, clientY, target }) {
 
     return;
   }
+
+  if (prevHoverElement === target) return;
+  prevHoverElement = target;
 
   if (state.hide || rootElement === target) return;
 
@@ -427,11 +445,6 @@ function selectParentElement() {
 function handleMouseUp() {
   if (state.isDragging) state.isDragging = false;
 }
-function updateCardSize() {
-  setTimeout(() => {
-    cardRect.height = cardEl.value.getBoundingClientRect().height;
-  }, 250);
-}
 const handleScroll = debounce(() => {
   if (state.hide) return;
 
@@ -470,11 +483,22 @@ function destroy() {
 
   document.documentElement.style.fontSize = originalFontSize;
 }
+function attachListeners() {
+  cardElementObserver.observe(cardEl.value);
 
-window.addEventListener('scroll', handleScroll);
-window.addEventListener('mouseup', handleMouseUp);
-window.addEventListener('mousemove', handleMouseMove);
-document.addEventListener('click', handleClick, true);
+  window.addEventListener('scroll', handleScroll);
+  window.addEventListener('mouseup', handleMouseUp);
+  window.addEventListener('mousemove', handleMouseMove);
+  document.addEventListener('click', handleClick, true);
+}
+function detachListeners() {
+  cardElementObserver.disconnect();
+
+  window.removeEventListener('scroll', handleScroll);
+  window.removeEventListener('mouseup', handleMouseUp);
+  window.removeEventListener('mousemove', handleMouseMove);
+  document.removeEventListener('click', handleClick, true);
+}
 
 watch(
   () => state.isDragging,
@@ -482,7 +506,6 @@ watch(
     document.body.toggleAttribute('automa-isDragging', value);
   }
 );
-watch(() => [state.elSelector, state.activeTab, state.hide], updateCardSize);
 watch(
   () => state.selectList,
   (value) => {
@@ -497,7 +520,7 @@ watch(
   }
 );
 
-nextTick(() => {
+onMounted(() => {
   setTimeout(() => {
     const { height, width } = cardEl.value.getBoundingClientRect();
 
@@ -511,7 +534,12 @@ nextTick(() => {
       '16px',
       'important'
     );
-  }, 250);
+  }, 500);
+
+  attachListeners();
+});
+onBeforeUnmount(() => {
+  detachListeners();
 });
 </script>
 <style>
@@ -522,11 +550,18 @@ nextTick(() => {
   font-family: 'Inter var', sans-serif;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
+.root-card:hover .drag-button {
+  transform: scale(1);
+}
 .drag-button {
   transform: scale(0);
   transition: transform 200ms ease-in-out;
 }
-.root-card:hover .drag-button {
-  transform: scale(1);
+.main-tab {
+  background-color: transparent !important;
+  padding: 0 !important;
+}
+.main-tab .ui-tab.is-active.fill {
+  @apply bg-accent text-white !important;
 }
 </style>

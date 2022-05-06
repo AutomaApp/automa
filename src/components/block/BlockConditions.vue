@@ -11,16 +11,18 @@
         <span>{{ t('workflow.blocks.conditions.name') }}</span>
       </div>
       <div class="flex-grow"></div>
-      <v-remixicon
-        name="riDeleteBin7Line"
-        class="cursor-pointer mr-2"
-        @click="editor.removeNodeId(`node-${block.id}`)"
-      />
-      <v-remixicon
-        name="riPencilLine"
-        class="inline-block cursor-pointer"
-        @click="editBlock"
-      />
+      <template v-if="!editor.minimap">
+        <v-remixicon
+          name="riDeleteBin7Line"
+          class="cursor-pointer mr-2"
+          @click="editor.removeNodeId(`node-${block.id}`)"
+        />
+        <v-remixicon
+          name="riPencilLine"
+          class="inline-block cursor-pointer"
+          @click="editBlock"
+        />
+      </template>
     </div>
     <ul
       v-if="block.data.conditions && block.data.conditions.length !== 0"

@@ -1,17 +1,11 @@
 <template>
-  <div
-    v-if="value === uiTabPanels.modelValue.value"
-    class="ui-tab-panel"
-    :class="activeClass"
-  >
-    <slot></slot>
-  </div>
+  <render />
 </template>
 <script setup>
-import { inject } from 'vue';
+import { inject, h, useSlots } from 'vue';
 
 /* eslint-disable-next-line */
-defineProps({
+const props = defineProps({
   value: {
     type: [String, Number],
     default: '',
@@ -20,7 +14,28 @@ defineProps({
     type: String,
     default: 'ui-tab-panel--active',
   },
+  cache: Boolean,
 });
 
+const slots = useSlots();
 const uiTabPanels = inject('ui-tab-panels', {});
+
+const render = () => {
+  const isActive = props.value === uiTabPanels.modelValue.value;
+  const cache = props.cache || uiTabPanels.cache.value;
+  const component = h(
+    'div',
+    {
+      class: [props.activeClass, 'ui-tab-panel'],
+      style: {
+        display: cache && !isActive ? 'none' : null,
+      },
+    },
+    slots
+  );
+
+  if (props.cache || isActive) return component;
+
+  return null;
+};
 </script>

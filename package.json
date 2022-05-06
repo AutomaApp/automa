@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "1.9.5",
+  "version": "1.9.6",
   "description": "An extension for automating your browser by connecting blocks",
   "license": "MIT",
   "repository": {
@@ -48,7 +48,7 @@
     "css-selector-generator": "^3.6.0",
     "dayjs": "^1.10.7",
     "defu": "^6.0.0",
-    "drawflow": "^0.0.51",
+    "drawflow": "^0.0.58",
     "idb": "^7.0.0",
     "lodash.clonedeep": "^4.5.0",
     "mitt": "^3.0.0",
