@@ -17,6 +17,17 @@ export const googleSheets = {
 
     return fetchApi(url);
   },
+  getRange({ spreadsheetId, range }) {
+    const baseURL = this.getUrl(spreadsheetId, range);
+    const url = `${baseURL}&valueInputOption=RAW&includeValuesInResponse=false&insertDataOption=INSERT_ROWS`;
+
+    return fetchApi(url, {
+      method: 'POST',
+      body: JSON.stringify({
+        values: [],
+      }),
+    });
+  },
   updateValues({ spreadsheetId, range, valueInputOption, options = {} }) {
     const url = `${this.getUrl(spreadsheetId, range)}&valueInputOption=${
       valueInputOption || 'RAW'

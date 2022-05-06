@@ -21,6 +21,21 @@ async function getSpreadsheetValues({ spreadsheetId, range, firstRowAsKey }) {
 
   return sheetsData;
 }
+async function getSpreadsheetRange({ spreadsheetId, range }) {
+  const response = await googleSheets.getRange({ spreadsheetId, range });
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.statusMessage);
+  }
+
+  const data = {
+    tableRange: result.tableRange || null,
+    lastRange: result.updates.updatedRange,
+  };
+
+  return data;
+}
 async function updateSpreadsheetValues(
   {
     spreadsheetId,
@@ -81,6 +96,15 @@ export default async function ({ data, outputs }, { refData }) {
 
       if (data.refKey && !isWhitespace(data.refKey)) {
         refData.googleSheets[data.refKey] = spreadsheetValues;
+      }
+    } else if (data.type === 'getRange') {
+      result = await getSpreadsheetRange(data);
+
+      if (data.assignVariable) {
+        this.setVariable(data.variableName, result);
+      }
+      if (data.saveData) {
+        this.addDataToColumn(data.dataColumn, result);
       }
     } else if (data.type === 'update') {
       result = await updateSpreadsheetValues(data, refData.table);

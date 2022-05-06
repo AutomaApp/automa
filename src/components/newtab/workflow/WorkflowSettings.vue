@@ -127,7 +127,10 @@
           <ui-switch v-model="settings.insertDefaultColumn" />
         </div>
         <transition-expand>
-          <div v-if="settings.insertDefaultColumn" class="flex pt-4">
+          <div
+            v-if="settings.insertDefaultColumn"
+            class="flex pt-4 items-center"
+          >
             <p class="flex-1">
               {{ t('workflow.settings.defaultColumn.name') }}
             </p>

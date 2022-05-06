@@ -216,6 +216,7 @@
         "keysAsFirstRow": "Use keys as the first row",
         "insertData": "Insert data",
         "valueInputOption": "Value input option",
+        "rangeToSearch": "Range to start the search",
         "dataFrom": {
           "label": "Data from",
           "options": {
@@ -237,6 +238,7 @@
         },
         "select": {
           "get": "Get spreadsheet cell values",
+          "getRange": "Get spreadsheet range",
           "update": "Update spreadsheet cell values"
         }
       },
