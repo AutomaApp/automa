@@ -63,7 +63,6 @@ async function takeScreenshot({ data, outputs, name }) {
       let tab = null;
       const isChrome = BROWSER_TYPE === 'chrome';
       const captureTab = () => {
-        console.log(isChrome, BROWSER_TYPE);
         if (isChrome) return browser.tabs.captureVisibleTab(options);
 
         return browser.tabs.captureTab(this.activeTab.id, options);

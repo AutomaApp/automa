@@ -86,12 +86,10 @@ function onEditorClick(event) {
       outputEl = nodeEl.querySelector(`.${firstOutput}`);
     }
 
-    console.log(outputEl);
     if (outputEl) outputEl.classList.add('active');
 
     nodeEl.classList.add('selected');
     activeBlock.value = node;
-    console.log(activeBlock.value);
   }
 }
 

@@ -17,9 +17,14 @@ export function attachDebugger(tabId, prevTab) {
   });
 }
 
-export function waitTabLoaded(tabId) {
+export function waitTabLoaded(tabId, ms = 10000) {
   return new Promise((resolve, reject) => {
+    const isResolved = false;
+    const timeout = setTimeout(resolve, ms);
+
     const activeTabStatus = () => {
+      if (isResolved) return;
+
       browser.tabs.get(tabId).then((tab) => {
         if (!tab) {
           reject(new Error('no-tab'));
@@ -32,6 +37,8 @@ export function waitTabLoaded(tabId) {
           }, 500);
           return;
         }
+
+        clearTimeout(timeout);
 
         resolve();
       });

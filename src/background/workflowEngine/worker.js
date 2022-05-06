@@ -60,7 +60,6 @@ class Worker {
     const columnId =
       (this.engine.columns[key] ? key : this.engine.columnsId[key]) || 'column';
 
-    console.log(columnId);
     if (columnId === 'column' && !insertDefault) return;
 
     const currentColumn = this.engine.columns[columnId];

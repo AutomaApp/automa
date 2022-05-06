@@ -29,7 +29,7 @@ class WorkflowEngine {
     this.historyCtxData = {};
     this.eventListeners = {};
     this.preloadScripts = [];
-    console.log(this.workflow.settings);
+
     this.columns = {
       column: {
         index: 0,
