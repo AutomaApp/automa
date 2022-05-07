@@ -41,6 +41,7 @@ async function loopData({ data, id, outputs }, { refData }) {
             max: data.maxLoop,
             type: 'loop-elements',
             selector: data.elementSelector,
+            frameSelector: this.frameSelector,
           });
 
           return elements;

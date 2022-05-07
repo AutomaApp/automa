@@ -40,6 +40,16 @@ export function queryElements(data, documentCtx = document) {
   });
 }
 
+export function getDocumentCtx(frameSelector) {
+  let documentCtx = document;
+
+  if (frameSelector) {
+    documentCtx = document.querySelector(frameSelector)?.contentDocument;
+  }
+
+  return documentCtx;
+}
+
 export default async function (
   { data, id, frameSelector, debugMode },
   { onSelected, onError, onSuccess }
@@ -49,18 +59,11 @@ export default async function (
     return null;
   }
 
-  let documentCtx = document;
+  const documentCtx = getDocumentCtx(frameSelector);
+  if (!documentCtx) {
+    if (onError) onError(new Error('iframe-not-found'));
 
-  if (frameSelector) {
-    const iframeCtx = document.querySelector(frameSelector)?.contentDocument;
-
-    if (!iframeCtx) {
-      if (onError) onError(new Error('iframe-not-found'));
-
-      return null;
-    }
-
-    documentCtx = iframeCtx;
+    return null;
   }
 
   try {

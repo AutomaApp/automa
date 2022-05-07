@@ -2,6 +2,7 @@ import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
 import { toCamelCase } from '@/utils/helper';
 import FindElement from '@/utils/FindElement';
+import { getDocumentCtx } from './handleSelector';
 import executedBlock from './executedBlock';
 import blocksHandler from './blocksHandler';
 
@@ -88,7 +89,15 @@ function handleConditionBuilder({ data, type }) {
         case 'loop-elements': {
           const selectors = [];
           const attrId = nanoid(5);
-          const elements = document.body.querySelectorAll(data.selector);
+
+          const documentCtx = getDocumentCtx(data.frameSelector);
+          const selectorType = data.selector.startsWith('/')
+            ? 'xpath'
+            : 'cssSelector';
+          const elements = FindElement[selectorType](
+            { selector: data.selector, multiple: true },
+            documentCtx
+          );
 
           elements.forEach((el, index) => {
             if (data.max > 0 && selectors.length - 1 > data.max) return;
