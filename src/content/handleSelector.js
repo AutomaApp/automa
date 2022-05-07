@@ -9,37 +9,40 @@ export function markElement(el, { id, data }) {
   }
 }
 
-export function waitForSelector({
-  timeout,
-  selector,
-  documentCtx = document,
-} = {}) {
+export function queryElements(data, documentCtx = document) {
   return new Promise((resolve) => {
+    let timeout = null;
     let isTimeout = false;
+
     const findSelector = () => {
       if (isTimeout) return;
 
-      const element = documentCtx.querySelector(selector);
+      const selectorType = data.findBy || 'cssSelector';
+      const elements = FindElement[selectorType](data, documentCtx);
+      const isElNotFound = !elements || elements.length === 0;
 
-      if (!element) {
+      if (isElNotFound && data.waitForSelector) {
         setTimeout(findSelector, 200);
       } else {
-        resolve(element);
+        clearTimeout(timeout);
+        resolve(elements);
       }
     };
 
     findSelector();
 
-    setTimeout(() => {
-      isTimeout = true;
-      resolve(null);
-    }, timeout);
+    if (data.waitForSelector) {
+      timeout = setTimeout(() => {
+        isTimeout = true;
+        resolve(null);
+      }, data.waitSelectorTimeout);
+    }
   });
 }
 
 export default async function (
   { data, id, frameSelector, debugMode },
-  { onSelected, onError, onSuccess, returnElement }
+  { onSelected, onError, onSuccess }
 ) {
   if (!data || !data.selector) {
     if (onError) onError(new Error('selector-empty'));
@@ -51,62 +54,46 @@ export default async function (
   if (frameSelector) {
     const iframeCtx = document.querySelector(frameSelector)?.contentDocument;
 
-    if (!iframeCtx && returnElement) return null;
-    if (!iframeCtx && onError) {
-      onError(new Error('iframe-not-found'));
-      return;
+    if (!iframeCtx) {
+      if (onError) onError(new Error('iframe-not-found'));
+
+      return null;
     }
 
     documentCtx = iframeCtx;
   }
 
-  if (data.waitForSelector && data.findBy === 'cssSelector') {
-    const element = await waitForSelector({
-      documentCtx,
-      selector: data.selector,
-      timeout: data.waitSelectorTimeout,
-    });
-
-    if (!element) {
-      if (returnElement) return element;
-
-      if (onError) {
-        onError(new Error('element-not-found'));
-        return;
-      }
-    }
-  }
-
   try {
     data.blockIdAttr = `block--${id}`;
 
-    const selectorType = data.findBy || 'cssSelector';
-    const element = FindElement[selectorType](data, documentCtx);
+    const elements = await queryElements(data, documentCtx);
 
-    if (returnElement) return element;
-
-    if (!element) {
+    if (!elements || elements.length === 0) {
       if (onError) onError(new Error('element-not-found'));
 
       return null;
     }
 
-    if (data.multiple && selectorType === 'cssSelector') {
+    if (data.multiple) {
       await Promise.allSettled(
-        Array.from(element).map((el) => {
+        Array.from(elements).map((el) => {
           markElement(el, { id, data });
           if (debugMode) scrollIfNeeded(el);
           return onSelected(el);
         })
       );
-    } else if (element) {
-      markElement(element, { id, data });
-      if (debugMode) scrollIfNeeded(element);
-      await onSelected(element);
+    } else if (elements) {
+      markElement(elements, { id, data });
+      if (debugMode) scrollIfNeeded(elements);
+      await onSelected(elements);
     }
 
     if (onSuccess) onSuccess();
+
+    return elements;
   } catch (error) {
     console.error(error);
   }
+
+  return elements;
 }

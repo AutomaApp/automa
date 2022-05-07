@@ -43,10 +43,7 @@
           />
           Selector options
         </template>
-        <div
-          v-if="(data.findBy || 'cssSelector') === 'cssSelector'"
-          class="mt-1"
-        >
+        <div class="mt-1">
           <ui-checkbox
             v-if="!data.disableMultiple && !hideMultiple"
             :title="t('workflow.blocks.base.multiple.title')"
@@ -57,6 +54,7 @@
             {{ t('workflow.blocks.base.multiple.text') }}
           </ui-checkbox>
           <ui-checkbox
+            v-if="(data.findBy || 'cssSelector') === 'cssSelector'"
             :model-value="data.markEl"
             :title="t('workflow.blocks.base.markElement.title')"
             @change="updateData({ markEl: $event })"

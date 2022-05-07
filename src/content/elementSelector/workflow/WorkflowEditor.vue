@@ -1,4 +1,7 @@
 <template>
+  <div class="flex items-center p-2 rounded-lg bg-accent">
+    <p class="flex-1">Connect a workflow</p>
+  </div>
   <workflow-list
     v-if="!activeWorkflow"
     :workflows="state.workflows"
