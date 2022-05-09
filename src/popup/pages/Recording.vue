@@ -71,8 +71,8 @@ const state = reactive({
 
 function generateDrawflow(startBlock, startBlockData) {
   let nextNodeId = nanoid();
-  const triggerId = startBlock.id || nanoid();
-  let prevNodeId = startBlock.id || triggerId;
+  const triggerId = startBlock?.id || nanoid();
+  let prevNodeId = startBlock?.id || triggerId;
 
   const nodes = {
     [triggerId]: {
@@ -98,8 +98,27 @@ function generateDrawflow(startBlock, startBlockData) {
     y: startBlockData ? startBlockData.pos_y + 50 : 300,
     x: startBlockData ? startBlockData.pos_x + 120 : 260,
   };
+  const groups = {};
 
   state.flows.forEach((block, index) => {
+    if (block.groupId) {
+      if (!groups[block.groupId]) groups[block.groupId] = [];
+
+      groups[block.groupId].push({
+        id: block.id,
+        itemId: nanoid(),
+        data: defu(block.data, tasks[block.id].data),
+      });
+
+      const nextNodeInGroup = state.flows[index + 1]?.groupId;
+      if (nextNodeInGroup) return;
+
+      block.id = 'blocks-group';
+      block.data = { blocks: groups[block.groupId] };
+
+      delete groups[block.groupId];
+    }
+
     const node = {
       id: nextNodeId,
       name: block.id,
@@ -171,6 +190,7 @@ async function stopRecording() {
       });
     } else {
       const drawflow = generateDrawflow();
+
       await Workflow.insert({
         data: {
           name: state.name,

@@ -534,7 +534,7 @@
         "description": "截取当前活动标签页的屏幕截图",
         "imageQuality": "图像质量",
         "saveToColumn": "将屏幕截图插入表格",
-        "saveToComputer": "将屏幕截图保存到计算机"
+        "saveToComputer": "将屏幕截图保存到计算机",
         "types": {
           "title": "截图",
           "page": "页面",

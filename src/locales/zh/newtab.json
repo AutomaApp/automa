@@ -123,12 +123,12 @@
       "messages": {
         "hostExist": "您已添加此主机",
         "notFound": "找不到托管工作流 \"{id}\" id"
-      },
+      }
     },
     "type": {
       "local": "本地",
       "shared": "共享",
-      "host": "主机",
+      "host": "主机"
     },
     "unpublish": {
       "title": "取消发布工作流",
@@ -184,7 +184,7 @@
       "zoomIn": "放大",
       "zoomOut": "缩小",
       "resetZoom": "重置缩放",
-      "duplicate": "副本"
+      "duplicate": "副本",
       "copy": "复制",
       "paste": "粘贴"
     },
