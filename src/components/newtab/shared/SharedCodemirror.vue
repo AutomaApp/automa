@@ -3,7 +3,13 @@
     ref="containerEl"
     :class="{ 'hide-gutters': !lineNumbers }"
     class="codemirror relative overflow-auto rounded-lg"
-  ></div>
+  >
+    <span
+      class="text-sm text-gray-300 absolute bottom-2 right-2 z-10 pointer-events-none z-10"
+    >
+      {{ lang }}
+    </span>
+  </div>
 </template>
 <script setup>
 import { onMounted, ref, onBeforeUnmount, watch } from 'vue';
