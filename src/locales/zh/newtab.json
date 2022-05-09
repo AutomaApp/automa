@@ -37,6 +37,14 @@
         "description": "添加箭头到线的尾端"
       }
     },
+    "deleteLog": {
+      "title": "自动删除工作流日志",
+      "after": "删除间隔",
+      "deleteAfter": {
+        "never": "从不",
+        "days": "{day} 天"
+      }
+    },
     "language": {
       "label": "语言",
       "helpTranslate": "找不到您的语言？ 帮助翻译.",
@@ -54,6 +62,7 @@
       "invalidPassword": "无效密码",
       "workflowsAdded": "{count} 个工作流已被添加",
       "name": "备份工作流",
+      "needSignin": "首先你需要登录账户",
       "backup": {
         "button": "备份",
         "encrypt": "用密码加密"
@@ -68,6 +77,7 @@
           "local": "本地",
           "cloud": "云端"
         },
+        "location": "位置",
         "delete": "删除备份",
         "title": "云端备份",
         "sync": "同步",
@@ -90,6 +100,7 @@
     "browse": "浏览工作流",
     "name": "工作流名称",
     "rename": "重命名工作流",
+    "backupCloud": "备份工作流到云端",
     "add": "添加工作流",
     "clickToEnable": "单击启用",
     "toggleSidebar": "切换侧栏",
@@ -174,6 +185,8 @@
       "zoomOut": "缩小",
       "resetZoom": "重置缩放",
       "duplicate": "副本"
+      "copy": "复制",
+      "paste": "粘贴"
     },
     "settings": {
       "saveLog": "保存工作流日志",
@@ -238,6 +251,7 @@
     }
   },
   "log": {
+    "flowId": "流程 Id",
     "goBack": "返回到 \"{name}\" 日志",
     "goWorkflow": "转到工作流",
     "startedDate": "启动日期",
