@@ -5,15 +5,16 @@
       'bg-black bg-opacity-30': !state.hide,
     }"
     class="root fixed h-full w-full pointer-events-none top-0 text-black left-0"
+    style="z-index: 99999999"
   >
     <div
       ref="cardEl"
       :style="{ transform: `translate(${cardRect.x}px, ${cardRect.y}px)` }"
-      style="width: 320px; min-height: 175px"
-      class="absolute root-card bg-white shadow-xl z-50 pointer-events-auto rounded-lg"
+      style="width: 320px"
+      class="relative root-card bg-white shadow-xl z-50 pointer-events-auto rounded-lg"
     >
       <div
-        class="absolute p-2 drag-button shadow-xl bg-white p-1 cursor-move rounded-lg"
+        class="absolute p-2 drag-button z-50 shadow-xl bg-white p-1 cursor-move rounded-lg"
         style="top: -15px; left: -15px"
       >
         <v-remixicon
@@ -34,81 +35,79 @@
         <p class="text-lg font-semibold">Automa</p>
         <div class="flex-grow"></div>
         <button
-          class="mr-1 hoverable p-1 rounded-md transition"
-          size="20"
+          class="mr-2 hoverable p-1 rounded-md transition"
           @click="state.hide = !state.hide"
         >
           <v-remixicon :name="state.hide ? 'riEyeOffLine' : 'riEyeLine'" />
         </button>
-        <button
-          class="hoverable p-1 rounded-md transition"
-          size="20"
-          @click="destroy"
-        >
+        <button class="hoverable p-1 rounded-md transition" @click="destroy">
           <v-remixicon name="riCloseLine" />
         </button>
       </div>
-      <ui-tab-panels :model-value="mainActiveTab">
-        <ui-tab-panel value="selector" class="p-4">
-          <app-selector
-            v-model:selectorType="state.selectorType"
-            v-model:selectList="state.selectList"
-            :selector="state.elSelector"
-            :selected-count="state.selectedElements.length"
-            @child="selectChildElement"
-            @parent="selectParentElement"
-            @change="updateSelectedElements"
-          />
-          <app-elements-detail
-            v-if="!state.hide && state.selectedElements.length > 0"
-            v-model:active-tab="state.activeTab"
-            v-bind="{
-              elSelector: state.elSelector,
-              selectElements: state.selectElements,
-              selectedElements: state.selectedElements,
-            }"
-            @highlight="toggleHighlightElement"
-            @execute="state.isExecuting = $event"
-          />
-        </ui-tab-panel>
-      </ui-tab-panels>
+      <div class="p-4">
+        <selector-query
+          v-model:selectorType="state.selectorType"
+          v-model:selectList="state.selectList"
+          :selector="state.elSelector"
+          :selected-count="state.selectedElements.length"
+          @child="selectChildElement"
+          @parent="selectParentElement"
+          @change="updateSelectedElements"
+        />
+        <selector-elements-detail
+          v-if="!state.hide && state.selectedElements.length > 0"
+          v-model:active-tab="state.activeTab"
+          v-bind="{
+            elSelector: state.elSelector,
+            selectElements: state.selectElements,
+            selectedElements: state.selectedElements,
+          }"
+          @highlight="toggleHighlightElement"
+          @execute="state.isExecuting = $event"
+        />
+      </div>
     </div>
-    <svg
+    <shared-element-highlighter
       v-if="!state.hide"
-      class="h-full w-full absolute top-0 pointer-events-none left-0 z-10"
-    >
-      <app-element-highlighter
-        :items="state.hoveredElements"
-        stroke="#fbbf24"
-        fill="rgba(251, 191, 36, 0.1)"
-      />
-      <app-element-highlighter
-        :items="state.selectedElements"
-        stroke="#2563EB"
-        active-stroke="#f87171"
-        fill="rgba(37, 99, 235, 0.1)"
-        active-fill="rgba(248, 113, 113, 0.1)"
-      />
-    </svg>
+      :disabled="state.hide"
+      :data="elementsHighlightData"
+      :items="{
+        hoveredElements: state.hoveredElements,
+        selectedElements: state.selectedElements,
+      }"
+      @update="state[$event.key] = $event.items"
+    />
   </div>
+  <teleport to="body">
+    <div
+      v-if="!state.hide"
+      style="
+        z-index: 9999999;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+      "
+    ></div>
+  </teleport>
 </template>
 <script setup>
 import { reactive, ref, watch, inject, onMounted, onBeforeUnmount } from 'vue';
 import { getCssSelector } from 'css-selector-generator';
-import { debounce } from '@/utils/helper';
 import { finder } from '@medv/finder';
+import { elementsHighlightData } from '@/utils/shared';
 import findElement from '@/utils/FindElement';
-import AppSelector from './AppSelector.vue';
-import AppElementsDetail from './AppElementsDetail.vue';
-import AppElementHighlighter from './AppElementHighlighter.vue';
+import SelectorQuery from '@/components/content/selector/SelectorQuery.vue';
+import SelectorElementsDetail from '@/components/content/selector/SelectorElementsDetail.vue';
+import SharedElementHighlighter from '@/components/content/shared/SharedElementHighlighter.vue';
 import findElementList from './listSelector';
 
 const selectedElement = {
   path: [],
   pathIndex: 0,
 };
-let lastScrollPosY = window.scrollY;
-let lastScrollPosX = window.scrollX;
+
 const originalFontSize = document.documentElement.style.fontSize;
 
 const rootElement = inject('rootElement');
@@ -301,29 +300,33 @@ function handleMouseMove({ clientX, clientY, target }) {
     return;
   }
 
-  if (prevHoverElement === target) return;
-  prevHoverElement = target;
+  const { 1: realTarget } = document.elementsFromPoint(clientX, clientY);
+
+  if (prevHoverElement === realTarget) return;
+  prevHoverElement = realTarget;
 
   if (state.hide || rootElement === target) return;
 
   let elementsRect = [];
 
   if (state.selectList) {
-    const elements = getElementList(target) || [];
+    const elements = getElementList(realTarget) || [];
 
     elementsRect = elements.map((el) => getElementRect(el, true));
   } else {
-    elementsRect = [getElementRect(target)];
+    elementsRect = [getElementRect(realTarget)];
   }
 
   state.hoveredElements = elementsRect;
 }
 function handleClick(event) {
-  const { target, path, ctrlKey } = event;
+  const { target: eventTarget, path, ctrlKey, clientY, clientX } = event;
 
-  if (target === rootElement || state.hide || state.isExecuting) return;
+  if (eventTarget === rootElement || state.hide || state.isExecuting) return;
   event.stopPropagation();
   event.preventDefault();
+
+  const { 1: target } = document.elementsFromPoint(clientX, clientY);
 
   if (state.selectList) {
     const firstElement = state.hoveredElements[0].element;
@@ -350,9 +353,7 @@ function handleClick(event) {
       element.setAttribute('automa-el-list', '');
     });
 
-    const parentSelector = getCssSelector(firstElement.parentElement, {
-      includeTag: true,
-    });
+    const parentSelector = finder(firstElement.parentElement);
     const elementSelector = `${parentSelector} > ${firstElement.tagName.toLowerCase()}`;
 
     state.listSelector = elementSelector;
@@ -424,6 +425,7 @@ function selectChildElement() {
 
     childElement = childEl;
     selectedElement.path.unshift(childEl);
+    selectedElement.pathIndex = 0;
   } else {
     selectedElement.pathIndex -= 1;
     childElement = selectedElement.path[selectedElement.pathIndex];
@@ -445,24 +447,6 @@ function selectParentElement() {
 function handleMouseUp() {
   if (state.isDragging) state.isDragging = false;
 }
-const handleScroll = debounce(() => {
-  if (state.hide) return;
-
-  const yPos = window.scrollY - lastScrollPosY;
-  const xPos = window.scrollX - lastScrollPosX;
-  const updateState = (key) => {
-    state[key].forEach((_, index) => {
-      state[key][index].x -= xPos;
-      state[key][index].y -= yPos;
-    });
-  };
-
-  updateState('hoveredElements');
-  updateState('selectedElements');
-
-  lastScrollPosX = window.scrollX;
-  lastScrollPosY = window.scrollY;
-}, 100);
 function destroy() {
   rootElement.style.display = 'none';
 
@@ -486,7 +470,6 @@ function destroy() {
 function attachListeners() {
   cardElementObserver.observe(cardEl.value);
 
-  window.addEventListener('scroll', handleScroll);
   window.addEventListener('mouseup', handleMouseUp);
   window.addEventListener('mousemove', handleMouseMove);
   document.addEventListener('click', handleClick, true);
@@ -494,7 +477,6 @@ function attachListeners() {
 function detachListeners() {
   cardElementObserver.disconnect();
 
-  window.removeEventListener('scroll', handleScroll);
   window.removeEventListener('mouseup', handleMouseUp);
   window.removeEventListener('mousemove', handleMouseMove);
   document.removeEventListener('click', handleClick, true);
@@ -545,7 +527,7 @@ onBeforeUnmount(() => {
 <style>
 .root {
   font-size: 16px;
-  z-index: 9999999999;
+  z-index: 99999;
   line-height: 1.5 !important;
   font-family: 'Inter var', sans-serif;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';

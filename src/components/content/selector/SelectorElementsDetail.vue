@@ -15,7 +15,7 @@
     style="max-height: calc(100vh - 17rem)"
   >
     <ui-tab-panel value="attributes">
-      <app-element-list
+      <selector-element-list
         :elements="selectedElements"
         @highlight="$emit('highlight', $event)"
       >
@@ -39,10 +39,10 @@
             />
           </div>
         </template>
-      </app-element-list>
+      </selector-element-list>
     </ui-tab-panel>
     <ui-tab-panel value="options">
-      <app-element-list
+      <selector-element-list
         :elements="selectElements"
         element-name="Select element options"
         @highlight="
@@ -73,10 +73,10 @@
             />
           </div>
         </template>
-      </app-element-list>
+      </selector-element-list>
     </ui-tab-panel>
     <ui-tab-panel value="blocks">
-      <app-blocks
+      <selector-blocks
         :elements="selectedElements"
         :selector="elSelector"
         @execute="$emit('execute', $event)"
@@ -86,8 +86,8 @@
   </ui-tab-panels>
 </template>
 <script setup>
-import AppBlocks from './AppBlocks.vue';
-import AppElementList from './AppElementList.vue';
+import SelectorBlocks from './SelectorBlocks.vue';
+import SelectorElementList from './SelectorElementList.vue';
 
 defineProps({
   activeTab: {

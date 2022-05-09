@@ -7,7 +7,13 @@
     "record": {
       "title": "Record workflow",
       "button": "Record",
-      "name": "Workflow name"
+      "name": "Workflow name",
+      "selectBlock": "Select a block to start from",
+      "anotherBlock": "Can't start from this block",
+      "tabs": {
+        "new": "New workflow",
+        "existing": "Existing workflow"
+      }
     },
     "elementSelector": {
       "name": "Element selector",

@@ -48,7 +48,8 @@ const options = {
       'src',
       'content',
       'services',
-      'recordWorkflow.js'
+      'recordWorkflow',
+      'index.js'
     ),
     shortcutListener: path.join(
       __dirname,

@@ -1043,6 +1043,19 @@ export const communities = [
   },
 ];
 
+export const elementsHighlightData = {
+  selectedElements: {
+    stroke: '#2563EB',
+    activeStroke: '#f87171',
+    fill: 'rgba(37, 99, 235, 0.1)',
+    activeFill: 'rgba(248, 113, 113, 0.1)',
+  },
+  hoveredElements: {
+    stroke: '#fbbf24',
+    fill: 'rgba(251, 191, 36, 0.1)',
+  },
+};
+
 export const conditionBuilder = {
   valueTypes: [
     {

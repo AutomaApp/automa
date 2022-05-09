@@ -1,25 +1,18 @@
-import { getCssSelector } from 'css-selector-generator';
+import { finder } from '@medv/finder';
+import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
 import { debounce } from '@/utils/helper';
+import addBlock from './addBlock';
 
+const isAutomaInstance = (target) =>
+  target.id === 'automa-recording' ||
+  document.body.hasAttribute('automa-selecting');
 const textFieldEl = (el) =>
   ['INPUT', 'TEXTAREA'].includes(el.tagName) || el.isContentEditable;
 
-async function addBlock(detail) {
-  const { isRecording, recording } = await browser.storage.local.get([
-    'isRecording',
-    'recording',
-  ]);
-
-  if (!isRecording || !recording) return;
-
-  if (typeof detail === 'function') detail(recording);
-  else recording.flows.push(detail);
-
-  await browser.storage.local.set({ recording });
-}
-
 function changeListener({ target }) {
+  if (isAutomaInstance(target)) return;
+
   const isInputEl = target.tagName === 'INPUT';
   const inputType = target.getAttribute('type');
   const execludeInput = isInputEl && ['checkbox', 'radio'].includes(inputType);
@@ -27,14 +20,14 @@ function changeListener({ target }) {
   if (execludeInput) return;
 
   let block = null;
-  const selector = getCssSelector(target);
+  const selector = finder(target);
   const isSelectEl = target.tagName === 'SELECT';
   const elementName = target.ariaLabel || target.name;
 
   if (isInputEl && inputType === 'file') {
     block = {
       id: 'upload-file',
-      description: elementName || selector,
+      description: elementName,
       data: {
         selector,
         waitForSelector: true,
@@ -43,16 +36,22 @@ function changeListener({ target }) {
       },
     };
   } else if (textFieldEl(target) || isSelectEl) {
+    let description = '';
+
+    if (elementName && elementName.length < 12) {
+      description = `${isSelectEl ? 'Select' : 'Text field'} (${elementName})`;
+    }
+
     block = {
       id: 'forms',
       data: {
         selector,
         delay: 100,
+        description,
         clearValue: true,
         value: target.value,
         waitForSelector: true,
         type: isSelectEl ? 'select' : 'text-field',
-        description: `${isSelectEl ? 'Select' : 'Text field'} (${elementName})`,
       },
     };
   } else {
@@ -60,11 +59,11 @@ function changeListener({ target }) {
       id: 'trigger-event',
       data: {
         selector,
+        description,
         eventName: 'change',
         eventType: 'event',
         waitForSelector: true,
         eventParams: { bubbles: true },
-        description: `Change event (${selector})`,
       },
     };
   }
@@ -90,34 +89,51 @@ function keyEventListener({
   type,
   repeat,
 }) {
-  const isTextField = textFieldEl(target);
+  if (isAutomaInstance(target)) return;
 
+  const isTextField = textFieldEl(target);
   if (isTextField) return;
 
-  const selector = getCssSelector(target);
+  const selector = finder(target);
 
-  addBlock({
-    id: 'trigger-event',
-    data: {
-      selector,
-      eventName: type,
-      eventType: 'keyboard-event',
-      eventParams: {
-        key,
-        code,
-        repeat,
-        altKey,
-        ctrlKey,
-        metaKey,
-        keyCode,
-        shiftKey,
+  addBlock((recording) => {
+    const lastFlow = recording.flows.at(-1);
+    const block = {
+      id: 'trigger-event',
+      data: {
+        selector,
+        eventName: type,
+        eventType: 'keyboard-event',
+        eventParams: {
+          key,
+          code,
+          repeat,
+          altKey,
+          ctrlKey,
+          metaKey,
+          keyCode,
+          shiftKey,
+        },
+        description: `${type}: ${key === ' ' ? 'Space' : key}`,
       },
-      description: `${type}(${key === ' ' ? 'Space' : key}): ${selector}`,
-    },
+    };
+
+    if (lastFlow.id === 'trigger-event') {
+      if (!lastFlow.groupId) lastFlow.groupId = nanoid();
+
+      block.groupId = lastFlow.groupId;
+    }
+
+    recording.flows.push(block);
+
+    return recording;
   });
 }
 function clickListener(event) {
   const { target } = event;
+
+  if (isAutomaInstance(target)) return;
+
   let isClickLink = true;
   const isTextField =
     (target.tagName === 'INPUT' && target.getAttribute('type') === 'text') ||
@@ -125,7 +141,7 @@ function clickListener(event) {
 
   if (isTextField) return;
 
-  const selector = getCssSelector(target);
+  const selector = finder(target);
 
   if (target.tagName === 'A') {
     if (event.ctrlKey || event.metaKey) return;
@@ -136,11 +152,14 @@ function clickListener(event) {
     if (openInNewTab) {
       event.preventDefault();
 
+      const description = (target.innerText || target.href).slice(0, 24);
+
       addBlock({
         id: 'link',
+        description,
         data: {
           selector,
-          description: (target.innerText || target.href).slice(0, 64),
+          description,
         },
       });
 
@@ -150,24 +169,29 @@ function clickListener(event) {
     }
   }
 
-  const elText = target.innerText || target.ariaLabel || target.title;
+  const elText = (target.innerText || target.ariaLabel || target.title).slice(
+    0,
+    24
+  );
 
   addBlock({
     isClickLink,
     id: 'event-click',
-    description: elText.slice(0, 64) || selector,
+    description: elText,
     data: {
       selector,
+      description: elText,
       waitForSelector: true,
-      description: elText.slice(0, 64),
     },
   });
 }
 
 const scrollListener = debounce(({ target }) => {
+  if (isAutomaInstance(target)) return;
+
   const isDocument = target === document;
   const element = isDocument ? document.documentElement : target;
-  const selector = isDocument ? 'html' : getCssSelector(target);
+  const selector = isDocument ? 'html' : finder(target);
 
   addBlock((recording) => {
     const lastFlow = recording.flows[recording.flows.length - 1];
@@ -183,7 +207,6 @@ const scrollListener = debounce(({ target }) => {
 
     recording.flows.push({
       id: 'element-scroll',
-      description: selector,
       data: {
         selector,
         smooth: true,
@@ -194,30 +217,24 @@ const scrollListener = debounce(({ target }) => {
   });
 }, 500);
 
-function cleanUp() {
+export function cleanUp() {
   document.removeEventListener('click', clickListener, true);
   document.removeEventListener('change', changeListener, true);
   document.removeEventListener('scroll', scrollListener, true);
   document.removeEventListener('keyup', keyEventListener, true);
   document.removeEventListener('keydown', keyEventListener, true);
 }
-function messageListener({ type }) {
-  if (type === 'recording:stop') {
-    cleanUp();
-    browser.runtime.onMessage.removeListener(messageListener);
-  }
-}
 
-(async () => {
+export default async function () {
   const { isRecording } = await browser.storage.local.get('isRecording');
 
-  if (!isRecording) return;
+  if (isRecording) {
+    document.addEventListener('click', clickListener, true);
+    document.addEventListener('scroll', scrollListener, true);
+    document.addEventListener('change', changeListener, true);
+    document.addEventListener('keyup', keyEventListener, true);
+    document.addEventListener('keydown', keyEventListener, true);
+  }
 
-  document.addEventListener('click', clickListener, true);
-  document.addEventListener('scroll', scrollListener, true);
-  document.addEventListener('change', changeListener, true);
-  document.addEventListener('keyup', keyEventListener, true);
-  document.addEventListener('keydown', keyEventListener, true);
-
-  browser.runtime.onMessage.addListener(messageListener);
-})();
+  return cleanUp;
+}

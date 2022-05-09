@@ -39,11 +39,11 @@ import { tasks } from '@/utils/shared';
 import EditForms from '@/components/newtab/workflow/edit/EditForms.vue';
 import EditTriggerEvent from '@/components/newtab/workflow/edit/EditTriggerEvent.vue';
 import EditScrollElement from '@/components/newtab/workflow/edit/EditScrollElement.vue';
-import handleForms from '../blocksHandler/handlerForms';
-import handleGetText from '../blocksHandler/handlerGetText';
-import handleEventClick from '../blocksHandler/handlerEventClick';
-import handelTriggerEvent from '../blocksHandler/handlerTriggerEvent';
-import handleElementScroll from '../blocksHandler/handlerElementScroll';
+import handleForms from '@/content/blocksHandler/handlerForms';
+import handleGetText from '@/content/blocksHandler/handlerGetText';
+import handleEventClick from '@/content/blocksHandler/handlerEventClick';
+import handelTriggerEvent from '@/content/blocksHandler/handlerTriggerEvent';
+import handleElementScroll from '@/content/blocksHandler/handlerElementScroll';
 
 const props = defineProps({
   selector: {

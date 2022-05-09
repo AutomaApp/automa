@@ -196,7 +196,8 @@ browser.webNavigation.onCommitted.addListener(
 
       const lastFlow = recording.flows[recording.flows.length - 1];
       const isClickSubmit =
-        lastFlow.id === 'event-click' && transitionType === 'form_submit';
+        lastFlow.id === 'event-click' &&
+        (transitionType === 'form_submit' || lastFlow.isClickLink);
 
       if (isClickSubmit) return;
 
@@ -235,11 +236,11 @@ browser.tabs.onActivated.addListener(async ({ tabId }) => {
     recording.activeTab = { id, url };
     recording.flows.push({
       id: 'switch-tab',
+      description: title,
       data: {
         url,
         matchPattern: url,
         createIfNoMatch: true,
-        description: title || url,
       },
     });
   });
