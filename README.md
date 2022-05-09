@@ -1,9 +1,15 @@
 <img src="src/assets/images/icon-128.png" width="64"/>
 
 # Automa
-![version](https://img.shields.io/github/package-json/v/kholid060/automa)
-[![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/AutomaApp)
-[![Discord](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/C6khwwTE84)
+<p>
+  <img alt="Automa latest version" src="https://img.shields.io/github/package-json/v/kholid060/automa" />
+  <a href="https://twitter.com/AutomaApp">
+    <img alt="Follow Us on Twitter" src="https://img.shields.io/twitter/follow/AutomaApp?style=social" />
+  </a>
+  <a href="https://discord.gg/C6khwwTE84">
+    <img alt="Chat with us on Discord" src="https://img.shields.io/discord/942211415517835354?label=join%20discord&logo=Discord&logoColor=white" />
+  </a>
+</p>
 
 An extension for automating your browser by connecting blocks. <br />
 Auto-fill forms, do a repetitive task, take a screenshot, or scrape website data — the choice is yours. You can even schedule when the automation will execute!
