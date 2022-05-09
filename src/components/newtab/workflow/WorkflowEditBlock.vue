@@ -98,11 +98,12 @@ export default {
   emits: ['close', 'update', 'update:autocomplete'],
   setup(props, { emit }) {
     const excludeOnError = [
+      'delay',
       'webhook',
-      'while-loop',
-      'element-exists',
-      'conditions',
       'trigger',
+      'while-loop',
+      'conditions',
+      'element-exists',
     ];
 
     const { t } = useI18n();

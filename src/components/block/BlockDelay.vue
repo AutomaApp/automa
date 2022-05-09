@@ -1,5 +1,5 @@
 <template>
-  <div :id="componentId" class="p-4">
+  <div :id="componentId" class="p-4 block-basic">
     <div class="flex items-center mb-2">
       <div
         :class="block.category.color"
@@ -26,6 +26,16 @@
       required
       @input="handleInput"
     />
+    <div
+      v-if="!editor.minimap && block.details.id !== 'trigger'"
+      :title="t('workflow.blocks.base.moveToGroup')"
+      draggable="true"
+      class="bg-white dark:bg-gray-700 invisible move-to-group z-50 absolute -top-2 -right-2 rounded-md p-1 shadow-md"
+      @dragstart="handleStartDrag"
+      @mousedown.stop
+    >
+      <v-remixicon name="riDragDropLine" size="20" />
+    </div>
   </div>
 </template>
 <script setup>
@@ -48,5 +58,15 @@ const block = useEditorBlock(`#${componentId}`, props.editor);
 function handleInput({ target }) {
   props.editor.updateNodeDataFromId(block.id, { time: target.value });
   emitter.emit('editor:data-changed', block.id);
+}
+function handleStartDrag(event) {
+  const payload = {
+    data: block.data,
+    id: block.details.id,
+    blockId: block.id,
+    fromBlockBasic: true,
+  };
+
+  event.dataTransfer.setData('block', JSON.stringify(payload));
 }
 </script>

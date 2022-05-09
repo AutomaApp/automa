@@ -116,7 +116,6 @@ const excludeBlocks = [
   'blocks-group',
   'conditions',
   'element-exists',
-  'delay',
 ];
 
 function onDragStart(item, event) {
