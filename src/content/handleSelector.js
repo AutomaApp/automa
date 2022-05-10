@@ -77,19 +77,17 @@ export default async function (
       return null;
     }
 
-    if (data.multiple) {
-      await Promise.allSettled(
-        Array.from(elements).map((el) => {
-          markElement(el, { id, data });
-          if (debugMode) scrollIfNeeded(el);
-          return onSelected(el);
-        })
-      );
-    } else if (elements) {
-      markElement(elements, { id, data });
-      if (debugMode) scrollIfNeeded(elements);
-      await onSelected(elements);
-    }
+    const elementsArr = data.multiple ? Array.from(elements) : [elements];
+
+    await Promise.allSettled(
+      elementsArr.map(async (el) => {
+        markElement(el, { id, data });
+
+        if (debugMode) scrollIfNeeded(el);
+
+        if (onSelected) await onSelected(el);
+      })
+    );
 
     if (onSuccess) onSuccess();
 
@@ -97,6 +95,4 @@ export default async function (
   } catch (error) {
     console.error(error);
   }
-
-  return elements;
 }

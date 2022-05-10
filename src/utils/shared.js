@@ -1065,6 +1065,13 @@ export const conditionBuilder = {
       data: { value: '' },
     },
     {
+      id: 'code',
+      category: 'value',
+      name: 'Code',
+      compareable: true,
+      data: { code: '\nreturn true;' },
+    },
+    {
       id: 'element#text',
       category: 'element',
       name: 'Element text',

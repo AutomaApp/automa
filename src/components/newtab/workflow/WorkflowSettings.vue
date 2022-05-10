@@ -156,7 +156,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-const emit = defineEmits(['update']);
+const emit = defineEmits(['update', 'close']);
 
 const { t } = useI18n();
 const toast = useToast();

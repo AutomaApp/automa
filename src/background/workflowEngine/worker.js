@@ -218,7 +218,7 @@ class Worker {
           block,
           blockOnError.toDo === 'continue' ? 1 : 2
         );
-        if (blockOnError.toDo !== 'error' && nextBlocks.connections) {
+        if (blockOnError.toDo !== 'error' && nextBlocks?.connections) {
           addBlockLog('error', {
             message: error.message,
             ...(error.data || {}),
@@ -236,7 +236,7 @@ class Worker {
       });
 
       const { onError } = this.settings;
-      const nodeConnections = error.nextBlockId.connections;
+      const nodeConnections = error.nextBlockId?.connections;
 
       if (onError === 'keep-running' && nodeConnections) {
         setTimeout(() => {

@@ -109,7 +109,8 @@
       "title": "Condition builder",
       "add": "Add condition",
       "and": "AND",
-      "or": "OR"
+      "or": "OR",
+      "topAwait": "Support top-level await"
     },
     "host": {
       "title": "Host workflow",

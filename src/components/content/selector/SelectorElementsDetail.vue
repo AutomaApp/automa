@@ -107,5 +107,5 @@ defineProps({
     default: '',
   },
 });
-defineEmits(['update:activeTab', 'execute', 'highlight']);
+defineEmits(['update:activeTab', 'execute', 'highlight', 'update']);
 </script>

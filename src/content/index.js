@@ -5,42 +5,7 @@ import FindElement from '@/utils/FindElement';
 import { getDocumentCtx } from './handleSelector';
 import executedBlock from './executedBlock';
 import blocksHandler from './blocksHandler';
-
-function handleConditionBuilder({ data, type }) {
-  if (!type.startsWith('element')) return null;
-
-  const selectorType = data.selector.startsWith('/') ? 'xpath' : 'cssSelector';
-
-  const element = FindElement[selectorType](data);
-  const { 1: actionType } = type.split('#');
-
-  if (!element) {
-    if (actionType === 'visible' || actionType === 'invisible') return false;
-
-    return null;
-  }
-
-  const elementActions = {
-    text: () => element.innerText,
-    visible: () => {
-      const { visibility, display } = getComputedStyle(element);
-
-      return visibility !== 'hidden' && display !== 'none';
-    },
-    invisible: () => {
-      const { visibility, display } = getComputedStyle(element);
-
-      return visibility === 'hidden' || display === 'none';
-    },
-    attribute: ({ attrName }) => {
-      if (!element.hasAttribute(attrName)) return null;
-
-      return element.getAttribute(attrName);
-    },
-  };
-
-  return elementActions[actionType](data);
-}
+import handleTestCondition from './handleTestCondition';
 
 (() => {
   if (window.isAutomaInjected) return;
@@ -75,16 +40,12 @@ function handleConditionBuilder({ data, type }) {
 
       switch (data.type) {
         case 'condition-builder':
-          resolve(handleConditionBuilder(data.data));
+          handleTestCondition(data.data)
+            .then((result) => resolve(result))
+            .catch((error) => reject(error));
           break;
         case 'content-script-exists':
           resolve(true);
-          break;
-        case 'give-me-the-frame-id':
-          browser.runtime.sendMessage({
-            type: 'this-is-the-frame-id',
-          });
-          resolve();
           break;
         case 'loop-elements': {
           const selectors = [];

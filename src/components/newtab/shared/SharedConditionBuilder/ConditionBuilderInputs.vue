@@ -2,7 +2,7 @@
   <div
     v-for="(item, index) in inputsData"
     :key="item.id"
-    class="condition-input"
+    class="condition-input scroll"
   >
     <div
       v-if="item.category === 'value'"
@@ -10,6 +10,7 @@
     >
       <ui-select
         :model-value="item.type"
+        class="flex-shrink-0"
         @change="updateValueType($event, index)"
       >
         <optgroup
@@ -22,19 +23,33 @@
           </option>
         </optgroup>
       </ui-select>
-      <edit-autocomplete
-        v-for="(_, name) in item.data"
-        :key="item.id + name + index"
-        class="flex-1"
-      >
-        <ui-input
-          v-model="inputsData[index].data[name]"
-          :title="conditionBuilder.inputTypes[name].label"
-          :placeholder="conditionBuilder.inputTypes[name].label"
-          autocomplete="off"
-          class="w-full"
+      <template v-for="(_, name) in item.data" :key="item.id + name + index">
+        <v-remixicon
+          v-if="name === 'code'"
+          :title="t('workflow.conditionBuilder.topAwait')"
+          name="riInformationLine"
         />
-      </edit-autocomplete>
+        <edit-autocomplete
+          :disabled="name === 'code'"
+          :class="[name === 'code' ? 'w-full' : 'flex-1']"
+          :style="{ marginLeft: name === 'code' ? 0 : null }"
+        >
+          <shared-codemirror
+            v-if="name === 'code'"
+            v-model="inputsData[index].data[name]"
+            class="code-condition mt-2"
+            style="margin-left: 0"
+          />
+          <ui-input
+            v-else
+            v-model="inputsData[index].data[name]"
+            :title="conditionBuilder.inputTypes[name].label"
+            :placeholder="conditionBuilder.inputTypes[name].label"
+            autocomplete="off"
+            class="w-full"
+          />
+        </edit-autocomplete>
+      </template>
     </div>
     <ui-select
       v-else-if="item.category === 'compare'"
@@ -52,10 +67,16 @@
   </div>
 </template>
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, defineAsyncComponent } from 'vue';
 import { nanoid } from 'nanoid';
+import { useI18n } from 'vue-i18n';
+import cloneDeep from 'lodash.clonedeep';
 import { conditionBuilder } from '@/utils/shared';
 import EditAutocomplete from '../../workflow/edit/EditAutocomplete.vue';
+
+const SharedCodemirror = defineAsyncComponent(() =>
+  import('../SharedCodemirror.vue')
+);
 
 const props = defineProps({
   data: {
@@ -69,7 +90,8 @@ const props = defineProps({
 });
 const emit = defineEmits(['update']);
 
-const inputsData = ref(JSON.parse(JSON.stringify(props.data)));
+const { t } = useI18n();
+const inputsData = ref(cloneDeep(props.data));
 
 function getDefaultValues(items) {
   const defaultValues = {
@@ -131,3 +153,8 @@ watch(
   { deep: true }
 );
 </script>
+<style>
+.code-condition .cm-content {
+  white-space: pre-wrap;
+}
+</style>
