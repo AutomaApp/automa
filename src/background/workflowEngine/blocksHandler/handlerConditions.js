@@ -33,7 +33,7 @@ async function conditions({ data, outputs }, { prevBlockData, refData }) {
       );
 
       Object.assign(replacedValue, result?.replacedValue || {});
-
+      console.log(result);
       if (result.isMatch) {
         isConditionMatch = true;
         outputIndex = index + 1;

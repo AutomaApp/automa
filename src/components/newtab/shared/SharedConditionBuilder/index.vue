@@ -132,7 +132,7 @@ function getConditionText({ category, type, data }) {
 
   if (type === 'value') {
     text = data.value || 'Empty';
-  } else if (type === 'code') {
+  } else if (type.startsWith('code')) {
     text = 'JS Code';
   } else if (type.startsWith('element')) {
     text = type;

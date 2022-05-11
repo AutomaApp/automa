@@ -88,7 +88,7 @@ export default async function (data) {
   if (data.type.startsWith('element')) {
     result = await handleConditionElement(data);
   }
-  if (data.type === 'code') {
+  if (data.type.startsWith('code')) {
     result = await injectJsCode(data);
   }
 

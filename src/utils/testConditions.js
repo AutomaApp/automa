@@ -17,6 +17,9 @@ const comparisons = {
   lt: (a, b) => isNumStr(a) < isNumStr(b),
   lte: (a, b) => isNumStr(a) <= isNumStr(b),
   cnt: (a, b) => a?.includes(b) ?? false,
+  nct: (a, b) => !comparisons.cnt(a, b),
+  stw: (a, b) => a?.startsWith(b) ?? false,
+  enw: (a, b) => a?.endsWith(b) ?? false,
   itr: (a) => Boolean(isBoolStr(a)),
   ifl: (a) => !isBoolStr(a),
 };
@@ -42,7 +45,7 @@ export default async function (conditionsArr, workflowData) {
 
     if (type === 'value') return copyData.value;
 
-    if (type.startsWith('element') || type === 'code') {
+    if (type.startsWith('element') || type.startsWith('code')) {
       const conditionValue = await workflowData.sendMessage({
         type: 'condition-builder',
         data: {

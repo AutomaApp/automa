@@ -56,13 +56,15 @@
       :model-value="inputsData[index].type"
       @change="updateCompareType($event, index)"
     >
-      <option
-        v-for="type in conditionBuilder.compareTypes"
-        :key="type.id"
-        :value="type.id"
+      <optgroup
+        v-for="(types, category) in conditionOperators"
+        :key="category"
+        :label="category"
       >
-        {{ type.name }}
-      </option>
+        <option v-for="type in types" :key="type.id" :value="type.id">
+          {{ type.name }}
+        </option>
+      </optgroup>
     </ui-select>
   </div>
 </template>
@@ -89,6 +91,14 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update']);
+
+const conditionOperators = conditionBuilder.compareTypes.reduce((acc, type) => {
+  if (!acc[type.category]) acc[type.category] = [];
+
+  acc[type.category].push(type);
+
+  return acc;
+}, {});
 
 const { t } = useI18n();
 const inputsData = ref(cloneDeep(props.data));
