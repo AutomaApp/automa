@@ -8,26 +8,25 @@ function handleConditionElement({ data, type }) {
   const element = FindElement[selectorType](data);
   const { 1: actionType } = type.split('#');
 
-  if (!element) {
-    if (actionType === 'visible' || actionType === 'invisible') return false;
-
-    return null;
-  }
-
   const elementActions = {
-    text: () => element.innerText,
+    exists: () => Boolean(element),
+    text: () => element?.innerText ?? null,
     visible: () => {
+      if (!element) return false;
+
       const { visibility, display } = getComputedStyle(element);
 
       return visibility !== 'hidden' && display !== 'none';
     },
     invisible: () => {
+      if (!element) return false;
+
       const { visibility, display } = getComputedStyle(element);
 
       return visibility === 'hidden' || display === 'none';
     },
     attribute: ({ attrName }) => {
-      if (!element.hasAttribute(attrName)) return null;
+      if (!element || !element.hasAttribute(attrName)) return null;
 
       return element.getAttribute(attrName);
     },

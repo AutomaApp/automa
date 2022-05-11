@@ -1079,6 +1079,13 @@ export const conditionBuilder = {
       data: { selector: '' },
     },
     {
+      id: 'element#exists',
+      category: 'element',
+      name: 'Element exists',
+      compareable: false,
+      data: { selector: '' },
+    },
+    {
       id: 'element#visible',
       category: 'element',
       name: 'Element visible',
