@@ -758,6 +758,9 @@ export default {
       });
       editor.value.on('export', saveEditorState);
       editor.value.on('contextmenu', ({ clientY, clientX, target }) => {
+        if (target.tagName === 'path' && target.classList.contains('main-path'))
+          return;
+
         const isBlock = target.closest('.drawflow .drawflow-node');
         const virtualEl = {
           getReferenceClientRect: () => ({
