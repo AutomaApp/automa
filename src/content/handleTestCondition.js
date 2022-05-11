@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid';
+import { visibleInViewport } from '@/utils/helper';
 import FindElement from '@/utils/FindElement';
 import { automaRefDataStr } from './utils';
 
@@ -11,6 +12,8 @@ function handleConditionElement({ data, type }) {
   const elementActions = {
     exists: () => Boolean(element),
     text: () => element?.innerText ?? null,
+    visibleInViewport: () => visibleInViewport(element),
+    hiddenInViewport: () => !elementActions.visibleInViewport(),
     visible: () => {
       if (!element) return false;
 

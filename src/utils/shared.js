@@ -1100,6 +1100,20 @@ export const conditionBuilder = {
       data: { selector: '' },
     },
     {
+      id: 'element#visibleInViewport',
+      category: 'element',
+      name: 'Element visible in viewport',
+      compareable: false,
+      data: { selector: '' },
+    },
+    {
+      id: 'element#hiddenInViewport',
+      category: 'element',
+      name: 'Element hidden in viewport',
+      compareable: false,
+      data: { selector: '' },
+    },
+    {
       id: 'element#attribute',
       category: 'element',
       name: 'Element attribute value',

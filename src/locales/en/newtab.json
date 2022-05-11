@@ -110,7 +110,7 @@
       "add": "Add condition",
       "and": "AND",
       "or": "OR",
-      "topAwait": "Support top-level await"
+      "topAwait": "Support top-level await and \"automaRefData\" function"
     },
     "host": {
       "title": "Host workflow",

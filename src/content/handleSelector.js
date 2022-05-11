@@ -1,5 +1,5 @@
 import FindElement from '@/utils/FindElement';
-import { scrollIfNeeded } from '@/utils/helper';
+import { visibleInViewport } from '@/utils/helper';
 
 /* eslint-disable consistent-return */
 
@@ -83,7 +83,10 @@ export default async function (
       elementsArr.map(async (el) => {
         markElement(el, { id, data });
 
-        if (debugMode) scrollIfNeeded(el);
+        if (debugMode) {
+          const isInViewport = visibleInViewport(el);
+          if (!isInViewport) el.scrollIntoView();
+        }
 
         if (onSelected) await onSelected(el);
       })

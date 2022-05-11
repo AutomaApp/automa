@@ -1,16 +1,17 @@
 import browser from 'webextension-polyfill';
 
-export function scrollIfNeeded(element) {
-  const { top, left, bottom, right } = element.getBoundingClientRect();
-  const isInViewport =
+export function visibleInViewport(element) {
+  const { top, left, bottom, right, height, width } =
+    element.getBoundingClientRect();
+
+  if (height === 0 || width === 0) return false;
+
+  return (
     top >= 0 &&
     left >= 0 &&
     bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-    right <= (window.innerWidth || document.documentElement.clientWidth);
-
-  if (!isInViewport) {
-    element.scrollIntoView();
-  }
+    right <= (window.innerWidth || document.documentElement.clientWidth)
+  );
 }
 
 export function sleep(timeout = 500) {
