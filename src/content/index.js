@@ -60,6 +60,12 @@ import handleTestCondition from './handleTestCondition';
             documentCtx
           );
 
+          if (!elements || elements?.length === 0) {
+            reject(new Error('element-not-found'));
+
+            return;
+          }
+
           elements.forEach((el, index) => {
             if (data.max > 0 && selectors.length - 1 > data.max) return;
 

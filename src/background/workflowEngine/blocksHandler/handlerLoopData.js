@@ -93,6 +93,10 @@ async function loopData({ data, id, outputs }, { refData }) {
   } catch (error) {
     error.nextBlockId = nextBlockId;
 
+    if (data.loopThrough === 'elements') {
+      error.data = { selector: data.elementSelector };
+    }
+
     throw error;
   }
 }
