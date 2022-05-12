@@ -23,7 +23,11 @@
       style="height: calc(100vh - 10rem); max-height: 600px"
     >
       <ui-tab-panel v-for="tab in tabs" :key="tab.value" :value="tab.value">
-        <component :is="tab.component" :settings="settings" />
+        <component
+          :is="tab.component"
+          :settings="settings"
+          @update="settings[$event.key] = $event.value"
+        />
       </ui-tab-panel>
     </ui-tab-panels>
   </ui-card>

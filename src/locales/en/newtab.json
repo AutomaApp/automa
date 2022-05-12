@@ -238,7 +238,7 @@
       },
       "tabLoadTimeout": {
         "title": "Tab load timeout",
-        "description": "Maximum time to load tab in milliseconds, defaults to 30 seconds, pass 0 to disable the timeout."
+        "description": "Maximum time to load tab in milliseconds, pass 0 to disable the timeout."
       },
     }
   },

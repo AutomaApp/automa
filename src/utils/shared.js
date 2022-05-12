@@ -82,6 +82,7 @@ export const tasks = {
       userAgent: '',
       active: true,
       inGroup: false,
+      waitTabLoaded: false,
       updatePrevTab: false,
       customUserAgent: false,
     },

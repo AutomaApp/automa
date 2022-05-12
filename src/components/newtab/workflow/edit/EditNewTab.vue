@@ -25,6 +25,14 @@
       {{ t('workflow.blocks.new-tab.updatePrevTab.text') }}
     </ui-checkbox>
     <ui-checkbox
+      :model-value="data.waitTabLoaded"
+      class="leading-tight mt-2"
+      :title="t('workflow.blocks.new-tab.waitTabLoaded')"
+      @change="updateData({ waitTabLoaded: $event })"
+    >
+      {{ t('workflow.blocks.new-tab.waitTabLoaded') }}
+    </ui-checkbox>
+    <ui-checkbox
       :model-value="data.active"
       class="my-2"
       @change="updateData({ active: $event })"

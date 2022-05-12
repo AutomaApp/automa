@@ -359,6 +359,7 @@
         "customUserAgent": "Use custom User-Agent",
         "activeTab": "Set as active tab",
         "tabToGroup": "Add tab to group",
+        "waitTabLoaded": "Wait till tab loaded",
         "updatePrevTab": {
           "title": "Use the previously opened new tab instead of creating a new one",
           "text": "Update previously opened tab"
