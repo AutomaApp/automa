@@ -235,7 +235,11 @@
       "blockDelay": {
         "title": "Block delay (milliseconds)",
         "description": "Add delay before executing each of the blocks"
-      }
+      },
+      "tabLoadTimeout": {
+        "title": "Tab load timeout",
+        "description": "Maximum time to load tab in milliseconds, defaults to 30 seconds, pass 0 to disable the timeout."
+      },
     }
   },
   "collection": {

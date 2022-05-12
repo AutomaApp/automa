@@ -19,8 +19,15 @@ export function attachDebugger(tabId, prevTab) {
 
 export function waitTabLoaded(tabId, ms = 10000) {
   return new Promise((resolve, reject) => {
-    const isResolved = false;
-    const timeout = setTimeout(resolve, ms);
+    const timeout = null;
+    let isResolved = false;
+
+    if (ms > 0) {
+      setTimeout(() => {
+        isResolved = true;
+        reject(new Error('Timeout'));
+      }, ms);
+    }
 
     const activeTabStatus = () => {
       if (isResolved) return;

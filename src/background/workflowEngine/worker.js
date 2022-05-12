@@ -311,7 +311,10 @@ class Worker {
         throw error;
       }
 
-      await waitTabLoaded(this.activeTab.id);
+      await waitTabLoaded(
+        this.activeTab.id,
+        this.settings?.tabLoadTimeout ?? 30000
+      );
       await executeContentScript(
         this.activeTab.id,
         this.activeTab.frameId || 0
