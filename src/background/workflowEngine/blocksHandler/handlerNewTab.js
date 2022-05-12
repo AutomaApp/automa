@@ -97,7 +97,6 @@ async function newTab({ outputs, data }) {
       await Promise.allSettled(preloadScripts);
     }
 
-    console.log(data, data.waitTabLoaded);
     if (data.waitTabLoaded) {
       await waitTabLoaded(
         this.activeTab.id,

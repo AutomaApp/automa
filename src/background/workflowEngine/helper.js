@@ -21,13 +21,23 @@ export function waitTabLoaded(tabId, ms = 10000) {
   return new Promise((resolve, reject) => {
     const timeout = null;
     let isResolved = false;
+    const onErrorOccurred = (details) => {
+      if (details.tabId !== tabId) return;
+
+      isResolved = true;
+      browser.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
+      reject(new Error(details.error));
+    };
 
     if (ms > 0) {
       setTimeout(() => {
         isResolved = true;
+        browser.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
         reject(new Error('Timeout'));
       }, ms);
     }
+
+    browser.webNavigation.onErrorOccurred.addListener(onErrorOccurred);
 
     const activeTabStatus = () => {
       if (isResolved) return;
@@ -41,12 +51,13 @@ export function waitTabLoaded(tabId, ms = 10000) {
         if (tab.status === 'loading') {
           setTimeout(() => {
             activeTabStatus();
-          }, 500);
+          }, 1000);
           return;
         }
 
         clearTimeout(timeout);
 
+        browser.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
         resolve();
       });
     };
