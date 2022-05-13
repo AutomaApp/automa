@@ -2,7 +2,7 @@ import { sendMessage } from '@/utils/message';
 import { automaRefDataStr } from '../utils';
 
 function getAutomaScript(blockId, everyNewTab) {
-  const str = `
+  let str = `
 function automaSetVariable(name, value) {
   const data = JSON.parse(sessionStorage.getItem('automa--${blockId}')) || null;
 
@@ -20,17 +20,19 @@ function automaResetTimeout() {
 ${automaRefDataStr(blockId)}
   `;
 
-  if (everyNewTab) return '';
+  if (everyNewTab) str = automaRefDataStr(blockId);
 
   return str;
 }
 
 function javascriptCode(block) {
-  if (!block.data.everyNewTab)
+  if (!block.data.everyNewTab) {
     sessionStorage.setItem(
       `automa--${block.id}`,
       JSON.stringify(block.refData)
     );
+  }
+
   const automaScript = getAutomaScript(block.id, block.data.everyNewTab);
 
   return new Promise((resolve, reject) => {
@@ -60,7 +62,7 @@ function javascriptCode(block) {
     }
 
     const promisePreloadScripts =
-      block.data?.preloadScripts.map(async (item) => {
+      block.data?.preloadScripts?.map(async (item) => {
         try {
           const { protocol, pathname } = new URL(item.src);
           const isValidUrl = /https?/.test(protocol) && /\.js$/.test(pathname);
@@ -139,7 +141,6 @@ function javascriptCode(block) {
       } else {
         resolve();
       }
-
       documentCtx.body.appendChild(script);
     });
   });
