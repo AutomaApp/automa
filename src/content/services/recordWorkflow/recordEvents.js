@@ -74,25 +74,46 @@ function changeListener({ target }) {
       recording.flows.pop();
     }
 
+    if (
+      block.data.type === 'text-field' &&
+      block.data.type === lastFlow?.data?.type
+    )
+      return;
+
     recording.flows.push(block);
   });
 }
-function keyEventListener({
-  target,
-  code,
-  key,
-  keyCode,
-  altKey,
-  ctrlKey,
-  metaKey,
-  shiftKey,
-  type,
-  repeat,
-}) {
+function keyEventListener(event) {
+  const {
+    target,
+    code,
+    key,
+    keyCode,
+    altKey,
+    ctrlKey,
+    metaKey,
+    shiftKey,
+    type,
+    repeat,
+  } = event;
   if (isAutomaInstance(target)) return;
 
   const isTextField = textFieldEl(target);
-  if (isTextField) return;
+  if (isTextField) {
+    const enterKey = type === 'keydown' && key === 'Enter';
+    const inputEl = target.form && target.tagName === 'INPUT';
+
+    if (enterKey && inputEl) {
+      event.preventDefault();
+      target.dispatchEvent(new Event('change', { bubbles: true }));
+
+      setTimeout(() => {
+        target.form.submit();
+      }, 500);
+    }
+
+    return;
+  }
 
   const selector = finder(target);
 

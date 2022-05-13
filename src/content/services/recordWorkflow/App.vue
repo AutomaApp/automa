@@ -182,6 +182,7 @@
       hoveredElements: selectState.hoveredElements,
       selectedElements: selectState.selectedElements,
     }"
+    style="z-index: 99999999"
     @update="selectState[$event.key] = $event.items"
   />
   <teleport to="body">
@@ -194,6 +195,7 @@
         top: 0;
         width: 100%;
         height: 100%;
+        background-color: rgba(0, 0, 0, 0.3);
       "
     ></div>
   </teleport>
@@ -338,6 +340,7 @@ function clearSelectState() {
   selectState.listId = '';
   selectState.list = false;
   selectState.status = 'idle';
+  selectState.isSelecting = false;
   selectState.hoveredElements = [];
   selectState.selectedElements = [];
 
@@ -419,6 +422,7 @@ function onKeyup({ key }) {
 }
 function startSelecting(list = false) {
   selectState.list = list;
+  selectState.isSelecting = true;
   selectState.status = 'selecting';
 
   document.body.setAttribute('automa-selecting', '');
@@ -426,6 +430,8 @@ function startSelecting(list = false) {
   window.addEventListener('keyup', onKeyup);
 }
 function onMousemove({ clientX, clientY, target: eventTarget }) {
+  if (!selectState.isSelecting) return;
+
   if (draggingState.dragging) {
     draggingState.xPos = clientX - mouseRelativePos.x;
     draggingState.yPos = clientY - mouseRelativePos.y;
@@ -469,6 +475,8 @@ function getElementPath(el, root = document.documentElement) {
   return path;
 }
 function onClick(event) {
+  if (!selectState.isSelecting) return;
+
   const { target: eventTarget, clientY, clientX } = event;
 
   if (eventTarget.id === 'automa-recording') return;
@@ -578,7 +586,7 @@ onMounted(() => {
     .then(({ recording, workflows }) => {
       const workflow = workflows.find(({ id }) => recording.workflowId === id);
 
-      addBlockState.workflowColumns = workflow.table || [];
+      addBlockState.workflowColumns = workflow?.table || [];
     });
 });
 onBeforeUnmount(detachListeners);
