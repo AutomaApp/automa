@@ -182,14 +182,14 @@
       hoveredElements: selectState.hoveredElements,
       selectedElements: selectState.selectedElements,
     }"
-    style="z-index: 99999999"
+    style="z-index: 9999999"
     @update="selectState[$event.key] = $event.items"
   />
   <teleport to="body">
     <div
       v-if="selectState.status === 'selecting'"
       style="
-        z-index: 9999999;
+        z-index: 999999;
         position: fixed;
         left: 0;
         top: 0;
@@ -279,13 +279,15 @@ function addFlowItem() {
       column: addBlockState.column,
       variableName: addBlockState.varName,
       selector: selectState.list
-        ? addBlockState.listSelector
+        ? selectState.listSelector
         : selectState.childSelector,
     },
   };
 
-  if (selectState.isInList) {
-    block.data.selector = `{{loopData@${selectState.listId}}} ${selectState.childSelector}`;
+  if (selectState.isInList || selectState.listId) {
+    const childSelector = selectState.isInList ? selectState.childSelector : '';
+
+    block.data.selector = `{{loopData@${selectState.listId}}} ${childSelector}`;
   } else if (selectState.list) {
     block.data.multiple = true;
   }
