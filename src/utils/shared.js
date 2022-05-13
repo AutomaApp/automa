@@ -555,6 +555,7 @@ export const tasks = {
       firstRowAsKey: false,
       keysAsFirstRow: true,
       valueInputOption: 'RAW',
+      InsertDataOption: 'INSERT_ROWS',
       dataFrom: 'data-columns',
     },
   },

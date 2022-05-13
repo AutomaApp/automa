@@ -38,12 +38,14 @@ async function getSpreadsheetRange({ spreadsheetId, range }) {
 }
 async function updateSpreadsheetValues(
   {
-    spreadsheetId,
     range,
-    valueInputOption,
-    keysAsFirstRow,
+    append,
     dataFrom,
     customData,
+    spreadsheetId,
+    keysAsFirstRow,
+    insertDataOption,
+    valueInputOption,
   },
   columns
 ) {
@@ -63,11 +65,23 @@ async function updateSpreadsheetValues(
     values = parseJSON(customData, customData);
   }
 
+  const queries = {
+    valueInputOption: valueInputOption || 'RAW',
+  };
+
+  if (append) {
+    Object.assign(queries, {
+      includeValuesInResponse: false,
+      insertDataOption: insertDataOption || 'INSERT_ROWS',
+    });
+  }
+
   const response = await googleSheets.updateValues({
     range,
+    append,
     spreadsheetId,
-    valueInputOption,
     options: {
+      queries,
       body: JSON.stringify({ values }),
     },
   });
@@ -106,8 +120,14 @@ export default async function ({ data, outputs }, { refData }) {
       if (data.saveData) {
         this.addDataToColumn(data.dataColumn, result);
       }
-    } else if (data.type === 'update') {
-      result = await updateSpreadsheetValues(data, refData.table);
+    } else if (['update', 'append'].includes(data.type)) {
+      result = await updateSpreadsheetValues(
+        {
+          ...data,
+          append: data.type === 'append',
+        },
+        refData.table
+      );
     }
 
     return {

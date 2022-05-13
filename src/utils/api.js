@@ -2,6 +2,18 @@ import secrets from 'secrets';
 import browser from 'webextension-polyfill';
 import { parseJSON } from './helper';
 
+function queryBuilder(obj) {
+  let str = '';
+
+  Object.entries(obj).forEach(([key, value], index) => {
+    if (index !== 0) str += `&`;
+
+    str += `${key}=${value}`;
+  });
+
+  return str;
+}
+
 export function fetchApi(path, options) {
   const urlPath = path.startsWith('/') ? path : `/${path}`;
 
@@ -18,24 +30,28 @@ export const googleSheets = {
     return fetchApi(url);
   },
   getRange({ spreadsheetId, range }) {
-    const baseURL = this.getUrl(spreadsheetId, range);
-    const url = `${baseURL}&valueInputOption=RAW&includeValuesInResponse=false&insertDataOption=INSERT_ROWS`;
-
-    return fetchApi(url, {
-      method: 'POST',
-      body: JSON.stringify({
-        values: [],
-      }),
+    return googleSheets.updateValues({
+      range,
+      append: true,
+      spreadsheetId,
+      options: {
+        body: JSON.stringify({ values: [] }),
+        queries: {
+          valueInputOption: 'RAW',
+          includeValuesInResponse: false,
+          insertDataOption: 'INSERT_ROWS',
+        },
+      },
     });
   },
-  updateValues({ spreadsheetId, range, valueInputOption, options = {} }) {
-    const url = `${this.getUrl(spreadsheetId, range)}&valueInputOption=${
-      valueInputOption || 'RAW'
-    }`;
+  updateValues({ spreadsheetId, range, options = {}, append }) {
+    const url = `${this.getUrl(spreadsheetId, range)}&${queryBuilder(
+      options?.queries || {}
+    )}`;
 
     return fetchApi(url, {
       ...options,
-      method: 'PUT',
+      method: append ? 'POST' : 'PUT',
     });
   },
 };

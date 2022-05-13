@@ -93,7 +93,7 @@
         {{ t('workflow.blocks.google-sheets.previewData') }}
       </ui-button>
     </template>
-    <template v-else-if="data.type === 'update'">
+    <template v-else-if="['update', 'append'].includes(data.type)">
       <ui-select
         :model-value="data.valueInputOption"
         class="w-full mt-2"
@@ -111,6 +111,29 @@
         </template>
         <option
           v-for="option in valueInputOptions"
+          :key="option"
+          :value="option"
+        >
+          {{ option }}
+        </option>
+      </ui-select>
+      <ui-select
+        :model-value="data.insertDataOption || 'INSERT_ROWS'"
+        class="w-full mt-2"
+        @change="updateData({ insertDataOption: $event })"
+      >
+        <template #label>
+          {{ t('workflow.blocks.google-sheets.insertDataOption') }}
+          <a
+            href="https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/append#InsertDataOption"
+            target="_blank"
+            rel="noopener"
+          >
+            <v-remixicon name="riInformationLine" size="18" class="inline" />
+          </a>
+        </template>
+        <option
+          v-for="option in insertDataOptions"
           :key="option"
           :value="option"
         >
@@ -148,7 +171,7 @@
       v-if="
         previewDataState.data &&
         previewDataState.status !== 'error' &&
-        type !== 'update'
+        data.type !== 'update'
       "
       :model-value="previewDataState.data"
       :line-numbers="false"
@@ -191,9 +214,10 @@ const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
 
-const actions = ['get', 'getRange', 'update'];
+const actions = ['get', 'getRange', 'update', 'append'];
 const dataFrom = ['data-columns', 'custom'];
 const valueInputOptions = ['RAW', 'USER_ENTERED'];
+const insertDataOptions = ['OVERWRITE', 'INSERT_ROWS'];
 
 const previewDataState = shallowReactive({
   data: '',
