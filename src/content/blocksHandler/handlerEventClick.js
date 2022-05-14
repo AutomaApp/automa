@@ -1,4 +1,5 @@
 import { sendMessage } from '@/utils/message';
+import { getElementPosition } from '../utils';
 import handleSelector from '../handleSelector';
 
 function eventClick(block) {
@@ -6,13 +7,13 @@ function eventClick(block) {
     handleSelector(block, {
       async onSelected(element) {
         if (block.debugMode) {
-          const { width, height, x, y } = element.getBoundingClientRect();
+          const { x, y } = await getElementPosition(element);
           const payload = {
             tabId: block.activeTabId,
             method: 'Input.dispatchMouseEvent',
             params: {
-              x: x + width / 2,
-              y: y + height / 2,
+              x,
+              y,
               button: 'left',
             },
           };

@@ -1,6 +1,7 @@
 import { sendMessage } from '@/utils/message';
 import simulateEvent from '@/utils/simulateEvent';
 import simulateMouseEvent from '@/utils/simulateEvent/mouseEvent';
+import { getElementPosition } from '../utils';
 import handleSelector from '../handleSelector';
 
 const modifiers = {
@@ -64,11 +65,7 @@ function triggerEvent({ data, id, frameSelector, debugMode, activeTabId }) {
           const eventHandler = eventHandlers[data.eventType];
 
           if (debugMode && eventHandler) {
-            const { x, y, width, height } = element.getBoundingClientRect();
-            const elCoordinate = {
-              x: x + width / 2,
-              y: y + height / 2,
-            };
+            const elCoordinate = await getElementPosition(element);
             const sendCommand = (method, params = {}) => {
               const payload = {
                 method,

@@ -32,3 +32,62 @@ function automaRefData(keyword, path = '') {
 }
   `;
 }
+
+function messageTopFrame(windowCtx) {
+  return new Promise((resolve) => {
+    let timeout = null;
+    let isResolved = false;
+
+    const messageListener = ({ data }) => {
+      if (data.type !== 'automa:the-frame-rect' || isResolved) return;
+
+      clearTimeout(timeout);
+      isResolved = true;
+      windowCtx.removeEventListener('message', messageListener);
+      resolve(data.frameRect);
+    };
+
+    timeout = setTimeout(() => {
+      if (isResolved) return;
+
+      isResolved = true;
+      windowCtx.removeEventListener('message', messageListener);
+      resolve(null);
+    }, 5000);
+
+    windowCtx.addEventListener('message', messageListener);
+    windowCtx.top.postMessage('automa:get-frame', '*');
+  });
+}
+export async function getElementPosition(element) {
+  const elWindow = element.ownerDocument.defaultView;
+  const isInFrame = elWindow !== window.top;
+  const { width, height, x, y } = element.getBoundingClientRect();
+  const position = {
+    x: x + width / 2,
+    y: y + height / 2,
+  };
+
+  if (!isInFrame) return position;
+
+  try {
+    const frameEl = elWindow.frameElement;
+    let frameRect = null;
+
+    if (frameEl) {
+      frameRect = frameEl.getBoundingClientRect();
+    } else {
+      frameRect = await messageTopFrame(elWindow);
+
+      if (!frameRect) throw new Error('Iframe not found');
+    }
+
+    position.x += frameRect.x;
+    position.y += frameRect.y;
+
+    return position;
+  } catch (error) {
+    console.error(error);
+    return position;
+  }
+}

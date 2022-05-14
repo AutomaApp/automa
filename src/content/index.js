@@ -7,10 +7,33 @@ import executedBlock from './executedBlock';
 import blocksHandler from './blocksHandler';
 import handleTestCondition from './handleTestCondition';
 
+function messageListener({ data, source }) {
+  if (data !== 'automa:get-frame') return;
+
+  let frameRect = { x: 0, y: 0 };
+
+  document.querySelectorAll('iframe').forEach((iframe) => {
+    if (iframe.contentWindow !== source) return;
+
+    frameRect = iframe.getBoundingClientRect();
+  });
+
+  source.postMessage(
+    {
+      frameRect,
+      type: 'automa:the-frame-rect',
+    },
+    '*'
+  );
+}
+
 (() => {
   if (window.isAutomaInjected) return;
-
   window.isAutomaInjected = true;
+
+  if (window.self === window.top) {
+    window.addEventListener('message', messageListener);
+  }
 
   browser.runtime.onMessage.addListener((data) => {
     return new Promise((resolve, reject) => {
