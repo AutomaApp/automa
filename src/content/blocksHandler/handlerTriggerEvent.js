@@ -1,6 +1,7 @@
 import { sendMessage } from '@/utils/message';
 import simulateEvent from '@/utils/simulateEvent';
 import simulateMouseEvent from '@/utils/simulateEvent/mouseEvent';
+import { keyDefinitions } from '@/utils/USKeyboardLayout';
 import { getElementPosition } from '../utils';
 import handleSelector from '../handleSelector';
 
@@ -39,6 +40,8 @@ const eventHandlers = {
     await mouseEvents[eventName]();
   },
   'keyboard-event': async ({ name, params, sendCommand }) => {
+    const definition = keyDefinitions[params?.key];
+
     const commandParams = {
       key: params.key ?? '',
       code: params.code ?? '',
@@ -46,6 +49,10 @@ const eventHandlers = {
       windowsVirtualKeyCode: params.keyCode ?? 0,
       type: name === 'keyup' ? 'keyUp' : 'keyDown',
     };
+
+    if (definition.text || params.key.length === 1) {
+      commandParams.text = definition.text || params.key;
+    }
 
     Object.keys(modifiers).forEach((key) => {
       if (commandParams.modifiers) return;
@@ -65,13 +72,18 @@ function triggerEvent({ data, id, frameSelector, debugMode, activeTabId }) {
           const eventHandler = eventHandlers[data.eventType];
 
           if (debugMode && eventHandler) {
-            const elCoordinate = await getElementPosition(element);
+            let elCoordinate = {};
+
+            if (data.eventType === 'mouse-event') {
+              const { x, y } = await getElementPosition(element);
+              elCoordinate = { x, y };
+            }
+
             const sendCommand = (method, params = {}) => {
               const payload = {
                 method,
                 params: {
-                  x: elCoordinate.x,
-                  y: elCoordinate.y,
+                  ...elCoordinate,
                   ...params,
                 },
                 tabId: activeTabId,

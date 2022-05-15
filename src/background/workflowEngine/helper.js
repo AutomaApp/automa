@@ -22,7 +22,8 @@ export function waitTabLoaded(tabId, ms = 10000) {
     const timeout = null;
     let isResolved = false;
     const onErrorOccurred = (details) => {
-      if (details.tabId !== tabId) return;
+      if (details.tabId !== tabId || detail.error.includes('ERR_ABORTED'))
+        return;
 
       isResolved = true;
       browser.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
