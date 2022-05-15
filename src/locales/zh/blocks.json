@@ -10,6 +10,7 @@
   "workflow": {
     "blocks": {
       "base": {
+        "title": "模块",
         "moveToGroup": "移动模块到模块组",
         "selector": "元素选择器",
         "timeout": "超时 (毫秒)",
@@ -20,9 +21,9 @@
         "onError": {
           "info": "这些规则适用于模块发生错误时",
           "button": "出错时",
-          "title": "发生错误时",
+          "title": "错误发生时",
           "retry": "重试操作",
-          "fallbackTitle": "当模块发生错误时将执行",
+          "fallbackTitle": "当模块中发生错误时执行",
           "times": {
             "name": "次数",
             "description": "重试操作的次数",
@@ -138,6 +139,7 @@
         "description": "上传文件到 <input type=\"file\"> 元素",
         "filePath": "URL 或 文件路径",
         "addFile": "添加文件",
+        "onlyURL": "仅支持从 Firefox 浏览器中的 URL 上传文件",
         "requirement": "使用本模块前，请参看要求",
         "noFileAccess": "Automa 没有文件访问权限"
       },
@@ -214,6 +216,7 @@
         "keysAsFirstRow": "使用主键作为第一行",
         "insertData": "插入数据",
         "valueInputOption": "输入选项值",
+        "rangeToSearch": "开始搜索的范围",
         "dataFrom": {
           "label": "数据来自",
           "options": {
@@ -235,6 +238,7 @@
         },
         "select": {
           "get": "获取电子表格单元格值",
+          "getRange": "获取电子表格范围",
           "update": "更新电子表格单元格值"
         }
       },
@@ -435,6 +439,7 @@
         "name": "条件",
         "add": "添加条件",
         "description": "条件模块",
+        "refresh": "刷新条件连接",
         "fallbackTitle": "当所有比较不满足要求时执行",
         "equals": "等于",
         "gt": "大于",
