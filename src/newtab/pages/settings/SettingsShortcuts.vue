@@ -56,7 +56,7 @@ import { ref, reactive, computed, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 import { mapShortcuts, getReadableShortcut } from '@/composable/shortcut';
-import recordShortcut from '@/utils/recordShortcut';
+import { recordShortcut } from '@/utils/recordKeys';
 
 const { t } = useI18n();
 const toast = useToast();

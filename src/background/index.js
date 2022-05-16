@@ -187,19 +187,13 @@ browser.commands.onCommand.addListener((name) => {
 });
 browser.webNavigation.onCommitted.addListener(
   ({ frameId, tabId, url, transitionType }) => {
-    const allowedType = ['link', 'typed', 'form_submit'];
+    const allowedType = ['link', 'typed'];
     if (frameId !== 0 || !allowedType.includes(transitionType)) return;
 
     updateRecording((recording) => {
       if (tabId !== recording.activeTab.id) return;
 
       const lastFlow = recording.flows.at(-1) ?? {};
-      const isClickSubmit =
-        lastFlow.id === 'event-click' &&
-        (transitionType === 'form_submit' || lastFlow.isClickLink);
-
-      if (isClickSubmit) return;
-
       const isInvalidNewtabFlow =
         lastFlow &&
         lastFlow.id === 'new-tab' &&

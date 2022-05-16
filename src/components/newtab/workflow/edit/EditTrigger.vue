@@ -213,7 +213,7 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 import dayjs from 'dayjs';
 import { isObject } from '@/utils/helper';
-import recordShortcut from '@/utils/recordShortcut';
+import { recordShortcut } from '@/utils/recordKeys';
 
 const props = defineProps({
   data: {

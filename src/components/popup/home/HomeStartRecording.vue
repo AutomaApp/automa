@@ -16,6 +16,7 @@
           v-model="state.workflowName"
           :label="t('home.record.name')"
           :placeholder="t('common.name')"
+          autofocus
           class="w-full"
         />
         <ui-button class="w-full mt-6" variant="accent" type="submit">

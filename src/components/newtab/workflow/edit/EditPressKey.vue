@@ -52,8 +52,8 @@
 <script setup>
 import { ref, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { toCamelCase } from '@/utils/helper';
 import { keyDefinitions } from '@/utils/USKeyboardLayout';
+import { recordPressedKey } from '@/utils/recordKeys';
 import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({
@@ -69,7 +69,6 @@ const filteredDefinitions = Object.keys(keyDefinitions).filter(
   (key) => key.trim().length <= 1 || key.startsWith('Arrow')
 );
 const keysList = filteredDefinitions.concat(includedKeys);
-const modifierKeys = ['Control', 'Alt', 'Shift', 'Meta'];
 
 const { t } = useI18n();
 
@@ -84,25 +83,12 @@ function updateKeys(value) {
   updateData({ keys: value });
 }
 function onKeydown(event) {
-  if (event.repeat || modifierKeys.includes(event.key)) return;
-
   event.preventDefault();
   event.stopPropagation();
 
-  const { shiftKey, metaKey, altKey, ctrlKey, key } = event;
-  let pressedKey = key.length > 1 || shiftKey ? toCamelCase(key, true) : key;
-
-  if (pressedKey === ' ') pressedKey = 'Space';
-  else if (pressedKey === '+') pressedKey = 'NumpadAdd';
-
-  const keys = [pressedKey];
-
-  if (shiftKey) keys.unshift('Shift');
-  if (metaKey) keys.unshift('Meta');
-  if (altKey) keys.unshift('Alt');
-  if (ctrlKey) keys.unshift('Control');
-
-  updateKeys(keys.join('+'));
+  recordPressedKey(event, (keys) => {
+    updateKeys(keys.join('+'));
+  });
 }
 function onKeyup() {
   isRecordingKey.value = false;

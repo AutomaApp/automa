@@ -2,6 +2,7 @@ import { finder } from '@medv/finder';
 import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
 import { debounce } from '@/utils/helper';
+import { recordPressedKey } from '@/utils/recordKeys';
 import addBlock from './addBlock';
 
 const isAutomaInstance = (target) =>
@@ -73,81 +74,81 @@ function changeListener({ target }) {
     if (block.id === 'upload-file' && lastFlow.id === 'event-click') {
       recording.flows.pop();
     }
+    console.log(
+      block.data.type === 'text-field' &&
+        block.data.selector === lastFlow?.data?.selector,
+      lastFlow,
+      block.data
+    );
 
     if (
       block.data.type === 'text-field' &&
-      block.data.type === lastFlow?.data?.type
+      block.data.selector === lastFlow?.data?.selector
     )
       return;
 
     recording.flows.push(block);
   });
 }
-function keyEventListener(event) {
-  const {
-    target,
-    code,
-    key,
-    keyCode,
-    altKey,
-    ctrlKey,
-    metaKey,
-    shiftKey,
-    type,
-    repeat,
-  } = event;
-  if (isAutomaInstance(target)) return;
+async function keyEventListener(event) {
+  if (isAutomaInstance(event.target) || event.repeat) return;
 
-  const isTextField = textFieldEl(target);
+  const isTextField = textFieldEl(event.target);
+  const enterKey = event.key === 'Enter';
+  let isSubmitting = false;
+
   if (isTextField) {
-    const enterKey = type === 'keydown' && key === 'Enter';
-    const inputEl = target.form && target.tagName === 'INPUT';
+    const inputInForm = event.target.form && event.target.tagName === 'INPUT';
 
-    if (enterKey && inputEl) {
+    if (enterKey && inputInForm) {
       event.preventDefault();
-      target.dispatchEvent(new Event('change', { bubbles: true }));
 
-      setTimeout(() => {
-        target.form.submit();
-      }, 500);
+      await addBlock({
+        id: 'forms',
+        data: {
+          delay: 100,
+          clearValue: true,
+          type: 'text-field',
+          waitForSelector: true,
+          value: event.target.value,
+          selector: finder(event.target),
+        },
+      });
+
+      isSubmitting = true;
+    } else {
+      return;
     }
-
-    return;
   }
 
-  const selector = finder(target);
+  recordPressedKey(event, (keysArr) => {
+    const selector = isTextField && enterKey ? finder(event.target) : '';
+    const keys = keysArr.join('+');
 
-  addBlock((recording) => {
-    const lastFlow = recording.flows.at(-1);
-    const block = {
-      id: 'trigger-event',
-      data: {
-        selector,
-        eventName: type,
-        eventType: 'keyboard-event',
-        eventParams: {
-          key,
-          code,
-          repeat,
-          altKey,
-          ctrlKey,
-          metaKey,
-          keyCode,
-          shiftKey,
+    addBlock((recording) => {
+      const block = {
+        id: 'press-key',
+        description: `Press: ${keys}`,
+        data: {
+          keys,
+          selector,
         },
-        description: `${type}: ${key === ' ' ? 'Space' : key}`,
-      },
-    };
+      };
 
-    if (lastFlow.id === 'trigger-event') {
-      if (!lastFlow.groupId) lastFlow.groupId = nanoid();
+      const lastFlow = recording.flows.at(-1);
+      if (lastFlow.id === 'press-key') {
+        if (!lastFlow.groupId) lastFlow.groupId = nanoid();
+        block.groupId = lastFlow.groupId;
+      }
 
-      block.groupId = lastFlow.groupId;
-    }
+      recording.flows.push(block);
 
-    recording.flows.push(block);
-
-    return recording;
+      if (isSubmitting) {
+        setTimeout(() => {
+          event.target.form.submit();
+        }, 500);
+      }
+    });
   });
 }
 function clickListener(event) {
@@ -242,7 +243,6 @@ export function cleanUp() {
   document.removeEventListener('click', clickListener, true);
   document.removeEventListener('change', changeListener, true);
   document.removeEventListener('scroll', scrollListener, true);
-  document.removeEventListener('keyup', keyEventListener, true);
   document.removeEventListener('keydown', keyEventListener, true);
 }
 
@@ -253,7 +253,6 @@ export default async function () {
     document.addEventListener('click', clickListener, true);
     document.addEventListener('scroll', scrollListener, true);
     document.addEventListener('change', changeListener, true);
-    document.addEventListener('keyup', keyEventListener, true);
     document.addEventListener('keydown', keyEventListener, true);
   }
 
