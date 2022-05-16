@@ -22,7 +22,7 @@ export function waitTabLoaded(tabId, ms = 10000) {
     const timeout = null;
     let isResolved = false;
     const onErrorOccurred = (details) => {
-      if (details.tabId !== tabId || detail.error.includes('ERR_ABORTED'))
+      if (details.tabId !== tabId || details.error.includes('ERR_ABORTED'))
         return;
 
       isResolved = true;

@@ -11,7 +11,9 @@
     <template #trigger>
       <slot />
     </template>
-    <p v-if="filteredItems.length === 0" class="text-center">No data to show</p>
+    <p v-if="filteredItems.length === 0" class="text-center">
+      {{ t('message.noData') }}
+    </p>
     <ui-list v-else class="space-y-1">
       <ui-list-item
         v-for="(item, index) in filteredItems"
@@ -37,6 +39,7 @@ import {
   shallowReactive,
   watch,
 } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useComponentId } from '@/composable/componentId';
 import { debounce } from '@/utils/helper';
 
@@ -57,14 +60,6 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  block: {
-    type: Boolean,
-    default: false,
-  },
-  hideEmpty: {
-    type: Boolean,
-    default: false,
-  },
   customFilter: {
     type: Function,
     default: null,
@@ -73,10 +68,14 @@ const props = defineProps({
     type: [String, Array],
     default: null,
   },
+  block: Boolean,
+  disabled: Boolean,
+  hideEmpty: Boolean,
 });
 const emit = defineEmits(['update:modelValue', 'change', 'search']);
 
 let input = null;
+const { t } = useI18n();
 const componentId = useComponentId('autocomplete');
 
 const state = shallowReactive({
@@ -134,6 +133,8 @@ function getSearchText(caretIndex, charIndex) {
   return null;
 }
 function showPopover() {
+  if (props.disabled) return;
+
   if (props.triggerChar.length < 1) {
     state.showPopover = true;
     return;
@@ -264,10 +265,14 @@ function handleFocus() {
 
   showPopover();
 }
+function handleInput() {
+  state.inputChanged = true;
+}
 function attachEvents() {
   if (!input) return;
 
   input.addEventListener('blur', handleBlur);
+  input.addEventListener('input', handleInput);
   input.addEventListener('focus', handleFocus);
   input.addEventListener('input', showPopover);
   input.addEventListener('keydown', handleKeydown);
@@ -276,6 +281,7 @@ function detachEvents() {
   if (!input) return;
 
   input.removeEventListener('blur', handleBlur);
+  input.removeEventListener('input', handleInput);
   input.removeEventListener('focus', handleFocus);
   input.removeEventListener('input', showPopover);
   input.removeEventListener('keydown', handleKeydown);
@@ -296,13 +302,18 @@ watch(
   }, 100)
 );
 watch(
+  () => filteredItems,
+  () => {
+    if (filteredItems.value.length === 0 && props.hideEmpty) {
+      state.showPopover = false;
+    }
+  },
+  { deep: true }
+);
+watch(
   () => state.showPopover,
   (value) => {
     if (!value) state.inputChanged = false;
-
-    if (props.hideEmpty && filteredItems.value.length === 0) {
-      state.showPopover = false;
-    }
   }
 );
 

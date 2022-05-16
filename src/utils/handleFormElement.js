@@ -32,9 +32,12 @@ function formEvent(element, data) {
     bubbles: true,
     cancelable: true,
   });
-  element.dispatchEvent(
-    new Event('change', { bubbles: true, cancelable: true })
-  );
+
+  if (data.type !== 'text-field') {
+    element.dispatchEvent(
+      new Event('change', { bubbles: true, cancelable: true })
+    );
+  }
 }
 async function inputText({ data, element, isEditable }) {
   const elementKey = isEditable ? 'textContent' : 'value';
@@ -60,6 +63,10 @@ async function inputText({ data, element, isEditable }) {
       value: data.value[0] ?? '',
     });
   }
+
+  element.dispatchEvent(
+    new Event('change', { bubbles: true, cancelable: true })
+  );
 }
 
 export default async function (element, data) {

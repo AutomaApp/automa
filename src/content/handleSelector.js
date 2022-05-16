@@ -9,6 +9,16 @@ export function markElement(el, { id, data }) {
   }
 }
 
+export function getDocumentCtx(frameSelector) {
+  let documentCtx = document;
+
+  if (frameSelector) {
+    documentCtx = document.querySelector(frameSelector)?.contentDocument;
+  }
+
+  return documentCtx;
+}
+
 export function queryElements(data, documentCtx = document) {
   return new Promise((resolve) => {
     let timeout = null;
@@ -38,16 +48,6 @@ export function queryElements(data, documentCtx = document) {
       }, data.waitSelectorTimeout);
     }
   });
-}
-
-export function getDocumentCtx(frameSelector) {
-  let documentCtx = document;
-
-  if (frameSelector) {
-    documentCtx = document.querySelector(frameSelector)?.contentDocument;
-  }
-
-  return documentCtx;
 }
 
 export default async function (

@@ -167,9 +167,11 @@ export function countDuration(started, ended) {
   return `${getText(minutes, 'm')} ${seconds}s`;
 }
 
-export function toCamelCase(str) {
+export function toCamelCase(str, capitalize = false) {
   const result = str.replace(/(?:^\w|[A-Z]|\b\w)/g, (letter, index) => {
-    return index === 0 ? letter.toLowerCase() : letter.toUpperCase();
+    return index === 0 && !capitalize
+      ? letter.toLowerCase()
+      : letter.toUpperCase();
   });
 
   return result.replace(/\s+|[-]/g, '');

@@ -839,6 +839,25 @@ export const tasks = {
       onConflict: 'uniquify',
     },
   },
+  'press-key': {
+    name: 'Press key',
+    description: 'Press a key or a combination',
+    icon: 'riKeyboardLine',
+    component: 'BlockBasic',
+    editComponent: 'EditPressKey',
+    category: 'interaction',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    refDataKeys: ['selector', 'keys'],
+    data: {
+      disableBlock: false,
+      keys: '',
+      selector: '',
+      description: '',
+    },
+  },
   'handle-dialog': {
     name: 'Handle dialog',
     description:

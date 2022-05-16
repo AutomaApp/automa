@@ -41,7 +41,7 @@
             :rotate="show ? 270 : 180"
             class="mr-1 transition-transform -ml-1"
           />
-          Selector options
+          {{ t('workflow.blocks.base.selectorOptions') }}
         </template>
         <div class="mt-1">
           <ui-checkbox

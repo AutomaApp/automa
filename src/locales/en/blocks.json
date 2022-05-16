@@ -13,6 +13,7 @@
         "title": "Blocks",
         "moveToGroup": "Move block to blocks group",
         "selector": "Element selector",
+        "selectorOptions": "Selector options",
         "timeout": "Timeout (milliseconds)",
         "toggle": {
           "enable": "Enable block",
@@ -91,6 +92,13 @@
       "reload-tab": {
         "name": "Reload tab",
         "description": "Reload the active tab"
+      },
+      "press-key": {
+        "name": "Press key",
+        "description": "Press a key or a combination",
+        "target": "Target element (optional)",
+        "key": "Key",
+        "detect": "Detect key"
       },
       "save-assets": {
         "name": "Save assets",
