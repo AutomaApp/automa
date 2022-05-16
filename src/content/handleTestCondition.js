@@ -11,9 +11,9 @@ function handleConditionElement({ data, type }) {
 
   const elementActions = {
     exists: () => Boolean(element),
+    notExists: () => !element,
     text: () => element?.innerText ?? null,
-    visibleInViewport: () => visibleInViewport(element),
-    hiddenInViewport: () => !elementActions.visibleInViewport(),
+    visibleScreen: () => visibleInViewport(element),
     visible: () => {
       if (!element) return false;
 
@@ -25,8 +25,9 @@ function handleConditionElement({ data, type }) {
       if (!element) return false;
 
       const { visibility, display } = getComputedStyle(element);
+      const styleHidden = visibility === 'hidden' || display === 'none';
 
-      return visibility === 'hidden' || display === 'none';
+      return styleHidden || !visibleInViewport(element);
     },
     attribute: ({ attrName }) => {
       if (!element || !element.hasAttribute(attrName)) return null;
