@@ -191,6 +191,11 @@
     "settings": {
       "saveLog": "保存工作流日志",
       "executedBlockOnWeb": "在网页上显示已执行的模块",
+      "defaultColumn": {
+        "title": "插入信息到默认列",
+        "description": "如果模块中没有选择列，则将数据插入默认列",
+        "name": "默认列名称"
+      },
       "autocomplete": {
         "title": "自动完成",
         "description": "在输入块中启用自动完成（如果造成 Automa 不稳定请禁用）"
@@ -287,6 +292,7 @@
       "no-workflow": "找不到含 \"{workflowId}\" ID 的工作流",
       "no-match-tab": "找不到含 \"{pattern}\" 参数的标签页",
       "no-clipboard-acces": "无权访问剪贴板",
+      "browser-not-supported": "{browser} 浏览器不支持此功能",
       "element-not-found": "找不到含 \"{selector}\" 选择器的元素.",
       "not-iframe": "含 \"{selector}\" 选择器的元素并不是一个 Iframe 元素",
       "iframe-not-found": "找不到含 \"{selector}\" 选择器的 Iframe 元素.",
