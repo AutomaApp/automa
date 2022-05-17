@@ -80,7 +80,7 @@ function generateDrawflow(startBlock, startBlockData) {
       pos_y: 300,
       inputs: {},
       outputs: {
-        [startBlock ? startBlock.output : 'output_1']: {
+        output_1: {
           connections: [{ node: nextNodeId, output: 'input_1' }],
         },
       },
@@ -93,6 +93,13 @@ function generateDrawflow(startBlock, startBlockData) {
       ...startBlockData,
     },
   };
+
+  if (startBlock) {
+    nodes[triggerId].outputs[startBlock.output]?.connections.push({
+      node: nextNodeId,
+      output: 'input_1',
+    });
+  }
 
   const position = {
     y: startBlockData ? startBlockData.pos_y + 50 : 300,
