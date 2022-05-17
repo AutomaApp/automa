@@ -432,14 +432,14 @@ function startSelecting(list = false) {
   window.addEventListener('keyup', onKeyup);
 }
 function onMousemove({ clientX, clientY, target: eventTarget }) {
-  if (!selectState.isSelecting) return;
-
   if (draggingState.dragging) {
     draggingState.xPos = clientX - mouseRelativePos.x;
     draggingState.yPos = clientY - mouseRelativePos.y;
 
     return;
   }
+
+  if (!selectState.isSelecting) return;
 
   const elementSelected = selectState.selectedElements.length > 0;
   const disable = selectState.list && !selectState.listId && elementSelected;

@@ -2,7 +2,7 @@
   <div>
     <div class="mb-4 flex items-center justify-between">
       <ui-button
-        :disabled="conditions.length >= 10"
+        :disabled="conditions.length >= 20"
         variant="accent"
         class="mr-2"
         @click="addCondition"
@@ -115,7 +115,7 @@ function editCondition(index) {
   state.showModal = true;
 }
 function addCondition() {
-  if (conditions.value.length >= 10) return;
+  if (conditions.value.length >= 20) return;
 
   emitter.emit('conditions-block:add', {
     id: props.blockId,
