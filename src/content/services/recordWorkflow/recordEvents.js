@@ -11,6 +11,13 @@ const isAutomaInstance = (target) =>
 const textFieldEl = (el) =>
   ['INPUT', 'TEXTAREA'].includes(el.tagName) || el.isContentEditable;
 
+function findSelector(element) {
+  return finder(element, {
+    tagName: () => true,
+    attr: (name, value) => name === 'id' || (name.startsWith('aria') && value),
+  });
+}
+
 function changeListener({ target }) {
   if (isAutomaInstance(target)) return;
 
@@ -21,7 +28,7 @@ function changeListener({ target }) {
   if (execludeInput) return;
 
   let block = null;
-  const selector = finder(target);
+  const selector = findSelector(target);
   const isSelectEl = target.tagName === 'SELECT';
   const elementName = target.ariaLabel || target.name;
 
@@ -111,7 +118,7 @@ async function keyEventListener(event) {
           type: 'text-field',
           waitForSelector: true,
           value: event.target.value,
-          selector: finder(event.target),
+          selector: findSelector(event.target),
         },
       });
 
@@ -122,7 +129,7 @@ async function keyEventListener(event) {
   }
 
   recordPressedKey(event, (keysArr) => {
-    const selector = isTextField && enterKey ? finder(event.target) : '';
+    const selector = isTextField && enterKey ? findSelector(event.target) : '';
     const keys = keysArr.join('+');
 
     addBlock((recording) => {
@@ -163,7 +170,7 @@ function clickListener(event) {
 
   if (isTextField) return;
 
-  const selector = finder(target);
+  const selector = findSelector(target);
 
   if (target.tagName === 'A') {
     if (event.ctrlKey || event.metaKey) return;
@@ -213,7 +220,7 @@ const scrollListener = debounce(({ target }) => {
 
   const isDocument = target === document;
   const element = isDocument ? document.documentElement : target;
-  const selector = isDocument ? 'html' : finder(target);
+  const selector = isDocument ? 'html' : findSelector(target);
 
   addBlock((recording) => {
     const lastFlow = recording.flows[recording.flows.length - 1];
