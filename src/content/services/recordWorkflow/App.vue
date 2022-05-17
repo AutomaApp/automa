@@ -276,6 +276,7 @@ function addFlowItem() {
     data: {
       saveData,
       assignVariable,
+      waitForSelector: true,
       column: addBlockState.column,
       variableName: addBlockState.varName,
       selector: selectState.list
@@ -329,7 +330,7 @@ function selectElementPath(type) {
     : finder(element);
 }
 function clearSelectState() {
-  if (selectState.list) {
+  if (selectState.list && selectState.listId) {
     addBlock({
       id: 'loop-breakpoint',
       description: selectState.listId,
