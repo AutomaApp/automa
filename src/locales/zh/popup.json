@@ -7,13 +7,13 @@
     "record": {
       "title": "录制工作流",
       "button": "录制",
-      "name": "工作流名称"
+      "name": "工作流名称",
       "selectBlock": "选择一个启动模块",
       "anotherBlock": "无法从此模块启动",
       "tabs": {
         "new": "新建模块",
         "existing": "已存在工作流"
-	}
+	    }
     },
     "elementSelector": {
       "name": "元素选择器",
