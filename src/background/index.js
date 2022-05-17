@@ -145,43 +145,43 @@ async function checkWorkflowStates() {
   await storage.set('workflowState', states);
 }
 checkWorkflowStates();
-async function checkVisitWebTriggers(changeInfo, tab) {
-  if (!changeInfo.status || changeInfo.status !== 'complete') return;
-
-  const tabIsUsed = await workflow.states.get(({ state }) =>
-    state.tabIds.includes(tab.id)
+async function checkVisitWebTriggers(tabId, tabUrl) {
+  const workflowState = await workflow.states.get(({ state }) =>
+    state.tabIds.includes(tabId)
   );
-
-  if (tabIsUsed) return;
-
   const visitWebTriggers = await storage.get('visitWebTriggers');
-  const triggeredWorkflow = visitWebTriggers.find(({ url, isRegex }) => {
+  const triggeredWorkflow = visitWebTriggers.find(({ url, isRegex, id }) => {
     if (url.trim() === '') return false;
 
-    return tab.url.match(isRegex ? new RegExp(url, 'g') : url);
+    const matchUrl = tabUrl.match(isRegex ? new RegExp(url, 'g') : url);
+
+    return matchUrl && id !== workflowState.workflowId;
   });
 
   if (triggeredWorkflow) {
     const workflowData = await workflow.get(triggeredWorkflow.id);
 
-    if (workflowData) workflow.execute(workflowData, { tabId: tab.id });
+    if (workflowData) workflow.execute(workflowData, { tabId });
   }
 }
-async function checkRecordingWorkflow({ status }, { url, id }) {
-  if (status === 'complete' && validateUrl(url)) {
-    const { isRecording } = await browser.storage.local.get('isRecording');
+async function checkRecordingWorkflow(tabId, tabUrl) {
+  if (!validateUrl(tabUrl)) return;
 
-    if (!isRecording) return;
+  const isRecording = await storage.get('isRecording');
+  if (!isRecording) return;
 
-    await browser.tabs.executeScript(id, {
-      file: 'recordWorkflow.bundle.js',
-    });
-  }
+  await browser.tabs.executeScript(tabId, {
+    file: 'recordWorkflow.bundle.js',
+  });
 }
-browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  checkRecordingWorkflow(changeInfo, tab);
-  checkVisitWebTriggers(changeInfo, tab);
-});
+browser.webNavigation.onCompleted.addListener(
+  async ({ tabId, url, frameId }) => {
+    if (frameId > 0) return;
+
+    checkRecordingWorkflow(tabId, url);
+    checkVisitWebTriggers(tabId, url);
+  }
+);
 browser.commands.onCommand.addListener((name) => {
   if (name === 'open-dashboard') openDashboard();
 });

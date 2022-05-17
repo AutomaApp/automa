@@ -163,13 +163,13 @@ function clickListener(event) {
 
   if (isAutomaInstance(target)) return;
 
-  let isClickLink = true;
   const isTextField =
     (target.tagName === 'INPUT' && target.getAttribute('type') === 'text') ||
     ['SELECT', 'TEXTAREA'].includes(target.tagName);
 
   if (isTextField) return;
 
+  let isClickLink = false;
   const selector = findSelector(target);
 
   if (target.tagName === 'A') {
