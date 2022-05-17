@@ -81,12 +81,6 @@ function changeListener({ target }) {
     if (block.id === 'upload-file' && lastFlow.id === 'event-click') {
       recording.flows.pop();
     }
-    console.log(
-      block.data.type === 'text-field' &&
-        block.data.selector === lastFlow?.data?.selector,
-      lastFlow,
-      block.data
-    );
 
     if (
       block.data.type === 'text-field' &&

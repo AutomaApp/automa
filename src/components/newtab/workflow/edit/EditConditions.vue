@@ -1,7 +1,11 @@
 <template>
   <div>
-    <div class="mb-4 flex items-center justify-between">
+    <div class="mb-4 flex items-center space-x-2">
+      <p v-if="state.showSettings" class="font-semibold">
+        {{ t('common.settings') }}
+      </p>
       <ui-button
+        v-else
         :disabled="conditions.length >= 20"
         variant="accent"
         class="mr-2"
@@ -9,6 +13,7 @@
       >
         {{ t('workflow.blocks.conditions.add') }}
       </ui-button>
+      <div class="flex-grow"></div>
       <ui-button
         v-tooltip:bottom="t('workflow.blocks.conditions.refresh')"
         icon
@@ -16,8 +21,49 @@
       >
         <v-remixicon name="riRefreshLine" />
       </ui-button>
+      <ui-button
+        v-tooltip:bottom="t('common.settings')"
+        icon
+        @click="state.showSettings = !state.showSettings"
+      >
+        <v-remixicon
+          :name="state.showSettings ? 'riCloseLine' : 'riSettings3Line'"
+        />
+      </ui-button>
     </div>
+    <template v-if="state.showSettings">
+      <label class="flex items-center mt-6">
+        <ui-switch
+          :model-value="data.retryConditions"
+          @change="updateData({ retryConditions: $event })"
+        />
+        <span class="ml-2 leading-tight">
+          {{ t('workflow.blocks.conditions.retryConditions') }}
+        </span>
+      </label>
+      <div v-if="data.retryConditions" class="mt-2">
+        <ui-input
+          :model-value="data.retryCount"
+          :title="t('workflow.blocks.element-exists.tryFor.title')"
+          :label="t('workflow.blocks.element-exists.tryFor.label')"
+          class="w-full mb-1"
+          type="number"
+          min="1"
+          @change="updateData({ retryCount: +$event })"
+        />
+        <ui-input
+          :model-value="data.retryTimeout"
+          :label="t('workflow.blocks.element-exists.timeout.label')"
+          :title="t('workflow.blocks.element-exists.timeout.title')"
+          class="w-full"
+          type="number"
+          min="200"
+          @change="updateData({ retryTimeout: +$event })"
+        />
+      </div>
+    </template>
     <draggable
+      v-else
       v-model="conditions"
       item-key="id"
       tag="ui-list"
@@ -108,6 +154,7 @@ const conditions = ref(props.data.conditions);
 const state = shallowReactive({
   showModal: false,
   conditionsIndex: 0,
+  showSettings: false,
 });
 
 function editCondition(index) {
@@ -140,13 +187,14 @@ function refreshConnections() {
     id: props.blockId,
   });
 }
+function updateData(value) {
+  emit('update:data', { ...props.data, ...value });
+}
 
 watch(
   conditions,
   () => {
-    emit('update:data', {
-      conditions: conditions.value,
-    });
+    updateData({ conditions: conditions.value });
   },
   { deep: true }
 );

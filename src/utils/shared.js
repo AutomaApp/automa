@@ -573,6 +573,9 @@ export const tasks = {
     data: {
       disableBlock: false,
       conditions: [],
+      retryConditions: false,
+      retryCount: 10,
+      retryTimeout: 1000,
     },
   },
   'element-exists': {

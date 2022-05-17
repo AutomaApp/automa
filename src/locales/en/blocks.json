@@ -449,6 +449,7 @@
       "conditions": {
         "name": "Conditions",
         "add": "Add condition",
+        "retryConditions": "Retry if all conditions are not met",
         "description": "Conditional block",
         "refresh": "Refresh conditions connections",
         "fallbackTitle": "Execute when all comparisons don't meet the requirement",

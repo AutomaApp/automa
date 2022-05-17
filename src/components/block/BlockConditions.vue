@@ -64,7 +64,7 @@
   </div>
 </template>
 <script setup>
-import { watch, toRaw, onBeforeUnmount } from 'vue';
+import { watch, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import emitter from '@/lib/mitt';
 import { debounce } from '@/utils/helper';
@@ -135,10 +135,6 @@ function refreshConnections({ id }) {
 watch(
   () => block.data.conditions,
   debounce((newValue, oldValue) => {
-    props.editor.updateNodeDataFromId(block.id, {
-      conditions: toRaw(newValue),
-    });
-
     props.editor.updateConnectionNodes(`node-${block.id}`);
 
     if (!oldValue) return;

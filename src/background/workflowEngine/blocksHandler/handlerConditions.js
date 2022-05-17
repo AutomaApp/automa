@@ -3,13 +3,52 @@ import mustacheReplacer from '@/utils/referenceData/mustacheReplacer';
 import testConditions from '@/utils/testConditions';
 import { getBlockConnection } from '../helper';
 
+function checkConditions(data, conditionOptions) {
+  return new Promise((resolve, reject) => {
+    let retryCount = 1;
+    const replacedValue = {};
+
+    const testAllConditions = async () => {
+      try {
+        for (let index = 0; index < data.conditions.length; index += 1) {
+          const result = await testConditions(
+            data.conditions[index].conditions,
+            conditionOptions
+          );
+
+          Object.assign(replacedValue, result?.replacedValue || {});
+
+          if (result.isMatch) {
+            resolve({ match: true, index, replacedValue });
+            return;
+          }
+        }
+
+        if (data.retryConditions && retryCount <= data.retryCount) {
+          retryCount += 1;
+
+          setTimeout(() => {
+            testAllConditions();
+          }, data.retryTimeout);
+        } else {
+          resolve({ match: false, replacedValue });
+        }
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    testAllConditions();
+  });
+}
+
 async function conditions({ data, outputs }, { prevBlockData, refData }) {
   if (data.conditions.length === 0) {
     throw new Error('conditions-empty');
   }
 
   let resultData = '';
-  let isConditionMatch = false;
+  let isConditionMet = false;
   let outputIndex = data.conditions.length + 1;
 
   const replacedValue = {};
@@ -26,24 +65,18 @@ async function conditions({ data, outputs }, { prevBlockData, refData }) {
         this._sendMessageToTab({ ...payload, isBlock: false }),
     };
 
-    for (let index = 0; index < data.conditions.length; index += 1) {
-      const result = await testConditions(
-        data.conditions[index].conditions,
-        conditionPayload
-      );
+    const conditionsResult = await checkConditions(data, conditionPayload);
 
-      Object.assign(replacedValue, result?.replacedValue || {});
-
-      if (result.isMatch) {
-        isConditionMatch = true;
-        outputIndex = index + 1;
-
-        break;
-      }
+    if (conditionsResult.replacedValue) {
+      Object.assign(replacedValue, conditionsResult.replacedValue);
+    }
+    if (conditionsResult.match) {
+      isConditionMet = true;
+      outputIndex = conditionsResult.index + 1;
     }
   } else {
     data.conditions.forEach(({ type, value, compareValue }, index) => {
-      if (isConditionMatch) return;
+      if (isConditionMet) return;
 
       const firstValue = mustacheReplacer(compareValue ?? prevData, refData);
       const secondValue = mustacheReplacer(value, refData);
@@ -59,7 +92,7 @@ async function conditions({ data, outputs }, { prevBlockData, refData }) {
       if (isMatch) {
         resultData = value;
         outputIndex = index + 1;
-        isConditionMatch = true;
+        isConditionMet = true;
       }
     });
   }
