@@ -9,6 +9,7 @@
     </div>
     <slot name="append" />
     <div
+      v-if="!minimap"
       class="absolute bottom-1 transition-transform duration-300 pt-4 ml-1 menu"
     >
       <div
@@ -32,6 +33,10 @@
 <script setup>
 defineProps({
   hideDelete: {
+    type: Boolean,
+    default: false,
+  },
+  minimap: {
     type: Boolean,
     default: false,
   },

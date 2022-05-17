@@ -1,16 +1,17 @@
 import browser from 'webextension-polyfill';
 
-export function scrollIfNeeded(element) {
-  const { top, left, bottom, right } = element.getBoundingClientRect();
-  const isInViewport =
+export function visibleInViewport(element) {
+  const { top, left, bottom, right, height, width } =
+    element.getBoundingClientRect();
+
+  if (height === 0 || width === 0) return false;
+
+  return (
     top >= 0 &&
     left >= 0 &&
     bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-    right <= (window.innerWidth || document.documentElement.clientWidth);
-
-  if (!isInViewport) {
-    element.scrollIntoView();
-  }
+    right <= (window.innerWidth || document.documentElement.clientWidth)
+  );
 }
 
 export function sleep(timeout = 500) {
@@ -55,8 +56,10 @@ export function convertArrObjTo2DArr(arr) {
         values[0].push(key);
       }
 
+      const value = obj[key];
+
       const rowIndex = keyIndex.get(key);
-      row[rowIndex] = obj[key];
+      row[rowIndex] = typeof value === 'object' ? JSON.stringify(value) : value;
     });
 
     values.push([...row]);
@@ -164,9 +167,11 @@ export function countDuration(started, ended) {
   return `${getText(minutes, 'm')} ${seconds}s`;
 }
 
-export function toCamelCase(str) {
+export function toCamelCase(str, capitalize = false) {
   const result = str.replace(/(?:^\w|[A-Z]|\b\w)/g, (letter, index) => {
-    return index === 0 ? letter.toLowerCase() : letter.toUpperCase();
+    return index === 0 && !capitalize
+      ? letter.toLowerCase()
+      : letter.toUpperCase();
   });
 
   return result.replace(/\s+|[-]/g, '');

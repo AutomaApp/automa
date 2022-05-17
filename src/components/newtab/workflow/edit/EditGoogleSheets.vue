@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mb-10">
     <ui-textarea
       :model-value="data.description"
       class="w-full mb-2"
@@ -9,13 +9,10 @@
     <ui-select
       :model-value="data.type"
       class="w-full mb-2"
-      @change="updateData({ type: $event })"
+      @change="onActionChange"
     >
-      <option value="get">
-        {{ t('workflow.blocks.google-sheets.select.get') }}
-      </option>
-      <option value="update">
-        {{ t('workflow.blocks.google-sheets.select.update') }}
+      <option v-for="action in actions" :key="action" :value="action">
+        {{ t(`workflow.blocks.google-sheets.select.${action}`) }}
       </option>
     </ui-select>
     <edit-autocomplete>
@@ -84,15 +81,19 @@
       <p v-if="previewDataState.status === 'error'" class="text-red-500">
         {{ previewDataState.errorMessage }}
       </p>
-      <shared-codemirror
-        v-if="previewDataState.data && previewDataState.status !== 'error'"
-        :model-value="previewDataState.data"
-        :line-numbers="false"
-        readonly
-        class="mt-4 max-h-96 scroll"
-      />
     </template>
-    <template v-else-if="data.type === 'update'">
+    <template v-else-if="data.type === 'getRange'">
+      <insert-workflow-data :data="data" variables @update="updateData" />
+      <ui-button
+        :loading="previewDataState.status === 'loading'"
+        variant="accent"
+        class="mt-4"
+        @click="previewData"
+      >
+        {{ t('workflow.blocks.google-sheets.previewData') }}
+      </ui-button>
+    </template>
+    <template v-else-if="['update', 'append'].includes(data.type)">
       <ui-select
         :model-value="data.valueInputOption"
         class="w-full mt-2"
@@ -110,6 +111,29 @@
         </template>
         <option
           v-for="option in valueInputOptions"
+          :key="option"
+          :value="option"
+        >
+          {{ option }}
+        </option>
+      </ui-select>
+      <ui-select
+        :model-value="data.insertDataOption || 'INSERT_ROWS'"
+        class="w-full mt-2"
+        @change="updateData({ insertDataOption: $event })"
+      >
+        <template #label>
+          {{ t('workflow.blocks.google-sheets.insertDataOption') }}
+          <a
+            href="https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/append#InsertDataOption"
+            target="_blank"
+            rel="noopener"
+          >
+            <v-remixicon name="riInformationLine" size="18" class="inline" />
+          </a>
+        </template>
+        <option
+          v-for="option in insertDataOptions"
           :key="option"
           :value="option"
         >
@@ -143,6 +167,17 @@
         {{ t('workflow.blocks.google-sheets.insertData') }}
       </ui-button>
     </template>
+    <shared-codemirror
+      v-if="
+        previewDataState.data &&
+        previewDataState.status !== 'error' &&
+        data.type !== 'update'
+      "
+      :model-value="previewDataState.data"
+      :line-numbers="false"
+      readonly
+      class="mt-4 max-h-96 scroll"
+    />
     <ui-modal
       v-model="customDataState.showModal"
       title="Custom data"
@@ -163,6 +198,7 @@ import { useI18n } from 'vue-i18n';
 import { googleSheets } from '@/utils/api';
 import { convert2DArrayToArrayObj } from '@/utils/helper';
 import EditAutocomplete from './EditAutocomplete.vue';
+import InsertWorkflowData from './InsertWorkflowData.vue';
 
 const SharedCodemirror = defineAsyncComponent(() =>
   import('@/components/newtab/shared/SharedCodemirror.vue')
@@ -178,8 +214,10 @@ const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
 
+const actions = ['get', 'getRange', 'update', 'append'];
 const dataFrom = ['data-columns', 'custom'];
 const valueInputOptions = ['RAW', 'USER_ENTERED'];
+const insertDataOptions = ['OVERWRITE', 'INSERT_ROWS'];
 
 const previewDataState = shallowReactive({
   data: '',
@@ -197,10 +235,15 @@ function updateData(value) {
 async function previewData() {
   try {
     previewDataState.status = 'loading';
-    const response = await googleSheets.getValues({
-      spreadsheetId: props.data.spreadsheetId,
+
+    const isGetValues = props.data.type === 'get';
+    const params = {
       range: props.data.range,
-    });
+      spreadsheetId: props.data.spreadsheetId,
+    };
+    const response = await (isGetValues
+      ? googleSheets.getValues(params)
+      : googleSheets.getRange(params));
 
     if (!response.ok) {
       const error = await response.json();
@@ -208,18 +251,33 @@ async function previewData() {
       throw new Error(error.statusMessage || response.statusText);
     }
 
-    const { values } = await response.json();
-    const sheetsData = props.data.firstRowAsKey
-      ? convert2DArrayToArrayObj(values)
-      : values;
+    let result = await response.json();
 
-    previewDataState.data = JSON.stringify(sheetsData, null, 2);
+    if (isGetValues) {
+      result = props.data.firstRowAsKey
+        ? convert2DArrayToArrayObj(result.values)
+        : result.values;
+    } else {
+      result = {
+        tableRange: result.tableRange || null,
+        lastRange: result.updates.updatedRange,
+      };
+    }
 
+    previewDataState.data = JSON.stringify(result, null, 2);
     previewDataState.status = 'idle';
   } catch (error) {
+    console.error(error);
     previewDataState.data = '';
     previewDataState.status = 'error';
     previewDataState.errorMessage = error.message;
   }
+}
+function onActionChange(value) {
+  updateData({ type: value });
+
+  previewDataState.data = '';
+  previewDataState.status = '';
+  previewDataState.errorMessage = '';
 }
 </script>

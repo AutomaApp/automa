@@ -39,6 +39,8 @@ class Workflow extends Model {
         inputAutocomplete: true,
         onError: 'stop-workflow',
         executedBlockOnWeb: false,
+        insertDefaultColumn: true,
+        defaultColumnName: 'column',
       }),
       logs: this.hasMany(Log, 'workflowId'),
       globalData: this.string('[{ "key": "value" }]'),

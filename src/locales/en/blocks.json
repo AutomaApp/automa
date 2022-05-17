@@ -10,8 +10,10 @@
   "workflow": {
     "blocks": {
       "base": {
+        "title": "Blocks",
         "moveToGroup": "Move block to blocks group",
         "selector": "Element selector",
+        "selectorOptions": "Selector options",
         "timeout": "Timeout (milliseconds)",
         "toggle": {
           "enable": "Enable block",
@@ -91,6 +93,13 @@
         "name": "Reload tab",
         "description": "Reload the active tab"
       },
+      "press-key": {
+        "name": "Press key",
+        "description": "Press a key or a combination",
+        "target": "Target element (optional)",
+        "key": "Key",
+        "detect": "Detect key"
+      },
       "save-assets": {
         "name": "Save assets",
         "description": "Save assets (image, video, audio, or file) from an element or URL",
@@ -138,6 +147,7 @@
         "description": "Upload file into <input type=\"file\"> element",
         "filePath": "URL or File path",
         "addFile": "Add file",
+        "onlyURL": "Only support upload files from an URL in the Firefox browser",
         "requirement": "See the requirement before using this block",
         "noFileAccess": "Automa doesn't have file access"
       },
@@ -214,6 +224,8 @@
         "keysAsFirstRow": "Use keys as the first row",
         "insertData": "Insert data",
         "valueInputOption": "Value input option",
+        "insertDataOption": "Insert data option",
+        "rangeToSearch": "Range to start the search",
         "dataFrom": {
           "label": "Data from",
           "options": {
@@ -235,7 +247,9 @@
         },
         "select": {
           "get": "Get spreadsheet cell values",
-          "update": "Update spreadsheet cell values"
+          "getRange": "Get spreadsheet range",
+          "update": "Update spreadsheet cell values",
+          "append": "Append spreadsheet cell values"
         }
       },
       "active-tab": {
@@ -355,6 +369,7 @@
         "customUserAgent": "Use custom User-Agent",
         "activeTab": "Set as active tab",
         "tabToGroup": "Add tab to group",
+        "waitTabLoaded": "Wait till tab loaded",
         "updatePrevTab": {
           "title": "Use the previously opened new tab instead of creating a new one",
           "text": "Update previously opened tab"
@@ -434,6 +449,7 @@
       "conditions": {
         "name": "Conditions",
         "add": "Add condition",
+        "retryConditions": "Retry if all conditions are not met",
         "description": "Conditional block",
         "refresh": "Refresh conditions connections",
         "fallbackTitle": "Execute when all comparisons don't meet the requirement",

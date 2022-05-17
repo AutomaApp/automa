@@ -36,22 +36,37 @@ Auto-fill forms, do a repetitive task, take a screenshot, or scrape website data
 Browse the Automa marketplace where you can share and download workflows with others. [Go to the marketplace &#187;](https://automa.vercel.app/workflows)
 
 ## Project setup
+Before running the `yarn dev` or `yarn build` script, you need to create the `getPassKey.js` file in the `src/utils` directory.  Inside the file write
+
+```js
+export default function() {
+  return 'anything-you-want';
+}
+```
+
 ```bash
 # Install dependencies
 yarn install
 
-# Compiles and hot-reloads for development
+# Compiles and hot-reloads for development for the chrome browser
 yarn dev
 
-# Compiles and minifies for production
+# Compiles and minifies for production for the chrome browser
 yarn build
 
-# Create a zip file from the build folder
+# Create a zip file from the build folder for the chrome browser
 yarn build:zip
+
+# Compiles and hot-reloads for development for the firefox browser
+yarn dev:firefox
+
+# Compiles and minifies for production for the firefox browser
+yarn build:firefox
 
 # Lints and fixes files
 yarn lint
 ```
+
 ## Contributors
 Thanks to everyone who has submitted issues, made suggestions, and generally helped make this a better project.
 

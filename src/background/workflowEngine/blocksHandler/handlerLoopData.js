@@ -41,6 +41,7 @@ async function loopData({ data, id, outputs }, { refData }) {
             max: data.maxLoop,
             type: 'loop-elements',
             selector: data.elementSelector,
+            frameSelector: this.frameSelector,
           });
 
           return elements;
@@ -91,6 +92,10 @@ async function loopData({ data, id, outputs }, { refData }) {
     };
   } catch (error) {
     error.nextBlockId = nextBlockId;
+
+    if (data.loopThrough === 'elements') {
+      error.data = { selector: data.elementSelector };
+    }
 
     throw error;
   }

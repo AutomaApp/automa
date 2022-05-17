@@ -82,6 +82,7 @@ export const tasks = {
       userAgent: '',
       active: true,
       inGroup: false,
+      waitTabLoaded: false,
       updatePrevTab: false,
       customUserAgent: false,
     },
@@ -277,7 +278,7 @@ export const tasks = {
     description: 'Add delay before executing the next block',
     icon: 'riTimerLine',
     component: 'BlockDelay',
-    editComponent: 'EditTrigger',
+    editComponent: 'EditDelay',
     category: 'general',
     inputs: 1,
     outputs: 1,
@@ -470,7 +471,6 @@ export const tasks = {
     name: 'Repeat task',
     icon: 'riRepeat2Line',
     component: 'BlockRepeatTask',
-    editComponent: 'EditTrigger',
     category: 'general',
     inputs: 1,
     outputs: 2,
@@ -548,9 +548,14 @@ export const tasks = {
       customData: '',
       description: '',
       spreadsheetId: '',
+      dataColumn: '',
+      saveData: true,
+      assignVariable: false,
+      variableName: '',
       firstRowAsKey: false,
       keysAsFirstRow: true,
       valueInputOption: 'RAW',
+      InsertDataOption: 'INSERT_ROWS',
       dataFrom: 'data-columns',
     },
   },
@@ -568,6 +573,9 @@ export const tasks = {
     data: {
       disableBlock: false,
       conditions: [],
+      retryConditions: false,
+      retryCount: 10,
+      retryTimeout: 1000,
     },
   },
   'element-exists': {
@@ -834,6 +842,25 @@ export const tasks = {
       onConflict: 'uniquify',
     },
   },
+  'press-key': {
+    name: 'Press key',
+    description: 'Press a key or a combination',
+    icon: 'riKeyboardLine',
+    component: 'BlockBasic',
+    editComponent: 'EditPressKey',
+    category: 'interaction',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    refDataKeys: ['selector', 'keys'],
+    data: {
+      disableBlock: false,
+      keys: '',
+      selector: '',
+      description: '',
+    },
+  },
   'handle-dialog': {
     name: 'Handle dialog',
     description:
@@ -1039,6 +1066,19 @@ export const communities = [
   },
 ];
 
+export const elementsHighlightData = {
+  selectedElements: {
+    stroke: '#2563EB',
+    activeStroke: '#f87171',
+    fill: 'rgba(37, 99, 235, 0.1)',
+    activeFill: 'rgba(248, 113, 113, 0.1)',
+  },
+  hoveredElements: {
+    stroke: '#fbbf24',
+    fill: 'rgba(251, 191, 36, 0.1)',
+  },
+};
+
 export const conditionBuilder = {
   valueTypes: [
     {
@@ -1049,10 +1089,31 @@ export const conditionBuilder = {
       data: { value: '' },
     },
     {
+      id: 'code',
+      category: 'value',
+      name: 'Code',
+      compareable: false,
+      data: { code: '\nreturn true;' },
+    },
+    {
       id: 'element#text',
       category: 'element',
       name: 'Element text',
       compareable: true,
+      data: { selector: '' },
+    },
+    {
+      id: 'element#exists',
+      category: 'element',
+      name: 'Element exists',
+      compareable: false,
+      data: { selector: '' },
+    },
+    {
+      id: 'element#notExists',
+      category: 'element',
+      name: 'Element not exists',
+      compareable: false,
       data: { selector: '' },
     },
     {
@@ -1063,9 +1124,16 @@ export const conditionBuilder = {
       data: { selector: '' },
     },
     {
+      id: 'element#visibleScreen',
+      category: 'element',
+      name: 'Element visible in screen',
+      compareable: false,
+      data: { selector: '' },
+    },
+    {
       id: 'element#invisible',
       category: 'element',
-      name: 'Element invisible',
+      name: 'Element hidden in screen',
       compareable: false,
       data: { selector: '' },
     },
@@ -1078,15 +1146,28 @@ export const conditionBuilder = {
     },
   ],
   compareTypes: [
-    { id: 'eq', name: 'Equals', needValue: true },
-    { id: 'nq', name: 'Not equals', needValue: true },
-    { id: 'gt', name: 'Greater than', needValue: true },
-    { id: 'gte', name: 'Greater than or equal', needValue: true },
-    { id: 'lt', name: 'Less than', needValue: true },
-    { id: 'lte', name: 'Less than or equal', needValue: true },
-    { id: 'cnt', name: 'Contains', needValue: true },
-    { id: 'itr', name: 'Is truthy', needValue: false },
-    { id: 'ifl', name: 'Is falsy', needValue: false },
+    { id: 'eq', name: 'Equals', needValue: true, category: 'basic' },
+    { id: 'nq', name: 'Not equals', needValue: true, category: 'basic' },
+    { id: 'gt', name: 'Greater than', needValue: true, category: 'number' },
+    {
+      id: 'gte',
+      name: 'Greater than or equal',
+      needValue: true,
+      category: 'number',
+    },
+    { id: 'lt', name: 'Less than', needValue: true, category: 'number' },
+    {
+      id: 'lte',
+      name: 'Less than or equal',
+      needValue: true,
+      category: 'number',
+    },
+    { id: 'cnt', name: 'Contains', needValue: true, category: 'text' },
+    { id: 'nct', name: 'Not contains', needValue: true, category: 'text' },
+    { id: 'stw', name: 'Starts with', needValue: true, category: 'text' },
+    { id: 'enw', name: 'Ends with', needValue: true, category: 'text' },
+    { id: 'itr', name: 'Is truthy', needValue: false, category: 'boolean' },
+    { id: 'ifl', name: 'Is falsy', needValue: false, category: 'boolean' },
   ],
   inputTypes: {
     selector: {

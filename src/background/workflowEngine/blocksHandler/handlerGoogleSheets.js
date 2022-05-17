@@ -21,14 +21,31 @@ async function getSpreadsheetValues({ spreadsheetId, range, firstRowAsKey }) {
 
   return sheetsData;
 }
+async function getSpreadsheetRange({ spreadsheetId, range }) {
+  const response = await googleSheets.getRange({ spreadsheetId, range });
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.statusMessage);
+  }
+
+  const data = {
+    tableRange: result.tableRange || null,
+    lastRange: result.updates.updatedRange,
+  };
+
+  return data;
+}
 async function updateSpreadsheetValues(
   {
-    spreadsheetId,
     range,
-    valueInputOption,
-    keysAsFirstRow,
+    append,
     dataFrom,
     customData,
+    spreadsheetId,
+    keysAsFirstRow,
+    insertDataOption,
+    valueInputOption,
   },
   columns
 ) {
@@ -38,17 +55,33 @@ async function updateSpreadsheetValues(
     if (keysAsFirstRow) {
       values = convertArrObjTo2DArr(columns);
     } else {
-      values = columns.map(Object.values);
+      values = columns.map((item) =>
+        Object.values(item).map((value) =>
+          typeof value === 'object' ? JSON.stringify(value) : value
+        )
+      );
     }
   } else if (dataFrom === 'custom') {
     values = parseJSON(customData, customData);
   }
 
+  const queries = {
+    valueInputOption: valueInputOption || 'RAW',
+  };
+
+  if (append) {
+    Object.assign(queries, {
+      includeValuesInResponse: false,
+      insertDataOption: insertDataOption || 'INSERT_ROWS',
+    });
+  }
+
   const response = await googleSheets.updateValues({
     range,
+    append,
     spreadsheetId,
-    valueInputOption,
     options: {
+      queries,
       body: JSON.stringify({ values }),
     },
   });
@@ -78,8 +111,23 @@ export default async function ({ data, outputs }, { refData }) {
       if (data.refKey && !isWhitespace(data.refKey)) {
         refData.googleSheets[data.refKey] = spreadsheetValues;
       }
-    } else if (data.type === 'update') {
-      result = await updateSpreadsheetValues(data, refData.table);
+    } else if (data.type === 'getRange') {
+      result = await getSpreadsheetRange(data);
+
+      if (data.assignVariable) {
+        this.setVariable(data.variableName, result);
+      }
+      if (data.saveData) {
+        this.addDataToColumn(data.dataColumn, result);
+      }
+    } else if (['update', 'append'].includes(data.type)) {
+      result = await updateSpreadsheetValues(
+        {
+          ...data,
+          append: data.type === 'append',
+        },
+        refData.table
+      );
     }
 
     return {

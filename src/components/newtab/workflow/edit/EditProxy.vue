@@ -69,7 +69,7 @@ const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
 
-const schemes = Object.values(chrome.proxy.Scheme);
+const schemes = ['http', 'https', 'socks4', 'socks5'];
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });

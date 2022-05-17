@@ -15,7 +15,7 @@
         class="p-4 rounded-lg bg-green-200 dark:bg-green-300 flex items-start text-black"
       >
         <v-remixicon name="riInformationLine" />
-        <p class="flex-1 ml-4 text-gray-100 dark:text-black">
+        <p class="flex-1 ml-4">
           {{ t('workflow.blocks.base.onError.info') }}
         </p>
       </div>

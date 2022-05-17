@@ -4,6 +4,7 @@
     :class="[
       uiTabs.type.value,
       {
+        'pointer-events-none opacity-75': disabled,
         small: uiTabs.small.value,
         'flex-1': uiTabs.fill.value,
         'is-active': uiTabs.modelValue.value === value,
@@ -23,6 +24,10 @@ import { inject } from 'vue';
 
 /* eslint-disable-next-line */
 const props = defineProps({
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
   value: {
     type: [String, Number],
     default: '',

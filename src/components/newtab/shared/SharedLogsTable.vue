@@ -6,7 +6,8 @@
         <td class="text-overflow" style="min-width: 140px; max-width: 330px">
           <router-link
             :to="`/logs/${log.id}`"
-            class="inline-block text-overflow w-full align-middle"
+            class="inline-block text-overflow w-full align-middle min-h"
+            style="min-height: 28px"
           >
             {{ log.name }}
           </router-link>

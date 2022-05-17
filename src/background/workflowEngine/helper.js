@@ -1,3 +1,5 @@
+import browser from 'webextension-polyfill';
+
 export function sendDebugCommand(tabId, method, params = {}) {
   return new Promise((resolve) => {
     chrome.debugger.sendCommand({ tabId }, method, params, resolve);
@@ -15,10 +17,33 @@ export function attachDebugger(tabId, prevTab) {
   });
 }
 
-export function waitTabLoaded(tabId) {
+export function waitTabLoaded(tabId, ms = 10000) {
   return new Promise((resolve, reject) => {
+    const timeout = null;
+    let isResolved = false;
+    const onErrorOccurred = (details) => {
+      if (details.tabId !== tabId || details.error.includes('ERR_ABORTED'))
+        return;
+
+      isResolved = true;
+      browser.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
+      reject(new Error(details.error));
+    };
+
+    if (ms > 0) {
+      setTimeout(() => {
+        isResolved = true;
+        browser.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
+        reject(new Error('Timeout'));
+      }, ms);
+    }
+
+    browser.webNavigation.onErrorOccurred.addListener(onErrorOccurred);
+
     const activeTabStatus = () => {
-      chrome.tabs.get(tabId, (tab) => {
+      if (isResolved) return;
+
+      browser.tabs.get(tabId).then((tab) => {
         if (!tab) {
           reject(new Error('no-tab'));
           return;
@@ -27,10 +52,13 @@ export function waitTabLoaded(tabId) {
         if (tab.status === 'loading') {
           setTimeout(() => {
             activeTabStatus();
-          }, 500);
+          }, 1000);
           return;
         }
 
+        clearTimeout(timeout);
+
+        browser.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
         resolve();
       });
     };
@@ -53,6 +81,9 @@ export function convertData(data, type) {
       break;
     case 'array':
       result = Array.from(data);
+      break;
+    case 'string':
+      result = String(data);
       break;
     default:
   }

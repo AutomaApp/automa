@@ -12,7 +12,8 @@ export function useEditorBlock(selector, editor) {
   });
 
   nextTick(() => {
-    const element = document.querySelector(selector);
+    const rootElement = editor.rootElement || document;
+    const element = rootElement.querySelector(selector);
 
     if (block.id || !element) return;
 

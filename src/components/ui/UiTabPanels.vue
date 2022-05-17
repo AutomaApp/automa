@@ -12,6 +12,10 @@ const props = defineProps({
     type: [String, Number],
     default: '',
   },
+  cache: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 provide('ui-tab-panels', toRefs(props));

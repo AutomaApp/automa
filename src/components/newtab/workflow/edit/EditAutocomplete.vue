@@ -1,5 +1,6 @@
 <template>
   <ui-autocomplete
+    :disabled="disabled"
     :items="autocompleteList"
     :trigger-char="['{{', '}}']"
     :custom-filter="autocompleteFilter"
@@ -13,6 +14,10 @@
 <script setup>
 import { inject, shallowReactive, computed } from 'vue';
 import objectPath from 'object-path';
+
+defineProps({
+  disabled: Boolean,
+});
 
 const autocompleteData = inject('autocompleteData', {});
 const state = shallowReactive({

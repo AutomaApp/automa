@@ -69,10 +69,10 @@ const state = reactive({
   isGenerating: false,
 });
 
-function generateDrawflow() {
+function generateDrawflow(startBlock, startBlockData) {
   let nextNodeId = nanoid();
-  const triggerId = nanoid();
-  let prevNodeId = triggerId;
+  const triggerId = startBlock?.id || nanoid();
+  let prevNodeId = startBlock?.id || triggerId;
 
   const nodes = {
     [triggerId]: {
@@ -90,11 +90,42 @@ function generateDrawflow() {
       class: 'trigger',
       html: 'BlockBasic',
       data: tasks.trigger.data,
+      ...startBlockData,
     },
   };
-  const position = { x: 260, y: 300 };
+
+  if (startBlock) {
+    nodes[triggerId].outputs[startBlock.output]?.connections.push({
+      node: nextNodeId,
+      output: 'input_1',
+    });
+  }
+
+  const position = {
+    y: startBlockData ? startBlockData.pos_y + 50 : 300,
+    x: startBlockData ? startBlockData.pos_x + 120 : 260,
+  };
+  const groups = {};
 
   state.flows.forEach((block, index) => {
+    if (block.groupId) {
+      if (!groups[block.groupId]) groups[block.groupId] = [];
+
+      groups[block.groupId].push({
+        id: block.id,
+        itemId: nanoid(),
+        data: defu(block.data, tasks[block.id].data),
+      });
+
+      const nextNodeInGroup = state.flows[index + 1]?.groupId;
+      if (nextNodeInGroup) return;
+
+      block.id = 'blocks-group';
+      block.data = { blocks: groups[block.groupId] };
+
+      delete groups[block.groupId];
+    }
+
     const node = {
       id: nextNodeId,
       name: block.id,
@@ -110,7 +141,7 @@ function generateDrawflow() {
 
     node.inputs.input_1.connections.push({
       node: prevNodeId,
-      input: 'output_1',
+      input: index === 0 && startBlock ? startBlock.output : 'output_1',
     });
 
     const isLastIndex = index === state.flows.length - 1;
@@ -126,12 +157,14 @@ function generateDrawflow() {
     }
 
     const inNewRow = (index + 1) % 5 === 0;
-    const blockNameLen = tasks[block.id].name.length * 11 + 120;
+    const blockNameLen = tasks[block.id].name.length * 14 + 120;
     position.x = inNewRow ? 50 : position.x + blockNameLen;
     position.y = inNewRow ? position.y + 150 : position.y;
 
     nodes[node.id] = node;
   });
+
+  if (startBlock) return nodes;
 
   return { drawflow: { Home: { data: nodes } } };
 }
@@ -145,14 +178,33 @@ async function stopRecording() {
   try {
     state.isGenerating = true;
 
-    const drawflow = generateDrawflow();
+    if (state.workflowId) {
+      const workflow = Workflow.find(state.workflowId);
+      const drawflow =
+        typeof workflow.drawflow === 'string'
+          ? JSON.parse(workflow.drawflow)
+          : workflow.drawflow;
+      const node = drawflow.drawflow.Home.data[state.connectFrom.id];
+      const updatedDrawflow = generateDrawflow(state.connectFrom, node);
 
-    await Workflow.insert({
-      data: {
-        name: state.name,
-        drawflow: JSON.stringify(drawflow),
-      },
-    });
+      Object.assign(drawflow.drawflow.Home.data, updatedDrawflow);
+
+      await Workflow.update({
+        where: state.workflowId,
+        data: {
+          drawflow: JSON.stringify(drawflow),
+        },
+      });
+    } else {
+      const drawflow = generateDrawflow();
+
+      await Workflow.insert({
+        data: {
+          name: state.name,
+          drawflow: JSON.stringify(drawflow),
+        },
+      });
+    }
 
     await browser.storage.local.remove(['isRecording', 'recording']);
     await browser.browserAction.setBadgeText({ text: '' });

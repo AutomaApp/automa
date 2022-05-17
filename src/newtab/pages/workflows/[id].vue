@@ -301,17 +301,12 @@ const renameModal = reactive({
   name: '',
   description: '',
 });
-const protectionState = reactive({
-  message: '',
-  password: '',
-  needed: false,
-  showPassword: false,
-});
 
 const workflowId = route.params.id;
 const workflowModals = {
   table: {
     icon: 'riKey2Line',
+    width: 'max-w-2xl',
     component: WorkflowDataTable,
     title: t('workflow.table.title'),
     docs: 'https://docs.automa.site/api-reference/table.html',
@@ -354,6 +349,15 @@ const workflowModals = {
     icon: 'riSettings3Line',
     component: WorkflowSettings,
     title: t('common.settings'),
+    attrs: {
+      customContent: true,
+    },
+    events: {
+      close() {
+        state.showModal = false;
+        state.modalName = '';
+      },
+    },
   },
 };
 
@@ -589,7 +593,7 @@ function insertToLocal() {
   const copy = {
     ...workflow.value,
     createdAt: Date.now(),
-    version: chrome.runtime.getManifest().version,
+    version: browser.runtime.getManifest().version,
   };
 
   Workflow.insert({
@@ -842,9 +846,6 @@ watch(
     if (value === 'shared') {
       state.isEditBlock = false;
       state.blockData = {};
-    } else if (workflow.value.isProtected) {
-      protectionState.needed = true;
-      return;
     }
 
     let drawflow = parseJSON(workflow.value.drawflow, null);

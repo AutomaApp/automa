@@ -58,7 +58,7 @@
               {{ element.data.description }}
             </p>
           </div>
-          <div class="invisible group-hover:visible">
+          <div v-if="!editor.minimap" class="invisible group-hover:visible">
             <v-remixicon
               name="riPencilLine"
               size="20"
@@ -116,7 +116,6 @@ const excludeBlocks = [
   'blocks-group',
   'conditions',
   'element-exists',
-  'delay',
 ];
 
 function onDragStart(item, event) {

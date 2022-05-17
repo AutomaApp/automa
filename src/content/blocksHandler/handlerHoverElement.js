@@ -1,20 +1,21 @@
 import { sendMessage } from '@/utils/message';
+import { getElementPosition } from '../utils';
 import handleSelector from '../handleSelector';
 
 function eventClick(block) {
   return new Promise((resolve, reject) => {
     handleSelector(block, {
       async onSelected(element) {
-        const { width, height, x, y } = element.getBoundingClientRect();
+        const { x, y } = await getElementPosition(element);
         const payload = {
           tabId: block.activeTabId,
           method: 'Input.dispatchMouseEvent',
           params: {
-            type: 'mousePressed',
-            x: x + width / 2,
-            y: y + height / 2,
-            button: 'left',
+            x,
+            y,
             clickCount: 1,
+            button: 'left',
+            type: 'mousePressed',
           },
         };
 

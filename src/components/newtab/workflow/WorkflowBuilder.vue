@@ -80,6 +80,7 @@ import { useI18n } from 'vue-i18n';
 import { compare } from 'compare-versions';
 import defu from 'defu';
 import SelectionArea from '@viselect/vanilla';
+import browser from 'webextension-polyfill';
 import emitter from '@/lib/mitt';
 import {
   useShortcut,
@@ -296,19 +297,6 @@ export default {
           .closest('.drawflow-node')
           .id.replace(/node-/, '');
         const outputClass = target.classList[1];
-        const blockData = editor.value.getNodeFromId(targetBlockId);
-        const { connections } = blockData.outputs[outputClass];
-
-        if (connections[0]) {
-          const { output, node } = connections[0];
-
-          editor.value.removeSingleConnection(
-            targetBlockId,
-            node,
-            outputClass,
-            output
-          );
-        }
 
         editor.value.addConnection(
           targetBlockId,
@@ -668,7 +656,7 @@ export default {
 
         if (!data || !data?.drawflow?.Home) return;
 
-        const currentExtVersion = chrome.runtime.getManifest().version;
+        const currentExtVersion = browser.runtime.getManifest().version;
         const isOldWorkflow = compare(
           currentExtVersion,
           props.version || '0.0.0',
@@ -770,6 +758,9 @@ export default {
       });
       editor.value.on('export', saveEditorState);
       editor.value.on('contextmenu', ({ clientY, clientX, target }) => {
+        if (target.tagName === 'path' && target.classList.contains('main-path'))
+          return;
+
         const isBlock = target.closest('.drawflow .drawflow-node');
         const virtualEl = {
           getReferenceClientRect: () => ({

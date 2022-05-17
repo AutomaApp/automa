@@ -51,7 +51,7 @@ function initWebListener() {
         );
 
         workflow.table = workflow.table || workflow.dataColumns;
-        delete workflow.dataColumns;
+        workflow.dataColumns = [];
 
         workflowsStorage.push({
           ...workflow,

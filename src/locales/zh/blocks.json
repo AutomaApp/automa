@@ -10,14 +10,20 @@
   "workflow": {
     "blocks": {
       "base": {
+        "title": "模块",
         "moveToGroup": "移动模块到模块组",
         "selector": "元素选择器",
+        "timeout": "超时 (毫秒)",
+        "toggle": {
+          "enable": "启用模块",
+          "disable": "禁用模块",
+        },
         "onError": {
           "info": "这些规则适用于模块发生错误时",
           "button": "出错时",
-          "title": "发生错误时",
+          "title": "错误发生时",
           "retry": "重试操作",
-          "fallbackTitle": "当模块发生错误时将执行",
+          "fallbackTitle": "当模块中发生错误时执行",
           "times": {
             "name": "次数",
             "description": "重试操作的次数",
@@ -70,6 +76,22 @@
           }
         }
       },
+      "wait-connections": {
+        "name": "等待连接",
+        "description": "在继续下一个模块之前等待所有连接",
+        "specificFlow": "只继续一个特定的流程",
+        "selectFlow": "选择流程"
+      },
+      "delete-data": {
+        "name": "删除数据",
+        "description": "删除表格或变量",
+        "from": "数据来自",
+        "allColumns": "[全部列]"
+      },
+      "reload-tab": {
+        "name": "重载标签页",
+        "description": "重新加载激活的标签页"
+      },
       "save-assets": {
         "name": "保存资源",
         "description": "保存资源 (图像, 视频, 音频, 或文件) 从一个元素或 URL",
@@ -117,6 +139,7 @@
         "description": "上传文件到 <input type=\"file\"> 元素",
         "filePath": "URL 或 文件路径",
         "addFile": "添加文件",
+        "onlyURL": "仅支持从 Firefox 浏览器中的 URL 上传文件",
         "requirement": "使用本模块前，请参看要求",
         "noFileAccess": "Automa 没有文件访问权限"
       },
@@ -193,6 +216,7 @@
         "keysAsFirstRow": "使用主键作为第一行",
         "insertData": "插入数据",
         "valueInputOption": "输入选项值",
+        "rangeToSearch": "开始搜索的范围",
         "dataFrom": {
           "label": "数据来自",
           "options": {
@@ -214,6 +238,7 @@
         },
         "select": {
           "get": "获取电子表格单元格值",
+          "getRange": "获取电子表格范围",
           "update": "更新电子表格单元格值"
         }
       },
@@ -414,6 +439,7 @@
         "name": "条件",
         "add": "添加条件",
         "description": "条件模块",
+        "refresh": "刷新条件连接",
         "fallbackTitle": "当所有比较不满足要求时执行",
         "equals": "等于",
         "gt": "大于",
@@ -513,7 +539,13 @@
         "description": "截取当前活动标签页的屏幕截图",
         "imageQuality": "图像质量",
         "saveToColumn": "将屏幕截图插入表格",
-        "saveToComputer": "将屏幕截图保存到计算机"
+        "saveToComputer": "将屏幕截图保存到计算机",
+        "types": {
+          "title": "截图",
+          "page": "页面",
+          "fullpage": "完整页面",
+          "element": "一个元素"
+        }
       },
       "switch-to": {
         "name": "切换框架",

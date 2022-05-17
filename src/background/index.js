@@ -145,61 +145,55 @@ async function checkWorkflowStates() {
   await storage.set('workflowState', states);
 }
 checkWorkflowStates();
-async function checkVisitWebTriggers(changeInfo, tab) {
-  if (!changeInfo.status || changeInfo.status !== 'complete') return;
-
-  const tabIsUsed = await workflow.states.get(({ state }) =>
-    state.tabIds.includes(tab.id)
+async function checkVisitWebTriggers(tabId, tabUrl) {
+  const workflowState = await workflow.states.get(({ state }) =>
+    state.tabIds.includes(tabId)
   );
-
-  if (tabIsUsed) return;
-
   const visitWebTriggers = await storage.get('visitWebTriggers');
-  const triggeredWorkflow = visitWebTriggers.find(({ url, isRegex }) => {
+  const triggeredWorkflow = visitWebTriggers.find(({ url, isRegex, id }) => {
     if (url.trim() === '') return false;
 
-    return tab.url.match(isRegex ? new RegExp(url, 'g') : url);
+    const matchUrl = tabUrl.match(isRegex ? new RegExp(url, 'g') : url);
+
+    return matchUrl && id !== workflowState.workflowId;
   });
 
   if (triggeredWorkflow) {
     const workflowData = await workflow.get(triggeredWorkflow.id);
 
-    if (workflowData) workflow.execute(workflowData, { tabId: tab.id });
+    if (workflowData) workflow.execute(workflowData, { tabId });
   }
 }
-async function checkRecordingWorkflow({ status }, { url, id }) {
-  if (status === 'complete' && validateUrl(url)) {
-    const { isRecording } = await browser.storage.local.get('isRecording');
+async function checkRecordingWorkflow(tabId, tabUrl) {
+  if (!validateUrl(tabUrl)) return;
 
-    if (!isRecording) return;
+  const isRecording = await storage.get('isRecording');
+  if (!isRecording) return;
 
-    await browser.tabs.executeScript(id, {
-      file: 'recordWorkflow.bundle.js',
-    });
-  }
+  await browser.tabs.executeScript(tabId, {
+    file: 'recordWorkflow.bundle.js',
+  });
 }
-browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  checkRecordingWorkflow(changeInfo, tab);
-  checkVisitWebTriggers(changeInfo, tab);
-});
+browser.webNavigation.onCompleted.addListener(
+  async ({ tabId, url, frameId }) => {
+    if (frameId > 0) return;
+
+    checkRecordingWorkflow(tabId, url);
+    checkVisitWebTriggers(tabId, url);
+  }
+);
 browser.commands.onCommand.addListener((name) => {
   if (name === 'open-dashboard') openDashboard();
 });
 browser.webNavigation.onCommitted.addListener(
   ({ frameId, tabId, url, transitionType }) => {
-    const allowedType = ['link', 'typed', 'form_submit'];
-
+    const allowedType = ['link', 'typed'];
     if (frameId !== 0 || !allowedType.includes(transitionType)) return;
 
     updateRecording((recording) => {
       if (tabId !== recording.activeTab.id) return;
 
-      const lastFlow = recording.flows[recording.flows.length - 1];
-      const isClickSubmit =
-        lastFlow.id === 'event-click' && transitionType === 'form_submit';
-
-      if (isClickSubmit) return;
-
+      const lastFlow = recording.flows.at(-1) ?? {};
       const isInvalidNewtabFlow =
         lastFlow &&
         lastFlow.id === 'new-tab' &&
@@ -235,11 +229,11 @@ browser.tabs.onActivated.addListener(async ({ tabId }) => {
     recording.activeTab = { id, url };
     recording.flows.push({
       id: 'switch-tab',
+      description: title,
       data: {
         url,
         matchPattern: url,
         createIfNoMatch: true,
-        description: title || url,
       },
     });
   });
@@ -306,7 +300,7 @@ browser.alarms.onAlarm.addListener(async ({ name }) => {
   }
 });
 
-chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+browser.runtime.onInstalled.addListener(async ({ reason }) => {
   try {
     if (reason === 'install') {
       await browser.storage.local.set({
@@ -347,7 +341,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
     console.error(error);
   }
 });
-chrome.runtime.onStartup.addListener(async () => {
+browser.runtime.onStartup.addListener(async () => {
   const { onStartupTriggers, workflows } = await browser.storage.local.get([
     'onStartupTriggers',
     'workflows',

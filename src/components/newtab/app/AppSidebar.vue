@@ -84,6 +84,7 @@ import { ref } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import browser from 'webextension-polyfill';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { communities } from '@/utils/shared';
@@ -94,7 +95,7 @@ const { t } = useI18n();
 const store = useStore();
 const router = useRouter();
 
-const extensionVersion = chrome.runtime.getManifest().version;
+const extensionVersion = browser.runtime.getManifest().version;
 const tabs = [
   {
     id: 'dashboard',

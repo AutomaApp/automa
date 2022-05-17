@@ -109,7 +109,8 @@
       "title": "Condition builder",
       "add": "Add condition",
       "and": "AND",
-      "or": "OR"
+      "or": "OR",
+      "topAwait": "Support top-level await and \"automaRefData\" function"
     },
     "host": {
       "title": "Host workflow",
@@ -191,6 +192,11 @@
     "settings": {
       "saveLog": "Save workflow log",
       "executedBlockOnWeb": "Show executed block on web page",
+      "defaultColumn": {
+        "title": "Insert into the default column",
+        "description": "Insert data to the default column if there's no column selected in the block",
+        "name": "Default column name"
+      },
       "autocomplete": {
         "title": "Autocomplete",
         "description": "Enable autocomplete in the input block (disable if it makes Automa unstable)"
@@ -229,7 +235,11 @@
       "blockDelay": {
         "title": "Block delay (milliseconds)",
         "description": "Add delay before executing each of the blocks"
-      }
+      },
+      "tabLoadTimeout": {
+        "title": "Tab load timeout",
+        "description": "Maximum time to load tab in milliseconds, pass 0 to disable the timeout."
+      },
     }
   },
   "collection": {
@@ -287,6 +297,7 @@
       "no-workflow": "Can't find workflow with \"{workflowId}\" ID",
       "no-match-tab": "Can't find a tab with \"{pattern}\" patterns",
       "no-clipboard-acces": "Don't have permission to access clipboard",
+      "browser-not-supported": "This feature not supported in {browser} browser",
       "element-not-found": "Can't find an element with \"{selector}\" selector.",
       "not-iframe": "Element with \"{selector}\" selector is not an Iframe element",
       "iframe-not-found": "Can't find an Iframe element with \"{selector}\" selector.",

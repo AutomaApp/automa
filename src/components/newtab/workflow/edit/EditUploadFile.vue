@@ -1,6 +1,19 @@
 <template>
-  <edit-interaction-base v-bind="{ data, hide: hideBase }" @change="updateData">
-    <template v-if="hasFileAccess">
+  <edit-interaction-base
+    class="mb-8"
+    v-bind="{ data, hide: hideBase }"
+    @change="updateData"
+  >
+    <template v-if="hasFileAccess || browserType === 'firefox'">
+      <div
+        v-if="browserType === 'firefox'"
+        class="mt-4 p-2 rounded-lg bg-primary mt-4 flex text-white items-start"
+      >
+        <v-remixicon name="riErrorWarningLine" size="20" />
+        <div class="ml-2 flex-1 leading-tight text-sm">
+          <p>{{ t('workflow.blocks.upload-file.onlyURL') }}</p>
+        </div>
+      </div>
       <div class="mt-4 space-y-2">
         <div
           v-for="(path, index) in filePaths"
@@ -27,7 +40,9 @@
       </ui-button>
     </template>
     <template v-else>
-      <div class="mt-4 p-2 rounded-lg bg-red-200 flex items-start">
+      <div
+        class="mt-4 p-2 rounded-lg bg-red-200 dark:bg-red-400 flex items-start"
+      >
         <v-remixicon name="riErrorWarningLine" />
         <div class="ml-2 flex-1 leading-tight">
           <p>{{ t('workflow.blocks.upload-file.noFileAccess') }}</p>
@@ -47,6 +62,7 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { ref, watch } from 'vue';
+import browser from 'webextension-polyfill';
 import EditInteractionBase from './EditInteractionBase.vue';
 import EditAutocomplete from './EditAutocomplete.vue';
 
@@ -63,6 +79,7 @@ const props = defineProps({
 const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
+const browserType = BROWSER_TYPE;
 
 const filePaths = ref([...props.data.filePaths]);
 const hasFileAccess = ref(true);
@@ -71,7 +88,7 @@ function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }
 
-chrome.extension.isAllowedFileSchemeAccess((value) => {
+browser.extension.isAllowedFileSchemeAccess().then((value) => {
   hasFileAccess.value = value;
 });
 

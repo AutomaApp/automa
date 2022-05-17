@@ -1,82 +1,44 @@
 <template>
-  <div
-    class="workflow-settings space-y-4 divide-y dark:divide-gray-700 divide-gray-100"
-  >
-    <div class="flex items-center">
-      <div class="mr-4 flex-1">
-        <p>
-          {{ t('workflow.settings.onError.title') }}
-        </p>
-        <p class="text-gray-600 dark:text-gray-200 text-sm leading-tight">
-          {{ t('workflow.settings.onError.description') }}
-        </p>
-      </div>
-      <ui-select v-model="settings.onError">
-        <option v-for="item in onError" :key="item.id" :value="item.id">
-          {{ t(`workflow.settings.onError.items.${item.name}`) }}
-        </option>
-      </ui-select>
-      <div
-        v-if="settings.onError === 'restart-workflow'"
-        :title="t('workflow.settings.restartWorkflow.description')"
-        class="flex items-center bg-input transition-colors rounded-lg ml-4"
-      >
-        <input
-          v-model.number="settings.restartTimes"
-          type="number"
-          class="py-2 pl-2 text-right appearance-none w-12 rounded-lg bg-transparent"
-        />
-        <span class="px-2 text-sm">
-          {{ t('workflow.settings.restartWorkflow.times') }}
-        </span>
-      </div>
+  <ui-card padding="p-0" class="workflow-settings w-full max-w-2xl">
+    <div class="flex items-center px-4 pt-4">
+      <p class="flex-1">
+        {{ t('common.settings') }}
+      </p>
+      <v-remixicon
+        name="riCloseLine"
+        class="cursor-pointer"
+        @click="$emit('close')"
+      />
     </div>
-    <div class="flex items-center pt-4">
-      <div class="mr-4 flex-1">
-        <p>
-          {{ t('workflow.settings.blockDelay.title') }}
-        </p>
-        <p class="text-gray-600 dark:text-gray-200 text-sm leading-tight">
-          {{ t('workflow.settings.blockDelay.description') }}
-        </p>
-      </div>
-      <ui-input v-model.number="settings.blockDelay" type="number" />
+    <div class="space-x-2 px-4 pt-2">
+      <ui-tabs v-model="activeTab" class="space-x-2">
+        <ui-tab v-for="tab in tabs" :key="tab.value" :value="tab.value">
+          {{ tab.name }}
+        </ui-tab>
+      </ui-tabs>
     </div>
-    <div
-      v-for="item in settingItems"
-      :key="item.id"
-      class="flex items-center pt-4"
+    <ui-tab-panels
+      v-model="activeTab"
+      class="overflow-auto scroll pt-4 px-4 pb-4 settings-content"
+      style="height: calc(100vh - 10rem); max-height: 600px"
     >
-      <div class="mr-4 flex-1">
-        <p>
-          {{ item.name }}
-        </p>
-        <p class="text-gray-600 dark:text-gray-200 text-sm leading-tight">
-          {{ item.description }}
-        </p>
-      </div>
-      <ui-switch v-model="settings[item.id]" class="mr-4" />
-    </div>
-    <div class="flex items-center pt-4">
-      <div class="mr-4 flex-1">
-        <p>
-          {{ t('workflow.settings.clearCache.title') }}
-        </p>
-        <p class="text-gray-600 dark:text-gray-200 text-sm leading-tight">
-          {{ t('workflow.settings.clearCache.description') }}
-        </p>
-      </div>
-      <ui-button @click="onClearCacheClick">
-        {{ t('workflow.settings.clearCache.btn') }}
-      </ui-button>
-    </div>
-  </div>
+      <ui-tab-panel v-for="tab in tabs" :key="tab.value" :value="tab.value">
+        <component
+          :is="tab.component"
+          :settings="settings"
+          @update="settings[$event.key] = $event.value"
+        />
+      </ui-tab-panel>
+    </ui-tab-panels>
+  </ui-card>
 </template>
 <script setup>
-import { onMounted, reactive, watch } from 'vue';
+import { onMounted, ref, reactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useToast } from 'vue-toastification';
-import { clearCache, debounce } from '@/utils/helper';
+import { debounce } from '@/utils/helper';
+import SettingsTable from './settings/SettingsTable.vue';
+import SettingsBlocks from './settings/SettingsBlocks.vue';
+import SettingsGeneral from './settings/SettingsGeneral.vue';
 
 const props = defineProps({
   workflow: {
@@ -84,62 +46,36 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-const emit = defineEmits(['update']);
+const emit = defineEmits(['update', 'close']);
 
 const { t } = useI18n();
-const toast = useToast();
 
-const onError = [
+const tabs = [
   {
-    id: 'keep-running',
-    name: 'keepRunning',
+    value: 'general',
+    component: SettingsGeneral,
+    name: t('settings.menu.general'),
   },
   {
-    id: 'stop-workflow',
-    name: 'stopWorkflow',
+    value: 'table',
+    component: SettingsTable,
+    name: t('workflow.table.title'),
   },
   {
-    id: 'restart-workflow',
-    name: 'restartWorkflow',
-  },
-];
-const settingItems = [
-  {
-    id: 'debugMode',
-    name: t('workflow.settings.debugMode.title'),
-    description: t('workflow.settings.debugMode.description'),
-  },
-  {
-    id: 'inputAutocomplete',
-    name: t('workflow.settings.autocomplete.title'),
-    description: t('workflow.settings.autocomplete.description'),
-  },
-  {
-    id: 'reuseLastState',
-    name: t('workflow.settings.reuseLastState.title'),
-    description: t('workflow.settings.reuseLastState.description'),
-  },
-  {
-    id: 'saveLog',
-    name: t('workflow.settings.saveLog'),
-    description: '',
-  },
-  {
-    id: 'executedBlockOnWeb',
-    name: t('workflow.settings.executedBlockOnWeb'),
-    description: '',
+    value: 'blocks',
+    component: SettingsBlocks,
+    name: t('workflow.blocks.base.title'),
   },
 ];
 
+const activeTab = ref('general');
 const settings = reactive({
   restartTimes: 3,
+  tabLoadTimeout: 30000,
   inputAutocomplete: true,
+  insertDefaultColumn: true,
+  defaultColumnName: 'column',
 });
-
-async function onClearCacheClick() {
-  const cacheCleared = await clearCache(props.workflow);
-  if (cacheCleared) toast(t('workflow.settings.clearCache.info'));
-}
 
 watch(
   settings,
@@ -155,3 +91,8 @@ onMounted(() => {
   Object.assign(settings, props.workflow.settings);
 });
 </script>
+<style>
+.settings-content .ui-tab-panel {
+  @apply space-y-4 space-y-4 divide-y dark:divide-gray-700 divide-gray-100;
+}
+</style>

@@ -5,6 +5,12 @@ export async function hoverElement(block) {
 
   try {
     if (!this.activeTab.id) throw new Error('no-tab');
+    if (BROWSER_TYPE !== 'chrome') {
+      const error = new Error('browser-not-supported');
+      error.data = { browser: BROWSER_TYPE };
+
+      throw error;
+    }
 
     const { debugMode, executedBlockOnWeb } = this.settings;
 

@@ -8,13 +8,13 @@
         v-tooltip.group="t('home.record.title')"
         icon
         class="mr-2"
-        @click="recordWorkflow"
+        @click="state.newRecordingModal = true"
       >
         <v-remixicon name="riRecordCircleLine" />
       </ui-button>
       <ui-button
         v-tooltip.group="
-          t(`home.elementSelector.${haveAccess ? 'name' : 'noAccess'}`)
+          t(`home.elementSelector.${state.haveAccess ? 'name' : 'noAccess'}`)
         "
         icon
         class="mr-2"
@@ -33,7 +33,7 @@
     </div>
     <div class="flex">
       <ui-input
-        v-model="query"
+        v-model="state.query"
         :placeholder="`${t('common.search')}...`"
         prepend-icon="riSearch2Line"
         class="w-full search-input"
@@ -63,9 +63,33 @@
       @delete="deleteWorkflow"
     />
   </div>
+  <ui-modal v-model="state.newRecordingModal" custom-content>
+    <ui-card
+      :style="{ height: `${state.cardHeight}px` }"
+      class="w-full recording-card overflow-hidden rounded-b-none"
+      padding="p-0"
+    >
+      <div class="flex items-center px-4 pt-4 pb-2">
+        <p class="flex-1 font-semibold">
+          {{ t('home.record.title') }}
+        </p>
+        <v-remixicon
+          class="text-gray-600 dark:text-gray-300 cursor-pointer"
+          name="riCloseLine"
+          size="20"
+          @click="state.newRecordingModal = false"
+        ></v-remixicon>
+      </div>
+      <home-start-recording
+        @record="recordWorkflow"
+        @close="state.newRecordingModal = false"
+        @update="state.cardHeight = recordingCardHeight[$event] || 255"
+      />
+    </ui-card>
+  </ui-modal>
 </template>
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { computed, onMounted, shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import browser from 'webextension-polyfill';
 import { useDialog } from '@/composable/dialog';
@@ -73,19 +97,29 @@ import { useGroupTooltip } from '@/composable/groupTooltip';
 import { sendMessage } from '@/utils/message';
 import Workflow from '@/models/workflow';
 import HomeWorkflowCard from '@/components/popup/home/HomeWorkflowCard.vue';
+import HomeStartRecording from '@/components/popup/home/HomeStartRecording.vue';
+
+const recordingCardHeight = {
+  new: 255,
+  existing: 480,
+};
 
 const { t } = useI18n();
 const dialog = useDialog();
 
 useGroupTooltip();
 
-const query = ref('');
-const haveAccess = ref(true);
+const state = shallowReactive({
+  query: '',
+  cardHeight: 255,
+  haveAccess: true,
+  newRecordingModal: false,
+});
 
 const workflows = computed(() =>
   Workflow.query()
     .where(({ name }) =>
-      name.toLocaleLowerCase().includes(query.value.toLocaleLowerCase())
+      name.toLocaleLowerCase().includes(state.query.toLocaleLowerCase())
     )
     .orderBy('createdAt', 'desc')
     .get()
@@ -144,59 +178,60 @@ async function initElementSelector() {
     console.error(error);
   }
 }
-function recordWorkflow() {
-  dialog.prompt({
-    title: t('home.record.title'),
-    okText: t('home.record.button'),
-    placeholder: t('home.record.name'),
-    onConfirm: async (name) => {
-      const flows = [];
-      const [activeTab] = await browser.tabs.query({
-        active: true,
-        currentWindow: true,
-      });
+async function recordWorkflow(options = {}) {
+  try {
+    const flows = [];
+    const [activeTab] = await browser.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
 
-      if (activeTab && activeTab.url.startsWith('http')) {
-        flows.push({
-          id: 'new-tab',
-          description: activeTab.url,
-          data: { url: activeTab.url },
+    if (activeTab && activeTab.url.startsWith('http')) {
+      flows.push({
+        id: 'new-tab',
+        description: activeTab.url,
+        data: { url: activeTab.url },
+      });
+    }
+
+    await browser.storage.local.set({
+      isRecording: true,
+      recording: {
+        flows,
+        name: 'unnamed',
+        activeTab: {
+          id: activeTab.id,
+          url: activeTab.url,
+        },
+        ...options,
+      },
+    });
+    await browser.browserAction.setBadgeBackgroundColor({ color: '#ef4444' });
+    await browser.browserAction.setBadgeText({ text: 'rec' });
+
+    const tabs = await browser.tabs.query({});
+    for (const tab of tabs) {
+      if (tab.url.startsWith('http')) {
+        await browser.tabs.executeScript(tab.id, {
+          file: 'recordWorkflow.bundle.js',
         });
       }
+    }
 
-      await browser.storage.local.set({
-        isRecording: true,
-        recording: {
-          flows,
-          activeTab: {
-            id: activeTab.id,
-            url: activeTab.url,
-          },
-          name: name || 'unnamed',
-        },
-      });
-      await browser.browserAction.setBadgeBackgroundColor({ color: '#ef4444' });
-      await browser.browserAction.setBadgeText({ text: 'rec' });
-
-      const tabs = (await browser.tabs.query({})).filter(({ url }) =>
-        url.startsWith('http')
-      );
-      await Promise.allSettled(
-        tabs.map(({ id }) =>
-          browser.tabs.executeScript(id, {
-            file: 'recordWorkflow.bundle.js',
-          })
-        )
-      );
-
-      window.close();
-    },
-  });
+    window.close();
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 onMounted(async () => {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
 
-  haveAccess.value = /^(https?)/.test(tab.url);
+  state.haveAccess = /^(https?)/.test(tab.url);
 });
 </script>
+<style>
+.recording-card {
+  transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+</style>

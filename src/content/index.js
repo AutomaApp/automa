@@ -2,49 +2,38 @@ import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
 import { toCamelCase } from '@/utils/helper';
 import FindElement from '@/utils/FindElement';
+import { getDocumentCtx } from './handleSelector';
 import executedBlock from './executedBlock';
 import blocksHandler from './blocksHandler';
+import handleTestCondition from './handleTestCondition';
 
-function handleConditionBuilder({ data, type }) {
-  if (!type.startsWith('element')) return null;
+function messageListener({ data, source }) {
+  if (data !== 'automa:get-frame') return;
 
-  const selectorType = data.selector.startsWith('/') ? 'xpath' : 'cssSelector';
+  let frameRect = { x: 0, y: 0 };
 
-  const element = FindElement[selectorType](data);
-  const { 1: actionType } = type.split('#');
+  document.querySelectorAll('iframe').forEach((iframe) => {
+    if (iframe.contentWindow !== source) return;
 
-  if (!element) {
-    if (actionType === 'visible' || actionType === 'invisible') return false;
+    frameRect = iframe.getBoundingClientRect();
+  });
 
-    return null;
-  }
-
-  const elementActions = {
-    text: () => element.innerText,
-    visible: () => {
-      const { visibility, display } = getComputedStyle(element);
-
-      return visibility !== 'hidden' && display !== 'none';
+  source.postMessage(
+    {
+      frameRect,
+      type: 'automa:the-frame-rect',
     },
-    invisible: () => {
-      const { visibility, display } = getComputedStyle(element);
-
-      return visibility === 'hidden' || display === 'none';
-    },
-    attribute: ({ attrName }) => {
-      if (!element.hasAttribute(attrName)) return null;
-
-      return element.getAttribute(attrName);
-    },
-  };
-
-  return elementActions[actionType](data);
+    '*'
+  );
 }
 
 (() => {
   if (window.isAutomaInjected) return;
-
   window.isAutomaInjected = true;
+
+  if (window.self === window.top) {
+    window.addEventListener('message', messageListener);
+  }
 
   browser.runtime.onMessage.addListener((data) => {
     return new Promise((resolve, reject) => {
@@ -74,21 +63,31 @@ function handleConditionBuilder({ data, type }) {
 
       switch (data.type) {
         case 'condition-builder':
-          resolve(handleConditionBuilder(data.data));
+          handleTestCondition(data.data)
+            .then((result) => resolve(result))
+            .catch((error) => reject(error));
           break;
         case 'content-script-exists':
           resolve(true);
           break;
-        case 'give-me-the-frame-id':
-          browser.runtime.sendMessage({
-            type: 'this-is-the-frame-id',
-          });
-          resolve();
-          break;
         case 'loop-elements': {
           const selectors = [];
           const attrId = nanoid(5);
-          const elements = document.body.querySelectorAll(data.selector);
+
+          const documentCtx = getDocumentCtx(data.frameSelector);
+          const selectorType = data.selector.startsWith('/')
+            ? 'xpath'
+            : 'cssSelector';
+          const elements = FindElement[selectorType](
+            { selector: data.selector, multiple: true },
+            documentCtx
+          );
+
+          if (!elements || elements?.length === 0) {
+            reject(new Error('element-not-found'));
+
+            return;
+          }
 
           elements.forEach((el, index) => {
             if (data.max > 0 && selectors.length - 1 > data.max) return;

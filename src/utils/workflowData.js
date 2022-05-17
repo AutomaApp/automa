@@ -1,3 +1,4 @@
+import browser from 'webextension-polyfill';
 import Workflow from '@/models/workflow';
 import { parseJSON, fileSaver, openFilePicker, isObject } from './helper';
 
@@ -77,7 +78,7 @@ export function convertWorkflow(workflow, additionalKeys = []) {
     ...additionalKeys,
   ];
   const content = {
-    extVersion: chrome.runtime.getManifest().version,
+    extVersion: browser.runtime.getManifest().version,
   };
 
   keys.forEach((key) => {

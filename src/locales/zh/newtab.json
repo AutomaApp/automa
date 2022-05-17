@@ -37,6 +37,14 @@
         "description": "添加箭头到线的尾端"
       }
     },
+    "deleteLog": {
+      "title": "自动删除工作流日志",
+      "after": "删除间隔",
+      "deleteAfter": {
+        "never": "从不",
+        "days": "{day} 天"
+      }
+    },
     "language": {
       "label": "语言",
       "helpTranslate": "找不到您的语言？ 帮助翻译.",
@@ -54,6 +62,7 @@
       "invalidPassword": "无效密码",
       "workflowsAdded": "{count} 个工作流已被添加",
       "name": "备份工作流",
+      "needSignin": "首先你需要登录账户",
       "backup": {
         "button": "备份",
         "encrypt": "用密码加密"
@@ -68,6 +77,7 @@
           "local": "本地",
           "cloud": "云端"
         },
+        "location": "位置",
         "delete": "删除备份",
         "title": "云端备份",
         "sync": "同步",
@@ -90,6 +100,7 @@
     "browse": "浏览工作流",
     "name": "工作流名称",
     "rename": "重命名工作流",
+    "backupCloud": "备份工作流到云端",
     "add": "添加工作流",
     "clickToEnable": "单击启用",
     "toggleSidebar": "切换侧栏",
@@ -112,12 +123,12 @@
       "messages": {
         "hostExist": "您已添加此主机",
         "notFound": "找不到托管工作流 \"{id}\" id"
-      },
+      }
     },
     "type": {
       "local": "本地",
       "shared": "共享",
-      "host": "主机",
+      "host": "主机"
     },
     "unpublish": {
       "title": "取消发布工作流",
@@ -173,11 +184,18 @@
       "zoomIn": "放大",
       "zoomOut": "缩小",
       "resetZoom": "重置缩放",
-      "duplicate": "副本"
+      "duplicate": "副本",
+      "copy": "复制",
+      "paste": "粘贴"
     },
     "settings": {
       "saveLog": "保存工作流日志",
       "executedBlockOnWeb": "在网页上显示已执行的模块",
+      "defaultColumn": {
+        "title": "插入信息到默认列",
+        "description": "如果模块中没有选择列，则将数据插入默认列",
+        "name": "默认列名称"
+      },
       "autocomplete": {
         "title": "自动完成",
         "description": "在输入块中启用自动完成（如果造成 Automa 不稳定请禁用）"
@@ -238,6 +256,7 @@
     }
   },
   "log": {
+    "flowId": "流程 Id",
     "goBack": "返回到 \"{name}\" 日志",
     "goWorkflow": "转到工作流",
     "startedDate": "启动日期",
@@ -273,6 +292,7 @@
       "no-workflow": "找不到含 \"{workflowId}\" ID 的工作流",
       "no-match-tab": "找不到含 \"{pattern}\" 参数的标签页",
       "no-clipboard-acces": "无权访问剪贴板",
+      "browser-not-supported": "{browser} 浏览器不支持此功能",
       "element-not-found": "找不到含 \"{selector}\" 选择器的元素.",
       "not-iframe": "含 \"{selector}\" 选择器的元素并不是一个 Iframe 元素",
       "iframe-not-found": "找不到含 \"{selector}\" 选择器的 Iframe 元素.",

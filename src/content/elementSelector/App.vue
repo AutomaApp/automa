@@ -5,16 +5,16 @@
       'bg-black bg-opacity-30': !state.hide,
     }"
     class="root fixed h-full w-full pointer-events-none top-0 text-black left-0"
-    style="z-index: 9999999999; font-family: Inter, sans-serif; font-size: 16px"
+    style="z-index: 99999999"
   >
     <div
       ref="cardEl"
       :style="{ transform: `translate(${cardRect.x}px, ${cardRect.y}px)` }"
       style="width: 320px"
-      class="absolute root-card bg-white shadow-xl z-50 p-4 pointer-events-auto rounded-lg"
+      class="relative root-card bg-white shadow-xl z-50 pointer-events-auto rounded-lg"
     >
       <div
-        class="absolute p-2 drag-button shadow-xl bg-white p-1 cursor-move rounded-lg"
+        class="absolute p-2 drag-button z-50 shadow-xl bg-white p-1 cursor-move rounded-lg"
         style="top: -15px; left: -15px"
       >
         <v-remixicon
@@ -22,154 +22,99 @@
           @mousedown="state.isDragging = true"
         />
       </div>
-      <div class="flex items-center">
-        <p class="ml-1 text-lg font-semibold">Automa</p>
-        <div class="flex-grow"></div>
-        <ui-button icon class="mr-2" @click="state.hide = !state.hide">
-          <v-remixicon :name="state.hide ? 'riEyeOffLine' : 'riEyeLine'" />
-        </ui-button>
-        <ui-button icon @click="destroy">
-          <v-remixicon name="riCloseLine" />
-        </ui-button>
-      </div>
-      <app-selector
-        v-model:selectorType="state.selectorType"
-        v-model:selectList="state.selectList"
-        :selector="state.elSelector"
-        :selected-count="state.selectedElements.length"
-        @child="selectChildElement"
-        @parent="selectParentElement"
-        @change="updateSelectedElements"
-      />
-      <template v-if="!state.hide && state.selectedElements.length > 0">
-        <ui-tabs v-model="state.activeTab" class="mt-2" fill>
-          <ui-tab value="attributes"> Attributes </ui-tab>
-          <ui-tab v-if="state.selectElements.length > 0" value="options">
-            Options
-          </ui-tab>
-          <ui-tab value="blocks"> Blocks </ui-tab>
-        </ui-tabs>
-        <ui-tab-panels
-          v-model="state.activeTab"
-          class="overflow-y-auto scroll"
-          style="max-height: calc(100vh - 17rem)"
+      <div class="flex px-4 pt-4 items-center">
+        <ui-tabs
+          v-if="false"
+          v-model="mainActiveTab"
+          type="fill"
+          class="main-tab"
         >
-          <ui-tab-panel value="attributes">
-            <app-element-list
-              :elements="state.selectedElements"
-              @highlight="toggleHighlightElement"
-            >
-              <template #item="{ element }">
-                <div
-                  v-for="(value, name) in element.attributes"
-                  :key="name"
-                  class="bg-box-transparent mb-1 rounded-lg py-2 px-3"
-                >
-                  <p
-                    class="text-sm text-overflow leading-tight text-gray-600"
-                    title="Attribute name"
-                  >
-                    {{ name }}
-                  </p>
-                  <input
-                    :value="value"
-                    readonly
-                    title="Attribute value"
-                    class="bg-transparent w-full"
-                  />
-                </div>
-              </template>
-            </app-element-list>
-          </ui-tab-panel>
-          <ui-tab-panel value="options">
-            <app-element-list
-              :elements="state.selectElements"
-              element-name="Select element options"
-              @highlight="
-                toggleHighlightElement({
-                  index: $event.element.index,
-                  highlight: $event.highlight,
-                })
-              "
-            >
-              <template #item="{ element }">
-                <div
-                  v-for="option in element.options"
-                  :key="option.name"
-                  class="bg-box-transparent mb-1 rounded-lg py-2 px-3"
-                >
-                  <p
-                    class="text-sm text-overflow leading-tight text-gray-600"
-                    title="Option name"
-                  >
-                    {{ option.name }}
-                  </p>
-                  <input
-                    :value="option.value"
-                    title="Option value"
-                    class="text-overflow focus:ring-0 w-full bg-transparent"
-                    readonly
-                    @click="$event.target.select()"
-                  />
-                </div>
-              </template>
-            </app-element-list>
-          </ui-tab-panel>
-          <ui-tab-panel value="blocks">
-            <app-blocks
-              :elements="state.selectedElements"
-              :selector="state.elSelector"
-              @execute="state.isExecuting = $event"
-              @update="updateCardSize"
-            />
-          </ui-tab-panel>
-        </ui-tab-panels>
-      </template>
+          <ui-tab value="selector"> Selector </ui-tab>
+          <ui-tab value="workflow"> Workflow </ui-tab>
+        </ui-tabs>
+        <p class="text-lg font-semibold">Automa</p>
+        <div class="flex-grow"></div>
+        <button
+          class="mr-2 hoverable p-1 rounded-md transition"
+          @click="state.hide = !state.hide"
+        >
+          <v-remixicon :name="state.hide ? 'riEyeOffLine' : 'riEyeLine'" />
+        </button>
+        <button class="hoverable p-1 rounded-md transition" @click="destroy">
+          <v-remixicon name="riCloseLine" />
+        </button>
+      </div>
+      <div class="p-4">
+        <selector-query
+          v-model:selectorType="state.selectorType"
+          v-model:selectList="state.selectList"
+          :selector="state.elSelector"
+          :selected-count="state.selectedElements.length"
+          @child="selectChildElement"
+          @parent="selectParentElement"
+          @change="updateSelectedElements"
+        />
+        <selector-elements-detail
+          v-if="!state.hide && state.selectedElements.length > 0"
+          v-model:active-tab="state.activeTab"
+          v-bind="{
+            elSelector: state.elSelector,
+            selectElements: state.selectElements,
+            selectedElements: state.selectedElements,
+          }"
+          @highlight="toggleHighlightElement"
+          @execute="state.isExecuting = $event"
+        />
+      </div>
     </div>
-    <svg
+    <shared-element-highlighter
       v-if="!state.hide"
-      class="h-full w-full absolute top-0 pointer-events-none left-0 z-10"
-    >
-      <app-element-highlighter
-        :items="state.hoveredElements"
-        stroke="#fbbf24"
-        fill="rgba(251, 191, 36, 0.1)"
-      />
-      <app-element-highlighter
-        :items="state.selectedElements"
-        stroke="#2563EB"
-        active-stroke="#f87171"
-        fill="rgba(37, 99, 235, 0.1)"
-        active-fill="rgba(248, 113, 113, 0.1)"
-      />
-    </svg>
+      :disabled="state.hide"
+      :data="elementsHighlightData"
+      :items="{
+        hoveredElements: state.hoveredElements,
+        selectedElements: state.selectedElements,
+      }"
+      @update="state[$event.key] = $event.items"
+    />
   </div>
+  <teleport to="body">
+    <div
+      v-if="!state.hide"
+      style="
+        z-index: 9999999;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+      "
+    ></div>
+  </teleport>
 </template>
 <script setup>
-import { reactive, ref, watch, inject, nextTick } from 'vue';
+import { reactive, ref, watch, inject, onMounted, onBeforeUnmount } from 'vue';
 import { getCssSelector } from 'css-selector-generator';
-import { debounce } from '@/utils/helper';
 import { finder } from '@medv/finder';
+import { elementsHighlightData } from '@/utils/shared';
 import findElement from '@/utils/FindElement';
-import AppBlocks from './AppBlocks.vue';
-import AppSelector from './AppSelector.vue';
-import AppElementList from './AppElementList.vue';
-import AppElementHighlighter from './AppElementHighlighter.vue';
+import SelectorQuery from '@/components/content/selector/SelectorQuery.vue';
+import SelectorElementsDetail from '@/components/content/selector/SelectorElementsDetail.vue';
+import SharedElementHighlighter from '@/components/content/shared/SharedElementHighlighter.vue';
 import findElementList from './listSelector';
 
 const selectedElement = {
   path: [],
   pathIndex: 0,
 };
-let lastScrollPosY = window.scrollY;
-let lastScrollPosX = window.scrollX;
+
 const originalFontSize = document.documentElement.style.fontSize;
 
 const rootElement = inject('rootElement');
 
 const cardEl = ref('cardEl');
+const mainActiveTab = ref('selector');
 const state = reactive({
-  activeTab: '',
   elSelector: '',
   listSelector: '',
   isDragging: false,
@@ -179,6 +124,7 @@ const state = reactive({
   hoveredElements: [],
   selectorType: 'css',
   selectedElements: [],
+  activeTab: 'attributes',
   hide: window.self !== window.top,
 });
 const cardRect = reactive({
@@ -186,6 +132,13 @@ const cardRect = reactive({
   y: 0,
   height: 0,
   width: 0,
+});
+
+const cardElementObserver = new ResizeObserver(([entry]) => {
+  const { height, width } = entry.contentRect;
+
+  cardRect.width = width;
+  cardRect.height = height;
 });
 
 /* eslint-disable  no-use-before-define */
@@ -330,19 +283,15 @@ function getElementList(target) {
 }
 let prevHoverElement = null;
 function handleMouseMove({ clientX, clientY, target }) {
-  if (prevHoverElement === target) return;
-
-  prevHoverElement = target;
-
   if (state.isDragging) {
     const height = window.innerHeight;
     const width = document.documentElement.clientWidth;
 
-    if (clientY < 10) clientY = 0;
+    if (clientY < 10) clientY = 10;
     else if (cardRect.height + clientY > height)
       clientY = height - cardRect.height;
 
-    if (clientX < 10) clientX = 0;
+    if (clientX < 10) clientX = 10;
     else if (cardRect.width + clientX > width) clientX = width - cardRect.width;
 
     cardRect.x = clientX;
@@ -351,26 +300,33 @@ function handleMouseMove({ clientX, clientY, target }) {
     return;
   }
 
+  const { 1: realTarget } = document.elementsFromPoint(clientX, clientY);
+
+  if (prevHoverElement === realTarget) return;
+  prevHoverElement = realTarget;
+
   if (state.hide || rootElement === target) return;
 
   let elementsRect = [];
 
   if (state.selectList) {
-    const elements = getElementList(target) || [];
+    const elements = getElementList(realTarget) || [];
 
     elementsRect = elements.map((el) => getElementRect(el, true));
   } else {
-    elementsRect = [getElementRect(target)];
+    elementsRect = [getElementRect(realTarget)];
   }
 
   state.hoveredElements = elementsRect;
 }
 function handleClick(event) {
-  const { target, path, ctrlKey } = event;
+  const { target: eventTarget, path, ctrlKey, clientY, clientX } = event;
 
-  if (target === rootElement || state.hide || state.isExecuting) return;
+  if (eventTarget === rootElement || state.hide || state.isExecuting) return;
   event.stopPropagation();
   event.preventDefault();
+
+  const { 1: target } = document.elementsFromPoint(clientX, clientY);
 
   if (state.selectList) {
     const firstElement = state.hoveredElements[0].element;
@@ -397,9 +353,7 @@ function handleClick(event) {
       element.setAttribute('automa-el-list', '');
     });
 
-    const parentSelector = getCssSelector(firstElement.parentElement, {
-      includeTag: true,
-    });
+    const parentSelector = finder(firstElement.parentElement);
     const elementSelector = `${parentSelector} > ${firstElement.tagName.toLowerCase()}`;
 
     state.listSelector = elementSelector;
@@ -471,6 +425,7 @@ function selectChildElement() {
 
     childElement = childEl;
     selectedElement.path.unshift(childEl);
+    selectedElement.pathIndex = 0;
   } else {
     selectedElement.pathIndex -= 1;
     childElement = selectedElement.path[selectedElement.pathIndex];
@@ -492,29 +447,6 @@ function selectParentElement() {
 function handleMouseUp() {
   if (state.isDragging) state.isDragging = false;
 }
-function updateCardSize() {
-  setTimeout(() => {
-    cardRect.height = cardEl.value.getBoundingClientRect().height;
-  }, 250);
-}
-const handleScroll = debounce(() => {
-  if (state.hide) return;
-
-  const yPos = window.scrollY - lastScrollPosY;
-  const xPos = window.scrollX - lastScrollPosX;
-  const updateState = (key) => {
-    state[key].forEach((_, index) => {
-      state[key][index].x -= xPos;
-      state[key][index].y -= yPos;
-    });
-  };
-
-  updateState('hoveredElements');
-  updateState('selectedElements');
-
-  lastScrollPosX = window.scrollX;
-  lastScrollPosY = window.scrollY;
-}, 100);
 function destroy() {
   rootElement.style.display = 'none';
 
@@ -535,11 +467,20 @@ function destroy() {
 
   document.documentElement.style.fontSize = originalFontSize;
 }
+function attachListeners() {
+  cardElementObserver.observe(cardEl.value);
 
-window.addEventListener('scroll', handleScroll);
-window.addEventListener('mouseup', handleMouseUp);
-window.addEventListener('mousemove', handleMouseMove);
-document.addEventListener('click', handleClick, true);
+  window.addEventListener('mouseup', handleMouseUp);
+  window.addEventListener('mousemove', handleMouseMove);
+  document.addEventListener('click', handleClick, true);
+}
+function detachListeners() {
+  cardElementObserver.disconnect();
+
+  window.removeEventListener('mouseup', handleMouseUp);
+  window.removeEventListener('mousemove', handleMouseMove);
+  document.removeEventListener('click', handleClick, true);
+}
 
 watch(
   () => state.isDragging,
@@ -547,7 +488,6 @@ watch(
     document.body.toggleAttribute('automa-isDragging', value);
   }
 );
-watch(() => [state.elSelector, state.activeTab, state.hide], updateCardSize);
 watch(
   () => state.selectList,
   (value) => {
@@ -562,7 +502,7 @@ watch(
   }
 );
 
-nextTick(() => {
+onMounted(() => {
   setTimeout(() => {
     const { height, width } = cardEl.value.getBoundingClientRect();
 
@@ -576,15 +516,34 @@ nextTick(() => {
       '16px',
       'important'
     );
-  }, 250);
+  }, 500);
+
+  attachListeners();
+});
+onBeforeUnmount(() => {
+  detachListeners();
 });
 </script>
 <style>
+.root {
+  font-size: 16px;
+  z-index: 99999;
+  line-height: 1.5 !important;
+  font-family: 'Inter var', sans-serif;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+.root-card:hover .drag-button {
+  transform: scale(1);
+}
 .drag-button {
   transform: scale(0);
   transition: transform 200ms ease-in-out;
 }
-.root-card:hover .drag-button {
-  transform: scale(1);
+.main-tab {
+  background-color: transparent !important;
+  padding: 0 !important;
+}
+.main-tab .ui-tab.is-active.fill {
+  @apply bg-accent text-white !important;
 }
 </style>

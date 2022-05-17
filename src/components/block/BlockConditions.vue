@@ -11,16 +11,18 @@
         <span>{{ t('workflow.blocks.conditions.name') }}</span>
       </div>
       <div class="flex-grow"></div>
-      <v-remixicon
-        name="riDeleteBin7Line"
-        class="cursor-pointer mr-2"
-        @click="editor.removeNodeId(`node-${block.id}`)"
-      />
-      <v-remixicon
-        name="riPencilLine"
-        class="inline-block cursor-pointer"
-        @click="editBlock"
-      />
+      <template v-if="!editor.minimap">
+        <v-remixicon
+          name="riDeleteBin7Line"
+          class="cursor-pointer mr-2"
+          @click="editor.removeNodeId(`node-${block.id}`)"
+        />
+        <v-remixicon
+          name="riPencilLine"
+          class="inline-block cursor-pointer"
+          @click="editBlock"
+        />
+      </template>
     </div>
     <ul
       v-if="block.data.conditions && block.data.conditions.length !== 0"
@@ -62,7 +64,7 @@
   </div>
 </template>
 <script setup>
-import { watch, toRaw, onBeforeUnmount } from 'vue';
+import { watch, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import emitter from '@/lib/mitt';
 import { debounce } from '@/utils/helper';
@@ -99,7 +101,7 @@ function addConditionEmit({ id }) {
 
   const { length } = block.data.conditions;
 
-  if (length >= 10) return;
+  if (length >= 20) return;
   if (length === 0) props.editor.addNodeOutput(block.id);
 
   props.editor.addNodeOutput(block.id);
@@ -133,10 +135,6 @@ function refreshConnections({ id }) {
 watch(
   () => block.data.conditions,
   debounce((newValue, oldValue) => {
-    props.editor.updateNodeDataFromId(block.id, {
-      conditions: toRaw(newValue),
-    });
-
     props.editor.updateConnectionNodes(`node-${block.id}`);
 
     if (!oldValue) return;

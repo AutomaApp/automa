@@ -43,8 +43,14 @@ export default async function ({ data, outputs }) {
   try {
     if (data.closeType === 'window') {
       await closeWindow(data, this.windowId);
+
+      this.windowId = null;
     } else {
       await closeTab(data, this.activeTab.id);
+
+      if (data.activeTab) {
+        this.activeTab.id = null;
+      }
     }
 
     return {

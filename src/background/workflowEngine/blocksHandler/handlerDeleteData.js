@@ -6,9 +6,10 @@ function deleteData({ data, outputs }) {
       if (item.type === 'table') {
         if (item.columnId === '[all]') {
           this.engine.referenceData.table = [];
-          this.engine.columns = {
-            column: { index: 0, name: 'column', type: 'any' },
-          };
+
+          Object.keys(this.engine.columns).forEach((key) => {
+            this.engine.columns[key].index = 0;
+          });
         } else {
           const columnName = this.engine.columns[item.columnId].name;
 

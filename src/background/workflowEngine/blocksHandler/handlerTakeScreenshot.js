@@ -60,13 +60,23 @@ async function takeScreenshot({ data, outputs, name }) {
         throw new Error('no-tab');
       }
 
-      const [tab] = await browser.tabs.query({
-        active: true,
-        currentWindow: true,
-      });
+      let tab = null;
+      const isChrome = BROWSER_TYPE === 'chrome';
+      const captureTab = () => {
+        if (isChrome) return browser.tabs.captureVisibleTab(options);
 
-      if (this.windowId) {
-        await browser.windows.update(this.windowId, { focused: true });
+        return browser.tabs.captureTab(this.activeTab.id, options);
+      };
+
+      if (isChrome) {
+        [tab] = await browser.tabs.query({
+          active: true,
+          currentWindow: true,
+        });
+
+        if (this.windowId) {
+          await browser.windows.update(this.windowId, { focused: true });
+        }
       }
 
       await browser.tabs.update(this.activeTab.id, { active: true });
@@ -81,7 +91,7 @@ async function takeScreenshot({ data, outputs, name }) {
             selector: data.selector,
             tabId: this.activeTab.id,
           })
-        : browser.tabs.captureVisibleTab(options));
+        : captureTab());
 
       if (tab) {
         await browser.windows.update(tab.windowId, { focused: true });

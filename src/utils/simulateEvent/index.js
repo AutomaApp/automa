@@ -32,9 +32,9 @@ export function getEventObj(name, params) {
 
 export default function (element, name, params) {
   const event = getEventObj(name, params);
-  const useNativeEvents = ['focus', 'submit', 'blur'];
+  const useNativeMethods = ['focus', 'submit', 'blur'];
 
-  if (useNativeEvents.includes(name) && element[name]) {
+  if (useNativeMethods.includes(name) && element[name]) {
     element[name]();
   } else {
     element.dispatchEvent(event);

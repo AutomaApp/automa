@@ -16,13 +16,33 @@ class FindElement {
   }
 
   static xpath(data, documentCtx = document) {
-    return documentCtx.evaluate(
+    const resultType = data.multiple
+      ? XPathResult.ORDERED_NODE_ITERATOR_TYPE
+      : XPathResult.FIRST_ORDERED_NODE_TYPE;
+
+    let result = null;
+    const elements = documentCtx.evaluate(
       data.selector,
       documentCtx,
       null,
-      XPathResult.FIRST_ORDERED_NODE_TYPE,
+      resultType,
       null
-    ).singleNodeValue;
+    );
+
+    if (data.multiple) {
+      result = [];
+      let element = elements.iterateNext();
+
+      while (element) {
+        result.push(element);
+
+        element = elements.iterateNext();
+      }
+    } else {
+      result = elements.singleNodeValue;
+    }
+
+    return result;
   }
 }
 

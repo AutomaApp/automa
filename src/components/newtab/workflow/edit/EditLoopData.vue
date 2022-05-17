@@ -49,7 +49,7 @@
         :model-value="data.elementSelector"
         :label="t('workflow.blocks.base.selector')"
         autocomplete="off"
-        placeholder=".selector"
+        placeholder="CSS Selector or XPath"
         class="w-full"
         @change="updateData({ elementSelector: $event })"
       />

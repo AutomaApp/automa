@@ -56,8 +56,12 @@ class Worker {
       return;
     }
 
+    const insertDefault = this.settings.insertDefaultColumn ?? true;
     const columnId =
       (this.engine.columns[key] ? key : this.engine.columnsId[key]) || 'column';
+
+    if (columnId === 'column' && !insertDefault) return;
+
     const currentColumn = this.engine.columns[columnId];
     const columnName = currentColumn.name || 'column';
     const convertedValue = convertData(value, currentColumn.type);
@@ -199,6 +203,7 @@ class Worker {
         this.engine.destroyWorker(this.id);
       }
     } catch (error) {
+      console.error(error);
       const { onError: blockOnError } = replacedBlock.data;
       if (blockOnError && blockOnError.enable) {
         if (blockOnError.retry && blockOnError.retryTimes) {
@@ -213,7 +218,7 @@ class Worker {
           block,
           blockOnError.toDo === 'continue' ? 1 : 2
         );
-        if (blockOnError.toDo !== 'error' && nextBlocks.connections) {
+        if (blockOnError.toDo !== 'error' && nextBlocks?.connections) {
           addBlockLog('error', {
             message: error.message,
             ...(error.data || {}),
@@ -231,7 +236,7 @@ class Worker {
       });
 
       const { onError } = this.settings;
-      const nodeConnections = error.nextBlockId.connections;
+      const nodeConnections = error.nextBlockId?.connections;
 
       if (onError === 'keep-running' && nodeConnections) {
         setTimeout(() => {
@@ -272,7 +277,13 @@ class Worker {
 
     this.engine.history = [];
     this.engine.preloadScripts = [];
-    this.engine.columns = { column: { index: 0, name: 'column', type: 'any' } };
+    this.engine.columns = {
+      column: {
+        index: 0,
+        type: 'any',
+        name: this.settings?.defaultColumnName || 'column',
+      },
+    };
 
     this.activeTab = {
       url: '',
@@ -300,7 +311,10 @@ class Worker {
         throw error;
       }
 
-      await waitTabLoaded(this.activeTab.id);
+      await waitTabLoaded(
+        this.activeTab.id,
+        this.settings?.tabLoadTimeout ?? 30000
+      );
       await executeContentScript(
         this.activeTab.id,
         this.activeTab.frameId || 0
