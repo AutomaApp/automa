@@ -13,7 +13,11 @@ function handleConditionElement({ data, type }) {
     exists: () => Boolean(element),
     notExists: () => !element,
     text: () => element?.innerText ?? null,
-    visibleScreen: () => visibleInViewport(element),
+    visibleScreen: () => {
+      if (!element) return false;
+
+      return visibleInViewport(element);
+    },
     visible: () => {
       if (!element) return false;
 

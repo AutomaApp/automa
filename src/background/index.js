@@ -155,7 +155,7 @@ async function checkVisitWebTriggers(tabId, tabUrl) {
 
     const matchUrl = tabUrl.match(isRegex ? new RegExp(url, 'g') : url);
 
-    return matchUrl && id !== workflowState.workflowId;
+    return matchUrl && id !== workflowState?.workflowId;
   });
 
   if (triggeredWorkflow) {

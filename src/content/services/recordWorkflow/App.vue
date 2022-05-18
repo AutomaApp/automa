@@ -146,7 +146,7 @@
               >
                 <option value="" selected>Select column [none]</option>
                 <option
-                  v-for="column in selectState.workflowColumns"
+                  v-for="column in addBlockState.workflowColumns"
                   :key="column.id"
                   :value="column.id"
                 >
@@ -277,7 +277,7 @@ function addFlowItem() {
       saveData,
       assignVariable,
       waitForSelector: true,
-      column: addBlockState.column,
+      dataColumn: addBlockState.column,
       variableName: addBlockState.varName,
       selector: selectState.list
         ? selectState.listSelector
