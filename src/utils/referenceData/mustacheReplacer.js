@@ -104,18 +104,29 @@ function replacer(str, { regex, tagLen, modifyPath, data }) {
     let key = match.slice(tagLen, -tagLen).trim();
 
     if (!key) return '';
-    if (modifyPath && typeof modifyPath === 'function') {
+
+    let result = '';
+    const isFunction = extractStrFunction(key);
+    const funcRef = isFunction && data.functions[isFunction.name];
+
+    if (modifyPath && !funcRef) {
       key = modifyPath(key);
     }
 
-    let result = '';
-    const funcRef = extractStrFunction(key);
+    if (funcRef) {
+      const funcParams = isFunction.params.map((param) => {
+        const { value, list } = replacer(param, {
+          data,
+          tagLen: 1,
+          regex: /\[(.*?)\]/,
+        });
 
-    if (funcRef && data.functions[funcRef.name]) {
-      result = data.functions[funcRef.name]?.apply(
-        { refData: data },
-        funcRef.params
-      );
+        Object.assign(replaceResult.list, list);
+
+        return value;
+      });
+
+      result = funcRef.apply({ refData: data }, funcParams);
     } else {
       const { dataKey, path } = keyParser(key, data);
 
