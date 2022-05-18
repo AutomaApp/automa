@@ -146,7 +146,7 @@
               >
                 <option value="" selected>Select column [none]</option>
                 <option
-                  v-for="column in selectState.workflowColumns"
+                  v-for="column in addBlockState.workflowColumns"
                   :key="column.id"
                   :value="column.id"
                 >
