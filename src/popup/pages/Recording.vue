@@ -170,40 +170,38 @@ function generateDrawflow(startBlock, startBlockData) {
 }
 async function stopRecording() {
   if (state.isGenerating) return;
-  if (state.flows.length === 0) {
-    router.push('/');
-    return;
-  }
 
   try {
     state.isGenerating = true;
 
-    if (state.workflowId) {
-      const workflow = Workflow.find(state.workflowId);
-      const drawflow =
-        typeof workflow.drawflow === 'string'
-          ? JSON.parse(workflow.drawflow)
-          : workflow.drawflow;
-      const node = drawflow.drawflow.Home.data[state.connectFrom.id];
-      const updatedDrawflow = generateDrawflow(state.connectFrom, node);
+    if (state.flows.length !== 0) {
+      if (state.workflowId) {
+        const workflow = Workflow.find(state.workflowId);
+        const drawflow =
+          typeof workflow.drawflow === 'string'
+            ? JSON.parse(workflow.drawflow)
+            : workflow.drawflow;
+        const node = drawflow.drawflow.Home.data[state.connectFrom.id];
+        const updatedDrawflow = generateDrawflow(state.connectFrom, node);
 
-      Object.assign(drawflow.drawflow.Home.data, updatedDrawflow);
+        Object.assign(drawflow.drawflow.Home.data, updatedDrawflow);
 
-      await Workflow.update({
-        where: state.workflowId,
-        data: {
-          drawflow: JSON.stringify(drawflow),
-        },
-      });
-    } else {
-      const drawflow = generateDrawflow();
+        await Workflow.update({
+          where: state.workflowId,
+          data: {
+            drawflow: JSON.stringify(drawflow),
+          },
+        });
+      } else {
+        const drawflow = generateDrawflow();
 
-      await Workflow.insert({
-        data: {
-          name: state.name,
-          drawflow: JSON.stringify(drawflow),
-        },
-      });
+        await Workflow.insert({
+          data: {
+            name: state.name,
+            drawflow: JSON.stringify(drawflow),
+          },
+        });
+      }
     }
 
     await browser.storage.local.remove(['isRecording', 'recording']);
