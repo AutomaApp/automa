@@ -277,7 +277,7 @@ function addFlowItem() {
       saveData,
       assignVariable,
       waitForSelector: true,
-      column: addBlockState.column,
+      dataColumn: addBlockState.column,
       variableName: addBlockState.varName,
       selector: selectState.list
         ? selectState.listSelector
