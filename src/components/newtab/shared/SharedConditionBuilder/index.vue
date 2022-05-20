@@ -17,43 +17,54 @@
           </span>
         </div>
         <div class="flex-1 space-y-2">
-          <ui-expand
-            v-for="(inputs, inputsIndex) in item.conditions"
-            :key="inputs.id"
-            class="border rounded-lg w-full"
-            header-class="px-4 py-2 w-full flex items-center h-full rounded-lg overflow-hidden group focus:ring-0"
+          <draggable
+            v-model="conditions[index].conditions"
+            item-key="id"
+            group="conditions"
+            class="space-y-2"
+            @end="onDragEnd"
           >
-            <template #header>
-              <p class="text-overflow flex-1 text-left space-x-2 w-64">
-                <span
-                  v-for="input in inputs.items"
-                  :key="`text-${input.id}`"
-                  :class="[
-                    input.category === 'compare'
-                      ? 'font-semibold'
-                      : 'text-gray-600 dark:text-gray-200',
-                  ]"
+            <template #item="{ element: inputs, index: inputsIndex }">
+              <div class="condition-item">
+                <ui-expand
+                  class="border rounded-lg w-full"
+                  header-class="px-4 py-2 w-full flex items-center h-full rounded-lg overflow-hidden group focus:ring-0"
                 >
-                  {{ getConditionText(input) }}
-                </span>
-              </p>
-              <v-remixicon
-                name="riDeleteBin7Line"
-                class="ml-4 group-hover:visible invisible"
-                @click.stop="deleteCondition(index, inputsIndex)"
-              />
+                  <template #header>
+                    <p class="text-overflow flex-1 text-left space-x-2 w-64">
+                      <span
+                        v-for="input in inputs.items"
+                        :key="`text-${input.id}`"
+                        :class="[
+                          input.category === 'compare'
+                            ? 'font-semibold'
+                            : 'text-gray-600 dark:text-gray-200',
+                        ]"
+                      >
+                        {{ getConditionText(input) }}
+                      </span>
+                    </p>
+                    <v-remixicon
+                      name="riDeleteBin7Line"
+                      class="ml-4 group-hover:visible invisible"
+                      @click.stop="deleteCondition(index, inputsIndex)"
+                    />
+                    <v-remixicon name="mdiDrag" class="ml-2 cursor-move" />
+                  </template>
+                  <div class="space-y-2 px-4 py-2">
+                    <condition-builder-inputs
+                      :autocomplete="autocomplete"
+                      :data="inputs.items"
+                      @update="
+                        conditions[index].conditions[inputsIndex].items = $event
+                      "
+                    />
+                  </div>
+                </ui-expand>
+              </div>
             </template>
-            <div class="space-y-2 px-4 py-2">
-              <condition-builder-inputs
-                :autocomplete="autocomplete"
-                :data="inputs.items"
-                @update="
-                  conditions[index].conditions[inputsIndex].items = $event
-                "
-              />
-            </div>
-          </ui-expand>
-          <div class="space-x-2 text-sm">
+          </draggable>
+          <div class="space-x-2 text-sm mt-2 condition-action">
             <ui-button @click="addAndCondition(index)">
               <v-remixicon name="riAddLine" class="-ml-2 mr-1" size="20" />
               {{ t('workflow.conditionBuilder.and') }}
@@ -89,6 +100,8 @@
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid';
+import Draggable from 'vuedraggable';
+import cloneDeep from 'lodash.clonedeep';
 import { conditionBuilder } from '@/utils/shared';
 import ConditionBuilderInputs from './ConditionBuilderInputs.vue';
 
@@ -106,7 +119,7 @@ const emit = defineEmits(['update:modelValue', 'change']);
 
 const { t } = useI18n();
 
-const conditions = ref(JSON.parse(JSON.stringify(props.modelValue)));
+const conditions = ref(cloneDeep(props.modelValue));
 
 function getDefaultValues(items = ['value', 'compare', 'value']) {
   const defaultValues = {
@@ -167,6 +180,13 @@ function deleteCondition(index, itemIndex) {
 
   if (condition.length === 0) conditions.value.splice(index, 1);
 }
+function onDragEnd() {
+  conditions.value.forEach((item, index) => {
+    if (item.conditions.length > 0) return;
+
+    conditions.value.splice(index, 1);
+  });
+}
 
 watch(
   conditions,
@@ -186,5 +206,8 @@ watch(
   height: 100%;
   left: 50%;
   @apply dark:border-blue-400 border-blue-500 border-2 border-r-0 rounded-bl-lg rounded-tl-lg;
+}
+.ghost-condition .condition-action {
+  display: none;
 }
 </style>
