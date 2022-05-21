@@ -1,277 +1,309 @@
 <template>
   <div class="container pt-8 pb-4">
-    <h1 class="text-2xl font-semibold mb-6 capitalize">
+    <h1 class="text-2xl font-semibold mb-8 capitalize">
       {{ t('common.workflow', 2) }}
     </h1>
-    <div class="flex items-center space-x-4">
-      <ui-input
-        id="search-input"
-        v-model="state.query"
-        :placeholder="`${t(`common.search`)}... (${
-          shortcut['action:search'].readable
-        })`"
-        prepend-icon="riSearch2Line"
-        class="flex-1"
-      />
-      <div class="flex items-center workflow-sort">
-        <ui-button
-          icon
-          class="rounded-r-none border-gray-300 dark:border-gray-700 border-r"
-          @click="state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc'"
-        >
-          <v-remixicon
-            :name="state.sortOrder === 'asc' ? 'riSortAsc' : 'riSortDesc'"
-          />
-        </ui-button>
-        <ui-select v-model="state.sortBy" :placeholder="t('sort.sortBy')">
-          <option v-for="sort in sorts" :key="sort" :value="sort">
-            {{ t(`sort.${sort}`) }}
-          </option>
-        </ui-select>
-      </div>
-      <span v-tooltip:bottom.group="t('workflow.browse')">
-        <ui-button
-          icon
-          tag="a"
-          href="https://automa.site/workflows"
-          target="_blank"
-          class="inline-block relative"
-          @click="browseWorkflow"
-        >
-          <span
-            v-if="state.highlightBrowse"
-            class="flex h-3 w-3 absolute top-0 right-0 -mr-1 -mt-1"
+    <div class="flex items-start">
+      <div class="w-60 sticky top-8">
+        <div class="flex w-full">
+          <ui-button
+            :title="shortcut['action:new'].readable"
+            variant="accent"
+            class="border-r rounded-r-none flex-1 font-semibold"
+            @click="newWorkflow"
           >
-            <span
-              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"
-            ></span>
-            <span
-              class="relative inline-flex rounded-full h-3 w-3 bg-blue-600"
-            ></span>
-          </span>
-          <v-remixicon name="riCompass3Line" />
-        </ui-button>
-      </span>
-      <span v-tooltip:bottom.group="t('workflow.backupCloud')">
-        <ui-button tag="router-link" to="/backup" class="inline-block" icon>
-          <v-remixicon name="riUploadCloud2Line" />
-        </ui-button>
-      </span>
-      <ui-button
-        v-tooltip:bottom.group="t('workflow.import')"
-        icon
-        @click="importWorkflow({ multiple: true })"
-      >
-        <v-remixicon name="riUploadLine" />
-      </ui-button>
-      <div class="flex">
-        <ui-button
-          :title="shortcut['action:new'].readable"
-          variant="accent"
-          class="border-r rounded-r-none"
-          @click="newWorkflow"
-        >
-          {{ t('workflow.new') }}
-        </ui-button>
-        <ui-popover>
-          <template #trigger>
-            <ui-button icon class="rounded-l-none" variant="accent">
-              <v-remixicon name="riArrowLeftSLine" rotate="-90" />
+            {{ t('workflow.new') }}
+          </ui-button>
+          <ui-popover>
+            <template #trigger>
+              <ui-button icon class="rounded-l-none" variant="accent">
+                <v-remixicon name="riArrowLeftSLine" rotate="-90" />
+              </ui-button>
+            </template>
+            <ui-list class="space-y-1">
+              <ui-list-item
+                v-close-popover
+                class="cursor-pointer"
+                @click="importWorkflow({ multiple: true })"
+              >
+                {{ t('workflow.import') }}
+              </ui-list-item>
+              <ui-list-item
+                v-close-popover
+                class="cursor-pointer"
+                @click="addHostWorkflow"
+              >
+                {{ t('workflow.host.add') }}
+              </ui-list-item>
+            </ui-list>
+          </ui-popover>
+        </div>
+        <ui-list class="mt-6 space-y-2">
+          <ui-list-item
+            tag="a"
+            href="https://www.automa.site/workflows"
+            target="_blank"
+          >
+            <v-remixicon name="riCompass3Line" />
+            <span class="ml-4 capitalize">
+              {{ t('workflow.browse') }}
+            </span>
+          </ui-list-item>
+          <ui-expand
+            :model-value="true"
+            append-icon
+            header-class="px-4 py-2 rounded-lg hoverable w-full flex items-center"
+          >
+            <template #header>
+              <v-remixicon name="riFlowChart" />
+              <span class="ml-4 capitalize flex-1 text-left">
+                {{ t('workflow.my') }}
+              </span>
+            </template>
+            <ui-list class="space-y-1 mt-1">
+              <ui-list-item
+                tag="button"
+                :active="state.activeTab === 'local'"
+                class="pl-14"
+              >
+                <span class="capitalize">
+                  {{ t('workflow.type.local') }}
+                </span>
+              </ui-list-item>
+              <ui-list-item
+                v-if="store.state.user"
+                tag="button"
+                :active="state.activeTab === 'shared'"
+                class="pl-14"
+              >
+                <span class="capitalize">
+                  {{ t('workflow.type.shared') }}
+                </span>
+              </ui-list-item>
+              <ui-list-item
+                v-if="workflowHosts.length > 0"
+                tag="button"
+                :active="state.activeTab === 'host'"
+                class="pl-14"
+              >
+                <span class="capitalize">
+                  {{ t('workflow.type.host') }}
+                </span>
+              </ui-list-item>
+            </ui-list>
+          </ui-expand>
+        </ui-list>
+      </div>
+      <div class="flex-1 ml-8">
+        <div class="flex items-center">
+          <ui-input
+            id="search-input"
+            v-model="state.query"
+            :placeholder="`${t(`common.search`)}... (${
+              shortcut['action:search'].readable
+            })`"
+            prepend-icon="riSearch2Line"
+          />
+          <div class="flex-grow"></div>
+          <span v-tooltip:bottom.group="t('workflow.backupCloud')" class="mr-4">
+            <ui-button tag="router-link" to="/backup" class="inline-block" icon>
+              <v-remixicon name="riUploadCloud2Line" />
             </ui-button>
-          </template>
-          <ui-list>
-            <ui-list-item
-              v-close-popover
-              class="cursor-pointer"
-              @click="addHostWorkflow"
+          </span>
+          <div class="flex items-center workflow-sort">
+            <ui-button
+              icon
+              class="rounded-r-none border-gray-300 dark:border-gray-700 border-r"
+              @click="
+                state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc'
+              "
             >
-              {{ t('workflow.host.add') }}
-            </ui-list-item>
-          </ui-list>
-        </ui-popover>
+              <v-remixicon
+                :name="state.sortOrder === 'asc' ? 'riSortAsc' : 'riSortDesc'"
+              />
+            </ui-button>
+            <ui-select v-model="state.sortBy" :placeholder="t('sort.sortBy')">
+              <option v-for="sort in sorts" :key="sort" :value="sort">
+                {{ t(`sort.${sort}`) }}
+              </option>
+            </ui-select>
+          </div>
+        </div>
+        <ui-tab-panels v-model="state.activeTab" class="flex-1 mt-6">
+          <ui-tab-panel value="shared">
+            <div class="workflows-container">
+              <shared-card
+                v-for="workflow in sharedWorkflows"
+                :key="workflow.id"
+                :data="workflow"
+                :show-details="false"
+                @click="$router.push(`/workflows/${$event.id}?shared=true`)"
+              />
+            </div>
+          </ui-tab-panel>
+          <ui-tab-panel value="host">
+            <div class="workflows-container">
+              <shared-card
+                v-for="workflow in workflowHosts"
+                :key="workflow.hostId"
+                :data="workflow"
+                :menu="workflowHostMenu"
+                @click="$router.push(`/workflows/${$event.hostId}/host`)"
+                @menuSelected="deleteWorkflowHost(workflow)"
+              />
+            </div>
+          </ui-tab-panel>
+          <ui-tab-panel value="local">
+            <div
+              v-if="Workflow.all().length === 0"
+              class="py-12 flex items-center"
+            >
+              <img src="@/assets/svg/alien.svg" class="w-96" />
+              <div class="ml-4">
+                <h1 class="text-2xl font-semibold max-w-md mb-6">
+                  {{ t('message.empty') }}
+                </h1>
+                <ui-button variant="accent" @click="newWorkflow">
+                  {{ t('workflow.new') }}
+                </ui-button>
+              </div>
+            </div>
+            <template v-else>
+              <div class="workflows-container">
+                <shared-card
+                  v-for="workflow in localWorkflows"
+                  :key="workflow.id"
+                  :data="workflow"
+                  @click="$router.push(`/workflows/${$event.id}`)"
+                >
+                  <template #header>
+                    <div class="flex items-center mb-4">
+                      <template v-if="!workflow.isDisabled">
+                        <ui-img
+                          v-if="workflow.icon.startsWith('http')"
+                          :src="workflow.icon"
+                          class="rounded-lg overflow-hidden"
+                          style="height: 40px; width: 40px"
+                          alt="Can not display"
+                        />
+                        <span v-else class="p-2 rounded-lg bg-box-transparent">
+                          <v-remixicon :name="workflow.icon" />
+                        </span>
+                      </template>
+                      <p v-else class="py-2">{{ t('common.disabled') }}</p>
+                      <div class="flex-grow"></div>
+                      <button
+                        v-if="!workflow.isDisabled"
+                        class="invisible group-hover:visible"
+                        @click="executeWorkflow(workflow)"
+                      >
+                        <v-remixicon name="riPlayLine" />
+                      </button>
+                      <v-remixicon
+                        v-if="workflow.isProtected"
+                        name="riShieldKeyholeLine"
+                        class="text-green-600 dark:text-green-400 ml-2"
+                      />
+                      <ui-popover v-if="!workflow.isProtected" class="h-6 ml-2">
+                        <template #trigger>
+                          <button>
+                            <v-remixicon name="riMoreLine" />
+                          </button>
+                        </template>
+                        <ui-list class="space-y-1" style="min-width: 150px">
+                          <ui-list-item
+                            class="cursor-pointer"
+                            @click="
+                              updateWorkflow(workflow.id, {
+                                isDisabled: !workflow.isDisabled,
+                              })
+                            "
+                          >
+                            <v-remixicon
+                              name="riToggleLine"
+                              class="mr-2 -ml-1"
+                            />
+                            <span class="capitalize">
+                              {{
+                                t(
+                                  `common.${
+                                    workflow.isDisabled ? 'enable' : 'disable'
+                                  }`
+                                )
+                              }}
+                            </span>
+                          </ui-list-item>
+                          <ui-list-item
+                            v-for="item in menu"
+                            :key="item.id"
+                            v-close-popover
+                            class="cursor-pointer"
+                            @click="menuHandlers[item.id](workflow)"
+                          >
+                            <v-remixicon :name="item.icon" class="mr-2 -ml-1" />
+                            <span class="capitalize">{{ item.name }}</span>
+                          </ui-list-item>
+                        </ui-list>
+                      </ui-popover>
+                    </div>
+                  </template>
+                  <template #footer-content>
+                    <v-remixicon
+                      v-if="sharedWorkflows[workflow.id]"
+                      v-tooltip:bottom.group="
+                        t('workflow.share.sharedAs', {
+                          name: sharedWorkflows[workflow.id]?.name.slice(0, 64),
+                        })
+                      "
+                      name="riShareLine"
+                      size="20"
+                      class="ml-2"
+                    />
+                    <v-remixicon
+                      v-if="hostWorkflows[workflow.id]"
+                      v-tooltip:bottom.group="t('workflow.host.title')"
+                      name="riBaseStationLine"
+                      size="20"
+                      class="ml-2"
+                    />
+                  </template>
+                </shared-card>
+              </div>
+              <div
+                v-if="workflows.length > 18"
+                class="flex items-center justify-between mt-8"
+              >
+                <div>
+                  {{ t('components.pagination.text1') }}
+                  <select
+                    v-model="pagination.perPage"
+                    class="p-1 rounded-md bg-input"
+                  >
+                    <option
+                      v-for="num in [18, 32, 64, 128]"
+                      :key="num"
+                      :value="num"
+                    >
+                      {{ num }}
+                    </option>
+                  </select>
+                  {{
+                    t('components.pagination.text2', {
+                      count: workflows.length,
+                    })
+                  }}
+                </div>
+                <ui-pagination
+                  v-model="pagination.currentPage"
+                  :per-page="pagination.perPage"
+                  :records="workflows.length"
+                />
+              </div>
+            </template>
+          </ui-tab-panel>
+        </ui-tab-panels>
       </div>
     </div>
-    <ui-tabs
-      v-model="state.activeTab"
-      class="mt-4 space-x-2"
-      type="fill"
-      style="display: inline-flex; background-color: transparent; padding: 0"
-    >
-      <ui-tab value="local">
-        {{ t('workflow.type.local') }}
-      </ui-tab>
-      <ui-tab v-if="store.state.user" value="shared">
-        {{ t('workflow.type.shared') }}
-      </ui-tab>
-      <ui-tab v-if="workflowHosts.length > 0" value="host">
-        {{ t('workflow.type.host') }}
-      </ui-tab>
-    </ui-tabs>
-    <ui-tab-panels v-model="state.activeTab" class="mt-6">
-      <ui-tab-panel value="shared">
-        <div class="grid gap-4 grid-cols-4 2xl:grid-cols-5">
-          <shared-card
-            v-for="workflow in sharedWorkflows"
-            :key="workflow.id"
-            :data="workflow"
-            :show-details="false"
-            @click="$router.push(`/workflows/${$event.id}?shared=true`)"
-          />
-        </div>
-      </ui-tab-panel>
-      <ui-tab-panel value="host">
-        <div class="grid gap-4 grid-cols-4 2xl:grid-cols-5">
-          <shared-card
-            v-for="workflow in workflowHosts"
-            :key="workflow.hostId"
-            :data="workflow"
-            :menu="workflowHostMenu"
-            @click="$router.push(`/workflows/${$event.hostId}/host`)"
-            @menuSelected="deleteWorkflowHost(workflow)"
-          />
-        </div>
-      </ui-tab-panel>
-      <ui-tab-panel value="local">
-        <div v-if="Workflow.all().length === 0" class="py-12 flex items-center">
-          <img src="@/assets/svg/alien.svg" class="w-96" />
-          <div class="ml-4">
-            <h1 class="text-2xl font-semibold max-w-md mb-6">
-              {{ t('message.empty') }}
-            </h1>
-            <ui-button variant="accent" @click="newWorkflow">
-              {{ t('workflow.new') }}
-            </ui-button>
-          </div>
-        </div>
-        <template v-else>
-          <div class="grid gap-4 grid-cols-4 2xl:grid-cols-5">
-            <shared-card
-              v-for="workflow in localWorkflows"
-              :key="workflow.id"
-              :data="workflow"
-              @click="$router.push(`/workflows/${$event.id}`)"
-            >
-              <template #header>
-                <div class="flex items-center mb-4">
-                  <template v-if="!workflow.isDisabled">
-                    <ui-img
-                      v-if="workflow.icon.startsWith('http')"
-                      :src="workflow.icon"
-                      class="rounded-lg overflow-hidden"
-                      style="height: 40px; width: 40px"
-                      alt="Can not display"
-                    />
-                    <span v-else class="p-2 rounded-lg bg-box-transparent">
-                      <v-remixicon :name="workflow.icon" />
-                    </span>
-                  </template>
-                  <p v-else class="py-2">{{ t('common.disabled') }}</p>
-                  <div class="flex-grow"></div>
-                  <button
-                    v-if="!workflow.isDisabled"
-                    class="invisible group-hover:visible"
-                    @click="executeWorkflow(workflow)"
-                  >
-                    <v-remixicon name="riPlayLine" />
-                  </button>
-                  <v-remixicon
-                    v-if="workflow.isProtected"
-                    name="riShieldKeyholeLine"
-                    class="text-green-600 dark:text-green-400 ml-2"
-                  />
-                  <ui-popover v-if="!workflow.isProtected" class="h-6 ml-2">
-                    <template #trigger>
-                      <button>
-                        <v-remixicon name="riMoreLine" />
-                      </button>
-                    </template>
-                    <ui-list class="space-y-1" style="min-width: 150px">
-                      <ui-list-item
-                        class="cursor-pointer"
-                        @click="
-                          updateWorkflow(workflow.id, {
-                            isDisabled: !workflow.isDisabled,
-                          })
-                        "
-                      >
-                        <v-remixicon name="riToggleLine" class="mr-2 -ml-1" />
-                        <span class="capitalize">
-                          {{
-                            t(
-                              `common.${
-                                workflow.isDisabled ? 'enable' : 'disable'
-                              }`
-                            )
-                          }}
-                        </span>
-                      </ui-list-item>
-                      <ui-list-item
-                        v-for="item in menu"
-                        :key="item.id"
-                        v-close-popover
-                        class="cursor-pointer"
-                        @click="menuHandlers[item.id](workflow)"
-                      >
-                        <v-remixicon :name="item.icon" class="mr-2 -ml-1" />
-                        <span class="capitalize">{{ item.name }}</span>
-                      </ui-list-item>
-                    </ui-list>
-                  </ui-popover>
-                </div>
-              </template>
-              <template #footer-content>
-                <v-remixicon
-                  v-if="sharedWorkflows[workflow.id]"
-                  v-tooltip:bottom.group="
-                    t('workflow.share.sharedAs', {
-                      name: sharedWorkflows[workflow.id]?.name.slice(0, 64),
-                    })
-                  "
-                  name="riShareLine"
-                  size="20"
-                  class="ml-2"
-                />
-                <v-remixicon
-                  v-if="hostWorkflows[workflow.id]"
-                  v-tooltip:bottom.group="t('workflow.host.title')"
-                  name="riBaseStationLine"
-                  size="20"
-                  class="ml-2"
-                />
-              </template>
-            </shared-card>
-          </div>
-          <div
-            v-if="workflows.length > 16"
-            class="flex items-center justify-between mt-8"
-          >
-            <div>
-              {{ t('components.pagination.text1') }}
-              <select
-                v-model="pagination.perPage"
-                class="p-1 rounded-md bg-input"
-              >
-                <option
-                  v-for="num in [16, 32, 64, 128]"
-                  :key="num"
-                  :value="num"
-                >
-                  {{ num }}
-                </option>
-              </select>
-              {{
-                t('components.pagination.text2', { count: workflows.length })
-              }}
-            </div>
-            <ui-pagination
-              v-model="pagination.currentPage"
-              :per-page="pagination.perPage"
-              :records="workflows.length"
-            />
-          </div>
-        </template>
-      </ui-tab-panel>
-    </ui-tab-panels>
     <ui-modal v-model="workflowModal.show" title="Workflow">
       <ui-input
         v-model="workflowModal.name"
@@ -348,7 +380,6 @@ const state = shallowReactive({
   activeTab: 'local',
   sortBy: savedSorts.sortBy || 'createdAt',
   sortOrder: savedSorts.sortOrder || 'desc',
-  highlightBrowse: !localStorage.getItem('first-time-browse'),
 });
 const workflowModal = shallowReactive({
   name: '',
@@ -357,7 +388,7 @@ const workflowModal = shallowReactive({
 });
 const pagination = shallowReactive({
   currentPage: 1,
-  perPage: savedSorts.perPage || 16,
+  perPage: savedSorts.perPage || 18,
 });
 
 const hostWorkflows = computed(() => store.state.hostWorkflows || {});
@@ -485,10 +516,6 @@ function addHostWorkflow() {
     },
   });
 }
-function browseWorkflow() {
-  state.highlightBrowse = false;
-  localStorage.setItem('first-time-browse', false);
-}
 function executeWorkflow(workflow) {
   sendMessage('workflow:execute', workflow, 'background');
 }
@@ -593,5 +620,8 @@ watch(
 <style>
 .workflow-sort select {
   @apply rounded-l-none !important;
+}
+.workflows-container {
+  @apply grid gap-4 grid-cols-3 2xl:grid-cols-4;
 }
 </style>
