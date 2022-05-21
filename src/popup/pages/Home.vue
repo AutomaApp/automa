@@ -1,6 +1,12 @@
 <template>
-  <div class="bg-accent rounded-b-2xl absolute top-0 left-0 h-48 w-full"></div>
-  <div class="dark placeholder-black relative z-10 text-white px-5 pt-8 mb-6">
+  <div
+    :class="[workflowHostKeys.length === 0 ? 'h-48' : 'h-56']"
+    class="bg-accent rounded-b-2xl absolute top-0 left-0 w-full"
+  ></div>
+  <div
+    :class="[workflowHostKeys.length === 0 ? 'mb-6' : 'mb-2']"
+    class="dark placeholder-black relative z-10 text-white px-5 pt-8"
+  >
     <div class="flex items-center mb-4">
       <h1 class="text-xl font-semibold text-white">Automa</h1>
       <div class="flex-grow"></div>
@@ -39,6 +45,16 @@
         class="w-full search-input"
       />
     </div>
+    <ui-tabs
+      v-if="workflowHostKeys.length > 0"
+      v-model="state.activeTab"
+      fill
+      class="mt-1"
+    >
+      <ui-tab v-for="type in workflowTypes" :key="type" :value="type">
+        {{ t(`home.workflow.type.${type}`) }}
+      </ui-tab>
+    </ui-tabs>
   </div>
   <div class="px-5 pb-5 space-y-2">
     <ui-card v-if="Workflow.all().length === 0" class="text-center">
@@ -56,6 +72,7 @@
       v-for="workflow in workflows"
       :key="workflow.id"
       :workflow="workflow"
+      :tab="state.activeTab"
       @details="openDashboard(`/workflows/${$event.id}`)"
       @update="updateWorkflow(workflow.id, $event)"
       @execute="executeWorkflow"
@@ -91,6 +108,7 @@
 <script setup>
 import { computed, onMounted, shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useStore } from 'vuex';
 import browser from 'webextension-polyfill';
 import { useDialog } from '@/composable/dialog';
 import { useGroupTooltip } from '@/composable/groupTooltip';
@@ -99,12 +117,14 @@ import Workflow from '@/models/workflow';
 import HomeWorkflowCard from '@/components/popup/home/HomeWorkflowCard.vue';
 import HomeStartRecording from '@/components/popup/home/HomeStartRecording.vue';
 
+const workflowTypes = ['local', 'host'];
 const recordingCardHeight = {
   new: 255,
   existing: 480,
 };
 
 const { t } = useI18n();
+const store = useStore();
 const dialog = useDialog();
 
 useGroupTooltip();
@@ -113,16 +133,37 @@ const state = shallowReactive({
   query: '',
   cardHeight: 255,
   haveAccess: true,
+  activeTab: 'local',
   newRecordingModal: false,
 });
 
-const workflows = computed(() =>
-  Workflow.query()
+const workflowHostKeys = computed(() => Object.keys(store.state.workflowHosts));
+const workflowHosts = computed(() => {
+  if (state.activeTab !== 'host') return [];
+
+  return workflowHostKeys.value.reduce((acc, key) => {
+    const workflow = store.state.workflowHosts[key];
+    const isMatch = workflow.name
+      .toLocaleLowerCase()
+      .includes(state.query.toLocaleLowerCase());
+
+    if (isMatch) acc.push({ ...workflow, id: key });
+
+    return acc;
+  }, []);
+});
+const localWorkflows = computed(() => {
+  if (state.activeTab !== 'local') return [];
+
+  return Workflow.query()
     .where(({ name }) =>
       name.toLocaleLowerCase().includes(state.query.toLocaleLowerCase())
     )
     .orderBy('createdAt', 'desc')
-    .get()
+    .get();
+});
+const workflows = computed(() =>
+  state.activeTab === 'local' ? localWorkflows.value : workflowHosts.value
 );
 
 function executeWorkflow(workflow) {
@@ -151,7 +192,17 @@ function deleteWorkflow({ id, name }) {
     okVariant: 'danger',
     body: t('message.delete', { name }),
     onConfirm: () => {
-      Workflow.delete(id);
+      if (state.activeTab === 'local') {
+        Workflow.delete(id);
+      } else {
+        store.commit('deleteStateNested', `workflowHosts.${id}`);
+
+        if (workflowHostKeys.value.length === 0) {
+          state.activeTab = 'local';
+        }
+
+        browser.storage.local.set({ workflowHosts: store.state.workflowHosts });
+      }
     },
   });
 }

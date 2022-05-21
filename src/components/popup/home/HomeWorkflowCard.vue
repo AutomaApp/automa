@@ -28,6 +28,7 @@
       </template>
       <ui-list class="w-40 space-y-1">
         <ui-list-item
+          v-if="tab === 'local'"
           class="capitalize cursor-pointer"
           @click="$emit('update', { isDisabled: !workflow.isDisabled })"
         >
@@ -37,7 +38,7 @@
           }}</span>
         </ui-list-item>
         <ui-list-item
-          v-for="item in menu"
+          v-for="item in filteredMenu"
           :key="item.name"
           v-close-popover
           class="capitalize cursor-pointer"
@@ -54,10 +55,14 @@
 import { useI18n } from 'vue-i18n';
 import dayjs from '@/lib/dayjs';
 
-defineProps({
+const props = defineProps({
   workflow: {
     type: Object,
     default: () => ({}),
+  },
+  tab: {
+    type: String,
+    default: 'local',
   },
 });
 defineEmits(['execute', 'rename', 'details', 'delete', 'update']);
@@ -68,4 +73,9 @@ const menu = [
   { name: 'rename', icon: 'riPencilLine' },
   { name: 'delete', icon: 'riDeleteBin7Line' },
 ];
+const filteredMenu = menu.filter(({ name }) => {
+  if (name === 'rename' && props.tab !== 'local') return false;
+
+  return true;
+});
 </script>
