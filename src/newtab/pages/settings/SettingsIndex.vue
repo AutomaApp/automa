@@ -107,7 +107,7 @@ function updateSetting(path, value) {
     userSettings = cloneDeep(userSettings);
   }
 
-  browser.storage.local.set({ settings: userSettings }).catch(console.log);
+  browser.storage.local.set({ settings: userSettings });
 }
 function updateLanguage(value) {
   isLangChange.value = true;

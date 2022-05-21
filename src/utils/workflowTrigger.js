@@ -149,15 +149,8 @@ export async function registerKeyboardShortcut(workflowId, data) {
   }
 }
 
-export async function registerOnStartup(workflowId) {
-  const { onStartupTriggers } = await browser.storage.local.get(
-    'onStartupTriggers'
-  );
-  const startupTriggers = onStartupTriggers || [];
-
-  startupTriggers.push(workflowId);
-
-  await browser.storage.local.set({ onStartupTriggers: startupTriggers });
+export async function registerOnStartup() {
+  // Do nothing
 }
 
 export async function registerWorkflowTrigger(workflowId, { data }) {
