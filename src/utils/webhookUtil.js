@@ -1,4 +1,4 @@
-import { isObject, parseJSON, isWhitespace } from './helper';
+import { parseJSON, isWhitespace } from './helper';
 
 const renderContent = (content, contentType) => {
   const renderedJson = parseJSON(content, new Error('invalid-body'));
@@ -6,15 +6,7 @@ const renderContent = (content, contentType) => {
   if (renderedJson instanceof Error) throw renderedJson;
 
   if (contentType === 'application/x-www-form-urlencoded') {
-    return Object.keys(renderedJson)
-      .map((key) => {
-        const value = isObject(renderedJson[key])
-          ? JSON.stringify(renderedJson[key])
-          : renderedJson[key];
-
-        return `${key}=${value}`;
-      })
-      .join('&');
+    return new URLSearchParams(renderedJson);
   }
 
   return JSON.stringify(renderedJson);
