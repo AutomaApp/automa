@@ -1,19 +1,18 @@
+import { getElementRect } from '../utils';
 import findElementList from './listSelector';
 import generateElementsSelector from './generateElementsSelector';
 
 let hoveredElements = [];
 let prevSelectedElement = null;
 
-function elementRect(element, offset) {
-  const { x, y, height, width } = element.getBoundingClientRect();
-  const rect = {
-    width: width + 4,
-    height: height + 4,
-    y: y + offset.top - 2,
-    x: x + offset.left - 2,
-  };
+function getElementRectWithOffset(element, data) {
+  const withAttributes = data.withAttributes && data.click;
+  const elementRect = getElementRect(element, withAttributes);
 
-  return rect;
+  elementRect.y += data.top;
+  elementRect.x += data.left;
+
+  return elementRect;
 }
 function getElementsRect(data) {
   const [element] = document.elementsFromPoint(
@@ -41,7 +40,9 @@ function getElementsRect(data) {
     });
 
     payload.selector = selector;
-    payload.elements = hoveredElements.map((el) => elementRect(el, data));
+    payload.elements = hoveredElements.map((el) =>
+      getElementRectWithOffset(el, data)
+    );
   } else {
     prevSelectedElement = element;
     let elementsRect = [];
@@ -50,10 +51,10 @@ function getElementsRect(data) {
       const elements = findElementList(element) || [];
 
       hoveredElements = elements;
-      elementsRect = elements.map((el) => elementRect(el, data));
+      elementsRect = elements.map((el) => getElementRectWithOffset(el, data));
     } else {
       hoveredElements = [element];
-      elementsRect = [elementRect(element, data)];
+      elementsRect = [getElementRectWithOffset(element, data)];
     }
 
     payload.elements = elementsRect;

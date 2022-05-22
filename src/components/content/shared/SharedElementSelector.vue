@@ -42,7 +42,8 @@
 <script setup>
 import { reactive, watch, onMounted, onBeforeUnmount } from 'vue';
 import { finder } from '@medv/finder';
-import { generateXPath } from '@/content/utils';
+import { debounce } from '@/utils/helper';
+import { generateXPath, getElementPath, getElementRect } from '@/content/utils';
 import findElementList from '@/content/elementSelector/listSelector';
 import generateElementsSelector from '@/content/elementSelector/generateElementsSelector';
 import SharedElementHighlighter from './SharedElementHighlighter.vue';
@@ -52,12 +53,19 @@ const props = defineProps({
     type: String,
     default: 'css',
   },
+  selectedEls: {
+    type: Array,
+    default: () => [],
+  },
   list: Boolean,
   disabled: Boolean,
+  withAttributes: Boolean,
 });
 const emit = defineEmits(['selected']);
 
 let frameElement = null;
+let lastScrollPosY = window.scrollY;
+let lastScrollPosX = window.scrollX;
 
 let hoveredElements = [];
 const elementsState = reactive({
@@ -65,10 +73,23 @@ const elementsState = reactive({
   selected: [],
 });
 
-function onScroll() {
+const onScroll = debounce(() => {
+  if (state.hide) return;
+
   hoveredElements = [];
-  elementsState.hoveredElements = [];
-}
+  elementsState.selected = [];
+
+  const yPos = window.scrollY - lastScrollPosY;
+  const xPos = window.scrollX - lastScrollPosX;
+
+  state.selected.forEach((_, index) => {
+    state.selected[index].x -= xPos;
+    state.selected[index].y -= yPos;
+  });
+
+  lastScrollPosX = window.scrollX;
+  lastScrollPosY = window.scrollY;
+}, 100);
 function resetFramesElements(options = {}) {
   const elements = document.querySelectorAll('iframe, frame');
 
@@ -82,21 +103,6 @@ function resetFramesElements(options = {}) {
     );
   });
 }
-function getElementRect(target, withElement = false) {
-  if (!target) return {};
-
-  const { x, y, height, width } = target.getBoundingClientRect();
-  const result = {
-    width: width + 4,
-    height: height + 4,
-    x: x - 2,
-    y: y - 2,
-  };
-
-  if (withElement) result.element = target;
-
-  return result;
-}
 function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
   const isAutomaContainer = eventTarget.classList.contains(
     'automa-element-selector'
@@ -107,10 +113,12 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
 
   let { 1: target } = document.elementsFromPoint(clientX, clientY);
   if (target.tagName === 'IFRAME' || target.tagName === 'FRAME') {
-    const prevSelectedList = document.querySelectorAll('[automa-el-list]');
-    prevSelectedList.forEach((el) => {
-      el.removeAttribute('automa-el-list');
-    });
+    if (type === 'selected') {
+      const prevSelectedList = document.querySelectorAll('[automa-el-list]');
+      prevSelectedList.forEach((el) => {
+        el.removeAttribute('automa-el-list');
+      });
+    }
 
     if (target.contentDocument) {
       target = target.contentDocument.elementsFromPoint(clientX, clientY);
@@ -123,6 +131,7 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
         clientY,
         list: isSelectList,
         type: 'automa:get-element-rect',
+        withAttributes: props.withAttributes,
       };
 
       if (type === 'selected')
@@ -140,18 +149,20 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
   }
 
   frameElement = null;
+
   let elementsRect = [];
+  const withAttribute = props.withAttributes && type === 'selected';
 
   if (isSelectList) {
     const elements = findElementList(target) || [];
 
     if (type === 'hovered') hoveredElements = elements;
 
-    elementsRect = elements.map((el) => getElementRect(el));
+    elementsRect = elements.map((el) => getElementRect(el, withAttribute));
   } else {
     if (type === 'hovered') hoveredElements = [target];
 
-    elementsRect = [getElementRect(target)];
+    elementsRect = [getElementRect(target, withAttribute)];
   }
 
   elementsState[type] = elementsRect;
@@ -165,7 +176,11 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
       list: isSelectList,
       selectorType: props.selectorType,
     });
-    console.log(selector);
+    emit('selected', {
+      selector,
+      elements: elementsRect,
+      path: getElementPath(target),
+    });
   }
 }
 function onMousemove(event) {
@@ -183,7 +198,10 @@ function onMessage({ data }) {
         ? finder(frameElement, { tagName: () => true })
         : generateXPath(frameElement);
 
-    emit('selected', `${frameSelector} |> ${data.selector}`);
+    emit('selected', {
+      elements: data.elements,
+      selector: `${frameSelector} |> ${data.selector}`,
+    });
   }
 
   const key = data.click ? 'selected' : 'hovered';
@@ -191,21 +209,27 @@ function onMessage({ data }) {
 }
 function attachListeners() {
   window.addEventListener('scroll', onScroll);
+  document.addEventListener('click', onClick);
   window.addEventListener('message', onMessage);
   window.addEventListener('mousemove', onMousemove);
-  document.addEventListener('click', onClick, true);
 }
 function detachListeners() {
   window.removeEventListener('scroll', onScroll);
+  document.removeEventListener('click', onClick);
   window.removeEventListener('message', onMessage);
   window.removeEventListener('mousemove', onMousemove);
-  document.removeEventListener('click', onClick, true);
 }
 
 watch(
   () => [props.list, props.disabled],
   () => {
     resetFramesElements({ clearCache: true });
+  }
+);
+watch(
+  () => props.selectedEls,
+  () => {
+    elementsState.selected = props.selectedEls;
   }
 );
 

@@ -1,3 +1,40 @@
+export function getElementRect(target, withAttributes) {
+  if (!target) return {};
+
+  const { x, y, height, width } = target.getBoundingClientRect();
+  const result = {
+    width: width + 4,
+    height: height + 4,
+    x: x - 2,
+    y: y - 2,
+  };
+
+  if (withAttributes) {
+    const attributes = {};
+
+    Array.from(target.attributes).forEach(({ name, value }) => {
+      if (name === 'automa-el-list') return;
+
+      attributes[name] = value;
+    });
+
+    result.attributes = attributes;
+  }
+
+  return result;
+}
+
+export function getElementPath(el, root = document.documentElement) {
+  const path = [el];
+
+  /* eslint-disable-next-line */
+  while ((el = el.parentNode) && !el.isEqualNode(root)) {
+    path.push(el);
+  }
+
+  return path;
+}
+
 export function generateXPath(element) {
   if (!element) return null;
   if (element.id !== '') return `id("${element.id}")`;

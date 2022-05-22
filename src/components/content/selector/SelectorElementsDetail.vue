@@ -33,6 +33,7 @@
             </p>
             <input
               :value="value"
+              :placeholder="!value ? 'EMPTY' : null"
               readonly
               title="Attribute value"
               class="bg-transparent w-full"

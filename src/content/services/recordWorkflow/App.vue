@@ -207,6 +207,7 @@ import browser from 'webextension-polyfill';
 import { toCamelCase } from '@/utils/helper';
 import { elementsHighlightData, tasks } from '@/utils/shared';
 import SharedElementHighlighter from '@/components/content/shared/SharedElementHighlighter.vue';
+import { getElementPath } from '../../utils';
 import findElementList from '../../elementSelector/listSelector';
 import addBlock from './addBlock';
 
@@ -466,16 +467,6 @@ function onMousemove({ clientX, clientY, target: eventTarget }) {
 
     selectState.hoveredElements = elementsRect;
   }
-}
-function getElementPath(el, root = document.documentElement) {
-  const path = [el];
-
-  /* eslint-disable-next-line */
-  while ((el = el.parentNode) && !el.isEqualNode(root)) {
-    path.push(el);
-  }
-
-  return path;
 }
 function onClick(event) {
   if (!selectState.isSelecting) return;

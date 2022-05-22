@@ -6,15 +6,7 @@
       @mouseenter="$emit('highlight', { highlight: true, index, element })"
       @mouseleave="$emit('highlight', { highlight: false, index, element })"
     >
-      <p
-        class="mb-1 cursor-pointer"
-        title="Scroll into view"
-        @click="
-          element.element.scrollIntoView({ block: 'center', inline: 'center' })
-        "
-      >
-        #{{ index + 1 }} {{ elementName }}
-      </p>
+      <p class="mb-1">#{{ index + 1 }} {{ elementName }}</p>
       <slot name="item" v-bind="{ element }" />
     </li>
   </ul>

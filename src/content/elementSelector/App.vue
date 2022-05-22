@@ -50,9 +50,8 @@
           v-model:selectList="state.selectList"
           :selector="state.elSelector"
           :selected-count="state.selectedElements.length"
-          @child="selectChildElement"
-          @parent="selectParentElement"
-          @change="updateSelectedElements"
+          @parent="selectElementPath('up')"
+          @child="selectElementPath('down')"
         />
         <selector-elements-detail
           v-if="!state.hide && state.selectedElements.length > 0"
@@ -72,21 +71,25 @@
     :disabled="state.hide"
     :list="state.selectList"
     :selector-type="state.selectorType"
-    @selected="state.elSelector = $event"
+    :selected-els="state.selectedElements"
+    with-attributes
+    @selected="onElementsSelected"
   />
 </template>
 <script setup>
 import { reactive, ref, watch, inject, onMounted, onBeforeUnmount } from 'vue';
+import { finder } from '@medv/finder';
 import SelectorQuery from '@/components/content/selector/SelectorQuery.vue';
 import SharedElementSelector from '@/components/content/shared/SharedElementSelector.vue';
 import SelectorElementsDetail from '@/components/content/selector/SelectorElementsDetail.vue';
+import { getElementRect } from '../utils';
 
+const originalFontSize = document.documentElement.style.fontSize;
 const selectedElement = {
   path: [],
   pathIndex: 0,
+  cache: new WeakMap(),
 };
-
-const originalFontSize = document.documentElement.style.fontSize;
 
 const rootElement = inject('rootElement');
 
@@ -95,7 +98,6 @@ const mainActiveTab = ref('selector');
 const state = reactive({
   hide: false,
   elSelector: '',
-  listSelector: '',
   isDragging: false,
   selectList: false,
   isExecuting: false,
@@ -120,8 +122,15 @@ const cardElementObserver = new ResizeObserver(([entry]) => {
 function toggleHighlightElement({ index, highlight }) {
   state.selectedElements[index].highlight = highlight;
 }
+function onElementsSelected({ selector, elements, path }) {
+  if (path) {
+    selectedElement.path = path;
+  }
 
-function handleMouseMove({ clientX, clientY }) {
+  state.elSelector = selector;
+  state.selectedElements = elements || [];
+}
+function onMousemove({ clientX, clientY }) {
   if (!state.isDragging) return;
 
   const height = window.innerHeight;
@@ -137,42 +146,36 @@ function handleMouseMove({ clientX, clientY }) {
   cardRect.x = clientX;
   cardRect.y = clientY;
 }
+function selectElementPath(type) {
+  let pathIndex =
+    type === 'up'
+      ? selectedElement.pathIndex + 1
+      : selectedElement.pathIndex - 1;
+  let element = selectedElement.path[pathIndex];
 
-function selectChildElement() {
-  if (selectedElement.path.length === 0 || state.hide) return;
+  if ((type === 'up' && !element) || element?.tagName === 'BODY') return;
 
-  const currentEl = selectedElement.path[selectedElement.pathIndex];
-  let childElement = currentEl;
-
-  if (selectedElement.pathIndex <= 0) {
-    const childEl = Array.from(currentEl.children).find(
+  if (type === 'down' && !element) {
+    const previousElement = selectedElement.path[selectedElement.pathIndex];
+    const childEl = Array.from(previousElement.children).find(
       (el) => !['STYLE', 'SCRIPT'].includes(el.tagName)
     );
 
-    if (currentEl.childElementCount === 0 || currentEl === childEl) return;
+    if (!childEl) return;
 
-    childElement = childEl;
+    element = childEl;
     selectedElement.path.unshift(childEl);
-    selectedElement.pathIndex = 0;
-  } else {
-    selectedElement.pathIndex -= 1;
-    childElement = selectedElement.path[selectedElement.pathIndex];
+    pathIndex = 0;
   }
 
-  updateSelectedElements(getElementSelector(childElement));
+  selectedElement.pathIndex = pathIndex;
+
+  state.selectedElements = [getElementRect(element, true)];
+  state.elSelector = selectedElement.cache.has(element)
+    ? selectedElement.cache.get(element)
+    : finder(element);
 }
-function selectParentElement() {
-  if (selectedElement.path.length === 0 || state.hide) return;
-
-  const parentElement = selectedElement.path[selectedElement.pathIndex];
-
-  if (parentElement.tagName === 'HTML') return;
-
-  selectedElement.pathIndex += 1;
-
-  updateSelectedElements(getElementSelector(parentElement));
-}
-function handleMouseUp() {
+function onMouseup() {
   if (state.isDragging) state.isDragging = false;
 }
 function destroy() {
@@ -198,14 +201,14 @@ function destroy() {
 function attachListeners() {
   cardElementObserver.observe(cardEl.value);
 
-  window.addEventListener('mouseup', handleMouseUp);
-  window.addEventListener('mousemove', handleMouseMove);
+  window.addEventListener('mouseup', onMouseup);
+  window.addEventListener('mousemove', onMousemove);
 }
 function detachListeners() {
   cardElementObserver.disconnect();
 
-  window.removeEventListener('mouseup', handleMouseUp);
-  window.removeEventListener('mousemove', handleMouseMove);
+  window.removeEventListener('mouseup', onMouseup);
+  window.removeEventListener('mousemove', onMousemove);
 }
 
 watch(
