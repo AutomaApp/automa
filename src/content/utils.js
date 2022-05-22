@@ -1,3 +1,28 @@
+export function generateXPath(element) {
+  if (!element) return null;
+  if (element.id !== '') return `id("${element.id}")`;
+  if (element === document.body) return `//${element.tagName}`;
+
+  let ix = 0;
+  const siblings = element.parentNode.childNodes;
+
+  for (let index = 0; index < siblings.length; index += 1) {
+    const sibling = siblings[index];
+
+    if (sibling === element) {
+      return `${generateXPath(element.parentNode)}/${element.tagName}[${
+        ix + 1
+      }]`;
+    }
+
+    if (sibling.nodeType === 1 && sibling.tagName === element.tagName) {
+      ix += 1;
+    }
+  }
+
+  return null;
+}
+
 export function automaRefDataStr(varName) {
   return `
 function findData(obj, path) {

@@ -1,3 +1,5 @@
+import { finder } from '@medv/finder';
+
 /* eslint-disable  no-cond-assign */
 export function getAllSiblings(el, selector) {
   const siblings = [el];
@@ -81,4 +83,22 @@ export function getElementList(el, maxDepth = 50, paths = []) {
   return siblings;
 }
 
-export default getElementList;
+export default function (target) {
+  const automaListEl = target.closest('[automa-el-list]');
+
+  if (automaListEl) {
+    if (target.hasAttribute('automa-el-list')) return [];
+
+    const childSelector = finder(target, {
+      root: automaListEl,
+      idName: () => false,
+    });
+    const elements = document.querySelectorAll(
+      `[automa-el-list] ${childSelector}`
+    );
+
+    return Array.from(elements);
+  }
+
+  return getElementList(target) || [target];
+}
