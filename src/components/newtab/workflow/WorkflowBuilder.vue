@@ -173,6 +173,7 @@ export default {
     const prevSelectedEl = {
       output: null,
       connection: null,
+      nodeContent: null,
     };
     const isOutputEl = (el) => el.classList.contains('output');
     const isConnectionEl = (el) =>
@@ -205,17 +206,73 @@ export default {
         classes: 'ring-4',
         active: isOutputEl(target),
       });
+
+      const nodeContent = target.closest('.drawflow_content_node');
+      toggleHoverClass({
+        classes: 'ring-4',
+        target: nodeContent,
+        name: 'nodeContent',
+        active: nodeContent,
+      });
     }
     function dropHandler({ dataTransfer, clientX, clientY, target }) {
       const block = JSON.parse(dataTransfer.getData('block') || null);
 
-      if (!block || block.fromBlockBasic) return;
+      if (!block) return;
 
       const isTriggerExists =
         block.id === 'trigger' &&
         editor.value.getNodesFromName('trigger').length !== 0;
-
       if (isTriggerExists) return;
+
+      if (target.closest('.drawflow_content_node')) {
+        const targetNodeId = target
+          .closest('.drawflow-node')
+          .id.replace(/node-/, '');
+        const targetNode = editor.value.getNodeFromId(targetNodeId);
+        editor.value.removeNodeId(`node-${targetNodeId}`);
+
+        let targetBlock = block;
+        if (block.fromBlockBasic) {
+          targetBlock = { ...tasks[block.id], id: block.id };
+        }
+
+        const newNodeId = editor.value.addNode(
+          targetBlock.id,
+          targetBlock.inputs,
+          targetBlock.outputs,
+          targetNode.pos_x,
+          targetNode.pos_y,
+          targetBlock.id,
+          targetBlock.data,
+          targetBlock.component,
+          'vue'
+        );
+        const duplicateConnections = (nodeIO, type) => {
+          if (block[type] === 0) return;
+
+          Object.keys(nodeIO).forEach((name) => {
+            const { connections } = nodeIO[name];
+
+            connections.forEach(({ node, input, output }) => {
+              if (node === targetNodeId) return;
+
+              if (type === 'inputs') {
+                editor.value.addConnection(node, newNodeId, input, name);
+              } else if (type === 'outputs') {
+                editor.value.addConnection(newNodeId, node, name, output);
+              }
+            });
+          });
+        };
+
+        duplicateConnections(targetNode.inputs, 'inputs');
+        duplicateConnections(targetNode.outputs, 'outputs');
+
+        return;
+      }
+
+      if (block.fromBlockBasic) return;
 
       const xPosition =
         clientX *
@@ -288,18 +345,18 @@ export default {
             result.inputClass
           );
         } catch (error) {
-          // Do nothing
+          console.error(error);
         }
       } else if (isOutputEl(target)) {
         prevSelectedEl.output?.classList.remove('ring-4');
 
-        const targetBlockId = target
+        const targetNodeId = target
           .closest('.drawflow-node')
           .id.replace(/node-/, '');
         const outputClass = target.classList[1];
 
         editor.value.addConnection(
-          targetBlockId,
+          targetNodeId,
           blockId,
           outputClass,
           'input_1'
@@ -861,5 +918,8 @@ export default {
   background: rgba(46, 115, 252, 0.11);
   border: 2px solid rgba(98, 155, 255, 0.81);
   border-radius: 0.1em;
+}
+.drawflow_content_node {
+  @apply rounded-lg;
 }
 </style>

@@ -354,7 +354,7 @@ browser.runtime.onStartup.addListener(async () => {
           ? parseJSON(currWorkflow.drawflow, {})
           : currWorkflow.drawflow;
 
-      triggerBlock = findTriggerBlock(flow);
+      triggerBlock = findTriggerBlock(flow)?.data;
     }
 
     if (triggerBlock) {

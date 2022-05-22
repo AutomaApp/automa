@@ -65,6 +65,7 @@
                 tag="button"
                 :active="state.activeTab === 'local'"
                 class="pl-14"
+                @click="state.activeTab = 'local'"
               >
                 <span class="capitalize">
                   {{ t('workflow.type.local') }}
@@ -75,6 +76,7 @@
                 tag="button"
                 :active="state.activeTab === 'shared'"
                 class="pl-14"
+                @click="state.activeTab = 'shared'"
               >
                 <span class="capitalize">
                   {{ t('workflow.type.shared') }}
@@ -85,6 +87,7 @@
                 tag="button"
                 :active="state.activeTab === 'host'"
                 class="pl-14"
+                @click="state.activeTab = 'host'"
               >
                 <span class="capitalize">
                   {{ t('workflow.type.host') }}
