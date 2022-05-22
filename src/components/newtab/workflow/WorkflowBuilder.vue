@@ -226,6 +226,8 @@ export default {
       if (isTriggerExists) return;
 
       if (target.closest('.drawflow_content_node')) {
+        prevSelectedEl.nodeContent?.classList.remove('ring-4');
+
         const targetNodeId = target
           .closest('.drawflow-node')
           .id.replace(/node-/, '');

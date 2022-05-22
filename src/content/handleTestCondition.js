@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid';
+import { nanoid } from 'nanoid/non-secure';
 import { visibleInViewport } from '@/utils/helper';
 import FindElement from '@/utils/FindElement';
 import { automaRefDataStr } from './utils';
@@ -44,14 +44,13 @@ function handleConditionElement({ data, type }) {
 }
 function injectJsCode({ data, refData }) {
   return new Promise((resolve, reject) => {
-    const stateId = nanoid();
-
-    sessionStorage.setItem(`automa--${stateId}`, JSON.stringify(refData));
+    const varName = `automa${nanoid(5)}`;
 
     const scriptEl = document.createElement('script');
     scriptEl.textContent = `
       (async () => {
-        ${automaRefDataStr(stateId)}
+        const ${varName} = ${JSON.stringify(refData)};
+        ${automaRefDataStr(varName)}
         try {
           ${data.code}
         } catch (error) {

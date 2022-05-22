@@ -1,39 +1,31 @@
+import { nanoid } from 'nanoid/non-secure';
 import { sendMessage } from '@/utils/message';
 import { automaRefDataStr } from '../utils';
 
-function getAutomaScript(blockId, everyNewTab) {
+function getAutomaScript(refData, everyNewTab) {
+  const varName = `automa${nanoid(5)}`;
+
   let str = `
+const ${varName} = ${JSON.stringify(refData)};
+${automaRefDataStr(varName)}
 function automaSetVariable(name, value) {
-  const data = JSON.parse(sessionStorage.getItem('automa--${blockId}')) || null;
-
-  if (data === null) return null;
-
-  data.variables[name] = value;
-  sessionStorage.setItem('automa--${blockId}', JSON.stringify(data));
+  ${varName}.variables[name] = value;
 }
 function automaNextBlock(data, insert = true) {
-  window.dispatchEvent(new CustomEvent('__automa-next-block__', { detail: { data, insert } }));
+  window.dispatchEvent(new CustomEvent('__automa-next-block__', { detail: { data, insert, refData: ${varName} } }));
 }
 function automaResetTimeout() {
  window.dispatchEvent(new CustomEvent('__automa-reset-timeout__'));
 }
-${automaRefDataStr(blockId)}
   `;
 
-  if (everyNewTab) str = automaRefDataStr(blockId);
+  if (everyNewTab) str = automaRefDataStr(varName);
 
   return str;
 }
 
 function javascriptCode(block) {
-  if (!block.data.everyNewTab) {
-    sessionStorage.setItem(
-      `automa--${block.id}`,
-      JSON.stringify(block.refData)
-    );
-  }
-
-  const automaScript = getAutomaScript(block.id, block.data.everyNewTab);
+  const automaScript = getAutomaScript(block.refData, block.data.everyNewTab);
 
   return new Promise((resolve, reject) => {
     let documentCtx = document;
@@ -115,20 +107,29 @@ function javascriptCode(block) {
 
       if (!block.data.everyNewTab) {
         let timeout;
-        const cleanUp = (columns = {}) => {
-          const storageKey = `automa--${block.id}`;
-          const storageRefData = JSON.parse(sessionStorage.getItem(storageKey));
+        let isResolved = false;
+
+        const cleanUp = (detail = {}) => {
+          if (isResolved) return;
+          isResolved = true;
 
           script.remove();
           preloadScripts.forEach((item) => {
             if (item.removeAfterExec) item.script.remove();
           });
 
-          resolve({ columns, variables: storageRefData?.variables });
+          clearTimeout(timeout);
+
+          resolve({
+            columns: {
+              data: detail?.data,
+              insert: detail?.insert,
+            },
+            variables: detail?.refData?.variables,
+          });
         };
 
         window.addEventListener('__automa-next-block__', ({ detail }) => {
-          clearTimeout(timeout);
           cleanUp(detail || {});
         });
         window.addEventListener('__automa-reset-timeout__', () => {

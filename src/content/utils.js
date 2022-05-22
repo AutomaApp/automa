@@ -1,4 +1,4 @@
-export function automaRefDataStr(stateId) {
+export function automaRefDataStr(varName) {
   return `
 function findData(obj, path) {
   const paths = path.split('.');
@@ -24,11 +24,11 @@ function findData(obj, path) {
   return result;
 }
 function automaRefData(keyword, path = '') {
-  const data = JSON.parse(sessionStorage.getItem('automa--${stateId}')) || null;
+  const data = ${varName}[keyword];
 
-  if (data === null) return null;
+  if (!data) return;
 
-  return findData(data[keyword], path);
+  return findData(data, path);
 }
   `;
 }
