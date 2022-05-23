@@ -172,6 +172,7 @@ async function checkRecordingWorkflow(tabId, tabUrl) {
   if (!isRecording) return;
 
   await browser.tabs.executeScript(tabId, {
+    allFrames: true,
     file: 'recordWorkflow.bundle.js',
   });
 }

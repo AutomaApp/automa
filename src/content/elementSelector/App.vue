@@ -68,6 +68,7 @@
     </div>
   </div>
   <shared-element-selector
+    :hide="state.hide"
     :disabled="state.hide"
     :list="state.selectList"
     :selector-type="state.selectorType"
@@ -125,6 +126,7 @@ function toggleHighlightElement({ index, highlight }) {
 function onElementsSelected({ selector, elements, path }) {
   if (path) {
     selectedElement.path = path;
+    selectedElement.pathIndex = 0;
   }
 
   state.elSelector = selector;

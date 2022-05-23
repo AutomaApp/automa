@@ -48,7 +48,10 @@ function getElementsRect(data) {
     let elementsRect = [];
 
     if (data.list) {
-      const elements = findElementList(element) || [];
+      const elements =
+        findElementList(element, {
+          onlyInList: data.onlyInList,
+        }) || [];
 
       hoveredElements = elements;
       elementsRect = elements.map((el) => getElementRectWithOffset(el, data));

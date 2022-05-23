@@ -9,7 +9,7 @@
       left: 0;
       pointer-events: none;
       position: fixed;
-      z-index: 10;
+      z-index: 999999;
     "
   >
     <shared-element-highlighter
@@ -58,7 +58,9 @@ const props = defineProps({
     default: () => [],
   },
   list: Boolean,
+  pause: Boolean,
   disabled: Boolean,
+  onlyInList: Boolean,
   withAttributes: Boolean,
 });
 const emit = defineEmits(['selected']);
@@ -132,6 +134,8 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
   let { 1: target } = document.elementsFromPoint(clientX, clientY);
   if (!target) return;
 
+  const onlyInList = props.onlyInList && elementsState.selected.length > 0;
+
   if (target.tagName === 'IFRAME' || target.tagName === 'FRAME') {
     if (type === 'selected') removeElementsList();
 
@@ -150,6 +154,7 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
         left,
         clientX,
         clientY,
+        onlyInList,
         list: isSelectList,
         type: 'automa:get-element-rect',
         withAttributes: props.withAttributes,
@@ -175,7 +180,11 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
   const withAttribute = props.withAttributes && type === 'selected';
 
   if (isSelectList) {
-    const elements = findElementList(target, frameElement) || [];
+    const elements =
+      findElementList(target, {
+        onlyInList,
+        frameElement,
+      }) || [];
 
     if (type === 'hovered') hoveredElements = elements;
 
@@ -214,6 +223,8 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
   }
 }
 function onMousemove(event) {
+  if (props.pause) return;
+
   retrieveElementsRect(event, 'hovered');
 }
 function onClick(event) {

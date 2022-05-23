@@ -19,6 +19,7 @@ export function getElementRect(target, withAttributes) {
     });
 
     result.attributes = attributes;
+    result.tagName = target.tagName;
   }
 
   return result;

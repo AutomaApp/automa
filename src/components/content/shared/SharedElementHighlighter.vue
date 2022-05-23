@@ -1,5 +1,4 @@
 <template>
-  {{ items }}
   <rect
     v-for="(item, index) in items"
     v-bind="{

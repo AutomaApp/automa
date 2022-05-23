@@ -264,6 +264,7 @@ async function recordWorkflow(options = {}) {
     for (const tab of tabs) {
       if (tab.url.startsWith('http')) {
         await browser.tabs.executeScript(tab.id, {
+          allFrames: true,
           file: 'recordWorkflow.bundle.js',
         });
       }

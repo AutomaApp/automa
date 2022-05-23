@@ -83,7 +83,7 @@ export function getElementList(el, maxDepth = 50, paths = []) {
   return siblings;
 }
 
-export default function (target, frameElement) {
+export default function (target, { frameElement, onlyInList } = {}) {
   if (!target) return [];
 
   const automaListEl = target.closest('[automa-el-list]');
@@ -106,6 +106,8 @@ export default function (target, frameElement) {
 
     return Array.from(elements);
   }
+
+  if (onlyInList) return [];
 
   return getElementList(target) || [target];
 }
