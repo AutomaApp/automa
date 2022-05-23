@@ -35,10 +35,10 @@ export function getElementPath(el, root = document.documentElement) {
   return path;
 }
 
-export function generateXPath(element) {
+export function generateXPath(element, root = document.body) {
   if (!element) return null;
   if (element.id !== '') return `id("${element.id}")`;
-  if (element === document.body) return `//${element.tagName}`;
+  if (element === root) return `//${element.tagName}`;
 
   let ix = 0;
   const siblings = element.parentNode.childNodes;

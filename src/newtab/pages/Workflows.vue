@@ -64,6 +64,7 @@
               <ui-list-item
                 tag="button"
                 :active="state.activeTab === 'local'"
+                color="bg-box-transparent font-semibold"
                 class="pl-14"
                 @click="state.activeTab = 'local'"
               >
@@ -73,8 +74,9 @@
               </ui-list-item>
               <ui-list-item
                 v-if="store.state.user"
-                tag="button"
                 :active="state.activeTab === 'shared'"
+                tag="button"
+                color="bg-box-transparent font-semibold"
                 class="pl-14"
                 @click="state.activeTab = 'shared'"
               >
@@ -84,8 +86,9 @@
               </ui-list-item>
               <ui-list-item
                 v-if="workflowHosts.length > 0"
-                tag="button"
                 :active="state.activeTab === 'host'"
+                color="bg-box-transparent font-semibold"
+                tag="button"
                 class="pl-14"
                 @click="state.activeTab = 'host'"
               >

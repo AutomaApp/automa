@@ -64,6 +64,7 @@ const props = defineProps({
 const emit = defineEmits(['selected']);
 
 let frameElement = null;
+let frameElementRect = null;
 let lastScrollPosY = window.scrollY;
 let lastScrollPosX = window.scrollX;
 
@@ -74,22 +75,39 @@ const elementsState = reactive({
 });
 
 const onScroll = debounce(() => {
-  if (state.hide) return;
+  if (props.disabled) return;
 
   hoveredElements = [];
-  elementsState.selected = [];
+  elementsState.hovered = [];
 
   const yPos = window.scrollY - lastScrollPosY;
   const xPos = window.scrollX - lastScrollPosX;
 
-  state.selected.forEach((_, index) => {
-    state.selected[index].x -= xPos;
-    state.selected[index].y -= yPos;
+  elementsState.selected.forEach((_, index) => {
+    elementsState.selected[index].x -= xPos;
+    elementsState.selected[index].y -= yPos;
   });
 
   lastScrollPosX = window.scrollX;
   lastScrollPosY = window.scrollY;
 }, 100);
+
+function getElementRectWithOffset(element, withAttribute) {
+  const rect = getElementRect(element, withAttribute);
+
+  if (frameElementRect) {
+    rect.y += frameElementRect.top;
+    rect.x += frameElementRect.left;
+  }
+
+  return rect;
+}
+function removeElementsList() {
+  const prevSelectedList = document.querySelectorAll('[automa-el-list]');
+  prevSelectedList.forEach((el) => {
+    el.removeAttribute('automa-el-list');
+  });
+}
 function resetFramesElements(options = {}) {
   const elements = document.querySelectorAll('iframe, frame');
 
@@ -112,16 +130,19 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
   const isSelectList = props.list && props.selectorType === 'css';
 
   let { 1: target } = document.elementsFromPoint(clientX, clientY);
+  if (!target) return;
+
   if (target.tagName === 'IFRAME' || target.tagName === 'FRAME') {
-    if (type === 'selected') {
-      const prevSelectedList = document.querySelectorAll('[automa-el-list]');
-      prevSelectedList.forEach((el) => {
-        el.removeAttribute('automa-el-list');
-      });
-    }
+    if (type === 'selected') removeElementsList();
 
     if (target.contentDocument) {
-      target = target.contentDocument.elementsFromPoint(clientX, clientY);
+      frameElement = target;
+      frameElementRect = target.getBoundingClientRect();
+
+      const yPos = clientY - frameElementRect.top;
+      const xPos = clientX - frameElementRect.left;
+
+      target = target.contentDocument.elementFromPoint(xPos, yPos);
     } else {
       const { top, left } = target.getBoundingClientRect();
       const payload = {
@@ -141,41 +162,50 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
         });
 
       target.contentWindow.postMessage(payload, '*');
+      frameElement = target;
+      frameElementRect = target.getBoundingClientRect();
+      return;
     }
-
-    frameElement = target;
-
-    return;
+  } else {
+    frameElement = null;
+    frameElementRect = null;
   }
-
-  frameElement = null;
 
   let elementsRect = [];
   const withAttribute = props.withAttributes && type === 'selected';
 
   if (isSelectList) {
-    const elements = findElementList(target) || [];
+    const elements = findElementList(target, frameElement) || [];
 
     if (type === 'hovered') hoveredElements = elements;
 
-    elementsRect = elements.map((el) => getElementRect(el, withAttribute));
+    elementsRect = elements.map((el) =>
+      getElementRectWithOffset(el, withAttribute)
+    );
   } else {
     if (type === 'hovered') hoveredElements = [target];
 
-    elementsRect = [getElementRect(target, withAttribute)];
+    elementsRect = [getElementRectWithOffset(target, withAttribute)];
   }
 
   elementsState[type] = elementsRect;
 
   if (type === 'selected') {
-    resetFramesElements();
+    if (!frameElement) resetFramesElements();
 
-    const selector = generateElementsSelector({
+    let selector = generateElementsSelector({
       target,
+      frameElement,
       hoveredElements,
       list: isSelectList,
       selectorType: props.selectorType,
     });
+
+    if (frameElement) {
+      const frameSelector = finder(frameElement);
+      selector = `${frameSelector} |> ${selector}`;
+    }
+
     emit('selected', {
       selector,
       elements: elementsRect,
@@ -223,6 +253,7 @@ function detachListeners() {
 watch(
   () => [props.list, props.disabled],
   () => {
+    removeElementsList();
     resetFramesElements({ clearCache: true });
   }
 );

@@ -1,9 +1,23 @@
 import { finder } from '@medv/finder';
 import { generateXPath } from '../utils';
 
-export default function ({ list, target, selectorType, hoveredElements }) {
+export default function ({
+  list,
+  target,
+  selectorType,
+  hoveredElements,
+  frameElement,
+}) {
   let selector = '';
+
   const [selectedElement] = hoveredElements;
+  const finderOptions = {};
+  let documentCtx = document;
+
+  if (frameElement) {
+    documentCtx = frameElement.contentDocument.body;
+    finderOptions.root = documentCtx;
+  }
 
   if (list) {
     const isInList = target.closest('[automa-el-list]');
@@ -17,11 +31,13 @@ export default function ({ list, target, selectorType, hoveredElements }) {
 
       selector = `${listSelector} ${childSelector}`;
     } else {
-      selector = `${finder(
-        selectedElement.parentElement
-      )} > ${selectedElement.tagName.toLowerCase()}`;
+      const parentSelector = finder(
+        selectedElement.parentElement,
+        finderOptions
+      );
+      selector = `${parentSelector} > ${selectedElement.tagName.toLowerCase()}`;
 
-      const prevSelectedList = document.querySelectorAll('[automa-el-list]');
+      const prevSelectedList = documentCtx.querySelectorAll('[automa-el-list]');
       prevSelectedList.forEach((el) => {
         el.removeAttribute('automa-el-list');
       });
@@ -33,7 +49,7 @@ export default function ({ list, target, selectorType, hoveredElements }) {
   } else {
     selector =
       selectorType === 'css'
-        ? finder(selectedElement)
+        ? finder(selectedElement, finderOptions)
         : generateXPath(selectedElement);
   }
 

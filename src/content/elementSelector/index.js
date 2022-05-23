@@ -29,7 +29,9 @@ function elementSelectorInstance() {
   });
 
   try {
-    if (window.self === window.top) {
+    const isMainFrame = window.self === window.top;
+
+    if (isMainFrame) {
       const isAppExists = elementSelectorInstance();
 
       if (isAppExists) return;

@@ -35,7 +35,7 @@ export function getAllSiblings(el, selector) {
 }
 
 export function getCssPath(el, root = document.body) {
-  if (!(el instanceof Element)) return null;
+  if (!el) return null;
 
   const path = [];
 
@@ -66,7 +66,7 @@ export function getCssPath(el, root = document.body) {
 }
 
 export function getElementList(el, maxDepth = 50, paths = []) {
-  if (maxDepth === 0 || el.tagName === 'BODY') return null;
+  if (maxDepth === 0 || !el || el.tagName === 'BODY') return null;
 
   let selector = el.tagName.toLowerCase();
   const { elements, index } = getAllSiblings(el, paths.join(' > '));
@@ -83,8 +83,15 @@ export function getElementList(el, maxDepth = 50, paths = []) {
   return siblings;
 }
 
-export default function (target) {
+export default function (target, frameElement) {
+  if (!target) return [];
+
   const automaListEl = target.closest('[automa-el-list]');
+  let documentCtx = document;
+
+  if (frameElement) {
+    documentCtx = frameElement.contentDocument;
+  }
 
   if (automaListEl) {
     if (target.hasAttribute('automa-el-list')) return [];
@@ -93,7 +100,7 @@ export default function (target) {
       root: automaListEl,
       idName: () => false,
     });
-    const elements = document.querySelectorAll(
+    const elements = documentCtx.querySelectorAll(
       `[automa-el-list] ${childSelector}`
     );
 
