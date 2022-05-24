@@ -52,7 +52,7 @@ export function queryElements(data, documentCtx = document) {
 
 export default async function (
   { data, id, frameSelector, debugMode },
-  { onSelected, onError, onSuccess }
+  { onSelected, onError, onSuccess } = {}
 ) {
   if (!data || !data.selector) {
     if (onError) onError(new Error('selector-empty'));

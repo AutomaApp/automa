@@ -119,7 +119,7 @@ function messageTopFrame(windowCtx) {
     }, 5000);
 
     windowCtx.addEventListener('message', messageListener);
-    windowCtx.top.postMessage('automa:get-frame', '*');
+    windowCtx.top.postMessage({ type: 'automa:get-frame' }, '*');
   });
 }
 export async function getElementPosition(element) {

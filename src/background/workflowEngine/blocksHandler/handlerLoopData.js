@@ -35,13 +35,16 @@ async function loopData({ data, id, outputs }, { refData }) {
           return parseJSON(variableVal, variableVal);
         },
         elements: async () => {
+          const isXPath = data.elementSelector.startsWith('/');
           const elements = await this._sendMessageToTab({
-            blockId: id,
-            isBlock: false,
-            max: data.maxLoop,
-            type: 'loop-elements',
-            selector: data.elementSelector,
-            frameSelector: this.frameSelector,
+            id,
+            name: 'loop-data',
+            data: {
+              multiple: true,
+              max: data.maxLoop,
+              selector: data.elementSelector,
+              findBy: isXPath ? 'xpath' : 'cssSelector',
+            },
           });
 
           return elements;
