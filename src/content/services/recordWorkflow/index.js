@@ -5,22 +5,15 @@ import selectorFrameContext from '../../elementSelector/selectorFrameContext';
 
 (async () => {
   try {
+    let elementSelectorInstance = null;
     const isMainFrame = window.self === window.top;
+    const destroyRecordEvents = await initRecordEvents(isMainFrame);
 
     if (isMainFrame) {
       const element = document.querySelector('#automa-recording');
       if (element) return;
 
-      const destroyRecordEvents = await initRecordEvents();
-      const elementSelectorInstance = await initElementSelector();
-
-      browser.runtime.onMessage.addListener(function messageListener({ type }) {
-        if (type === 'recording:stop') {
-          destroyRecordEvents();
-          elementSelectorInstance.unmount();
-          browser.runtime.onMessage.removeListener(messageListener);
-        }
-      });
+      elementSelectorInstance = await initElementSelector();
     } else {
       const style = document.createElement('style');
       style.textContent = '[automa-el-list] {outline: 2px dashed #6366f1;}';
@@ -29,6 +22,17 @@ import selectorFrameContext from '../../elementSelector/selectorFrameContext';
 
       selectorFrameContext();
     }
+
+    browser.runtime.onMessage.addListener(function messageListener({ type }) {
+      if (type === 'recording:stop') {
+        if (elementSelectorInstance) {
+          elementSelectorInstance.unmount();
+        }
+
+        destroyRecordEvents();
+        browser.runtime.onMessage.removeListener(messageListener);
+      }
+    });
   } catch (error) {
     console.error(error);
   }
