@@ -1,10 +1,10 @@
 import { nanoid } from 'nanoid/non-secure';
-import { visibleInViewport } from '@/utils/helper';
+import { visibleInViewport, isXPath } from '@/utils/helper';
 import FindElement from '@/utils/FindElement';
 import { automaRefDataStr } from './utils';
 
 function handleConditionElement({ data, type }) {
-  const selectorType = data.selector.startsWith('/') ? 'xpath' : 'cssSelector';
+  const selectorType = isXPath(data.selector) ? 'xpath' : 'cssSelector';
 
   const element = FindElement[selectorType](data);
   const { 1: actionType } = type.split('#');

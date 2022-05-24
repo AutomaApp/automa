@@ -271,6 +271,8 @@ export default {
         duplicateConnections(targetNode.inputs, 'inputs');
         duplicateConnections(targetNode.outputs, 'outputs');
 
+        emitter.emit('editor:data-changed');
+
         return;
       }
 

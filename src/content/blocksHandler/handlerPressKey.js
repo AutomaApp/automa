@@ -1,3 +1,4 @@
+import { isXPath } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
 import { keyDefinitions } from '@/utils/USKeyboardLayout';
 import { queryElements } from '../handleSelector';
@@ -126,7 +127,7 @@ async function pressKey({ data, debugMode, activeTabId }) {
   if (data.selector) {
     const customElement = await queryElements({
       selector: data.selector,
-      findBy: data.selector.startsWith('/') ? 'xpath' : 'cssSelector',
+      findBy: isXPath(data.selector) ? 'xpath' : 'cssSelector',
     });
 
     element = customElement || element;

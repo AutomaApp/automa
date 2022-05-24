@@ -1,4 +1,4 @@
-import { parseJSON } from '@/utils/helper';
+import { parseJSON, isXPath } from '@/utils/helper';
 import { getBlockConnection } from '../helper';
 
 async function loopData({ data, id, outputs }, { refData }) {
@@ -35,7 +35,6 @@ async function loopData({ data, id, outputs }, { refData }) {
           return parseJSON(variableVal, variableVal);
         },
         elements: async () => {
-          const isXPath = data.elementSelector.startsWith('/');
           const elements = await this._sendMessageToTab({
             id,
             name: 'loop-data',
@@ -43,7 +42,7 @@ async function loopData({ data, id, outputs }, { refData }) {
               multiple: true,
               max: data.maxLoop,
               selector: data.elementSelector,
-              findBy: isXPath ? 'xpath' : 'cssSelector',
+              findBy: isXPath(data.elementSelector) ? 'xpath' : 'cssSelector',
             },
           });
 
