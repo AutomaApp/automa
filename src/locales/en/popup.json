@@ -22,7 +22,11 @@
     "workflow": {
       "new": "New workflow",
       "rename": "Rename workflow",
-      "delete": "Delete workflow"
+      "delete": "Delete workflow",
+      "type": {
+        "host": "Host",
+        "local": "Local",
+      }
     },
   }
 }

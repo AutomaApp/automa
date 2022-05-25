@@ -1,3 +1,5 @@
+import { finder } from '@medv/finder';
+
 /* eslint-disable  no-cond-assign */
 export function getAllSiblings(el, selector) {
   const siblings = [el];
@@ -33,7 +35,7 @@ export function getAllSiblings(el, selector) {
 }
 
 export function getCssPath(el, root = document.body) {
-  if (!(el instanceof Element)) return null;
+  if (!el) return null;
 
   const path = [];
 
@@ -64,7 +66,7 @@ export function getCssPath(el, root = document.body) {
 }
 
 export function getElementList(el, maxDepth = 50, paths = []) {
-  if (maxDepth === 0 || el.tagName === 'BODY') return null;
+  if (maxDepth === 0 || !el || el.tagName === 'BODY') return null;
 
   let selector = el.tagName.toLowerCase();
   const { elements, index } = getAllSiblings(el, paths.join(' > '));
@@ -81,4 +83,31 @@ export function getElementList(el, maxDepth = 50, paths = []) {
   return siblings;
 }
 
-export default getElementList;
+export default function (target, { frameElement, onlyInList } = {}) {
+  if (!target) return [];
+
+  const automaListEl = target.closest('[automa-el-list]');
+  let documentCtx = document;
+
+  if (frameElement) {
+    documentCtx = frameElement.contentDocument;
+  }
+
+  if (automaListEl) {
+    if (target.hasAttribute('automa-el-list')) return [];
+
+    const childSelector = finder(target, {
+      root: automaListEl,
+      idName: () => false,
+    });
+    const elements = documentCtx.querySelectorAll(
+      `[automa-el-list] ${childSelector}`
+    );
+
+    return Array.from(elements);
+  }
+
+  if (onlyInList) return [];
+
+  return getElementList(target) || [target];
+}

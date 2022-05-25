@@ -50,9 +50,8 @@
           v-model:selectList="state.selectList"
           :selector="state.elSelector"
           :selected-count="state.selectedElements.length"
-          @child="selectChildElement"
-          @parent="selectParentElement"
-          @change="updateSelectedElements"
+          @parent="selectElementPath('up')"
+          @child="selectElementPath('down')"
         />
         <selector-elements-detail
           v-if="!state.hide && state.selectedElements.length > 0"
@@ -67,65 +66,45 @@
         />
       </div>
     </div>
-    <shared-element-highlighter
-      v-if="!state.hide"
-      :disabled="state.hide"
-      :data="elementsHighlightData"
-      :items="{
-        hoveredElements: state.hoveredElements,
-        selectedElements: state.selectedElements,
-      }"
-      @update="state[$event.key] = $event.items"
-    />
   </div>
-  <teleport to="body">
-    <div
-      v-if="!state.hide"
-      style="
-        z-index: 9999999;
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-      "
-    ></div>
-  </teleport>
+  <shared-element-selector
+    :hide="state.hide"
+    :disabled="state.hide"
+    :list="state.selectList"
+    :selector-type="state.selectorType"
+    :selected-els="state.selectedElements"
+    with-attributes
+    @selected="onElementsSelected"
+  />
 </template>
 <script setup>
 import { reactive, ref, watch, inject, onMounted, onBeforeUnmount } from 'vue';
-import { getCssSelector } from 'css-selector-generator';
 import { finder } from '@medv/finder';
-import { elementsHighlightData } from '@/utils/shared';
-import findElement from '@/utils/FindElement';
 import SelectorQuery from '@/components/content/selector/SelectorQuery.vue';
+import SharedElementSelector from '@/components/content/shared/SharedElementSelector.vue';
 import SelectorElementsDetail from '@/components/content/selector/SelectorElementsDetail.vue';
-import SharedElementHighlighter from '@/components/content/shared/SharedElementHighlighter.vue';
-import findElementList from './listSelector';
+import { getElementRect } from '../utils';
 
+const originalFontSize = document.documentElement.style.fontSize;
 const selectedElement = {
   path: [],
   pathIndex: 0,
+  cache: new WeakMap(),
 };
-
-const originalFontSize = document.documentElement.style.fontSize;
 
 const rootElement = inject('rootElement');
 
 const cardEl = ref('cardEl');
 const mainActiveTab = ref('selector');
 const state = reactive({
+  hide: false,
   elSelector: '',
-  listSelector: '',
   isDragging: false,
   selectList: false,
   isExecuting: false,
-  selectElements: [],
-  hoveredElements: [],
   selectorType: 'css',
   selectedElements: [],
   activeTab: 'attributes',
-  hide: window.self !== window.top,
 });
 const cardRect = reactive({
   x: 0,
@@ -141,310 +120,64 @@ const cardElementObserver = new ResizeObserver(([entry]) => {
   cardRect.height = height;
 });
 
-/* eslint-disable  no-use-before-define */
-const getElementSelector = (element, options = {}) => {
-  if (state.selectorType === 'css') {
-    if (Array.isArray(element)) {
-      return getCssSelector(element, {
-        root: document.body,
-        blacklist: [
-          '[focused]',
-          /focus/,
-          '[src=*]',
-          '[data-*]',
-          '[href=*]',
-          '[style=*]',
-          '[value=*]',
-          '[automa-*]',
-        ],
-        includeTag: true,
-        ...options,
-      });
-    }
-
-    return finder(element);
-  }
-
-  return generateXPath(element);
-};
-
-function generateXPath(element) {
-  if (!element) return null;
-  if (element.id !== '') return `id("${element.id}")`;
-  if (element === document.body) return `//${element.tagName}`;
-
-  let ix = 0;
-  const siblings = element.parentNode.childNodes;
-
-  for (let index = 0; index < siblings.length; index += 1) {
-    const sibling = siblings[index];
-
-    if (sibling === element) {
-      return `${generateXPath(element.parentNode)}/${element.tagName}[${
-        ix + 1
-      }]`;
-    }
-
-    if (sibling.nodeType === 1 && sibling.tagName === element.tagName) {
-      ix += 1;
-    }
-  }
-
-  return null;
-}
 function toggleHighlightElement({ index, highlight }) {
   state.selectedElements[index].highlight = highlight;
 }
-function getElementRect(target, withElement = false) {
-  if (!target) return {};
+function onElementsSelected({ selector, elements, path }) {
+  if (path) {
+    selectedElement.path = path;
+    selectedElement.pathIndex = 0;
+  }
 
-  const { x, y, height, width } = target.getBoundingClientRect();
-  const result = {
-    width: width + 4,
-    height: height + 4,
-    x: x - 2,
-    y: y - 2,
-  };
-
-  if (withElement) result.element = target;
-
-  return result;
-}
-function updateSelectedElements(selector) {
   state.elSelector = selector;
-
-  try {
-    const selectorType = state.selectorType === 'css' ? 'cssSelector' : 'xpath';
-    let elements = findElement[selectorType]({ selector, multiple: true });
-    const selectElements = [];
-
-    if (selectorType === 'xpath') {
-      elements = elements ? [elements] : [];
-    }
-
-    const elementsDetail = Array.from(elements).map((element, index) => {
-      const attributes = Array.from(element.attributes).reduce(
-        (acc, { name, value }) => {
-          if (name === 'automa-el-list') return acc;
-
-          acc[name] = value;
-
-          return acc;
-        },
-        {}
-      );
-
-      const elementProps = {
-        element,
-        attributes,
-        highlight: false,
-        ...getElementRect(element),
-      };
-
-      if (element.tagName === 'SELECT') {
-        const options = Array.from(element.querySelectorAll('option')).map(
-          (option) => ({
-            name: option.innerText,
-            value: option.value,
-          })
-        );
-
-        selectElements.push({ ...elementProps, options, index });
-      }
-
-      return elementProps;
-    });
-
-    state.selectElements = selectElements;
-    state.selectedElements = elementsDetail;
-  } catch (error) {
-    state.selectElements = [];
-    state.selectedElements = [];
-  }
+  state.selectedElements = elements || [];
 }
-function getElementList(target) {
-  const automaListEl = target.closest('[automa-el-list]');
+function onMousemove({ clientX, clientY }) {
+  if (!state.isDragging) return;
 
-  if (automaListEl) {
-    if (target.hasAttribute('automa-el-list')) return [];
+  const height = window.innerHeight;
+  const width = document.documentElement.clientWidth;
 
-    const childSelector = finder(target, {
-      root: automaListEl,
-      idName: () => false,
-    });
-    const elements = document.querySelectorAll(
-      `${state.listSelector} ${childSelector}`
-    );
+  if (clientY < 10) clientY = 10;
+  else if (cardRect.height + clientY > height)
+    clientY = height - cardRect.height;
 
-    return Array.from(elements);
-  }
+  if (clientX < 10) clientX = 10;
+  else if (cardRect.width + clientX > width) clientX = width - cardRect.width;
 
-  return findElementList(target) || [target];
+  cardRect.x = clientX;
+  cardRect.y = clientY;
 }
-let prevHoverElement = null;
-function handleMouseMove({ clientX, clientY, target }) {
-  if (state.isDragging) {
-    const height = window.innerHeight;
-    const width = document.documentElement.clientWidth;
+function selectElementPath(type) {
+  let pathIndex =
+    type === 'up'
+      ? selectedElement.pathIndex + 1
+      : selectedElement.pathIndex - 1;
+  let element = selectedElement.path[pathIndex];
 
-    if (clientY < 10) clientY = 10;
-    else if (cardRect.height + clientY > height)
-      clientY = height - cardRect.height;
+  if ((type === 'up' && !element) || element?.tagName === 'BODY') return;
 
-    if (clientX < 10) clientX = 10;
-    else if (cardRect.width + clientX > width) clientX = width - cardRect.width;
-
-    cardRect.x = clientX;
-    cardRect.y = clientY;
-
-    return;
-  }
-
-  const { 1: realTarget } = document.elementsFromPoint(clientX, clientY);
-
-  if (prevHoverElement === realTarget) return;
-  prevHoverElement = realTarget;
-
-  if (state.hide || rootElement === target) return;
-
-  let elementsRect = [];
-
-  if (state.selectList) {
-    const elements = getElementList(realTarget) || [];
-
-    elementsRect = elements.map((el) => getElementRect(el, true));
-  } else {
-    elementsRect = [getElementRect(realTarget)];
-  }
-
-  state.hoveredElements = elementsRect;
-}
-function handleClick(event) {
-  const { target: eventTarget, path, ctrlKey, clientY, clientX } = event;
-
-  if (eventTarget === rootElement || state.hide || state.isExecuting) return;
-  event.stopPropagation();
-  event.preventDefault();
-
-  const { 1: target } = document.elementsFromPoint(clientX, clientY);
-
-  if (state.selectList) {
-    const firstElement = state.hoveredElements[0].element;
-
-    if (!firstElement) return;
-
-    const isInList = target.closest('[automa-el-list]');
-    if (isInList) {
-      const childSelector = finder(target, {
-        root: isInList,
-        idName: () => false,
-      });
-      updateSelectedElements(`${state.listSelector} ${childSelector}`, true);
-
-      return;
-    }
-
-    const prevSelectedList = document.querySelectorAll('[automa-el-list]');
-    prevSelectedList.forEach((element) => {
-      element.removeAttribute('automa-el-list');
-    });
-
-    state.hoveredElements.forEach(({ element }) => {
-      element.setAttribute('automa-el-list', '');
-    });
-
-    const parentSelector = finder(firstElement.parentElement);
-    const elementSelector = `${parentSelector} > ${firstElement.tagName.toLowerCase()}`;
-
-    state.listSelector = elementSelector;
-    updateSelectedElements(elementSelector);
-
-    return;
-  }
-
-  const getElementDetail = (element) => {
-    const attributes = {};
-
-    Array.from(element.attributes).forEach(({ name, value }) => {
-      if (name === 'automa-el-list') return;
-
-      attributes[name] = value;
-    });
-
-    return {
-      ...getElementRect(element),
-      element,
-      attributes,
-      highlight: false,
-      outline: state.selectList && state.selectedElements.length,
-    };
-  };
-
-  let targetElement = target;
-  const targetElementDetail = getElementDetail(target);
-
-  if (state.selectorType === 'css' && ctrlKey) {
-    let elementIndex = -1;
-
-    const elements = state.selectedElements.map(({ element }, index) => {
-      if (element === targetElement) {
-        elementIndex = index;
-      }
-
-      return element;
-    });
-
-    if (elementIndex === -1) {
-      targetElement = [...elements, target];
-      state.selectedElements.push(targetElementDetail);
-    } else {
-      targetElement = elements.splice(elementIndex, 1);
-      state.selectedElements.splice(elementIndex, 1);
-    }
-  } else {
-    state.selectedElements = [targetElementDetail];
-  }
-
-  state.elSelector = getElementSelector(targetElement);
-
-  selectedElement.index = 0;
-  selectedElement.path = path;
-}
-function selectChildElement() {
-  if (selectedElement.path.length === 0 || state.hide) return;
-
-  const currentEl = selectedElement.path[selectedElement.pathIndex];
-  let childElement = currentEl;
-
-  if (selectedElement.pathIndex <= 0) {
-    const childEl = Array.from(currentEl.children).find(
+  if (type === 'down' && !element) {
+    const previousElement = selectedElement.path[selectedElement.pathIndex];
+    const childEl = Array.from(previousElement.children).find(
       (el) => !['STYLE', 'SCRIPT'].includes(el.tagName)
     );
 
-    if (currentEl.childElementCount === 0 || currentEl === childEl) return;
+    if (!childEl) return;
 
-    childElement = childEl;
+    element = childEl;
     selectedElement.path.unshift(childEl);
-    selectedElement.pathIndex = 0;
-  } else {
-    selectedElement.pathIndex -= 1;
-    childElement = selectedElement.path[selectedElement.pathIndex];
+    pathIndex = 0;
   }
 
-  updateSelectedElements(getElementSelector(childElement));
+  selectedElement.pathIndex = pathIndex;
+
+  state.selectedElements = [getElementRect(element, true)];
+  state.elSelector = selectedElement.cache.has(element)
+    ? selectedElement.cache.get(element)
+    : finder(element);
 }
-function selectParentElement() {
-  if (selectedElement.path.length === 0 || state.hide) return;
-
-  const parentElement = selectedElement.path[selectedElement.pathIndex];
-
-  if (parentElement.tagName === 'HTML') return;
-
-  selectedElement.pathIndex += 1;
-
-  updateSelectedElements(getElementSelector(parentElement));
-}
-function handleMouseUp() {
+function onMouseup() {
   if (state.isDragging) state.isDragging = false;
 }
 function destroy() {
@@ -470,35 +203,20 @@ function destroy() {
 function attachListeners() {
   cardElementObserver.observe(cardEl.value);
 
-  window.addEventListener('mouseup', handleMouseUp);
-  window.addEventListener('mousemove', handleMouseMove);
-  document.addEventListener('click', handleClick, true);
+  window.addEventListener('mouseup', onMouseup);
+  window.addEventListener('mousemove', onMousemove);
 }
 function detachListeners() {
   cardElementObserver.disconnect();
 
-  window.removeEventListener('mouseup', handleMouseUp);
-  window.removeEventListener('mousemove', handleMouseMove);
-  document.removeEventListener('click', handleClick, true);
+  window.removeEventListener('mouseup', onMouseup);
+  window.removeEventListener('mousemove', onMousemove);
 }
 
 watch(
   () => state.isDragging,
   (value) => {
     document.body.toggleAttribute('automa-isDragging', value);
-  }
-);
-watch(
-  () => state.selectList,
-  (value) => {
-    if (value) {
-      state.selectedElements = [];
-    } else {
-      const prevSelectedList = document.querySelectorAll('[automa-el-list]');
-      prevSelectedList.forEach((element) => {
-        element.removeAttribute('automa-el-list');
-      });
-    }
   }
 );
 

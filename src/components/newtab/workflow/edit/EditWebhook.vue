@@ -17,9 +17,10 @@
       </option>
     </ui-select>
     <edit-autocomplete class="mb-2">
-      <ui-input
+      <ui-textarea
         :model-value="data.url"
         :label="`${t('workflow.blocks.webhook.url')}*`"
+        rows="1"
         placeholder="http://api.example.com"
         class="w-full"
         autocomplete="off"

@@ -3,6 +3,7 @@
     :id="componentId"
     :minimap="editor.minimap"
     class="element-exists"
+    style="width: 195px"
     @edit="editBlock"
     @delete="editor.removeNodeId(`node-${block.id}`)"
   >
@@ -17,10 +18,15 @@
     </div>
     <p
       :title="t('workflow.blocks.element-exists.selector')"
-      class="text-overflow p-2 rounded-lg bg-box-transparent text-sm font-mono text-right mb-2"
+      :class="{ 'font-mono': !block.data.description }"
+      class="text-overflow p-2 rounded-lg bg-box-transparent text-sm text-right mb-2"
       style="max-width: 200px"
     >
-      {{ block.data.selector || t('workflow.blocks.element-exists.selector') }}
+      {{
+        block.data.description ||
+        block.data.selector ||
+        t('workflow.blocks.element-exists.selector')
+      }}
     </p>
     <p class="text-right text-gray-600 dark:text-gray-200">
       <span :title="t('workflow.blocks.element-exists.fallbackTitle')">

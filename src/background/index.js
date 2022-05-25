@@ -1,4 +1,5 @@
 import browser from 'webextension-polyfill';
+import dayjs from '@/lib/dayjs';
 import { MessageListener } from '@/utils/message';
 import { parseJSON, findTriggerBlock } from '@/utils/helper';
 import getFile from '@/utils/getFile';
@@ -171,6 +172,7 @@ async function checkRecordingWorkflow(tabId, tabUrl) {
   if (!isRecording) return;
 
   await browser.tabs.executeScript(tabId, {
+    allFrames: true,
     file: 'recordWorkflow.bundle.js',
   });
 }
@@ -342,21 +344,44 @@ browser.runtime.onInstalled.addListener(async ({ reason }) => {
   }
 });
 browser.runtime.onStartup.addListener(async () => {
-  const { onStartupTriggers, workflows } = await browser.storage.local.get([
-    'onStartupTriggers',
-    'workflows',
-  ]);
+  const { workflows } = await browser.storage.local.get('workflows');
 
-  (onStartupTriggers || []).forEach((workflowId, index) => {
-    const findWorkflow = workflows.find(({ id }) => id === workflowId);
+  for (const currWorkflow of workflows) {
+    let triggerBlock = currWorkflow.trigger;
 
-    if (findWorkflow) {
-      workflow.execute(findWorkflow);
-    } else {
-      onStartupTriggers.splice(index, 1);
+    if (!triggerBlock) {
+      const flow =
+        typeof currWorkflow.drawflow === 'string'
+          ? parseJSON(currWorkflow.drawflow, {})
+          : currWorkflow.drawflow;
+
+      triggerBlock = findTriggerBlock(flow)?.data;
     }
-  });
-  await browser.storage.local.set({ onStartupTriggers });
+
+    if (triggerBlock) {
+      if (triggerBlock.type === 'specific-day') {
+        const alarm = await browser.alarms.get(currWorkflow.id);
+
+        if (!alarm) await registerSpecificDay(currWorkflow.id, triggerBlock);
+      } else if (triggerBlock.type === 'date' && triggerBlock.date) {
+        const [hour, minute] = triggerBlock.time.split(':');
+        const date = dayjs(triggerBlock.date)
+          .hour(hour)
+          .minute(minute)
+          .second(0);
+
+        const isBefore = dayjs().isBefore(date);
+
+        if (isBefore) {
+          await browser.alarms.create(currWorkflow.id, {
+            when: date.valueOf(),
+          });
+        }
+      } else if (triggerBlock.type === 'on-startup') {
+        workflow.execute(currWorkflow);
+      }
+    }
+  }
 });
 
 const message = new MessageListener('background');

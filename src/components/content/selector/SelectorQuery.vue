@@ -24,9 +24,9 @@
     <div class="mt-2 flex items-center">
       <ui-input
         :model-value="selector"
+        readonly
         placeholder="Element selector"
         class="leading-normal flex-1 h-full element-selector"
-        @change="updateSelector"
       >
         <template #prepend>
           <button class="absolute ml-2 left-0" @click="copySelector">
@@ -34,7 +34,7 @@
           </button>
         </template>
       </ui-input>
-      <template v-if="selectedCount === 1">
+      <template v-if="selectedCount === 1 && !selector.includes('|>')">
         <button
           class="mr-1 ml-2"
           title="Parent element"
@@ -51,7 +51,6 @@
 </template>
 <script setup>
 import { inject } from 'vue';
-import { debounce } from '@/utils/helper';
 import UiInput from '@/components/ui/UiInput.vue';
 
 const props = defineProps({
@@ -72,7 +71,7 @@ const props = defineProps({
     default: false,
   },
 });
-const emit = defineEmits([
+defineEmits([
   'change',
   'list',
   'parent',
@@ -83,11 +82,6 @@ const emit = defineEmits([
 
 const rootElement = inject('rootElement');
 
-const updateSelector = debounce((value) => {
-  if (value === props.selector) return;
-
-  emit('change', value);
-}, 250);
 function copySelector() {
   rootElement.shadowRoot.querySelector('input')?.select();
 

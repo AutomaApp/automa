@@ -1,5 +1,11 @@
 import browser from 'webextension-polyfill';
 
+export function isXPath(str) {
+  const regex = /^[(/@]/;
+
+  return regex.test(str);
+}
+
 export function visibleInViewport(element) {
   const { top, left, bottom, right, height, width } =
     element.getBoundingClientRect();

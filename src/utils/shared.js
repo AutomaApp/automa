@@ -592,6 +592,7 @@ export const tasks = {
     refDataKeys: ['selector'],
     data: {
       disableBlock: false,
+      description: '',
       findBy: 'cssSelector',
       selector: '',
       tryCount: 1,

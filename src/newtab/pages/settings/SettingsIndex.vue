@@ -81,6 +81,7 @@
 import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
+import cloneDeep from 'lodash.clonedeep';
 import browser from 'webextension-polyfill';
 import { useTheme } from '@/composable/theme';
 import { supportLocales } from '@/utils/shared';
@@ -100,7 +101,13 @@ function updateSetting(path, value) {
     path: `settings.${path}`,
   });
 
-  browser.storage.local.set({ settings: settings.value });
+  let userSettings = settings.value;
+
+  if (BROWSER_TYPE === 'firefox') {
+    userSettings = cloneDeep(userSettings);
+  }
+
+  browser.storage.local.set({ settings: userSettings });
 }
 function updateLanguage(value) {
   isLangChange.value = true;

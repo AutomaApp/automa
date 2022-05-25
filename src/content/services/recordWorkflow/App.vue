@@ -74,11 +74,15 @@
           <template v-else>
             <div class="flex items-center space-x-2 w-full">
               <input
-                :value="selectState.childSelector"
+                :value="selectState.childSelector || selectState.parentSelector"
                 class="px-4 py-2 rounded-lg bg-input w-full"
                 readonly
               />
-              <template v-if="!selectState.list">
+              <template
+                v-if="
+                  !selectState.list && !selectState.childSelector.includes('|>')
+                "
+              >
                 <button @click="selectElementPath('up')">
                   <v-remixicon name="riArrowLeftLine" rotate="90" />
                 </button>
@@ -114,11 +118,11 @@
               >
                 <option value="" selected disabled>Select attribute</option>
                 <option
-                  v-for="attr in addBlockState.attributes"
-                  :key="attr.id"
-                  :value="attr.id"
+                  v-for="(value, name) in addBlockState.attributes"
+                  :key="name"
+                  :value="name"
                 >
-                  {{ attr.name }}
+                  {{ name }}({{ value.slice(0, 64) }})
                 </option>
               </select>
               <label
@@ -175,42 +179,30 @@
       </div>
     </div>
   </div>
-  <shared-element-highlighter
-    v-if="selectState.status === 'selecting'"
-    :data="elementsHighlightData"
-    :items="{
-      hoveredElements: selectState.hoveredElements,
-      selectedElements: selectState.selectedElements,
-    }"
-    style="z-index: 9999999"
-    @update="selectState[$event.key] = $event.items"
+  <shared-element-selector
+    v-if="selectState.isSelecting"
+    :selected-els="selectState.selectedElements"
+    with-attributes
+    only-in-list
+    :list="selectState.list"
+    :pause="
+      selectState.selectedElements.length > 0 &&
+      selectState.list &&
+      !selectState.listId
+    "
+    @selected="onElementsSelected"
   />
-  <teleport to="body">
-    <div
-      v-if="selectState.status === 'selecting'"
-      style="
-        z-index: 999999;
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.3);
-      "
-    ></div>
-  </teleport>
 </template>
 <script setup>
 import { ref, reactive, watch, onMounted, onBeforeUnmount } from 'vue';
 import { finder } from '@medv/finder';
 import browser from 'webextension-polyfill';
 import { toCamelCase } from '@/utils/helper';
-import { elementsHighlightData, tasks } from '@/utils/shared';
-import SharedElementHighlighter from '@/components/content/shared/SharedElementHighlighter.vue';
-import findElementList from '../../elementSelector/listSelector';
+import { tasks } from '@/utils/shared';
+import SharedElementSelector from '@/components/content/shared/SharedElementSelector.vue';
+import { getElementRect } from '../../utils';
 import addBlock from './addBlock';
 
-let prevHoverElement = null;
 const mouseRelativePos = { x: 0, y: 0 };
 const elementsPath = {
   path: [],
@@ -228,7 +220,7 @@ const selectState = reactive({
   isInList: false,
   listSelector: '',
   childSelector: '',
-  hoveredElements: [],
+  isSelecting: false,
   selectedElements: [],
 });
 const draggingState = reactive({
@@ -253,20 +245,41 @@ const blocksList = {
   default: ['get-text', 'attribute-value'],
 };
 
-function getElementRect(target, withElement = false) {
-  if (!target) return {};
+function getElementBlocks(element) {
+  if (!element) return;
 
-  const { x, y, height, width } = target.getBoundingClientRect();
-  const result = {
-    width: width + 4,
-    height: height + 4,
-    x: x - 2,
-    y: y - 2,
-  };
+  const elTag = element.tagName;
+  const blocks = [...(blocksList[elTag] || blocksList.default)];
+  const attrBlockIndex = blocks.indexOf('attribute-value');
 
-  if (withElement) result.element = target;
+  if (attrBlockIndex !== -1) {
+    addBlockState.attributes = element.attributes;
+  }
 
-  return result;
+  addBlockState.blocks = blocks;
+}
+function onElementsSelected({ selector, elements, path }) {
+  if (path) {
+    elementsPath.path = path;
+    selectState.pathIndex = 0;
+  }
+
+  getElementBlocks(elements[0]);
+  selectState.selectedElements = elements;
+
+  if (selectState.list) {
+    if (!selectState.listSelector) {
+      selectState.isInList = false;
+      selectState.listSelector = selector;
+      selectState.childSelector = selector;
+      return;
+    }
+
+    selectState.isInList = true;
+    selector = selector.replace(selectState.listSelector, '');
+  }
+
+  selectState.childSelector = selector;
 }
 function addFlowItem() {
   const saveData = Boolean(addBlockState.column);
@@ -285,12 +298,15 @@ function addFlowItem() {
     },
   };
 
-  if (selectState.isInList || selectState.listId) {
-    const childSelector = selectState.isInList ? selectState.childSelector : '';
-
-    block.data.selector = `{{loopData@${selectState.listId}}} ${childSelector}`;
-  } else if (selectState.list) {
-    block.data.multiple = true;
+  if (selectState.list) {
+    if (selectState.isInList || selectState.listId) {
+      const childSelector = selectState.isInList
+        ? selectState.childSelector
+        : '';
+      block.data.selector = `{{loopData@${selectState.listId}}} ${childSelector}`;
+    } else {
+      block.data.multiple = true;
+    }
   }
 
   if (addBlockState.activeBlock === 'attribute-value') {
@@ -343,13 +359,25 @@ function clearSelectState() {
   selectState.listId = '';
   selectState.list = false;
   selectState.status = 'idle';
+  selectState.listSelector = '';
+  selectState.childSelector = '';
+  selectState.parentSelector = '';
   selectState.isSelecting = false;
-  selectState.hoveredElements = [];
   selectState.selectedElements = [];
 
   const selectedList = document.querySelectorAll('[automa-el-list]');
   selectedList.forEach((element) => {
     element.removeAttribute('automa-el-list');
+  });
+
+  const frameElements = document.querySelectorAll('iframe, frame');
+  frameElements.forEach((element) => {
+    element.contentWindow.postMessage(
+      {
+        type: 'automa:reset-element-selector',
+      },
+      '*'
+    );
   });
 
   document.body.removeAttribute('automa-selecting');
@@ -369,37 +397,6 @@ function saveElementListId() {
       elementSelector: selectState.listSelector,
     },
   });
-}
-function getElementListChild(target, root) {
-  const result = {
-    elements: [],
-    childSelector: null,
-  };
-
-  if (!target.hasAttribute('automa-el-list')) {
-    result.childSelector = finder(target, {
-      root,
-      idName: () => false,
-    });
-
-    const selector = `${selectState.listSelector} ${result.childSelector}`;
-
-    result.elements = Array.from(document.querySelectorAll(selector));
-  }
-
-  return result;
-}
-function getElementList(target, forceList = false) {
-  const automaListEl = target.closest('[automa-el-list]');
-
-  if (automaListEl) {
-    return getElementListChild(target, automaListEl).elements;
-  }
-  if (forceList) {
-    return [];
-  }
-
-  return findElementList(target) || [target];
 }
 function toggleDragging(value, event) {
   if (value) {
@@ -432,143 +429,17 @@ function startSelecting(list = false) {
 
   window.addEventListener('keyup', onKeyup);
 }
-function onMousemove({ clientX, clientY, target: eventTarget }) {
-  if (draggingState.dragging) {
-    draggingState.xPos = clientX - mouseRelativePos.x;
-    draggingState.yPos = clientY - mouseRelativePos.y;
+function onMousemove({ clientX, clientY }) {
+  if (!draggingState.dragging) return;
 
-    return;
-  }
-
-  if (!selectState.isSelecting) return;
-
-  const elementSelected = selectState.selectedElements.length > 0;
-  const disable = selectState.list && !selectState.listId && elementSelected;
-  if (disable) return;
-
-  if (
-    selectState.status === 'selecting' &&
-    eventTarget.id !== 'automa-recording'
-  ) {
-    const { 1: target } = document.elementsFromPoint(clientX, clientY);
-
-    if (prevHoverElement === target) return;
-
-    prevHoverElement = target;
-    let elementsRect = [];
-
-    if (selectState.list) {
-      const elements = getElementList(target, elementSelected) || [];
-      elementsRect = elements.map((el) => getElementRect(el, true));
-    } else {
-      elementsRect = [getElementRect(target, true)];
-    }
-
-    selectState.hoveredElements = elementsRect;
-  }
-}
-function getElementPath(el, root = document.documentElement) {
-  const path = [el];
-
-  /* eslint-disable-next-line */
-  while ((el = el.parentNode) && !el.isEqualNode(root)) {
-    path.push(el);
-  }
-
-  return path;
-}
-function onClick(event) {
-  if (!selectState.isSelecting) return;
-
-  const { target: eventTarget, clientY, clientX } = event;
-
-  if (eventTarget.id === 'automa-recording') return;
-
-  const disable =
-    selectState.list &&
-    !selectState.listId &&
-    selectState.selectedElements.length > 0;
-  if (disable) return;
-
-  const { 1: target } = document.elementsFromPoint(clientX, clientY);
-  const isInList = target.closest('[automa-el-list]');
-  const getElementBlocks = (element) => {
-    const elTag = element.tagName;
-    const blocks = [...(blocksList[elTag] || blocksList.default)];
-    const attrBlockIndex = blocks.indexOf('attribute-value');
-
-    if (attrBlockIndex !== -1) {
-      const attributes = Array.from(element.attributes).reduce(
-        (acc, { name, value }) => {
-          if (name === 'automa-el-list') return acc;
-
-          acc.push({ id: name, name: `${name} (${value})`, value });
-
-          return acc;
-        },
-        []
-      );
-
-      if (attributes.length === 0) blocks.splice(attrBlockIndex, 1);
-
-      addBlockState.attributes = attributes;
-    }
-
-    addBlockState.blocks = blocks;
-  };
-
-  if (isInList) {
-    const { elements, childSelector } = getElementListChild(target, isInList);
-
-    getElementBlocks(elements[0]);
-
-    selectState.isInList = true;
-    selectState.childSelector = childSelector;
-    selectState.selectedElements = elements.map((element) =>
-      getElementRect(element)
-    );
-
-    return;
-  }
-
-  const prevSelectedList = document.querySelectorAll('[automa-el-list]');
-  prevSelectedList.forEach((element) => {
-    element.removeAttribute('automa-el-list');
-  });
-
-  const firstElement = selectState.hoveredElements[0].element;
-  if (!firstElement) return;
-
-  elementsPath.path = [];
-
-  if (selectState.list) {
-    selectState.hoveredElements.forEach(({ element }) => {
-      element.setAttribute('automa-el-list', '');
-    });
-
-    const parentSelector = finder(firstElement.parentElement);
-    const childSelector = firstElement.tagName.toLowerCase();
-    const elementSelector = `${parentSelector} > ${childSelector}`;
-
-    selectState.listSelector = elementSelector;
-    selectState.childSelector = childSelector;
-  } else {
-    selectState.childSelector = finder(firstElement);
-    elementsPath.path = getElementPath(firstElement);
-  }
-
-  selectState.isInList = false;
-  selectState.selectedElements = selectState.hoveredElements;
-
-  getElementBlocks(firstElement);
+  draggingState.xPos = clientX - mouseRelativePos.x;
+  draggingState.yPos = clientY - mouseRelativePos.y;
 }
 function attachListeners() {
-  window.addEventListener('click', onClick);
   window.addEventListener('mousemove', onMousemove);
 }
 function detachListeners() {
   window.removeEventListener('keyup', onKeyup);
-  window.removeEventListener('click', onClick);
   window.removeEventListener('mousemove', onMousemove);
 }
 

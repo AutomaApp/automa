@@ -3,7 +3,9 @@ import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
 import { debounce } from '@/utils/helper';
 import { recordPressedKey } from '@/utils/recordKeys';
-import addBlock from './addBlock';
+import addBlockToFlow from './addBlock';
+
+let isMainFrame = true;
 
 const isAutomaInstance = (target) =>
   target.id === 'automa-recording' ||
@@ -17,8 +19,34 @@ function findSelector(element) {
     attr: (name, value) => name === 'id' || (name.startsWith('aria') && value),
   });
 }
+async function addBlock(detail) {
+  try {
+    const data = await addBlockToFlow(detail, isMainFrame);
 
-function changeListener({ target }) {
+    if (!isMainFrame || !data || !data.addedBlock) {
+      let frameSelector = null;
+
+      if (window.frameElement) {
+        frameSelector = finder(window.frameElement, {
+          root: window.frameElement.ownerDocument,
+        });
+      }
+
+      window.top.postMessage(
+        {
+          frameSelector,
+          recording: data.recording,
+          type: 'automa:record-events',
+        },
+        '*'
+      );
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function onChange({ target }) {
   if (isAutomaInstance(target)) return;
 
   const isInputEl = target.tagName === 'INPUT';
@@ -86,12 +114,14 @@ function changeListener({ target }) {
       block.data.type === 'text-field' &&
       block.data.selector === lastFlow?.data?.selector
     )
-      return;
+      return null;
 
     recording.flows.push(block);
+
+    return block;
   });
 }
-async function keyEventListener(event) {
+async function onKeydown(event) {
   if (isAutomaInstance(event.target) || event.repeat) return;
 
   const isTextField = textFieldEl(event.target);
@@ -149,10 +179,12 @@ async function keyEventListener(event) {
           event.target.form.submit();
         }, 500);
       }
+
+      return block;
     });
   });
 }
-function clickListener(event) {
+function onClick(event) {
   const { target } = event;
 
   if (isAutomaInstance(target)) return;
@@ -175,7 +207,7 @@ function clickListener(event) {
     if (openInNewTab) {
       event.preventDefault();
 
-      const description = (target.innerText || target.href).slice(0, 24);
+      const description = (target.innerText || target.href)?.slice(0, 24) || '';
 
       addBlock({
         id: 'link',
@@ -192,10 +224,8 @@ function clickListener(event) {
     }
   }
 
-  const elText = (target.innerText || target.ariaLabel || target.title).slice(
-    0,
-    24
-  );
+  const elText =
+    (target.innerText || target.ariaLabel || target.title)?.slice(0, 24) || '';
 
   addBlock({
     isClickLink,
@@ -209,7 +239,30 @@ function clickListener(event) {
   });
 }
 
-const scrollListener = debounce(({ target }) => {
+const onMessage = debounce(({ data, source }) => {
+  if (data.type !== 'automa:record-events') return;
+
+  let { frameSelector } = data;
+
+  if (!frameSelector) {
+    const frames = document.querySelectorAll('iframe, frame');
+
+    frames.forEach((frame) => {
+      if (frame.contentWindow !== source) return;
+
+      frameSelector = finder(frame);
+    });
+  }
+
+  const lastFlow = data.recording.flows.at(-1);
+  const lastIndex = data.recording.flows.length - 1;
+  data.recording.flows[
+    lastIndex
+  ].data.selector = `${frameSelector} |> ${lastFlow.data.selector}`;
+
+  browser.storage.local.set({ recording: data.recording });
+}, 100);
+const onScroll = debounce(({ target }) => {
   if (isAutomaInstance(target)) return;
 
   const isDocument = target === document;
@@ -241,20 +294,30 @@ const scrollListener = debounce(({ target }) => {
 }, 500);
 
 export function cleanUp() {
-  document.removeEventListener('click', clickListener, true);
-  document.removeEventListener('change', changeListener, true);
-  document.removeEventListener('scroll', scrollListener, true);
-  document.removeEventListener('keydown', keyEventListener, true);
+  if (isMainFrame) {
+    window.removeEventListener('message', onMessage);
+    document.removeEventListener('scroll', onScroll, true);
+  }
+
+  document.removeEventListener('click', onClick, true);
+  document.removeEventListener('change', onChange, true);
+  document.removeEventListener('keydown', onKeydown, true);
 }
 
-export default async function () {
+export default async function (mainFrame) {
   const { isRecording } = await browser.storage.local.get('isRecording');
 
+  isMainFrame = mainFrame;
+
   if (isRecording) {
-    document.addEventListener('click', clickListener, true);
-    document.addEventListener('scroll', scrollListener, true);
-    document.addEventListener('change', changeListener, true);
-    document.addEventListener('keydown', keyEventListener, true);
+    if (isMainFrame) {
+      window.addEventListener('message', onMessage);
+      document.addEventListener('scroll', onScroll, true);
+    }
+
+    document.addEventListener('click', onClick, true);
+    document.addEventListener('change', onChange, true);
+    document.addEventListener('keydown', onKeydown, true);
   }
 
   return cleanUp;

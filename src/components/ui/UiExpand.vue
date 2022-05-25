@@ -15,7 +15,7 @@
         v-if="appendIcon"
         :rotate="show ? 90 : -90"
         name="riArrowLeftSLine"
-        class="mr-2 transition-transform -ml-1"
+        class="transition-transform -mr-1 ml-2"
       />
     </button>
     <transition-expand>

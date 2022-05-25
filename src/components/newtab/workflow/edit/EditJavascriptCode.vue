@@ -196,7 +196,7 @@ function automaFuncsCompletion(context) {
       {
         label: 'automaSetVariable',
         type: 'function',
-        apply: snippet('automaSetVariable(${name}, ${value})'),
+        apply: snippet("automaSetVariable('${name}', ${value})"),
         info: () => {
           const container = document.createElement('div');
 

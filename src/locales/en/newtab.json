@@ -94,6 +94,7 @@
     }
   },
   "workflow": {
+    "my": "My workflows",
     "import": "Import workflow",
     "new": "New workflow",
     "delete": "Delete workflow",

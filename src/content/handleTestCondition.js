@@ -1,10 +1,10 @@
-import { nanoid } from 'nanoid';
-import { visibleInViewport } from '@/utils/helper';
+import { nanoid } from 'nanoid/non-secure';
+import { visibleInViewport, isXPath } from '@/utils/helper';
 import FindElement from '@/utils/FindElement';
 import { automaRefDataStr } from './utils';
 
 function handleConditionElement({ data, type }) {
-  const selectorType = data.selector.startsWith('/') ? 'xpath' : 'cssSelector';
+  const selectorType = isXPath(data.selector) ? 'xpath' : 'cssSelector';
 
   const element = FindElement[selectorType](data);
   const { 1: actionType } = type.split('#');
@@ -44,14 +44,13 @@ function handleConditionElement({ data, type }) {
 }
 function injectJsCode({ data, refData }) {
   return new Promise((resolve, reject) => {
-    const stateId = nanoid();
-
-    sessionStorage.setItem(`automa--${stateId}`, JSON.stringify(refData));
+    const varName = `automa${nanoid(5)}`;
 
     const scriptEl = document.createElement('script');
     scriptEl.textContent = `
       (async () => {
-        ${automaRefDataStr(stateId)}
+        const ${varName} = ${JSON.stringify(refData)};
+        ${automaRefDataStr(varName)}
         try {
           ${data.code}
         } catch (error) {
