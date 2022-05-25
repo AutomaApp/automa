@@ -207,7 +207,9 @@ export default {
         active: isOutputEl(target),
       });
 
-      const nodeContent = target.closest('.drawflow_content_node');
+      const nodeContent = target.closest(
+        '.drawflow-node:not(.blocks-group) .drawflow_content_node'
+      );
       toggleHoverClass({
         classes: 'ring-4',
         target: nodeContent,
@@ -220,19 +222,26 @@ export default {
 
       if (!block) return;
 
+      const highlightedEls = document.querySelectorAll(
+        '.drawflow_content_node.ring-4'
+      );
+      highlightedEls.forEach((el) => {
+        el.classList.remove('ring-4');
+      });
+
       const isTriggerExists =
         block.id === 'trigger' &&
         editor.value.getNodesFromName('trigger').length !== 0;
       if (isTriggerExists) return;
 
       if (target.closest('.drawflow_content_node')) {
-        prevSelectedEl.nodeContent?.classList.remove('ring-4');
-
         const targetNodeId = target
           .closest('.drawflow-node')
           .id.replace(/node-/, '');
         const targetNode = editor.value.getNodeFromId(targetNodeId);
         editor.value.removeNodeId(`node-${targetNodeId}`);
+
+        if (targetNode.name === 'blocks-group') return;
 
         let targetBlock = block;
         if (block.fromBlockBasic) {
