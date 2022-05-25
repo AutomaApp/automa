@@ -1,9 +1,15 @@
 <template>
   <div>
+    <ui-textarea
+      :model-value="data.description"
+      :placeholder="t('common.description')"
+      class="w-full"
+      @change="updateData({ description: $event })"
+    />
     <ui-select
       :model-value="data.findBy || 'cssSelector'"
       :placeholder="t('workflow.blocks.base.findElement.placeholder')"
-      class="w-full mb-1"
+      class="w-full mb-1 mt-4"
       @change="updateData({ findBy: $event })"
     >
       <option v-for="type in selectorTypes" :key="type" :value="type">
