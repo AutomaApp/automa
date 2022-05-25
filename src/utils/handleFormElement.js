@@ -1,6 +1,16 @@
 import { keyDefinitions } from '@/utils/USKeyboardLayout';
 import simulateEvent from './simulateEvent';
 
+const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+  window.HTMLInputElement.prototype,
+  'value'
+).set;
+function reactJsEvent(element, value) {
+  if (!element._valueTracker) return;
+
+  nativeInputValueSetter.call(element, value);
+}
+
 function formEvent(element, data) {
   if (data.type === 'text-field') {
     const currentKey = /\s/.test(data.value) ? 'Space' : data.value;
@@ -47,6 +57,9 @@ async function inputText({ data, element, isEditable }) {
       const currentChar = data.value[index];
 
       element[elementKey] += currentChar;
+
+      if (elementKey === 'value') reactJsEvent(element, element.value);
+
       formEvent(element, {
         type: 'text-field',
         value: currentChar,
@@ -57,6 +70,9 @@ async function inputText({ data, element, isEditable }) {
     }
   } else {
     element[elementKey] += data.value;
+
+    if (elementKey === 'value') reactJsEvent(element, element.value);
+
     formEvent(element, {
       isEditable,
       type: 'text-field',
