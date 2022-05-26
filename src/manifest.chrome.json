@@ -29,10 +29,9 @@
         "<all_urls>"
       ],
       "js": [
-        "shortcutListener.bundle.js"
+        "contentScript.bundle.js"
       ],
-      "run_at": "document_end",
-      "all_frames": false
+      "all_frames": true
     },
     {
       "matches": [

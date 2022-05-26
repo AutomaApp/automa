@@ -1,5 +1,23 @@
 import browser from 'webextension-polyfill';
 
+export async function getFrames(tabId) {
+  try {
+    const frames = await browser.webNavigation.getAllFrames({ tabId });
+    const framesObj = frames.reduce((acc, { frameId, url }) => {
+      const key = url === 'about:blank' ? '' : url;
+
+      acc[key] = frameId;
+
+      return acc;
+    }, {});
+
+    return framesObj;
+  } catch (error) {
+    console.error(error);
+    return {};
+  }
+}
+
 export function sendDebugCommand(tabId, method, params = {}) {
   return new Promise((resolve) => {
     chrome.debugger.sendCommand({ tabId }, method, params, resolve);
@@ -19,20 +37,17 @@ export function attachDebugger(tabId, prevTab) {
 
 export function waitTabLoaded(tabId, ms = 10000) {
   return new Promise((resolve, reject) => {
-    const timeout = null;
-    let isResolved = false;
+    let timeout = null;
     const onErrorOccurred = (details) => {
       if (details.tabId !== tabId || details.error.includes('ERR_ABORTED'))
         return;
 
-      isResolved = true;
       browser.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
       reject(new Error(details.error));
     };
 
     if (ms > 0) {
-      setTimeout(() => {
-        isResolved = true;
+      timeout = setTimeout(() => {
         browser.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
         reject(new Error('Timeout'));
       }, ms);
@@ -41,8 +56,6 @@ export function waitTabLoaded(tabId, ms = 10000) {
     browser.webNavigation.onErrorOccurred.addListener(onErrorOccurred);
 
     const activeTabStatus = () => {
-      if (isResolved) return;
-
       browser.tabs.get(tabId).then((tab) => {
         if (!tab) {
           reject(new Error('no-tab'));

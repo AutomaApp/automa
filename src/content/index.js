@@ -3,6 +3,7 @@ import { toCamelCase } from '@/utils/helper';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
 import handleTestCondition from './handleTestCondition';
+import shortcutListener from './services/shortcutListener';
 
 const isMainFrame = window.self === window.top;
 
@@ -130,6 +131,8 @@ function messageListener({ data, source }) {
 
   window.isAutomaInjected = true;
   window.addEventListener('message', messageListener);
+
+  if (isMainFrame) shortcutListener();
 
   browser.runtime.onMessage.addListener((data) => {
     return new Promise((resolve, reject) => {

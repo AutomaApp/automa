@@ -107,12 +107,8 @@ function javascriptCode(block) {
 
       if (!block.data.everyNewTab) {
         let timeout;
-        let isResolved = false;
 
         const cleanUp = (detail = {}) => {
-          if (isResolved) return;
-          isResolved = true;
-
           script.remove();
           preloadScripts.forEach((item) => {
             if (item.removeAfterExec) item.script.remove();

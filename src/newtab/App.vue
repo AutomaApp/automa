@@ -297,10 +297,16 @@ window.addEventListener('beforeunload', () => {
 
 (async () => {
   try {
-    checkModal();
-
     const { isFirstTime } = await browser.storage.local.get('isFirstTime');
     isUpdated.value = !isFirstTime && compare(currentVersion, prevVersion, '>');
+
+    if (isFirstTime) {
+      modalState.show = false;
+      localStorage.setItem('has-testimonial', true);
+      localStorage.setItem('has-survey', Date.now());
+    } else {
+      checkModal();
+    }
 
     await Promise.allSettled([
       store.dispatch('retrieve', ['workflows', 'logs', 'collections']),

@@ -151,7 +151,7 @@ async function checkVisitWebTriggers(tabId, tabUrl) {
     state.tabIds.includes(tabId)
   );
   const visitWebTriggers = await storage.get('visitWebTriggers');
-  const triggeredWorkflow = visitWebTriggers.find(({ url, isRegex, id }) => {
+  const triggeredWorkflow = visitWebTriggers?.find(({ url, isRegex, id }) => {
     if (url.trim() === '') return false;
 
     const matchUrl = tabUrl.match(isRegex ? new RegExp(url, 'g') : url);
@@ -421,8 +421,6 @@ message.on('collection:execute', (collection) => {
 message.on('workflow:execute', (workflowData) => {
   workflow.execute(workflowData, workflowData?.options || {});
 });
-message.on('workflow:stop', async (id) => {
-  await workflow.states.stop(id);
-});
+message.on('workflow:stop', (id) => workflow.states.stop(id));
 
 browser.runtime.onMessage.addListener(message.listener());

@@ -99,13 +99,11 @@ function automaRefData(keyword, path = '') {
 function messageTopFrame(windowCtx) {
   return new Promise((resolve) => {
     let timeout = null;
-    let isResolved = false;
 
     const messageListener = ({ data }) => {
-      if (data.type !== 'automa:the-frame-rect' || isResolved) return;
+      if (data.type !== 'automa:the-frame-rect') return;
 
       clearTimeout(timeout);
-      isResolved = true;
       windowCtx.removeEventListener('message', messageListener);
       resolve(data.frameRect);
     };
@@ -113,7 +111,6 @@ function messageTopFrame(windowCtx) {
     timeout = setTimeout(() => {
       if (isResolved) return;
 
-      isResolved = true;
       windowCtx.removeEventListener('message', messageListener);
       resolve(null);
     }, 5000);
