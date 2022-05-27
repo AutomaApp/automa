@@ -213,9 +213,11 @@ async function initElementSelector() {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
 
   try {
-    await browser.tabs.sendMessage(tab.id, {
+    const result = await browser.tabs.sendMessage(tab.id, {
       type: 'automa-element-selector',
     });
+
+    if (!result) throw new Error('not-found');
 
     window.close();
   } catch (error) {
