@@ -257,7 +257,10 @@ async function recordWorkflow(options = {}) {
 
     const tabs = await browser.tabs.query({});
     for (const tab of tabs) {
-      if (tab.url.startsWith('http')) {
+      if (
+        tab.url.startsWith('http') &&
+        !tab.url.includes('chrome.google.com')
+      ) {
         await browser.tabs.executeScript(tab.id, {
           allFrames: true,
           file: 'recordWorkflow.bundle.js',
