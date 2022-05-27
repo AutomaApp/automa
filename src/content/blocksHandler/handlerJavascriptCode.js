@@ -56,8 +56,8 @@ function javascriptCode(block) {
     const promisePreloadScripts =
       block.data?.preloadScripts?.map(async (item) => {
         try {
-          const { protocol, pathname } = new URL(item.src);
-          const isValidUrl = /https?/.test(protocol) && /\.js$/.test(pathname);
+          const { protocol } = new URL(item.src);
+          const isValidUrl = /https?/.test(protocol);
 
           if (!isValidUrl) return null;
 

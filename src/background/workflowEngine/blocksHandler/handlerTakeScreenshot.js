@@ -87,8 +87,10 @@ async function takeScreenshot({ data, outputs, name }) {
         ? this._sendMessageToTab({
             name,
             options,
-            type: data.type,
-            selector: data.selector,
+            data: {
+              type: data.type,
+              selector: data.selector,
+            },
             tabId: this.activeTab.id,
           })
         : captureTab());
