@@ -1,3 +1,17 @@
+export function elementSelectorInstance() {
+  const rootElementExist = document.querySelector(
+    '#app-container.automa-element-selector'
+  );
+
+  if (rootElementExist) {
+    rootElementExist.style.display = 'block';
+
+    return true;
+  }
+
+  return false;
+}
+
 export function getElementRect(target, withAttributes) {
   if (!target) return {};
 

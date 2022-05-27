@@ -211,27 +211,18 @@ function openDashboard(url) {
 }
 async function initElementSelector() {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+  const result = await browser.tabs.sendMessage(tab.id, {
+    type: 'automa-element-selector',
+  });
 
-  try {
-    const result = await browser.tabs.sendMessage(tab.id, {
-      type: 'automa-element-selector',
+  if (!result) {
+    await browser.tabs.executeScript(tab.id, {
+      allFrames: true,
+      file: './elementSelector.bundle.js',
     });
-
-    if (!result) throw new Error('not-found');
-
-    window.close();
-  } catch (error) {
-    if (error.message.includes('Could not establish connection.')) {
-      await browser.tabs.executeScript(tab.id, {
-        allFrames: true,
-        file: './elementSelector.bundle.js',
-      });
-
-      initElementSelector();
-    }
-
-    console.error(error);
   }
+
+  window.close();
 }
 async function recordWorkflow(options = {}) {
   try {

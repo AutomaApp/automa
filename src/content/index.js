@@ -4,6 +4,7 @@ import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
 import handleTestCondition from './handleTestCondition';
 import shortcutListener from './services/shortcutListener';
+import { elementSelectorInstance } from './utils';
 
 const isMainFrame = window.self === window.top;
 
@@ -150,7 +151,14 @@ function messageListener({ data, source }) {
         case 'content-script-exists':
           resolve(true);
           break;
+        case 'automa-element-selector': {
+          const selectorInstance = elementSelectorInstance();
+
+          resolve(selectorInstance);
+          break;
+        }
         default:
+          resolve(null);
       }
     });
   });
