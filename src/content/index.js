@@ -3,6 +3,7 @@ import { toCamelCase } from '@/utils/helper';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
 import handleTestCondition from './handleTestCondition';
+import shortcutListener from './services/shortcutListener';
 
 const isMainFrame = window.self === window.top;
 
@@ -36,7 +37,7 @@ function messageToFrame(frameElement, blockData) {
 async function executeBlock(data) {
   const removeExecutedBlock = showExecutedBlock(data, data.executedBlockOnWeb);
 
-  if (data.data.selector?.includes('|>') && isMainFrame) {
+  if (data.data?.selector?.includes('|>') && isMainFrame) {
     const [frameSelector, selector] = data.data.selector.split(/\|>(.+)/);
     const frameElement = document.querySelector(frameSelector);
     const frameError = (message) => {
@@ -130,6 +131,8 @@ function messageListener({ data, source }) {
 
   window.isAutomaInjected = true;
   window.addEventListener('message', messageListener);
+
+  if (isMainFrame) shortcutListener();
 
   browser.runtime.onMessage.addListener((data) => {
     return new Promise((resolve, reject) => {

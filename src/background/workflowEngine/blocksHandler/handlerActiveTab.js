@@ -1,6 +1,5 @@
 import browser from 'webextension-polyfill';
 import { getBlockConnection } from '../helper';
-import executeContentScript from '../executeContentScript';
 
 async function activeTab(block) {
   const nextBlockId = getBlockConnection(block);
@@ -29,11 +28,8 @@ async function activeTab(block) {
       throw error;
     }
 
-    const frames = await executeContentScript(tab.id);
-
     this.activeTab = {
       ...this.activeTab,
-      frames,
       frameId: 0,
       id: tab.id,
       url: tab.url,

@@ -56,7 +56,7 @@ function workflowShortcutsListener(findWorkflow, shortcutsObj) {
   });
 }
 
-(async () => {
+export default async function () {
   try {
     const { shortcuts, workflows, workflowHosts } =
       await browser.storage.local.get([
@@ -83,4 +83,4 @@ function workflowShortcutsListener(findWorkflow, shortcutsObj) {
   } catch (error) {
     console.error(error);
   }
-})();
+}

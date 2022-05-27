@@ -90,7 +90,7 @@ async function captureElementScreenshot({ selector, tabId, options }) {
   return canvasToBase64(canvas, options);
 }
 
-export default async function ({ tabId, options, type, selector }) {
+export default async function ({ tabId, options, data: { type, selector } }) {
   if (type === 'element') {
     const imageUrl = await captureElementScreenshot({
       tabId,

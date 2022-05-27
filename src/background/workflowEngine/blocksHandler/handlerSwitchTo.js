@@ -1,6 +1,5 @@
 import { objectHasKey } from '@/utils/helper';
-import { getBlockConnection } from '../helper';
-import executeContentScript, { getFrames } from '../executeContentScript';
+import { getBlockConnection, getFrames } from '../helper';
 
 async function switchTo(block) {
   const nextBlockId = getBlockConnection(block);
@@ -35,7 +34,6 @@ async function switchTo(block) {
     if (objectHasKey(frames, url)) {
       this.activeTab.frameId = frames[url];
 
-      await executeContentScript(this.activeTab.id, this.activeTab.frameId);
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       return {

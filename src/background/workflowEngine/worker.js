@@ -5,7 +5,6 @@ import { toCamelCase, sleep, objectHasKey, isObject } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
 import referenceData from '@/utils/referenceData';
 import { convertData, waitTabLoaded, getBlockConnection } from './helper';
-import executeContentScript from './executeContentScript';
 
 class Worker {
   constructor(engine) {
@@ -315,10 +314,6 @@ class Worker {
         this.activeTab.id,
         this.settings?.tabLoadTimeout ?? 30000
       );
-      await executeContentScript(
-        this.activeTab.id,
-        this.activeTab.frameId || 0
-      );
 
       const { executedBlockOnWeb, debugMode } = this.settings;
       const messagePayload = {
@@ -338,6 +333,7 @@ class Worker {
 
       return data;
     } catch (error) {
+      console.error(error);
       if (error.message?.startsWith('Could not establish connection')) {
         error.message = 'Could not establish connection to the active tab';
       } else if (error.message?.startsWith('No tab')) {

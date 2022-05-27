@@ -23,7 +23,7 @@
       </template>
     </ui-dialog>
     <div
-      v-if="isUpdated"
+      v-if="false"
       class="p-4 shadow-2xl z-50 fixed bottom-8 left-1/2 -translate-x-1/2 rounded-lg bg-accent text-white dark:text-gray-900 flex items-center"
     >
       <v-remixicon name="riInformationLine" class="mr-3" />
@@ -297,10 +297,16 @@ window.addEventListener('beforeunload', () => {
 
 (async () => {
   try {
-    checkModal();
-
     const { isFirstTime } = await browser.storage.local.get('isFirstTime');
     isUpdated.value = !isFirstTime && compare(currentVersion, prevVersion, '>');
+
+    if (isFirstTime) {
+      modalState.show = false;
+      localStorage.setItem('has-testimonial', true);
+      localStorage.setItem('has-survey', Date.now());
+    } else {
+      checkModal();
+    }
 
     await Promise.allSettled([
       store.dispatch('retrieve', ['workflows', 'logs', 'collections']),
