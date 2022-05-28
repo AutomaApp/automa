@@ -1,9 +1,11 @@
-import { nanoid } from 'nanoid/non-secure';
+import { customAlphabet } from 'nanoid/non-secure';
 import { sendMessage } from '@/utils/message';
 import { automaRefDataStr } from '../utils';
 
+const nanoid = customAlphabet('1234567890abcdef', 5);
+
 function getAutomaScript(refData, everyNewTab) {
-  const varName = `automa${nanoid(5)}`;
+  const varName = `automa${nanoid()}`;
 
   let str = `
 const ${varName} = ${JSON.stringify(refData)};

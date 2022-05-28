@@ -1,7 +1,9 @@
-import { nanoid } from 'nanoid/non-secure';
+import { customAlphabet } from 'nanoid/non-secure';
 import { visibleInViewport, isXPath } from '@/utils/helper';
 import FindElement from '@/utils/FindElement';
 import { automaRefDataStr } from './utils';
+
+const nanoid = customAlphabet('1234567890abcdef', 5);
 
 function handleConditionElement({ data, type }) {
   const selectorType = isXPath(data.selector) ? 'xpath' : 'cssSelector';
@@ -44,7 +46,7 @@ function handleConditionElement({ data, type }) {
 }
 function injectJsCode({ data, refData }) {
   return new Promise((resolve, reject) => {
-    const varName = `automa${nanoid(5)}`;
+    const varName = `automa${nanoid()}`;
 
     const scriptEl = document.createElement('script');
     scriptEl.textContent = `
