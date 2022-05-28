@@ -139,26 +139,25 @@ function messageListener({ data, source }) {
     return new Promise((resolve, reject) => {
       if (data.isBlock) {
         executeBlock(data).then(resolve).catch(reject);
-        return;
-      }
+      } else {
+        switch (data.type) {
+          case 'condition-builder':
+            handleTestCondition(data.data)
+              .then((result) => resolve(result))
+              .catch((error) => reject(error));
+            break;
+          case 'content-script-exists':
+            resolve(true);
+            break;
+          case 'automa-element-selector': {
+            const selectorInstance = elementSelectorInstance();
 
-      switch (data.type) {
-        case 'condition-builder':
-          handleTestCondition(data.data)
-            .then((result) => resolve(result))
-            .catch((error) => reject(error));
-          break;
-        case 'content-script-exists':
-          resolve(true);
-          break;
-        case 'automa-element-selector': {
-          const selectorInstance = elementSelectorInstance();
-
-          resolve(selectorInstance);
-          break;
+            resolve(selectorInstance);
+            break;
+          }
+          default:
+            resolve(null);
         }
-        default:
-          resolve(null);
       }
     });
   });
