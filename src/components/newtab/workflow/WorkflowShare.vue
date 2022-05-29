@@ -237,7 +237,7 @@ async function publishWorkflow() {
     });
     const result = await response.json();
 
-    if (response.status !== 200) {
+    if (!response.ok) {
       const error = new Error(response.statusText);
       error.data = result.data;
 

@@ -35,6 +35,7 @@
     },
     {
       "matches": [
+        "http://localhost/*",
         "*://*.automa.site/*",
         "*://automa.vercel.app/*"
       ],

@@ -130,10 +130,12 @@ import { computed, reactive, onMounted, watch } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
+import browser from 'webextension-polyfill';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { parseJSON, findTriggerBlock } from '@/utils/helper';
+import { cleanWorkflowTriggers } from '@/utils/workflowTrigger';
 import { sendMessage } from '@/utils/message';
 import Log from '@/models/log';
 import getTriggerText from '@/utils/triggerText';
@@ -233,7 +235,7 @@ function deleteLog(logId) {
   });
 }
 async function retrieveTriggerText() {
-  const flow = parseJSON(workflow.value.drawflow, null);
+  const flow = parseJSON(workflow.value?.drawflow, null);
   const triggerBlock = findTriggerBlock(flow);
 
   if (!triggerBlock) return;
@@ -247,7 +249,7 @@ async function retrieveTriggerText() {
 }
 
 watch(
-  () => workflow.value.drawflow,
+  () => workflow.value?.drawflow,
   () => {
     state.editorKey += 1;
     retrieveTriggerText();

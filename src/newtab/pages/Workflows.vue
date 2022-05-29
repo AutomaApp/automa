@@ -143,6 +143,7 @@
                 :key="workflow.id"
                 :data="workflow"
                 :show-details="false"
+                @execute="executeWorkflow(workflow)"
                 @click="$router.push(`/workflows/${$event.id}?shared=true`)"
               />
             </div>
@@ -154,6 +155,7 @@
                 :key="workflow.hostId"
                 :data="workflow"
                 :menu="workflowHostMenu"
+                @execute="executeWorkflow(workflow)"
                 @click="$router.push(`/workflows/${$event.hostId}/host`)"
                 @menuSelected="deleteWorkflowHost(workflow)"
               />
@@ -471,14 +473,14 @@ function addHostWorkflow() {
           return false;
         }
 
-        const response = await fetchApi('/host', {
+        const response = await fetchApi('/workflows/hosted', {
           method: 'POST',
-          body: JSON.stringify({ length, hostId }),
+          body: JSON.stringify({ hostId }),
         });
         const result = await response.json();
 
-        if (response.status !== 200) {
-          const error = new Error(response.statusText);
+        if (!response.ok) {
+          const error = new Error(result.message);
           error.data = result.data;
 
           throw error;

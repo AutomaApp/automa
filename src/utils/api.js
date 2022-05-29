@@ -17,7 +17,12 @@ function queryBuilder(obj) {
 export function fetchApi(path, options) {
   const urlPath = path.startsWith('/') ? path : `/${path}`;
 
-  return fetch(`${secrets.baseApiUrl}${urlPath}`, options);
+  return fetch(`${secrets.baseApiUrl}${urlPath}`, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    ...options,
+  });
 }
 
 export const googleSheets = {
