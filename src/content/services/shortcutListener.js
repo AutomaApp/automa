@@ -10,9 +10,9 @@ function automaCustomEventListener(findWorkflow) {
   window.addEventListener(
     'automa:execute-workflow',
     ({ detail }) => {
-      if (!detail || !detail.id) return;
+      if (!detail || (!detail.id && !detail.name)) return;
 
-      const workflow = findWorkflow(detail.id);
+      const workflow = findWorkflow(detail.id, detail.name);
 
       if (!workflow) return;
 
@@ -64,12 +64,14 @@ export default async function () {
         'workflows',
         'workflowHosts',
       ]);
-    const findWorkflow = (id) => {
-      let workflow = workflows.find((item) => item.id === id);
+    const findWorkflow = (id, workflowName) => {
+      let workflow = workflows.find((item) =>
+        id ? item.id === id : item.name === workflowName
+      );
 
       if (!workflow) {
-        workflow = Object.values(workflowHosts || {}).find(
-          ({ hostId }) => hostId === id
+        workflow = Object.values(workflowHosts || {}).find((hostWorkflow) =>
+          id ? hostWorkflow.id === id : hostWorkflow.name === workflowName
         );
 
         if (workflow) workflow.id = workflow.hostId;
