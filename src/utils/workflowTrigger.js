@@ -2,6 +2,51 @@ import browser from 'webextension-polyfill';
 import dayjs from 'dayjs';
 import { isObject } from './helper';
 
+function registerContextMenu(workflowId, data) {
+  return new Promise((resolve, reject) => {
+    const documentUrlPatterns = ['https://*/*', 'http://*/*'];
+    const contextTypes =
+      data.contextTypes.length === 0 ? ['all'] : data.contextTypes;
+
+    browser.contextMenus.create(
+      {
+        id: workflowId,
+        documentUrlPatterns,
+        contexts: contextTypes,
+        title: data.contextMenuName,
+        parentId: 'automaContextMenu',
+      },
+      () => {
+        const error = browser.runtime.lastError;
+
+        if (error) {
+          if (error.message.includes('automaContextMenu')) {
+            browser.contextMenus.create(
+              {
+                documentUrlPatterns,
+                contexts: ['all'],
+                id: 'automaContextMenu',
+                title: 'Run Automa workflow',
+              },
+              () => {
+                registerContextMenu(workflowId, data)
+                  .then(resolve)
+                  .catch(reject);
+              }
+            );
+            return;
+          }
+
+          reject(error.message);
+        } else {
+          if (browser.contextMenus.refresh) browser.contextMenus.refresh();
+          resolve();
+        }
+      }
+    );
+  });
+}
+
 async function removeFromWorkflowQueue(workflowId) {
   const { workflowQueue } = await browser.storage.local.get('workflowQueue');
   const queueIndex = (workflowQueue || []).indexOf(workflowId);
@@ -47,6 +92,8 @@ export async function cleanWorkflowTriggers(workflowId) {
       shortcuts: keyboardShortcuts,
       onStartupTriggers: startupTriggers,
     });
+
+    browser.contextMenus.remove(workflowId);
   } catch (error) {
     console.error(error);
   }
@@ -163,6 +210,7 @@ export async function registerWorkflowTrigger(workflowId, { data }) {
       'visit-web': registerVisitWeb,
       'on-startup': registerOnStartup,
       'specific-day': registerSpecificDay,
+      'context-menu': registerContextMenu,
       'keyboard-shortcut': registerKeyboardShortcut,
     };
 

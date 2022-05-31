@@ -314,6 +314,30 @@ browser.alarms.onAlarm.addListener(async ({ name }) => {
   }
 });
 
+if (browser.contextMenus?.onClicked) {
+  browser.contextMenus.onClicked.addListener(
+    async ({ parentMenuItemId, menuItemId }, tab) => {
+      try {
+        if (parentMenuItemId !== 'automaContextMenu') return;
+
+        const message = await browser.tabs.sendMessage(tab.id, {
+          frameId: 0,
+          type: 'context-element',
+        });
+        const workflowData = await workflow.get(menuItemId);
+
+        workflow.execute(workflowData, {
+          data: {
+            variables: message,
+          },
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  );
+}
+
 browser.runtime.onInstalled.addListener(async ({ reason }) => {
   try {
     if (reason === 'install') {

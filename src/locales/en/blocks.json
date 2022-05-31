@@ -173,6 +173,12 @@
         "selectDay": "Select day",
         "timeExist": "You alread add {time} on {day}",
         "fixedDelay": "Fixed delay",
+        "contextMenus": {
+          "noPermission": "This trigger requires \"contextMenus\" permission to be working",
+          "grantPermission": "Grant permission",
+          "appearIn": "Will appear in",
+          "contextName": "Workflow name in the context menu"
+        },
         "days": [
           "Sunday",
           "Monday",
@@ -203,6 +209,7 @@
           "manual": "Manually",
           "interval": "Interval",
           "date": "On a specific date",
+          "context-menu": "Context menu",
           "specific-day": "On a specific day",
           "visit-web": "When visit a website",
           "on-startup": "On browser startup",

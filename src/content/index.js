@@ -1,4 +1,5 @@
 import browser from 'webextension-polyfill';
+import { finder } from '@medv/finder';
 import { toCamelCase } from '@/utils/helper';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
@@ -133,7 +134,14 @@ function messageListener({ data, source }) {
   window.isAutomaInjected = true;
   window.addEventListener('message', messageListener);
 
-  if (isMainFrame) shortcutListener();
+  let contextElement = null;
+
+  if (isMainFrame) {
+    shortcutListener();
+    window.addEventListener('contextmenu', ({ target }) => {
+      contextElement = target;
+    });
+  }
 
   browser.runtime.onMessage.addListener((data) => {
     return new Promise((resolve, reject) => {
@@ -153,6 +161,15 @@ function messageListener({ data, source }) {
             const selectorInstance = elementSelectorInstance();
 
             resolve(selectorInstance);
+            break;
+          }
+          case 'context-element': {
+            let $ctxElSelector = '';
+            const $ctxTextSelection = window.getSelection().toString() || '';
+
+            if (contextElement) $ctxElSelector = finder(contextElement);
+
+            resolve({ $ctxElSelector, $ctxTextSelection });
             break;
           }
           default:

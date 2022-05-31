@@ -20,6 +20,9 @@ export function useHasPermissions(permissions) {
         reqPermissions.forEach((permission) => {
           handlePermission(permission, true);
         });
+      })
+      .catch((error) => {
+        console.error(error);
       });
   }
 

@@ -33,6 +33,7 @@ import { useI18n } from 'vue-i18n';
 import TriggerDate from './Trigger/TriggerDate.vue';
 import TriggerInterval from './Trigger/TriggerInterval.vue';
 import TriggerVisitWeb from './Trigger/TriggerVisitWeb.vue';
+import TriggerContextMenu from './Trigger/TriggerContextMenu.vue';
 import TriggerSpecificDay from './Trigger/TriggerSpecificDay.vue';
 import TriggerKeyboardShortcut from './Trigger/TriggerKeyboardShortcut.vue';
 
@@ -49,6 +50,7 @@ const { t } = useI18n();
 const triggers = {
   manual: null,
   interval: TriggerInterval,
+  'context-menu': TriggerContextMenu,
   date: TriggerDate,
   'specific-day': TriggerSpecificDay,
   'on-startup': null,

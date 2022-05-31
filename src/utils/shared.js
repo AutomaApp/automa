@@ -26,6 +26,8 @@ export const tasks = {
       activeInInput: false,
       isUrlRegex: false,
       days: [],
+      contextMenuName: '',
+      contextTypes: [],
     },
   },
   'execute-workflow': {
