@@ -33,14 +33,13 @@ const allowedKeys = {
   Escape: 'escape',
   Enter: 'enter',
 };
-export function recordShortcut(event, callback) {
-  event.preventDefault();
-  event.stopPropagation();
-
-  if (event.repeat) return;
+export function recordShortcut(
+  { ctrlKey, altKey, metaKey, shiftKey, key, repeat },
+  callback
+) {
+  if (repeat) return;
 
   const keys = [];
-  const { ctrlKey, altKey, metaKey, shiftKey, key } = event;
 
   if (ctrlKey || metaKey) keys.push('mod');
   if (altKey) keys.push('option');
