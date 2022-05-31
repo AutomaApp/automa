@@ -52,7 +52,7 @@
   "optional_permissions": [
     "clipboardRead",
     "downloads",
-    "contextMenus"
+    "menus"
   ],
   "permissions": [
     "tabs",

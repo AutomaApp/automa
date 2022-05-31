@@ -6,6 +6,7 @@ import getFile from '@/utils/getFile';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
 import {
   registerSpecificDay,
+  registerContextMenu,
   registerWorkflowTrigger,
 } from '../utils/workflowTrigger';
 import WorkflowState from './WorkflowState';
@@ -370,9 +371,13 @@ browser.runtime.onInstalled.addListener(async ({ reason }) => {
           workflowTrigger = findTriggerBlock(flows)?.data;
         }
 
-        if (!alarmTypes.includes(workflowTrigger.type)) return;
+        const triggerType = workflowTrigger?.type;
 
-        registerWorkflowTrigger(id, { data: workflowTrigger });
+        if (alarmTypes.includes(triggerType)) {
+          registerWorkflowTrigger(id, { data: workflowTrigger });
+        } else if (triggerType === 'context-menu') {
+          registerContextMenu(id, workflowTrigger);
+        }
       }
     }
   } catch (error) {

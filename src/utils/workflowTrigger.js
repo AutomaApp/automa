@@ -2,11 +2,13 @@ import browser from 'webextension-polyfill';
 import dayjs from 'dayjs';
 import { isObject } from './helper';
 
-function registerContextMenu(workflowId, data) {
+export function registerContextMenu(workflowId, data) {
   return new Promise((resolve, reject) => {
     const documentUrlPatterns = ['https://*/*', 'http://*/*'];
     const contextTypes =
-      data.contextTypes.length === 0 ? ['all'] : data.contextTypes;
+      !data.contextTypes || data.contextTypes.length === 0
+        ? ['all']
+        : data.contextTypes;
 
     browser.contextMenus.create(
       {
