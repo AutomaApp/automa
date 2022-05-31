@@ -38,6 +38,8 @@ class WorkflowEngine {
       },
     };
 
+    this.logHistoryId = 0;
+
     let variables = {};
     let { globalData } = workflow;
 
@@ -170,15 +172,15 @@ class WorkflowEngine {
   }
 
   addLogHistory(detail) {
-    if (
-      !this.saveLog &&
-      (this.history.length >= 1001 || detail.name === 'blocks-group') &&
-      detail.type !== 'error'
-    )
-      return;
+    if (detail.name === 'blocks-group') return;
 
-    const historyId = nanoid();
-    detail.id = historyId;
+    const isLimit = this.history.length >= 1001;
+    const notErrorLog = detail.type !== 'error';
+
+    if ((!this.saveLog || isLimit) && notErrorLog) return;
+
+    this.logHistoryId += 1;
+    detail.id = this.logHistoryId;
 
     if (
       detail.replacedValue ||
@@ -188,7 +190,7 @@ class WorkflowEngine {
         JSON.stringify(this.referenceData)
       );
 
-      this.historyCtxData[historyId] = {
+      this.historyCtxData[this.logHistoryId] = {
         referenceData: {
           loopData,
           variables,
