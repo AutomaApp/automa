@@ -29,12 +29,14 @@
     </div>
     <div class="divide-y bg-box-transparent divide-y px-4 rounded-lg">
       <div
-        v-for="block in getBlock()"
+        v-for="block in data.state.currentBlock"
         :key="block.id || block.name"
         class="flex items-center py-2"
       >
-        <v-remixicon :name="block.icon" />
-        <p class="flex-1 ml-2 mr-4 text-overflow">{{ block.name }}</p>
+        <v-remixicon :name="tasks[block.name].icon" />
+        <p class="flex-1 ml-2 mr-4 text-overflow">
+          {{ tasks[block.name].name }}
+        </p>
         <ui-spinner color="text-accent" size="20" />
       </div>
     </div>
@@ -69,23 +71,6 @@ const props = defineProps({
 
 const { t } = useI18n();
 
-function getBlock() {
-  const block = props.data.state.currentBlock;
-
-  if (!block) return [];
-
-  const blockArr = Array.isArray(block) ? block : [block];
-
-  return blockArr.map((item) => {
-    if (tasks[item.name] && item.outputs)
-      return {
-        ...tasks[item.name],
-        name: t(`workflow.blocks.${item.name}.name`),
-      };
-
-    return item;
-  });
-}
 function formatDate(date, format) {
   if (format === 'relative') return dayjs(date).fromNow();
 
