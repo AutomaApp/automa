@@ -143,6 +143,7 @@ class WorkflowEngine {
 
     this.states
       .add(this.id, {
+        id: this.id,
         state: this.state,
         workflowId: this.workflow.id,
         parentState: this.parentWorkflow,
@@ -327,15 +328,18 @@ class WorkflowEngine {
 
   async updateState(data) {
     const state = {
-      ...this.state,
       ...data,
       tabIds: [],
       currentBlock: [],
+      name: this.workflow.name,
+      startedTimestamp: this.startedTimestamp,
     };
 
     this.workers.forEach((worker) => {
+      const { id, name } = worker.currentBlock;
+
+      state.currentBlock.push({ id, name });
       state.tabIds.push(worker.activeTab.id);
-      state.currentBlock.push(worker.currentBlock);
     });
 
     await this.states.update(this.id, { state });
@@ -356,20 +360,6 @@ class WorkflowEngine {
     (this.eventListeners[name] = this.eventListeners[name] || []).push(
       listener
     );
-  }
-
-  get state() {
-    const keys = ['columns', 'referenceData', 'startedTimestamp'];
-    const state = {
-      name: this.workflow.name,
-      icon: this.workflow.icon,
-    };
-
-    keys.forEach((key) => {
-      state[key] = this[key];
-    });
-
-    return state;
   }
 }
 

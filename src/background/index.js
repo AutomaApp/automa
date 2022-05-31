@@ -15,7 +15,7 @@ import blocksHandler from './workflowEngine/blocksHandler';
 import WorkflowLogger from './WorkflowLogger';
 
 const validateUrl = (str) => str?.startsWith('http');
-const storage = {
+const browserStorage = {
   async get(key) {
     try {
       const result = await browser.storage.local.get(key);
@@ -34,9 +34,21 @@ const storage = {
     }
   },
 };
+const localStateStorage = {
+  get(key) {
+    const data = parseJSON(localStorage.getItem(key), null);
+
+    return data;
+  },
+  set(key, value) {
+    const data = typeof value === 'object' ? JSON.stringify(value) : value;
+
+    return localStorage.setItem(key, data);
+  },
+};
 const workflow = {
-  states: new WorkflowState({ storage }),
-  logger: new WorkflowLogger({ storage }),
+  states: new WorkflowState({ storage: localStateStorage }),
+  logger: new WorkflowLogger({ storage: browserStorage }),
   async get(workflowId) {
     const { workflows, workflowHosts } = await browser.storage.local.get([
       'workflows',
@@ -126,7 +138,7 @@ async function checkWorkflowStates() {
   const states = await workflow.states.get();
   // const sessionStates = parseJSON(sessionStorage.getItem('workflowState'), {});
 
-  Object.values(states || {}).forEach((state) => {
+  states.forEach((state) => {
     /* Enable when using manifest 3 */
     // const resumeWorkflow =
     //   !state.isDestroyed && objectHasKey(sessionStates, state.id);
@@ -139,18 +151,18 @@ async function checkWorkflowStates() {
         });
       });
     } else {
-      delete states[state.id];
+      workflow.states.states.delete(state.id);
     }
   });
 
-  await storage.set('workflowState', states);
+  await browserStorage.set('workflowState', states);
 }
 checkWorkflowStates();
 async function checkVisitWebTriggers(tabId, tabUrl) {
   const workflowState = await workflow.states.get(({ state }) =>
     state.tabIds.includes(tabId)
   );
-  const visitWebTriggers = await storage.get('visitWebTriggers');
+  const visitWebTriggers = await browserStorage.get('visitWebTriggers');
   const triggeredWorkflow = visitWebTriggers?.find(({ url, isRegex, id }) => {
     if (url.trim() === '') return false;
 
@@ -168,7 +180,7 @@ async function checkVisitWebTriggers(tabId, tabUrl) {
 async function checkRecordingWorkflow(tabId, tabUrl) {
   if (!validateUrl(tabUrl)) return;
 
-  const isRecording = await storage.get('isRecording');
+  const isRecording = await browserStorage.get('isRecording');
   if (!isRecording) return;
 
   await browser.tabs.executeScript(tabId, {
