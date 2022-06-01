@@ -54,7 +54,7 @@
 <script>
 import { computed, provide, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { tasks } from '@/utils/shared';
+import { tasks, excludeOnError } from '@/utils/shared';
 import { parseJSON } from '@/utils/helper';
 import OnBlockError from './edit/OnBlockError.vue';
 
@@ -97,15 +97,6 @@ export default {
   },
   emits: ['close', 'update', 'update:autocomplete'],
   setup(props, { emit }) {
-    const excludeOnError = [
-      'delay',
-      'webhook',
-      'trigger',
-      'while-loop',
-      'conditions',
-      'element-exists',
-    ];
-
     const { t } = useI18n();
     const autocompleteData = ref({
       common: {

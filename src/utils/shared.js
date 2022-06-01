@@ -1038,6 +1038,15 @@ export const workflowCategories = {
   productivity: 'Productivity',
 };
 
+export const excludeOnError = [
+  'delay',
+  'webhook',
+  'trigger',
+  'while-loop',
+  'conditions',
+  'element-exists',
+];
+
 export const contentTypes = [
   { name: 'application/json', value: 'json' },
   { name: 'application/x-www-form-urlencoded', value: 'form' },

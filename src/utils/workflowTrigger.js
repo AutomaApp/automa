@@ -10,7 +10,10 @@ export function registerContextMenu(workflowId, data) {
         ? ['all']
         : data.contextTypes;
 
-    browser.contextMenus.create(
+    const isFirefox = BROWSER_TYPE === 'firefox';
+    const browserContext = isFirefox ? browser.menus : browser.contextMenus;
+
+    browserContext.create(
       {
         id: workflowId,
         documentUrlPatterns,
@@ -23,7 +26,7 @@ export function registerContextMenu(workflowId, data) {
 
         if (error) {
           if (error.message.includes('automaContextMenu')) {
-            browser.contextMenus.create(
+            browserContext.create(
               {
                 documentUrlPatterns,
                 contexts: ['all'],
@@ -41,7 +44,7 @@ export function registerContextMenu(workflowId, data) {
 
           reject(error.message);
         } else {
-          if (browser.contextMenus.refresh) browser.contextMenus.refresh();
+          if (browserContext.refresh) browserContext.refresh();
           resolve();
         }
       }
@@ -95,7 +98,9 @@ export async function cleanWorkflowTriggers(workflowId) {
       onStartupTriggers: startupTriggers,
     });
 
-    browser.contextMenus.remove(workflowId);
+    (BROWSER_TYPE === 'firefox' ? browser.menus : browser.contextMenus)?.remove(
+      workflowId
+    );
   } catch (error) {
     console.error(error);
   }

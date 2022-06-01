@@ -87,7 +87,7 @@ import {
   getShortcut,
   getReadableShortcut,
 } from '@/composable/shortcut';
-import { tasks } from '@/utils/shared';
+import { tasks, excludeOnError } from '@/utils/shared';
 import { parseJSON } from '@/utils/helper';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import drawflow from '@/lib/drawflow';
@@ -248,6 +248,13 @@ export default {
           targetBlock = { ...tasks[block.id], id: block.id };
         }
 
+        const onErrorEnabled =
+          targetNode.data?.onError?.enable &&
+          !excludeOnError.includes(targetBlock.id);
+        const newNodeData = onErrorEnabled
+          ? { ...targetBlock.data, onError: targetNode.data.onError }
+          : targetBlock.data;
+
         const newNodeId = editor.value.addNode(
           targetBlock.id,
           targetBlock.inputs,
@@ -255,10 +262,15 @@ export default {
           targetNode.pos_x,
           targetNode.pos_y,
           targetBlock.id,
-          targetBlock.data,
+          newNodeData,
           targetBlock.component,
           'vue'
         );
+
+        if (onErrorEnabled && targetNode.data.onError.toDo === 'fallback') {
+          editor.value.addNodeOutput(newNodeId);
+        }
+
         const duplicateConnections = (nodeIO, type) => {
           if (block[type] === 0) return;
 
