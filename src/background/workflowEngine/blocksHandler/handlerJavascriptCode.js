@@ -23,7 +23,6 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
 
     const payload = { ...block, data, refData: { variables: {} } };
     if (data.code.includes('automaRefData')) payload.refData = refData;
-    console.log(data.code.includes('automaRefData'), payload);
 
     const result = await this._sendMessageToTab(payload);
 

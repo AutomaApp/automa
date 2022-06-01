@@ -78,8 +78,11 @@ async function conditions({ data, outputs }, { prevBlockData, refData }) {
     data.conditions.forEach(({ type, value, compareValue }, index) => {
       if (isConditionMet) return;
 
-      const firstValue = mustacheReplacer(compareValue ?? prevData, refData);
-      const secondValue = mustacheReplacer(value, refData);
+      const firstValue = mustacheReplacer(
+        compareValue ?? prevData,
+        refData
+      ).value;
+      const secondValue = mustacheReplacer(value, refData).value;
 
       Object.assign(replacedValue, firstValue.list, secondValue.list);
 
