@@ -134,7 +134,7 @@ function replacer(str, { regex, tagLen, modifyPath, data }) {
     }
 
     result = typeof result === 'string' ? result : JSON.stringify(result);
-    replaceResult.list[match] = result;
+    replaceResult.list[match] = result.slice(0, 512);
 
     return result;
   });

@@ -21,7 +21,11 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
       }
     }
 
-    const result = await this._sendMessageToTab({ ...block, data, refData });
+    const payload = { ...block, data, refData: { variables: {} } };
+    if (data.code.includes('automaRefData')) payload.refData = refData;
+    console.log(data.code.includes('automaRefData'), payload);
+
+    const result = await this._sendMessageToTab(payload);
 
     if (result) {
       if (result.columns.data?.$error) {
