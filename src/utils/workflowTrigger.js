@@ -98,9 +98,17 @@ export async function cleanWorkflowTriggers(workflowId) {
       onStartupTriggers: startupTriggers,
     });
 
-    (BROWSER_TYPE === 'firefox' ? browser.menus : browser.contextMenus)?.remove(
-      workflowId
-    );
+    const removeFromContextMenu = async () => {
+      try {
+        await (BROWSER_TYPE === 'firefox'
+          ? browser.menus
+          : browser.contextMenus
+        )?.remove(workflowId);
+      } catch (error) {
+        // Do nothing
+      }
+    };
+    await removeFromContextMenu();
   } catch (error) {
     console.error(error);
   }

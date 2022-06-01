@@ -205,11 +205,42 @@
           "url": "URL or Regex",
           "shortcut": "Shortcut"
         },
+        "element-change": {
+          "target": "Target element to observe",
+          "optionsInfo": "Which element mutation will trigger the workflow",
+          "targetWebsite": "The Match Pattern of the website where the target element is (click to see more Match Pattern examples)",
+          "baseEl": {
+            "title": "Base element (optional)",
+            "description": "Automa will restart observing the target element when this element changed"
+          },
+          "subtree": {
+            "title": "Include subtree",
+            "description": "Extend monitoring to the entire subtree of the target element"
+          },
+          "childList": {
+            "title": "Child list",
+            "description": "Monitor for the addition of new child elements or removal of existing child elements"
+          },
+          "attributes": {
+            "title": "Attributes",
+            "description": "Watch for changes to the value of attributes on the target element"
+          },
+          "attributeFilter": {
+            "title": "Attribute filter",
+            "separate": "Use commas(,) to separate attribute name",
+            "description": "Only monitor specific attributes (leave blank to monitor all)"
+          },
+          "characterData": {
+            "title": "Character data",
+            "description": "Monitor changes to the character data/text within the target element"
+          },
+        },
         "items": {
           "manual": "Manually",
           "interval": "Interval",
           "date": "On a specific date",
           "context-menu": "Context menu",
+          "element-change": "When element change",
           "specific-day": "On a specific day",
           "visit-web": "When visit a website",
           "on-startup": "On browser startup",
@@ -220,7 +251,7 @@
         "name": "Execute workflow",
         "overwriteNote": "This will overwrite the global data of the selected workflow",
         "select": "Select workflow",
-        "executeId": "Execute Id",
+        "executeId": "Execute Id (optional)",
         "description": ""
       },
       "google-sheets": {

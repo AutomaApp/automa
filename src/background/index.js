@@ -459,7 +459,13 @@ message.on('collection:execute', (collection) => {
   engine.init();
 });
 
-message.on('workflow:execute', (workflowData) => {
+message.on('workflow:execute', (workflowData, sender) => {
+  if (workflowData.includeTabId) {
+    if (!workflowData.options) workflowData.options = {};
+
+    workflowData.options.tabId = sender.tab.id;
+  }
+
   workflow.execute(workflowData, workflowData?.options || {});
 });
 message.on('workflow:stop', (id) => workflow.states.stop(id));

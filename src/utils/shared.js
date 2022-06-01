@@ -28,6 +28,25 @@ export const tasks = {
       days: [],
       contextMenuName: '',
       contextTypes: [],
+      observeElement: {
+        selector: '',
+        baseSelector: '',
+        matchPattern: '',
+        targetOptions: {
+          subtree: false,
+          childList: true,
+          attributes: false,
+          attributeFilter: [],
+          characterData: false,
+        },
+        baseElOptions: {
+          subtree: false,
+          childList: true,
+          attributes: false,
+          attributeFilter: [],
+          characterData: false,
+        },
+      },
     },
   },
   'execute-workflow': {

@@ -35,6 +35,7 @@ import TriggerInterval from './Trigger/TriggerInterval.vue';
 import TriggerVisitWeb from './Trigger/TriggerVisitWeb.vue';
 import TriggerContextMenu from './Trigger/TriggerContextMenu.vue';
 import TriggerSpecificDay from './Trigger/TriggerSpecificDay.vue';
+import TriggerElementChange from './Trigger/TriggerElementChange.vue';
 import TriggerKeyboardShortcut from './Trigger/TriggerKeyboardShortcut.vue';
 
 const props = defineProps({
@@ -51,6 +52,7 @@ const triggers = {
   manual: null,
   interval: TriggerInterval,
   'context-menu': TriggerContextMenu,
+  'element-change': TriggerElementChange,
   date: TriggerDate,
   'specific-day': TriggerSpecificDay,
   'on-startup': null,

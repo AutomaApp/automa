@@ -5,6 +5,7 @@ import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
 import handleTestCondition from './handleTestCondition';
 import shortcutListener from './services/shortcutListener';
+import elementObserver from './elementObserver';
 import { elementSelectorInstance } from './utils';
 
 const isMainFrame = window.self === window.top;
@@ -141,6 +142,7 @@ function messageListener({ data, source }) {
     window.addEventListener('contextmenu', ({ target }) => {
       contextElement = target;
     });
+    window.addEventListener('load', elementObserver);
   }
 
   browser.runtime.onMessage.addListener((data) => {
