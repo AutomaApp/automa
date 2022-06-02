@@ -1,7 +1,10 @@
+import { isXPath } from '@/utils/helper';
 import handleSelector from '../handleSelector';
 
 function switchTo(block) {
   return new Promise((resolve, reject) => {
+    block.data.findBy = isXPath(block.data.selector) ? 'xpath' : 'cssSelector';
+
     handleSelector(block, {
       onSelected(element) {
         if (element.tagName !== 'IFRAME') {

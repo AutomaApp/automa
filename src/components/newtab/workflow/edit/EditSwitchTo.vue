@@ -29,7 +29,8 @@
     >
       <ui-input
         :model-value="data.selector"
-        :placeholder="t('workflow.blocks.switch-to.iframeSelector')"
+        :label="t('workflow.blocks.switch-to.iframeSelector')"
+        placeholder="CSS Selector or XPath"
         autocomplete="off"
         class="mb-1 w-full"
         @change="updateData({ selector: $event })"
