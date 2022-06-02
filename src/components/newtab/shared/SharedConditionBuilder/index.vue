@@ -20,6 +20,7 @@
           <draggable
             v-model="conditions[index].conditions"
             item-key="id"
+            handle=".handle"
             group="conditions"
             class="space-y-2"
             @end="onDragEnd"
@@ -46,10 +47,13 @@
                     </p>
                     <v-remixicon
                       name="riDeleteBin7Line"
-                      class="ml-4 group-hover:visible invisible"
+                      class="ml-4 group-hover:visible invisibl"
                       @click.stop="deleteCondition(index, inputsIndex)"
                     />
-                    <v-remixicon name="mdiDrag" class="ml-2 cursor-move" />
+                    <v-remixicon
+                      name="mdiDrag"
+                      class="ml-2 cursor-move handle"
+                    />
                   </template>
                   <div class="space-y-2 px-4 py-2">
                     <condition-builder-inputs
