@@ -99,10 +99,12 @@ export function useShortcut(shortcuts, handler) {
       ...extractedShortcuts.data[shortcutId],
     };
 
+    if (shortcutId) event.preventDefault();
+
     if (typeof params.data === 'function') {
       params.data(params);
-    } else {
-      handler?.(params);
+    } else if (handler) {
+      handler(params);
     }
   };
   const addShortcutData = ({ combo, id, readable, ...rest }) => {
