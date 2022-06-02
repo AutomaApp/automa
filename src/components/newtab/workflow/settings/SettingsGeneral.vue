@@ -74,6 +74,21 @@
       {{ t('workflow.settings.clearCache.btn') }}
     </ui-button>
   </div>
+  <div class="flex items-center pt-4">
+    <div class="mr-4 flex-1">
+      <p>
+        {{ t('workflow.settings.publicId.title') }}
+      </p>
+      <p class="text-gray-600 dark:text-gray-200 text-sm leading-tight">
+        {{ t('workflow.settings.publicId.description') }}
+      </p>
+    </div>
+    <ui-input
+      :model-value="settings.publicId"
+      placeholder="myWorkflowPublicId"
+      @change="updateSetting('publicId', $event)"
+    />
+  </div>
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';

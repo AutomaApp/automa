@@ -193,6 +193,10 @@
     "settings": {
       "saveLog": "Save workflow log",
       "executedBlockOnWeb": "Show executed block on web page",
+      "publicId": {
+        "title": "Workflow public Id",
+        "description": "Use this public id to execute workflow using JS custom event"
+      },
       "defaultColumn": {
         "title": "Insert into the default column",
         "description": "Insert data to the default column if there's no column selected in the block",

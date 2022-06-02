@@ -31,6 +31,7 @@ class Workflow extends Model {
       isDisabled: this.boolean(false),
       isProtected: this.boolean(false),
       settings: this.attr({
+        publicId: '',
         blockDelay: 0,
         saveLog: true,
         debugMode: false,
