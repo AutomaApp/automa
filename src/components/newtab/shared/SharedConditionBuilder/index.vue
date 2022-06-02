@@ -47,7 +47,7 @@
                     </p>
                     <v-remixicon
                       name="riDeleteBin7Line"
-                      class="ml-4 group-hover:visible invisibl"
+                      class="ml-4 group-hover:visible invisible"
                       @click.stop="deleteCondition(index, inputsIndex)"
                     />
                     <v-remixicon
@@ -128,17 +128,23 @@ const conditions = ref(cloneDeep(props.modelValue));
 function getDefaultValues(items = ['value', 'compare', 'value']) {
   const defaultValues = {
     value: {
-      id: nanoid(),
       type: 'value',
       category: 'value',
       data: { value: '' },
     },
-    compare: { id: nanoid(), category: 'compare', type: 'eq' },
+    compare: { category: 'compare', type: 'eq' },
   };
+  const selectValue = (type) =>
+    cloneDeep({
+      ...defaultValues[type],
+      id: nanoid(),
+    });
 
-  if (typeof items === 'string') return defaultValues[items];
+  if (typeof items === 'string') {
+    return selectValue(items);
+  }
 
-  return items.map((item) => defaultValues[item]);
+  return items.map((item) => selectValue(item));
 }
 function getConditionText({ category, type, data }) {
   if (category === 'compare') {
