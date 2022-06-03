@@ -106,6 +106,9 @@
     "clickToEnable": "Click to enable",
     "toggleSidebar": "Toggle sidebar",
     "cantEdit": "Can't edit shared workflow",
+    "searchBlocks": {
+      "title": "Search blocks in the editor"
+    },
     "conditionBuilder": {
       "title": "Condition builder",
       "add": "Add condition",

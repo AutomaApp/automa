@@ -36,6 +36,10 @@ const defaultShortcut = {
     id: 'editor:duplicate-block',
     combo: 'mod+option+d',
   },
+  'editor:search-blocks': {
+    id: 'editor:search-blocks',
+    combo: 'mod+b',
+  },
   'editor:save': {
     id: 'editor:save',
     combo: 'mod+shift+s',

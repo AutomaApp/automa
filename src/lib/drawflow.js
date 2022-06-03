@@ -8,15 +8,16 @@ export default function (element, { context, options = {} }) {
   const editor = new Drawflow(element, { render, version: 3, h }, context);
 
   editor.useuuid = true;
-  editor.translate_to = function (x, y) {
+  editor.translate_to = function (x, y, zoom) {
+    if (typeof x !== 'number' || typeof y !== 'number') return;
+
     this.canvas_x = x;
     this.canvas_y = y;
 
-    const storedZoom = this.zoom;
-
     this.zoom = 1;
-    this.precanvas.style.transform = `translate("${this.canvas_x}"px, "${this.canvas_y}"px) scale("${this.zoom}")`;
-    this.zoom = storedZoom;
+
+    this.precanvas.style.transform = `translate(${this.canvas_x}px, ${this.canvas_y}px) scale(${this.zoom})`;
+    this.zoom = zoom;
     this.zoom_last_value = 1;
     this.zoom_refresh();
   };
@@ -110,6 +111,8 @@ export default function (element, { context, options = {} }) {
 
     editor.registerNode(name, blockComponents(key).default, { editor }, {});
   });
+
+  console.log(editor);
 
   return editor;
 }

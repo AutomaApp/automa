@@ -29,7 +29,7 @@ module.exports = {
   },
   // add your custom rules here
   rules: {
-    'no-undef': 'off',
+    camelcase: 'off',
     'no-await-in-loop': 'off',
     'no-console': ['warn', { allow: ['warn', 'error'] }],
     'no-underscore-dangle': 'off',

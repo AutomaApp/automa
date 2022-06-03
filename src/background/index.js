@@ -315,7 +315,7 @@ browser.alarms.onAlarm.addListener(async ({ name }) => {
   }
 });
 
-if (browser.contextMenus?.onClicked) {
+if (browser.contextMenus && browser.contextMenus.onClicked) {
   browser.contextMenus.onClicked.addListener(
     async ({ parentMenuItemId, menuItemId }, tab) => {
       try {
