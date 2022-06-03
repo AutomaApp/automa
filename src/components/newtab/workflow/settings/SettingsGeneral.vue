@@ -32,6 +32,30 @@
       </span>
     </div>
   </div>
+  <div class="flex items-center pt-4">
+    <div class="mr-4 flex-1">
+      <p>
+        {{ t('workflow.settings.notification.title') }}
+      </p>
+      <p class="text-gray-600 dark:text-gray-200 text-sm leading-tight">
+        {{
+          t(
+            `workflow.settings.notification.${
+              permissions.has.notifications ? 'description' : 'noPermission'
+            }`
+          )
+        }}
+      </p>
+    </div>
+    <ui-switch
+      v-if="permissions.has.notifications"
+      :model-value="settings.notification"
+      @change="updateSetting('notification', $event)"
+    />
+    <ui-button v-else @click="permissions.request">
+      {{ t('workflow.blocks.clipboard.grantPermission') }}
+    </ui-button>
+  </div>
   <div
     v-for="item in settingItems"
     :key="item.id"
@@ -94,8 +118,9 @@
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 import { clearCache } from '@/utils/helper';
+import { useHasPermissions } from '@/composable/hasPermissions';
 
-defineProps({
+const props = defineProps({
   settings: {
     type: Object,
     default: () => ({}),
@@ -105,6 +130,7 @@ const emit = defineEmits(['update']);
 
 const { t } = useI18n();
 const toast = useToast();
+const permissions = useHasPermissions(['notifications']);
 
 const browserType = BROWSER_TYPE;
 const onError = [

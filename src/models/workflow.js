@@ -36,6 +36,7 @@ class Workflow extends Model {
         saveLog: true,
         debugMode: false,
         restartTimes: 3,
+        notification: true,
         reuseLastState: false,
         inputAutocomplete: true,
         onError: 'stop-workflow',

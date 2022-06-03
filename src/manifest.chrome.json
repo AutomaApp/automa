@@ -48,7 +48,8 @@
   "optional_permissions": [
     "clipboardRead",
     "downloads",
-    "contextMenus"
+    "contextMenus",
+    "notifications"
   ],
   "permissions": [
     "tabs",

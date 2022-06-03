@@ -52,7 +52,8 @@
   "optional_permissions": [
     "clipboardRead",
     "downloads",
-    "menus"
+    "menus",
+    "notifications"
   ],
   "permissions": [
     "tabs",

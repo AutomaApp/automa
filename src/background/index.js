@@ -91,6 +91,25 @@ const workflow = {
       engine.resume(options.state);
     } else {
       engine.init();
+
+      engine.on('destroyed', ({ id, status }) => {
+        browser.permissions
+          .contains({ permissions: ['notifications'] })
+          .then((hasPermission) => {
+            if (!hasPermission || !workflowData.settings.notification) return;
+
+            const name = workflowData.name.slice(0, 32);
+
+            browser.notifications.create(`logs:${id}`, {
+              type: 'basic',
+              iconUrl: browser.runtime.getURL('icon-128.png'),
+              title: status === 'success' ? 'Success' : 'Error',
+              message: `${
+                status === 'success' ? 'Successfully' : 'Failed'
+              } to run the "${name}" workflow`,
+            });
+          });
+      });
     }
 
     return engine;
@@ -315,8 +334,10 @@ browser.alarms.onAlarm.addListener(async ({ name }) => {
   }
 });
 
-if (browser.contextMenus && browser.contextMenus.onClicked) {
-  browser.contextMenus.onClicked.addListener(
+const contextMenu =
+  BROWSER_TYPE === 'firefox' ? browser.menus : browser.contextMenus;
+if (contextMenu && contextMenu.onClicked) {
+  contextMenu.onClicked.addListener(
     async ({ parentMenuItemId, menuItemId }, tab) => {
       try {
         if (parentMenuItemId !== 'automaContextMenu') return;
@@ -337,6 +358,15 @@ if (browser.contextMenus && browser.contextMenus.onClicked) {
       }
     }
   );
+}
+
+if (browser.notifications && browser.notifications.onClicked) {
+  browser.notifications.onClicked.addListener((notificationId) => {
+    if (notificationId.startsWith('logs')) {
+      const { 1: logId } = notificationId.split(':');
+      openDashboard(`/logs/${logId}`);
+    }
+  });
 }
 
 browser.runtime.onInstalled.addListener(async ({ reason }) => {

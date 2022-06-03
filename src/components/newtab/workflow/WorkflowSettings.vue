@@ -72,6 +72,7 @@ const activeTab = ref('general');
 const settings = reactive({
   publicId: '',
   restartTimes: 3,
+  notification: true,
   tabLoadTimeout: 30000,
   inputAutocomplete: true,
   insertDefaultColumn: true,

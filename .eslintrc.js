@@ -28,6 +28,9 @@ module.exports = {
     },
   },
   // add your custom rules here
+  globals: {
+    BROWSER_TYPE: true,
+  },
   rules: {
     camelcase: 'off',
     'no-await-in-loop': 'off',

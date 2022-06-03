@@ -196,6 +196,11 @@
     "settings": {
       "saveLog": "Save workflow log",
       "executedBlockOnWeb": "Show executed block on web page",
+      "notification": {
+        "title": "Workflow notification",
+        "description": "Show workflow status(success or failed) after it executed",
+        "noPermission": "Automa requires \"notifications\" permission to make this work"
+      },
       "publicId": {
         "title": "Workflow public Id",
         "description": "Use this public id to execute workflow using JS custom event"
