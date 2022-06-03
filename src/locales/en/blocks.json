@@ -83,6 +83,14 @@
         "specificFlow": "Only continue a specific flow",
         "selectFlow": "Select flow"
       },
+      "notification": {
+        "name": "notification",
+        "description": "Display a notification",
+        "title": "Title",
+        "message": "Message",
+        "imageUrl": "Image URL (optional)",
+        "iconUrl": "Icon URL (optional)"
+      },
       "delete-data": {
         "name": "Delete data",
         "description": "Delete table or variable data",

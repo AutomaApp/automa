@@ -144,7 +144,7 @@ async function openDashboard(url) {
     if (tab) {
       await browser.tabs.update(tab.id, tabOptions);
 
-      if (tab.url.includes('workflows/')) {
+      if (tabOptions.url.includes('workflows/')) {
         await browser.tabs.reload(tab.id);
       }
     } else {

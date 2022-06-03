@@ -1,5 +1,11 @@
 <template>
   <div>
+    <ui-textarea
+      :model-value="data.description"
+      :placeholder="t('common.description')"
+      class="w-full mb-2"
+      @change="updateData({ description: $event })"
+    />
     <ui-input
       :model-value="data.host"
       placeholder="socks5://1.2.3.4"

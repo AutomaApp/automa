@@ -45,7 +45,7 @@ class Workflow extends Model {
         defaultColumnName: 'column',
       }),
       logs: this.hasMany(Log, 'workflowId'),
-      globalData: this.string('[{ "key": "value" }]'),
+      globalData: this.string('{\n\t"key": "value"\n}'),
     };
   }
 
