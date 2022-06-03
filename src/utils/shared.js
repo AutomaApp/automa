@@ -161,6 +161,7 @@ export const tasks = {
     outputs: 1,
     maxConnection: 1,
     allowedInputs: true,
+    refDataKeys: ['host', 'port', 'scheme'],
     data: {
       disableBlock: false,
       scheme: 'https',

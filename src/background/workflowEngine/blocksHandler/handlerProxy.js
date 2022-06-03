@@ -23,7 +23,16 @@ function setProxy({ data, outputs }) {
     };
 
     if (!isWhitespace(data.host)) {
-      config.rules.singleProxy.host = data.host;
+      let proxyHost = data.host;
+
+      const schemeRegex = /^https?|socks4|socks5/i;
+      if (schemeRegex.test(data.host)) {
+        const [scheme, host] = data.host.split(/:\/\/(.*)/);
+        proxyHost = host;
+        config.rules.singleProxy.scheme = scheme;
+      }
+
+      config.rules.singleProxy.host = proxyHost;
     } else {
       if (data.clearProxy) {
         this.engine.isUsingProxy = false;
@@ -44,10 +53,10 @@ function setProxy({ data, outputs }) {
     }
 
     if (data.port !== 0) {
-      config.rules.singleProxy.port = data.port;
+      config.rules.singleProxy.port = +data.port;
     }
 
-    browser.proxy.settings.set({ value: config, scope: 'regular' }).then(() => {
+    chrome.proxy.settings.set({ value: config, scope: 'regular' }, () => {
       this.engine.isUsingProxy = true;
 
       resolve({

@@ -29,6 +29,7 @@
         :placeholder="t('common.search')"
         :style="{ width: state.active ? '250px' : '0px' }"
         type="search"
+        autocomplete="off"
         class="py-2 focus:ring-0 rounded-lg bg-transparent"
         @focus="extractBlocks"
         @blur="clearState"

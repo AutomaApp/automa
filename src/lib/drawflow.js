@@ -112,7 +112,5 @@ export default function (element, { context, options = {} }) {
     editor.registerNode(name, blockComponents(key).default, { editor }, {});
   });
 
-  console.log(editor);
-
   return editor;
 }

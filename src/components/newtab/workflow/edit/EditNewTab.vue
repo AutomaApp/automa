@@ -7,9 +7,13 @@
       @change="updateData({ description: $event })"
     />
     <edit-autocomplete v-if="!data.activeTab" class="mt-2">
-      <ui-input
+      <label for="new-tab-url" class="input-label">
+        {{ t('workflow.blocks.new-tab.url') }}
+      </label>
+      <ui-textarea
+        id="new-tab-url"
         :model-value="data.url"
-        :label="t('workflow.blocks.new-tab.url')"
+        rows="1"
         class="w-full"
         autocomplete="off"
         placeholder="http://example.com/"
