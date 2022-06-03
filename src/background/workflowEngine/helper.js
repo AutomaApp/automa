@@ -37,6 +37,7 @@ export function attachDebugger(tabId, prevTab) {
 
 export function waitTabLoaded(tabId, ms = 10000) {
   return new Promise((resolve, reject) => {
+    let timeout = null;
     const excludeErrors = ['net::ERR_BLOCKED_BY_CLIENT', 'net::ERR_ABORTED'];
 
     const onErrorOccurred = (details) => {
