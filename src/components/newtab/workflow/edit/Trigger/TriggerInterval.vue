@@ -44,7 +44,7 @@ defineProps({
     default: () => ({}),
   },
 });
-defineEmits(['update']);
+const emit = defineEmits(['update']);
 
 const { t } = useI18n();
 

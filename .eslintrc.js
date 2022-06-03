@@ -39,6 +39,7 @@ module.exports = {
     'func-names': 'off',
     'import/no-named-default': 'off',
     'no-restricted-syntax': 'off',
+    'vue/multi-word-component-names': 'off',
     'import/extensions': [
       'error',
       'always',

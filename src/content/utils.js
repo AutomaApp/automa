@@ -123,8 +123,6 @@ function messageTopFrame(windowCtx) {
     };
 
     timeout = setTimeout(() => {
-      if (isResolved) return;
-
       windowCtx.removeEventListener('message', messageListener);
       resolve(null);
     }, 5000);

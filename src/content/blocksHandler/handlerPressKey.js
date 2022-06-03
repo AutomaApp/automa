@@ -61,9 +61,9 @@ function pressKeyWithJs(element, keys) {
 
       if (isEditable || isTextField) {
         const isDigit = /^[0-9]$/.test(key);
+        const contentKey = isEditable ? 'textContent' : 'value';
 
         if (isLetter || isDigit) {
-          const contentKey = isEditable ? 'textContent' : 'value';
           element[contentKey] += key;
 
           return;
