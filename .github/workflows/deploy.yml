@@ -17,7 +17,7 @@ jobs:
       - name: Create zip
         run: yarn build:zip
       - name: Browser Plugin Publish
-        uses: plasmo-corp/bpp@v0.0.0
+        uses: plasmo-corp/bpp@v2
         with:
           artifact: build-zip/automa-v*.zip
           keys: ${{ secrets.SUBMIT_KEYS }}
