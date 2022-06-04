@@ -2,6 +2,7 @@ import browser from 'webextension-polyfill';
 import dayjs from '@/lib/dayjs';
 import { MessageListener } from '@/utils/message';
 import { parseJSON, findTriggerBlock } from '@/utils/helper';
+import { fetchApi } from '@/utils/api';
 import getFile from '@/utils/getFile';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
 import {
@@ -91,7 +92,6 @@ const workflow = {
       engine.resume(options.state);
     } else {
       engine.init();
-
       engine.on('destroyed', ({ id, status }) => {
         browser.permissions
           .contains({ permissions: ['notifications'] })
@@ -110,6 +110,16 @@ const workflow = {
             });
           });
       });
+
+      const lastCheckStatus = localStorage.getItem('check-status');
+      const isSameDay = dayjs().isSame(lastCheckStatus, 'day');
+      if (!isSameDay) {
+        fetchApi('/status')
+          .then((response) => response.json())
+          .then(() => {
+            localStorage.setItem('check-status', new Date());
+          });
+      }
     }
 
     return engine;
