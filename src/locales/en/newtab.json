@@ -12,6 +12,14 @@
     "text1": "Automa has been updated to v{version},",
     "text2": "see what's new."
   },
+  "workflows": {
+    "folder": {
+      "new": "New folder",
+      "name": "Folder name",
+      "delete": "Delete folder",
+      "rename": "Rename folder"
+    }
+  },
   "auth": {
     "title": "Auth",
     "signIn": "Sign in",

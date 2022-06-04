@@ -316,7 +316,12 @@ window.addEventListener('storage', ({ key, newValue }) => {
     }
 
     await Promise.allSettled([
-      store.dispatch('retrieve', ['workflows', 'logs', 'collections']),
+      store.dispatch('retrieve', [
+        'workflows',
+        'logs',
+        'collections',
+        'folders',
+      ]),
       store.dispatch('retrieveWorkflowState'),
     ]);
 

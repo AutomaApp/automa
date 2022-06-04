@@ -20,6 +20,7 @@ class Workflow extends Model {
       name: this.string(''),
       icon: this.string('riGlobalLine'),
       data: this.attr(null),
+      folderId: this.attr(null),
       drawflow: this.attr(''),
       table: this.attr([]),
       dataColumns: this.attr([]),

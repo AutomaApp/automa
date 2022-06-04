@@ -99,8 +99,16 @@
             </ui-list>
           </ui-expand>
         </ui-list>
+        <workflows-folder
+          v-if="state.activeTab === 'local'"
+          v-model="state.activeFolder"
+        />
       </div>
-      <div class="flex-1 ml-8">
+      <div
+        class="flex-1 workflows-list ml-8"
+        style="min-height: calc(100vh - 8rem)"
+        @dblclick="clearSelectedWorkflows"
+      >
         <div class="flex items-center">
           <ui-input
             id="search-input"
@@ -182,6 +190,10 @@
                   v-for="workflow in localWorkflows"
                   :key="workflow.id"
                   :data="workflow"
+                  :data-workflow="workflow.id"
+                  draggable="true"
+                  class="cursor-default select-none ring-accent local-workflow"
+                  @dragstart="onDragStart"
                   @click="$router.push(`/workflows/${$event.id}`)"
                 >
                   <template #header>
@@ -194,7 +206,10 @@
                           style="height: 40px; width: 40px"
                           alt="Can not display"
                         />
-                        <span v-else class="p-2 rounded-lg bg-box-transparent">
+                        <span
+                          v-else
+                          class="p-2 rounded-lg bg-box-transparent inline-block"
+                        >
                           <v-remixicon :name="workflow.icon" />
                         </span>
                       </template>
@@ -364,6 +379,8 @@ import {
 import { findTriggerBlock, isWhitespace } from '@/utils/helper';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 import Workflow from '@/models/workflow';
+import WorkflowsFolder from '@/components/newtab/workflows/WorkflowsFolder.vue';
+import SelectionArea from '@viselect/vanilla';
 
 useGroupTooltip();
 const { t } = useI18n();
@@ -385,7 +402,9 @@ const workflowHostMenu = [
 const savedSorts = JSON.parse(localStorage.getItem('workflow-sorts') || '{}');
 const state = shallowReactive({
   query: '',
+  activeFolder: '',
   activeTab: 'local',
+  selectedWorkflows: [],
   sortBy: savedSorts.sortBy || 'createdAt',
   sortOrder: savedSorts.sortOrder || 'desc',
 });
@@ -399,13 +418,46 @@ const pagination = shallowReactive({
   perPage: savedSorts.perPage || 18,
 });
 
+const selection = new SelectionArea({
+  container: '.workflows-list',
+  startareas: ['.workflows-list'],
+  boundaries: ['.workflows-list'],
+  selectables: ['.local-workflow'],
+});
+selection
+  .on('beforestart', ({ event }) => {
+    return (
+      event.target.tagName !== 'INPUT' &&
+      !event.target.closest('.local-workflow')
+    );
+  })
+  .on('start', () => {
+    /* eslint-disable-next-line */
+  clearSelectedWorkflows();
+  })
+  .on('move', (event) => {
+    event.store.changed.added.forEach((el) => {
+      el.classList.add('ring-2');
+    });
+    event.store.changed.removed.forEach((el) => {
+      el.classList.remove('ring-2');
+    });
+  })
+  .on('stop', (event) => {
+    state.selectedWorkflows = event.store.selected.map(
+      (el) => el.dataset.workflow
+    );
+  });
+
 const hostWorkflows = computed(() => store.state.hostWorkflows || {});
 const workflowHosts = computed(() => Object.values(store.state.workflowHosts));
 const sharedWorkflows = computed(() => store.state.sharedWorkflows || {});
 const workflows = computed(() =>
   Workflow.query()
-    .where(({ name }) =>
-      name.toLocaleLowerCase().includes(state.query.toLocaleLowerCase())
+    .where(
+      ({ name, folderId }) =>
+        name.toLocaleLowerCase().includes(state.query.toLocaleLowerCase()) &&
+        (!state.activeFolder || state.activeFolder === folderId)
     )
     .orderBy(state.sortBy, state.sortOrder)
     .get()
@@ -417,6 +469,22 @@ const localWorkflows = computed(() =>
   )
 );
 
+function clearSelectedWorkflows() {
+  state.selectedWorkflows = [];
+
+  selection.getSelection().forEach((el) => {
+    el.classList.remove('ring-2');
+  });
+  selection.clearSelection();
+}
+function onDragStart({ dataTransfer, target }) {
+  const payload = [...state.selectedWorkflows];
+
+  const targetId = target.dataset.workflow;
+  if (targetId && !payload.includes(targetId)) payload.push(targetId);
+
+  dataTransfer.setData('workflows', JSON.stringify(payload));
+}
 async function deleteWorkflowHost(workflow) {
   dialog.confirm({
     title: t('workflow.delete'),
