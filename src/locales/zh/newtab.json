@@ -256,7 +256,7 @@
       "blockDelay": {
         "title": "模块延迟(毫秒)",
         "description": "在执行每个块之前添加延迟"
-      }
+      },
       "tabLoadTimeout": {
         "title": "标签页载入超时",
         "description": "加载标签的最大时间，以毫秒为单位，通过0来禁用超时。"
