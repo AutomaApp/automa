@@ -58,6 +58,7 @@ const props = defineProps({
     default: () => [],
   },
   list: Boolean,
+  hide: Boolean,
   pause: Boolean,
   disabled: Boolean,
   onlyInList: Boolean,

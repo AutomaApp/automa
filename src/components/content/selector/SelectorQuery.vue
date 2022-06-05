@@ -24,9 +24,9 @@
     <div class="mt-2 flex items-center">
       <ui-input
         :model-value="selector"
-        readonly
         placeholder="Element selector"
         class="leading-normal flex-1 h-full element-selector"
+        @change="$emit('selector', $event)"
       >
         <template #prepend>
           <button class="absolute ml-2 left-0" @click="copySelector">
@@ -76,6 +76,7 @@ defineEmits([
   'list',
   'parent',
   'child',
+  'selector',
   'update:selectorType',
   'update:selectList',
 ]);
