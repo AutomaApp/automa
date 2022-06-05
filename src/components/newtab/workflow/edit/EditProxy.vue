@@ -42,7 +42,6 @@
     <ui-textarea
       id="input-bypass"
       :model-value="data.bypassList"
-      rows="1"
       placeholder="example1.com, example2.org"
       class="w-full"
       @change="updateData({ bypassList: $event })"
