@@ -52,7 +52,7 @@
       :model-value="settings.notification"
       @change="updateSetting('notification', $event)"
     />
-    <ui-button v-else @click="permissions.request">
+    <ui-button v-else @click="permissions.request(true)">
       {{ t('workflow.blocks.clipboard.grantPermission') }}
     </ui-button>
   </div>

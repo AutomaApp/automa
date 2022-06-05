@@ -4,7 +4,7 @@
       <p>
         {{ t('workflow.blocks.trigger.contextMenus.noPermission') }}
       </p>
-      <ui-button class="mt-2" @click="permission.request">
+      <ui-button class="mt-2" @click="permission.request(true)">
         {{ t('workflow.blocks.trigger.contextMenus.grantPermission') }}
       </ui-button>
     </template>
