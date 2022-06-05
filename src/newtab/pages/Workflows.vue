@@ -361,7 +361,13 @@
   </div>
 </template>
 <script setup>
-import { computed, shallowReactive, watch } from 'vue';
+import {
+  computed,
+  shallowReactive,
+  watch,
+  onMounted,
+  onBeforeUnmount,
+} from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
@@ -619,6 +625,33 @@ function deleteWorkflow({ name, id }) {
     },
   });
 }
+function deleteSelectedWorkflows({ target, key }) {
+  const excludeTags = ['INPUT', 'TEXTAREA', 'SELECT'];
+  if (
+    excludeTags.includes(target.tagName) ||
+    key !== 'Delete' ||
+    state.selectedWorkflows.length === 0
+  )
+    return;
+
+  if (state.selectedWorkflows.length === 1) {
+    const workflow = Workflow.find(state.selectedWorkflows[0]);
+    deleteWorkflow(workflow);
+  } else {
+    dialog.confirm({
+      title: t('workflow.delete'),
+      okVariant: 'danger',
+      body: t('message.delete', {
+        name: `${state.selectedWorkflows.length} workflows`,
+      }),
+      onConfirm: () => {
+        state.selectedWorkflows.forEach((id) => {
+          Workflow.delete(id);
+        });
+      },
+    });
+  }
+}
 function renameWorkflow({ id, name, description }) {
   Object.assign(workflowModal, {
     id,
@@ -692,6 +725,13 @@ watch(
     );
   }
 );
+
+onMounted(() => {
+  window.addEventListener('keydown', deleteSelectedWorkflows);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', deleteSelectedWorkflows);
+});
 </script>
 <style>
 .workflow-sort select {
