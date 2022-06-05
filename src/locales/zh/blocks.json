@@ -13,7 +13,7 @@
         "title": "模块",
         "moveToGroup": "移动模块到模块组",
         "selector": "元素选择器",
-	"selectorOptions": "选择器选项",
+        "selectorOptions": "选择器选项",
         "timeout": "超时 (毫秒)",
         "toggle": {
           "enable": "启用模块",
@@ -294,7 +294,7 @@
         "select": {
           "get": "获取电子表格单元格值",
           "getRange": "获取电子表格范围",
-          "update": "更新电子表格单元格值"
+          "update": "更新电子表格单元格值",
           "append": "追加电子表格单元格值"
         }
       },
