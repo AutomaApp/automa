@@ -12,6 +12,14 @@
     "text1": "Automa 已更新为 v{version},",
     "text2": "看看有什么新东西."
   },
+  "workflows": {
+    "folder": {
+      "new": "新建文件夹",
+      "name": "文件夹名",
+      "delete": "删除文件夹",
+      "rename": "重命名文件夹"
+    }
+  },
   "auth": {
     "title": "作者",
     "signIn": "登录",
@@ -102,14 +110,19 @@
     "rename": "重命名工作流",
     "backupCloud": "备份工作流到云端",
     "add": "添加工作流",
+    "add": "添加工作流",
     "clickToEnable": "单击启用",
     "toggleSidebar": "切换侧栏",
     "cantEdit": "无法编辑共享的工作流",
+    "searchBlocks": {
+      "title": "在编辑器中搜索模块"
+    },
     "conditionBuilder": {
       "title": "条件生成器",
       "add": "附加条件",
       "and": "AND",
-      "or": "OR"
+      "or": "OR",
+      "topAwait": "支持 top-level await 和\"automaRefData\"函数"
     },
     "host": {
       "title": "主机工作流程",
@@ -191,6 +204,15 @@
     "settings": {
       "saveLog": "保存工作流日志",
       "executedBlockOnWeb": "在网页上显示已执行的模块",
+      "notification": {
+        "title": "工作流通知",
+        "description": "执行后显示工作流状态（成功或失败）",
+        "noPermission": "Automa 需要 \"notifications\" 权限才能正常工作"
+      },
+      "publicId": {
+        "title": "工作流公开 Id",
+        "description": "用于JS自定义事件使用此公共ID执行工作流"
+      },
       "defaultColumn": {
         "title": "插入信息到默认列",
         "description": "如果模块中没有选择列，则将数据插入默认列",
@@ -235,6 +257,10 @@
         "title": "模块延迟(毫秒)",
         "description": "在执行每个块之前添加延迟"
       }
+      "tabLoadTimeout": {
+        "title": "标签页载入超时",
+        "description": "加载标签的最大时间，以毫秒为单位，通过0来禁用超时。"
+      },
     }
   },
   "collection": {
@@ -294,6 +320,7 @@
       "no-clipboard-acces": "无权访问剪贴板",
       "browser-not-supported": "{browser} 浏览器不支持此功能",
       "element-not-found": "找不到含 \"{selector}\" 选择器的元素.",
+      "no-permission": "没有执行此操作的 \"{permission}\" 权限",
       "not-iframe": "含 \"{selector}\" 选择器的元素并不是一个 Iframe 元素",
       "iframe-not-found": "找不到含 \"{selector}\" 选择器的 Iframe 元素.",
       "workflow-infinite-loop": "无法执行工作流以防止无限循环",
