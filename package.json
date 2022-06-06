@@ -29,7 +29,7 @@
     "*.{js,ts,vue}": "eslint --fix"
   },
   "dependencies": {
-    "@codemirror/basic-setup": "^0.19.1",
+    "@codemirror/basic-setup": "^0.20.0",
     "@codemirror/fold": "^0.19.3",
     "@codemirror/lang-javascript": "^0.19.7",
     "@codemirror/lang-json": "^0.19.2",
