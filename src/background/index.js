@@ -108,6 +108,9 @@ const workflow = {
                 status === 'success' ? 'Successfully' : 'Failed'
               } to run the "${name}" workflow`,
             });
+          })
+          .catch((error) => {
+            console.error(error);
           });
       });
 

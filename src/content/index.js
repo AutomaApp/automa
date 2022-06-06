@@ -136,11 +136,13 @@ function messageListener({ data, source }) {
   window.addEventListener('message', messageListener);
 
   let contextElement = null;
+  let $ctxTextSelection = '';
 
   if (isMainFrame) {
     shortcutListener();
     window.addEventListener('contextmenu', ({ target }) => {
       contextElement = target;
+      $ctxTextSelection = window.getSelection().toString();
     });
     // window.addEventListener('load', elementObserver);
   }
@@ -167,9 +169,11 @@ function messageListener({ data, source }) {
           }
           case 'context-element': {
             let $ctxElSelector = '';
-            const $ctxTextSelection = window.getSelection().toString() || '';
 
-            if (contextElement) $ctxElSelector = finder(contextElement);
+            if (contextElement) {
+              $ctxElSelector = finder(contextElement);
+              contextElement = null;
+            }
 
             resolve({ $ctxElSelector, $ctxTextSelection });
             break;

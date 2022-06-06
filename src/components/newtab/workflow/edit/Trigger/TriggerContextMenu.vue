@@ -1,6 +1,6 @@
 <template>
   <div class="mt-4">
-    <template v-if="!permission.has.contextMenus">
+    <template v-if="!permission.has[permissionName]">
       <p>
         {{ t('workflow.blocks.trigger.contextMenus.noPermission') }}
       </p>
@@ -74,9 +74,10 @@ const types = [
   'selection',
   'video',
 ];
+const permissionName = BROWSER_TYPE === 'firefox' ? 'menus' : 'contextMenus';
 
 const { t } = useI18n();
-const permission = useHasPermissions(['contextMenus']);
+const permission = useHasPermissions([permissionName]);
 
 const workflow = inject('workflow');
 

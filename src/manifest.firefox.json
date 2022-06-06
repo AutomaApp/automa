@@ -52,12 +52,12 @@
   "optional_permissions": [
     "clipboardRead",
     "downloads",
-    "menus",
     "notifications"
   ],
   "permissions": [
     "tabs",
     "proxy",
+    "menus",
     "alarms",
     "storage",
     "webNavigation",
