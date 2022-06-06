@@ -94,9 +94,7 @@
         :label="t('workflow.blocks.loop-data.maxLoop.label')"
         :title="t('workflow.blocks.loop-data.maxLoop.title')"
         class="w-full mt-2"
-        min="0"
-        type="number"
-        @change="updateData({ maxLoop: +$event || 0 })"
+        @change="updateData({ maxLoop: $event })"
       />
       <ui-input
         v-if="!data.resumeLastWorkflow"

@@ -687,7 +687,7 @@ export const tasks = {
       'referenceKey',
       'elementSelector',
     ],
-    autocomplete: ['variableName', 'loopId'],
+    autocomplete: ['variableName', 'loopId', 'maxLoop'],
     data: {
       disableBlock: false,
       loopId: '',
