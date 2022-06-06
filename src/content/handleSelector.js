@@ -1,5 +1,5 @@
 import FindElement from '@/utils/FindElement';
-import { visibleInViewport } from '@/utils/helper';
+import { visibleInViewport, isXPath } from '@/utils/helper';
 
 /* eslint-disable consistent-return */
 
@@ -13,7 +13,9 @@ export function getDocumentCtx(frameSelector) {
   let documentCtx = document;
 
   if (frameSelector) {
-    documentCtx = document.querySelector(frameSelector)?.contentDocument;
+    const type = isXPath(frameSelector) ? 'xpath' : 'cssSelector';
+    const element = FindElement[type]({ selector: frameSelector });
+    documentCtx = element?.contentDocument;
   }
 
   return documentCtx;

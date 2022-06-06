@@ -24,7 +24,7 @@ async function forms(block) {
   if (data.multiple) {
     const promises = Array.from(elements).map(async (element) => {
       markElement(element, block);
-      await handleFormElement(element, data, eventResolve);
+      await handleFormElement(element, data);
     });
 
     await Promise.allSettled(promises);

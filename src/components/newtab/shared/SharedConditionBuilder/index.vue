@@ -20,6 +20,7 @@
           <draggable
             v-model="conditions[index].conditions"
             item-key="id"
+            handle=".handle"
             group="conditions"
             class="space-y-2"
             @end="onDragEnd"
@@ -49,7 +50,10 @@
                       class="ml-4 group-hover:visible invisible"
                       @click.stop="deleteCondition(index, inputsIndex)"
                     />
-                    <v-remixicon name="mdiDrag" class="ml-2 cursor-move" />
+                    <v-remixicon
+                      name="mdiDrag"
+                      class="ml-2 cursor-move handle"
+                    />
                   </template>
                   <div class="space-y-2 px-4 py-2">
                     <condition-builder-inputs
@@ -124,17 +128,23 @@ const conditions = ref(cloneDeep(props.modelValue));
 function getDefaultValues(items = ['value', 'compare', 'value']) {
   const defaultValues = {
     value: {
-      id: nanoid(),
       type: 'value',
       category: 'value',
       data: { value: '' },
     },
-    compare: { id: nanoid(), category: 'compare', type: 'eq' },
+    compare: { category: 'compare', type: 'eq' },
   };
+  const selectValue = (type) =>
+    cloneDeep({
+      ...defaultValues[type],
+      id: nanoid(),
+    });
 
-  if (typeof items === 'string') return defaultValues[items];
+  if (typeof items === 'string') {
+    return selectValue(items);
+  }
 
-  return items.map((item) => defaultValues[item]);
+  return items.map((item) => selectValue(item));
 }
 function getConditionText({ category, type, data }) {
   if (category === 'compare') {

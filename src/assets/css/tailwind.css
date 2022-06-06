@@ -93,3 +93,7 @@ pre {
 .ProseMirror img.ProseMirror-selectednode {
   outline: 3px solid #68CEF8;
 }
+
+.input-label {
+  @apply ml-1 text-sm text-gray-600 dark:text-gray-200;
+}

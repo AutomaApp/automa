@@ -445,7 +445,7 @@ async function updateHostedWorkflow() {
       );
     }
 
-    const response = await fetchApi(`/me/workflows?id=${workflowId}`, {
+    const response = await fetchApi(`/me/workflows/${workflowId}`, {
       method: 'PUT',
       keepalive: true,
       body: JSON.stringify({
@@ -480,12 +480,9 @@ function unpublishSharedWorkflow() {
       try {
         workflowData.isUnpublishing = true;
 
-        const response = await fetchApi(
-          `/me/workflows/shared?workflowId=${workflowId}`,
-          {
-            method: 'DELETE',
-          }
-        );
+        const response = await fetchApi(`/me/workflows/shared/${workflowId}`, {
+          method: 'DELETE',
+        });
 
         if (response.status !== 200) {
           throw new Error(response.statusText);
@@ -526,7 +523,7 @@ async function saveUpdatedSharedWorkflow() {
       }
     });
 
-    const url = `/me/workflows/shared?workflowId=${workflowId}`;
+    const url = `/me/workflows/shared/${workflowId}`;
     const response = await fetchApi(url, {
       method: 'PUT',
       body: JSON.stringify(payload),
@@ -621,11 +618,11 @@ async function setAsHostWorkflow(isHost) {
       workflowPaylod.drawflow = parseJSON(workflow.value.drawflow, null);
       delete workflowPaylod.extVersion;
 
-      url += `?type=host`;
+      url += `/host`;
       payload = {
         method: 'POST',
         body: JSON.stringify({
-          workflows: workflowPaylod,
+          workflow: workflowPaylod,
         }),
       };
     } else {

@@ -12,6 +12,14 @@
     "text1": "Automa has been updated to v{version},",
     "text2": "see what's new."
   },
+  "workflows": {
+    "folder": {
+      "new": "New folder",
+      "name": "Folder name",
+      "delete": "Delete folder",
+      "rename": "Rename folder"
+    }
+  },
   "auth": {
     "title": "Auth",
     "signIn": "Sign in",
@@ -106,6 +114,9 @@
     "clickToEnable": "Click to enable",
     "toggleSidebar": "Toggle sidebar",
     "cantEdit": "Can't edit shared workflow",
+    "searchBlocks": {
+      "title": "Search blocks in the editor"
+    },
     "conditionBuilder": {
       "title": "Condition builder",
       "add": "Add condition",
@@ -193,6 +204,15 @@
     "settings": {
       "saveLog": "Save workflow log",
       "executedBlockOnWeb": "Show executed block on web page",
+      "notification": {
+        "title": "Workflow notification",
+        "description": "Show workflow status(success or failed) after it executed",
+        "noPermission": "Automa requires \"notifications\" permission to make this work"
+      },
+      "publicId": {
+        "title": "Workflow public Id",
+        "description": "Use this public id to execute workflow using JS custom event"
+      },
       "defaultColumn": {
         "title": "Insert into the default column",
         "description": "Insert data to the default column if there's no column selected in the block",
@@ -300,6 +320,7 @@
       "no-clipboard-acces": "Don't have permission to access clipboard",
       "browser-not-supported": "This feature not supported in {browser} browser",
       "element-not-found": "Can't find an element with \"{selector}\" selector.",
+      "no-permission": "Don't have \"{permission}\" permission to do this action",
       "not-iframe": "Element with \"{selector}\" selector is not an Iframe element",
       "iframe-not-found": "Can't find an Iframe element with \"{selector}\" selector.",
       "workflow-infinite-loop": "Can't execute the workflow to prevent an infinite loop",

@@ -7,7 +7,7 @@ export function useHasPermissions(permissions) {
   function handlePermission(name, status) {
     hasPermissions[name] = status;
   }
-  function request() {
+  function request(needReload = false) {
     const reqPermissions = permissions.filter(
       (permission) => !hasPermissions[permission]
     );
@@ -20,6 +20,14 @@ export function useHasPermissions(permissions) {
         reqPermissions.forEach((permission) => {
           handlePermission(permission, true);
         });
+
+        if (needReload) {
+          alert('Automa needs to reload to make this feature work');
+          browser.runtime.reload();
+        }
+      })
+      .catch((error) => {
+        console.error(error);
       });
   }
 

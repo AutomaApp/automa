@@ -1,9 +1,10 @@
 import objectPath from 'object-path';
 import { isWhitespace } from '@/utils/helper';
 import { executeWebhook } from '@/utils/webhookUtil';
+import mustacheReplacer from '@/utils/referenceData/mustacheReplacer';
 import { getBlockConnection } from '../helper';
 
-export async function webhook({ data, outputs }) {
+export async function webhook({ data, outputs }, { refData }) {
   const nextBlockId = getBlockConnection({ outputs });
   const fallbackOutput = getBlockConnection({ outputs }, 2);
 
@@ -11,7 +12,14 @@ export async function webhook({ data, outputs }) {
     if (isWhitespace(data.url)) throw new Error('url-empty');
     if (!data.url.startsWith('http')) throw new Error('invalid-url');
 
-    const response = await executeWebhook(data);
+    const newHeaders = [];
+    data.headers.forEach(({ value, name }) => {
+      const newValue = mustacheReplacer(value, refData).value;
+
+      newHeaders.push({ name, value: newValue });
+    });
+
+    const response = await executeWebhook({ ...data, headers: newHeaders });
 
     if (!response.ok) {
       if (fallbackOutput.connections.length > 0) {

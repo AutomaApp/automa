@@ -1,39 +1,14 @@
-import browser from 'webextension-polyfill';
+import { elementSelectorInstance } from '../utils';
 import initElementSelector from './main';
 import injectAppStyles from '../injectAppStyles';
 import selectorFrameContext from './selectorFrameContext';
 
-function elementSelectorInstance() {
-  const rootElementExist = document.querySelector(
-    '#app-container.automa-element-selector'
-  );
-
-  if (rootElementExist) {
-    rootElementExist.style.display = 'block';
-
-    return true;
-  }
-
-  return false;
-}
-
 (async function () {
-  browser.runtime.onMessage.addListener((data) => {
-    return new Promise((resolve) => {
-      if (data.type === 'automa-element-selector') {
-        elementSelectorInstance();
-
-        resolve(true);
-      }
-    });
-  });
-
   try {
     const isMainFrame = window.self === window.top;
 
     if (isMainFrame) {
       const isAppExists = elementSelectorInstance();
-
       if (isAppExists) return;
 
       const rootElement = document.createElement('div');

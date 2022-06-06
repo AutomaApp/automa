@@ -2,10 +2,12 @@ import browser from 'webextension-polyfill';
 import dayjs from '@/lib/dayjs';
 import { MessageListener } from '@/utils/message';
 import { parseJSON, findTriggerBlock } from '@/utils/helper';
+import { fetchApi } from '@/utils/api';
 import getFile from '@/utils/getFile';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
 import {
   registerSpecificDay,
+  registerContextMenu,
   registerWorkflowTrigger,
 } from '../utils/workflowTrigger';
 import WorkflowState from './WorkflowState';
@@ -15,7 +17,7 @@ import blocksHandler from './workflowEngine/blocksHandler';
 import WorkflowLogger from './WorkflowLogger';
 
 const validateUrl = (str) => str?.startsWith('http');
-const storage = {
+const browserStorage = {
   async get(key) {
     try {
       const result = await browser.storage.local.get(key);
@@ -34,9 +36,21 @@ const storage = {
     }
   },
 };
+const localStateStorage = {
+  get(key) {
+    const data = parseJSON(localStorage.getItem(key), null);
+
+    return data;
+  },
+  set(key, value) {
+    const data = typeof value === 'object' ? JSON.stringify(value) : value;
+
+    return localStorage.setItem(key, data);
+  },
+};
 const workflow = {
-  states: new WorkflowState({ storage }),
-  logger: new WorkflowLogger({ storage }),
+  states: new WorkflowState({ storage: localStateStorage }),
+  logger: new WorkflowLogger({ storage: browserStorage }),
   async get(workflowId) {
     const { workflows, workflowHosts } = await browser.storage.local.get([
       'workflows',
@@ -78,6 +92,37 @@ const workflow = {
       engine.resume(options.state);
     } else {
       engine.init();
+      engine.on('destroyed', ({ id, status }) => {
+        browser.permissions
+          .contains({ permissions: ['notifications'] })
+          .then((hasPermission) => {
+            if (!hasPermission || !workflowData.settings.notification) return;
+
+            const name = workflowData.name.slice(0, 32);
+
+            browser.notifications.create(`logs:${id}`, {
+              type: 'basic',
+              iconUrl: browser.runtime.getURL('icon-128.png'),
+              title: status === 'success' ? 'Success' : 'Error',
+              message: `${
+                status === 'success' ? 'Successfully' : 'Failed'
+              } to run the "${name}" workflow`,
+            });
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      });
+
+      const lastCheckStatus = localStorage.getItem('check-status');
+      const isSameDay = dayjs().isSame(lastCheckStatus, 'day');
+      if (!isSameDay) {
+        fetchApi('/status')
+          .then((response) => response.json())
+          .then(() => {
+            localStorage.setItem('check-status', new Date());
+          });
+      }
     }
 
     return engine;
@@ -112,7 +157,7 @@ async function openDashboard(url) {
     if (tab) {
       await browser.tabs.update(tab.id, tabOptions);
 
-      if (tab.url.includes('workflows/')) {
+      if (tabOptions.url.includes('workflows/')) {
         await browser.tabs.reload(tab.id);
       }
     } else {
@@ -126,7 +171,7 @@ async function checkWorkflowStates() {
   const states = await workflow.states.get();
   // const sessionStates = parseJSON(sessionStorage.getItem('workflowState'), {});
 
-  Object.values(states || {}).forEach((state) => {
+  states.forEach((state) => {
     /* Enable when using manifest 3 */
     // const resumeWorkflow =
     //   !state.isDestroyed && objectHasKey(sessionStates, state.id);
@@ -139,18 +184,18 @@ async function checkWorkflowStates() {
         });
       });
     } else {
-      delete states[state.id];
+      workflow.states.states.delete(state.id);
     }
   });
 
-  await storage.set('workflowState', states);
+  await browserStorage.set('workflowState', states);
 }
 checkWorkflowStates();
 async function checkVisitWebTriggers(tabId, tabUrl) {
   const workflowState = await workflow.states.get(({ state }) =>
     state.tabIds.includes(tabId)
   );
-  const visitWebTriggers = await storage.get('visitWebTriggers');
+  const visitWebTriggers = await browserStorage.get('visitWebTriggers');
   const triggeredWorkflow = visitWebTriggers?.find(({ url, isRegex, id }) => {
     if (url.trim() === '') return false;
 
@@ -168,7 +213,7 @@ async function checkVisitWebTriggers(tabId, tabUrl) {
 async function checkRecordingWorkflow(tabId, tabUrl) {
   if (!validateUrl(tabUrl)) return;
 
-  const isRecording = await storage.get('isRecording');
+  const isRecording = await browserStorage.get('isRecording');
   if (!isRecording) return;
 
   await browser.tabs.executeScript(tabId, {
@@ -302,6 +347,41 @@ browser.alarms.onAlarm.addListener(async ({ name }) => {
   }
 });
 
+const contextMenu =
+  BROWSER_TYPE === 'firefox' ? browser.menus : browser.contextMenus;
+if (contextMenu && contextMenu.onClicked) {
+  contextMenu.onClicked.addListener(
+    async ({ parentMenuItemId, menuItemId }, tab) => {
+      try {
+        if (parentMenuItemId !== 'automaContextMenu') return;
+
+        const message = await browser.tabs.sendMessage(tab.id, {
+          frameId: 0,
+          type: 'context-element',
+        });
+        const workflowData = await workflow.get(menuItemId);
+
+        workflow.execute(workflowData, {
+          data: {
+            variables: message,
+          },
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  );
+}
+
+if (browser.notifications && browser.notifications.onClicked) {
+  browser.notifications.onClicked.addListener((notificationId) => {
+    if (notificationId.startsWith('logs')) {
+      const { 1: logId } = notificationId.split(':');
+      openDashboard(`/logs/${logId}`);
+    }
+  });
+}
+
 browser.runtime.onInstalled.addListener(async ({ reason }) => {
   try {
     if (reason === 'install') {
@@ -334,9 +414,13 @@ browser.runtime.onInstalled.addListener(async ({ reason }) => {
           workflowTrigger = findTriggerBlock(flows)?.data;
         }
 
-        if (!alarmTypes.includes(workflowTrigger.type)) return;
+        const triggerType = workflowTrigger?.type;
 
-        registerWorkflowTrigger(id, { data: workflowTrigger });
+        if (alarmTypes.includes(triggerType)) {
+          registerWorkflowTrigger(id, { data: workflowTrigger });
+        } else if (triggerType === 'context-menu') {
+          registerContextMenu(id, workflowTrigger);
+        }
       }
     }
   } catch (error) {
@@ -418,7 +502,13 @@ message.on('collection:execute', (collection) => {
   engine.init();
 });
 
-message.on('workflow:execute', (workflowData) => {
+message.on('workflow:execute', (workflowData, sender) => {
+  if (workflowData.includeTabId) {
+    if (!workflowData.options) workflowData.options = {};
+
+    workflowData.options.tabId = sender.tab.id;
+  }
+
   workflow.execute(workflowData, workflowData?.options || {});
 });
 message.on('workflow:stop', (id) => workflow.states.stop(id));

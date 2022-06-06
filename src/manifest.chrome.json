@@ -35,6 +35,7 @@
     },
     {
       "matches": [
+        "http://localhost/*",
         "*://*.automa.site/*",
         "*://automa.vercel.app/*"
       ],
@@ -46,7 +47,9 @@
   ],
   "optional_permissions": [
     "clipboardRead",
-    "downloads"
+    "downloads",
+    "contextMenus",
+    "notifications"
   ],
   "permissions": [
     "tabs",

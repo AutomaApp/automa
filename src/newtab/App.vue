@@ -83,10 +83,12 @@
 import { ref, shallowReactive, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
 import { compare } from 'compare-versions';
 import browser from 'webextension-polyfill';
 import { useTheme } from '@/composable/theme';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
+import { parseJSON } from '@/utils/helper';
 import { fetchApi, getSharedWorkflows, getUserWorkflows } from '@/utils/api';
 import dayjs from '@/lib/dayjs';
 import Log from '@/models/log';
@@ -96,6 +98,7 @@ import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 const { t } = useI18n();
 const store = useStore();
 const theme = useTheme();
+const route = useRoute();
 
 theme.init();
 
@@ -251,16 +254,6 @@ function handleStorageChanged(change) {
       data: change.logs.newValue,
     });
   }
-
-  if (change.workflowState) {
-    store.commit('updateState', {
-      key: 'workflowState',
-      value: Object.values(change.workflowState.newValue || {}).filter(
-        ({ isDestroyed, parentState }) =>
-          !isDestroyed && !parentState?.isCollection
-      ),
-    });
-  }
 }
 function closeModal() {
   let value = true;
@@ -295,6 +288,20 @@ window.addEventListener('beforeunload', () => {
   browser.storage.onChanged.removeListener(handleStorageChanged);
 });
 
+const includeRoutes = ['home', 'workflows-details'];
+window.addEventListener('storage', ({ key, newValue }) => {
+  if (key !== 'workflowState' || !includeRoutes.includes(route.name)) return;
+
+  const states = parseJSON(newValue, {});
+  store.commit('updateState', {
+    key: 'workflowState',
+    value: Object.values(states).filter(
+      ({ isDestroyed, parentState }) =>
+        !isDestroyed && !parentState?.isCollection
+    ),
+  });
+});
+
 (async () => {
   try {
     const { isFirstTime } = await browser.storage.local.get('isFirstTime');
@@ -309,7 +316,12 @@ window.addEventListener('beforeunload', () => {
     }
 
     await Promise.allSettled([
-      store.dispatch('retrieve', ['workflows', 'logs', 'collections']),
+      store.dispatch('retrieve', [
+        'workflows',
+        'logs',
+        'collections',
+        'folders',
+      ]),
       store.dispatch('retrieveWorkflowState'),
     ]);
 

@@ -40,7 +40,7 @@ async function loopData({ data, id, outputs }, { refData }) {
             name: 'loop-data',
             data: {
               multiple: true,
-              max: data.maxLoop,
+              max: +data.maxLoop || 0,
               selector: data.elementSelector,
               findBy: isXPath(data.elementSelector) ? 'xpath' : 'cssSelector',
             },
@@ -74,7 +74,7 @@ async function loopData({ data, id, outputs }, { refData }) {
         maxLoop:
           data.loopThrough === 'numbers'
             ? data.toNumber + 1 - data.fromNumber
-            : data.maxLoop || currLoopData.length,
+            : +data.maxLoop || currLoopData.length,
       };
       /* eslint-disable-next-line */
       refData.loopData[data.loopId] = {

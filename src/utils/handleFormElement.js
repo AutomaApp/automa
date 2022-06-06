@@ -52,10 +52,9 @@ function formEvent(element, data) {
 async function inputText({ data, element, isEditable }) {
   const elementKey = isEditable ? 'textContent' : 'value';
 
-  if (data.delay > 0) {
+  if (data.delay > 0 && !document.hidden) {
     for (let index = 0; index < data.value.length; index += 1) {
       const currentChar = data.value[index];
-
       element[elementKey] += currentChar;
 
       if (elementKey === 'value') reactJsEvent(element, element.value);

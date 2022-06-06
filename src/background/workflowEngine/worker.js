@@ -1,6 +1,5 @@
 import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
-import cloneDeep from 'lodash.clonedeep';
 import { toCamelCase, sleep, objectHasKey, isObject } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
 import referenceData from '@/utils/referenceData';
@@ -84,7 +83,7 @@ class Worker {
       if (index === 0) {
         this.executeBlock(this.engine.blocks[node], prevBlockData);
       } else {
-        const state = cloneDeep({
+        const state = structuredClone({
           windowId: this.windowId,
           loopList: this.loopList,
           activeTab: this.activeTab,

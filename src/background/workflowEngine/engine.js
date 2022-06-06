@@ -38,6 +38,8 @@ class WorkflowEngine {
       },
     };
 
+    this.logHistoryId = 0;
+
     let variables = {};
     let { globalData } = workflow;
 
@@ -143,6 +145,7 @@ class WorkflowEngine {
 
     this.states
       .add(this.id, {
+        id: this.id,
         state: this.state,
         workflowId: this.workflow.id,
         parentState: this.parentWorkflow,
@@ -170,15 +173,15 @@ class WorkflowEngine {
   }
 
   addLogHistory(detail) {
-    if (
-      !this.saveLog &&
-      (this.history.length >= 1001 || detail.name === 'blocks-group') &&
-      detail.type !== 'error'
-    )
-      return;
+    if (detail.name === 'blocks-group') return;
 
-    const historyId = nanoid();
-    detail.id = historyId;
+    const isLimit = this.history.length >= 1001;
+    const notErrorLog = detail.type !== 'error';
+
+    if ((!this.saveLog || isLimit) && notErrorLog) return;
+
+    this.logHistoryId += 1;
+    detail.id = this.logHistoryId;
 
     if (
       detail.replacedValue ||
@@ -188,7 +191,7 @@ class WorkflowEngine {
         JSON.stringify(this.referenceData)
       );
 
-      this.historyCtxData[historyId] = {
+      this.historyCtxData[this.logHistoryId] = {
         referenceData: {
           loopData,
           variables,
@@ -327,15 +330,18 @@ class WorkflowEngine {
 
   async updateState(data) {
     const state = {
-      ...this.state,
       ...data,
       tabIds: [],
       currentBlock: [],
+      name: this.workflow.name,
+      startedTimestamp: this.startedTimestamp,
     };
 
     this.workers.forEach((worker) => {
+      const { id, name } = worker.currentBlock;
+
+      state.currentBlock.push({ id, name });
       state.tabIds.push(worker.activeTab.id);
-      state.currentBlock.push(worker.currentBlock);
     });
 
     await this.states.update(this.id, { state });
@@ -356,20 +362,6 @@ class WorkflowEngine {
     (this.eventListeners[name] = this.eventListeners[name] || []).push(
       listener
     );
-  }
-
-  get state() {
-    const keys = ['columns', 'referenceData', 'startedTimestamp'];
-    const state = {
-      name: this.workflow.name,
-      icon: this.workflow.icon,
-    };
-
-    keys.forEach((key) => {
-      state[key] = this[key];
-    });
-
-    return state;
   }
 }
 

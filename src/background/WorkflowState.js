@@ -5,27 +5,13 @@ class WorkflowState {
     this.key = key;
     this.storage = storage;
 
-    this.cache = null;
+    this.states = new Map();
     this.eventListeners = {};
   }
 
-  async _updater(callback, event) {
-    try {
-      const storageStates = await this.get();
-      const states = callback(storageStates);
-
-      await this.storage.set(this.key, states);
-
-      if (event) {
-        this.dispatchEvent(event.name, event.params);
-      }
-
-      return states;
-    } catch (error) {
-      console.error(error);
-
-      return [];
-    }
+  _saveToStorage() {
+    const states = Object.fromEntries(this.states);
+    return this.storage.set(this.key, states);
   }
 
   dispatchEvent(name, params) {
@@ -53,77 +39,48 @@ class WorkflowState {
   }
 
   async get(stateId) {
-    try {
-      let states = this.cache ?? ((await this.storage.get(this.key)) || {});
+    let { states } = this;
 
-      if (Array.isArray(states)) {
-        states = {};
-        await this.storage.set(this.key, {});
-      }
-
-      if (typeof stateId === 'function') {
-        states = Object.values(states).find(stateId);
-      } else if (stateId) {
-        states = states[stateId];
-      } else {
-        this.cache = states;
-      }
-
-      return states;
-    } catch (error) {
-      console.error(error);
-
-      return null;
+    if (typeof stateId === 'function') {
+      states = Array.from(states.entries()).find(({ 1: state }) =>
+        stateId(state)
+      );
+    } else if (stateId) {
+      states = this.states.get(stateId);
     }
+
+    return states;
   }
 
-  add(id, data = {}) {
-    return this._updater((states) => {
-      states[id] = {
-        id,
-        isPaused: false,
-        isDestroyed: false,
-        ...data,
-      };
-
-      return states;
-    });
+  async add(id, data = {}) {
+    this.states.set(id, data);
+    await this._saveToStorage(this.key);
   }
 
   async stop(id) {
+    const isStateExist = await this.get(id);
+    if (!isStateExist) {
+      await this.delete(id);
+      this.dispatchEvent('stop', id);
+      return id;
+    }
+
     await this.update(id, { isDestroyed: true });
-
     this.dispatchEvent('stop', id);
-
     return id;
   }
 
-  update(id, data = {}) {
-    const event = {
-      name: 'update',
-      params: { id, data },
-    };
-
-    return this._updater((states) => {
-      if (states[id]) {
-        states[id] = { ...states[id], ...data };
-      }
-
-      return states;
-    }, event);
+  async update(id, data = {}) {
+    const state = this.states.get(id);
+    this.states.set(id, { ...state, ...data });
+    this.dispatchEvent('update', { id, data });
+    await this._saveToStorage();
   }
 
-  delete(id) {
-    const event = {
-      name: 'delete',
-      params: id,
-    };
-
-    return this._updater((states) => {
-      delete states[id];
-
-      return states;
-    }, event);
+  async delete(id) {
+    this.states.delete(id);
+    this.dispatchEvent('delete', id);
+    await this._saveToStorage();
   }
 }
 

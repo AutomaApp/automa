@@ -26,6 +26,27 @@ export const tasks = {
       activeInInput: false,
       isUrlRegex: false,
       days: [],
+      contextMenuName: '',
+      contextTypes: [],
+      observeElement: {
+        selector: '',
+        baseSelector: '',
+        matchPattern: '',
+        targetOptions: {
+          subtree: false,
+          childList: true,
+          attributes: false,
+          attributeFilter: [],
+          characterData: false,
+        },
+        baseElOptions: {
+          subtree: false,
+          childList: true,
+          attributes: false,
+          attributeFilter: [],
+          characterData: false,
+        },
+      },
     },
   },
   'execute-workflow': {
@@ -140,7 +161,9 @@ export const tasks = {
     outputs: 1,
     maxConnection: 1,
     allowedInputs: true,
+    refDataKeys: ['host', 'port', 'scheme'],
     data: {
+      description: '',
       disableBlock: false,
       scheme: 'https',
       host: '',
@@ -664,7 +687,7 @@ export const tasks = {
       'referenceKey',
       'elementSelector',
     ],
-    autocomplete: ['variableName', 'loopId'],
+    autocomplete: ['variableName', 'loopId', 'maxLoop'],
     data: {
       disableBlock: false,
       loopId: '',
@@ -959,6 +982,27 @@ export const tasks = {
       flowBlockId: '',
     },
   },
+  notification: {
+    name: 'Notification',
+    description: 'Display a notification',
+    icon: 'riNotification3Line',
+    editComponent: 'EditNotification',
+    component: 'BlockBasic',
+    category: 'general',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    refDataKeys: ['message', 'title', 'iconUrl', 'imageUrl'],
+    data: {
+      disableBlock: false,
+      description: '',
+      message: '',
+      iconUrl: '',
+      imageUrl: '',
+      title: 'Hello world!',
+    },
+  },
 };
 
 export const categories = {
@@ -1035,6 +1079,15 @@ export const workflowCategories = {
   automation: 'Automation',
   productivity: 'Productivity',
 };
+
+export const excludeOnError = [
+  'delay',
+  'webhook',
+  'trigger',
+  'while-loop',
+  'conditions',
+  'element-exists',
+];
 
 export const contentTypes = [
   { name: 'application/json', value: 'json' },

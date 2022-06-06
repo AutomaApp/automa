@@ -95,7 +95,6 @@ function onChange({ target }) {
       id: 'trigger-event',
       data: {
         selector,
-        description,
         eventName: 'change',
         eventType: 'event',
         waitForSelector: true,

@@ -133,7 +133,7 @@ const store = createStore({
     async fetchWorkflowHosts({ commit, state }, hosts) {
       if (!hosts || hosts.length === 0) return null;
 
-      const response = await fetchApi('/host', {
+      const response = await fetchApi('/workflows/hosted', {
         method: 'POST',
         body: JSON.stringify({ hosts }),
       });

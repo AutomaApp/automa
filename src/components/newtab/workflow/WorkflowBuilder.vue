@@ -34,6 +34,7 @@
             <v-remixicon name="riAddLine" />
           </button>
         </div>
+        <workflow-builder-search-blocks :editor="editor" />
       </div>
       <slot v-bind="{ editor }"></slot>
     </div>
@@ -87,12 +88,14 @@ import {
   getShortcut,
   getReadableShortcut,
 } from '@/composable/shortcut';
-import { tasks } from '@/utils/shared';
+import { tasks, excludeOnError } from '@/utils/shared';
 import { parseJSON } from '@/utils/helper';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import drawflow from '@/lib/drawflow';
+import WorkflowBuilderSearchBlocks from './WorkflowBuilderSearchBlocks.vue';
 
 export default {
+  components: { WorkflowBuilderSearchBlocks },
   props: {
     data: {
       type: [Object, String],
@@ -248,6 +251,13 @@ export default {
           targetBlock = { ...tasks[block.id], id: block.id };
         }
 
+        const onErrorEnabled =
+          targetNode.data?.onError?.enable &&
+          !excludeOnError.includes(targetBlock.id);
+        const newNodeData = onErrorEnabled
+          ? { ...targetBlock.data, onError: targetNode.data.onError }
+          : targetBlock.data;
+
         const newNodeId = editor.value.addNode(
           targetBlock.id,
           targetBlock.inputs,
@@ -255,10 +265,15 @@ export default {
           targetNode.pos_x,
           targetNode.pos_y,
           targetBlock.id,
-          targetBlock.data,
+          newNodeData,
           targetBlock.component,
           'vue'
         );
+
+        if (onErrorEnabled && targetNode.data.onError.toDo === 'fallback') {
+          editor.value.addNodeOutput(newNodeId);
+        }
+
         const duplicateConnections = (nodeIO, type) => {
           if (block[type] === 0) return;
 
@@ -490,14 +505,6 @@ export default {
       editor.value.editor_mode = props.isShared ? 'fixed' : 'edit';
       editor.value.container.classList.toggle('is-shared', props.isShared);
     }
-    function refreshConnection() {
-      const nodes = document.querySelectorAll('#drawflow .drawflow-node');
-      nodes.forEach((node) => {
-        if (!node.id) return;
-
-        editor.value.updateConnectionNodes(node.id);
-      });
-    }
     function saveEditorState() {
       const editorStates =
         parseJSON(localStorage.getItem('editor-states'), {}) || {};
@@ -703,17 +710,6 @@ export default {
           ...store.state.settings.editor,
         },
       });
-
-      const editorStates =
-        parseJSON(localStorage.getItem('editor-states'), {}) || {};
-      const editorState = editorStates[workflowId];
-
-      if (editorState) {
-        editor.value.zoom = editorState.zoom;
-        editor.value.canvas_x = editorState.canvas_x;
-        editor.value.canvas_y = editorState.canvas_y;
-      }
-
       editor.value.start();
 
       emit('load', editor.value);
@@ -870,13 +866,16 @@ export default {
         }
       });
 
+      const editorStates =
+        parseJSON(localStorage.getItem('editor-states'), {}) || {};
+      const editorState = editorStates[workflowId];
+      if (editorState) {
+        const { canvas_x, canvas_y, zoom } = editorState;
+        editor.value.translate_to(canvas_x, canvas_y, zoom);
+      }
+
       checkWorkflowData();
       initSelectArea();
-
-      setTimeout(() => {
-        editor.value.zoom_refresh();
-        refreshConnection();
-      }, 500);
     });
     onBeforeUnmount(() => {
       const element = document.querySelector('#drawflow');

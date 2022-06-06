@@ -18,10 +18,10 @@
       <ui-list-item
         v-for="(item, index) in filteredItems"
         :id="`list-item-${index}`"
-        :key="getItem(item)"
+        :key="getItem(item, true)"
         :class="{ 'bg-box-transparent': state.activeIndex === index }"
         class="cursor-pointer"
-        @mousedown="selectItem(index)"
+        @mousedown="selectItem(index, true)"
         @mouseenter="state.activeIndex = index"
       >
         <slot name="item" :item="item">
@@ -56,6 +56,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  itemLabel: {
+    type: String,
+    default: '',
+  },
   triggerChar: {
     type: Array,
     default: () => [],
@@ -72,7 +76,14 @@ const props = defineProps({
   disabled: Boolean,
   hideEmpty: Boolean,
 });
-const emit = defineEmits(['update:modelValue', 'change', 'search']);
+const emit = defineEmits([
+  'update:modelValue',
+  'change',
+  'search',
+  'select',
+  'cancel',
+  'selected',
+]);
 
 let input = null;
 const { t } = useI18n();
@@ -86,7 +97,8 @@ const state = shallowReactive({
   inputChanged: false,
 });
 
-const getItem = (item) => item[props.itemLabel] || item;
+const getItem = (item, key) =>
+  item[key ? props.itemKey : props.itemLabel] || item;
 
 const filteredItems = computed(() => {
   if (!state.showPopover) return [];
@@ -185,7 +197,7 @@ function updateValue(value) {
   input.value = value;
   input.dispatchEvent(new Event('input'));
 }
-function selectItem(itemIndex) {
+function selectItem(itemIndex, selected) {
   let selectedItem = filteredItems.value[itemIndex];
 
   if (!selectedItem) return;
@@ -226,6 +238,13 @@ function selectItem(itemIndex) {
 
   updateValue(selectedItem);
 
+  if (selected) {
+    emit('selected', {
+      index: itemIndex,
+      item: filteredItems.value[itemIndex],
+    });
+  }
+
   if (isTriggerChar) {
     input.selectionEnd = caretPosition;
     const isNotTextarea = input.tagName !== 'TEXTAREA';
@@ -250,10 +269,11 @@ function handleKeydown(event) {
 
     event.preventDefault();
   } else if (event.key === 'Enter' && state.showPopover) {
-    selectItem(state.activeIndex);
+    selectItem(state.activeIndex, true);
 
     event.preventDefault();
   } else if (event.key === 'Escape') {
+    emit('cancel');
     state.showPopover = false;
   }
 }
@@ -299,6 +319,11 @@ watch(
         behavior: 'smooth',
       });
     }
+
+    emit('select', {
+      index: activeIndex,
+      item: filteredItems.value[activeIndex],
+    });
   }, 100)
 );
 watch(

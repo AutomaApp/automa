@@ -50,6 +50,7 @@
           v-model:selectList="state.selectList"
           :selector="state.elSelector"
           :selected-count="state.selectedElements.length"
+          @selector="updateSelector"
           @parent="selectElementPath('up')"
           @child="selectElementPath('down')"
         />
@@ -79,7 +80,9 @@
 </template>
 <script setup>
 import { reactive, ref, watch, inject, onMounted, onBeforeUnmount } from 'vue';
+import { debounce } from '@/utils/helper';
 import { finder } from '@medv/finder';
+import FindElement from '@/utils/FindElement';
 import SelectorQuery from '@/components/content/selector/SelectorQuery.vue';
 import SharedElementSelector from '@/components/content/shared/SharedElementSelector.vue';
 import SelectorElementsDetail from '@/components/content/selector/SelectorElementsDetail.vue';
@@ -119,6 +122,50 @@ const cardElementObserver = new ResizeObserver(([entry]) => {
   cardRect.width = width;
   cardRect.height = height;
 });
+
+const updateSelector = debounce((selector) => {
+  let frameSelector;
+  let elSelector = selector;
+
+  if (selector.includes('|>')) {
+    [frameSelector, elSelector] = selector.split(/\|>(.+)/);
+  }
+
+  const selectorType = state.selectorType === 'css' ? 'cssSelector' : 'xpath';
+
+  try {
+    if (frameSelector) {
+      const frame = FindElement[selectorType]({
+        selector: frameSelector,
+        multiple: false,
+      });
+      if (!['IFRAME', 'FRAME'].includes(frame.tagName)) return;
+
+      const { top, left } = frame.getBoundingClientRect();
+      frame.contentWindow.postMessage(
+        {
+          selectorType,
+          selector: elSelector,
+          type: 'automa:find-element',
+          frameRect: { top, left },
+        },
+        '*'
+      );
+      return;
+    }
+
+    const elements = FindElement[selectorType]({
+      selector: elSelector,
+      multiple: true,
+    });
+    state.selectedElements = Array.from(elements || []).map((el) =>
+      getElementRect(el, true)
+    );
+  } catch (error) {
+    console.error(error);
+    state.selectedElements = [];
+  }
+}, 200);
 
 function toggleHighlightElement({ index, highlight }) {
   state.selectedElements[index].highlight = highlight;
@@ -180,6 +227,11 @@ function selectElementPath(type) {
 function onMouseup() {
   if (state.isDragging) state.isDragging = false;
 }
+function onMessage({ data }) {
+  if (data.type !== 'automa:selected-elements') return;
+
+  state.selectedElements = data.elements;
+}
 function destroy() {
   rootElement.style.display = 'none';
 
@@ -203,12 +255,14 @@ function destroy() {
 function attachListeners() {
   cardElementObserver.observe(cardEl.value);
 
+  window.addEventListener('message', onMessage);
   window.addEventListener('mouseup', onMouseup);
   window.addEventListener('mousemove', onMousemove);
 }
 function detachListeners() {
   cardElementObserver.disconnect();
 
+  window.removeEventListener('message', onMessage);
   window.removeEventListener('mouseup', onMouseup);
   window.removeEventListener('mousemove', onMousemove);
 }

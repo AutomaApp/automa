@@ -1,9 +1,12 @@
 import browser from 'webextension-polyfill';
+import { finder } from '@medv/finder';
 import { toCamelCase } from '@/utils/helper';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
 import handleTestCondition from './handleTestCondition';
 import shortcutListener from './services/shortcutListener';
+// import elementObserver from './elementObserver';
+import { elementSelectorInstance } from './utils';
 
 const isMainFrame = window.self === window.top;
 
@@ -132,7 +135,17 @@ function messageListener({ data, source }) {
   window.isAutomaInjected = true;
   window.addEventListener('message', messageListener);
 
-  if (isMainFrame) shortcutListener();
+  let contextElement = null;
+  let $ctxTextSelection = '';
+
+  if (isMainFrame) {
+    shortcutListener();
+    window.addEventListener('contextmenu', ({ target }) => {
+      contextElement = target;
+      $ctxTextSelection = window.getSelection().toString();
+    });
+    // window.addEventListener('load', elementObserver);
+  }
 
   browser.runtime.onMessage.addListener((data) => {
     return new Promise((resolve, reject) => {
@@ -152,6 +165,17 @@ function messageListener({ data, source }) {
             const selectorInstance = elementSelectorInstance();
 
             resolve(selectorInstance);
+            break;
+          }
+          case 'context-element': {
+            let $ctxElSelector = '';
+
+            if (contextElement) {
+              $ctxElSelector = finder(contextElement);
+              contextElement = null;
+            }
+
+            resolve({ $ctxElSelector, $ctxTextSelection });
             break;
           }
           default:

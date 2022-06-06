@@ -1,3 +1,4 @@
+import FindElement from '@/utils/FindElement';
 import { getElementRect } from '../utils';
 import findElementList from './listSelector';
 import generateElementsSelector from './generateElementsSelector';
@@ -76,10 +77,42 @@ function resetElementSelector(data) {
     prevSelectedElement = null;
   }
 }
+function findElement({ selector, selectorType, frameRect }) {
+  const payload = {
+    elements: [],
+    type: 'automa:selected-elements',
+  };
+
+  try {
+    const elements = FindElement[selectorType]({ multiple: true, selector });
+
+    payload.elements = Array.from(elements || []).map((el) =>
+      getElementRectWithOffset(el, {
+        withAttributes: true,
+        click: true,
+        ...frameRect,
+      })
+    );
+  } catch (error) {
+    console.error(error);
+    payload.elements = [];
+  }
+
+  window.top.postMessage(payload, '*');
+}
 function onMessage({ data }) {
-  if (data.type === 'automa:get-element-rect') getElementsRect(data);
-  else if (data.type === 'automa:reset-element-selector')
-    resetElementSelector(data);
+  switch (data.type) {
+    case 'automa:get-element-rect':
+      getElementsRect(data);
+      break;
+    case 'automa:reset-element-selector':
+      resetElementSelector(data);
+      break;
+    case 'automa:find-element':
+      findElement(data);
+      break;
+    default:
+  }
 }
 
 export default function () {

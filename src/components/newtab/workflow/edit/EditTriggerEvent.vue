@@ -63,11 +63,11 @@ import { useI18n } from 'vue-i18n';
 import { eventList } from '@/utils/shared';
 import { toCamelCase } from '@/utils/helper';
 import EditInteractionBase from './EditInteractionBase.vue';
-import TriggerEventMouse from './TriggerEventMouse.vue';
-import TriggerEventTouch from './TriggerEventTouch.vue';
-import TriggerEventWheel from './TriggerEventWheel.vue';
-import TriggerEventInput from './TriggerEventInput.vue';
-import TriggerEventKeyboard from './TriggerEventKeyboard.vue';
+import TriggerEventMouse from './TriggerEvent/TriggerEventMouse.vue';
+import TriggerEventTouch from './TriggerEvent/TriggerEventTouch.vue';
+import TriggerEventWheel from './TriggerEvent/TriggerEventWheel.vue';
+import TriggerEventInput from './TriggerEvent/TriggerEventInput.vue';
+import TriggerEventKeyboard from './TriggerEvent/TriggerEventKeyboard.vue';
 
 const props = defineProps({
   data: {

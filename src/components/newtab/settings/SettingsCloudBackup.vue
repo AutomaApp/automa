@@ -287,15 +287,19 @@ async function backupWorkflowsToCloud(workflowId) {
         '__id',
       ]);
       delete workflow.extVersion;
+      workflow.drawflow =
+        typeof workflow.drawflow === 'string'
+          ? parseJSON(workflow.drawflow, { drawflow: { Home: { data: {} } } })
+          : workflow.drawflow;
 
-      if (!workflow.__id) delete workflow.__id;
+      if (!workflow.__id) workflow.__id = null;
 
       acc.push(workflow);
 
       return acc;
     }, []);
 
-    const response = await fetchApi('/me/workflows?type=backup', {
+    const response = await fetchApi('/me/workflows/backup', {
       method: 'POST',
       body: JSON.stringify({ workflows: workflowsPayload }),
     });

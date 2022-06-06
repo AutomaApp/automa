@@ -23,7 +23,7 @@
           </option>
         </optgroup>
       </ui-select>
-      <template v-for="(_, name) in item.data" :key="item.id + name + index">
+      <template v-for="(_, name) in item.data" :key="item.id + name">
         <v-remixicon
           v-if="name === 'code'"
           :title="t('workflow.conditionBuilder.topAwait')"

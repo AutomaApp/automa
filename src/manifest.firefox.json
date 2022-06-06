@@ -51,11 +51,13 @@
   ],
   "optional_permissions": [
     "clipboardRead",
-    "downloads"
+    "downloads",
+    "notifications"
   ],
   "permissions": [
     "tabs",
     "proxy",
+    "menus",
     "alarms",
     "storage",
     "webNavigation",

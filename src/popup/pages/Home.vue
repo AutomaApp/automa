@@ -211,25 +211,18 @@ function openDashboard(url) {
 }
 async function initElementSelector() {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+  const result = await browser.tabs.sendMessage(tab.id, {
+    type: 'automa-element-selector',
+  });
 
-  try {
-    await browser.tabs.sendMessage(tab.id, {
-      type: 'automa-element-selector',
+  if (!result) {
+    await browser.tabs.executeScript(tab.id, {
+      allFrames: true,
+      file: './elementSelector.bundle.js',
     });
-
-    window.close();
-  } catch (error) {
-    if (error.message.includes('Could not establish connection.')) {
-      await browser.tabs.executeScript(tab.id, {
-        allFrames: true,
-        file: './elementSelector.bundle.js',
-      });
-
-      initElementSelector();
-    }
-
-    console.error(error);
   }
+
+  window.close();
 }
 async function recordWorkflow(options = {}) {
   try {
@@ -264,7 +257,10 @@ async function recordWorkflow(options = {}) {
 
     const tabs = await browser.tabs.query({});
     for (const tab of tabs) {
-      if (tab.url.startsWith('http')) {
+      if (
+        tab.url.startsWith('http') &&
+        !tab.url.includes('chrome.google.com')
+      ) {
         await browser.tabs.executeScript(tab.id, {
           allFrames: true,
           file: 'recordWorkflow.bundle.js',

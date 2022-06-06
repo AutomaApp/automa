@@ -28,14 +28,18 @@ module.exports = {
     },
   },
   // add your custom rules here
+  globals: {
+    BROWSER_TYPE: true,
+  },
   rules: {
-    'no-undef': 'off',
+    camelcase: 'off',
     'no-await-in-loop': 'off',
     'no-console': ['warn', { allow: ['warn', 'error'] }],
     'no-underscore-dangle': 'off',
     'func-names': 'off',
     'import/no-named-default': 'off',
     'no-restricted-syntax': 'off',
+    'vue/multi-word-component-names': 'off',
     'import/extensions': [
       'error',
       'always',

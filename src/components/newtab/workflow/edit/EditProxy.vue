@@ -1,49 +1,52 @@
 <template>
   <div>
-    <div class="flex items-center mb-2">
-      <ui-select
-        :model-value="data.scheme"
-        label="Scheme"
-        class="mr-2"
-        @change="updateData({ scheme: $event })"
-      >
-        <option v-for="scheme in schemes" :key="scheme" :value="scheme">
-          {{ scheme.toUpperCase() }}
-        </option>
-      </ui-select>
-      <ui-input
-        :model-value="data.port"
-        label="Port"
-        placeholder="443"
-        class="flex-1"
-        type="number"
-        @change="updateData({ port: +$event })"
-      />
-    </div>
-    <ui-input
-      :model-value="data.host"
-      label="Host"
-      placeholder="1.2.3.4"
+    <ui-textarea
+      :model-value="data.description"
+      :placeholder="t('common.description')"
       class="w-full mb-2"
-      @change="updateData({ host: $event })"
+      @change="updateData({ description: $event })"
     />
     <ui-input
+      :model-value="data.host"
+      placeholder="socks5://1.2.3.4"
+      class="w-full mb-2"
+      @change="updateData({ host: $event })"
+    >
+      <template #label>
+        <span class="input-label"> Host </span>
+        <v-remixicon
+          title="Supported protocols: http, https, socks4, and socks5"
+          name="riInformationLine"
+          class="inline-block"
+          size="18"
+        />
+      </template>
+    </ui-input>
+    <ui-input
+      :model-value="data.port"
+      label="Port"
+      placeholder="443"
+      class="w-full mb-2"
+      @change="updateData({ port: +$event })"
+    />
+    <label for="input-bypass" class="input-label">
+      {{ t('workflow.blocks.proxy.bypass.label') }}
+      <a
+        href="https://developer.chrome.com/docs/extensions/reference/proxy/#bypass-list"
+        target="_blank"
+        rel="noopener"
+      >
+        &#128712;
+      </a>
+    </label>
+    <ui-textarea
+      id="input-bypass"
       :model-value="data.bypassList"
       placeholder="example1.com, example2.org"
       class="w-full"
       @change="updateData({ bypassList: $event })"
     >
-      <template #label>
-        {{ t('workflow.blocks.proxy.bypass.label') }}
-        <a
-          href="https://developer.chrome.com/docs/extensions/reference/proxy/#bypass-list"
-          target="_blank"
-          rel="noopener"
-        >
-          &#128712;
-        </a>
-      </template>
-    </ui-input>
+    </ui-textarea>
     <p class="text-gray-600 dark:text-gray-200 text-sm">
       {{ t('workflow.blocks.proxy.bypass.note') }}
     </p>
@@ -68,8 +71,6 @@ const props = defineProps({
 const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
-
-const schemes = ['http', 'https', 'socks4', 'socks5'];
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });

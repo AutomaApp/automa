@@ -1,6 +1,9 @@
 <template>
   <div class="on-block-error">
-    <ui-button @click="state.showModal = true">
+    <ui-button
+      :class="{ 'text-primary': state.data.enable }"
+      @click="state.showModal = true"
+    >
       <v-remixicon name="riShieldLine" class="-ml-1 mr-2" />
       <span>
         {{ t('workflow.blocks.base.onError.button') }}

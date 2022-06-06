@@ -14,7 +14,7 @@ function getLocalFile(path) {
       return;
     }
 
-    const fileUrl = path.startsWith('file://') ? path : `file://${path}`;
+    const fileUrl = path?.startsWith('file://') ? path : `file://${path}`;
 
     const xhr = new XMLHttpRequest();
     xhr.responseType = 'blob';

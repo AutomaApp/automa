@@ -13,6 +13,7 @@
         "title": "模块",
         "moveToGroup": "移动模块到模块组",
         "selector": "元素选择器",
+        "selectorOptions": "选择器选项",
         "timeout": "超时 (毫秒)",
         "toggle": {
           "enable": "启用模块",
@@ -82,6 +83,14 @@
         "specificFlow": "只继续一个特定的流程",
         "selectFlow": "选择流程"
       },
+      "notification": {
+        "name": "通知",
+        "description": "显示通知",
+        "title": "标题",
+        "message": "消息",
+        "imageUrl": "图片 URL (可选项)",
+        "iconUrl": "图标 URL (可选项)"
+      },
       "delete-data": {
         "name": "删除数据",
         "description": "删除表格或变量",
@@ -91,6 +100,13 @@
       "reload-tab": {
         "name": "重载标签页",
         "description": "重新加载激活的标签页"
+      },
+      "press-key": {
+        "name": "按键",
+        "description": "按键或组合键",
+        "target": "目标元素 (可选项)",
+        "key": "Key",
+        "detect": "Detect key"
       },
       "save-assets": {
         "name": "保存资源",
@@ -165,6 +181,12 @@
         "selectDay": "选择星期几",
         "timeExist": "你已经添加 {time} 在 {day}",
         "fixedDelay": "固定延迟",
+        "contextMenus": {
+          "noPermission": "此触发器需要 \"contextMenus\" 权限才能工作",
+          "grantPermission": "授予权限",
+          "appearIn": "会使",
+          "contextName": "工作流名称出现在上下文菜单中"
+        },
         "days": [
           "星期日",
           "星期一",
@@ -191,12 +213,44 @@
           "url": "URL 或 正则表达式",
           "shortcut": "快捷键"
         },
+        "element-change": {
+          "target": "要监测的目标元素",
+          "optionsInfo": "哪个元素突变会触发工作流",
+          "targetWebsite": "目标元素所在网站的匹配模式（点击查看更多匹配模式示例)",
+          "baseEl": {
+            "title": "基础元素 (可选项)",
+            "description": "当此元素发生变化时，Automa 将重新开始监测目标元素"
+          },
+          "subtree": {
+            "title": "包含子树",
+            "description": "将监测扩展到目标元素的整个子树"
+          },
+          "childList": {
+            "title": "子列表",
+            "description": "监测新的子元素的增加或现有子元素的删除"
+          },
+          "attributes": {
+            "title": "属性",
+            "description": "监测目标元素属性值的变化"
+          },
+          "attributeFilter": {
+            "title": "属性过滤器",
+            "separate": "使用逗号(,)来分隔属性名称",
+            "description": "只监测特定的属性（留空以监测所有属性）。"
+          },
+          "characterData": {
+            "title": "字符数据",
+            "description": "监测目标元素内的字符数据/文本的变化"
+          },
+        },
         "items": {
           "manual": "手动",
           "interval": "间隔",
           "date": "在特定日期",
+          "context-menu": "上下文菜单",
+          "element-change": "元素更改时",
           "specific-day": "在特定的星期几",
-          "visit-web": "访问网页时",
+          "visit-web": "访问网站时",
           "on-startup": "浏览器启动时",
           "keyboard-shortcut": "键盘快捷键"
         }
@@ -216,6 +270,7 @@
         "keysAsFirstRow": "使用主键作为第一行",
         "insertData": "插入数据",
         "valueInputOption": "输入选项值",
+        "insertDataOption": "插入数据选项",
         "rangeToSearch": "开始搜索的范围",
         "dataFrom": {
           "label": "数据来自",
@@ -230,7 +285,7 @@
         },
         "spreadsheetId": {
           "label": "电子表格 Id",
-          "link": "查看如何获取电子表格 ID"
+          "link": "查看如何获取电子表格 Id"
         },
         "range": {
           "label": "范围",
@@ -239,7 +294,8 @@
         "select": {
           "get": "获取电子表格单元格值",
           "getRange": "获取电子表格范围",
-          "update": "更新电子表格单元格值"
+          "update": "更新电子表格单元格值",
+          "append": "追加电子表格单元格值"
         }
       },
       "active-tab": {
@@ -359,6 +415,7 @@
         "customUserAgent": "使用自定义 User-Agent",
         "activeTab": "设为活动标签页",
         "tabToGroup": "标签页分组",
+        "waitTabLoaded": "等待标签页加载完毕",
         "updatePrevTab": {
           "title": "使用之前打开的新标签页而不是新建标签页",
           "text": "更新之前打开的标签页"
@@ -438,6 +495,7 @@
       "conditions": {
         "name": "条件",
         "add": "添加条件",
+        "retryConditions": "如果所有条件都不满足，则重试",
         "description": "条件模块",
         "refresh": "刷新条件连接",
         "fallbackTitle": "当所有比较不满足要求时执行",

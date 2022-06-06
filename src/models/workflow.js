@@ -20,6 +20,7 @@ class Workflow extends Model {
       name: this.string(''),
       icon: this.string('riGlobalLine'),
       data: this.attr(null),
+      folderId: this.attr(null),
       drawflow: this.attr(''),
       table: this.attr([]),
       dataColumns: this.attr([]),
@@ -31,10 +32,12 @@ class Workflow extends Model {
       isDisabled: this.boolean(false),
       isProtected: this.boolean(false),
       settings: this.attr({
+        publicId: '',
         blockDelay: 0,
         saveLog: true,
         debugMode: false,
         restartTimes: 3,
+        notification: true,
         reuseLastState: false,
         inputAutocomplete: true,
         onError: 'stop-workflow',
@@ -43,7 +46,7 @@ class Workflow extends Model {
         defaultColumnName: 'column',
       }),
       logs: this.hasMany(Log, 'workflowId'),
-      globalData: this.string('[{ "key": "value" }]'),
+      globalData: this.string('{\n\t"key": "value"\n}'),
     };
   }
 
