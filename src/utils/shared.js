@@ -367,7 +367,7 @@ export const tasks = {
       type: 'json',
       description: '',
       variableName: '',
-      addBOMHeader: false,
+      addBOMHeader: true,
       onConflict: 'uniquify',
       dataToExport: 'data-columns',
     },

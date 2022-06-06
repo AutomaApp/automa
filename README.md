@@ -54,7 +54,7 @@ yarn dev
 # Compiles and minifies for production for the chrome browser
 yarn build
 
-# Create a zip file from the build folder for the chrome browser
+# Create a zip file from the build folder
 yarn build:zip
 
 # Compiles and hot-reloads for development for the firefox browser
