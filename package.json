@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "1.12.0",
+  "version": "1.12.1",
   "description": "An extension for automating your browser by connecting blocks",
   "license": "MIT",
   "repository": {
@@ -29,7 +29,7 @@
     "*.{js,ts,vue}": "eslint --fix"
   },
   "dependencies": {
-    "@codemirror/basic-setup": "^0.19.1",
+    "@codemirror/basic-setup": "^0.20.0",
     "@codemirror/fold": "^0.19.3",
     "@codemirror/lang-javascript": "^0.19.7",
     "@codemirror/lang-json": "^0.19.2",
@@ -71,7 +71,7 @@
     "@babel/core": "7.15.5",
     "@babel/eslint-parser": "7.15.7",
     "@babel/preset-env": "7.15.6",
-    "@intlify/vue-i18n-loader": "^4.0.1",
+    "@intlify/vue-i18n-loader": "^4.2.0",
     "@tailwindcss/typography": "^0.5.1",
     "@vue/compiler-sfc": "3.2.19",
     "archiver": "^5.3.0",
@@ -87,7 +87,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-friendly-formatter": "^4.0.1",
     "eslint-import-resolver-webpack": "^0.13.2",
-    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-vue": "^9.1.0",
     "file-loader": "^6.2.0",
@@ -98,14 +98,14 @@
     "mini-css-extract-plugin": "^2.3.0",
     "postcss": "8.3.8",
     "postcss-loader": "^6.1.1",
-    "prettier": "^2.4.1",
+    "prettier": "^2.6.2",
     "simple-git-hooks": "^2.6.1",
     "source-map-loader": "3.0.0",
     "tailwindcss": "^3.0.7",
     "terser-webpack-plugin": "5.2.4",
     "vue-loader": "16.8.1",
     "webpack": "5.55.1",
-    "webpack-cli": "4.8.0",
+    "webpack-cli": "4.9.2",
     "webpack-dev-server": "3.11.2"
   }
 }
