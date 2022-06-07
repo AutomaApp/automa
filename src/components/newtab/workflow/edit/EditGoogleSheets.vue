@@ -248,7 +248,7 @@ async function previewData() {
     if (!response.ok) {
       const error = await response.json();
 
-      throw new Error(error.statusMessage || response.statusText);
+      throw new Error(error.message || response.statusText);
     }
 
     let result = await response.json();
