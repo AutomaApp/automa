@@ -31,7 +31,7 @@
         {{ t('updateMessage.text1', { version: currentVersion }) }}
       </p>
       <a
-        :href="`https://github.com/Kholid060/automa/releases/tag/v1.12.0`"
+        :href="`https://github.com/AutomaApp/automa/releases/latest`"
         target="_blank"
         rel="noopener"
         class="underline ml-1"
