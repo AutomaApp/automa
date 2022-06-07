@@ -16,7 +16,9 @@ const textFieldEl = (el) =>
 function findSelector(element) {
   return finder(element, {
     tagName: () => true,
-    attr: (name, value) => name === 'id' || (name.startsWith('aria') && value),
+    attr: (name, value) =>
+      name === 'id' ||
+      (name.startsWith('aria') && !name.startsWith('aria-disabled') && value),
   });
 }
 async function addBlock(detail) {
