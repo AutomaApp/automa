@@ -104,7 +104,7 @@
     "terser-webpack-plugin": "5.2.4",
     "vue-loader": "16.8.1",
     "webpack": "5.55.1",
-    "webpack-cli": "4.8.0",
+    "webpack-cli": "4.9.2",
     "webpack-dev-server": "3.11.2"
   }
 }
