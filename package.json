@@ -45,7 +45,7 @@
     "@vuex-orm/core": "^0.36.4",
     "compare-versions": "^4.1.2",
     "crypto-js": "^4.1.1",
-    "css-selector-generator": "^3.6.0",
+    "css-selector-generator": "^3.6.1",
     "dayjs": "^1.10.7",
     "defu": "^6.0.0",
     "drawflow": "^0.0.58",
