@@ -12,7 +12,7 @@ async function getSpreadsheetValues({ spreadsheetId, range, firstRowAsKey }) {
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(result.statusMessage);
+    throw new Error(result.message);
   }
 
   const sheetsData = firstRowAsKey
@@ -26,7 +26,7 @@ async function getSpreadsheetRange({ spreadsheetId, range }) {
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(result.statusMessage);
+    throw new Error(result.message);
   }
 
   const data = {
@@ -89,7 +89,7 @@ async function updateSpreadsheetValues(
   if (!response.ok) {
     const error = await response.json();
 
-    throw new Error(error.statusMessage);
+    throw new Error(error.message);
   }
 }
 
