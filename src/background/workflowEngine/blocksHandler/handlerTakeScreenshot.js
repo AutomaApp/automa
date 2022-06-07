@@ -80,7 +80,7 @@ async function takeScreenshot({ data, outputs, name }) {
       }
 
       await browser.tabs.update(this.activeTab.id, { active: true });
-      await waitTabLoaded(this.activeTab.id);
+      await waitTabLoaded({ tabId: this.activeTab.id, listenError: true });
 
       screenshot = await (data.fullPage ||
       ['element', 'fullpage'].includes(data.type)

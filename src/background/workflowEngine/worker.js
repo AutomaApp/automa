@@ -309,10 +309,10 @@ class Worker {
         throw error;
       }
 
-      await waitTabLoaded(
-        this.activeTab.id,
-        this.settings?.tabLoadTimeout ?? 30000
-      );
+      await waitTabLoaded({
+        tabId: this.activeTab.id,
+        ms: this.settings?.tabLoadTimeout ?? 30000,
+      });
 
       const { executedBlockOnWeb, debugMode } = this.settings;
       const messagePayload = {

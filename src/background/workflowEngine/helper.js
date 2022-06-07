@@ -35,7 +35,7 @@ export function attachDebugger(tabId, prevTab) {
   });
 }
 
-export function waitTabLoaded(tabId, ms = 10000) {
+export function waitTabLoaded({ tabId, listenError = false, ms = 10000 }) {
   return new Promise((resolve, reject) => {
     let timeout = null;
     const excludeErrors = ['net::ERR_BLOCKED_BY_CLIENT', 'net::ERR_ABORTED'];
@@ -44,7 +44,7 @@ export function waitTabLoaded(tabId, ms = 10000) {
       if (
         details.tabId !== tabId ||
         details.frameId !== 0 ||
-        !excludeErrors.includes(details.error)
+        excludeErrors.includes(details.error)
       )
         return;
 
@@ -58,8 +58,8 @@ export function waitTabLoaded(tabId, ms = 10000) {
         reject(new Error('Timeout'));
       }, ms);
     }
-
-    browser.webNavigation.onErrorOccurred.addListener(onErrorOccurred);
+    if (listenError)
+      browser.webNavigation.onErrorOccurred.addListener(onErrorOccurred);
 
     const activeTabStatus = () => {
       browser.tabs.get(tabId).then((tab) => {
