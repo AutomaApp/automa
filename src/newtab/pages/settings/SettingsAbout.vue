@@ -44,6 +44,7 @@
         />
       </a>
     </div>
+    <h3>Translators</h3>
   </div>
 </template>
 <script setup>

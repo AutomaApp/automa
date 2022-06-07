@@ -23,7 +23,7 @@
       </template>
     </ui-dialog>
     <div
-      v-if="false"
+      v-if="isUpdated"
       class="p-4 shadow-2xl z-50 fixed bottom-8 left-1/2 -translate-x-1/2 rounded-lg bg-accent text-white dark:text-gray-900 flex items-center"
     >
       <v-remixicon name="riInformationLine" class="mr-3" />
@@ -31,7 +31,7 @@
         {{ t('updateMessage.text1', { version: currentVersion }) }}
       </p>
       <a
-        :href="`https://github.com/Kholid060/automa/releases/tag/v${currentVersion}`"
+        :href="`https://github.com/Kholid060/automa/releases/tag/v1.12.0`"
         target="_blank"
         rel="noopener"
         class="underline ml-1"
