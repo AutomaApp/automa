@@ -98,10 +98,11 @@ async function newTab({ outputs, data }) {
     }
 
     if (data.waitTabLoaded) {
-      await waitTabLoaded(
-        this.activeTab.id,
-        this.settings?.tabLoadTimeout ?? 30000
-      );
+      await waitTabLoaded({
+        listenError: true,
+        tabId: this.activeTab.id,
+        ms: this.settings?.tabLoadTimeout ?? 30000,
+      });
     }
 
     return {

@@ -195,10 +195,10 @@
 </template>
 <script setup>
 import { ref, reactive, watch, onMounted, onBeforeUnmount } from 'vue';
-import { finder } from '@medv/finder';
 import browser from 'webextension-polyfill';
 import { toCamelCase } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
+import findSelector from '@/lib/findSelector';
 import SharedElementSelector from '@/components/content/shared/SharedElementSelector.vue';
 import { getElementRect } from '../../utils';
 import addBlock from './addBlock';
@@ -343,7 +343,7 @@ function selectElementPath(type) {
   selectState.selectedElements = [getElementRect(element)];
   selectState.childSelector = elementsPath.cache.has(element)
     ? elementsPath.cache.get(element)
-    : finder(element);
+    : findSelector(element);
 }
 function clearSelectState() {
   if (selectState.list && selectState.listId) {

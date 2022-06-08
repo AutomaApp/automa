@@ -35,7 +35,7 @@
     <component
       :is="data.editComponent"
       v-if="blockData"
-      :key="data.blockId"
+      :key="data.itemId || data.blockId"
       v-model:data="blockData"
       :block-id="data.blockId"
       v-bind="{

@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { finder } from '@medv/finder';
+import findSelector from '@/lib/findSelector';
 import { toCamelCase } from '@/utils/helper';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
@@ -171,7 +171,7 @@ function messageListener({ data, source }) {
             let $ctxElSelector = '';
 
             if (contextElement) {
-              $ctxElSelector = finder(contextElement);
+              $ctxElSelector = findSelector(contextElement);
               contextElement = null;
             }
 

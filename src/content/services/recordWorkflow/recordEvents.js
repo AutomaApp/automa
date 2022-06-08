@@ -1,8 +1,8 @@
-import { finder } from '@medv/finder';
 import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
 import { debounce } from '@/utils/helper';
 import { recordPressedKey } from '@/utils/recordKeys';
+import findSelector, { finder } from '@/lib/findSelector';
 import addBlockToFlow from './addBlock';
 
 let isMainFrame = true;
@@ -13,12 +13,6 @@ const isAutomaInstance = (target) =>
 const textFieldEl = (el) =>
   ['INPUT', 'TEXTAREA'].includes(el.tagName) || el.isContentEditable;
 
-function findSelector(element) {
-  return finder(element, {
-    tagName: () => true,
-    attr: (name, value) => name === 'id' || (name.startsWith('aria') && value),
-  });
-}
 async function addBlock(detail) {
   try {
     const data = await addBlockToFlow(detail, isMainFrame);
