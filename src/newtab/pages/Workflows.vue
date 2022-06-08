@@ -451,7 +451,7 @@ selection
   })
   .on('stop', (event) => {
     state.selectedWorkflows = event.store.selected.map(
-      (el) => el.dataset.workflow
+      (el) => el.dataset?.workflow
     );
   });
 
@@ -486,7 +486,7 @@ function clearSelectedWorkflows() {
 function onDragStart({ dataTransfer, target }) {
   const payload = [...state.selectedWorkflows];
 
-  const targetId = target.dataset.workflow;
+  const targetId = target.dataset?.workflow;
   if (targetId && !payload.includes(targetId)) payload.push(targetId);
 
   dataTransfer.setData('workflows', JSON.stringify(payload));
