@@ -152,6 +152,7 @@ function handleDataChange({ detail }) {
   block.data.blocks[itemIndex].data = detail.data;
 }
 function editBlock(payload) {
+  console.log(payload);
   emitter.emit('editor:edit-block', {
     ...tasks[payload.id],
     ...payload,

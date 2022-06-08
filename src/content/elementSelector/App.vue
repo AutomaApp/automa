@@ -81,7 +81,7 @@
 <script setup>
 import { reactive, ref, watch, inject, onMounted, onBeforeUnmount } from 'vue';
 import { debounce } from '@/utils/helper';
-import { finder } from '@medv/finder';
+import findSelector from '@/lib/findSelector';
 import FindElement from '@/utils/FindElement';
 import SelectorQuery from '@/components/content/selector/SelectorQuery.vue';
 import SharedElementSelector from '@/components/content/shared/SharedElementSelector.vue';
@@ -222,7 +222,7 @@ function selectElementPath(type) {
   state.selectedElements = [getElementRect(element, true)];
   state.elSelector = selectedElement.cache.has(element)
     ? selectedElement.cache.get(element)
-    : finder(element);
+    : findSelector(element);
 }
 function onMouseup() {
   if (state.isDragging) state.isDragging = false;

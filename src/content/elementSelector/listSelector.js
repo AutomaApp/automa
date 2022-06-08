@@ -1,4 +1,4 @@
-import { finder } from '@medv/finder';
+import findSelector from '@/lib/findSelector';
 
 /* eslint-disable  no-cond-assign */
 export function getAllSiblings(el, selector) {
@@ -96,7 +96,7 @@ export default function (target, { frameElement, onlyInList } = {}) {
   if (automaListEl) {
     if (target.hasAttribute('automa-el-list')) return [];
 
-    const childSelector = finder(target, {
+    const childSelector = findSelector(target, {
       root: automaListEl,
       idName: () => false,
     });

@@ -1,4 +1,4 @@
-import { finder } from '@medv/finder';
+import findSelector from '@/lib/findSelector';
 import { generateXPath } from '../utils';
 
 export default function ({
@@ -23,7 +23,7 @@ export default function ({
     const isInList = target.closest('[automa-el-list]');
 
     if (isInList) {
-      const childSelector = finder(target, {
+      const childSelector = findSelector(target, {
         root: isInList,
         idName: () => false,
       });
@@ -31,7 +31,7 @@ export default function ({
 
       selector = `${listSelector} ${childSelector}`;
     } else {
-      const parentSelector = finder(
+      const parentSelector = findSelector(
         selectedElement.parentElement,
         finderOptions
       );
@@ -49,7 +49,7 @@ export default function ({
   } else {
     selector =
       selectorType === 'css'
-        ? finder(selectedElement, finderOptions)
+        ? findSelector(selectedElement, finderOptions)
         : generateXPath(selectedElement);
   }
 
