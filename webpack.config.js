@@ -84,6 +84,9 @@ const options = {
       {
         test: /\.vue$/,
         loader: 'vue-loader',
+        options: {
+          reactivityTransform: true,
+        },
       },
       {
         test: /\.css$/,

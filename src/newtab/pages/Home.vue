@@ -22,7 +22,7 @@
         </div>
         <div>
           <div class="mb-2 flex items-center justify-between">
-            <p class="font-semibold inline-block">Logs</p>
+            <p class="font-semibold inline-block">{{ t('common.log', 2) }}</p>
             <router-link
               to="/logs"
               class="text-gray-600 dark:text-gray-200 text-sm"
@@ -31,12 +31,12 @@
             </router-link>
           </div>
           <p
-            v-if="logs.length === 0"
+            v-if="logs?.length === 0"
             class="text-center text-gray-600 dark:text-gray-200"
           >
             {{ t('message.noData') }}
           </p>
-          <shared-logs-table :logs="logs" class="w-full" />
+          <shared-logs-table :logs="logs || []" class="w-full" />
         </div>
       </div>
       <div class="w-4/12 space-y-4">
@@ -61,7 +61,8 @@ import { computed } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { sendMessage } from '@/utils/message';
-import Log from '@/models/log';
+import { useLiveQuery } from '@/composable/liveQuery';
+import dbLogs from '@/db/logs';
 import Workflow from '@/models/workflow';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
@@ -70,18 +71,11 @@ import SharedWorkflowState from '@/components/newtab/shared/SharedWorkflowState.
 const { t } = useI18n();
 const store = useStore();
 
+const logs = useLiveQuery(() =>
+  dbLogs.items.orderBy('endedAt').reverse().limit(10).toArray()
+);
 const workflows = computed(() =>
   Workflow.query().orderBy('createdAt', 'desc').limit(3).get()
-);
-const logs = computed(() =>
-  Log.query()
-    .where(
-      ({ isInCollection, isChildLog, parentLog }) =>
-        !isInCollection && !isChildLog && !parentLog
-    )
-    .orderBy('startedAt', 'desc')
-    .limit(10)
-    .get()
 );
 const workflowState = computed(() =>
   store.state.workflowState.filter(({ isInCollection }) => !isInCollection)

@@ -1,4 +1,5 @@
 import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 import App from './App.vue';
 import router from './router';
 import store from '../store';
@@ -15,6 +16,7 @@ createApp(App)
   .use(store)
   .use(compsUi)
   .use(vueI18n)
+  .use(createPinia())
   .use(vueToastification)
   .use(vRemixicon, icons)
   .mount('#app');

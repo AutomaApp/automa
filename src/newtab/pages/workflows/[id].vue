@@ -114,7 +114,7 @@
         </workflow-builder>
         <div v-else class="container pb-4 mt-24 px-4">
           <template v-if="activeTab === 'logs'">
-            <div v-if="logs.length === 0" class="text-center">
+            <div v-if="!logs || logs.length === 0" class="text-center">
               <img
                 src="@/assets/svg/files-and-folder.svg"
                 class="mx-auto max-w-sm"
@@ -222,7 +222,6 @@ import { useToast } from 'vue-toastification';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import defu from 'defu';
-import AES from 'crypto-js/aes';
 import browser from 'webextension-polyfill';
 import emitter from '@/lib/mitt';
 import { useDialog } from '@/composable/dialog';
@@ -238,8 +237,9 @@ import {
   parseJSON,
   throttle,
 } from '@/utils/helper';
-import Log from '@/models/log';
+import { useLiveQuery } from '@/composable/liveQuery';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
+import dbLogs from '@/db/logs';
 import Workflow from '@/models/workflow';
 import workflowTrigger from '@/utils/workflowTrigger';
 import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
@@ -261,6 +261,14 @@ const toast = useToast();
 const router = useRouter();
 const dialog = useDialog();
 const shortcut = useShortcut('editor:toggle-sidebar', toggleSidebar);
+const logs = useLiveQuery(() =>
+  dbLogs.items
+    .where('workflowId')
+    .equals(route.params.id)
+    .reverse()
+    .limit(15)
+    .sortBy('endedAt')
+);
 
 const activeTabQuery = route.query.tab || 'editor';
 
@@ -370,17 +378,6 @@ const workflow = computed(() =>
 const workflowModal = computed(() => workflowModals[state.modalName] || {});
 const workflowState = computed(() =>
   store.getters.getWorkflowState(workflowId)
-);
-const logs = computed(() =>
-  Log.query()
-    .where(
-      (item) =>
-        item.workflowId === workflowId &&
-        (!item.isInCollection || !item.isChildLog || !item.parentLog)
-    )
-    .limit(15)
-    .orderBy('startedAt', 'desc')
-    .get()
 );
 
 const updateBlockData = debounce((data) => {
@@ -681,9 +678,7 @@ function shareWorkflow() {
   }
 }
 function deleteLog(logId) {
-  Log.delete(logId).then(() => {
-    store.dispatch('saveToStorage', 'logs');
-  });
+  dbLogs.items.where('id').equals(logId).delete();
 }
 function workflowExporter() {
   const currentWorkflow = { ...workflow.value };
@@ -753,13 +748,9 @@ async function saveWorkflow() {
   if (workflowData.active === 'shared') return;
 
   try {
-    let flow = JSON.stringify(editor.value.export());
+    const flow = JSON.stringify(editor.value.export());
     const [triggerBlockId] = editor.value.getNodesFromName('trigger');
     const triggerBlock = editor.value.getNodeFromId(triggerBlockId);
-
-    if (workflow.value.isProtected) {
-      flow = AES.encrypt(flow, getWorkflowPass(workflow.value.pass)).toString();
-    }
 
     updateWorkflow({ drawflow: flow, trigger: triggerBlock?.data }).then(() => {
       if (triggerBlock) {

@@ -17,6 +17,7 @@ class WorkflowEngine {
     this.parentWorkflow = parentWorkflow;
     this.saveLog = workflow.settings?.saveLog ?? true;
 
+    this.workerId = 0;
     this.workers = new Map();
     this.waitConnections = {};
 
@@ -166,7 +167,10 @@ class WorkflowEngine {
   }
 
   addWorker(detail) {
-    const worker = new Worker(this);
+    this.workerId += 1;
+
+    const workerId = `worker-${this.workerId}`;
+    const worker = new Worker(workerId, this);
     worker.init(detail);
 
     this.workers.set(worker.id, worker);
@@ -178,7 +182,7 @@ class WorkflowEngine {
     const isLimit = this.history.length >= 1001;
     const notErrorLog = detail.type !== 'error';
 
-    if ((!this.saveLog || isLimit) && notErrorLog) return;
+    if (!this.saveLog && isLimit && notErrorLog) return;
 
     this.logHistoryId += 1;
     detail.id = this.logHistoryId;
@@ -273,24 +277,31 @@ class WorkflowEngine {
       if (!this.workflow.isTesting) {
         const { name, id } = this.workflow;
 
-        let { logsCtxData } = await browser.storage.local.get('logsCtxData');
-        if (!logsCtxData) logsCtxData = {};
-        logsCtxData[this.id] = this.historyCtxData;
-        await browser.storage.local.set({ logsCtxData });
-
         await this.logger.add({
-          name,
-          status,
-          message,
-          id: this.id,
-          workflowId: id,
-          endedAt: endedTimestamp,
-          parentLog: this.parentWorkflow,
-          startedAt: this.startedTimestamp,
-          history: this.saveLog ? this.history : [],
+          detail: {
+            name,
+            status,
+            message,
+            id: this.id,
+            workflowId: id,
+            endedAt: endedTimestamp,
+            parentLog: this.parentWorkflow,
+            startedAt: this.startedTimestamp,
+          },
+          history: {
+            logId: this.id,
+            data: this.saveLog ? this.history : [],
+          },
+          ctxData: {
+            logId: this.id,
+            data: this.historyCtxData,
+          },
           data: {
-            table: this.referenceData.table,
-            variables: this.referenceData.variables,
+            logId: this.id,
+            data: {
+              table: this.referenceData.table,
+              variables: this.referenceData.variables,
+            },
           },
         });
       }

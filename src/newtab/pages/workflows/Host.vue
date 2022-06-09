@@ -131,13 +131,14 @@ import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import browser from 'webextension-polyfill';
+import { useLiveQuery } from '@/composable/liveQuery';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { parseJSON, findTriggerBlock } from '@/utils/helper';
 import { cleanWorkflowTriggers } from '@/utils/workflowTrigger';
 import { sendMessage } from '@/utils/message';
-import Log from '@/models/log';
+import dbLogs from '@/db/logs';
 import getTriggerText from '@/utils/triggerText';
 import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
@@ -152,6 +153,9 @@ const router = useRouter();
 const dialog = useDialog();
 /* eslint-disable-next-line */
 const shortcut = useShortcut('editor:execute-workflow', executeWorkflow);
+const logs = useLiveQuery(() =>
+  dbLogs.items.query().where('workflowId').equals(route.params.id).toArray()
+);
 
 const workflowId = route.params.id;
 
@@ -165,17 +169,6 @@ const state = reactive({
 const workflow = computed(() => store.state.workflowHosts[workflowId]);
 const workflowState = computed(() =>
   store.getters.getWorkflowState(workflowId)
-);
-const logs = computed(() =>
-  Log.query()
-    .where(
-      (item) =>
-        item.workflowId === workflowId &&
-        (!item.isInCollection || !item.isChildLog || !item.parentLog)
-    )
-    .limit(15)
-    .orderBy('startedAt', 'desc')
-    .get()
 );
 
 function syncWorkflow() {
@@ -230,9 +223,7 @@ function executeWorkflow() {
   sendMessage('workflow:execute', payload, 'background');
 }
 function deleteLog(logId) {
-  Log.delete(logId).then(() => {
-    store.dispatch('saveToStorage', 'logs');
-  });
+  dbLogs.items.where('id').equals(logId);
 }
 async function retrieveTriggerText() {
   const flow = parseJSON(workflow.value?.drawflow, null);

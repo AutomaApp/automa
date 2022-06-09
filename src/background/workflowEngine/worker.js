@@ -1,4 +1,3 @@
-import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
 import { toCamelCase, sleep, objectHasKey, isObject } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
@@ -6,8 +5,8 @@ import referenceData from '@/utils/referenceData';
 import { convertData, waitTabLoaded, getBlockConnection } from './helper';
 
 class Worker {
-  constructor(engine) {
-    this.id = nanoid(5);
+  constructor(id, engine) {
+    this.id = id;
     this.engine = engine;
     this.settings = engine.workflow.settings;
 

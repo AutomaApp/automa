@@ -65,18 +65,14 @@ function formatDate(date, format) {
 
   return dayjs(date).format(format);
 }
-function getErrorMessage({ history, message }) {
+function getErrorMessage({ message }) {
   const messagePath = `log.messages.${message}`;
 
   if (message && te(messagePath)) {
     return t(messagePath);
   }
 
-  const lastHistory = history[history.length - 1];
-
-  return lastHistory && lastHistory.type === 'error'
-    ? lastHistory.message
-    : null;
+  return '';
 }
 </script>
 <style scoped>

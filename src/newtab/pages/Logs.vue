@@ -8,7 +8,7 @@
       @updateSorts="sortsBuilder[$event.key] = $event.value"
       @updateFilters="filtersBuilder[$event.key] = $event.value"
     />
-    <div style="min-height: 320px">
+    <div v-if="logs" style="min-height: 320px">
       <shared-logs-table :logs="logs" class="w-full">
         <template #item-prepend="{ log }">
           <td class="w-8">
@@ -23,7 +23,6 @@
           <td class="ml-4">
             <div class="flex items-center justify-end space-x-4">
               <v-remixicon
-                v-if="Object.keys(log.data).length !== 0"
                 name="riFileTextLine"
                 class="cursor-pointer"
                 @click="
@@ -65,7 +64,7 @@
         {{
           t(
             `log.${
-              selectedLogs.length >= logs.length ? 'deselectAll' : 'selectAll'
+              selectedLogs.length >= logs?.length ? 'deselectAll' : 'selectAll'
             }`
           )
         }}
@@ -87,17 +86,17 @@
 </template>
 <script setup>
 import { shallowReactive, ref, computed, watch } from 'vue';
-import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { useDialog } from '@/composable/dialog';
-import Log from '@/models/log';
+import dbLogs from '@/db/logs';
+import { useLiveQuery } from '@/composable/liveQuery';
 import LogsFilters from '@/components/newtab/logs/LogsFilters.vue';
 import LogsDataViewer from '@/components/newtab/logs/LogsDataViewer.vue';
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
 
 const { t } = useI18n();
-const store = useStore();
 const dialog = useDialog();
+const storedlogs = useLiveQuery(() => dbLogs.items.toArray());
 
 const savedSorts = JSON.parse(localStorage.getItem('logs-sorts') || '{}');
 
@@ -113,41 +112,45 @@ const filtersBuilder = shallowReactive({
 });
 const sortsBuilder = shallowReactive({
   order: savedSorts.order || 'desc',
-  by: savedSorts.by || 'startedAt',
+  by: savedSorts.by || 'endedAt',
 });
 const exportDataModal = shallowReactive({
   show: false,
   log: {},
 });
 
-const filteredLogs = computed(() =>
-  Log.query()
-    .where(
-      ({ name, status, startedAt, isInCollection, isChildLog, parentLog }) => {
-        if (isInCollection || isChildLog || parentLog) return false;
+const filteredLogs = computed(() => {
+  if (!storedlogs.value) return [];
 
-        let statusFilter = true;
-        let dateFilter = true;
-        const searchFilter = name
-          .toLocaleLowerCase()
-          .includes(filtersBuilder.query.toLocaleLowerCase());
+  return storedlogs.value
+    .filter(({ name, status, endedAt }) => {
+      let dateFilter = true;
+      let statusFilter = true;
+      const searchFilter = name
+        .toLocaleLowerCase()
+        .includes(filtersBuilder.query.toLocaleLowerCase());
 
-        if (filtersBuilder.byStatus !== 'all') {
-          statusFilter = status === filtersBuilder.byStatus;
-        }
-
-        if (filtersBuilder.byDate > 0) {
-          const date = Date.now() - filtersBuilder.byDate * 24 * 60 * 60 * 1000;
-
-          dateFilter = date <= startedAt;
-        }
-
-        return searchFilter && statusFilter && dateFilter;
+      if (filtersBuilder.byStatus !== 'all') {
+        statusFilter = status === filtersBuilder.byStatus;
       }
-    )
-    .orderBy(sortsBuilder.by, sortsBuilder.order)
-    .get()
-);
+
+      if (filtersBuilder.byDate > 0) {
+        const date = Date.now() - filtersBuilder.byDate * 24 * 60 * 60 * 1000;
+
+        dateFilter = date <= endedAt;
+      }
+
+      return searchFilter && statusFilter && dateFilter;
+    })
+    .sort((a, b) => {
+      const valueA = a[sortsBuilder.by];
+      const valueB = b[sortsBuilder.by];
+
+      if (sortsBuilder.order === 'asc') return valueA > valueB ? 1 : -1;
+
+      return valueB > valueA ? 1 : -1;
+    });
+});
 const logs = computed(() =>
   filteredLogs.value.slice(
     (pagination.currentPage - 1) * pagination.perPage,
@@ -156,9 +159,7 @@ const logs = computed(() =>
 );
 
 function deleteLog(id) {
-  Log.delete(id).then(() => {
-    store.dispatch('saveToStorage', 'logs');
-  });
+  dbLogs.items.where('id').equals(id).delete();
 }
 function toggleSelectedLog(selected, logId) {
   if (selected) {
@@ -176,11 +177,8 @@ function deleteSelectedLogs() {
     okVariant: 'danger',
     body: t('log.delete.description'),
     onConfirm: () => {
-      const promises = selectedLogs.value.map((logId) => Log.delete(logId));
-
-      Promise.allSettled(promises).then(() => {
+      dbLogs.items.bulkDelete(selectedLogs.value).then(() => {
         selectedLogs.value = [];
-        store.dispatch('saveToStorage', 'logs');
       });
     },
   });
@@ -191,20 +189,17 @@ function clearLogs() {
     okVariant: 'danger',
     body: t('log.clearLogs.description'),
     onConfirm: () => {
-      Log.deleteAll().then(() => {
-        selectedLogs.value = [];
-        store.dispatch('saveToStorage', 'logs');
-      });
+      dbLogs.delete();
     },
   });
 }
 function selectAllLogs() {
-  if (selectedLogs.value.length >= logs.value.length) {
+  if (selectedLogs.value.length >= logs.value?.length) {
     selectedLogs.value = [];
     return;
   }
 
-  const logIds = logs.value.map(({ id }) => id);
+  const logIds = logs?.value.map(({ id }) => id);
 
   selectedLogs.value = logIds;
 }

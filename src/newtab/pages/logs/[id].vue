@@ -1,16 +1,16 @@
 <template>
-  <div v-if="activeLog" class="container pt-8 pb-4">
+  <div v-if="currentLog.id" class="container pt-8 pb-4">
     <div class="flex items-center mb-8">
       <div>
         <h1 class="text-2xl max-w-md text-overflow font-semibold">
-          {{ activeLog.name }}
+          {{ currentLog.name }}
         </h1>
         <p class="text-gray-600 dark:text-gray-200">
           {{
             t(`log.description.text`, {
-              status: t(`log.description.status.${activeLog.status}`),
-              date: dayjs(activeLog.startedAt).format('DD MMM'),
-              duration: countDuration(activeLog.startedAt, activeLog.endedAt),
+              status: t(`log.description.status.${currentLog.status}`),
+              date: dayjs(currentLog.startedAt).format('DD MMM'),
+              duration: countDuration(currentLog.startedAt, currentLog.endedAt),
             })
           }}
         </p>
@@ -33,13 +33,13 @@
       <div class="w-7/12 mr-6">
         <ui-list>
           <router-link
-            v-if="collectionLog"
-            :to="activeLog.parentLog?.id || activeLog.collectionLogId"
+            v-if="parentLog"
+            :to="currentLog.parentLog?.id || currentLog.collectionLogId"
             replace
             class="mb-4 flex"
           >
             <v-remixicon name="riArrowLeftLine" class="mr-2" />
-            {{ t('log.goBack', { name: collectionLog.name }) }}
+            {{ t('log.goBack', { name: parentLog.name }) }}
           </router-link>
           <ui-expand
             v-for="(item, index) in history"
@@ -107,7 +107,7 @@
           </ui-expand>
         </ui-list>
         <div
-          v-if="activeLog.history.length >= 10"
+          v-if="currentLog.history.length >= 10"
           class="flex items-center justify-between mt-4"
         >
           <div>
@@ -126,29 +126,28 @@
             </select>
             {{
               t('components.pagination.text2', {
-                count: activeLog.history.length,
+                count: currentLog.history.length,
               })
             }}
           </div>
           <ui-pagination
             v-model="pagination.currentPage"
             :per-page="pagination.perPage"
-            :records="activeLog.history.length"
+            :records="currentLog.history.length"
           />
         </div>
       </div>
       <div class="w-5/12 logs-details sticky top-10">
-        <logs-data-viewer :log="activeLog" />
+        <logs-data-viewer :log="currentLog" />
       </div>
     </div>
   </div>
 </template>
 <script setup>
-import { computed, onMounted, shallowReactive, shallowRef } from 'vue';
+import { computed, shallowReactive, shallowRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import browser from 'webextension-polyfill';
-import Log from '@/models/log';
+import dbLogs from '@/db/logs';
 import Workflow from '@/models/workflow';
 import dayjs from '@/lib/dayjs';
 import { countDuration } from '@/utils/helper';
@@ -182,9 +181,14 @@ const route = useRoute();
 const router = useRouter();
 
 const ctxData = shallowRef({});
+const parentLog = shallowRef(null);
+
 const pagination = shallowReactive({
   perPage: 10,
   currentPage: 1,
+});
+const currentLog = shallowRef({
+  history: [],
 });
 
 function translateLog(log) {
@@ -212,41 +216,37 @@ function translateLog(log) {
   return copyLog;
 }
 
-const activeLog = computed(() => Log.find(route.params.id));
 const history = computed(() =>
-  activeLog.value.history
+  currentLog.value.history
     .slice(
       (pagination.currentPage - 1) * pagination.perPage,
       pagination.currentPage * pagination.perPage
     )
     .map(translateLog)
 );
-const collectionLog = computed(() => {
-  if (activeLog.value.parentLog) {
-    return Log.find(activeLog.value.parentLog.id);
-  }
-
-  return Log.find(activeLog.value.collectionLogId);
-});
 const workflowExists = computed(() =>
-  Workflow.find(activeLog.value.workflowId)
+  Workflow.find(currentLog.value.workflowId)
 );
 
 function deleteLog() {
-  Log.delete(route.params.id).then(() => {
-    const backHistory = window.history.state.back;
+  dbLogs.items
+    .where('id')
+    .equals(route.params.id)
+    .delete()
+    .then(() => {
+      const backHistory = window.history.state.back;
 
-    if (backHistory.startsWith('/workflows')) {
-      router.replace(backHistory);
-      return;
-    }
+      if (backHistory.startsWith('/workflows')) {
+        router.replace(backHistory);
+        return;
+      }
 
-    router.replace('/logs');
-  });
+      router.replace('/logs');
+    });
 }
 function goToWorkflow() {
   const backHistory = window.history.state.back;
-  let path = `/workflows/${activeLog.value.workflowId}`;
+  let path = `/workflows/${currentLog.value.workflowId}`;
 
   if (backHistory.startsWith(path)) {
     path = backHistory;
@@ -255,15 +255,33 @@ function goToWorkflow() {
   router.push(path);
 }
 
-onMounted(async () => {
-  if (!activeLog.value) router.replace('/logs');
+(async () => {
+  const logId = route.params.id;
+  const logDetail = await dbLogs.items.where('id').equals(logId).last();
 
-  const { logsCtxData } = await browser.storage.local.get('logsCtxData');
-  const logCtxData = logsCtxData && logsCtxData[route.params.id];
-  if (logCtxData) {
-    ctxData.value = logCtxData;
+  if (!logDetail) {
+    router.replace('/logs');
+    return;
   }
-});
+
+  const [logCtxData, logHistory] = await Promise.all(
+    ['ctxData', 'histories'].map((key) =>
+      dbLogs[key].where('logId').equals(logId).last()
+    )
+  );
+
+  ctxData.value = logCtxData?.data || {};
+  currentLog.value = {
+    history: logHistory?.data || [],
+    ...logDetail,
+  };
+
+  const parentLogId = logDetail.collectionLogId || logDetail.parentLog?.id;
+  if (parentLogId) {
+    parentLog.value =
+      (await dbLogs.items.where('id').equals(parentLogId).last()) || null;
+  }
+})();
 </script>
 <style>
 .logs-details .cm-editor {
