@@ -1118,6 +1118,11 @@ export const communities = [
     icon: 'riDiscordLine',
     url: 'https://discord.gg/C6khwwTE84',
   },
+  {
+    name: 'YouTube',
+    icon: 'riYoutubeLine',
+    url: 'https://www.youtube.com/channel/UCL3qU64hW0fsIj2vOayOQUQ',
+  },
 ];
 
 export const elementsHighlightData = {
