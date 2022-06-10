@@ -93,6 +93,8 @@ const workflow = {
     } else {
       engine.init();
       engine.on('destroyed', ({ id, status }) => {
+        if (status === 'stopped') return;
+
         browser.permissions
           .contains({ permissions: ['notifications'] })
           .then((hasPermission) => {

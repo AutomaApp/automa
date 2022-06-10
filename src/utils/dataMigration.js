@@ -5,11 +5,13 @@ export default async function () {
   try {
     const { logs, logsCtxData, migration } = await browser.storage.local.get([
       'logs',
+      'migration',
       'logsCtxData',
     ]);
     const hasMigrated = migration || {};
+    const backupData = {};
 
-    if (!hasMigrated.logs) {
+    if (!hasMigrated.logs && logs) {
       const ids = new Set();
 
       const items = [];
@@ -17,11 +19,11 @@ export default async function () {
       const logsData = [];
       const histories = [];
 
-      for (let index = 0; index < logs.length; index += 1) {
+      for (let index = logs.length - 1; index > 0; index -= 1) {
         const { data, history, ...item } = logs[index];
         const logId = item.id;
 
-        if (!ids.has(logId)) {
+        if (!ids.has(logId) && ids.size < 500) {
           items.push(item);
           logsData.push({ logId, data });
           histories.push({ logId, data: history });
@@ -38,11 +40,15 @@ export default async function () {
         dbLogs.histories.bulkAdd(histories),
       ]);
 
+      backupData.logs = logs;
       hasMigrated.logs = true;
+
+      await browser.storage.local.remove('logs');
     }
 
     await browser.storage.local.set({
       migration: hasMigrated,
+      ...backupData,
     });
   } catch (error) {
     console.error(error);

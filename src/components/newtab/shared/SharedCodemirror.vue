@@ -109,7 +109,7 @@ onBeforeUnmount(() => {
 .cm-editor .cm-gutters,
 .cm-editor .cm-content,
 .cm-tooltip.cm-tooltip-autocomplete > ul {
-  font-family: JetBrains Mono, Fira code, Fira Mono, Consolas, Menlo, Courier,
+  font-family: 'Source Code Pro', Fira code, Fira Mono, Consolas, Menlo, Courier,
     monospace !important;
 }
 </style>

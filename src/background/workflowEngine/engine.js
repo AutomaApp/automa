@@ -5,16 +5,13 @@ import { clearCache, sleep, parseJSON, isObject } from '@/utils/helper';
 import Worker from './worker';
 
 class WorkflowEngine {
-  constructor(
-    workflow,
-    { states, logger, blocksHandler, parentWorkflow, options }
-  ) {
+  constructor(workflow, { states, logger, blocksHandler, options }) {
     this.id = nanoid();
     this.states = states;
     this.logger = logger;
     this.workflow = workflow;
     this.blocksHandler = blocksHandler;
-    this.parentWorkflow = parentWorkflow;
+    this.parentWorkflow = options?.parentWorkflow;
     this.saveLog = workflow.settings?.saveLog ?? true;
 
     this.workerId = 0;

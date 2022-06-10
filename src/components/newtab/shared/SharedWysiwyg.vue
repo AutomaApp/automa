@@ -81,7 +81,7 @@ onBeforeUnmount(() => {
 <style>
 .ProseMirror pre,
 .ProseMirror code {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Source Code Pro', monospace;
 }
 .ProseMirror:focus {
   outline: none;

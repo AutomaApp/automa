@@ -37,6 +37,7 @@ module.exports = {
     'no-console': ['warn', { allow: ['warn', 'error'] }],
     'no-underscore-dangle': 'off',
     'func-names': 'off',
+    'vue/v-on-event-hyphenation': 'off',
     'import/no-named-default': 'off',
     'no-restricted-syntax': 'off',
     'vue/multi-word-component-names': 'off',
