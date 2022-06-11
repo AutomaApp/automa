@@ -261,6 +261,8 @@ function autoDeleteLogs() {
       dbLogs.ctxData.where('logId').anyOf(ids).delete();
       dbLogs.logsData.where('logId').anyOf(ids).delete();
       dbLogs.histories.where('logId').anyOf(ids).delete();
+
+      localStorage.setItem('checkDeleteLogs', Date.now());
     });
 }
 function handleStorageChanged(change) {
