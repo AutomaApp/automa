@@ -7237,10 +7237,10 @@ vue-i18n@^9.2.0-beta.29:
     "@intlify/vue-devtools" "9.2.0-beta.33"
     "@vue/devtools-api" "^6.0.0-beta.13"
 
-vue-inspector-agnostic@^0.0.6:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/vue-inspector-agnostic/-/vue-inspector-agnostic-0.0.6.tgz#a67caddb01181de5890b8b86febc5f70f3b12eb1"
-  integrity sha512-LnR+znqsQ2thATWPuuzNlcVU/vZVo/AQOZZWq/v9sf1CwMGkl5jzw+/ob2kxFMzqVfpJ9IBhAipyHUnfcXnmbQ==
+vue-inspector-agnostic@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/vue-inspector-agnostic/-/vue-inspector-agnostic-1.0.0.tgz#e98d317a1c37619e84c69b1f216eab94970fa253"
+  integrity sha512-8awtLkMS1ohA6xplv/f/L6cJoAJNFO6vhHz61xjCJZMwPveMI45k1yMUkxmVJJOkZJoR8SCWSUN7RLbZeOUsRQ==
 
 vue-loader@16.8.1:
   version "16.8.1"
