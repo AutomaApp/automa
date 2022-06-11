@@ -20,22 +20,12 @@
           </td>
         </template>
         <template #item-append="{ log }">
-          <td class="ml-4">
-            <div class="flex items-center justify-end space-x-4">
-              <v-remixicon
-                name="riFileTextLine"
-                class="cursor-pointer"
-                @click="
-                  exportDataModal.show = true;
-                  exportDataModal.log = log;
-                "
-              />
-              <v-remixicon
-                name="riDeleteBin7Line"
-                class="text-red-500 dark:text-red-400 cursor-pointer"
-                @click="deleteLog(log.id)"
-              />
-            </div>
+          <td class="ml-4 text-right">
+            <v-remixicon
+              name="riDeleteBin7Line"
+              class="text-red-500 inline-block dark:text-red-400 cursor-pointer"
+              @click="deleteLog(log.id)"
+            />
           </td>
         </template>
       </shared-logs-table>

@@ -149,6 +149,7 @@ async function fetchLog() {
 
   tableData.body = [];
   tableData.header = [];
+  parentLog.value = null;
   tableData.converted = false;
 
   const [logCtxData, logHistory, logsData] = await Promise.all(
