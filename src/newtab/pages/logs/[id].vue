@@ -140,12 +140,10 @@ function onTabChange(value) {
 }
 async function fetchLog() {
   const logId = route.params.id;
-  const logDetail = await dbLogs.items.where('id').equals(logId).last();
+  if (!logId) return;
 
-  if (!logDetail) {
-    router.replace('/logs');
-    return;
-  }
+  const logDetail = await dbLogs.items.where('id').equals(logId).last();
+  if (!logDetail) return;
 
   tableData.body = [];
   tableData.header = [];
@@ -174,7 +172,7 @@ async function fetchLog() {
   }
 }
 
-watch(() => route.params.id, fetchLog, { immediate: true });
+watch(() => route.params, fetchLog, { immediate: true });
 </script>
 <style>
 .logs-details .cm-editor {

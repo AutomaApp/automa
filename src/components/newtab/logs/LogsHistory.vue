@@ -9,14 +9,15 @@
     {{ t('log.goBack', { name: parentLog.name }) }}
   </router-link>
   <div
-    class="p-4 rounded-lg flex items-start font-mono group bg-gray-900 dark:bg-gray-800 text-gray-100 dark"
+    class="p-4 rounded-lg flex items-start font-mono bg-gray-900 dark:bg-gray-800 text-gray-100 dark scroll overflow-auto"
+    style="max-height: 600px"
   >
-    <ul class="text-sm flex-1">
+    <ul class="text-sm flex-1 overflow-auto">
       <li
         v-for="(item, index) in history"
         :key="item.id || index"
         :class="{ 'bg-box-transparent': item.id === state.itemId }"
-        class="px-2 py-1 rounded-md hoverable flex items-start"
+        class="px-2 py-1 rounded-md hoverable group cursor-default flex items-start"
         @click="state.itemId = item.id"
       >
         <span
@@ -27,8 +28,14 @@
         </span>
         <span
           :class="logsType[item.type]?.color"
+          :title="item.type"
           class="w-2/12 flex-shrink-0 text-overflow"
         >
+          <v-remixicon
+            :name="logsType[item.type]?.icon"
+            size="18"
+            class="inline-block -mr-1 align-text-top"
+          />
           {{ item.name }}
         </span>
         <span
@@ -45,11 +52,28 @@
         </p>
         <router-link
           v-if="item.logId"
-          :to="'/logs/' + item.logId"
-          class="ml-4 text-gray-400"
-          title="Open log detail"
+          v-slot="{ navigate }"
+          :to="{ name: 'logs-details', params: { id: item.logId } }"
+          custom
         >
-          <v-remixicon size="20" name="riFileTextLine" />
+          <v-remixicon
+            title="Open log detail"
+            class="ml-2 text-gray-300 cursor-pointer"
+            size="20"
+            name="riFileTextLine"
+            @click.stop="navigate"
+          />
+        </router-link>
+        <router-link
+          v-show="currentLog.workflowId && item.blockId"
+          :to="`/workflows/${currentLog.workflowId}?blockId=${item.blockId}`"
+        >
+          <v-remixicon
+            name="riExternalLinkLine"
+            size="20"
+            title="Go to block"
+            class="text-gray-300 cursor-pointer ml-2 invisible group-hover:visible"
+          />
         </router-link>
       </li>
     </ul>
@@ -57,7 +81,7 @@
       v-if="state.itemId"
       class="w-4/12 ml-4 border-2 border-opacity-60 rounded-lg dark:text-gray-200 text-sm sticky top-4"
     >
-      <div class="flex items-center px-2 pt-2">
+      <div class="flex items-center p-2">
         <p class="flex-1">Context Data</p>
         <v-remixicon
           name="riCloseLine"
@@ -66,7 +90,7 @@
           @click="state.itemId = ''"
         />
       </div>
-      <pre class="p-2 overflow-auto scroll h-80">{{
+      <pre class="px-2 pb-2 overflow-auto scroll max-h-96">{{
         ctxData[state.itemId] || 'EMPTY'
       }}</pre>
     </div>

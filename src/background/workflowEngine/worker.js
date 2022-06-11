@@ -152,6 +152,7 @@ class Worker {
         prevBlockData,
         type: status,
         name: block.name,
+        blockId: block.id,
         workerId: this.id,
         description: block.data.description,
         replacedValue: replacedBlock.replacedValue,

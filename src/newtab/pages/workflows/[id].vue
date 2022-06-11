@@ -91,6 +91,7 @@
           @save="saveWorkflow"
           @update="updateWorkflow"
           @load="editor = $event"
+          @loaded="onEditorLoaded"
           @deleteBlock="deleteBlock"
         >
           <ui-tabs
@@ -811,6 +812,28 @@ function renameWorkflow() {
     name: workflow.value.name,
     description: workflow.value.description,
   });
+}
+function onEditorLoaded(editorInstance) {
+  const { blockId } = route.query;
+  if (!blockId) return;
+
+  const node = editorInstance.getNodeFromId(blockId);
+  if (!node) return;
+
+  if (editorInstance.zoom !== 1) {
+    editorInstance.zoom = 1;
+    editorInstance.zoom_refresh();
+  }
+
+  const { width, height } = editorInstance.container.getBoundingClientRect();
+  const rectX = width / 2;
+  const rectY = height / 2;
+
+  editorInstance.translate_to(
+    -(node.pos_x - rectX),
+    -(node.pos_y - rectY),
+    editorInstance.zoom
+  );
 }
 
 provide('workflow', {
