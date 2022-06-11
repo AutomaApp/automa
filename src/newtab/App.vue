@@ -253,9 +253,14 @@ function autoDeleteLogs() {
   dbLogs.items
     .where('endedAt')
     .below(maxLogAge)
-    .delete()
-    .then(() => {
-      localStorage.setItem('checkDeleteLogs', Date.now());
+    .toArray()
+    .then((values) => {
+      const ids = values.map(({ id }) => id);
+
+      dbLogs.items.bulkDelete(ids);
+      dbLogs.ctxData.where('logId').anyOf(ids).delete();
+      dbLogs.logsData.where('logId').anyOf(ids).delete();
+      dbLogs.histories.where('logId').anyOf(ids).delete();
     });
 }
 function handleStorageChanged(change) {

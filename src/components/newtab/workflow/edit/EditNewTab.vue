@@ -12,7 +12,6 @@
       </label>
       <ui-textarea
         id="new-tab-url"
-        key="anu"
         :model-value="data.url"
         class="w-full"
         autocomplete="off"

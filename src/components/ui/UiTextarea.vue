@@ -1,11 +1,11 @@
 <template>
   <textarea
-    v-bind="{ value: modelValue, placeholder, maxlength: max }"
+    v-bind="{ placeholder, maxlength: max }"
     :id="textareaId"
     ref="textarea"
+    :value="modelValue"
     class="ui-textarea w-full ui-input rounded-lg px-4 py-2 transition bg-input"
     :class="{ 'overflow-hidden resize-none': autoresize }"
-    :style="{ height }"
     @input="emitValue"
     @keyup="$emit('keyup', $event)"
     @keydown="$emit('keydown', $event)"
@@ -35,10 +35,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    height: {
-      type: [Number, String],
-      default: '',
-    },
     max: {
       type: [Number, String],
       default: null,
@@ -66,7 +62,7 @@ export default {
 
       emit('update:modelValue', value);
       emit('change', value);
-      calcHeight();
+      // calcHeight();
     }
 
     onMounted(calcHeight);
