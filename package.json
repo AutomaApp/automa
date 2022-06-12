@@ -31,7 +31,7 @@
   "dependencies": {
     "@codemirror/basic-setup": "^0.20.0",
     "@codemirror/fold": "^0.19.4",
-    "@codemirror/lang-javascript": "^0.20.1",
+    "@codemirror/lang-javascript": "^6.0.0",
     "@codemirror/lang-json": "^0.20.0",
     "@codemirror/theme-one-dark": "^0.20.0",
     "@medv/finder": "^2.1.0",
