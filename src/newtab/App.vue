@@ -1,4 +1,8 @@
 <template>
+  <Head>
+    <link rel="icon" :href="icon" />
+  </Head>
+
   <template v-if="retrieved">
     <app-sidebar />
     <main class="pl-16">
@@ -80,6 +84,8 @@
   </ui-card>
 </template>
 <script setup>
+import iconFirefox from '@/assets/svg/logoFirefox.svg';
+import iconChrome from '@/assets/svg/logo.svg';
 import { ref, shallowReactive, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
@@ -94,6 +100,14 @@ import dayjs from '@/lib/dayjs';
 import Workflow from '@/models/workflow';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 import dataMigration from '@/utils/dataMigration';
+import { Head } from '@vueuse/head';
+
+let icon;
+if (window.location.protocol === 'moz-extension:') {
+  icon = iconFirefox;
+} else {
+  icon = iconChrome;
+}
 
 const { t } = useI18n();
 const store = useStore();

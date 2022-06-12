@@ -1,5 +1,6 @@
 import { createApp } from 'vue';
 import inspector from 'vue-inspector-agnostic';
+import { createHead } from '@vueuse/head';
 import App from './App.vue';
 import router from './router';
 import store from '../store';
@@ -11,8 +12,11 @@ import '../assets/css/tailwind.css';
 import '../assets/css/fonts.css';
 import '../assets/css/style.css';
 
+const head = createHead();
+
 createApp(App)
   .use(router)
+  .use(head)
   .use(store)
   .use(compsUi)
   .use(vueI18n)
