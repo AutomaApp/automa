@@ -95,7 +95,7 @@
     "eslint-plugin-vue": "^9.1.0",
     "file-loader": "^6.2.0",
     "fs-extra": "10.0.0",
-    "html-loader": "2.1.2",
+    "html-loader": "3.1.0",
     "html-webpack-plugin": "5.3.2",
     "lint-staged": "^11.1.2",
     "mini-css-extract-plugin": "^2.3.0",
