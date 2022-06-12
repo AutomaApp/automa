@@ -25,7 +25,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Poppins', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        mono: ['Source Code Pro', 'monospace'],
       },
       container: {
         center: true,

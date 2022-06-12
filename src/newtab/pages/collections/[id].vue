@@ -208,7 +208,8 @@ import { useI18n } from 'vue-i18n';
 import Draggable from 'vuedraggable';
 import { useDialog } from '@/composable/dialog';
 import { sendMessage } from '@/utils/message';
-import Log from '@/models/log';
+import { useLiveQuery } from '@/composable/liveQuery';
+import dbLogs from '@/db/logs';
 import Workflow from '@/models/workflow';
 import Collection from '@/models/collection';
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
@@ -223,6 +224,14 @@ const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const dialog = useDialog();
+const logs = useLiveQuery(() =>
+  dbLogs.items
+    .where('collectionId')
+    .equals(route.params.id)
+    .reverse()
+    .limit(15)
+    .sortBy('endedAt')
+);
 
 const blocks = {
   'export-result': {
@@ -254,16 +263,6 @@ const collectionOptions = shallowReactive({
 const runningCollection = computed(() =>
   store.state.workflowState.filter(({ id }) => id === route.params.id)
 );
-const logs = computed(() =>
-  Log.query()
-    .where(
-      ({ collectionId, isInCollection, isChildLog }) =>
-        collectionId === route.params.id && (!isInCollection || !isChildLog)
-    )
-    .orderBy('startedAt', 'desc')
-    .limit(10)
-    .get()
-);
 const workflows = computed(() =>
   Workflow.query()
     .where(({ name }) =>
@@ -284,9 +283,7 @@ const collectionFlow = computed(() => {
 });
 
 function deleteLog(logId) {
-  Log.delete(logId).then(() => {
-    store.dispatch('saveToStorage', 'logs');
-  });
+  dbLogs.items.where('id').equals(logId).delete();
 }
 function executeCollection() {
   sendMessage('collection:execute', collection.value, 'background');

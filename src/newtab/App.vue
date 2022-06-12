@@ -83,22 +83,21 @@
 import { ref, shallowReactive, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
-import { useRoute } from 'vue-router';
 import { compare } from 'compare-versions';
 import browser from 'webextension-polyfill';
+import dbLogs from '@/db/logs';
 import { useTheme } from '@/composable/theme';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
 import { parseJSON } from '@/utils/helper';
 import { fetchApi, getSharedWorkflows, getUserWorkflows } from '@/utils/api';
 import dayjs from '@/lib/dayjs';
-import Log from '@/models/log';
 import Workflow from '@/models/workflow';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
+import dataMigration from '@/utils/dataMigration';
 
 const { t } = useI18n();
 const store = useStore();
 const theme = useTheme();
-const route = useRoute();
 
 theme.init();
 
@@ -238,14 +237,31 @@ async function fetchUserData() {
 /* eslint-disable-next-line */
 function autoDeleteLogs() {
   const deleteAfter = store.state.settings.deleteLogAfter;
-
   if (deleteAfter === 'never') return;
 
-  Log.delete(({ endedAt }) => {
-    const diff = dayjs().diff(dayjs(endedAt), 'day');
+  const lastCheck =
+    +localStorage.getItem('checkDeleteLogs') || Date.now() - 8.64e7;
+  const dayDiff = dayjs().diff(dayjs(lastCheck), 'day');
 
-    return diff >= deleteAfter;
-  });
+  if (dayDiff < 1) return;
+
+  const aDayInMs = 8.64e7;
+  const maxLogAge = Date.now() - aDayInMs * deleteAfter;
+
+  dbLogs.items
+    .where('endedAt')
+    .below(maxLogAge)
+    .toArray()
+    .then((values) => {
+      const ids = values.map(({ id }) => id);
+
+      dbLogs.items.bulkDelete(ids);
+      dbLogs.ctxData.where('logId').anyOf(ids).delete();
+      dbLogs.logsData.where('logId').anyOf(ids).delete();
+      dbLogs.histories.where('logId').anyOf(ids).delete();
+
+      localStorage.setItem('checkDeleteLogs', Date.now());
+    });
 }
 function handleStorageChanged(change) {
   if (change.logs) {
@@ -288,9 +304,8 @@ window.addEventListener('beforeunload', () => {
   browser.storage.onChanged.removeListener(handleStorageChanged);
 });
 
-const includeRoutes = ['home', 'workflows-details'];
 window.addEventListener('storage', ({ key, newValue }) => {
-  if (key !== 'workflowState' || !includeRoutes.includes(route.name)) return;
+  if (key !== 'workflowState') return;
 
   const states = parseJSON(newValue, {});
   store.commit('updateState', {
@@ -316,24 +331,20 @@ window.addEventListener('storage', ({ key, newValue }) => {
     }
 
     await Promise.allSettled([
-      store.dispatch('retrieve', [
-        'workflows',
-        'logs',
-        'collections',
-        'folders',
-      ]),
+      store.dispatch('retrieve', ['workflows', 'collections', 'folders']),
       store.dispatch('retrieveWorkflowState'),
     ]);
 
     await loadLocaleMessages(store.state.settings.locale, 'newtab');
     await setI18nLanguage(store.state.settings.locale);
 
+    await dataMigration();
+
     retrieved.value = true;
 
     await fetchUserData();
     await syncHostWorkflow();
-
-    // autoDeleteLogs();
+    autoDeleteLogs();
   } catch (error) {
     retrieved.value = true;
     console.error(error);

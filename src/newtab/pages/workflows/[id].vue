@@ -41,9 +41,8 @@
             />
           </button>
           <ui-tab value="editor">{{ t('common.editor') }}</ui-tab>
-          <ui-tab value="logs">{{ t('common.log', 2) }}</ui-tab>
-          <ui-tab value="running" class="flex items-center">
-            {{ t('common.running') }}
+          <ui-tab value="logs" class="flex items-center">
+            {{ t('common.log', 2) }}
             <span
               v-if="workflowState.length > 0"
               class="ml-2 p-1 text-center inline-block text-xs rounded-full bg-accent text-white dark:text-black"
@@ -91,6 +90,7 @@
           @save="saveWorkflow"
           @update="updateWorkflow"
           @load="editor = $event"
+          @loaded="onEditorLoaded"
           @deleteBlock="deleteBlock"
         >
           <ui-tabs
@@ -114,14 +114,19 @@
         </workflow-builder>
         <div v-else class="container pb-4 mt-24 px-4">
           <template v-if="activeTab === 'logs'">
-            <div v-if="logs.length === 0" class="text-center">
+            <div v-if="!logs || logs.length === 0" class="text-center">
               <img
                 src="@/assets/svg/files-and-folder.svg"
                 class="mx-auto max-w-sm"
               />
               <p class="text-xl font-semibold">{{ t('message.noData') }}</p>
             </div>
-            <shared-logs-table :logs="logs" class="w-full">
+            <shared-logs-table
+              :logs="logs"
+              :running="workflowState"
+              hide-select
+              class="w-full"
+            >
               <template #item-append="{ log: itemLog }">
                 <td class="text-right">
                   <v-remixicon
@@ -132,22 +137,6 @@
                 </td>
               </template>
             </shared-logs-table>
-          </template>
-          <template v-else-if="activeTab === 'running'">
-            <div v-if="workflowState.length === 0" class="text-center">
-              <img
-                src="@/assets/svg/files-and-folder.svg"
-                class="mx-auto max-w-sm"
-              />
-              <p class="text-xl font-semibold">{{ t('message.noData') }}</p>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <shared-workflow-state
-                v-for="item in workflowState"
-                :key="item.id"
-                :data="item"
-              />
-            </div>
           </template>
         </div>
       </keep-alive>
@@ -222,7 +211,6 @@ import { useToast } from 'vue-toastification';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import defu from 'defu';
-import AES from 'crypto-js/aes';
 import browser from 'webextension-polyfill';
 import emitter from '@/lib/mitt';
 import { useDialog } from '@/composable/dialog';
@@ -238,8 +226,9 @@ import {
   parseJSON,
   throttle,
 } from '@/utils/helper';
-import Log from '@/models/log';
+import { useLiveQuery } from '@/composable/liveQuery';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
+import dbLogs from '@/db/logs';
 import Workflow from '@/models/workflow';
 import workflowTrigger from '@/utils/workflowTrigger';
 import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
@@ -252,7 +241,6 @@ import WorkflowGlobalData from '@/components/newtab/workflow/WorkflowGlobalData.
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
 import WorkflowSharedActions from '@/components/newtab/workflow/WorkflowSharedActions.vue';
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
-import SharedWorkflowState from '@/components/newtab/shared/SharedWorkflowState.vue';
 
 const { t } = useI18n();
 const store = useStore();
@@ -261,6 +249,14 @@ const toast = useToast();
 const router = useRouter();
 const dialog = useDialog();
 const shortcut = useShortcut('editor:toggle-sidebar', toggleSidebar);
+const logs = useLiveQuery(() =>
+  dbLogs.items
+    .where('workflowId')
+    .equals(route.params.id)
+    .reverse()
+    .limit(15)
+    .sortBy('endedAt')
+);
 
 const activeTabQuery = route.query.tab || 'editor';
 
@@ -370,17 +366,6 @@ const workflow = computed(() =>
 const workflowModal = computed(() => workflowModals[state.modalName] || {});
 const workflowState = computed(() =>
   store.getters.getWorkflowState(workflowId)
-);
-const logs = computed(() =>
-  Log.query()
-    .where(
-      (item) =>
-        item.workflowId === workflowId &&
-        (!item.isInCollection || !item.isChildLog || !item.parentLog)
-    )
-    .limit(15)
-    .orderBy('startedAt', 'desc')
-    .get()
 );
 
 const updateBlockData = debounce((data) => {
@@ -681,9 +666,7 @@ function shareWorkflow() {
   }
 }
 function deleteLog(logId) {
-  Log.delete(logId).then(() => {
-    store.dispatch('saveToStorage', 'logs');
-  });
+  dbLogs.items.where('id').equals(logId).delete();
 }
 function workflowExporter() {
   const currentWorkflow = { ...workflow.value };
@@ -753,13 +736,9 @@ async function saveWorkflow() {
   if (workflowData.active === 'shared') return;
 
   try {
-    let flow = JSON.stringify(editor.value.export());
+    const flow = JSON.stringify(editor.value.export());
     const [triggerBlockId] = editor.value.getNodesFromName('trigger');
     const triggerBlock = editor.value.getNodeFromId(triggerBlockId);
-
-    if (workflow.value.isProtected) {
-      flow = AES.encrypt(flow, getWorkflowPass(workflow.value.pass)).toString();
-    }
 
     updateWorkflow({ drawflow: flow, trigger: triggerBlock?.data }).then(() => {
       if (triggerBlock) {
@@ -820,6 +799,28 @@ function renameWorkflow() {
     name: workflow.value.name,
     description: workflow.value.description,
   });
+}
+function onEditorLoaded(editorInstance) {
+  const { blockId } = route.query;
+  if (!blockId) return;
+
+  const node = editorInstance.getNodeFromId(blockId);
+  if (!node) return;
+
+  if (editorInstance.zoom !== 1) {
+    editorInstance.zoom = 1;
+    editorInstance.zoom_refresh();
+  }
+
+  const { width, height } = editorInstance.container.getBoundingClientRect();
+  const rectX = width / 2;
+  const rectY = height / 2;
+
+  editorInstance.translate_to(
+    -(node.pos_x - rectX),
+    -(node.pos_y - rectY),
+    editorInstance.zoom
+  );
 }
 
 provide('workflow', {

@@ -22,6 +22,7 @@
         :label="`${t('workflow.blocks.webhook.url')}*`"
         placeholder="http://api.example.com"
         class="w-full"
+        rows="1"
         autocomplete="off"
         required
         type="url"

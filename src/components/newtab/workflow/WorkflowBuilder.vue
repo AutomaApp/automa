@@ -114,7 +114,7 @@ export default {
       default: 'edit',
     },
   },
-  emits: ['load', 'deleteBlock', 'update', 'save'],
+  emits: ['load', 'loaded', 'deleteBlock', 'update', 'save'],
   setup(props, { emit }) {
     useGroupTooltip();
 
@@ -876,6 +876,7 @@ export default {
 
       checkWorkflowData();
       initSelectArea();
+      emit('loaded', editor.value);
     });
     onBeforeUnmount(() => {
       const element = document.querySelector('#drawflow');

@@ -1,15 +1,19 @@
+import dbLogs, { defaultLogItem } from '@/db/logs';
+/* eslint-disable class-methods-use-this */
 class WorkflowLogger {
-  constructor({ storage, key = 'logs' }) {
+  constructor({ key = 'logs' }) {
     this.key = key;
-    this.storage = storage;
   }
 
-  async add(data) {
-    const logs = (await this.storage.get(this.key)) || [];
+  async add({ detail, history, ctxData, data }) {
+    const logDetail = { ...defaultLogItem, ...detail };
 
-    logs.unshift(data);
-
-    await this.storage.set(this.key, logs);
+    await Promise.all([
+      dbLogs.logsData.add(data),
+      dbLogs.ctxData.add(ctxData),
+      dbLogs.items.add(logDetail),
+      dbLogs.histories.add(history),
+    ]);
   }
 }
 

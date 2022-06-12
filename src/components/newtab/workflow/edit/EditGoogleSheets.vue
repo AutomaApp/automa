@@ -20,7 +20,7 @@
         :model-value="data.spreadsheetId"
         class="w-full"
         placeholder="abcd123"
-        @change="updateData({ spreadsheetId: $event })"
+        @change="updateData({ spreadsheetId: $event }), checkPermission($event)"
       >
         <template #label>
           {{ t('workflow.blocks.google-sheets.spreadsheetId.label') }}*
@@ -35,6 +35,16 @@
         </template>
       </ui-input>
     </edit-autocomplete>
+    <a
+      v-if="!state.havePermission"
+      href="https://docs.automa.site/blocks/google-sheets.html#access-to-spreadsheet"
+      target="_blank"
+      rel="noopener"
+      class="text-sm leading-tight inline-block ml-1"
+    >
+      Automa doesn't have access to the spreadsheet
+      <v-remixicon name="riInformationLine" size="18" class="inline" />
+    </a>
     <edit-autocomplete>
       <ui-input
         :model-value="data.range"
@@ -195,8 +205,8 @@
 <script setup>
 import { shallowReactive, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { googleSheets } from '@/utils/api';
-import { convert2DArrayToArrayObj } from '@/utils/helper';
+import { googleSheets, fetchApi } from '@/utils/api';
+import { convert2DArrayToArrayObj, debounce } from '@/utils/helper';
 import EditAutocomplete from './EditAutocomplete.vue';
 import InsertWorkflowData from './InsertWorkflowData.vue';
 
@@ -228,6 +238,25 @@ const customDataState = shallowReactive({
   showModal: false,
   data: props.data.customData,
 });
+const state = shallowReactive({
+  lastSheetId: null,
+  havePermission: true,
+});
+
+const checkPermission = debounce(async (value) => {
+  try {
+    if (state.lastSheetId === value) return;
+
+    const response = await fetchApi(
+      `/services/google-sheets/meta?spreadsheetId=${value}`
+    );
+
+    state.havePermission = response.status !== 403;
+    state.lastSheetId = value;
+  } catch (error) {
+    console.error(error);
+  }
+}, 1000);
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
