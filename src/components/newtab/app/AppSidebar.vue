@@ -37,6 +37,12 @@
           <div class="p-2 rounded-lg transition-colors inline-block">
             <v-remixicon :name="tab.icon" />
           </div>
+          <span
+            v-if="tab.id === 'log' && runningWorkflowsLen > 0"
+            class="absolute h-4 w-4 text-xs dark:text-black text-white rounded-full bg-accent -top-1 right-2"
+          >
+            {{ runningWorkflowsLen }}
+          </span>
         </a>
       </router-link>
     </div>
@@ -80,7 +86,7 @@
   </aside>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
@@ -97,12 +103,6 @@ const router = useRouter();
 
 const extensionVersion = browser.runtime.getManifest().version;
 const tabs = [
-  {
-    id: 'dashboard',
-    icon: 'riHome5Line',
-    path: '/',
-    shortcut: getShortcut('page:dashboard', '/'),
-  },
   {
     id: 'workflow',
     icon: 'riFlowChart',
@@ -130,6 +130,7 @@ const tabs = [
 ];
 const hoverIndicator = ref(null);
 const showHoverIndicator = ref(false);
+const runningWorkflowsLen = computed(() => store.state.workflowState.length);
 
 useShortcut(
   tabs.map(({ shortcut }) => shortcut),

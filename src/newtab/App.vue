@@ -83,7 +83,6 @@
 import { ref, shallowReactive, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
-import { useRoute } from 'vue-router';
 import { compare } from 'compare-versions';
 import browser from 'webextension-polyfill';
 import dbLogs from '@/db/logs';
@@ -99,7 +98,6 @@ import dataMigration from '@/utils/dataMigration';
 const { t } = useI18n();
 const store = useStore();
 const theme = useTheme();
-const route = useRoute();
 
 theme.init();
 
@@ -306,9 +304,8 @@ window.addEventListener('beforeunload', () => {
   browser.storage.onChanged.removeListener(handleStorageChanged);
 });
 
-const includeRoutes = ['home', 'workflows-details'];
 window.addEventListener('storage', ({ key, newValue }) => {
-  if (key !== 'workflowState' || !includeRoutes.includes(route.name)) return;
+  if (key !== 'workflowState') return;
 
   const states = parseJSON(newValue, {});
   store.commit('updateState', {

@@ -9,7 +9,11 @@
       @updateFilters="filtersBuilder[$event.key] = $event.value"
     />
     <div v-if="logs" style="min-height: 320px">
-      <shared-logs-table :logs="logs" class="w-full">
+      <shared-logs-table
+        :logs="logs"
+        :running="$store.state.workflowState"
+        class="w-full"
+      >
         <template #item-prepend="{ log }">
           <td class="w-8">
             <ui-checkbox

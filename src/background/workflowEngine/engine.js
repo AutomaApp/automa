@@ -342,13 +342,14 @@ class WorkflowEngine {
       tabIds: [],
       currentBlock: [],
       name: this.workflow.name,
+      logs: this.history.slice(-5),
       startedTimestamp: this.startedTimestamp,
     };
 
     this.workers.forEach((worker) => {
-      const { id, name } = worker.currentBlock;
+      const { id, name, startedAt } = worker.currentBlock;
 
-      state.currentBlock.push({ id, name });
+      state.currentBlock.push({ id, name, startedAt });
       state.tabIds.push(worker.activeTab.id);
     });
 

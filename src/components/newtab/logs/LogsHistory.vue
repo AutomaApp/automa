@@ -9,10 +9,11 @@
     {{ t('log.goBack', { name: parentLog.name }) }}
   </router-link>
   <div
-    class="p-4 rounded-lg flex items-start font-mono bg-gray-900 dark:bg-gray-800 text-gray-100 dark scroll overflow-auto"
+    class="p-4 rounded-lg bg-gray-900 dark:bg-gray-800 text-gray-100 dark scroll overflow-auto"
     style="max-height: 600px"
   >
-    <div class="text-sm flex-1 space-y-1 overflow-auto">
+    <slot name="prepend" />
+    <div class="text-sm font-mono space-y-1 w-full overflow-auto">
       <ui-expand
         v-for="(item, index) in history"
         :key="item.id || index"
@@ -96,6 +97,7 @@
           >{{ ctxData[state.itemId] || 'EMPTY' }}</pre
         >
       </ui-expand>
+      <slot name="append-items" />
     </div>
   </div>
   <div

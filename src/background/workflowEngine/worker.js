@@ -110,8 +110,9 @@ class Worker {
       return;
     }
 
+    const startExecuteTime = Date.now();
     const prevBlock = this.currentBlock;
-    this.currentBlock = block;
+    this.currentBlock = { ...block, startedAt: startExecuteTime };
 
     if (!isRetry) {
       await this.engine.updateState({
@@ -119,8 +120,6 @@ class Worker {
         childWorkflowId: this.childWorkflowId,
       });
     }
-
-    const startExecuteTime = Date.now();
 
     const blockHandler = this.engine.blocksHandler[toCamelCase(block.name)];
     const handler =

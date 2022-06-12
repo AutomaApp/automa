@@ -27,6 +27,10 @@
     "clickHere": "Click here",
     "text": "You need to be signed in before you can do that"
   },
+  "running": {
+    "start": "Started on {date}",
+    "message": "This only display the last 5 logs"
+  },
   "settings": {
     "theme": "Theme",
     "shortcuts": {

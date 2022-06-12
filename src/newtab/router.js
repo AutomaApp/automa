@@ -1,5 +1,4 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import Home from './pages/Home.vue';
 import Welcome from './pages/Welcome.vue';
 import Workflows from './pages/Workflows.vue';
 import WorkflowHost from './pages/workflows/Host.vue';
@@ -8,6 +7,7 @@ import Collections from './pages/Collections.vue';
 import CollectionsDetails from './pages/collections/[id].vue';
 import Logs from './pages/Logs.vue';
 import LogsDetails from './pages/logs/[id].vue';
+import LogsRunning from './pages/logs/Running.vue';
 import Settings from './pages/Settings.vue';
 import SettingsIndex from './pages/settings/SettingsIndex.vue';
 import SettingsAbout from './pages/settings/SettingsAbout.vue';
@@ -19,7 +19,7 @@ const routes = [
   {
     name: 'home',
     path: '/',
-    component: Home,
+    component: Workflows,
   },
   {
     name: 'welcome',
@@ -60,6 +60,11 @@ const routes = [
     name: 'logs-details',
     path: '/logs/:id',
     component: LogsDetails,
+  },
+  {
+    name: 'logs-running',
+    path: '/logs/:id/running',
+    component: LogsRunning,
   },
   {
     path: '/settings',

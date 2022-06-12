@@ -41,9 +41,8 @@
             />
           </button>
           <ui-tab value="editor">{{ t('common.editor') }}</ui-tab>
-          <ui-tab value="logs">{{ t('common.log', 2) }}</ui-tab>
-          <ui-tab value="running" class="flex items-center">
-            {{ t('common.running') }}
+          <ui-tab value="logs" class="flex items-center">
+            {{ t('common.log', 2) }}
             <span
               v-if="workflowState.length > 0"
               class="ml-2 p-1 text-center inline-block text-xs rounded-full bg-accent text-white dark:text-black"
@@ -122,7 +121,12 @@
               />
               <p class="text-xl font-semibold">{{ t('message.noData') }}</p>
             </div>
-            <shared-logs-table :logs="logs" class="w-full">
+            <shared-logs-table
+              :logs="logs"
+              :running="workflowState"
+              hide-select
+              class="w-full"
+            >
               <template #item-append="{ log: itemLog }">
                 <td class="text-right">
                   <v-remixicon
@@ -133,22 +137,6 @@
                 </td>
               </template>
             </shared-logs-table>
-          </template>
-          <template v-else-if="activeTab === 'running'">
-            <div v-if="workflowState.length === 0" class="text-center">
-              <img
-                src="@/assets/svg/files-and-folder.svg"
-                class="mx-auto max-w-sm"
-              />
-              <p class="text-xl font-semibold">{{ t('message.noData') }}</p>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <shared-workflow-state
-                v-for="item in workflowState"
-                :key="item.id"
-                :data="item"
-              />
-            </div>
           </template>
         </div>
       </keep-alive>
@@ -253,7 +241,6 @@ import WorkflowGlobalData from '@/components/newtab/workflow/WorkflowGlobalData.
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
 import WorkflowSharedActions from '@/components/newtab/workflow/WorkflowSharedActions.vue';
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
-import SharedWorkflowState from '@/components/newtab/shared/SharedWorkflowState.vue';
 
 const { t } = useI18n();
 const store = useStore();
