@@ -13,6 +13,7 @@
       <ui-textarea
         id="new-tab-url"
         :model-value="data.url"
+        rows="1"
         class="w-full"
         autocomplete="off"
         placeholder="http://example.com/"
