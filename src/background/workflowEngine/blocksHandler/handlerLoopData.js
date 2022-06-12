@@ -35,15 +35,27 @@ async function loopData({ data, id, outputs }, { refData }) {
           return parseJSON(variableVal, variableVal);
         },
         elements: async () => {
-          const elements = await this._sendMessageToTab({
+          const max = +data.maxLoop || 0;
+          const findBy = isXPath(data.elementSelector)
+            ? 'xpath'
+            : 'cssSelector';
+          const { elements, url, loopId } = await this._sendMessageToTab({
             id,
             name: 'loop-data',
             data: {
+              max,
+              findBy,
               multiple: true,
-              max: +data.maxLoop || 0,
               selector: data.elementSelector,
-              findBy: isXPath(data.elementSelector) ? 'xpath' : 'cssSelector',
             },
+          });
+          this.loopEls.push({
+            url,
+            max,
+            loopId,
+            findBy,
+            blockId: id,
+            selector: data.elementSelector,
           });
 
           return elements;

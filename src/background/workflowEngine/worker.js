@@ -10,6 +10,7 @@ class Worker {
     this.engine = engine;
     this.settings = engine.workflow.settings;
 
+    this.loopEls = [];
     this.loopList = {};
     this.repeatedTasks = {};
     this.preloadScripts = [];
@@ -318,6 +319,7 @@ class Worker {
         isBlock: true,
         debugMode,
         executedBlockOnWeb,
+        loopEls: this.loopEls,
         activeTabId: this.activeTab.id,
         frameSelector: this.frameSelector,
         ...payload,

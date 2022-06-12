@@ -33,9 +33,9 @@
               countDuration(item.state.startedTimestamp, Date.now())
             }}</span>
           </td>
-          <td title="Executing block">
+          <td title="Executing block" class="text-overflow">
             <ui-spinner color="text-accent" size="20" />
-            <span class="align-middle inline-block ml-3">
+            <span class="align-middle inline-block ml-3 text-overflow">
               {{ t(`workflow.blocks.${item.state.currentBlock[0].name}.name`) }}
             </span>
           </td>
