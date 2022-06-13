@@ -42,6 +42,7 @@
       v-model="contextMenu.show"
       :options="contextMenu.position"
       padding="p-3"
+      @close="clearContextMenu"
     >
       <ui-list class="space-y-1 w-52">
         <ui-list-item
@@ -220,6 +221,20 @@ export default {
         active: nodeContent,
       });
     }
+    function getRelativePosToEditor(clientX, clientY) {
+      const { x, y } = editor.value.precanvas.getBoundingClientRect();
+      const { clientWidth, clientHeight } = editor.value.precanvas;
+      const { zoom } = editor.value;
+
+      const xPosition =
+        clientX * (clientWidth / (clientWidth * zoom)) -
+        x * (clientWidth / (clientWidth * zoom));
+      const yPosition =
+        clientY * (clientHeight / (clientHeight * zoom)) -
+        y * (clientHeight / (clientHeight * zoom));
+
+      return { xPosition, yPosition };
+    }
     function dropHandler({ dataTransfer, clientX, clientY, target }) {
       const block = JSON.parse(dataTransfer.getData('block') || null);
 
@@ -302,20 +317,7 @@ export default {
 
       if (block.fromBlockBasic) return;
 
-      const xPosition =
-        clientX *
-          (editor.value.precanvas.clientWidth /
-            (editor.value.precanvas.clientWidth * editor.value.zoom)) -
-        editor.value.precanvas.getBoundingClientRect().x *
-          (editor.value.precanvas.clientWidth /
-            (editor.value.precanvas.clientWidth * editor.value.zoom));
-      const yPosition =
-        clientY *
-          (editor.value.precanvas.clientHeight /
-            (editor.value.precanvas.clientHeight * editor.value.zoom)) -
-        editor.value.precanvas.getBoundingClientRect().y *
-          (editor.value.precanvas.clientHeight /
-            (editor.value.precanvas.clientHeight * editor.value.zoom));
+      const { xPosition, yPosition } = getRelativePosToEditor(clientX, clientY);
 
       const blockId = editor.value.addNode(
         block.id,
@@ -418,7 +420,9 @@ export default {
       activeNode = null;
     }
     function duplicateBlock(nodeId, isPaste = false) {
+      let initialPos = null;
       const nodes = new Map();
+
       const addNode = (id) => {
         const node = editor.value.getNodeFromId(id);
 
@@ -431,6 +435,15 @@ export default {
         store.state.copiedNodes.forEach((node) => {
           nodes.set(node.id, node);
         });
+
+        const pos = contextMenu?.position?.getReferenceClientRect?.() ?? null;
+        if (pos) {
+          const { xPosition, yPosition } = getRelativePosToEditor(
+            pos.left,
+            pos.top
+          );
+          initialPos = { x: xPosition, y: yPosition };
+        }
       } else {
         if (nodeId) addNode(nodeId);
         else if (activeNode) addNode(activeNode.id);
@@ -442,9 +455,11 @@ export default {
         });
       }
 
-      const nodesOutputs = [];
-
       clearSelectedElements();
+
+      const nodesOutputs = [];
+      let firstNodePos = null;
+      let index = 0;
 
       nodes.forEach((node) => {
         const { outputs, inputs } = tasks[node.name];
@@ -455,12 +470,28 @@ export default {
         const blockInputs = inputsLen || inputs;
         const blockOutputs = outputsLen || outputs;
 
+        let nodePosX = node.pos_x;
+        let nodePosY = node.pos_y;
+
+        if (initialPos && index === 0) {
+          firstNodePos = { x: nodePosX, y: nodePosY };
+
+          nodePosX = initialPos.x;
+          nodePosY = initialPos.y;
+        } else if (firstNodePos) {
+          const xDistance = nodePosX - firstNodePos.x;
+          const yDistance = nodePosY - firstNodePos.y;
+
+          nodePosX = initialPos.x + xDistance;
+          nodePosY = initialPos.y + yDistance;
+        }
+
         const newNodeId = editor.value.addNode(
           node.name,
           blockInputs,
           blockOutputs,
-          node.pos_x + 25,
-          node.pos_y + 70,
+          nodePosX + 25,
+          nodePosY + 70,
           node.name,
           node.data,
           node.html,
@@ -483,6 +514,8 @@ export default {
         if (outputsLen > 0) {
           nodesOutputs.push({ id: newNodeId, outputs: node.outputs });
         }
+
+        index += 1;
       });
 
       if (nodesOutputs.length < 1) return;
@@ -639,6 +672,14 @@ export default {
         nodeEl.classList.add('selected-list');
         selectedElements.push(nodeProperties);
       }
+    }
+    function clearContextMenu() {
+      Object.assign(contextMenu, {
+        items: [],
+        data: null,
+        show: false,
+        position: {},
+      });
     }
     function copyBlocks() {
       let nodes = selectedElements;
@@ -897,6 +938,7 @@ export default {
       contextMenu,
       dropHandler,
       handleDragOver,
+      clearContextMenu,
       contextMenuHandler: {
         copyBlocks,
         deleteBlock,
