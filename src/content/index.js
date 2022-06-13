@@ -3,7 +3,6 @@ import findSelector from '@/lib/findSelector';
 import { toCamelCase } from '@/utils/helper';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
-import handleTestCondition from './handleTestCondition';
 import shortcutListener from './services/shortcutListener';
 // import elementObserver from './elementObserver';
 import { elementSelectorInstance } from './utils';
@@ -182,11 +181,6 @@ function messageListener({ data, source }) {
           });
       } else {
         switch (data.type) {
-          case 'condition-builder':
-            handleTestCondition(data.data)
-              .then((result) => resolve(result))
-              .catch((error) => reject(error));
-            break;
           case 'content-script-exists':
             resolve(true);
             break;
