@@ -1,7 +1,7 @@
 <template>
-  <Head>
+  <!-- <Head>
     <link rel="icon" :href="icon" />
-  </Head>
+  </Head> -->
 
   <template v-if="retrieved">
     <app-sidebar />
@@ -100,7 +100,6 @@ import dayjs from '@/lib/dayjs';
 import Workflow from '@/models/workflow';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 import dataMigration from '@/utils/dataMigration';
-import { Head } from '@vueuse/head';
 
 let icon;
 if (window.location.protocol === 'moz-extension:') {
@@ -108,6 +107,11 @@ if (window.location.protocol === 'moz-extension:') {
 } else {
   icon = iconChrome;
 }
+
+const iconElement = document.createElement('link');
+iconElement.rel = 'icon';
+iconElement.href = icon;
+document.head.appendChild(iconElement);
 
 const { t } = useI18n();
 const store = useStore();
