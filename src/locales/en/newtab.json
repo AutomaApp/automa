@@ -8,6 +8,19 @@
     "text": "Get started by reading the documentation or browsing workflows in the Automa Marketplace.",
     "marketplace": "Marketplace"
   },
+  "scheduledWorkflow": {
+    "title": "Scheduled workflows",
+    "nextRun": "Next run",
+    "active": "Active",
+    "refresh": "Refresh",
+    "schedule":{
+      "title": "Schedule",
+      "types": {
+        "general": "Every {time}",
+        "interval": "Every {time} minutes"
+      }
+    }
+  },
   "updateMessage": {
     "text1": "Automa has been updated to v{version},",
     "text2": "see what's new."

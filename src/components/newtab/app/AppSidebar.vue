@@ -110,6 +110,12 @@ const tabs = [
     shortcut: getShortcut('page:workflows', '/workflows'),
   },
   {
+    id: 'schedule',
+    icon: 'riTimeLine',
+    path: '/schedule',
+    shortcut: getShortcut('page:schedule', '/triggers'),
+  },
+  {
     id: 'collection',
     icon: 'riFolderLine',
     path: '/collections',
