@@ -320,7 +320,11 @@ browser.alarms.onAlarm.addListener(async ({ name }) => {
   const currentWorkflow = await workflow.get(name);
   if (!currentWorkflow) return;
 
-  const { data } = findTriggerBlock(JSON.parse(currentWorkflow.drawflow)) || {};
+  const drawflow =
+    typeof currentWorkflow.drawflow === 'string'
+      ? parseJSON(currentWorkflow.drawflow, {})
+      : currentWorkflow.drawflow;
+  const { data } = findTriggerBlock(drawflow) || {};
   if (data && data.type === 'interval' && data.fixedDelay) {
     const workflowState = await workflow.states.get(
       ({ workflowId }) => name === workflowId

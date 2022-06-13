@@ -63,6 +63,26 @@ select:focus,
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+
+.custom-table thead {
+  @apply bg-box-transparent;
+}
+.custom-table thead th {
+  @apply font-semibold;
+}
+.custom-table thead th:first-child {
+  @apply rounded-l-lg;
+}
+.custom-table thead th:last-child {
+  @apply rounded-r-lg;
+}
+.custom-table tbody {
+  @apply divide-y;
+}
+
+
+
 pre {
   font-size: 15px;
 }

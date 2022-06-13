@@ -10,19 +10,23 @@ const defaultShortcut = {
   },
   'page:workflows': {
     id: 'page:workflows',
-    combo: 'option+2',
+    combo: 'option+w',
+  },
+  'page:schedule': {
+    id: 'page:schedule',
+    combo: 'option+t',
   },
   'page:collections': {
     id: 'page:collections',
-    combo: 'option+3',
+    combo: 'option+c',
   },
   'page:logs': {
     id: 'page:logs',
-    combo: 'option+4',
+    combo: 'option+l',
   },
   'page:settings': {
     id: 'page:settings',
-    combo: 'option+5',
+    combo: 'option+s',
   },
   'action:search': {
     id: 'action:search',
