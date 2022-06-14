@@ -24,6 +24,10 @@ const defaultShortcut = {
     id: 'page:logs',
     combo: 'option+l',
   },
+  'page:storage': {
+    id: 'page:storage',
+    combo: 'option+a',
+  },
   'page:settings': {
     id: 'page:settings',
     combo: 'option+s',

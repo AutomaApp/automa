@@ -44,6 +44,9 @@
     "start": "Started on {date}",
     "message": "This only display the last 5 logs"
   },
+  "storage": {
+    "title": "Storage"
+  },
   "settings": {
     "theme": "Theme",
     "shortcuts": {
@@ -199,7 +202,7 @@
       "executeBy": "Executed by: \"{name}\""
     },
     "table": {
-      "title": "Table",
+      "title": "Table | Tables",
       "placeholder": "Search or add column",
       "select": "Select column",
       "column": {
