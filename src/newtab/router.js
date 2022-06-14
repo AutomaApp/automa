@@ -3,6 +3,7 @@ import Welcome from './pages/Welcome.vue';
 import Workflows from './pages/Workflows.vue';
 import WorkflowHost from './pages/workflows/Host.vue';
 import WorkflowDetails from './pages/workflows/[id].vue';
+import ScheduledWorkflow from './pages/ScheduledWorkflow.vue';
 import Collections from './pages/Collections.vue';
 import CollectionsDetails from './pages/collections/[id].vue';
 import Logs from './pages/Logs.vue';
@@ -30,6 +31,11 @@ const routes = [
     name: 'workflows',
     path: '/workflows',
     component: Workflows,
+  },
+  {
+    name: 'schedule',
+    path: '/schedule',
+    component: ScheduledWorkflow,
   },
   {
     name: 'workflows-details',

@@ -24,6 +24,9 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
     const payload = { ...block, data, refData: { variables: {} } };
     if (data.code.includes('automaRefData')) payload.refData = refData;
 
+    if (!data.code.includes('automaNextBlock'))
+      payload.data.code += `\nautomaNextBlock()`;
+
     const result = await this._sendMessageToTab(payload);
 
     if (result) {

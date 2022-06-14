@@ -42,7 +42,7 @@ function checkConditions(data, conditionOptions) {
   });
 }
 
-async function conditions({ data, outputs }, { prevBlockData, refData }) {
+async function conditions({ data, outputs, id }, { prevBlockData, refData }) {
   if (data.conditions.length === 0) {
     throw new Error('conditions-empty');
   }
@@ -62,7 +62,7 @@ async function conditions({ data, outputs }, { prevBlockData, refData }) {
       refData,
       activeTab: this.activeTab.id,
       sendMessage: (payload) =>
-        this._sendMessageToTab({ ...payload, isBlock: false }),
+        this._sendMessageToTab({ ...payload.data, name: 'conditions', id }),
     };
 
     const conditionsResult = await checkConditions(data, conditionPayload);
