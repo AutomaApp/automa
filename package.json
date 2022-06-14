@@ -31,7 +31,7 @@
   "dependencies": {
     "@codemirror/basic-setup": "^0.20.0",
     "@codemirror/fold": "^0.19.4",
-    "@codemirror/lang-javascript": "^0.20.1",
+    "@codemirror/lang-javascript": "^6.0.0",
     "@codemirror/lang-json": "^0.20.0",
     "@codemirror/theme-one-dark": "^0.20.0",
     "@medv/finder": "^2.1.0",
@@ -47,7 +47,7 @@
     "compare-versions": "^4.1.2",
     "crypto-js": "^4.1.1",
     "css-selector-generator": "^3.6.0",
-    "dayjs": "^1.10.7",
+    "dayjs": "^1.11.3",
     "defu": "^6.0.0",
     "dexie": "^3.2.2",
     "drawflow": "^0.0.58",
