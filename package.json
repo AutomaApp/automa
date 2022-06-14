@@ -80,6 +80,7 @@
     "archiver": "^5.3.0",
     "autoprefixer": "10.3.6",
     "babel-loader": "^8.2.2",
+    "bumpp": "^7.1.1",
     "clean-webpack-plugin": "4.0.0",
     "copy-webpack-plugin": "9.0.1",
     "core-js": "3",
