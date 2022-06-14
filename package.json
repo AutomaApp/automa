@@ -31,11 +31,11 @@
   "dependencies": {
     "@codemirror/basic-setup": "^0.20.0",
     "@codemirror/fold": "^0.19.4",
-    "@codemirror/lang-javascript": "^0.20.1",
+    "@codemirror/lang-javascript": "^6.0.0",
     "@codemirror/lang-json": "^0.20.0",
     "@codemirror/theme-one-dark": "^0.20.0",
     "@medv/finder": "^2.1.0",
-    "@tiptap/extension-character-count": "^2.0.0-beta.24",
+    "@tiptap/extension-character-count": "^2.0.0-beta.26",
     "@tiptap/extension-image": "^2.0.0-beta.25",
     "@tiptap/extension-link": "^2.0.0-beta.36",
     "@tiptap/extension-placeholder": "^2.0.0-beta.48",
