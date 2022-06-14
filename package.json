@@ -31,7 +31,7 @@
   "dependencies": {
     "@codemirror/basic-setup": "^0.20.0",
     "@codemirror/fold": "^0.19.4",
-    "@codemirror/lang-javascript": "^0.20.1",
+    "@codemirror/lang-javascript": "^6.0.0",
     "@codemirror/lang-json": "^0.20.0",
     "@codemirror/theme-one-dark": "^0.20.0",
     "@medv/finder": "^2.1.0",
@@ -107,7 +107,7 @@
     "tailwindcss": "^3.0.7",
     "terser-webpack-plugin": "5.2.4",
     "vue-loader": "^17.0.0",
-    "webpack": "5.55.1",
+    "webpack": "5.73.0",
     "webpack-cli": "4.9.2",
     "webpack-dev-server": "3.11.2"
   }
