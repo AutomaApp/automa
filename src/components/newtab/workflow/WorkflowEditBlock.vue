@@ -107,6 +107,7 @@ export default {
         $date: '',
         $randint: '',
         $getLength: '',
+        $randData: '',
       },
     });
 

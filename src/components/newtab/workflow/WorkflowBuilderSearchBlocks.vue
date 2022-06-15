@@ -15,11 +15,13 @@
       <v-remixicon name="riSearch2Line" />
     </button>
     <ui-autocomplete
+      ref="autocompleteEl"
       :model-value="state.query"
       :items="state.autocompleteItems"
       :custom-filter="searchNodes"
       item-key="id"
       item-label="name"
+      @cancel="blurInput"
       @select="onSelectItem"
       @selected="onItemSelected"
     >
@@ -51,7 +53,7 @@
 </template>
 <script setup>
 /* eslint-disable vue/no-mutating-props */
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useShortcut } from '@/composable/shortcut';
 
@@ -71,6 +73,8 @@ const initialState = {
   canvasX: 0,
   canvasY: 0,
 };
+
+const autocompleteEl = ref(null);
 const state = reactive({
   query: '',
   active: false,
@@ -142,11 +146,15 @@ function clearState() {
     canvasY: 0,
   });
 
+  autocompleteEl.value.state.showPopover = false;
   clearHighlightedNodes();
 
   setTimeout(() => {
     props.editor.precanvas.style.transition = '';
   }, 500);
+}
+function blurInput() {
+  document.querySelector('#search-blocks')?.blur();
 }
 function onSelectItem({ item }) {
   if (props.editor.zoom !== 1) {
@@ -170,6 +178,7 @@ function onSelectItem({ item }) {
 function onItemSelected(event) {
   state.selected = true;
   onSelectItem(event);
+  blurInput();
 }
 </script>
 <style scoped>

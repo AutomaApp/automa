@@ -360,6 +360,10 @@ onMounted(() => {
 onBeforeUnmount(() => {
   detachEvents();
 });
+
+defineExpose({
+  state,
+});
 </script>
 <style>
 .ui-autocomplete.block,
