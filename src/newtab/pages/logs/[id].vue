@@ -1,6 +1,21 @@
 <template>
   <div v-if="currentLog.id" class="container pt-8 pb-4">
     <div class="flex items-center">
+      <router-link
+        v-if="state.goBackBtn"
+        v-slot="{ navigate }"
+        :to="backHistory"
+        custom
+      >
+        <button
+          v-tooltip:bottom="t('workflow.blocks.go-back.name')"
+          role="button"
+          class="h-12 px-1 transition mr-2 bg-input rounded-lg dark:text-gray-300 text-gray-600"
+          @click="navigate"
+        >
+          <v-remixicon name="riArrowLeftSLine" />
+        </button>
+      </router-link>
       <div>
         <h1 class="text-2xl max-w-md text-overflow font-semibold">
           {{ currentLog.name }}
@@ -74,6 +89,7 @@ const router = useRouter();
 const ctxData = shallowRef({});
 const parentLog = shallowRef(null);
 
+const backHistory = window.history.state.back;
 const tabs = [
   { id: 'logs', name: t('common.log', 2) },
   { id: 'table', name: t('workflow.table.title') },
@@ -83,6 +99,7 @@ const tabs = [
 const state = shallowReactive({
   activeTab: 'logs',
   workflowExists: false,
+  goBackBtn: ['/logs', '/workflows'].some((str) => backHistory?.includes(str)),
 });
 const tableData = shallowReactive({
   converted: false,
@@ -103,8 +120,6 @@ function deleteLog() {
     .equals(route.params.id)
     .delete()
     .then(() => {
-      const backHistory = window.history.state.back;
-
       if (backHistory.startsWith('/workflows')) {
         router.replace(backHistory);
         return;
@@ -114,7 +129,6 @@ function deleteLog() {
     });
 }
 function goToWorkflow() {
-  const backHistory = window.history.state.back;
   let path = `/workflows/${currentLog.value.workflowId}`;
 
   if (backHistory.startsWith(path)) {

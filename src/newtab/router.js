@@ -20,6 +20,7 @@ const routes = [
   {
     name: 'home',
     path: '/',
+    redirect: '/workflows',
     component: Workflows,
   },
   {
