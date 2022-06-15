@@ -174,18 +174,19 @@ class WorkflowEngine {
   }
 
   addLogHistory(detail) {
-    if (detail.name === 'blocks-group') return;
+    if (['blocks-group', 'delay'].includes(detail.name)) return;
 
     const isLimit = this.history.length >= 1001;
     const notErrorLog = detail.type !== 'error';
 
-    if (!this.saveLog && isLimit && notErrorLog) return;
+    if ((isLimit || !this.saveLog) && notErrorLog) return;
 
     this.logHistoryId += 1;
     detail.id = this.logHistoryId;
 
     if (
       detail.replacedValue ||
+      detail.name === 'javascript-code' ||
       (tasks[detail.name]?.refDataKeys && this.saveLog)
     ) {
       const { activeTabUrl, variables, loopData } = JSON.parse(

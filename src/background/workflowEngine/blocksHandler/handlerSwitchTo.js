@@ -1,4 +1,4 @@
-import { objectHasKey } from '@/utils/helper';
+import { objectHasKey, sleep } from '@/utils/helper';
 import { getBlockConnection, getFrames } from '../helper';
 
 async function switchTo(block) {
@@ -34,7 +34,7 @@ async function switchTo(block) {
     if (objectHasKey(frames, url)) {
       this.activeTab.frameId = frames[url];
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await sleep(1000);
 
       return {
         data: this.activeTab.frameId,

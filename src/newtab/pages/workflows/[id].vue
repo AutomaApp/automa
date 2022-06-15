@@ -114,7 +114,10 @@
         </workflow-builder>
         <div v-else class="container pb-4 mt-24 px-4">
           <template v-if="activeTab === 'logs'">
-            <div v-if="!logs || logs.length === 0" class="text-center">
+            <div
+              v-if="(!logs || logs.length === 0) && workflowState.length === 0"
+              class="text-center"
+            >
               <img
                 src="@/assets/svg/files-and-folder.svg"
                 class="mx-auto max-w-sm"

@@ -2,6 +2,7 @@ import browser from 'webextension-polyfill';
 import { toCamelCase, sleep, objectHasKey, isObject } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
 import referenceData from '@/utils/referenceData';
+import injectContentScript from './injectContentScript';
 import { convertData, waitTabLoaded, getBlockConnection } from './helper';
 
 class Worker {
@@ -335,6 +336,15 @@ class Worker {
     } catch (error) {
       console.error(error);
       if (error.message?.startsWith('Could not establish connection')) {
+        const isScriptInjected = await injectContentScript(
+          this.activeTab.id,
+          this.activeTab.frameId
+        );
+
+        if (isScriptInjected) {
+          const result = await this._sendMessageToTab(payload, options);
+          return result;
+        }
         error.message = 'Could not establish connection to the active tab';
       } else if (error.message?.startsWith('No tab')) {
         error.message = 'active-tab-removed';

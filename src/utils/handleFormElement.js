@@ -1,3 +1,4 @@
+import { sleep } from '@/utils/helper';
 import { keyDefinitions } from '@/utils/USKeyboardLayout';
 import simulateEvent from './simulateEvent';
 
@@ -66,7 +67,7 @@ async function inputText({ data, element, isEditable }) {
         isEditable,
       });
 
-      await new Promise((r) => setTimeout(r, data.delay));
+      await sleep(data.delay);
     }
   } else {
     element[elementKey] += data.value;
