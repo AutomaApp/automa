@@ -281,14 +281,6 @@ function autoDeleteLogs() {
       localStorage.setItem('checkDeleteLogs', Date.now());
     });
 }
-function handleStorageChanged(change) {
-  if (change.logs) {
-    store.dispatch('entities/create', {
-      entity: 'logs',
-      data: change.logs.newValue,
-    });
-  }
-}
 function closeModal() {
   let value = true;
 
@@ -315,12 +307,6 @@ function checkModal() {
     modalState.show = false;
   }
 }
-
-browser.storage.onChanged.addListener(handleStorageChanged);
-
-window.addEventListener('beforeunload', () => {
-  browser.storage.onChanged.removeListener(handleStorageChanged);
-});
 
 window.addEventListener('storage', ({ key, newValue }) => {
   if (key !== 'workflowState') return;

@@ -52,6 +52,7 @@
       style="max-height: 600px"
     />
     <ui-table
+      v-show="state.activeTab === 'table'"
       :headers="tableData.header"
       :items="rows"
       :search="state.query"

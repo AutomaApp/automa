@@ -30,9 +30,9 @@
     "*.{js,ts,vue}": "eslint --fix"
   },
   "dependencies": {
-    "@codemirror/fold": "^0.19.4",
     "@codemirror/lang-javascript": "^6.0.0",
-    "@codemirror/lang-json": "^0.20.0",
+    "@codemirror/lang-json": "^6.0.0",
+    "@codemirror/language": "^6.0.0",
     "@codemirror/theme-one-dark": "^6.0.0",
     "@medv/finder": "^2.1.0",
     "@tiptap/extension-character-count": "^2.0.0-beta.24",
