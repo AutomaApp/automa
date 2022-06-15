@@ -50,6 +50,7 @@
   </div>
 </template>
 <script setup>
+/* eslint-disable vue/no-mutating-props */
 import { reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useShortcut } from '@/composable/shortcut';
@@ -115,6 +116,8 @@ function extractBlocks() {
       name: t(`workflow.blocks.${name}.name`),
     })
   );
+
+  props.editor.precanvas.style.transition = 'transform 250ms ease';
 }
 function clearState() {
   if (!state.selected) {
@@ -133,6 +136,10 @@ function clearState() {
     canvasX: 0,
     canvasY: 0,
   });
+
+  setTimeout(() => {
+    props.editor.precanvas.style.transition = '';
+  }, 500);
 }
 function onSelectItem({ item }) {
   if (props.editor.zoom !== 1) {

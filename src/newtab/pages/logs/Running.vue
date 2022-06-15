@@ -80,6 +80,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { countDuration } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
+import dbLogs from '@/db/logs';
 import dayjs from '@/lib/dayjs';
 import LogsHistory from '@/components/newtab/logs/LogsHistory.vue';
 
@@ -103,9 +104,19 @@ function stopWorkflow() {
 
 watch(
   running,
-  () => {
+  async () => {
     if (!running.value && route.params.id) {
-      router.replace('/logs');
+      const log = await dbLogs.items
+        .where('id')
+        .equals(route.params.id)
+        .first();
+      let path = 'logs';
+
+      if (log) {
+        path = `/logs/${route.params.id}`;
+      }
+
+      router.replace(path);
     }
   },
   { immediate: true }
