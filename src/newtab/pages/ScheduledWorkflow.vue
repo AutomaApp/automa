@@ -8,52 +8,43 @@
       prepend-icon="riSearch2Line"
       :placeholder="t('common.search')"
     />
-    <table class="w-full mt-4 custom-table">
-      <thead>
-        <tr class="text-left font-semibold">
-          <th class="w-3/12">{{ t('common.name') }}</th>
-          <th class="w-4/12">{{ t('scheduledWorkflow.schedule.title') }}</th>
-          <th>{{ t('scheduledWorkflow.nextRun') }}</th>
-          <th class="text-center">{{ t('scheduledWorkflow.active') }}</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="trigger in triggers" :key="trigger.id" class="hoverable">
-          <td>
-            <router-link
-              :to="`/workflows/${trigger.workflowId}`"
-              class="block h-full w-full"
-              style="min-height: 20px"
-            >
-              {{ trigger.name }}
-            </router-link>
-          </td>
-          <td v-tooltip="{ content: trigger.scheduleDetail, allowHTML: true }">
-            {{ trigger.schedule }}
-          </td>
-          <td>
-            {{ trigger.nextRun }}
-          </td>
-          <td class="text-center">
-            <v-remixicon
-              v-if="trigger.active"
-              class="text-green-500 dark:text-green-400 inline-block"
-              name="riCheckLine"
-            />
-          </td>
-          <td class="text-right">
-            <button
-              v-tooltip="t('scheduledWorkflow.refresh')"
-              class="rounded-md text-gray-600 dark:text-gray-300"
-              @click="refreshSchedule(trigger.id)"
-            >
-              <v-remixicon name="riRefreshLine" />
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <ui-table
+      :headers="tableHeaders"
+      :items="triggers"
+      item-key="id"
+      class="w-full mt-4"
+    >
+      <template #item-name="{ item }">
+        <router-link
+          :to="`/workflows/${item.workflowId}`"
+          class="block h-full w-full"
+          style="min-height: 20px"
+        >
+          {{ item.name }}
+        </router-link>
+      </template>
+      <template #item-schedule="{ item }">
+        <p v-tooltip="{ content: item.scheduleDetail, allowHTML: true }">
+          {{ item.schedule }}
+        </p>
+      </template>
+      <template #item-active="{ item }">
+        <v-remixicon
+          v-if="item.active"
+          class="text-green-500 dark:text-green-400 inline-block"
+          name="riCheckLine"
+        />
+      </template>
+      <template #item-action="{ item }">
+        <button
+          v-tooltip="t('scheduledWorkflow.refresh')"
+          class="rounded-md text-gray-600 dark:text-gray-300"
+          @click="refreshSchedule(item.id)"
+        >
+          <v-remixicon name="riRefreshLine" />
+        </button>
+      </template>
+    </ui-table>
   </div>
 </template>
 <script setup>
@@ -76,6 +67,38 @@ const state = reactive({
 
 let rowId = 0;
 const scheduledTypes = ['interval', 'date', 'specific-day'];
+const tableHeaders = [
+  {
+    value: 'name',
+    filterable: true,
+    text: t('common.name'),
+    attrs: {
+      class: 'w-3/12',
+    },
+  },
+  {
+    value: 'schedule',
+    text: t('scheduledWorkflow.schedule.title'),
+    attrs: {
+      class: 'w-4/12',
+    },
+  },
+  {
+    value: 'nextRun',
+    text: t('scheduledWorkflow.nextRun'),
+  },
+  {
+    value: 'active',
+    align: 'center',
+    text: t('scheduledWorkflow.active'),
+  },
+  {
+    value: 'action',
+    text: '',
+    sortable: false,
+    align: 'right',
+  },
+];
 
 const triggers = computed(() =>
   state.triggers.filter(({ name }) =>

@@ -7,7 +7,6 @@ import ScheduledWorkflow from './pages/ScheduledWorkflow.vue';
 import Collections from './pages/Collections.vue';
 import CollectionsDetails from './pages/collections/[id].vue';
 import Logs from './pages/Logs.vue';
-import Storage from './pages/Storage.vue';
 import LogsDetails from './pages/logs/[id].vue';
 import LogsRunning from './pages/logs/Running.vue';
 import Settings from './pages/Settings.vue';
@@ -32,11 +31,6 @@ const routes = [
     name: 'workflows',
     path: '/workflows',
     component: Workflows,
-  },
-  {
-    name: 'storage',
-    path: '/storage',
-    component: Storage,
   },
   {
     name: 'schedule',

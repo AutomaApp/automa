@@ -42,7 +42,7 @@
           :key="header.value"
           :align="header.align"
         >
-          <slot :name="`item-${header.value}`">
+          <slot :name="`item-${header.value}`" :item="item">
             {{ item[header.value] }}
           </slot>
         </td>
@@ -89,10 +89,12 @@ const sortState = reactive({
 });
 
 const filteredItems = computed(() => {
+  if (!props.search) return props.items;
+
   const filterFunc =
     props.customFilter ||
     ((search, item) => {
-      return table.filterKeys.every((key) =>
+      return table.filterKeys.some((key) =>
         item[key].toLocaleLowerCase().includes(search)
       );
     });

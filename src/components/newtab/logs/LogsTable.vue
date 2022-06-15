@@ -16,6 +16,14 @@
         <ui-tab value="raw"> Raw </ui-tab>
       </ui-tabs>
       <div class="flex-grow"></div>
+      <ui-input
+        v-if="state.activeTab === 'table'"
+        v-model="state.query"
+        :placeholder="t('common.search')"
+        class="mr-4"
+        prepend-icon="riSearch2Line"
+        type="search"
+      />
       <ui-popover trigger-width>
         <template #trigger>
           <ui-button variant="accent">
@@ -43,28 +51,13 @@
       lang="json"
       style="max-height: 600px"
     />
-    <table v-show="state.activeTab === 'table'" class="w-full">
-      <thead>
-        <tr>
-          <th
-            v-for="header in tableData.header"
-            :key="header"
-            class="last:rounded-r-lg first:rounded-l-lg text-left bg-box-transparent"
-          >
-            {{ header }}
-          </th>
-        </tr>
-      </thead>
-      <tbody class="divide-y">
-        <tr v-for="(row, index) in rows" :key="index">
-          <td v-for="(column, colIndex) in row" :key="index + colIndex">
-            <p class="line-clamp">
-              {{ column }}
-            </p>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <ui-table
+      :headers="tableData.header"
+      :items="rows"
+      :search="state.query"
+      item-key="id"
+      class="w-full"
+    />
     <div
       v-if="
         state.activeTab === 'table' &&
@@ -122,6 +115,7 @@ const props = defineProps({
 const { t } = useI18n();
 
 const state = shallowReactive({
+  query: '',
   activeTab: 'table',
 });
 const pagination = shallowReactive({

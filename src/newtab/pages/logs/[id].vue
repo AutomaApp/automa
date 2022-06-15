@@ -127,11 +127,16 @@ function convertToTableData() {
   const data = currentLog.value.data?.table;
   if (!data) return;
 
-  const [header, ...body] = convertArrObjTo2DArr(data);
+  const [header] = convertArrObjTo2DArr(data);
 
-  tableData.body = body;
-  tableData.header = header;
   tableData.converted = true;
+  tableData.body = data.map((item, index) => ({ ...item, id: index + 1 }));
+  tableData.header = header.map((name) => ({
+    text: name,
+    value: name,
+    filterable: true,
+  }));
+  tableData.header.unshift({ value: 'id', text: '', sortable: false });
 }
 function onTabChange(value) {
   if (value === 'table' && !tableData.converted) {

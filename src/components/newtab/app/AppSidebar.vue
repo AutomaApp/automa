@@ -116,12 +116,6 @@ const tabs = [
     shortcut: getShortcut('page:schedule', '/triggers'),
   },
   {
-    id: 'storage',
-    icon: 'riHardDrive2Line',
-    path: '/storage',
-    shortcut: getShortcut('page:storage', '/storage'),
-  },
-  {
     id: 'collection',
     icon: 'riFolderLine',
     path: '/collections',
