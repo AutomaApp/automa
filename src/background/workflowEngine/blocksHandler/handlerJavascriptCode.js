@@ -28,7 +28,6 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
       payload.data.code += `\nautomaNextBlock()`;
 
     const result = await this._sendMessageToTab(payload);
-
     if (result) {
       if (result.columns.data?.$error) {
         throw new Error(result.columns.data.message);

@@ -14,10 +14,10 @@ function automaSetVariable(name, value) {
   ${varName}.variables[name] = value;
 }
 function automaNextBlock(data, insert = true) {
-  window.dispatchEvent(new CustomEvent('__automa-next-block__', { detail: { data, insert, refData: ${varName} } }));
+  document.body.dispatchEvent(new CustomEvent('__automa-next-block__', { detail: { data, insert, refData: ${varName} } }));
 }
 function automaResetTimeout() {
- window.dispatchEvent(new CustomEvent('__automa-reset-timeout__'));
+ document.body.dispatchEvent(new CustomEvent('__automa-reset-timeout__'));
 }
   `;
 
@@ -127,10 +127,13 @@ function javascriptCode(block) {
           });
         };
 
-        window.addEventListener('__automa-next-block__', ({ detail }) => {
-          cleanUp(detail || {});
-        });
-        window.addEventListener('__automa-reset-timeout__', () => {
+        documentCtx.body.addEventListener(
+          '__automa-next-block__',
+          ({ detail }) => {
+            cleanUp(detail || {});
+          }
+        );
+        documentCtx.body.addEventListener('__automa-reset-timeout__', () => {
           clearTimeout(timeout);
 
           timeout = setTimeout(cleanUp, block.data.timeout);
