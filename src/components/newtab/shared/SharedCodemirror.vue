@@ -16,9 +16,10 @@ import { onMounted, ref, onBeforeUnmount, watch } from 'vue';
 import { json } from '@codemirror/lang-json';
 import { indentWithTab } from '@codemirror/commands';
 import { oneDark } from '@codemirror/theme-one-dark';
-import { EditorView, keymap } from '@codemirror/view';
+import { keymap } from '@codemirror/view';
 import { javascript } from '@codemirror/lang-javascript';
-import { EditorState, basicSetup } from '@codemirror/basic-setup';
+import { EditorState } from '@codemirror/state';
+import { EditorView, basicSetup } from 'codemirror';
 
 const props = defineProps({
   lang: {

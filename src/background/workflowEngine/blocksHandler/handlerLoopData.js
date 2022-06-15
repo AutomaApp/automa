@@ -32,6 +32,8 @@ async function loopData({ data, id, outputs }, { refData }) {
         variable: () => {
           const variableVal = refData.variables[data.variableName];
 
+          if (Array.isArray(variableVal)) return variableVal;
+
           return parseJSON(variableVal, variableVal);
         },
         elements: async () => {
