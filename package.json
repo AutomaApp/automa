@@ -17,7 +17,8 @@
     "dev": "node utils/webserver.js",
     "dev:firefox": "cross-env BROWSER=firefox yarn dev",
     "prettier": "prettier --write '**/*.{js,jsx,css,html}'",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "release": "bumpp --tag --commit --push"
   },
   "engines": {
     "node": ">=14.18.1"
@@ -80,6 +81,7 @@
     "archiver": "^5.3.1",
     "autoprefixer": "10.3.6",
     "babel-loader": "^8.2.2",
+    "bumpp": "^7.1.1",
     "clean-webpack-plugin": "4.0.0",
     "copy-webpack-plugin": "9.0.1",
     "core-js": "3",
