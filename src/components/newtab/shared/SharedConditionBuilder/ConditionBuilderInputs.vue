@@ -119,10 +119,8 @@ function getDefaultValues(items) {
   return items.map((item) => defaultValues[item]);
 }
 function filterValueTypes(index) {
-  const exclude = ['element#visible', 'element#invisible'];
-
   return conditionBuilder.valueTypes.reduce((acc, item) => {
-    if (index < 1 || !exclude.includes(item.id)) {
+    if (index < 1 || item.compareable) {
       (acc[item.category] = acc[item.category] || []).push(item);
     }
 
