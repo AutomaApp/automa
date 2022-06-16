@@ -28,7 +28,7 @@ async function exportData({ data, outputs }, { refData }) {
     const blobUrl = dataExporter(payload, {
       ...data,
       csvOptions: {
-        delimiter: data.csvDelimiter,
+        delimiter: data.csvDelimiter || ',',
       },
       returnUrl: hasDownloadAccess,
     });

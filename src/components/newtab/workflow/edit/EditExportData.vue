@@ -88,7 +88,7 @@
           :model-value="data.csvDelimiter"
           label="Delimiter"
           class="mt-1"
-          placeholder="(auto-detect)"
+          placeholder=","
           @change="updateData({ csvDelimiter: $event })"
         />
       </div>
