@@ -165,10 +165,6 @@ const options = {
             };
             const isChrome = env.BROWSER === 'chrome';
 
-            if (env.NODE_ENV === 'development' && !isChrome) {
-              manifestObj.content_security_policy =
-                "script-src 'self' 'unsafe-eval'; object-src 'self'";
-            }
             if (manifestObj.version.includes('-')) {
               const [version, preRelease] = manifestObj.version.split('-');
 

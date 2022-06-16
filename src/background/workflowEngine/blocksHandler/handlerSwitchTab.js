@@ -12,6 +12,7 @@ export default async function ({ data, outputs }) {
     return error;
   };
   this.windowId = null;
+  const activeTab = data.activeTab ?? true;
   let [tab] = await browser.tabs.query({ url: data.matchPattern });
 
   if (!tab) {
@@ -21,7 +22,7 @@ export default async function ({ data, outputs }) {
       }
 
       tab = await browser.tabs.create({
-        active: true,
+        active: activeTab,
         url: data.url,
         windowId: this.windowId,
       });
@@ -29,7 +30,7 @@ export default async function ({ data, outputs }) {
       throw generateError('no-match-tab', { pattern: data.matchPattern });
     }
   } else {
-    await browser.tabs.update(tab.id, { active: true });
+    await browser.tabs.update(tab.id, { active: activeTab });
   }
 
   if (this.settings.debugMode) {

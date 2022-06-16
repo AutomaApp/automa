@@ -125,6 +125,7 @@ export const tasks = {
       description: '',
       url: '',
       matchPattern: '',
+      activeTab: true,
       createIfNoMatch: false,
     },
   },

@@ -41,6 +41,13 @@
         @change="updateData({ url: $event })"
       />
     </edit-autocomplete>
+    <ui-checkbox
+      :model-value="data.activeTab"
+      class="my-2"
+      @change="updateData({ activeTab: $event })"
+    >
+      {{ t('workflow.blocks.new-tab.activeTab') }}
+    </ui-checkbox>
   </div>
 </template>
 <script setup>
