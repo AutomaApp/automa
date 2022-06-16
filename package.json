@@ -102,7 +102,7 @@
     "lint-staged": "^13.0.1",
     "mini-css-extract-plugin": "^2.3.0",
     "postcss": "8.4.14",
-    "postcss-loader": "^6.1.1",
+    "postcss-loader": "^7.0.0",
     "prettier": "^2.6.2",
     "simple-git-hooks": "^2.6.1",
     "source-map-loader": "3.0.0",
