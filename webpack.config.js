@@ -109,12 +109,11 @@ const options = {
       },
       {
         test: new RegExp(`.(${fileExtensions.join('|')})$`),
-        loader: 'file-loader',
-        type: 'javascript/auto',
-        options: {
-          name: '[name].[ext]',
+        type: 'asset/resource',
+        dependency: { not: [/node_modules/] },
+        generator: {
+          filename: '[name].[ext]',
         },
-        exclude: /node_modules/,
       },
       {
         test: /\.js$/,
@@ -145,8 +144,7 @@ const options = {
     new webpack.ProgressPlugin(),
     // clean the build folder
     new CleanWebpackPlugin({
-      verbose: true,
-      cleanStaleWebpackAssets: true,
+      verbose: false,
     }),
     // expose and write the allowed env vars on the compiled bundle
     new webpack.EnvironmentPlugin(['NODE_ENV']),
