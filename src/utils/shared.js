@@ -1206,6 +1206,12 @@ export const conditionBuilder = {
   ],
   compareTypes: [
     { id: 'eq', name: 'Equals', needValue: true, category: 'basic' },
+    {
+      id: 'eqi',
+      name: 'Equals (case insensitive)',
+      needValue: true,
+      category: 'basic',
+    },
     { id: 'nq', name: 'Not equals', needValue: true, category: 'basic' },
     { id: 'gt', name: 'Greater than', needValue: true, category: 'number' },
     {
