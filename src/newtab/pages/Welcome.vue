@@ -1,41 +1,45 @@
 <template>
   <div class="py-16 max-w-xl mx-auto">
-    <h1 class="font-semibold text-4xl mb-8">
+    <h1 class="font-semibold text-2xl mb-8">
       {{ t('welcome.title') }}
     </h1>
-    <p class="text-lg">
-      {{ t('welcome.text') }}
+    <p>
+      Get started by reading the documentation or browsing workflows in the
+      Automa Marketplace. <br />
+      To learn how to use Automa, watch the tutorials on our YouTube Channel.
     </p>
     <div class="mt-8 space-x-2 flex items-center">
-      <ui-button
-        tag="a"
-        href="https://docs.automa.site"
-        target="_blank"
-        rel="noopener"
-      >
-        <v-remixicon name="riBook3Line" class="-ml-1 mr-2" />
-        {{ t('common.docs') }}
-      </ui-button>
-      <ui-button
-        tag="a"
-        href="https://automa.site/workflows"
-        target="_blank"
-        rel="noopener"
-      >
-        <v-remixicon name="riCompass3Line" class="-ml-1 mr-2" />
-        {{ t('welcome.marketplace') }}
-      </ui-button>
-      <ui-button
+      <a
         v-for="link in links"
         :key="link.name"
         :href="link.url"
-        icon
-        tag="a"
         target="_blank"
-        class="inline-block p-2 rounded-lg transition hoverable"
+        rel="noopener"
+        class="p-4 rounded-lg hoverable transition border-2 w-40"
       >
-        <v-remixicon :name="link.icon" />
-      </ui-button>
+        <v-remixicon size="28" :name="link.icon" />
+        <p class="mt-2">
+          {{ link.name }}
+        </p>
+      </a>
+    </div>
+    <div class="mt-8">
+      <p>{{ t('home.communities') }}</p>
+      <div class="space-x-2 flex items-center mt-2">
+        <a
+          v-for="link in communities"
+          :key="link.name"
+          :href="link.url"
+          target="_blank"
+          rel="noopener"
+          class="p-4 rounded-lg hoverable transition border-2 w-40"
+        >
+          <v-remixicon size="28" :name="link.icon" />
+          <p class="mt-2">
+            {{ link.name }}
+          </p>
+        </a>
+      </div>
     </div>
   </div>
 </template>
@@ -44,11 +48,11 @@ import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
-const links = [
+const communities = [
   {
     name: 'GitHub',
     icon: 'riGithubFill',
-    url: 'https://github.com/kholid060/automa',
+    url: 'https://github.com/AutomaApp/automa',
   },
   {
     name: 'Twitter',
@@ -59,6 +63,23 @@ const links = [
     name: 'Discord',
     icon: 'riDiscordLine',
     url: 'https://discord.gg/C6khwwTE84',
+  },
+];
+const links = [
+  {
+    name: t('common.docs'),
+    icon: 'riBook3Line',
+    url: 'https://docs.automa.site',
+  },
+  {
+    name: t('welcome.marketplace'),
+    icon: 'riCompass3Line',
+    url: 'https://www.automa.site/workflows',
+  },
+  {
+    name: 'YouTube',
+    icon: 'riYoutubeLine',
+    url: 'https://youtube.com/channel/UCL3qU64hW0fsIj2vOayOQUQ',
   },
 ];
 </script>

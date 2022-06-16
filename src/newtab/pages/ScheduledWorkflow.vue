@@ -34,6 +34,7 @@
           class="text-green-500 dark:text-green-400 inline-block"
           name="riCheckLine"
         />
+        <span v-else></span>
       </template>
       <template #item-action="{ item }">
         <button
@@ -120,9 +121,13 @@ function scheduleText(data) {
 
         return day;
       });
-      text.schedule = t('scheduledWorkflow.schedule.types.general', {
-        time: days.join(', '),
-      });
+
+      text.schedule =
+        data.days.length >= 6
+          ? t('scheduledWorkflow.schedule.types.everyDay')
+          : t('scheduledWorkflow.schedule.types.general', {
+              time: days.join(', '),
+            });
       break;
     }
     case 'interval':

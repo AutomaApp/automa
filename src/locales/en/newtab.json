@@ -16,6 +16,7 @@
     "schedule":{
       "title": "Schedule",
       "types": {
+        "everyDay": "Every day",
         "general": "Every {time}",
         "interval": "Every {time} minutes"
       }
