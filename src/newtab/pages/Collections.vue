@@ -9,7 +9,7 @@
       </div>
       <div class="flex items-center px-4 py-2 bg-red-400 text-white rounded-lg">
         <v-remixicon name="riErrorWarningLine" class="-ml-1" />
-        <p class="ml-2">This feature will be removed in the next update</p>
+        <p class="ml-2">This feature will be removed in the future update</p>
       </div>
     </div>
     <div class="flex items-center my-6 space-x-4">

@@ -18,7 +18,7 @@
           class="p-0.5 rounded-lg"
         >
           <img
-            :src="require(`@/assets/images/${item.id}.png`).default"
+            :src="require(`@/assets/images/${item.id}.png`)"
             width="140"
             class="rounded-lg"
           />
