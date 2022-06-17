@@ -86,7 +86,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "core-js": "3",
     "cross-env": "^7.0.3",
-    "css-loader": "5.2.7",
+    "css-loader": "6.7.1",
     "eslint": "7.32.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.3.0",
