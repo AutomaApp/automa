@@ -68,12 +68,11 @@
         </ui-select>
       </div>
     </ui-popover>
-    <ui-button
-      v-tooltip:bottom="t('log.clearLogs.title')"
-      icon
-      @click="$emit('clear')"
-    >
-      <v-remixicon name="riDeleteBin7Line" />
+    <ui-button @click="$emit('clear')">
+      <v-remixicon name="riDeleteBin7Line" class="mr-2 -ml-1" />
+      <span>
+        {{ t('log.clearLogs.title') }}
+      </span>
     </ui-button>
   </div>
 </template>

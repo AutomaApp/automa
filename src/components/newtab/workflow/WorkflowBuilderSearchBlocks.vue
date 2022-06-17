@@ -15,11 +15,13 @@
       <v-remixicon name="riSearch2Line" />
     </button>
     <ui-autocomplete
+      ref="autocompleteEl"
       :model-value="state.query"
       :items="state.autocompleteItems"
       :custom-filter="searchNodes"
       item-key="id"
       item-label="name"
+      @cancel="blurInput"
       @select="onSelectItem"
       @selected="onItemSelected"
     >
@@ -50,7 +52,8 @@
   </div>
 </template>
 <script setup>
-import { reactive } from 'vue';
+/* eslint-disable vue/no-mutating-props */
+import { reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useShortcut } from '@/composable/shortcut';
 
@@ -70,6 +73,8 @@ const initialState = {
   canvasX: 0,
   canvasY: 0,
 };
+
+const autocompleteEl = ref(null);
 const state = reactive({
   query: '',
   active: false,
@@ -115,6 +120,13 @@ function extractBlocks() {
       name: t(`workflow.blocks.${name}.name`),
     })
   );
+
+  props.editor.precanvas.style.transition = 'transform 300ms ease';
+}
+function clearHighlightedNodes() {
+  document.querySelectorAll('.search-select-node').forEach((el) => {
+    el.classList.remove('search-select-node');
+  });
 }
 function clearState() {
   if (!state.selected) {
@@ -133,6 +145,16 @@ function clearState() {
     canvasX: 0,
     canvasY: 0,
   });
+
+  autocompleteEl.value.state.showPopover = false;
+  clearHighlightedNodes();
+
+  setTimeout(() => {
+    props.editor.precanvas.style.transition = '';
+  }, 500);
+}
+function blurInput() {
+  document.querySelector('#search-blocks')?.blur();
 }
 function onSelectItem({ item }) {
   if (props.editor.zoom !== 1) {
@@ -140,6 +162,11 @@ function onSelectItem({ item }) {
     props.editor.zoom = 1;
     props.editor.zoom_refresh();
   }
+
+  clearHighlightedNodes();
+  document
+    .querySelector(`#node-${item.id}`)
+    ?.classList.add('search-select-node');
 
   const { rectX, rectY } = initialState;
   props.editor.translate_to(
@@ -151,10 +178,16 @@ function onSelectItem({ item }) {
 function onItemSelected(event) {
   state.selected = true;
   onSelectItem(event);
+  blurInput();
 }
 </script>
 <style scoped>
 input {
   transition: width 250ms ease;
+}
+</style>
+<style>
+.search-select-node .drawflow_content_node {
+  @apply ring-4;
 }
 </style>

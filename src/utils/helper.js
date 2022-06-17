@@ -21,7 +21,11 @@ export function visibleInViewport(element) {
 }
 
 export function sleep(timeout = 500) {
-  return new Promise((resolve) => setTimeout(resolve, timeout));
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, timeout);
+  });
 }
 
 export function findTriggerBlock(drawflow = {}) {

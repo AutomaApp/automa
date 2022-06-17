@@ -4,6 +4,14 @@ import handleSelector from '../handleSelector';
 
 function eventClick(block) {
   return new Promise((resolve, reject) => {
+    const dispatchClickEvents = (element, eventFn) => {
+      const eventOpts = { bubbles: true };
+
+      element.dispatchEvent(new MouseEvent('mousedown', eventOpts));
+      element.dispatchEvent(new MouseEvent('mouseup', eventOpts));
+      eventFn();
+    };
+
     handleSelector(block, {
       async onSelected(element) {
         if (block.debugMode) {
@@ -34,9 +42,12 @@ function eventClick(block) {
         }
 
         if (element.click) {
-          element.click();
+          dispatchClickEvents(element, () => element.click());
         } else {
-          element.dispatchEvent(new PointerEvent('click', { bubbles: true }));
+          dispatchClickEvents(
+            () => element,
+            element.dispatchEvent(new PointerEvent('click', { bubbles: true }))
+          );
         }
       },
       onError(error) {

@@ -1,3 +1,4 @@
+import { sleep } from '@/utils/helper';
 import { keyDefinitions } from '@/utils/USKeyboardLayout';
 import simulateEvent from './simulateEvent';
 
@@ -50,6 +51,7 @@ function formEvent(element, data) {
   }
 }
 async function inputText({ data, element, isEditable }) {
+  element?.focus();
   const elementKey = isEditable ? 'textContent' : 'value';
 
   if (data.delay > 0 && !document.hidden) {
@@ -65,7 +67,7 @@ async function inputText({ data, element, isEditable }) {
         isEditable,
       });
 
-      await new Promise((r) => setTimeout(r, data.delay));
+      await sleep(data.delay);
     }
   } else {
     element[elementKey] += data.value;
@@ -82,6 +84,8 @@ async function inputText({ data, element, isEditable }) {
   element.dispatchEvent(
     new Event('change', { bubbles: true, cancelable: true })
   );
+
+  element?.blur();
 }
 
 export default async function (element, data) {
@@ -104,13 +108,17 @@ export default async function (element, data) {
   }
 
   if (data.type === 'checkbox' || data.type === 'radio') {
+    element?.focus();
     element.checked = data.selected;
     formEvent(element, { type: data.type, value: data.selected });
+    element?.blur();
     return;
   }
 
   if (data.type === 'select') {
+    element?.focus();
     element.value = data.value;
+    element?.blur();
     formEvent(element, data);
   }
 }

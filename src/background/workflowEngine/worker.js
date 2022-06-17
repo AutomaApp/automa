@@ -1,16 +1,17 @@
-import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
 import { toCamelCase, sleep, objectHasKey, isObject } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
 import referenceData from '@/utils/referenceData';
+import injectContentScript from './injectContentScript';
 import { convertData, waitTabLoaded, getBlockConnection } from './helper';
 
 class Worker {
-  constructor(engine) {
-    this.id = nanoid(5);
+  constructor(id, engine) {
+    this.id = id;
     this.engine = engine;
     this.settings = engine.workflow.settings;
 
+    this.loopEls = [];
     this.loopList = {};
     this.repeatedTasks = {};
     this.preloadScripts = [];
@@ -111,8 +112,9 @@ class Worker {
       return;
     }
 
+    const startExecuteTime = Date.now();
     const prevBlock = this.currentBlock;
-    this.currentBlock = block;
+    this.currentBlock = { ...block, startedAt: startExecuteTime };
 
     if (!isRetry) {
       await this.engine.updateState({
@@ -120,8 +122,6 @@ class Worker {
         childWorkflowId: this.childWorkflowId,
       });
     }
-
-    const startExecuteTime = Date.now();
 
     const blockHandler = this.engine.blocksHandler[toCamelCase(block.name)];
     const handler =
@@ -153,6 +153,7 @@ class Worker {
         prevBlockData,
         type: status,
         name: block.name,
+        blockId: block.id,
         workerId: this.id,
         description: block.data.description,
         replacedValue: replacedBlock.replacedValue,
@@ -319,6 +320,7 @@ class Worker {
         isBlock: true,
         debugMode,
         executedBlockOnWeb,
+        loopEls: this.loopEls,
         activeTabId: this.activeTab.id,
         frameSelector: this.frameSelector,
         ...payload,
@@ -334,6 +336,15 @@ class Worker {
     } catch (error) {
       console.error(error);
       if (error.message?.startsWith('Could not establish connection')) {
+        const isScriptInjected = await injectContentScript(
+          this.activeTab.id,
+          this.activeTab.frameId
+        );
+
+        if (isScriptInjected) {
+          const result = await this._sendMessageToTab(payload, options);
+          return result;
+        }
         error.message = 'Could not establish connection to the active tab';
       } else if (error.message?.startsWith('No tab')) {
         error.message = 'active-tab-removed';

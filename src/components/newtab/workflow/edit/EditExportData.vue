@@ -63,14 +63,36 @@
         {{ type.name }}
       </option>
     </ui-select>
-    <ui-checkbox
+    <ui-expand
       v-if="data.type === 'csv'"
-      :model-value="data.addBOMHeader"
-      class="mt-2"
-      @change="updateData({ addBOMHeader: $event })"
+      hide-header-icon
+      header-class="flex items-center focus:ring-0 w-full"
     >
-      {{ t('workflow.blocks.export-data.bomHeader') }}
-    </ui-checkbox>
+      <template #header="{ show }">
+        <v-remixicon
+          :rotate="show ? 270 : 180"
+          name="riArrowLeftSLine"
+          class="transition-transform text-gray-600 dark:text-gray-300"
+        />
+        {{ t('common.options') }}
+      </template>
+      <div class="pl-6 mt-1">
+        <ui-checkbox
+          v-if="data.type === 'csv'"
+          :model-value="data.addBOMHeader"
+          @change="updateData({ addBOMHeader: $event })"
+        >
+          {{ t('workflow.blocks.export-data.bomHeader') }}
+        </ui-checkbox>
+        <ui-input
+          :model-value="data.csvDelimiter"
+          label="Delimiter"
+          class="mt-1"
+          placeholder=","
+          @change="updateData({ csvDelimiter: $event })"
+        />
+      </div>
+    </ui-expand>
   </div>
 </template>
 <script setup>

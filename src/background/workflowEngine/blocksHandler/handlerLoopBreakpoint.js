@@ -23,6 +23,14 @@ function loopBreakpoint(block, { prevBlockData }) {
         nextBlockId: currentLoop.blockId,
       });
     } else {
+      if (currentLoop.type === 'elements') {
+        const loopElsIndex = this.loopEls.findIndex(
+          ({ blockId }) => blockId === currentLoop.blockId
+        );
+
+        if (loopElsIndex !== -1) this.loopEls.splice(loopElsIndex, 1);
+      }
+
       delete this.loopList[block.data.loopId];
       delete this.engine.referenceData.loopData[block.data.loopId];
 

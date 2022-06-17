@@ -11,6 +11,7 @@ const isBoolStr = (str) => {
 const isNumStr = (str) => (Number.isNaN(+str) ? str : +str);
 const comparisons = {
   eq: (a, b) => a === b,
+  eqi: (a, b) => a?.toLocaleLowerCase() === b?.toLocaleLowerCase(),
   nq: (a, b) => a !== b,
   gt: (a, b) => isNumStr(a) > isNumStr(b),
   gte: (a, b) => isNumStr(a) >= isNumStr(b),

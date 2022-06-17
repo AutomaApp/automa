@@ -69,5 +69,6 @@
     "/Inter-roman-latin.var.woff2",
     "/locales/*",
     "elementSelector.bundle.js"
-  ]
+  ],
+  "content_security_policy": "script-src 'self' https:; object-src 'self'"
 }

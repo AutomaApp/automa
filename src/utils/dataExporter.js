@@ -38,7 +38,7 @@ export function generateJSON(keys, data) {
 
 export default function (
   data,
-  { name, type, addBOMHeader, returnUrl },
+  { name, type, addBOMHeader, csvOptions, returnUrl },
   converted
 ) {
   let result = data;
@@ -48,7 +48,7 @@ export default function (
 
     result =
       type === 'csv'
-        ? Papa.unparse(jsonData)
+        ? Papa.unparse(jsonData, csvOptions || {})
         : JSON.stringify(jsonData, null, 2);
   } else if (type === 'plain-text') {
     const extractObj = (obj) => {

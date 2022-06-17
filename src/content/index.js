@@ -3,7 +3,6 @@ import findSelector from '@/lib/findSelector';
 import { toCamelCase } from '@/utils/helper';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
-import handleTestCondition from './handleTestCondition';
 import shortcutListener from './services/shortcutListener';
 // import elementObserver from './elementObserver';
 import { elementSelectorInstance } from './utils';
@@ -150,14 +149,38 @@ function messageListener({ data, source }) {
   browser.runtime.onMessage.addListener((data) => {
     return new Promise((resolve, reject) => {
       if (data.isBlock) {
-        executeBlock(data).then(resolve).catch(reject);
+        executeBlock(data)
+          .then(resolve)
+          .catch((error) => {
+            const elNotFound = error.message === 'element-not-found';
+            const selectLoopItem = data.data?.selector?.includes('automa-loop');
+            if (elNotFound && selectLoopItem) {
+              const findLoopEl = data.loopEls.find(({ url }) =>
+                window.location.href.includes(url)
+              );
+
+              const blockData = { ...data.data, ...findLoopEl, multiple: true };
+              const loopBlock = {
+                ...data,
+                onlyGenerate: true,
+                data: blockData,
+              };
+
+              blocksHandler
+                .loopData(loopBlock)
+                .then(() => {
+                  executeBlock(data).then(resolve).catch(reject);
+                })
+                .catch((blockError) => {
+                  reject(blockError);
+                });
+              return;
+            }
+
+            reject(error);
+          });
       } else {
         switch (data.type) {
-          case 'condition-builder':
-            handleTestCondition(data.data)
-              .then((result) => resolve(result))
-              .catch((error) => reject(error));
-            break;
           case 'content-script-exists':
             resolve(true);
             break;

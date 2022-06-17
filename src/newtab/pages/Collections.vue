@@ -1,9 +1,17 @@
 <template>
   <div class="container pt-8 pb-4">
-    <h1 class="text-2xl font-semibold">{{ t('common.collection', 2) }}</h1>
-    <p class="text-gray-600 dark:text-gray-200">
-      {{ t('collection.description') }}
-    </p>
+    <div class="flex items-center">
+      <div class="flex-grow">
+        <h1 class="text-2xl font-semibold">{{ t('common.collection', 2) }}</h1>
+        <p class="text-gray-600 dark:text-gray-200">
+          {{ t('collection.description') }}
+        </p>
+      </div>
+      <div class="flex items-center px-4 py-2 bg-red-400 text-white rounded-lg">
+        <v-remixicon name="riErrorWarningLine" class="-ml-1" />
+        <p class="ml-2">This feature will be removed in the future update</p>
+      </div>
+    </div>
     <div class="flex items-center my-6 space-x-4">
       <ui-input
         id="search-input"

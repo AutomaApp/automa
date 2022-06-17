@@ -21,7 +21,6 @@
     </ui-select>
     <edit-autocomplete
       v-if="data.windowType === 'iframe'"
-      :items="autocomplete"
       :trigger-char="['{{', '}}']"
       block
       hide-empty

@@ -16,9 +16,10 @@ import { onMounted, ref, onBeforeUnmount, watch } from 'vue';
 import { json } from '@codemirror/lang-json';
 import { indentWithTab } from '@codemirror/commands';
 import { oneDark } from '@codemirror/theme-one-dark';
-import { EditorView, keymap } from '@codemirror/view';
+import { keymap } from '@codemirror/view';
 import { javascript } from '@codemirror/lang-javascript';
-import { EditorState, basicSetup } from '@codemirror/basic-setup';
+import { EditorState } from '@codemirror/state';
+import { EditorView, basicSetup } from 'codemirror';
 
 const props = defineProps({
   lang: {
@@ -109,7 +110,7 @@ onBeforeUnmount(() => {
 .cm-editor .cm-gutters,
 .cm-editor .cm-content,
 .cm-tooltip.cm-tooltip-autocomplete > ul {
-  font-family: JetBrains Mono, Fira code, Fira Mono, Consolas, Menlo, Courier,
+  font-family: 'Source Code Pro', Fira code, Fira Mono, Consolas, Menlo, Courier,
     monospace !important;
 }
 </style>

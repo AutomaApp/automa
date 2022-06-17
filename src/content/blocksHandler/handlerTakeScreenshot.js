@@ -170,7 +170,7 @@ export default async function ({ tabId, options, data: { type, selector } }) {
     scrollPosition = newScrollPos;
     scrollableElement.scrollTo(0, newScrollPos);
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await sleep(1000);
   }
 
   style.remove();

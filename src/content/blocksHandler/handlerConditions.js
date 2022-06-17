@@ -1,14 +1,22 @@
 import { customAlphabet } from 'nanoid/non-secure';
 import { visibleInViewport, isXPath } from '@/utils/helper';
-import FindElement from '@/utils/FindElement';
-import { automaRefDataStr } from './utils';
+import handleSelector from '../handleSelector';
+import { automaRefDataStr } from '../utils';
 
 const nanoid = customAlphabet('1234567890abcdef', 5);
 
-function handleConditionElement({ data, type }) {
+async function handleConditionElement({ data, type, id, frameSelector }) {
   const selectorType = isXPath(data.selector) ? 'xpath' : 'cssSelector';
 
-  const element = FindElement[selectorType](data);
+  const element = await handleSelector({
+    id,
+    data: {
+      ...data,
+      findBy: selectorType,
+    },
+    frameSelector,
+    type: selectorType,
+  });
   const { 1: actionType } = type.split('#');
 
   const elementActions = {

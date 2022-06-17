@@ -84,6 +84,9 @@ const options = {
       {
         test: /\.vue$/,
         loader: 'vue-loader',
+        options: {
+          reactivityTransform: true,
+        },
       },
       {
         test: /\.css$/,
@@ -106,12 +109,11 @@ const options = {
       },
       {
         test: new RegExp(`.(${fileExtensions.join('|')})$`),
-        loader: 'file-loader',
-        type: 'javascript/auto',
-        options: {
-          name: '[name].[ext]',
+        type: 'asset/resource',
+        dependency: { not: [/node_modules/] },
+        generator: {
+          filename: '[name].[ext]',
         },
-        exclude: /node_modules/,
       },
       {
         test: /\.js$/,
@@ -142,8 +144,7 @@ const options = {
     new webpack.ProgressPlugin(),
     // clean the build folder
     new CleanWebpackPlugin({
-      verbose: true,
-      cleanStaleWebpackAssets: true,
+      verbose: false,
     }),
     // expose and write the allowed env vars on the compiled bundle
     new webpack.EnvironmentPlugin(['NODE_ENV']),
@@ -162,10 +163,6 @@ const options = {
             };
             const isChrome = env.BROWSER === 'chrome';
 
-            if (env.NODE_ENV === 'development' && !isChrome) {
-              manifestObj.content_security_policy =
-                "script-src 'self' 'unsafe-eval'; object-src 'self'";
-            }
             if (manifestObj.version.includes('-')) {
               const [version, preRelease] = manifestObj.version.split('-');
 

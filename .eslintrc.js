@@ -34,9 +34,11 @@ module.exports = {
   rules: {
     camelcase: 'off',
     'no-await-in-loop': 'off',
+    'import/no-import-module-exports': 'off',
     'no-console': ['warn', { allow: ['warn', 'error'] }],
     'no-underscore-dangle': 'off',
     'func-names': 'off',
+    'vue/v-on-event-hyphenation': 'off',
     'import/no-named-default': 'off',
     'no-restricted-syntax': 'off',
     'vue/multi-word-component-names': 'off',

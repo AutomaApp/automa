@@ -46,8 +46,8 @@
             </option>
           </ui-select>
         </div>
-        <div class="flex items-center">
-          <ui-input
+        <div class="flex items-start">
+          <ui-textarea
             v-model="item.value"
             placeholder="value"
             title="value"

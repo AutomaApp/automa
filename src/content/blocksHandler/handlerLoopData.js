@@ -1,19 +1,11 @@
 import { nanoid } from 'nanoid';
 import handleSelector from '../handleSelector';
 
-export default async function loopElements(block) {
-  const elements = await handleSelector(block);
+function generateLoopSelectors(elements, { max, attrId, frameSelector }) {
   const selectors = [];
-  const attrId = nanoid(5);
-
-  let frameSelector = '';
-
-  if (block.data.$frameSelector) {
-    frameSelector = `${block.data.$frameSelector} |> `;
-  }
 
   elements.forEach((el, index) => {
-    if (block.data.max > 0 && selectors.length - 1 > block.data.max) return;
+    if (max > 0 && selectors.length - 1 > max) return;
 
     const attrName = 'automa-loop';
     const attrValue = `${attrId}--${index}`;
@@ -23,4 +15,38 @@ export default async function loopElements(block) {
   });
 
   return selectors;
+}
+
+export default async function loopElements(block) {
+  const elements = await handleSelector(block);
+  if (!elements) throw new Error('element-not-found');
+
+  let frameSelector = '';
+  if (block.data.$frameSelector) {
+    frameSelector = `${block.data.$frameSelector} |> `;
+  }
+
+  if (block.onlyGenerate) {
+    generateLoopSelectors(elements, {
+      ...block.data,
+      frameSelector,
+      attrId: block.data.loopId,
+    });
+
+    return {};
+  }
+
+  const attrId = nanoid(5);
+  const selectors = generateLoopSelectors(elements, {
+    ...block.data,
+    frameSelector,
+    attrId,
+  });
+  const { origin, pathname } = window.location;
+
+  return {
+    loopId: attrId,
+    elements: selectors,
+    url: origin + pathname,
+  };
 }

@@ -8,7 +8,7 @@ const refKeys = {
   dataColumns: 'table',
 };
 
-/* eslint-disable prefer-destructuring */
+/* eslint-disable prefer-destructuring, no-useless-escape */
 export const functions = {
   date(...args) {
     let date = new Date();
@@ -39,6 +39,39 @@ export const functions = {
     const value = parseJSON(str, str);
 
     return value.length ?? value;
+  },
+  randData(str) {
+    const getRand = (data) => data[Math.floor(Math.random() * data.length)];
+    const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    const symbols = `!@#$%^&*()-_+={}[]|\;:'"<>,./?"`;
+    const mapSamples = {
+      l: () => getRand(lowercase),
+      u: () => getRand(uppercase),
+      d: () => getRand(digits),
+      s: () => getRand(symbols),
+      f() {
+        return this.l() + this.u();
+      },
+      n() {
+        return this.l() + this.d();
+      },
+      m() {
+        return this.u() + this.d();
+      },
+      i() {
+        return this.l() + this.u() + this.d();
+      },
+      a() {
+        return getRand(lowercase + uppercase + digits.join('') + symbols);
+      },
+    };
+
+    return `${str}`.replace(
+      /\?[a-zA-Z]/g,
+      (char) => mapSamples[char.at(-1)]?.() ?? char
+    );
   },
 };
 

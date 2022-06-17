@@ -10,19 +10,27 @@ const defaultShortcut = {
   },
   'page:workflows': {
     id: 'page:workflows',
-    combo: 'option+2',
+    combo: 'option+w',
+  },
+  'page:schedule': {
+    id: 'page:schedule',
+    combo: 'option+t',
   },
   'page:collections': {
     id: 'page:collections',
-    combo: 'option+3',
+    combo: 'option+c',
   },
   'page:logs': {
     id: 'page:logs',
-    combo: 'option+4',
+    combo: 'option+l',
+  },
+  'page:storage': {
+    id: 'page:storage',
+    combo: 'option+a',
   },
   'page:settings': {
     id: 'page:settings',
-    combo: 'option+5',
+    combo: 'option+s',
   },
   'action:search': {
     id: 'action:search',
@@ -69,7 +77,7 @@ export function getReadableShortcut(str) {
       mac: '⌘',
     },
   };
-  const regex = new RegExp('option|mod', 'g');
+  const regex = /option|mod/g;
   const replacedStr = str.replace(regex, (match) => {
     return list[match][os];
   });
