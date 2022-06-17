@@ -1233,6 +1233,7 @@ export const conditionBuilder = {
     { id: 'nct', name: 'Not contains', needValue: true, category: 'text' },
     { id: 'stw', name: 'Starts with', needValue: true, category: 'text' },
     { id: 'enw', name: 'Ends with', needValue: true, category: 'text' },
+    { id: 'rgx', name: 'Match with RegEx', needValue: true, category: 'text' },
     { id: 'itr', name: 'Is truthy', needValue: false, category: 'boolean' },
     { id: 'ifl', name: 'Is falsy', needValue: false, category: 'boolean' },
   ],
