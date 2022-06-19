@@ -1,3 +1,4 @@
+import { sendMessage } from '@/utils/message';
 import handleFormElement from '@/utils/handleFormElement';
 import handleSelector, { markElement } from '../handleSelector';
 
@@ -21,16 +22,31 @@ async function forms(block) {
     return result;
   }
 
+  async function typeText(element) {
+    if (block.debugMode && data.type === 'text-field') {
+      const commands = data.value.split('').map((char) => ({
+        text: char,
+        type: 'keyDown',
+      }));
+      await sendMessage(
+        'debugger:type',
+        { commands, tabId: block.activeTabId, delay: block.data.delay },
+        'background'
+      );
+
+      return;
+    }
+
+    markElement(element, block);
+    await handleFormElement(element, data);
+  }
+
   if (data.multiple) {
-    const promises = Array.from(elements).map(async (element) => {
-      markElement(element, block);
-      await handleFormElement(element, data);
-    });
+    const promises = Array.from(elements).map((element) => typeText(element));
 
     await Promise.allSettled(promises);
   } else {
-    markElement(elements, block);
-    await handleFormElement(elements, data);
+    await typeText(elements);
   }
 
   return null;

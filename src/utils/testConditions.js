@@ -21,6 +21,11 @@ const comparisons = {
   nct: (a, b) => !comparisons.cnt(a, b),
   stw: (a, b) => a?.startsWith(b) ?? false,
   enw: (a, b) => a?.endsWith(b) ?? false,
+  rgx: (a, b) => {
+    const match = b.match(/^\/(.*?)\/([gimy]*)$/);
+    const regex = new RegExp(match[1], match[2]);
+    return regex.test(a);
+  },
   itr: (a) => Boolean(isBoolStr(a)),
   ifl: (a) => !isBoolStr(a),
 };
