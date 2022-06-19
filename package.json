@@ -61,7 +61,7 @@
     "papaparse": "^5.3.1",
     "rxjs": "^7.5.5",
     "tippy.js": "^6.3.1",
-    "v-remixicon": "^0.1.1",
+    "v-remixicon": "^0.1.4",
     "vue": "^3.2.37",
     "vue-i18n": "^9.2.0-beta.29",
     "vue-inspector-agnostic": "^1.0.0",
