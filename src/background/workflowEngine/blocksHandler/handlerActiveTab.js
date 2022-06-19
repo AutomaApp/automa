@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { getBlockConnection } from '../helper';
+import { getBlockConnection, attachDebugger } from '../helper';
 
 async function activeTab(block) {
   const nextBlockId = getBlockConnection(block);
@@ -35,6 +35,11 @@ async function activeTab(block) {
       url: tab.url,
     };
     this.windowId = tab.windowId;
+
+    if (this.settings.debugMode) {
+      await attachDebugger(tab.id, this.activeTab.id);
+      this.debugAttached = true;
+    }
 
     if (this.preloadScripts.length > 0) {
       const preloadScripts = this.preloadScripts.map((script) =>
