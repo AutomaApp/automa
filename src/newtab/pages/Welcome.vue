@@ -15,7 +15,7 @@
         :href="link.url"
         target="_blank"
         rel="noopener"
-        class="p-4 rounded-lg hoverable transition border-2 w-40"
+        class="p-4 rounded-lg hoverable flex-1 transition border-2 w-40"
       >
         <v-remixicon size="28" :name="link.icon" />
         <p class="mt-2">
@@ -80,6 +80,11 @@ const links = [
     name: 'YouTube',
     icon: 'riYoutubeLine',
     url: 'https://youtube.com/channel/UCL3qU64hW0fsIj2vOayOQUQ',
+  },
+  {
+    name: 'Blog',
+    icon: 'riArticleLine',
+    url: 'https://blog.automa.site',
   },
 ];
 </script>
