@@ -32,7 +32,7 @@
           :href="link.url"
           target="_blank"
           rel="noopener"
-          class="p-4 rounded-lg hoverable transition border-2 w-40"
+          class="p-4 rounded-lg hoverable transition border-2 w-60"
         >
           <v-remixicon size="28" :name="link.icon" />
           <p class="mt-2">
@@ -66,6 +66,11 @@ const communities = [
   },
 ];
 const links = [
+  {
+    name: 'Blog',
+    icon: 'riQuillPenLine',
+    url: 'https://blog.automa.site',
+  },
   {
     name: t('common.docs'),
     icon: 'riBook3Line',
