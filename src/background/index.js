@@ -1,7 +1,7 @@
 import browser from 'webextension-polyfill';
 import dayjs from '@/lib/dayjs';
 import { MessageListener } from '@/utils/message';
-import { parseJSON, findTriggerBlock } from '@/utils/helper';
+import { parseJSON, findTriggerBlock, sleep } from '@/utils/helper';
 import { fetchApi } from '@/utils/api';
 import getFile from '@/utils/getFile';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
@@ -488,6 +488,31 @@ message.on('set:active-tab', (tabId) => {
 message.on('debugger:send-command', ({ tabId, method, params }) => {
   return new Promise((resolve) => {
     chrome.debugger.sendCommand({ tabId }, method, params, resolve);
+  });
+});
+message.on('debugger:type', ({ tabId, commands, delay }) => {
+  return new Promise((resolve) => {
+    let index = 0;
+    async function executeCommands() {
+      const command = commands[index];
+      if (!command) {
+        resolve();
+        return;
+      }
+
+      chrome.debugger.sendCommand(
+        { tabId },
+        'Input.dispatchKeyEvent',
+        command,
+        async () => {
+          if (delay > 0) await sleep(delay);
+
+          index += 1;
+          executeCommands();
+        }
+      );
+    }
+    executeCommands();
   });
 });
 
