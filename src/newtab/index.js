@@ -1,5 +1,4 @@
 import { createApp } from 'vue';
-import inspector from 'vue-inspector-agnostic';
 import App from './App.vue';
 import router from './router';
 import store from '../store';
@@ -18,7 +17,6 @@ createApp(App)
   .use(vueI18n)
   .use(vueToastification)
   .use(vRemixicon, icons)
-  .use(inspector)
   .mount('#app');
 
 if (module.hot) module.hot.accept();

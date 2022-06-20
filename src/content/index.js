@@ -153,8 +153,8 @@ function messageListener({ data, source }) {
           .then(resolve)
           .catch((error) => {
             const elNotFound = error.message === 'element-not-found';
-            const selectLoopItem = data.data?.selector?.includes('automa-loop');
-            if (elNotFound && selectLoopItem) {
+            const isLoopItem = data.data?.selector?.includes('automa-loop');
+            if (elNotFound && isLoopItem) {
               const findLoopEl = data.loopEls.find(({ url }) =>
                 window.location.href.includes(url)
               );
