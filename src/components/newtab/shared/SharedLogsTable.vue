@@ -7,51 +7,55 @@
     </transition-expand>
     <table class="w-full">
       <tbody class="divide-y dark:divide-gray-800">
-        <tr v-for="item in running" :key="item.id" class="p-2 border">
-          <td v-if="!hideSelect" class="w-8">
-            <ui-checkbox
-              :model-value="state.selected.includes(item.id)"
-              class="align-text-bottom"
-              @change="toggleSelectedLog($event, item.id)"
-            />
-          </td>
-          <td class="w-4/12">
-            <router-link
-              :to="`/logs/${item.id}/running`"
-              class="inline-block text-overflow w-full align-middle min-h"
-              style="min-height: 28px"
+        <template v-if="running && running[0]?.state">
+          <tr v-for="item in running" :key="item.id" class="p-2 border">
+            <td v-if="!hideSelect" class="w-8">
+              <ui-checkbox
+                :model-value="state.selected.includes(item.id)"
+                class="align-text-bottom"
+                @change="toggleSelectedLog($event, item.id)"
+              />
+            </td>
+            <td class="w-4/12">
+              <router-link
+                :to="`/logs/${item.id}/running`"
+                class="inline-block text-overflow w-full align-middle min-h"
+                style="min-height: 28px"
+              >
+                {{ item.state.name }}
+              </router-link>
+            </td>
+            <td
+              class="log-time w-2/12 dark:text-gray-200"
+              :title="t('log.duration')"
             >
-              {{ item.state.name }}
-            </router-link>
-          </td>
-          <td
-            class="log-time w-2/12 dark:text-gray-200"
-            :title="t('log.duration')"
-          >
-            <v-remixicon name="riTimerLine"></v-remixicon>
-            <span>{{
-              countDuration(item.state.startedTimestamp, Date.now())
-            }}</span>
-          </td>
-          <td title="Executing block" class="text-overflow">
-            <ui-spinner color="text-accent" size="20" />
-            <span class="align-middle inline-block ml-3 text-overflow">
-              {{ t(`workflow.blocks.${item.state.currentBlock[0].name}.name`) }}
-            </span>
-          </td>
-          <td class="text-right">
-            <span
-              class="inline-block py-1 w-16 text-center text-sm rounded-md dark:text-black bg-blue-300"
-            >
-              {{ t('common.running') }}
-            </span>
-          </td>
-          <td class="text-right">
-            <ui-button small class="text-sm" @click="stopWorkflow(item.id)">
-              {{ t('common.stop') }}
-            </ui-button>
-          </td>
-        </tr>
+              <v-remixicon name="riTimerLine"></v-remixicon>
+              <span>{{
+                countDuration(item.state?.startedTimestamp, Date.now())
+              }}</span>
+            </td>
+            <td title="Executing block" class="text-overflow">
+              <ui-spinner color="text-accent" size="20" />
+              <span class="align-middle inline-block ml-3 text-overflow">
+                {{
+                  t(`workflow.blocks.${item.state.currentBlock[0].name}.name`)
+                }}
+              </span>
+            </td>
+            <td class="text-right">
+              <span
+                class="inline-block py-1 w-16 text-center text-sm rounded-md dark:text-black bg-blue-300"
+              >
+                {{ t('common.running') }}
+              </span>
+            </td>
+            <td class="text-right">
+              <ui-button small class="text-sm" @click="stopWorkflow(item.id)">
+                {{ t('common.stop') }}
+              </ui-button>
+            </td>
+          </tr>
+        </template>
         <tr v-for="log in logs" :key="log.id" class="hoverable">
           <slot name="item-prepend" :log="log" />
           <td
