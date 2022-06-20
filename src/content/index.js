@@ -191,14 +191,39 @@ function messageListener({ data, source }) {
             break;
           }
           case 'context-element': {
+            let $ctxLink = '';
+            let $ctxMediaUrl = '';
             let $ctxElSelector = '';
 
             if (contextElement) {
               $ctxElSelector = findSelector(contextElement);
+
+              const tag = contextElement.tagName;
+              if (tag === 'A') {
+                $ctxLink = contextElement.href;
+              }
+
+              const mediaTags = ['AUDIO', 'VIDEO', 'IMG'];
+              if (mediaTags.includes(tag)) {
+                let mediaSrc = contextElement.src || '';
+
+                if (!mediaSrc.src) {
+                  const sourceEl = contextElement.querySelector('source');
+                  if (sourceEl) mediaSrc = sourceEl.src;
+                }
+
+                $ctxMediaUrl = mediaSrc;
+              }
+
               contextElement = null;
             }
 
-            resolve({ $ctxElSelector, $ctxTextSelection });
+            resolve({
+              $ctxElSelector,
+              $ctxTextSelection,
+              $ctxLink,
+              $ctxMediaUrl,
+            });
             break;
           }
           default:
