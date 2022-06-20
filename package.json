@@ -40,7 +40,7 @@
     "@tiptap/extension-image": "^2.0.0-beta.25",
     "@tiptap/extension-link": "^2.0.0-beta.36",
     "@tiptap/extension-placeholder": "^2.0.0-beta.48",
-    "@tiptap/starter-kit": "^2.0.0-beta.181",
+    "@tiptap/starter-kit": "^2.0.0-beta.188",
     "@tiptap/vue-3": "^2.0.0-beta.90",
     "@viselect/vanilla": "^3.0.0-beta.13",
     "@vueuse/rxjs": "^8.6.0",
