@@ -29,7 +29,7 @@
             readonly
           />
           <ui-input
-            :model-value="varValue"
+            :model-value="JSON.stringify(varValue)"
             label="Value"
             class="w-full"
             placeholder="EMPTY"
