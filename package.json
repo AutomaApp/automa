@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "1.13.1",
+  "version": "1.13.2",
   "description": "An extension for automating your browser by connecting blocks",
   "license": "MIT",
   "repository": {
@@ -40,7 +40,7 @@
     "@tiptap/extension-image": "^2.0.0-beta.25",
     "@tiptap/extension-link": "^2.0.0-beta.41",
     "@tiptap/extension-placeholder": "^2.0.0-beta.51",
-    "@tiptap/starter-kit": "^2.0.0-beta.188",
+    "@tiptap/starter-kit": "^2.0.0-beta.189",
     "@tiptap/vue-3": "^2.0.0-beta.90",
     "@viselect/vanilla": "^3.0.0-beta.13",
     "@vueuse/rxjs": "^8.7.4",
