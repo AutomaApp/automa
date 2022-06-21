@@ -1389,14 +1389,14 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-italic/-/extension-italic-2.0.0-beta.28.tgz#bf88ecae64c8f2f69f1f508b802c1efd7454a84e"
   integrity sha512-/pKRiCfewh7nqiXRD3N4hQHfGrGNOiWPFYZfY35bSpvTms7PDb/MF7xT1CWW23hSpY31BBS+R/a66vlR/gqu7Q==
 
-"@tiptap/extension-link@^2.0.0-beta.41":
-  version "2.0.0-beta.41"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-link/-/extension-link-2.0.0-beta.41.tgz#9061c983fa4d7c4f8a9b677f3f2d9e5e1de59c65"
-  integrity sha512-nT4x5+eFg9d6ERDNF4RNb4ZKjWqDQj6BYfJvSLWEa+EEtTsTi9eiyj1GdXmYftUqazY2LknxdgzLcoiz24Kbwg==
+"@tiptap/extension-link@^2.0.0-beta.42":
+  version "2.0.0-beta.42"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-link/-/extension-link-2.0.0-beta.42.tgz#2ac28440a5a66426deb2a939a7c1145fdd9437db"
+  integrity sha512-cyIYcNJTqBEf6eRSYI6AZptwMnZw0xUMl4FNo9qyo/PbPNwXcoIyyNRdn1jPB9mtlW0eTNwhHDlFpwJgbDcsxg==
   dependencies:
     linkifyjs "^3.0.5"
-    prosemirror-model "^1.16.1"
-    prosemirror-state "^1.3.4"
+    prosemirror-model "^1.17.0"
+    prosemirror-state "^1.4.0"
 
 "@tiptap/extension-list-item@^2.0.0-beta.23":
   version "2.0.0-beta.23"
@@ -5376,11 +5376,6 @@ optionator@^0.9.1:
     type-check "^0.4.0"
     word-wrap "^1.2.3"
 
-orderedmap@^1.1.0:
-  version "1.1.8"
-  resolved "https://registry.yarnpkg.com/orderedmap/-/orderedmap-1.1.8.tgz#9652b2584f721c1032fa04cb60d442b3d4aa097c"
-  integrity sha512-eWEYOAggZZpZbJ9CTsqAKOTxlbBHdHZ8pzcfEvNTxGrjQ/m+Q25nSWUiMlT9MTbgpB6FOiBDKqsgJ2FlLDVNaw==
-
 orderedmap@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/orderedmap/-/orderedmap-2.0.0.tgz#12ff5ef6ea9d12d6430b80c701b35475e1c9ff34"
@@ -5759,14 +5754,7 @@ prosemirror-keymap@^1.0.0, prosemirror-keymap@^1.2.0:
     prosemirror-state "^1.0.0"
     w3c-keyname "^2.2.0"
 
-prosemirror-model@^1.0.0, prosemirror-model@^1.16.0, prosemirror-model@^1.16.1:
-  version "1.18.0"
-  resolved "https://registry.yarnpkg.com/prosemirror-model/-/prosemirror-model-1.18.0.tgz#8c360ed65a6ec9dd2fb899b5f5ceeb5f5f689ee0"
-  integrity sha512-EZLl0mvVIixEL1V538GsPP4Iw+D83gBRdLcjL7VouzoPPWlhhv/0Y0V9ttT5lUhF7jieIrNHOa3XNFs1FwgrOw==
-  dependencies:
-    orderedmap "^1.1.0"
-
-prosemirror-model@^1.17.0:
+prosemirror-model@^1.0.0, prosemirror-model@^1.16.0, prosemirror-model@^1.16.1, prosemirror-model@^1.17.0:
   version "1.18.1"
   resolved "https://registry.yarnpkg.com/prosemirror-model/-/prosemirror-model-1.18.1.tgz#1d5d6b6de7b983ee67a479dc607165fdef3935bd"
   integrity sha512-IxSVBKAEMjD7s3n8cgtwMlxAXZrC7Mlag7zYsAKDndAqnDScvSmp/UdnRTV/B33lTCVU3CCm7dyAn/rVVD0mcw==
