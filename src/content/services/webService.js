@@ -1,6 +1,7 @@
 import { openDB } from 'idb';
 import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
+import cloneDeep from 'lodash.clonedeep';
 import { objectHasKey } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
 
@@ -49,9 +50,10 @@ function initWebListener() {
         const { workflows: workflowsStorage } = await browser.storage.local.get(
           'workflows'
         );
+        const copyWorkflow = cloneDeep(workflow);
 
-        workflow.table = workflow.table || workflow.dataColumns;
-        workflow.dataColumns = [];
+        copyWorkflow.table = copyWorkflow.table || copyWorkflow.dataColumns;
+        copyWorkflow.dataColumns = [];
 
         workflowsStorage.push({
           ...workflow,
