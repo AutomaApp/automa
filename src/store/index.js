@@ -13,37 +13,7 @@ const store = createStore({
   plugins: [vuexORM(models)],
   state: () => ({
     user: null,
-    workflowState: [
-      {
-        id: '7F9HCTQXKMSDGlm_q_dVW',
-        state: {
-          activeTabUrl: '',
-          childWorkflowId: null,
-          tabIds: [null],
-          currentBlock: [
-            {
-              id: '1fb2464c-b94d-48f0-b40a-2903f2592428',
-              name: 'delay',
-              startedAt: 1655001148198,
-            },
-          ],
-          name: 'Child',
-          logs: [
-            {
-              type: 'success',
-              name: 'trigger',
-              blockId: '1991a5a0-a499-4c70-9040-03b37123b5df',
-              workerId: 'worker-1',
-              description: '',
-              duration: 1,
-              id: 1,
-            },
-          ],
-          startedTimestamp: 1655001148195,
-        },
-        workflowId: 'lPKjzF5cUfzckN3KgCdmX',
-      },
-    ],
+    workflowState: [],
     backupIds: [],
     contributors: null,
     hostWorkflows: {},

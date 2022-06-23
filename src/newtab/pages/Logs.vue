@@ -136,6 +136,7 @@ const filteredLogs = computed(() => {
 
       return searchFilter && statusFilter && dateFilter;
     })
+    .slice()
     .sort((a, b) => {
       const valueA = a[sortsBuilder.by];
       const valueB = b[sortsBuilder.by];

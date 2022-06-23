@@ -1010,23 +1010,25 @@ export const tasks = {
 export const categories = {
   interaction: {
     name: 'Web interaction',
-    color: 'bg-green-200 dark:bg-green-300',
+    color: 'bg-green-200 dark:bg-green-300 fill-green-200 dark:fill-green-300',
   },
   browser: {
     name: 'Browser',
-    color: 'bg-orange-200 dark:bg-orange-300',
+    color:
+      'bg-orange-200 dark:bg-orange-300 fill-orange-200 dark:fill-orange-300',
   },
   general: {
     name: 'General',
-    color: 'bg-yellow-200 dark:bg-yellow-300',
+    color:
+      'bg-yellow-200 dark:bg-yellow-300 fill-yellow-200 dark:fill-yellow-300',
   },
   onlineServices: {
     name: 'Online services',
-    color: 'bg-red-200 dark:bg-red-300',
+    color: 'bg-red-200 dark:bg-red-300 fill-red-200 dark:fill-red-300',
   },
   conditions: {
     name: 'Conditions',
-    color: 'bg-blue-200 dark:bg-blue-300',
+    color: 'bg-blue-200 dark:bg-blue-300 fill-blue-200 dark:fill-blue-300',
   },
 };
 

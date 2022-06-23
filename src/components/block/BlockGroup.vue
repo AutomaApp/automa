@@ -1,5 +1,6 @@
 <template>
-  <div :id="componentId" class="w-64">
+  <ui-card :id="componentId" class="w-64" padding="p-0">
+    <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div class="p-4">
       <div class="flex items-center mb-2">
         <div
@@ -17,20 +18,21 @@
         <v-remixicon
           name="riDeleteBin7Line"
           class="cursor-pointer"
-          @click="editor.removeNodeId(`node-${block.id}`)"
+          @click.stop="emit('delete', id)"
         />
       </div>
       <input
-        v-model="block.data.name"
+        :model-value="data.name"
         :placeholder="t('workflow.blocks.blocks-group.groupName')"
         type="text"
         class="bg-transparent w-full focus:ring-0"
+        @input="$emit('update', { name: $event.target.value })"
       />
     </div>
     <draggable
-      v-model="block.data.blocks"
+      v-model="state.blocks"
       item-key="itemId"
-      class="px-4 mb-4 overflow-auto scroll text-sm space-y-1 max-h-60"
+      class="px-4 mb-4 overflow-auto nowheel scroll text-sm space-y-1 max-h-60"
       @mousedown.stop
       @dragover.prevent
       @drop="handleDrop"
@@ -58,7 +60,7 @@
               {{ element.data.description }}
             </p>
           </div>
-          <div v-if="!editor.minimap" class="invisible group-hover:visible">
+          <div class="invisible group-hover:visible">
             <v-remixicon
               name="riPencilLine"
               size="20"
@@ -82,31 +84,36 @@
         </div>
       </template>
     </draggable>
-    <input class="hidden trigger" @change="handleDataChange" />
-  </div>
+    <Handle :id="`${id}-output-1`" type="source" :position="Position.Right" />
+  </ui-card>
 </template>
 <script setup>
-import { watch } from 'vue';
+import { watch, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
+import { Handle, Position } from '@braks/vue-flow';
+import cloneDeep from 'lodash.clonedeep';
 import draggable from 'vuedraggable';
-import emitter from '@/lib/mitt';
 import { tasks } from '@/utils/shared';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
 
 const props = defineProps({
-  editor: {
+  id: {
+    type: String,
+    default: '',
+  },
+  label: {
+    type: String,
+    default: '',
+  },
+  data: {
     type: Object,
     default: () => ({}),
   },
 });
-
-const { t } = useI18n();
-const toast = useToast();
-const componentId = useComponentId('blocks-group');
-const block = useEditorBlock(`#${componentId}`, props.editor);
+const emit = defineEmits(['update', 'delete', 'edit']);
 
 const excludeBlocks = [
   'trigger',
@@ -117,6 +124,16 @@ const excludeBlocks = [
   'conditions',
   'element-exists',
 ];
+
+const { t } = useI18n();
+const toast = useToast();
+const componentId = useComponentId('blocks-group');
+const block = useEditorBlock(props.label);
+
+const state = reactive({
+  blocks: [],
+  retrieved: false,
+});
 
 function onDragStart(item, event) {
   event.dataTransfer.setData(
@@ -129,39 +146,21 @@ function onDragEnd(itemId) {
     const blockEl = document.querySelector(`[group-item-id="${itemId}"]`);
 
     if (blockEl) {
-      const blockIndex = block.data.blocks.findIndex(
+      const blockIndex = state.blocks.findIndex(
         (item) => item.itemId === itemId
       );
 
       if (blockIndex !== -1) {
-        emitter.emit('editor:delete-block', { itemId, isInGroup: true });
-        block.data.blocks.splice(blockIndex, 1);
+        state.blocks.splice(blockIndex, 1);
       }
     }
   }, 200);
 }
-function handleDataChange({ detail }) {
-  if (!detail) return;
-
-  const itemIndex = block.data.blocks.findIndex(
-    ({ itemId }) => itemId === detail.itemId
-  );
-
-  if (itemIndex === -1) return;
-
-  block.data.blocks[itemIndex].data = detail.data;
-}
 function editBlock(payload) {
-  emitter.emit('editor:edit-block', {
-    ...tasks[payload.id],
-    ...payload,
-    isInGroup: true,
-    blockId: block.id,
-  });
+  emit('edit', payload);
 }
-function deleteItem(index, itemId) {
-  emitter.emit('editor:delete-block', { itemId, isInGroup: true });
-  block.data.blocks.splice(index, 1);
+function deleteItem(index) {
+  state.blocks.splice(index, 1);
 }
 function handleDrop(event) {
   event.preventDefault();
@@ -184,20 +183,23 @@ function handleDrop(event) {
   }
 
   if (blockId) {
-    props.editor.removeNodeId(`node-${blockId}`);
+    emit('delete', id);
   }
 
-  block.data.blocks.push({ id, data, itemId: nanoid(5) });
+  state.blocks.push({ id, data, itemId: nanoid(5) });
 }
 
 watch(
-  () => block.data,
-  (value, oldValue) => {
-    if (Object.keys(oldValue).length === 0) return;
+  () => state.blocks,
+  () => {
+    if (!state.retrieved) return;
 
-    props.editor.updateNodeDataFromId(block.id, value);
-    emitter.emit('editor:data-changed', block.id);
+    emit('update', { blocks: state.blocks });
   },
   { deep: true }
 );
+
+onMounted(() => {
+  state.blocks = cloneDeep(props.data.blocks);
+});
 </script>

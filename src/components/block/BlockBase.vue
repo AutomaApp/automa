@@ -1,12 +1,9 @@
 <template>
-  <div class="block-base relative" @dblclick="$emit('edit')">
+  <div class="block-base relative w-48" @dblclick="$emit('edit')">
     <slot name="prepend" />
-    <div
-      :class="contentClass"
-      class="z-10 bg-white dark:bg-gray-800 relative rounded-lg overflow-hidden w-full p-4 block-base__content"
-    >
+    <ui-card :class="contentClass" class="z-10 relative block-base__content">
       <slot></slot>
-    </div>
+    </ui-card>
     <slot name="append" />
     <div
       v-if="!minimap"
@@ -22,7 +19,7 @@
           v-if="!hideDelete && !hideEdit"
           class="border-r border-gray-600 h-5 mx-3"
         />
-        <button v-if="!hideDelete" @click="$emit('delete')">
+        <button v-if="!hideDelete" @click.stop="$emit('delete')">
           <v-remixicon size="20" name="riDeleteBin7Line" />
         </button>
         <slot name="action" />

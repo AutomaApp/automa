@@ -53,7 +53,7 @@
 </template>
 <script setup>
 import { reactive, computed, watch } from 'vue';
-import { isObject } from '@/utils/helper';
+import { isObject, arraySorter } from '@/utils/helper';
 
 const props = defineProps({
   headers: {
@@ -105,18 +105,10 @@ const filteredItems = computed(() => {
 const sortedItems = computed(() => {
   if (sortState.id === '') return filteredItems.value;
 
-  return filteredItems.value.slice().sort((a, b) => {
-    let comparison = 0;
-    const itemA = a[sortState.id];
-    const itemB = b[sortState.id];
-
-    if (itemA > itemB) {
-      comparison = 1;
-    } else if (itemA < itemB) {
-      comparison = -1;
-    }
-
-    return sortState.order === 'desc' ? comparison * -1 : comparison;
+  return arraySorter({
+    key: sortState.id,
+    order: sortState.order,
+    data: filteredItems.value,
   });
 });
 

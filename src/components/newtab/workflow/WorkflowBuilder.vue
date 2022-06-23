@@ -34,7 +34,7 @@
             <v-remixicon name="riAddLine" />
           </button>
         </div>
-        <workflow-builder-search-blocks :editor="editor" />
+        <!-- <workflow-builder-search-blocks :editor="editor" /> -->
       </div>
       <slot v-bind="{ editor }"></slot>
     </div>
@@ -93,10 +93,10 @@ import { tasks, excludeOnError } from '@/utils/shared';
 import { parseJSON } from '@/utils/helper';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import drawflow from '@/lib/drawflow';
-import WorkflowBuilderSearchBlocks from './WorkflowBuilderSearchBlocks.vue';
+// import WorkflowBuilderSearchBlocks from './WorkflowBuilderSearchBlocks.vue';
 
 export default {
-  components: { WorkflowBuilderSearchBlocks },
+  // components: { WorkflowBuilderSearchBlocks },
   props: {
     data: {
       type: [Object, String],

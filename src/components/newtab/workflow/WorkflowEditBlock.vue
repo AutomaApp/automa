@@ -33,12 +33,13 @@
       />
     </div>
     <component
-      :is="data.editComponent"
+      :is="components[data.editComponent]"
       v-if="blockData"
       :key="data.itemId || data.blockId"
       v-model:data="blockData"
       :block-id="data.blockId"
       v-bind="{
+        editor: data.id === 'conditions' ? editor : null,
         connections: data.id === 'wait-connections' ? data.connections : null,
       }"
     />
@@ -51,11 +52,10 @@
     />
   </div>
 </template>
-<script>
-import { computed, provide, ref, watch } from 'vue';
+<script setup>
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { tasks, excludeOnError } from '@/utils/shared';
-import { parseJSON } from '@/utils/helper';
+import { excludeOnError } from '@/utils/shared';
 import OnBlockError from './edit/OnBlockError.vue';
 
 const editComponents = require.context(
@@ -74,165 +74,37 @@ const components = editComponents.keys().reduce((acc, key) => {
   return acc;
 }, {});
 
-export default {
-  components: { ...components, OnBlockError },
-  props: {
-    data: {
-      type: Object,
-      default: () => ({}),
-    },
-    editor: {
-      type: Object,
-      default: () => ({}),
-    },
-    workflow: {
-      type: Object,
-      default: () => ({}),
-    },
-    autocomplete: {
-      type: Object,
-      default: () => ({}),
-    },
-    dataChanged: Boolean,
+const props = defineProps({
+  data: {
+    type: Object,
+    default: () => ({}),
   },
-  emits: ['close', 'update', 'update:autocomplete'],
-  setup(props, { emit }) {
-    const { t } = useI18n();
-    const autocompleteData = ref({
-      common: {
-        table: {},
-        globalData: [],
-        activeTabUrl: '',
-        prevBlockData: '',
-        $date: '',
-        $randint: '',
-        $getLength: '',
-        $randData: '',
-      },
-    });
-
-    const blockData = computed({
-      get() {
-        return props.data.data || {};
-      },
-      set(value) {
-        emit('update', value);
-      },
-    });
-    const autocompleteList = computed(() => ({
-      ...autocompleteData.value.common,
-      ...autocompleteData.value[props.data.itemId || props.data.blockId],
-    }));
-
-    provide('autocompleteData', autocompleteList);
-
-    const dataKeywords = {
-      loopId: 'loopData',
-      refKey: 'googleSheets',
-      variableName: 'variables',
-    };
-    function addAutocompleteData(id, name, data) {
-      if (!autocompleteData.value[id]) autocompleteData.value[id] = {};
-
-      if (!tasks[name].autocomplete) return;
-
-      tasks[name].autocomplete.forEach((key) => {
-        const variableNotAssigned =
-          key === 'variableName' && !data.assignVariable;
-        if (!data[key] || variableNotAssigned) return;
-
-        const keyword = dataKeywords[key];
-        if (!autocompleteData.value[id][keyword]) {
-          autocompleteData.value[id][keyword] = {};
-        }
-
-        autocompleteData.value[id][keyword][data[key]] = '';
-      });
-    }
-    function getGroupBlockData(blocks, currentItemId) {
-      let itemFound = currentItemId || true;
-      const blockId = currentItemId || props.data.blockId;
-
-      for (let index = blocks.length - 1; index > 0; index -= 1) {
-        const { id, data, itemId } = blocks[index];
-
-        if (itemFound) {
-          addAutocompleteData(blockId, id, data);
-        } else {
-          itemFound = itemId === currentItemId;
-        }
-      }
-    }
-    function traceBlockData(
-      blockId,
-      { name, inputs, data, id },
-      blocks,
-      maxDepth = 20
-    ) {
-      const notFirstDepth = maxDepth !== 20;
-
-      if (maxDepth === 0 || (blockId === id && notFirstDepth)) return;
-
-      if (notFirstDepth) {
-        if (name === 'blocks-group') getGroupBlockData(data.blocks);
-        else addAutocompleteData(props.data.blockId, name, data);
-      }
-
-      inputs?.input_1?.connections.forEach(({ node }) => {
-        traceBlockData(blockId, blocks[node], blocks, maxDepth - 1);
-      });
-    }
-
-    watch(
-      () => [props.data.blockId, props.data.itemId],
-      () => {
-        const enableAutocomplete =
-          props.workflow.settings?.inputAutocomplete ?? true;
-
-        if (!enableAutocomplete) return;
-
-        const id = props.data.blockId;
-        const isDataChanging =
-          !props.autocomplete || !props.autocomplete[id] || props.dataChanged;
-        if (isDataChanging) {
-          const blocks = props.editor.export().drawflow.Home.data;
-          const currentBlock = blocks[id];
-
-          if (Object.keys(blocks).length > 32) return;
-
-          if (props.data.isInGroup)
-            getGroupBlockData(currentBlock.data.blocks, props.data.itemId);
-
-          traceBlockData(props.data.blockId, currentBlock, blocks);
-        }
-
-        props.workflow.table?.forEach((column) => {
-          autocompleteData.value.common.table[column.name] = '';
-        });
-
-        const workflowGlobalData = props.workflow.globalData;
-        autocompleteData.value.common.globalData = parseJSON(
-          workflowGlobalData,
-          workflowGlobalData
-        );
-      },
-      { immediate: true }
-    );
-    watch(
-      autocompleteData,
-      () => {
-        emit('update:autocomplete', autocompleteData.value);
-      },
-      { deep: true }
-    );
-
-    return {
-      t,
-      blockData,
-      excludeOnError,
-    };
+  editor: {
+    type: Object,
+    default: () => ({}),
   },
-};
+  workflow: {
+    type: Object,
+    default: () => ({}),
+  },
+  autocomplete: {
+    type: Object,
+    default: () => ({}),
+  },
+  dataChanged: Boolean,
+});
+const emit = defineEmits(['close', 'update', 'update:autocomplete']);
+
+const { t } = useI18n();
+
+const blockData = computed({
+  get() {
+    return props.data.data;
+  },
+  set(data) {
+    emit('update', data);
+  },
+});
 </script>
 <style>
 #workflow-edit-block hr {

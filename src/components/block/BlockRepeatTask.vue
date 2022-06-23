@@ -1,5 +1,6 @@
 <template>
-  <div :id="componentId" class="p-4 repeat-task">
+  <ui-card :id="componentId" class="p-4 repeat-task">
+    <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div class="flex items-center mb-2">
       <div
         :class="block.category.color"
@@ -10,7 +11,6 @@
       </div>
       <div class="flex-grow"></div>
       <v-remixicon
-        v-if="!editor.minimap"
         name="riDeleteBin7Line"
         class="cursor-pointer"
         @click="editor.removeNodeId(`node-${block.id}`)"
@@ -20,7 +20,7 @@
       class="mb-2 block bg-input focus-within:bg-input pr-4 transition rounded-lg"
     >
       <input
-        :value="block.data.repeatFor || 0"
+        :value="data.repeatFor || 0"
         min="0"
         class="pl-4 py-2 bg-transparent rounded-l-lg w-24 mr-2"
         type="number"
@@ -34,24 +34,40 @@
     <p class="text-right text-gray-600 dark:text-gray-200">
       {{ t('workflow.blocks.repeat-task.repeatFrom') }}
     </p>
-  </div>
+    <Handle :id="`${id}-output-1`" type="source" :position="Position.Right" />
+    <Handle
+      :id="`${id}-output-2`"
+      type="source"
+      :position="Position.Right"
+      style="top: auto; bottom: 12px"
+    />
+  </ui-card>
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
+import { Handle, Position } from '@braks/vue-flow';
 import emitter from '@/lib/mitt';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
 
 const { t } = useI18n();
 const props = defineProps({
-  editor: {
+  id: {
+    type: String,
+    default: '',
+  },
+  label: {
+    type: String,
+    default: '',
+  },
+  data: {
     type: Object,
     default: () => ({}),
   },
 });
 
+const block = useEditorBlock(props.label);
 const componentId = useComponentId('block-delay');
-const block = useEditorBlock(`#${componentId}`, props.editor);
 
 function handleInput({ target }) {
   target.reportValidity();
@@ -60,8 +76,8 @@ function handleInput({ target }) {
 
   if (repeatFor < 0) return;
 
-  props.editor.updateNodeDataFromId(block.id, { repeatFor });
-  emitter.emit('editor:data-changed', block.id);
+  props.editor.updateNodeDataFromId(props.id, { repeatFor });
+  emitter.emit('editor:data-changed', props.id);
 }
 </script>
 <style>

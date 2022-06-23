@@ -121,7 +121,7 @@ export function parseJSON(data, def) {
 export function parseFlow(flow) {
   const obj = typeof flow === 'string' ? parseJSON(flow, {}) : flow;
 
-  return obj?.drawflow?.Home.data;
+  return obj;
 }
 
 export function replaceMustache(str, replacer) {
@@ -236,4 +236,22 @@ export async function clearCache(workflow) {
     console.error(error);
     return false;
   }
+}
+
+export function arraySorter({ data, key, order = 'asc' }) {
+  const copyData = data.slice();
+
+  return copyData.sort((a, b) => {
+    let comparison = 0;
+    const itemA = a[key] || a;
+    const itemB = b[key] || b;
+
+    if (itemA > itemB) {
+      comparison = 1;
+    } else if (itemA < itemB) {
+      comparison = -1;
+    }
+
+    return order === 'desc' ? comparison * -1 : comparison;
+  });
 }
