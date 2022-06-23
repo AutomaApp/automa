@@ -129,6 +129,7 @@ import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { customAlphabet } from 'nanoid';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
+import { useShortcut } from '@/composable/shortcut';
 import { tasks } from '@/utils/shared';
 import { debounce, parseJSON, throttle } from '@/utils/helper';
 import { fetchApi } from '@/utils/api';
@@ -151,6 +152,8 @@ const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
+/* eslint-disable-next-line */
+const shortcut = useShortcut('editor:toggle-sidebar', toggleSidebar);
 
 const editor = shallowRef(null);
 
@@ -322,6 +325,10 @@ const updateHostedWorkflow = throttle(async () => {
   }
 }, 5000);
 
+function toggleSidebar() {
+  state.showSidebar = !state.showSidebar;
+  localStorage.setItem('workflow:sidebar', state.showSidebar);
+}
 function initEditBlock(data) {
   const { editComponent } = tasks[data.id];
 
