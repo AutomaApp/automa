@@ -65,7 +65,6 @@
     "v-remixicon": "^0.1.1",
     "vue": "^3.2.37",
     "vue-i18n": "^9.2.0-beta.29",
-    "vue-inspector-agnostic": "^1.0.0",
     "vue-router": "^4.0.11",
     "vue-toastification": "^2.0.0-rc.5",
     "vuedraggable": "^4.1.0",
