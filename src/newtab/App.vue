@@ -1,8 +1,4 @@
 <template>
-  <!-- <Head>
-    <link rel="icon" :href="icon" />
-  </Head> -->
-
   <template v-if="retrieved">
     <app-sidebar />
     <main class="pl-16">
@@ -360,17 +356,20 @@ window.addEventListener('storage', ({ key, newValue }) => {
 <style>
 html,
 body {
-  @apply bg-gray-50 dark:bg-gray-900 text-black dark:text-gray-100;
+  @apply bg-gray-50 dark: bg-gray-900 text-black dark:text-gray-100;
 }
+
 body {
   min-height: 100vh;
 }
+
 #app {
   height: 100%;
 }
+
 h1,
 h2,
 h3 {
-  @apply dark:text-white;
+  @apply dark: text-white;
 }
 </style>
