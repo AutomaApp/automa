@@ -356,7 +356,7 @@ window.addEventListener('storage', ({ key, newValue }) => {
 <style>
 html,
 body {
-  @apply bg-gray-50 dark: bg-gray-900 text-black dark:text-gray-100;
+  @apply bg-gray-50 dark:bg-gray-900 text-black dark:text-gray-100;
 }
 
 body {
@@ -370,6 +370,6 @@ body {
 h1,
 h2,
 h3 {
-  @apply dark: text-white;
+  @apply dark:text-white;
 }
 </style>
