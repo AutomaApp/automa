@@ -80,6 +80,13 @@
             @update:node="state.dataChanged = true"
             @delete:node="state.dataChanged = true"
           />
+          <editor-local-ctx-menu
+            v-if="editor"
+            :editor="editor"
+            @copy="copySelectedElements"
+            @paste="pasteCopiedElements"
+            @duplicate="duplicateElements"
+          />
         </ui-tab-panel>
         <ui-tab-panel value="logs" class="mt-24">
           <editor-logs
@@ -144,6 +151,7 @@ import WorkflowDataTable from '@/components/newtab/workflow/WorkflowDataTable.vu
 import WorkflowGlobalData from '@/components/newtab/workflow/WorkflowGlobalData.vue';
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
 import EditorLogs from '@/components/newtab/workflow/editor/EditorLogs.vue';
+import EditorLocalCtxMenu from '@/components/newtab/workflow/editor/EditorLocalCtxMenu.vue';
 import EditorLocalActions from '@/components/newtab/workflow/editor/EditorLocalActions.vue';
 
 const nanoid = customAlphabet('1234567890abcdef', 7);
@@ -447,30 +455,51 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
 
   state.dataChanged = true;
 }
-function copySelectedElements() {
+function copyElements(nodes, edges, initialPos) {
   const newIds = new Map();
+  let firstNodePos = null;
 
-  const nodes = editor.value.getSelectedNodes.value.map(
-    ({ id, label, position, data, type }) => {
-      const newNodeId = nanoid();
+  const newNodes = nodes.map(({ id, label, position, data, type }, index) => {
+    const newNodeId = nanoid();
 
-      newIds.set(id, newNodeId);
+    const nodePos = {
+      z: position.z || 0,
+      y: position.y + 50,
+      x: position.x + 50,
+    };
+    newIds.set(id, newNodeId);
 
-      return {
-        type,
-        data,
-        label,
-        position: {
-          z: position.z,
-          y: position.y + 50,
-          x: position.x + 50,
-        },
-        id: newNodeId,
-        selected: true,
-      };
+    if (initialPos) {
+      if (index === 0) {
+        firstNodePos = {
+          x: nodePos.x,
+          y: nodePos.y,
+        };
+        initialPos = editor.value.project({
+          y: initialPos.clientY,
+          x: initialPos.clientX - 360,
+        });
+
+        Object.assign(nodePos, initialPos);
+      } else {
+        const xDistance = nodePos.x - firstNodePos.x;
+        const yDistance = nodePos.y - firstNodePos.y;
+
+        nodePos.x = initialPos.x + xDistance;
+        nodePos.y = initialPos.y + yDistance;
+      }
     }
-  );
-  const edges = editor.value.getSelectedEdges.value.reduce(
+
+    return {
+      type,
+      data,
+      label,
+      id: newNodeId,
+      selected: true,
+      position: nodePos,
+    };
+  });
+  const newEdges = edges.reduce(
     (acc, { target, targetHandle, source, sourceHandle }) => {
       const targetId = newIds.get(target);
       const sourceId = newIds.get(source);
@@ -491,14 +520,33 @@ function copySelectedElements() {
     []
   );
 
-  store.copiedEls.edges = edges;
-  store.copiedEls.nodes = nodes;
+  return {
+    nodes: newNodes,
+    edges: newEdges,
+  };
 }
-function pasteCopiedElements() {
+function duplicateElements({ nodes, edges }) {
   editor.value.removeSelectedNodes(editor.value.getSelectedNodes.value);
   editor.value.removeSelectedEdges(editor.value.getSelectedEdges.value);
 
-  const { nodes, edges } = store.copiedEls;
+  const { edges: newEdges, nodes: newNodes } = copyElements(nodes, edges);
+
+  editor.value.addNodes(newNodes);
+  editor.value.addEdges(newEdges);
+}
+function copySelectedElements(data = {}) {
+  store.copiedEls.nodes = data.nodes || editor.value.getSelectedNodes.value;
+  store.copiedEls.edges = data.edges || editor.value.getSelectedEdges.value;
+}
+function pasteCopiedElements(position) {
+  editor.value.removeSelectedNodes(editor.value.getSelectedNodes.value);
+  editor.value.removeSelectedEdges(editor.value.getSelectedEdges.value);
+
+  const { nodes, edges } = copyElements(
+    store.copiedEls.nodes,
+    store.copiedEls.edges,
+    position
+  );
   editor.value.addNodes(nodes);
   editor.value.addEdges(edges);
 }
