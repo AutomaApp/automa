@@ -4,7 +4,10 @@ import browser from 'webextension-polyfill';
 
 export const useStore = defineStore('main', {
   state: () => ({
-    user: null,
+    copiedEls: {
+      edges: [],
+      nodes: [],
+    },
     settings: {
       locale: 'en',
       deleteLogAfter: 30,

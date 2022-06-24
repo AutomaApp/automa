@@ -127,6 +127,7 @@ import {
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { customAlphabet } from 'nanoid';
+import { useStore } from '@/stores/main';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useShortcut } from '@/composable/shortcut';
@@ -148,6 +149,7 @@ import EditorLocalActions from '@/components/newtab/workflow/editor/EditorLocalA
 const nanoid = customAlphabet('1234567890abcdef', 7);
 
 const { t } = useI18n();
+const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
@@ -346,8 +348,15 @@ function updateWorkflow(data) {
 function onEditorInit(instance) {
   editor.value = instance;
   // listen to change event
-  instance.onEdgesChange(() => {
-    state.dataChanged = true;
+  instance.onEdgesChange((changes) => {
+    changes.forEach(({ type }) => {
+      if (state.dataChanged) return;
+
+      state.dataChanged = type !== 'select';
+    });
+  });
+  instance.onEdgeDoubleClick(({ edge }) => {
+    instance.removeEdges([edge]);
   });
 }
 function clearHighlightedElements() {
@@ -438,6 +447,72 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
 
   state.dataChanged = true;
 }
+function copySelectedElements() {
+  const newIds = new Map();
+
+  const nodes = editor.value.getSelectedNodes.value.map(
+    ({ id, label, position, data, type }) => {
+      const newNodeId = nanoid();
+
+      newIds.set(id, newNodeId);
+
+      return {
+        type,
+        data,
+        label,
+        position: {
+          z: position.z,
+          y: position.y + 50,
+          x: position.x + 50,
+        },
+        id: newNodeId,
+        selected: true,
+      };
+    }
+  );
+  const edges = editor.value.getSelectedEdges.value.reduce(
+    (acc, { target, targetHandle, source, sourceHandle }) => {
+      const targetId = newIds.get(target);
+      const sourceId = newIds.get(source);
+
+      if (!targetId || !sourceId) return acc;
+
+      acc.push({
+        selected: true,
+        target: targetId,
+        source: sourceId,
+        id: `edge-${nanoid()}`,
+        targetHandle: targetHandle.replace(target, targetId),
+        sourceHandle: sourceHandle.replace(source, sourceId),
+      });
+
+      return acc;
+    },
+    []
+  );
+
+  store.copiedEls.edges = edges;
+  store.copiedEls.nodes = nodes;
+}
+function pasteCopiedElements() {
+  editor.value.removeSelectedNodes(editor.value.getSelectedNodes.value);
+  editor.value.removeSelectedEdges(editor.value.getSelectedEdges.value);
+
+  const { nodes, edges } = store.copiedEls;
+  editor.value.addNodes(nodes);
+  editor.value.addEdges(edges);
+}
+function onKeydown({ ctrlKey, metaKey, key }) {
+  const command = (keyName) => (ctrlKey || metaKey) && keyName === key;
+
+  if (command('c')) {
+    copySelectedElements();
+    console.log(store.copiedEls);
+  } else if (command('v')) {
+    pasteCopiedElements();
+  }
+}
+
 /* eslint-disable consistent-return */
 onBeforeRouteLeave(() => {
   updateHostedWorkflow();
@@ -469,9 +544,11 @@ onMounted(() => {
     }
     return true;
   };
+  window.addEventListener('keydown', onKeydown);
 });
 onBeforeUnmount(() => {
   window.onbeforeunload = null;
+  window.removeEventListener('keydown', onKeydown);
 });
 </script>
 <style>

@@ -30,7 +30,7 @@
     "*.{js,ts,vue}": "eslint --fix"
   },
   "dependencies": {
-    "@braks/vue-flow": "^0.4.23",
+    "@braks/vue-flow": "^0.4.24",
     "@codemirror/lang-javascript": "^6.0.0",
     "@codemirror/lang-json": "^6.0.0",
     "@codemirror/language": "^6.0.0",
