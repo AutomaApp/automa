@@ -58,7 +58,7 @@
           :editor="editor"
           :workflow="workflow"
           :is-data-changed="state.dataChanged"
-          @save="state.dataChanged = false"
+          @update="onActionUpdated"
           @modal="(modalState.name = $event), (modalState.show = true)"
         />
       </div>
@@ -141,6 +141,7 @@ import { useShortcut } from '@/composable/shortcut';
 import { tasks } from '@/utils/shared';
 import { debounce, parseJSON, throttle } from '@/utils/helper';
 import { fetchApi } from '@/utils/api';
+import browser from 'webextension-polyfill';
 import EditorUtils from '@/utils/EditorUtils';
 import convertWorkflowData from '@/utils/convertWorkflowData';
 import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
@@ -185,11 +186,11 @@ const autocompleteState = reactive({
   cache: new Map(),
   dataChanged: false,
 });
-
 const workflowPayload = {
   data: {},
   isUpdating: false,
 };
+
 const workflowModals = {
   table: {
     icon: 'riKey2Line',
@@ -241,9 +242,7 @@ const workflowModals = {
   },
 };
 
-const workflow = computed(() =>
-  workflowStore.getById('local', route.params.id)
-);
+const workflow = computed(() => workflowStore.getById(route.params.id));
 const activeWorkflowModal = computed(
   () => workflowModals[modalState.name] || {}
 );
@@ -251,6 +250,7 @@ const activeWorkflowModal = computed(
 const updateBlockData = debounce((data) => {
   const node = editor.value.getNode.value(editState.blockData.blockId);
   node.data = data;
+  editState.blockData.data = data;
   state.dataChanged = true;
   // let payload = data;
 
@@ -276,14 +276,13 @@ const updateBlockData = debounce((data) => {
 const updateHostedWorkflow = throttle(async () => {
   if (!userStore.user || workflowPayload.isUpdating) return;
 
-  const isHosted = workflowStore.userHosted[route.param.id];
-  const isBackup = (userStore.backupIds || []).includes(route.params.id);
-  const isExists = Boolean(workflow.value);
+  const isHosted = userStore.hostedWorkflows[route.params.id];
+  const isBackup = userStore.backupIds.includes(route.params.id);
+  const workflowExist = workflowStore.getById(route.params.id);
 
   if (
     (!isBackup && !isHosted) ||
-    !isExists ||
-    Object.keys(workflowPayload.data).length === 0
+    (workflowExist && Object.keys(workflowPayload.data).length === 0)
   )
     return;
 
@@ -346,12 +345,17 @@ function initEditBlock(data) {
   editState.blockData = { ...data, editComponent };
 }
 function updateWorkflow(data) {
-  workflowStore.updateWorkflow({
+  workflowStore.update({
     data,
-    location: 'local',
     id: route.params.id,
   });
   workflowPayload.data = { ...workflowPayload.data, ...data };
+  updateHostedWorkflow();
+}
+function onActionUpdated({ data, changedIndicator }) {
+  state.dataChanged = changedIndicator;
+  workflowPayload.data = { ...workflowPayload.data, ...data };
+  updateHostedWorkflow();
 }
 function onEditorInit(instance) {
   editor.value = instance;
@@ -555,7 +559,6 @@ function onKeydown({ ctrlKey, metaKey, key }) {
 
   if (command('c')) {
     copySelectedElements();
-    console.log(store.copiedEls);
   } else if (command('v')) {
     pasteCopiedElements();
   }
@@ -565,7 +568,7 @@ function onKeydown({ ctrlKey, metaKey, key }) {
 onBeforeRouteLeave(() => {
   updateHostedWorkflow();
 
-  if (!state.dataChange) return;
+  if (!state.dataChanged) return;
 
   const confirm = window.confirm(t('message.notSaved'));
 
@@ -587,10 +590,9 @@ onMounted(() => {
   window.onbeforeunload = () => {
     updateHostedWorkflow();
 
-    if (state.dataChange) {
+    if (state.dataChanged) {
       return t('message.notSaved');
     }
-    return true;
   };
   window.addEventListener('keydown', onKeydown);
 });

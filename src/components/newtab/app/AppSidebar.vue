@@ -118,12 +118,6 @@ const tabs = [
     shortcut: getShortcut('page:schedule', '/triggers'),
   },
   {
-    id: 'collection',
-    icon: 'riFolderLine',
-    path: '/collections',
-    shortcut: getShortcut('page:collections', '/collections'),
-  },
-  {
     id: 'log',
     icon: 'riHistoryLine',
     path: '/logs',

@@ -4,153 +4,216 @@ import defu from 'defu';
 import deepmerge from 'lodash.merge';
 import browser from 'webextension-polyfill';
 import { fetchApi } from '@/utils/api';
-import { firstWorkflows } from '@/utils/shared';
-import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
-import { parseJSON, objectHasKey, findTriggerBlock } from '@/utils/helper';
+import { firstWorkflows, tasks } from '@/utils/shared';
+import {
+  registerWorkflowTrigger,
+  cleanWorkflowTriggers,
+} from '@/utils/workflowTrigger';
+import { parseJSON, findTriggerBlock } from '@/utils/helper';
+import { useUserStore } from './user';
 
-function getWorkflowKey(state, id, location = 'local') {
-  let key = id;
+const defaultWorkflow = (data = null) => {
+  let workflowData = {
+    id: nanoid(),
+    name: '',
+    icon: 'riGlobalLine',
+    folderId: null,
+    drawflow: {
+      edges: [],
+      position: { zoom: 1 },
+      nodes: [
+        {
+          position: {
+            x: 100,
+            y: window.innerHeight / 2,
+          },
+          id: nanoid(),
+          label: 'trigger',
+          data: tasks.trigger.data,
+          type: tasks.trigger.component,
+        },
+      ],
+    },
+    table: [],
+    dataColumns: [],
+    description: '',
+    trigger: null,
+    version: '',
+    createdAt: Date.now(),
+    isDisabled: false,
+    settings: {
+      publicId: '',
+      blockDelay: 0,
+      saveLog: true,
+      debugMode: false,
+      restartTimes: 3,
+      notification: true,
+      reuseLastState: false,
+      inputAutocomplete: true,
+      onError: 'stop-workflow',
+      executedBlockOnWeb: false,
+      insertDefaultColumn: true,
+      defaultColumnName: 'column',
+    },
+    globalData: '{\n\t"key": "value"\n}',
+  };
 
-  if (Array.isArray(state[location])) {
-    const index = state[location].findIndex((workflow) => workflow.id === id);
-    key = index === -1 ? null : index;
-  } else {
-    key = objectHasKey(state[location]) ? key : null;
+  if (data) workflowData = defu(data, workflowData);
+
+  return workflowData;
+};
+
+function convertWorkflowsToObject(workflows) {
+  if (Array.isArray(workflows)) {
+    return workflows.reduce((acc, workflow) => {
+      acc[workflow.id] = workflow;
+
+      return acc;
+    }, {});
   }
 
-  return key;
+  return workflows;
 }
 
 export const useWorkflowStore = defineStore('workflow', {
   storageMap: {
-    local: 'workflows',
-    hosted: 'workflowHosts',
-    userHosted: 'hostWorkflow',
+    workflows: 'workflows',
   },
   state: () => ({
-    local: [],
     states: [],
-    shared: {},
-    hosted: {},
-    userHosted: {},
+    workflows: {},
     retrieved: false,
   }),
   getters: {
-    getById: (state) => (location, id) => {
-      let data = state[location];
-
-      if (!Array.isArray(data)) data = Object.values(data);
-
-      return data.find((item) => item.id === id);
-    },
+    getById: (state) => (id) => state.workflows[id],
+    getWorkflows: (state) => Object.values(state.workflows),
   },
   actions: {
-    loadLocal() {
-      return browser.storage.local
-        .get(['workflows', 'workflowHosts', 'isFirstTime'])
-        .then(({ workflows, workflowHosts, isFirstTime }) => {
-          this.hosted = workflowHosts || {};
-          this.local = isFirstTime ? firstWorkflows : workflows;
+    async loadData() {
+      const { workflows, isFirstTime } = await browser.storage.local.get([
+        'workflows',
+        'isFirstTime',
+      ]);
 
-          if (isFirstTime) {
-            browser.storage.local.set({
-              isFirstTime: false,
-            });
-          }
-        });
-    },
-    loadStates() {
+      const localWorkflows = isFirstTime ? firstWorkflows : workflows;
+      this.workflows = convertWorkflowsToObject(localWorkflows);
+
+      if (isFirstTime) {
+        await browser.storage.local.set({ isFirstTime: false });
+      }
+
       const storedStates = localStorage.getItem('workflowState') || '{}';
       const states = parseJSON(storedStates, {});
-
       this.states = Object.values(states).filter(
         ({ isDestroyed }) => !isDestroyed
       );
     },
-    addWorkflow(data = {}) {
-      const workflow = defu(data, {
-        id: nanoid(),
-        name: '',
-        icon: 'riGlobalLine',
-        folderId: null,
-        drawflow: { edges: [], nodes: [] },
-        table: [],
-        dataColumns: [],
-        description: '',
-        trigger: null,
-        version: '',
-        createdAt: Date.now(),
-        isDisabled: false,
-        settings: {
-          publicId: '',
-          blockDelay: 0,
-          saveLog: true,
-          debugMode: false,
-          restartTimes: 3,
-          notification: true,
-          reuseLastState: false,
-          inputAutocomplete: true,
-          onError: 'stop-workflow',
-          executedBlockOnWeb: false,
-          insertDefaultColumn: true,
-          defaultColumnName: 'column',
-        },
-        globalData: '{\n\t"key": "value"\n}',
-      });
+    async insert(data = {}) {
+      const insertedWorkflows = {};
 
-      this.local.push(workflow);
-    },
-    workflowExist(id, location = 'local') {
-      let key = id;
+      if (Array.isArray(data)) {
+        data.forEach((item) => {
+          delete item.id;
 
-      if (Array.isArray(this[location])) {
-        const index = this.local.findIndex((workflow) => workflow.id === id);
-        key = index === -1 ? null : index;
+          const workflow = defaultWorkflow(item);
+          this.workflows[workflow.id] = workflow;
+          insertedWorkflows[workflow.id] = workflow;
+        });
       } else {
-        key = objectHasKey(this[location]) ? key : null;
+        delete data.id;
+
+        const workflow = defaultWorkflow(data);
+        this.workflows[workflow.id] = workflow;
+        insertedWorkflows[workflow.id] = workflow;
       }
 
-      return Boolean(key);
+      await this.saveToStorage('workflows');
+
+      return insertedWorkflows;
     },
-    async updateWorkflow({ id, location = 'local', data = {}, deep = false }) {
-      const key = getWorkflowKey(this, id, location);
-      if (key === null) return null;
+    async update({ id, data = {}, deep = false }) {
+      if (!this.workflows[id]) return null;
 
       if (deep) {
-        deepmerge(this[location][key], data);
+        deepmerge(this.workflows[id], data);
       } else {
-        Object.assign(this[location][key], data);
+        Object.assign(this.workflows[id], data);
       }
 
-      if (this.retrieved) {
-        await this.saveToStorage(location);
-      }
+      await this.saveToStorage('workflows');
 
-      return this[location][key];
+      return this.workflows;
     },
-    deleteWorkflow(id, location = 'local') {
-      const key = getWorkflowKey(this, id, location);
-      if (key === null) return null;
+    async insertOrUpdate(data = []) {
+      const insertedData = {};
 
-      if (Array.isArray(this[location])) {
-        this[location].splice(key, 1);
+      data.forEach((item) => {
+        if (this.workflows[item.id]) {
+          Object.assign(this.workflows[item.id], item);
+          insertedData[item.id] = this.workflows[item.id];
+        } else {
+          const workflow = defaultWorkflow(item);
+          this.workflows[workflow.id] = workflow;
+          insertedData[workflow.id] = workflow;
+        }
+      });
+
+      await this.saveToStorage('workflows');
+
+      return insertedData;
+    },
+    async delete(id) {
+      if (Array.isArray(id)) {
+        id.forEach((workflowId) => {
+          delete this.workflows[workflowId];
+        });
       } else {
-        delete this[location];
+        delete this.workflows[id];
       }
+
+      await cleanWorkflowTriggers(id);
+
+      const userStore = useUserStore();
+
+      const hostedWorkflow = userStore.hostedWorkflows[id];
+      const backupIndex = userStore.backupIds.indexOf(id);
+
+      if (hostedWorkflow || backupIndex !== -1) {
+        const response = await fetchApi(`/me/workflows?id=${id}`, {
+          method: 'DELETE',
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message);
+        }
+
+        if (backupIndex !== -1) {
+          userStore.backupIds.splice(backupIndex, 1);
+          await browser.storage.local.set({ backupIds: userStore.backupIds });
+        }
+      }
+
+      await browser.storage.local.remove(`state:${id}`);
+
+      await this.saveToStorage('workflows');
 
       return id;
     },
-    async syncHostedWorkflows() {
-      const ids = [];
-      const userHosted = Object.values(this.userHosted);
+    async syncHostedWorkflows(hostIds = []) {
+      const ids = hostIds;
 
-      Object.keys(this.hosted).forEach((hostId) => {
-        const isItsOwn = userHosted.find((item) => item.hostId === hostId);
+      if (ids.length === 0) {
+        const userHosted = Object.values(this.userHosted);
 
-        if (isItsOwn) return;
+        Object.keys(this.hosted).forEach((hostId) => {
+          const isItsOwn = userHosted.find((item) => item.hostId === hostId);
 
-        ids.push({ hostId, updatedAt: this.hosted[hostId].updatedAt });
-      });
+          if (isItsOwn) return;
+
+          ids.push({ hostId, updatedAt: this.hosted[hostId].updatedAt });
+        });
+      }
 
       const response = await fetchApi('/workflows/hosted', {
         method: 'POST',

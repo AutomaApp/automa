@@ -4,7 +4,7 @@
       <h2 class="font-semibold mb-2">
         {{ t('settings.backupWorkflows.cloud.title') }}
       </h2>
-      <template v-if="$store.state.user">
+      <template v-if="userStore.user">
         <div
           class="border dark:border-gray-700 p-4 rounded-lg flex items-center"
         >
@@ -111,9 +111,8 @@
   </ui-modal>
 </template>
 <script setup>
-import { reactive, watch } from 'vue';
+import { reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
 import dayjs from 'dayjs';
 import AES from 'crypto-js/aes';
@@ -121,15 +120,17 @@ import encUtf8 from 'crypto-js/enc-utf8';
 import browser from 'webextension-polyfill';
 import hmacSHA256 from 'crypto-js/hmac-sha256';
 import { useDialog } from '@/composable/dialog';
+import { useUserStore } from '@/stores/user';
 import { getUserWorkflows } from '@/utils/api';
+import { useWorkflowStore } from '@/stores/workflow';
 import { fileSaver, openFilePicker, parseJSON } from '@/utils/helper';
-import Workflow from '@/models/workflow';
 import SettingsCloudBackup from '@/components/newtab/settings/SettingsCloudBackup.vue';
 
 const { t } = useI18n();
-const store = useStore();
 const toast = useToast();
 const dialog = useDialog();
+const userStore = useUserStore();
+const workflowStore = useWorkflowStore();
 
 const state = reactive({
   lastSync: null,
@@ -153,17 +154,17 @@ async function syncBackupWorkflows() {
   try {
     state.loadingSync = true;
     const { backup, hosted } = await getUserWorkflows(false);
+    const backupIds = backup.map(({ id }) => id);
 
-    store.commit('updateState', {
-      key: 'hostWorkflows',
-      value: hosted,
-    });
+    userStore.backupIds = backupIds;
+    userStore.hostedWorkflows = hosted;
+
     await browser.storage.local.set({
+      backupIds,
       lastBackup: new Date().toISOString(),
     });
-    await Workflow.insertOrUpdate({
-      data: backup,
-    });
+
+    await workflowStore.insertOrUpdate(backup);
 
     state.loadingSync = false;
   } catch (error) {
@@ -173,7 +174,7 @@ async function syncBackupWorkflows() {
   }
 }
 function backupWorkflows() {
-  const workflows = Workflow.all().reduce((acc, workflow) => {
+  const workflows = workflowStore.getWorkflows.reduce((acc, workflow) => {
     if (workflow.isProtected) return acc;
 
     delete workflow.$id;
@@ -246,14 +247,10 @@ async function restoreWorkflows() {
       };
 
       if (state.updateIfExists) {
-        return Workflow.insertOrUpdate({
-          data: newWorkflows,
-        }).then(showMessage);
+        return workflowStore.insertOrUpdate(newWorkflows).then(showMessage);
       }
 
-      return Workflow.insert({
-        data: newWorkflows,
-      }).then(showMessage);
+      return workflowStore.insert(newWorkflows).then(showMessage);
     };
 
     reader.onload = ({ target }) => {
@@ -303,18 +300,13 @@ async function restoreWorkflows() {
   }
 }
 
-watch(
-  () => store.state.userDataRetrieved,
-  async () => {
-    const { lastBackup, lastSync } = await browser.storage.local.get([
-      'backupIds',
-      'lastBackup',
-      'lastSync',
-    ]);
+onMounted(async () => {
+  const { lastBackup, lastSync } = await browser.storage.local.get([
+    'lastBackup',
+    'lastSync',
+  ]);
 
-    state.lastSync = lastSync;
-    state.lastBackup = lastBackup;
-  },
-  { immediate: true }
-);
+  state.lastSync = lastSync;
+  state.lastBackup = lastBackup;
+});
 </script>

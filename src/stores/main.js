@@ -1,8 +1,12 @@
 import { defineStore } from 'pinia';
 import defu from 'defu';
 import browser from 'webextension-polyfill';
+import deepmerge from 'lodash.merge';
 
 export const useStore = defineStore('main', {
+  storageMap: {
+    settings: 'settings',
+  },
   state: () => ({
     copiedEls: {
       edges: [],
@@ -25,6 +29,9 @@ export const useStore = defineStore('main', {
       return browser.storage.local.get('settings').then(({ settings }) => {
         this.settings = defu(settings || {}, this.settings);
       });
+    },
+    updateSettings(settings = {}) {
+      deepmerge(this.settings, settings);
     },
   },
 });

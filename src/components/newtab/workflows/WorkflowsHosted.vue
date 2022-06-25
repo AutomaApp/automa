@@ -12,10 +12,9 @@
 <script setup>
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useWorkflowStore } from '@/stores/workflow';
 import { useDialog } from '@/composable/dialog';
 import { arraySorter } from '@/utils/helper';
-import { cleanWorkflowTriggers } from '@/utils/workflowTrigger';
+import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 
 const props = defineProps({
@@ -34,14 +33,14 @@ const props = defineProps({
 
 const { t } = useI18n();
 const dialog = useDialog();
-const workflowStore = useWorkflowStore();
+const hostedWorkflowStore = useHostedWorkflowStore();
 
 const menu = [
   { id: 'delete', name: t('common.delete'), icon: 'riDeleteBin7Line' },
 ];
 
 const workflows = computed(() => {
-  const filtered = Object.values(workflowStore.hosted).filter(({ name }) =>
+  const filtered = hostedWorkflowStore.toArray.filter(({ name }) =>
     name.toLocaleLowerCase().includes(props.search.toLocaleLowerCase())
   );
 
@@ -59,8 +58,7 @@ async function deleteWorkflow(workflow) {
     body: t('message.delete', { name: workflow.name }),
     onConfirm: async () => {
       try {
-        delete workflowStore.hosted[workflow.hostId];
-        await cleanWorkflowTriggers(workflow.hostId);
+        await hostedWorkflowStore.delete(workflow.hostId);
       } catch (error) {
         console.error(error);
       }

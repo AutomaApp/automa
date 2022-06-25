@@ -177,7 +177,7 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 import { fetchApi } from '@/utils/api';
 import { useUserStore } from '@/stores/user';
-import { useWorkflowStore } from '@/stores/workflow';
+import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
 import { workflowCategories } from '@/utils/shared';
 import { parseJSON, debounce } from '@/utils/helper';
 import { convertWorkflow } from '@/utils/workflowData';
@@ -195,7 +195,7 @@ const emit = defineEmits(['close', 'publish', 'change']);
 const { t } = useI18n();
 const toast = useToast();
 const userStore = useUserStore();
-const workflowStore = useWorkflowStore();
+const sharedWorkflowStore = useSharedWorkflowStore();
 
 const menuItems = [
   { id: 'bold', name: 'Bold', icon: 'riBold', action: 'toggleBold' },
@@ -241,10 +241,10 @@ async function publishWorkflow() {
 
     workflow.drawflow = props.workflow.drawflow;
 
-    workflowStore.shared[workflow.id] = workflow;
+    sharedWorkflowStore.insert(workflow);
     sessionStorage.setItem(
       'shared-workflows',
-      JSON.stringify(workflowStore.shared)
+      JSON.stringify(sharedWorkflowStore.shared)
     );
 
     state.isPublishing = false;

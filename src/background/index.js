@@ -56,7 +56,9 @@ const workflow = {
       'workflows',
       'workflowHosts',
     ]);
-    let findWorkflow = workflows.find(({ id }) => id === workflowId);
+    let findWorkflow = Array.isArray(workflows)
+      ? workflows.find(({ id }) => id === workflowId)
+      : workflows[workflowId];
 
     if (!findWorkflow) {
       findWorkflow = Object.values(workflowHosts || {}).find(

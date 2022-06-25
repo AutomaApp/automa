@@ -7,7 +7,11 @@ export const useUserStore = defineStore('user', {
     user: null,
     backupIds: [],
     retrieved: false,
+    hostedWorkflows: {},
   }),
+  getters: {
+    getHostedWorkflows: (state) => Object.values(state.hostedWorkflows),
+  },
   actions: {
     async loadUser() {
       try {
@@ -17,7 +21,6 @@ export const useUserStore = defineStore('user', {
         if (!response.ok) throw new Error(response.message);
 
         const username = localStorage.getItem('username');
-
         if (!user || username !== user.username) {
           sessionStorage.removeItem('shared-workflows');
           sessionStorage.removeItem('user-workflows');
@@ -33,6 +36,9 @@ export const useUserStore = defineStore('user', {
         }
 
         localStorage.setItem('username', user?.username);
+
+        const { backupIds } = await browser.storage.local.get('backupIds');
+        this.backupIds = backupIds || [];
 
         this.user = user;
       } catch (error) {

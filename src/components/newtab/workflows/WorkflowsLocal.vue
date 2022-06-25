@@ -1,13 +1,13 @@
 <template>
-  <div v-if="workflowStore.local.length === 0" class="py-12 flex items-center">
+  <div
+    v-if="workflowStore.getWorkflows.length === 0"
+    class="py-12 flex items-center"
+  >
     <img src="@/assets/svg/alien.svg" class="w-96" />
     <div class="ml-4">
       <h1 class="text-2xl font-semibold max-w-md mb-6">
         {{ t('message.empty') }}
       </h1>
-      <ui-button variant="accent" @click="newWorkflow">
-        {{ t('workflow.new') }}
-      </ui-button>
     </div>
   </div>
   <template v-else>
@@ -82,10 +82,13 @@
         </template>
         <template #footer-content>
           <v-remixicon
-            v-if="workflowStore.shared[workflow.id]"
+            v-if="sharedWorkflowStore.workflows[workflow.id]"
             v-tooltip:bottom.group="
               t('workflow.share.sharedAs', {
-                name: workflowStore.shared[workflow.id]?.name.slice(0, 64),
+                name: sharedWorkflowStore.workflows[workflow.id]?.name.slice(
+                  0,
+                  64
+                ),
               })
             "
             name="riShareLine"
@@ -93,7 +96,7 @@
             class="ml-2"
           />
           <v-remixicon
-            v-if="workflowStore.hosted[workflow.id]"
+            v-if="userStore.hostedWorkflows[workflow.id]"
             v-tooltip:bottom.group="t('workflow.host.title')"
             name="riBaseStationLine"
             size="20"
@@ -159,10 +162,12 @@
 import { shallowReactive, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import SelectionArea from '@viselect/vanilla';
+import { arraySorter } from '@/utils/helper';
+import { useUserStore } from '@/stores/user';
 import { useDialog } from '@/composable/dialog';
 import { useWorkflowStore } from '@/stores/workflow';
-import { arraySorter } from '@/utils/helper';
 import { exportWorkflow } from '@/utils/workflowData';
+import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 
 const props = defineProps({
@@ -189,7 +194,9 @@ const props = defineProps({
 
 const { t } = useI18n();
 const dialog = useDialog();
+const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
+const sharedWorkflowStore = useSharedWorkflowStore();
 
 const state = shallowReactive({
   selectedWorkflows: [],
@@ -237,10 +244,10 @@ selection
   });
 
 const filteredWorkflows = computed(() => {
-  const filtered = workflowStore.local.filter(
+  const filtered = workflowStore.getWorkflows.filter(
     ({ name, folderId }) =>
       name.toLocaleLowerCase().includes(props.search.toLocaleLowerCase()) &&
-      (!props.activeFolder || props.activeFolder === folderId)
+      (!props.folderId || props.folderId === folderId)
   );
 
   return arraySorter({
@@ -257,9 +264,8 @@ const workflows = computed(() =>
 );
 
 function toggleDisableWorkflow({ id, isDisabled }) {
-  workflowStore.updateWorkflow({
+  workflowStore.update({
     id,
-    location: 'local',
     data: {
       isDisabled: !isDisabled,
     },
@@ -282,8 +288,7 @@ function initRenameWorkflow({ name, description, id }) {
   });
 }
 function renameWorkflow() {
-  workflowStore.updateWorkflow({
-    location: 'local',
+  workflowStore.update({
     id: renameState.id,
     data: {
       name: renameState.name,
@@ -298,7 +303,7 @@ function deleteWorkflow({ name, id }) {
     okVariant: 'danger',
     body: t('message.delete', { name }),
     onConfirm: () => {
-      workflowStore.deleteWorkflow(id, 'local');
+      workflowStore.delete(id);
     },
   });
 }
@@ -313,7 +318,7 @@ function deleteSelectedWorkflows({ target, key }) {
 
   if (state.selectedWorkflows.length === 1) {
     const [workflowId] = state.selectedWorkflows;
-    const workflow = workflowStore.getById('local', workflowId);
+    const workflow = workflowStore.getById(workflowId);
     deleteWorkflow(workflow);
   } else {
     dialog.confirm({
@@ -323,9 +328,7 @@ function deleteSelectedWorkflows({ target, key }) {
         name: `${state.selectedWorkflows.length} workflows`,
       }),
       onConfirm: async () => {
-        for (const workflowId of state.selectedWorkflows) {
-          await workflowStore.deleteWorkflow(workflowId, 'local');
-        }
+        await workflowStore.delete(state.selectedWorkflows);
       },
     });
   }
@@ -338,7 +341,7 @@ function duplicateWorkflow(workflow) {
     delete copyWorkflow[key];
   });
 
-  workflowStore.addWorkflow(copyWorkflow);
+  workflowStore.insert(copyWorkflow);
 }
 function onDragStart({ dataTransfer, target }) {
   const payload = [...state.selectedWorkflows];

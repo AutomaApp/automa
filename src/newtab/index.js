@@ -1,7 +1,6 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
-import store from '../store';
 import pinia from '../lib/pinia';
 import compsUi from '../lib/compsUi';
 import vueI18n from '../lib/vueI18n';
@@ -14,7 +13,6 @@ import '../assets/css/flow.css';
 
 createApp(App)
   .use(router)
-  .use(store)
   .use(compsUi)
   .use(pinia)
   .use(vueI18n)

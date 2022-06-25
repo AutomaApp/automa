@@ -4,8 +4,6 @@ import Workflows from './pages/Workflows.vue';
 import WorkflowHost from './pages/workflows/Host.vue';
 import WorkflowDetails from './pages/workflows/[id].vue';
 import ScheduledWorkflow from './pages/ScheduledWorkflow.vue';
-import Collections from './pages/Collections.vue';
-import CollectionsDetails from './pages/collections/[id].vue';
 import Logs from './pages/Logs.vue';
 import LogsDetails from './pages/logs/[id].vue';
 import LogsRunning from './pages/logs/Running.vue';
@@ -47,16 +45,6 @@ const routes = [
     name: 'workflow-host',
     path: '/workflows/:id/host',
     component: WorkflowHost,
-  },
-  {
-    name: 'collections',
-    path: '/collections',
-    component: Collections,
-  },
-  {
-    name: 'collections-details',
-    path: '/collections/:id',
-    component: CollectionsDetails,
   },
   {
     name: 'logs',

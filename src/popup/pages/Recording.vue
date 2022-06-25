@@ -50,17 +50,18 @@
   </div>
 </template>
 <script setup>
+/* eslint-disable */
 import { onMounted, reactive, toRaw } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
+// import { useRouter } from 'vue-router';
 import { nanoid } from 'nanoid';
 import defu from 'defu';
 import browser from 'webextension-polyfill';
 import { tasks } from '@/utils/shared';
-import Workflow from '@/models/workflow';
+// import Workflow from '@/models/workflow';
 
 const { t } = useI18n();
-const router = useRouter();
+// const router = useRouter();
 
 const state = reactive({
   name: '',
@@ -69,161 +70,161 @@ const state = reactive({
   isGenerating: false,
 });
 
-function generateDrawflow(startBlock, startBlockData) {
-  let nextNodeId = nanoid();
-  const triggerId = startBlock?.id || nanoid();
-  let prevNodeId = startBlock?.id || triggerId;
+// function generateDrawflow(startBlock, startBlockData) {
+//   let nextNodeId = nanoid();
+//   const triggerId = startBlock?.id || nanoid();
+//   let prevNodeId = startBlock?.id || triggerId;
 
-  const nodes = {
-    [triggerId]: {
-      pos_x: 50,
-      pos_y: 300,
-      inputs: {},
-      outputs: {
-        output_1: {
-          connections: [{ node: nextNodeId, output: 'input_1' }],
-        },
-      },
-      id: triggerId,
-      typenode: 'vue',
-      name: 'trigger',
-      class: 'trigger',
-      html: 'BlockBasic',
-      data: tasks.trigger.data,
-      ...startBlockData,
-    },
-  };
+//   const nodes = {
+//     [triggerId]: {
+//       pos_x: 50,
+//       pos_y: 300,
+//       inputs: {},
+//       outputs: {
+//         output_1: {
+//           connections: [{ node: nextNodeId, output: 'input_1' }],
+//         },
+//       },
+//       id: triggerId,
+//       typenode: 'vue',
+//       name: 'trigger',
+//       class: 'trigger',
+//       html: 'BlockBasic',
+//       data: tasks.trigger.data,
+//       ...startBlockData,
+//     },
+//   };
 
-  if (startBlock) {
-    nodes[triggerId].outputs[startBlock.output]?.connections.push({
-      node: nextNodeId,
-      output: 'input_1',
-    });
-  }
+//   if (startBlock) {
+//     nodes[triggerId].outputs[startBlock.output]?.connections.push({
+//       node: nextNodeId,
+//       output: 'input_1',
+//     });
+//   }
 
-  const position = {
-    y: startBlockData ? startBlockData.pos_y + 50 : 300,
-    x: startBlockData ? startBlockData.pos_x + 120 : 260,
-  };
-  const groups = {};
+//   const position = {
+//     y: startBlockData ? startBlockData.pos_y + 50 : 300,
+//     x: startBlockData ? startBlockData.pos_x + 120 : 260,
+//   };
+//   const groups = {};
 
-  state.flows.forEach((block, index) => {
-    if (block.groupId) {
-      if (!groups[block.groupId]) groups[block.groupId] = [];
+//   state.flows.forEach((block, index) => {
+//     if (block.groupId) {
+//       if (!groups[block.groupId]) groups[block.groupId] = [];
 
-      groups[block.groupId].push({
-        id: block.id,
-        itemId: nanoid(),
-        data: defu(block.data, tasks[block.id].data),
-      });
+//       groups[block.groupId].push({
+//         id: block.id,
+//         itemId: nanoid(),
+//         data: defu(block.data, tasks[block.id].data),
+//       });
 
-      const nextNodeInGroup = state.flows[index + 1]?.groupId;
-      if (nextNodeInGroup) return;
+//       const nextNodeInGroup = state.flows[index + 1]?.groupId;
+//       if (nextNodeInGroup) return;
 
-      block.id = 'blocks-group';
-      block.data = { blocks: groups[block.groupId] };
+//       block.id = 'blocks-group';
+//       block.data = { blocks: groups[block.groupId] };
 
-      delete groups[block.groupId];
-    }
+//       delete groups[block.groupId];
+//     }
 
-    const node = {
-      id: nextNodeId,
-      name: block.id,
-      class: block.id,
-      typenode: 'vue',
-      pos_x: position.x,
-      pos_y: position.y,
-      inputs: { input_1: { connections: [] } },
-      outputs: { output_1: { connections: [] } },
-      html: tasks[block.id].component,
-      data: defu(block.data, tasks[block.id].data),
-    };
+//     const node = {
+//       id: nextNodeId,
+//       name: block.id,
+//       class: block.id,
+//       typenode: 'vue',
+//       pos_x: position.x,
+//       pos_y: position.y,
+//       inputs: { input_1: { connections: [] } },
+//       outputs: { output_1: { connections: [] } },
+//       html: tasks[block.id].component,
+//       data: defu(block.data, tasks[block.id].data),
+//     };
 
-    node.inputs.input_1.connections.push({
-      node: prevNodeId,
-      input: index === 0 && startBlock ? startBlock.output : 'output_1',
-    });
+//     node.inputs.input_1.connections.push({
+//       node: prevNodeId,
+//       input: index === 0 && startBlock ? startBlock.output : 'output_1',
+//     });
 
-    const isLastIndex = index === state.flows.length - 1;
+//     const isLastIndex = index === state.flows.length - 1;
 
-    prevNodeId = nextNodeId;
-    nextNodeId = nanoid();
+//     prevNodeId = nextNodeId;
+//     nextNodeId = nanoid();
 
-    if (!isLastIndex) {
-      node.outputs.output_1.connections.push({
-        node: nextNodeId,
-        output: 'input_1',
-      });
-    }
+//     if (!isLastIndex) {
+//       node.outputs.output_1.connections.push({
+//         node: nextNodeId,
+//         output: 'input_1',
+//       });
+//     }
 
-    const inNewRow = (index + 1) % 5 === 0;
-    const blockNameLen = tasks[block.id].name.length * 14 + 120;
-    position.x = inNewRow ? 50 : position.x + blockNameLen;
-    position.y = inNewRow ? position.y + 150 : position.y;
+//     const inNewRow = (index + 1) % 5 === 0;
+//     const blockNameLen = tasks[block.id].name.length * 14 + 120;
+//     position.x = inNewRow ? 50 : position.x + blockNameLen;
+//     position.y = inNewRow ? position.y + 150 : position.y;
 
-    nodes[node.id] = node;
-  });
+//     nodes[node.id] = node;
+//   });
 
-  if (startBlock) return nodes;
+//   if (startBlock) return nodes;
 
-  return { drawflow: { Home: { data: nodes } } };
-}
-async function stopRecording() {
-  if (state.isGenerating) return;
+//   return { drawflow: { Home: { data: nodes } } };
+// }
+// async function stopRecording() {
+//   if (state.isGenerating) return;
 
-  try {
-    state.isGenerating = true;
+//   try {
+//     state.isGenerating = true;
 
-    if (state.flows.length !== 0) {
-      if (state.workflowId) {
-        const workflow = Workflow.find(state.workflowId);
-        const drawflow =
-          typeof workflow.drawflow === 'string'
-            ? JSON.parse(workflow.drawflow)
-            : workflow.drawflow;
-        const node = drawflow.drawflow.Home.data[state.connectFrom.id];
-        const updatedDrawflow = generateDrawflow(state.connectFrom, node);
+//     if (state.flows.length !== 0) {
+//       if (state.workflowId) {
+//         const workflow = Workflow.find(state.workflowId);
+//         const drawflow =
+//           typeof workflow.drawflow === 'string'
+//             ? JSON.parse(workflow.drawflow)
+//             : workflow.drawflow;
+//         const node = drawflow.drawflow.Home.data[state.connectFrom.id];
+//         const updatedDrawflow = generateDrawflow(state.connectFrom, node);
 
-        Object.assign(drawflow.drawflow.Home.data, updatedDrawflow);
+//         Object.assign(drawflow.drawflow.Home.data, updatedDrawflow);
 
-        await Workflow.update({
-          where: state.workflowId,
-          data: {
-            drawflow: JSON.stringify(drawflow),
-          },
-        });
-      } else {
-        const drawflow = generateDrawflow();
+//         await Workflow.update({
+//           where: state.workflowId,
+//           data: {
+//             drawflow: JSON.stringify(drawflow),
+//           },
+//         });
+//       } else {
+//         const drawflow = generateDrawflow();
 
-        await Workflow.insert({
-          data: {
-            name: state.name,
-            drawflow: JSON.stringify(drawflow),
-          },
-        });
-      }
-    }
+//         await Workflow.insert({
+//           data: {
+//             name: state.name,
+//             drawflow: JSON.stringify(drawflow),
+//           },
+//         });
+//       }
+//     }
 
-    await browser.storage.local.remove(['isRecording', 'recording']);
-    await browser.browserAction.setBadgeText({ text: '' });
+//     await browser.storage.local.remove(['isRecording', 'recording']);
+//     await browser.browserAction.setBadgeText({ text: '' });
 
-    const tabs = (await browser.tabs.query({})).filter((tab) =>
-      tab.url.startsWith('http')
-    );
-    Promise.allSettled(
-      tabs.map(({ id }) =>
-        browser.tabs.sendMessage(id, { type: 'recording:stop' })
-      )
-    );
+//     const tabs = (await browser.tabs.query({})).filter((tab) =>
+//       tab.url.startsWith('http')
+//     );
+//     Promise.allSettled(
+//       tabs.map(({ id }) =>
+//         browser.tabs.sendMessage(id, { type: 'recording:stop' })
+//       )
+//     );
 
-    state.isGenerating = false;
+//     state.isGenerating = false;
 
-    router.push('/');
-  } catch (error) {
-    state.isGenerating = false;
-    console.error(error);
-  }
-}
+//     router.push('/');
+//   } catch (error) {
+//     state.isGenerating = false;
+//     console.error(error);
+//   }
+// }
 function removeBlock(index) {
   state.flows.splice(index, 1);
 

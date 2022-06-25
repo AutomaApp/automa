@@ -62,14 +62,14 @@ export const googleSheets = {
 };
 
 export async function cacheApi(key, callback, useCache = true) {
-  const halfAnHour = 1000 * 60 * 15;
-  const halfAnHourAgo = Date.now() - halfAnHour;
+  const tenMinutes = 1000 * 10;
+  const tenMinutesAgo = Date.now() - tenMinutes;
 
   const timerKey = `cache-time:${key}`;
   const cacheResult = parseJSON(sessionStorage.getItem(key), null);
   const cacheTime = +sessionStorage.getItem(timerKey) || Date.now();
 
-  if (useCache && cacheResult && halfAnHourAgo < cacheTime) {
+  if (useCache && cacheResult && tenMinutesAgo < cacheTime) {
     return cacheResult;
   }
 
@@ -139,9 +139,7 @@ export async function getUserWorkflows(useCache = true) {
               };
             }
 
-            if (workflow.isBackup) {
-              acc.backup.push(workflow);
-            }
+            acc.backup.push(workflow);
 
             return acc;
           },

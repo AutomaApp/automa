@@ -36,16 +36,6 @@
       >
         <ui-tab value="editor">{{ t('common.editor') }}</ui-tab>
         <ui-tab value="logs">{{ t('common.log', 2) }}</ui-tab>
-        <ui-tab value="running" class="flex items-center">
-          {{ t('common.running') }}
-          <span
-            v-if="workflowState.length > 0"
-            class="ml-2 p-1 text-center inline-block text-xs rounded-full bg-accent text-white dark:text-black"
-            style="min-width: 25px"
-          >
-            {{ workflowState.length }}
-          </span>
-        </ui-tab>
       </ui-tabs>
       <div class="flex-grow"></div>
       <ui-card padding="p-1">
@@ -91,13 +81,15 @@
       class="h-full"
     >
       <ui-tab-panel class="h-full" value="editor">
-        <workflow-builder
-          v-if="workflow?.drawflow"
+        <workflow-editor
+          v-if="state.retrieved"
+          :id="route.params.id"
           :key="state.editorKey"
-          :version="false"
-          :is-shared="true"
           :data="workflow.drawflow"
+          :options="editorOptions"
+          :disabled="true"
           class="h-full w-full"
+          @init="onEditorInit"
         />
       </ui-tab-panel>
       <ui-tab-panel value="logs">
@@ -113,63 +105,59 @@
           </template>
         </shared-logs-table>
       </ui-tab-panel>
-      <ui-tab-panel value="running">
-        <div class="grid grid-cols-3 gap-4">
-          <shared-workflow-state
-            v-for="item in workflowState"
-            :key="item.id"
-            :data="item"
-          />
-        </div>
-      </ui-tab-panel>
     </ui-tab-panels>
   </div>
 </template>
 <script setup>
 import { computed, reactive, onMounted, watch } from 'vue';
-import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
-import browser from 'webextension-polyfill';
-import { useLiveQuery } from '@/composable/liveQuery';
+import { sendMessage } from '@/utils/message';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
+import { useLiveQuery } from '@/composable/liveQuery';
 import { useGroupTooltip } from '@/composable/groupTooltip';
-import { parseJSON, findTriggerBlock } from '@/utils/helper';
-import { cleanWorkflowTriggers } from '@/utils/workflowTrigger';
-import { sendMessage } from '@/utils/message';
+import { findTriggerBlock } from '@/utils/helper';
+import convertWorkflowData from '@/utils/convertWorkflowData';
+import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import dbLogs from '@/db/logs';
 import getTriggerText from '@/utils/triggerText';
-import WorkflowBuilder from '@/components/newtab/workflow/WorkflowBuilder.vue';
+import WorkflowEditor from '@/components/newtab/workflow/WorkflowEditor.vue';
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
-import SharedWorkflowState from '@/components/newtab/shared/SharedWorkflowState.vue';
 
 useGroupTooltip();
 
 const { t } = useI18n();
-const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const dialog = useDialog();
+const hostedWorkflowStore = useHostedWorkflowStore();
+
+const workflowId = route.params.id;
+const editorOptions = {
+  disabled: true,
+  fitViewOnInit: true,
+  nodesDraggable: false,
+  edgesUpdateable: false,
+  nodesConnectable: false,
+  elementsSelectable: false,
+};
+
 /* eslint-disable-next-line */
 const shortcut = useShortcut('editor:execute-workflow', executeWorkflow);
 const logs = useLiveQuery(() =>
-  dbLogs.items.query().where('workflowId').equals(route.params.id).toArray()
+  dbLogs.items.where('workflowId').equals(workflowId).toArray()
 );
-
-const workflowId = route.params.id;
 
 const state = reactive({
   editorKey: 0,
+  retrieved: false,
   loadingSync: false,
   activeTab: 'editor',
   trigger: 'Trigger: Manually',
 });
 
-const workflow = computed(() => store.state.workflowHosts[workflowId]);
-const workflowState = computed(() =>
-  store.getters.getWorkflowState(workflowId)
-);
+const workflow = computed(() => hostedWorkflowStore.getById(workflowId));
 
 function syncWorkflow() {
   state.loadingSync = true;
@@ -178,8 +166,8 @@ function syncWorkflow() {
     updatedAt: null,
   };
 
-  store
-    .dispatch('fetchWorkflowHosts', [hostId])
+  hostedWorkflowStore
+    .fetchWorkflows([hostId])
     .then(() => {
       if (!workflow.value) {
         router.replace('/workflows');
@@ -200,12 +188,7 @@ async function deleteWorkflowHost() {
     body: t('message.delete', { name: workflow.value.name }),
     onConfirm: async () => {
       try {
-        store.commit('deleteStateNested', `workflowHosts.${workflowId}`);
-
-        await browser.storage.local.set({
-          workflowHosts: store.state.sharedWorkflows,
-        });
-        await cleanWorkflowTriggers(workflowId);
+        await hostedWorkflowStore.delete(workflowId);
 
         router.replace('/workflows');
       } catch (error) {
@@ -226,9 +209,7 @@ function deleteLog(logId) {
   dbLogs.items.where('id').equals(logId);
 }
 async function retrieveTriggerText() {
-  const flow = parseJSON(workflow.value?.drawflow, null);
-  const triggerBlock = findTriggerBlock(flow);
-
+  const triggerBlock = findTriggerBlock(workflow.value.drawflow);
   if (!triggerBlock) return;
 
   state.triggerText = await getTriggerText(
@@ -238,22 +219,27 @@ async function retrieveTriggerText() {
     true
   );
 }
+function onEditorInit(editor) {
+  editor.setInteractive(false);
+}
 
-watch(
-  () => workflow.value?.drawflow,
-  () => {
-    state.editorKey += 1;
-    retrieveTriggerText();
-  }
-);
+watch(workflow, () => {
+  state.editorKey += 1;
+});
 
 onMounted(() => {
-  if (!workflow.value) {
+  const currentWorkflow = hostedWorkflowStore.workflows[workflowId];
+  if (!currentWorkflow) {
     router.push('/workflows');
     return;
   }
 
+  const convertedData = convertWorkflowData(currentWorkflow);
+  hostedWorkflowStore.update({ id: workflowId, ...convertedData });
+
   retrieveTriggerText();
+
+  state.retrieved = true;
 });
 </script>
 <style>

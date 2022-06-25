@@ -32,7 +32,7 @@
     <draggable
       v-model="state.blocks"
       item-key="itemId"
-      class="px-4 mb-4 overflow-auto nowheel scroll text-sm space-y-1 max-h-60"
+      class="px-4 pb-4 overflow-auto nowheel scroll text-sm space-y-1 max-h-60"
       @mousedown.stop
       @dragover.prevent
       @drop="handleDrop"
@@ -112,6 +112,10 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  editor: {
+    type: Object,
+    default: () => ({}),
+  },
 });
 const emit = defineEmits(['update', 'delete', 'edit']);
 
@@ -122,6 +126,7 @@ const excludeBlocks = [
   'loop-breakpoint',
   'blocks-group',
   'conditions',
+  'webhook',
   'element-exists',
 ];
 
@@ -167,7 +172,6 @@ function handleDrop(event) {
   event.stopPropagation();
 
   const droppedBlock = JSON.parse(event.dataTransfer.getData('block') || null);
-
   if (!droppedBlock || droppedBlock.fromGroup) return;
 
   const { id, data, blockId } = droppedBlock;
@@ -183,7 +187,7 @@ function handleDrop(event) {
   }
 
   if (blockId) {
-    emit('delete', id);
+    emit('delete', blockId);
   }
 
   state.blocks.push({ id, data, itemId: nanoid(5) });
@@ -193,13 +197,19 @@ watch(
   () => state.blocks,
   () => {
     if (!state.retrieved) return;
-
     emit('update', { blocks: state.blocks });
   },
   { deep: true }
 );
 
 onMounted(() => {
-  state.blocks = cloneDeep(props.data.blocks);
+  const copiedBlocks = cloneDeep(props.data.blocks);
+  state.blocks = Array.isArray(copiedBlocks)
+    ? copiedBlocks
+    : Object.values(copiedBlocks);
+
+  setTimeout(() => {
+    state.retrieved = true;
+  }, 500);
 });
 </script>

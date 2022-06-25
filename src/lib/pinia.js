@@ -7,18 +7,10 @@ function saveToStoragePlugin({ store, options }) {
 
   store.saveToStorage = (key) => {
     const storageKey = options.storageMap[key];
-    if (!storageKey) return;
+    if (!storageKey || !store.retrieved) return null;
 
-    newBrowser.storage.local.set({ [storageKey]: toRaw(store[key]) });
+    return newBrowser.storage.local.set({ [storageKey]: toRaw(store[key]) });
   };
-  store.$subscribe(({ events }, state) => {
-    if (!state.retrieved || !options.storageMap) return;
-
-    const storageKey = options.storageMap[events.key];
-    if (!storageKey) return;
-
-    console.log(storageKey, events.newValue);
-  });
 }
 
 const pinia = createPinia();

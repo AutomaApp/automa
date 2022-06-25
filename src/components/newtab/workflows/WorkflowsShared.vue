@@ -10,7 +10,7 @@
 </template>
 <script setup>
 import { computed } from 'vue';
-import { useWorkflowStore } from '@/stores/workflow';
+import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
 import { arraySorter } from '@/utils/helper';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 
@@ -28,10 +28,10 @@ const props = defineProps({
   },
 });
 
-const workflowStore = useWorkflowStore();
+const sharedWorkflowStore = useSharedWorkflowStore();
 
 const workflows = computed(() => {
-  const filtered = Object.values(workflowStore.shared).filter(({ name }) =>
+  const filtered = sharedWorkflowStore.toArray.filter(({ name }) =>
     name.toLocaleLowerCase().includes(props.search.toLocaleLowerCase())
   );
 

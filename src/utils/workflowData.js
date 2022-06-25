@@ -1,23 +1,19 @@
 import browser from 'webextension-polyfill';
-import Workflow from '@/models/workflow';
-import { parseJSON, fileSaver, openFilePicker, isObject } from './helper';
+import { useWorkflowStore } from '@/stores/workflow';
+import { parseJSON, fileSaver, openFilePicker } from './helper';
 
 export function importWorkflow(attrs = {}) {
   openFilePicker(['application/json'], attrs)
     .then((files) => {
-      const getDrawflow = ({ drawflow }) => {
-        if (isObject(drawflow)) return JSON.stringify(drawflow);
-
-        return drawflow;
-      };
       const handleOnLoadReader = ({ target }) => {
         const workflow = JSON.parse(target.result);
+        const workflowStore = useWorkflowStore();
 
         if (workflow.includedWorkflows) {
           Object.keys(workflow.includedWorkflows).forEach((workflowId) => {
-            const isWorkflowExists = Workflow.query()
-              .where('id', workflowId)
-              .exists();
+            const isWorkflowExists = Boolean(
+              workflowStore.workflows[workflowId]
+            );
 
             if (isWorkflowExists) return;
 
@@ -26,13 +22,10 @@ export function importWorkflow(attrs = {}) {
               currentWorkflow.table || currentWorkflow.dataColumns;
             delete currentWorkflow.dataColumns;
 
-            Workflow.insert({
-              data: {
-                ...currentWorkflow,
-                drawflow: getDrawflow(workflow.includedWorkflows[workflowId]),
-                id: workflowId,
-                createdAt: Date.now(),
-              },
+            workflowStore.insert({
+              ...currentWorkflow,
+              id: workflowId,
+              createdAt: Date.now(),
             });
           });
 
@@ -42,12 +35,9 @@ export function importWorkflow(attrs = {}) {
         workflow.table = workflow.table || workflow.dataColumns;
         delete workflow.dataColumns;
 
-        Workflow.insert({
-          data: {
-            ...workflow,
-            drawflow: getDrawflow(workflow),
-            createdAt: Date.now(),
-          },
+        workflowStore.insert({
+          ...workflow,
+          createdAt: Date.now(),
         });
       };
 
@@ -87,30 +77,45 @@ export function convertWorkflow(workflow, additionalKeys = []) {
 
   return content;
 }
-function findIncludedWorkflows({ drawflow }, maxDepth = 3, workflows = {}) {
+function findIncludedWorkflows(
+  { drawflow },
+  store,
+  maxDepth = 3,
+  workflows = {}
+) {
   if (maxDepth === 0) return workflows;
 
-  const blocks = parseJSON(drawflow, null)?.drawflow.Home.data;
-
+  const flow = parseJSON(drawflow, drawflow);
+  const blocks = flow?.drawflow?.Home.data ?? flow.nodes ?? null;
   if (!blocks) return workflows;
 
-  Object.values(blocks).forEach(({ data, name }) => {
-    if (name !== 'execute-workflow' || workflows[data.workflowId]) return;
+  const checkWorkflow = (type, workflowId) => {
+    if (type !== 'execute-workflow' || workflows[workflowId]) return;
 
-    const workflow = Workflow.find(data.workflowId);
-
-    if (workflow && !workflow.isProtected) {
-      workflows[data.workflowId] = convertWorkflow(workflow);
-      findIncludedWorkflows(workflow, maxDepth - 1, workflows);
+    const workflow = store.getById(workflowId);
+    if (workflow) {
+      workflows[workflowId] = convertWorkflow(workflow);
+      findIncludedWorkflows(workflow, store, maxDepth - 1, workflows);
     }
-  });
+  };
+
+  if (flow.nodes) {
+    flow.nodes.forEach((node) => {
+      checkWorkflow(node.label, node.data.workflowId);
+    });
+  } else {
+    Object.values(blocks).forEach(({ data, name }) => {
+      checkWorkflow(name, data.workflowId);
+    });
+  }
 
   return workflows;
 }
 export function exportWorkflow(workflow) {
   if (workflow.isProtected) return;
 
-  const includedWorkflows = findIncludedWorkflows(workflow);
+  const workflowStore = useWorkflowStore();
+  const includedWorkflows = findIncludedWorkflows(workflow, workflowStore);
   const content = convertWorkflow(workflow);
 
   content.includedWorkflows = includedWorkflows;

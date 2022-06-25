@@ -1,5 +1,5 @@
 <template>
-  <vue-flow :id="props.id">
+  <vue-flow :id="props.id" :class="{ disabled: options.disabled }">
     <Background />
     <MiniMap :node-class-name="minimapNodeClassName" />
     <div class="flex items-end absolute p-4 left-0 bottom-0 z-10">
@@ -41,7 +41,7 @@
   </vue-flow>
 </template>
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { VueFlow, Background, MiniMap, useVueFlow } from '@braks/vue-flow';
 import cloneDeep from 'lodash.clonedeep';
@@ -63,6 +63,10 @@ const props = defineProps({
       edges: [],
     }),
   },
+  options: {
+    type: Object,
+    default: () => ({}),
+  },
 });
 const emit = defineEmits(['edit', 'init', 'update:node', 'delete:node']);
 
@@ -74,15 +78,18 @@ const nodeTypes = blockComponents.keys().reduce((acc, key) => {
 
   return acc;
 }, {});
+const getPosition = (position) => (Array.isArray(position) ? position : [0, 0]);
 
 const { t } = useI18n();
 const editor = useVueFlow({
   id: props.id,
   minZoom: 0.4,
-  defaultZoom: 0,
   deleteKeyCode: 'Delete',
+  elevateEdgesOnSelect: true,
+  defaultZoom: props.data?.zoom ?? 0.7,
   multiSelectionKeyCode: isMac ? 'Meta' : 'Control',
-  ...props.data,
+  defaultPosition: getPosition(props.data?.position),
+  ...props.options,
 });
 editor.onConnect((params) => {
   params.class = `source-${params.sourceHandle} target-${params.targetHandle}`;
@@ -95,12 +102,17 @@ function minimapNodeClassName({ label }) {
 
   return color;
 }
-function updateBlockData(nodeId, data) {
+function updateBlockData(nodeId, data = {}) {
+  if (props.options.disabled) return;
+
   const node = editor.getNode.value(nodeId);
-  Object.assign(node.data, data);
+  node.data = { ...node.data, ...data };
+
   emit('update:node', node);
 }
 function editBlock({ id, label, data }, additionalData = {}) {
+  if (props.options.disabled) return;
+
   emit('edit', {
     id: label,
     blockId: id,
@@ -109,18 +121,34 @@ function editBlock({ id, label, data }, additionalData = {}) {
   });
 }
 function deleteBlock(nodeId) {
+  if (props.options.disabled) return;
+
   editor.removeNodes([nodeId]);
   emit('delete:node', nodeId);
 }
-
-onMounted(() => {
+function onMousedown(event) {
+  if (props.options.disabled && event.shiftKey) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+}
+function applyFlowData() {
+  editor.setNodes(props.data.nodes || []);
+  editor.setEdges(props.data.edges || []);
   editor.setTransform({
     x: props.data.x || 0,
     y: props.data.y || 0,
     zoom: props.data.zoom || 1,
   });
+}
 
+onMounted(() => {
+  applyFlowData();
+  window.addEventListener('mousedown', onMousedown, true);
   emit('init', editor);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener('mousedown', onMousedown, true);
 });
 </script>
 <style>

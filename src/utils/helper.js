@@ -31,11 +31,17 @@ export function sleep(timeout = 500) {
 export function findTriggerBlock(drawflow = {}) {
   if (!drawflow) return null;
 
-  const blocks = Object.values(drawflow.drawflow?.Home?.data);
+  if (drawflow.drawflow) {
+    const blocks = Object.values(drawflow.drawflow?.Home?.data);
+    if (!blocks) return null;
 
-  if (!blocks) return null;
+    return blocks.find(({ name }) => name === 'trigger');
+  }
+  if (drawflow.nodes) {
+    return drawflow.nodes.find((node) => node.label === 'trigger');
+  }
 
-  return blocks.find(({ name }) => name === 'trigger');
+  return null;
 }
 
 export function throttle(callback, limit) {

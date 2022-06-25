@@ -203,12 +203,11 @@ import { useToast } from 'vue-toastification';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
 import { useGroupTooltip } from '@/composable/groupTooltip';
-import { fetchApi } from '@/utils/api';
 import { importWorkflow } from '@/utils/workflowData';
-import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
-import { findTriggerBlock, isWhitespace } from '@/utils/helper';
+import { isWhitespace } from '@/utils/helper';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
+import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import WorkflowsLocal from '@/components/newtab/workflows/WorkflowsLocal.vue';
 import WorkflowsShared from '@/components/newtab/workflows/WorkflowsShared.vue';
 import WorkflowsHosted from '@/components/newtab/workflows/WorkflowsHosted.vue';
@@ -220,6 +219,7 @@ const toast = useToast();
 const dialog = useDialog();
 const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
+const hostedWorkflowStore = useHostedWorkflowStore();
 
 const sorts = ['name', 'createdAt'];
 
@@ -238,7 +238,7 @@ const addWorkflowModal = shallowReactive({
   description: '',
 });
 
-const hostedWorkflows = computed(() => Object.values(workflowStore.hosted));
+const hostedWorkflows = computed(() => hostedWorkflowStore.toArray);
 
 function clearAddWorkflowModal() {
   Object.assign(addWorkflowModal, {
@@ -248,7 +248,7 @@ function clearAddWorkflowModal() {
   });
 }
 function addWorkflow() {
-  workflowStore.addWorkflow({
+  workflowStore.insert({
     name: addWorkflowModal.name,
     description: addWorkflowModal.description,
   });
@@ -263,66 +263,22 @@ function addHostedWorkflow() {
     label: t('workflow.host.id'),
     placeholder: 'abcd123',
     onConfirm: async (value) => {
+      if (isWhitespace(value)) return false;
+      const hostId = value.replace(/\s/g, '');
+
       try {
-        if (isWhitespace(value)) return false;
-
-        let length = 0;
-        let isItsOwn = false;
-        let isHostExist = false;
-        const hostId = value.replace(/\s/g, '');
-
-        hostedWorkflows.value.forEach((host) => {
-          if (hostId === host.hostId) isHostExist = true;
-
-          length += 1;
-        });
-
-        if (!userStore.user && length >= 3) {
-          toast.error(t('message.rateExceeded'));
-          return false;
-        }
-
-        Object.values(workflowStore.userHosted).forEach((host) => {
-          if (hostId === host.hostId) isItsOwn = true;
-        });
-
-        if (isHostExist || isItsOwn) {
-          toast.error(t('workflow.host.messages.hostExist'));
-          return false;
-        }
-
-        const response = await fetchApi('/workflows/hosted', {
-          method: 'POST',
-          body: JSON.stringify({ hostId }),
-        });
-        const result = await response.json();
-
-        if (!response.ok) {
-          const error = new Error(result.message);
-          error.data = result.data;
-
-          throw error;
-        }
-
-        if (result === null) {
-          toast.error(t('workflow.host.messages.notFound', { id: hostId }));
-          return false;
-        }
-
-        result.hostId = hostId;
-        result.createdAt = Date.now();
-
-        workflowStore.hosted[hostId] = result;
-        const triggerBlock = findTriggerBlock(result.drawflow);
-        await registerWorkflowTrigger(hostId, triggerBlock);
+        await hostedWorkflowStore.addHostedWorkflow(hostId);
 
         return true;
       } catch (error) {
-        console.error(error);
+        const messages = {
+          exists: t('workflow.host.messages.hostExist'),
+          'rate-exceeded': t('message.rateExceeded'),
+          'not-found': t('workflow.host.messages.notFound', { id: hostId }),
+        };
+        const errorMessage = messages[error.message] || error.message;
 
-        toast.error(
-          error.data?.show ? error.message : t('message.somethingWrong')
-        );
+        toast.error(errorMessage);
 
         return false;
       }

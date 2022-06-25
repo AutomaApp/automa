@@ -28,6 +28,12 @@
 	}
 }
 
+.vue-flow.disabled {
+	.vue-flow__handle {
+		pointer-events: none;
+	}
+}
+
 .vue-flow__edge.selected .vue-flow__edge-path {
 	stroke: theme('colors.green.300');
 }

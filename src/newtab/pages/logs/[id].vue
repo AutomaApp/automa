@@ -75,8 +75,8 @@ import { shallowReactive, shallowRef, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import dbLogs from '@/db/logs';
-import Workflow from '@/models/workflow';
 import dayjs from '@/lib/dayjs';
+import { useWorkflowStore } from '@/stores/workflow';
 import { countDuration, convertArrObjTo2DArr } from '@/utils/helper';
 import LogsTable from '@/components/newtab/logs/LogsTable.vue';
 import LogsHistory from '@/components/newtab/logs/LogsHistory.vue';
@@ -85,6 +85,7 @@ import LogsVariables from '@/components/newtab/logs/LogsVariables.vue';
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
+const workflowStore = useWorkflowStore();
 
 const ctxData = shallowRef({});
 const parentLog = shallowRef(null);
@@ -182,7 +183,7 @@ async function fetchLog() {
     ...logDetail,
   };
 
-  state.workflowExists = Boolean(Workflow.find(logDetail.workflowId));
+  state.workflowExists = Boolean(workflowStore.getById(logDetail.workflowId));
 
   const parentLogId = logDetail.collectionLogId || logDetail.parentLog?.id;
   if (parentLogId) {

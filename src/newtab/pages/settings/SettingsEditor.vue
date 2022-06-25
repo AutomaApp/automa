@@ -1,4 +1,7 @@
 <template>
+  <p>Hello world</p>
+</template>
+<!-- <template>
   <div class="max-w-2xl">
     <p class="font-semibold">
       {{ t('settings.editor.curvature.title') }}
@@ -101,3 +104,4 @@ function curvatureLimit(value) {
   return value;
 }
 </script>
+ -->

@@ -79,10 +79,8 @@
 </template>
 <script setup>
 import { computed, ref } from 'vue';
-import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
-import cloneDeep from 'lodash.clonedeep';
-import browser from 'webextension-polyfill';
+import { useStore } from '@/stores/main';
 import { useTheme } from '@/composable/theme';
 import { supportLocales } from '@/utils/shared';
 
@@ -93,21 +91,10 @@ const store = useStore();
 const theme = useTheme();
 
 const isLangChange = ref(false);
-const settings = computed(() => store.state.settings);
+const settings = computed(() => store.settings);
 
 function updateSetting(path, value) {
-  store.commit('updateStateNested', {
-    value,
-    path: `settings.${path}`,
-  });
-
-  let userSettings = settings.value;
-
-  if (BROWSER_TYPE === 'firefox') {
-    userSettings = cloneDeep(userSettings);
-  }
-
-  browser.storage.local.set({ settings: userSettings });
+  store.updateSettings({ [path]: value });
 }
 function updateLanguage(value) {
   isLangChange.value = true;

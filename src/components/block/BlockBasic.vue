@@ -94,6 +94,14 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  events: {
+    type: Object,
+    default: () => ({}),
+  },
+  dimensions: {
+    type: Object,
+    default: () => ({}),
+  },
 });
 defineEmits(['delete', 'edit', 'update']);
 

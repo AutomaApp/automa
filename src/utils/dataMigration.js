@@ -1,16 +1,13 @@
 import browser from 'webextension-polyfill';
 import dbLogs from '@/db/logs';
-import convertWorkflowData from './convertWorkflowData';
 
 export default async function () {
   try {
-    const { logs, logsCtxData, migration, workflows } =
-      await browser.storage.local.get([
-        'logs',
-        'migration',
-        'workflows',
-        'logsCtxData',
-      ]);
+    const { logs, logsCtxData, migration } = await browser.storage.local.get([
+      'logs',
+      'migration',
+      'logsCtxData',
+    ]);
     const hasMigrated = migration || {};
     const backupData = {};
 
@@ -47,10 +44,6 @@ export default async function () {
       hasMigrated.logs = true;
 
       await browser.storage.local.remove('logs');
-    }
-
-    if (!hasMigrated.workflows && workflows) {
-      workflows.forEach((workflow) => convertWorkflowData(workflow));
     }
 
     await browser.storage.local.set({

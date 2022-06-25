@@ -64,11 +64,12 @@ import { useFolderStore } from '@/stores/folder';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useTheme } from '@/composable/theme';
 import { parseJSON } from '@/utils/helper';
+import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
+import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
-import { getSharedWorkflows, getUserWorkflows } from '@/utils/api';
+import { getUserWorkflows } from '@/utils/api';
 import dbLogs from '@/db/logs';
 import dayjs from '@/lib/dayjs';
-import Workflow from '@/models/workflow';
 import AppSurvey from '@/components/newtab/app/AppSurvey.vue';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 import dataMigration from '@/utils/dataMigration';
@@ -91,6 +92,8 @@ const theme = useTheme();
 const userStore = useUserStore();
 const folderStore = useFolderStore();
 const workflowStore = useWorkflowStore();
+const sharedWorkflowStore = useSharedWorkflowStore();
+const hostedWorkflowStore = useHostedWorkflowStore();
 
 theme.init();
 
@@ -102,38 +105,22 @@ const prevVersion = localStorage.getItem('ext-version') || '0.0.0';
 
 async function fetchUserData() {
   try {
-    if (!userStore.user) return;
+    const { backup, hosted } = await getUserWorkflows();
+    userStore.hostedWorkflows = hosted;
 
-    const [sharedWorkflows, userWorkflows] = await Promise.allSettled([
-      getSharedWorkflows(),
-      getUserWorkflows(),
-    ]);
+    if (backup && backup.length > 0) {
+      const { lastBackup } = browser.storage.local.get('lastBackup');
+      if (!lastBackup) {
+        const backupIds = backup.map(({ id }) => id);
 
-    if (sharedWorkflows.status === 'fulfilled') {
-      workflowStore.shared = sharedWorkflows.value;
-    }
-
-    if (userWorkflows.status === 'fulfilled') {
-      const { backup, hosted } = userWorkflows.value;
-
-      workflowStore.userHosted = hosted || {};
-
-      if (backup?.length > 0) {
-        const { lastBackup } = browser.storage.local.get('lastBackup');
-        if (!lastBackup) {
-          const backupIds = backup.map(({ id }) => id);
-
-          userStore.backupIds = backupIds;
-          await browser.storage.local.set({
-            backupIds,
-            lastBackup: new Date().toISOString(),
-          });
-        }
-
-        await Workflow.insertOrUpdate({
-          data: backup,
+        userStore.backupIds = backupIds;
+        await browser.storage.local.set({
+          backupIds,
+          lastBackup: new Date().toISOString(),
         });
       }
+
+      await workflowStore.insertOrUpdate(backup);
     }
 
     userStore.retrieved = true;
@@ -170,6 +157,20 @@ function autoDeleteLogs() {
       localStorage.setItem('checkDeleteLogs', Date.now());
     });
 }
+async function syncHostedWorkflows() {
+  const hostIds = [];
+  const userHosted = userStore.getHostedWorkflows;
+  const hostedWorkflows = hostedWorkflowStore.workflows;
+
+  Object.keys(hostedWorkflows).forEach((hostId) => {
+    const isItsOwn = userHosted.find((item) => item.hostId === hostId);
+    if (isItsOwn) return;
+
+    hostIds.push({ hostId, updatedAt: hostedWorkflows[hostId].updatedAt });
+  });
+
+  await hostedWorkflowStore.fetchWorkflows(hostIds);
+}
 
 window.addEventListener('storage', ({ key, newValue }) => {
   if (key !== 'workflowState') return;
@@ -187,22 +188,27 @@ window.addEventListener('storage', ({ key, newValue }) => {
 
     await Promise.allSettled([
       folderStore.load(),
-      workflowStore.loadLocal(),
-      workflowStore.loadStates(),
+      store.loadSettings(),
+      workflowStore.loadData(),
+      hostedWorkflowStore.loadData(),
     ]);
 
     await loadLocaleMessages(store.settings.locale, 'newtab');
     await setI18nLanguage(store.settings.locale);
 
     await dataMigration();
-    await workflowStore.loadLocal();
 
     retrieved.value = true;
     workflowStore.retrieved = true;
 
     await userStore.loadUser();
-    await fetchUserData();
-    await workflowStore.syncHostedWorkflows();
+    if (userStore.user) {
+      await Promise.allSettled([
+        sharedWorkflowStore.fetchWorkflows(),
+        fetchUserData(),
+      ]);
+    }
+    await syncHostedWorkflows();
 
     autoDeleteLogs();
   } catch (error) {

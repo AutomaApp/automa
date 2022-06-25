@@ -87,7 +87,7 @@
       v-else
       v-tooltip="t('workflow.clickToEnable')"
       class="p-2"
-      @click="$emit('update', { isDisabled: false })"
+      @click="updateWorkflow({ isDisabled: false })"
     >
       {{ t('common.disabled') }}
     </button>
@@ -102,7 +102,7 @@
       <ui-list class="w-36">
         <ui-list-item
           class="cursor-pointer"
-          @click="$emit('update', { isDisabled: !workflow.isDisabled })"
+          @click="updateWorkflow({ isDisabled: !workflow.isDisabled })"
         >
           <v-remixicon name="riToggleLine" class="mr-2 -ml-1" />
           {{ t(`common.${workflow.isDisabled ? 'enable' : 'disable'}`) }}
@@ -178,12 +178,13 @@ import { sendMessage } from '@/utils/message';
 import { fetchApi } from '@/utils/api';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
+import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
 import { useDialog } from '@/composable/dialog';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { parseJSON } from '@/utils/helper';
 import { exportWorkflow, convertWorkflow } from '@/utils/workflowData';
-import workflowTrigger from '@/utils/workflowTrigger';
+import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
 
 const props = defineProps({
   isDataChanged: {
@@ -199,7 +200,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-const emit = defineEmits(['modal', 'save', 'update']);
+const emit = defineEmits(['modal', 'change', 'update']);
 
 useGroupTooltip();
 
@@ -209,6 +210,7 @@ const router = useRouter();
 const dialog = useDialog();
 const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
+const sharedWorkflowStore = useSharedWorkflowStore();
 const shortcuts = useShortcut(
   [
     /* eslint-disable-next-line */
@@ -229,13 +231,21 @@ const renameState = reactive({
   showModal: false,
 });
 
-const shared = computed(() =>
-  workflowStore.getById('shared', props.workflow.id)
-);
-const hosted = computed(() =>
-  workflowStore.getById('userHosted', props.workflow.id)
-);
+const shared = computed(() => sharedWorkflowStore.getById(props.workflow.id));
+const hosted = computed(() => userStore.hostedWorkflows[props.workflow.id]);
 
+function updateWorkflow(data = {}, changedIndicator = false) {
+  return workflowStore
+    .update({
+      data,
+      id: props.workflow.id,
+    })
+    .then((result) => {
+      emit('update', { data, changedIndicator });
+
+      return result;
+    });
+}
 function executeWorkflow() {
   sendMessage(
     'workflow:execute',
@@ -291,16 +301,17 @@ async function setAsHostWorkflow(isHost) {
     }
 
     if (isHost) {
-      workflowStore.userHosted[props.workflow.id] = result;
+      userStore.hostedWorkflows[props.workflow.id] = result;
     } else {
-      delete workflowStore.userHosted[props.workflow.id];
+      delete userStore.hostedWorkflows[props.workflow.id];
     }
 
+    // Update cache
     const userWorkflows = parseJSON('user-workflows', {
       backup: [],
       hosted: {},
     });
-    userWorkflows.hosted = workflowStore.userHosted;
+    userWorkflows.hosted = userStore.hostedWorkflows;
     sessionStorage.setItem('user-workflows', JSON.stringify(userWorkflows));
 
     state.isUploadingHost = false;
@@ -340,13 +351,9 @@ function initRenameWorkflow() {
   });
 }
 function renameWorkflow() {
-  workflowStore.updateWorkflow({
-    location: 'local',
-    id: props.workflow.id,
-    data: {
-      name: renameState.name,
-      description: renameState.description,
-    },
+  updateWorkflow({
+    name: renameState.name,
+    description: renameState.description,
   });
   clearRenameModal();
 }
@@ -356,7 +363,7 @@ function deleteWorkflow() {
     okVariant: 'danger',
     body: t('message.delete', { name: props.workflow.name }),
     onConfirm: async () => {
-      await workflowStore.deleteWorkflow(props.workflow.id, 'local');
+      await workflowStore.delete(props.workflow.id);
       router.replace('/');
     },
   });
@@ -377,17 +384,16 @@ async function saveWorkflow() {
       return;
     }
 
-    workflowStore.updateWorkflow({
-      location: 'local',
-      id: props.workflow.id,
-      data: {
+    await updateWorkflow(
+      {
         drawflow: flow,
-        trigger: triggerBlock,
+        trigger: triggerBlock.data,
       },
-    });
+      false
+    );
+    await registerWorkflowTrigger(props.workflow.id, triggerBlock);
 
-    workflowTrigger.register(props.workflow.id, triggerBlock);
-    emit('save');
+    emit('change', { drawflow: flow });
   } catch (error) {
     console.error(error);
   }
