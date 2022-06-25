@@ -13,7 +13,7 @@
       <v-remixicon
         name="riDeleteBin7Line"
         class="cursor-pointer"
-        @click="editor.removeNodeId(`node-${block.id}`)"
+        @click="$emit('delete', id)"
       />
     </div>
     <label
@@ -65,6 +65,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
+defineEmits(['delete']);
 
 const block = useEditorBlock(props.label);
 const componentId = useComponentId('block-delay');

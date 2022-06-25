@@ -88,7 +88,7 @@
   </ui-card>
 </template>
 <script setup>
-import { watch, reactive, onMounted } from 'vue';
+import { watch, reactive, onMounted, inject } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
@@ -140,6 +140,8 @@ const state = reactive({
   retrieved: false,
 });
 
+const workflow = inject('workflow');
+
 function onDragStart(item, event) {
   event.dataTransfer.setData(
     'block',
@@ -164,7 +166,12 @@ function onDragEnd(itemId) {
 function editBlock(payload) {
   emit('edit', payload);
 }
-function deleteItem(index) {
+function deleteItem(index, itemId) {
+  if (workflow.editState.blockData.itemId === itemId) {
+    workflow.editState.editing = false;
+    workflow.editState.blockData = false;
+  }
+
   state.blocks.splice(index, 1);
 }
 function handleDrop(event) {

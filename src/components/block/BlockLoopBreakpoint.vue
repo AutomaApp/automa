@@ -13,7 +13,7 @@
       <v-remixicon
         name="riDeleteBin7Line"
         class="cursor-pointer"
-        @click="editor.removeNodeId(`node-${block.id}`)"
+        @click.stop="$emit('delete', id)"
       />
     </div>
     <input
@@ -48,6 +48,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
+defineEmits(['delete']);
 
 const { t } = useI18n();
 const block = useEditorBlock(props.label);

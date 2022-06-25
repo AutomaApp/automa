@@ -125,6 +125,7 @@
 </template>
 <script setup>
 import {
+  provide,
   reactive,
   computed,
   onMounted,
@@ -247,31 +248,26 @@ const activeWorkflowModal = computed(
   () => workflowModals[modalState.name] || {}
 );
 
+provide('workflow', {
+  editState,
+  data: workflow,
+});
+
 const updateBlockData = debounce((data) => {
   const node = editor.value.getNode.value(editState.blockData.blockId);
-  node.data = data;
+  if (editState.blockData.itemId) {
+    const itemIndex = node.data.blocks.findIndex(
+      ({ itemId }) => itemId === editState.blockData.itemId
+    );
+    if (itemIndex === -1) return;
+
+    node.data.blocks[itemIndex].data = data;
+  } else {
+    node.data = data;
+  }
+
   editState.blockData.data = data;
   state.dataChanged = true;
-  // let payload = data;
-
-  // state.blockData.data = data;
-  // state.dataChange = true;
-  // autocomplete.dataChanged = true;
-
-  // if (state.blockData.isInGroup) {
-  //   payload = { itemId: state.blockData.itemId, data };
-  // } else {
-  //   editor.value.updateNodeDataFromId(state.blockData.blockId, data);
-  // }
-
-  // const inputEl = document.querySelector(
-  //   `#node-${state.blockData.blockId} input.trigger`
-  // );
-
-  // if (inputEl)
-  //   inputEl.dispatchEvent(
-  //     new CustomEvent('change', { detail: toRaw(payload) })
-  //   );
 }, 250);
 const updateHostedWorkflow = throttle(async () => {
   if (!userStore.user || workflowPayload.isUpdating) return;
@@ -333,6 +329,16 @@ const updateHostedWorkflow = throttle(async () => {
     workflowPayload.isUpdating = false;
   }
 }, 5000);
+const onNodesChange = debounce((changes) => {
+  changes.forEach(({ type, id }) => {
+    if (type === 'remove') {
+      if (editState.blockData.blockId === id) {
+        editState.editing = false;
+        editState.blockData = {};
+      }
+    }
+  });
+}, 250);
 
 function toggleSidebar() {
   state.showSidebar = !state.showSidebar;
@@ -359,7 +365,6 @@ function onActionUpdated({ data, changedIndicator }) {
 }
 function onEditorInit(instance) {
   editor.value = instance;
-  // listen to change event
   instance.onEdgesChange((changes) => {
     changes.forEach(({ type }) => {
       if (state.dataChanged) return;
@@ -370,6 +375,7 @@ function onEditorInit(instance) {
   instance.onEdgeDoubleClick(({ edge }) => {
     instance.removeEdges([edge]);
   });
+  instance.onNodesChange(onNodesChange);
 }
 function clearHighlightedElements() {
   const elements = document.querySelectorAll(
