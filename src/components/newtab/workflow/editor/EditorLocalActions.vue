@@ -174,6 +174,7 @@ import { reactive, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
+import browser from 'webextension-polyfill';
 import { sendMessage } from '@/utils/message';
 import { fetchApi } from '@/utils/api';
 import { useUserStore } from '@/stores/user';
@@ -388,6 +389,7 @@ async function saveWorkflow() {
       {
         drawflow: flow,
         trigger: triggerBlock.data,
+        version: browser.runtime.getManifest().version,
       },
       false
     );

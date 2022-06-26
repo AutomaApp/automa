@@ -199,7 +199,6 @@ window.addEventListener('storage', ({ key, newValue }) => {
     await dataMigration();
 
     retrieved.value = true;
-    workflowStore.retrieved = true;
 
     await userStore.loadUser();
     if (userStore.user) {

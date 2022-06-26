@@ -38,7 +38,6 @@ const defaultWorkflow = (data = null) => {
     dataColumns: [],
     description: '',
     trigger: null,
-    version: '',
     createdAt: Date.now(),
     isDisabled: false,
     settings: {
@@ -55,10 +54,17 @@ const defaultWorkflow = (data = null) => {
       insertDefaultColumn: true,
       defaultColumnName: 'column',
     },
+    version: browser.runtime.getManifest().version,
     globalData: '{\n\t"key": "value"\n}',
   };
 
-  if (data) workflowData = defu(data, workflowData);
+  if (data) {
+    if (data.drawflow?.nodes?.length > 0) {
+      workflowData.drawflow.nodes = [];
+    }
+
+    workflowData = defu(data, workflowData);
+  }
 
   return workflowData;
 };
@@ -107,6 +113,8 @@ export const useWorkflowStore = defineStore('workflow', {
       this.states = Object.values(states).filter(
         ({ isDestroyed }) => !isDestroyed
       );
+
+      this.retrieved = true;
     },
     async insert(data = {}) {
       const insertedWorkflows = {};

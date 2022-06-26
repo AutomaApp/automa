@@ -50,18 +50,18 @@
   </div>
 </template>
 <script setup>
-/* eslint-disable */
 import { onMounted, reactive, toRaw } from 'vue';
 import { useI18n } from 'vue-i18n';
-// import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { nanoid } from 'nanoid';
 import defu from 'defu';
 import browser from 'webextension-polyfill';
 import { tasks } from '@/utils/shared';
-// import Workflow from '@/models/workflow';
+import { useWorkflowStore } from '@/stores/workflow';
 
 const { t } = useI18n();
-// const router = useRouter();
+const router = useRouter();
+const workflowStore = useWorkflowStore();
 
 const state = reactive({
   name: '',
@@ -70,161 +70,153 @@ const state = reactive({
   isGenerating: false,
 });
 
-// function generateDrawflow(startBlock, startBlockData) {
-//   let nextNodeId = nanoid();
-//   const triggerId = startBlock?.id || nanoid();
-//   let prevNodeId = startBlock?.id || triggerId;
+function generateDrawflow(startBlock, startBlockData) {
+  let nextNodeId = nanoid();
+  const triggerId = startBlock?.id || nanoid();
+  let prevNodeId = startBlock?.id || triggerId;
 
-//   const nodes = {
-//     [triggerId]: {
-//       pos_x: 50,
-//       pos_y: 300,
-//       inputs: {},
-//       outputs: {
-//         output_1: {
-//           connections: [{ node: nextNodeId, output: 'input_1' }],
-//         },
-//       },
-//       id: triggerId,
-//       typenode: 'vue',
-//       name: 'trigger',
-//       class: 'trigger',
-//       html: 'BlockBasic',
-//       data: tasks.trigger.data,
-//       ...startBlockData,
-//     },
-//   };
+  const nodes = [];
+  const edges = [];
 
-//   if (startBlock) {
-//     nodes[triggerId].outputs[startBlock.output]?.connections.push({
-//       node: nextNodeId,
-//       output: 'input_1',
-//     });
-//   }
+  const addEdge = (data = {}) => {
+    edges.push({
+      ...data,
+      id: nanoid(),
+      class: `source-${data.sourceHandle} targte-${data.targetHandle}`,
+    });
+  };
+  addEdge({
+    source: prevNodeId,
+    target: nextNodeId,
+    targetHandle: `${nextNodeId}-input-1`,
+    sourceHandle: startBlock?.output || `${prevNodeId}-output-1`,
+  });
 
-//   const position = {
-//     y: startBlockData ? startBlockData.pos_y + 50 : 300,
-//     x: startBlockData ? startBlockData.pos_x + 120 : 260,
-//   };
-//   const groups = {};
+  if (!startBlock) {
+    nodes.push({
+      position: {
+        x: 50,
+        y: 300,
+      },
+      id: triggerId,
+      label: 'trigger',
+      type: 'BlockBasic',
+      data: tasks.trigger.data,
+    });
+  }
 
-//   state.flows.forEach((block, index) => {
-//     if (block.groupId) {
-//       if (!groups[block.groupId]) groups[block.groupId] = [];
+  const position = {
+    y: startBlockData ? startBlockData.position.y + 120 : 300,
+    x: startBlockData ? startBlockData.position.x + 280 : 320,
+  };
+  const groups = {};
 
-//       groups[block.groupId].push({
-//         id: block.id,
-//         itemId: nanoid(),
-//         data: defu(block.data, tasks[block.id].data),
-//       });
+  state.flows.forEach((block, index) => {
+    if (block.groupId) {
+      if (!groups[block.groupId]) groups[block.groupId] = [];
 
-//       const nextNodeInGroup = state.flows[index + 1]?.groupId;
-//       if (nextNodeInGroup) return;
+      groups[block.groupId].push({
+        id: block.id,
+        itemId: nanoid(),
+        data: defu(block.data, tasks[block.id].data),
+      });
 
-//       block.id = 'blocks-group';
-//       block.data = { blocks: groups[block.groupId] };
+      const nextNodeInGroup = state.flows[index + 1]?.groupId;
+      if (nextNodeInGroup) return;
 
-//       delete groups[block.groupId];
-//     }
+      block.id = 'blocks-group';
+      block.data = { blocks: groups[block.groupId] };
 
-//     const node = {
-//       id: nextNodeId,
-//       name: block.id,
-//       class: block.id,
-//       typenode: 'vue',
-//       pos_x: position.x,
-//       pos_y: position.y,
-//       inputs: { input_1: { connections: [] } },
-//       outputs: { output_1: { connections: [] } },
-//       html: tasks[block.id].component,
-//       data: defu(block.data, tasks[block.id].data),
-//     };
+      delete groups[block.groupId];
+    }
 
-//     node.inputs.input_1.connections.push({
-//       node: prevNodeId,
-//       input: index === 0 && startBlock ? startBlock.output : 'output_1',
-//     });
+    const node = {
+      id: nextNodeId,
+      label: block.id,
+      type: tasks[block.id].component,
+      data: defu(block.data, tasks[block.id].data),
+      position: JSON.parse(JSON.stringify(position)),
+    };
 
-//     const isLastIndex = index === state.flows.length - 1;
+    prevNodeId = nextNodeId;
+    nextNodeId = nanoid();
 
-//     prevNodeId = nextNodeId;
-//     nextNodeId = nanoid();
+    if (index !== state.flows.length - 1) {
+      addEdge({
+        target: nextNodeId,
+        source: prevNodeId,
+        targetHandle: `${nextNodeId}-input-1`,
+        sourceHandle: `${prevNodeId}-output-1`,
+      });
+    }
 
-//     if (!isLastIndex) {
-//       node.outputs.output_1.connections.push({
-//         node: nextNodeId,
-//         output: 'input_1',
-//       });
-//     }
+    const inNewRow = (index + 1) % 5 === 0;
 
-//     const inNewRow = (index + 1) % 5 === 0;
-//     const blockNameLen = tasks[block.id].name.length * 14 + 120;
-//     position.x = inNewRow ? 50 : position.x + blockNameLen;
-//     position.y = inNewRow ? position.y + 150 : position.y;
+    position.x = inNewRow ? 50 : position.x + 280;
+    position.y = inNewRow ? position.y + 150 : position.y;
 
-//     nodes[node.id] = node;
-//   });
+    nodes.push(node);
+  });
 
-//   if (startBlock) return nodes;
+  return {
+    edges,
+    nodes,
+  };
+}
+async function stopRecording() {
+  if (state.isGenerating) return;
 
-//   return { drawflow: { Home: { data: nodes } } };
-// }
-// async function stopRecording() {
-//   if (state.isGenerating) return;
+  try {
+    state.isGenerating = true;
 
-//   try {
-//     state.isGenerating = true;
+    if (state.flows.length !== 0) {
+      if (state.workflowId) {
+        const workflow = workflowStore.getById(state.workflowId);
+        const startBlock = workflow.drawflow.nodes.find(
+          (node) => node.id === state.connectFrom.id
+        );
+        const updatedDrawflow = generateDrawflow(state.connectFrom, startBlock);
 
-//     if (state.flows.length !== 0) {
-//       if (state.workflowId) {
-//         const workflow = Workflow.find(state.workflowId);
-//         const drawflow =
-//           typeof workflow.drawflow === 'string'
-//             ? JSON.parse(workflow.drawflow)
-//             : workflow.drawflow;
-//         const node = drawflow.drawflow.Home.data[state.connectFrom.id];
-//         const updatedDrawflow = generateDrawflow(state.connectFrom, node);
+        const drawflow = {
+          ...workflow.drawflow,
+          nodes: [...workflow.drawflow.nodes, ...updatedDrawflow.nodes],
+          edges: [...workflow.drawflow.edges, ...updatedDrawflow.edges],
+        };
 
-//         Object.assign(drawflow.drawflow.Home.data, updatedDrawflow);
+        await workflowStore.update({
+          id: state.workflowId,
+          data: { drawflow },
+        });
+      } else {
+        const drawflow = generateDrawflow();
 
-//         await Workflow.update({
-//           where: state.workflowId,
-//           data: {
-//             drawflow: JSON.stringify(drawflow),
-//           },
-//         });
-//       } else {
-//         const drawflow = generateDrawflow();
+        await workflowStore.insert({
+          drawflow,
+          name: state.name,
+        });
+      }
+    }
 
-//         await Workflow.insert({
-//           data: {
-//             name: state.name,
-//             drawflow: JSON.stringify(drawflow),
-//           },
-//         });
-//       }
-//     }
+    await browser.storage.local.remove(['isRecording', 'recording']);
+    await browser.browserAction.setBadgeText({ text: '' });
 
-//     await browser.storage.local.remove(['isRecording', 'recording']);
-//     await browser.browserAction.setBadgeText({ text: '' });
+    const tabs = (await browser.tabs.query({})).filter((tab) =>
+      tab.url.startsWith('http')
+    );
+    Promise.allSettled(
+      tabs.map(({ id }) =>
+        browser.tabs.sendMessage(id, { type: 'recording:stop' })
+      )
+    );
 
-//     const tabs = (await browser.tabs.query({})).filter((tab) =>
-//       tab.url.startsWith('http')
-//     );
-//     Promise.allSettled(
-//       tabs.map(({ id }) =>
-//         browser.tabs.sendMessage(id, { type: 'recording:stop' })
-//       )
-//     );
+    state.isGenerating = false;
 
-//     state.isGenerating = false;
-
-//     router.push('/');
-//   } catch (error) {
-//     state.isGenerating = false;
-//     console.error(error);
-//   }
-// }
+    router.push('/');
+  } catch (error) {
+    state.isGenerating = false;
+    console.error(error);
+  }
+}
 function removeBlock(index) {
   state.flows.splice(index, 1);
 

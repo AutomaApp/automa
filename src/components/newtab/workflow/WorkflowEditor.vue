@@ -1,8 +1,11 @@
 <template>
   <vue-flow :id="props.id" :class="{ disabled: options.disabled }">
     <Background />
-    <MiniMap :node-class-name="minimapNodeClassName" />
-    <div class="flex items-end absolute p-4 left-0 bottom-0 z-10">
+    <MiniMap v-if="minimap" :node-class-name="minimapNodeClassName" />
+    <div
+      v-if="editorControls"
+      class="flex items-end absolute p-4 left-0 bottom-0 z-10"
+    >
       <button
         v-tooltip.group="t('workflow.editor.resetZoom')"
         class="p-2 rounded-lg bg-white dark:bg-gray-800 mr-2"
@@ -67,6 +70,14 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  editorControls: {
+    type: Boolean,
+    default: true,
+  },
+  minimap: {
+    type: Boolean,
+    default: true,
+  },
 });
 const emit = defineEmits(['edit', 'init', 'update:node', 'delete:node']);
 
@@ -97,6 +108,7 @@ const { t } = useI18n();
 const editor = useVueFlow({
   id: props.id,
   minZoom: 0.4,
+  edgeUpdaterRadius: 20,
   deleteKeyCode: 'Delete',
   elevateEdgesOnSelect: true,
   defaultZoom: props.data?.zoom ?? 0.7,

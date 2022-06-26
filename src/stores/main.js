@@ -23,11 +23,13 @@ export const useStore = defineStore('main', {
         reroute_curvature_start_end: 0.5,
       },
     },
+    retrieved: true,
   }),
   actions: {
     loadSettings() {
       return browser.storage.local.get('settings').then(({ settings }) => {
         this.settings = defu(settings || {}, this.settings);
+        this.retrieved = true;
       });
     },
     updateSettings(settings = {}) {

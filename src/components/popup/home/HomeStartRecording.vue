@@ -28,6 +28,7 @@
       <home-select-block
         v-if="activeWorkflow"
         :workflow="activeWorkflow"
+        @update="updateWorkflow"
         @record="$emit('record', $event)"
         @goBack="state.activeWorkflow = ''"
       />
@@ -107,4 +108,11 @@ const workflows = computed(() =>
     )
     .sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1))
 );
+
+function updateWorkflow(data) {
+  workflowStore.update({
+    data,
+    id: state.activeWorkflow,
+  });
+}
 </script>

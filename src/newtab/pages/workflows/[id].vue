@@ -351,16 +351,44 @@ function initEditBlock(data) {
   const { editComponent, data: blockDefData } = tasks[data.id];
   const blockData = defu(data.data, blockDefData);
 
-  editState.editing = true;
   editState.blockData = { ...data, editComponent, data: blockData };
+
+  if (data.id === 'wait-connections') {
+    const connections = editor.value.getEdges.value.reduce(
+      (acc, { target, sourceNode, source }) => {
+        if (target !== data.blockId) return acc;
+
+        let name = t(`workflow.blocks.${sourceNode.label}.name`);
+
+        const { description } = sourceNode.data;
+        if (description) name += ` (${description})`;
+
+        acc.push({
+          name,
+          id: source,
+        });
+
+        return acc;
+      },
+      []
+    );
+
+    editState.blockData.connections = connections;
+  }
+
+  editState.editing = true;
 }
-function updateWorkflow(data) {
-  workflowStore.update({
-    data,
-    id: route.params.id,
-  });
-  workflowPayload.data = { ...workflowPayload.data, ...data };
-  updateHostedWorkflow();
+async function updateWorkflow(data) {
+  try {
+    await workflowStore.update({
+      data,
+      id: route.params.id,
+    });
+    workflowPayload.data = { ...workflowPayload.data, ...data };
+    await updateHostedWorkflow();
+  } catch (error) {
+    console.error(error);
+  }
 }
 function onActionUpdated({ data, changedIndicator }) {
   state.dataChanged = changedIndicator;
@@ -594,8 +622,9 @@ onMounted(() => {
     JSON.parse(localStorage.getItem('workflow:sidebar')) ?? true;
 
   const convertedData = convertWorkflowData(workflow.value);
-  updateWorkflow({ drawflow: convertedData.drawflow });
-  state.workflowConverted = true;
+  updateWorkflow({ drawflow: convertedData.drawflow }).then(() => {
+    state.workflowConverted = true;
+  });
 
   window.onbeforeunload = () => {
     updateHostedWorkflow();

@@ -140,7 +140,7 @@ const state = reactive({
   retrieved: false,
 });
 
-const workflow = inject('workflow');
+const workflow = inject('workflow', {});
 
 function onDragStart(item, event) {
   event.dataTransfer.setData(
