@@ -148,9 +148,11 @@ const hostedWorkflows = computed(() => {
 const localWorkflows = computed(() => {
   if (state.activeTab !== 'local') return [];
 
-  return workflowStore.getWorkflows.filter(({ name }) =>
-    name.toLocaleLowerCase().includes(state.query.toLocaleLowerCase())
-  );
+  return workflowStore.getWorkflows
+    .filter(({ name }) =>
+      name.toLocaleLowerCase().includes(state.query.toLocaleLowerCase())
+    )
+    .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
 });
 const workflows = computed(() =>
   state.activeTab === 'local' ? localWorkflows.value : hostedWorkflows.value
@@ -270,9 +272,6 @@ function openWorkflowPage({ id, hostId }) {
 onMounted(async () => {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   state.haveAccess = /^(https?)/.test(tab.url);
-
-  await workflowStore.loadData();
-  await hostedWorkflowStore.loadData();
 });
 </script>
 <style>

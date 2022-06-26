@@ -9,10 +9,14 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import browser from 'webextension-polyfill';
 import { useStore } from '@/stores/main';
+import { useWorkflowStore } from '@/stores/workflow';
+import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
 
 const store = useStore();
 const router = useRouter();
+const workflowStore = useWorkflowStore();
+const hostedWorkflowStore = useHostedWorkflowStore();
 
 const retrieved = ref(false);
 
@@ -25,6 +29,9 @@ onMounted(async () => {
     await store.loadSettings();
     await loadLocaleMessages(store.settings.locale, 'popup');
     await setI18nLanguage(store.settings.locale);
+
+    await workflowStore.loadData();
+    await hostedWorkflowStore.loadData();
 
     retrieved.value = true;
   } catch (error) {

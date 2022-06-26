@@ -135,6 +135,7 @@ import {
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { customAlphabet } from 'nanoid';
+import defu from 'defu';
 import { useStore } from '@/stores/main';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
@@ -255,15 +256,17 @@ provide('workflow', {
 
 const updateBlockData = debounce((data) => {
   const node = editor.value.getNode.value(editState.blockData.blockId);
+  const dataCopy = JSON.parse(JSON.stringify(data));
+
   if (editState.blockData.itemId) {
     const itemIndex = node.data.blocks.findIndex(
       ({ itemId }) => itemId === editState.blockData.itemId
     );
     if (itemIndex === -1) return;
 
-    node.data.blocks[itemIndex].data = data;
+    node.data.blocks[itemIndex].data = dataCopy;
   } else {
-    node.data = data;
+    node.data = dataCopy;
   }
 
   editState.blockData.data = data;
@@ -345,10 +348,11 @@ function toggleSidebar() {
   localStorage.setItem('workflow:sidebar', state.showSidebar);
 }
 function initEditBlock(data) {
-  const { editComponent } = tasks[data.id];
+  const { editComponent, data: blockDefData } = tasks[data.id];
+  const blockData = defu(data.data, blockDefData);
 
   editState.editing = true;
-  editState.blockData = { ...data, editComponent };
+  editState.blockData = { ...data, editComponent, data: blockData };
 }
 function updateWorkflow(data) {
   workflowStore.update({

@@ -55,11 +55,21 @@ function initWebListener() {
         copyWorkflow.table = copyWorkflow.table || copyWorkflow.dataColumns;
         copyWorkflow.dataColumns = [];
 
-        workflowsStorage.push({
-          ...workflow,
-          id: nanoid(),
-          createdAt: Date.now(),
-        });
+        const workflowId = nanoid();
+
+        if (Array.isArray(workflowsStorage)) {
+          workflowsStorage.push({
+            ...copyWorkflow,
+            id: workflowId,
+            createdAt: Date.now(),
+          });
+        } else {
+          workflowsStorage[workflowId] = {
+            ...copyWorkflow,
+            id: workflowId,
+            createdAt: Date.now(),
+          };
+        }
 
         await browser.storage.local.set({ workflows: workflowsStorage });
       } catch (error) {

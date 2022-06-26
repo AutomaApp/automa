@@ -70,11 +70,24 @@ const props = defineProps({
 });
 const emit = defineEmits(['edit', 'init', 'update:node', 'delete:node']);
 
+const fallbackBlocks = {
+  BlockBasic: ['BlockExportData'],
+  BlockBasicWithFallback: ['BlockWebhook'],
+};
+
 const isMac = navigator.appVersion.indexOf('Mac') !== -1;
 const blockComponents = require.context('@/components/block', false, /\.vue$/);
 const nodeTypes = blockComponents.keys().reduce((acc, key) => {
   const name = key.replace(/(.\/)|\.vue$/g, '');
-  acc[`node-${name}`] = blockComponents(key).default;
+  const component = blockComponents(key).default;
+
+  if (fallbackBlocks[name]) {
+    fallbackBlocks[name].forEach((fallbackBlock) => {
+      acc[`node-${fallbackBlock}`] = component;
+    });
+  }
+
+  acc[`node-${name}`] = component;
 
   return acc;
 }, {});

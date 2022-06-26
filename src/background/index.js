@@ -168,30 +168,6 @@ async function openDashboard(url) {
     console.error(error);
   }
 }
-async function checkWorkflowStates() {
-  const states = await workflow.states.get();
-  // const sessionStates = parseJSON(sessionStorage.getItem('workflowState'), {});
-
-  states.forEach((state) => {
-    /* Enable when using manifest 3 */
-    // const resumeWorkflow =
-    //   !state.isDestroyed && objectHasKey(sessionStates, state.id);
-
-    if (false) {
-      workflow.get(state.workflowId).then((workflowData) => {
-        workflow.execute(workflowData, {
-          state,
-          resume: true,
-        });
-      });
-    } else {
-      workflow.states.states.delete(state.id);
-    }
-  });
-
-  await browserStorage.set('workflowState', states);
-}
-checkWorkflowStates();
 async function checkVisitWebTriggers(tabId, tabUrl) {
   const workflowState = await workflow.states.get(({ state }) =>
     state.tabIds.includes(tabId)

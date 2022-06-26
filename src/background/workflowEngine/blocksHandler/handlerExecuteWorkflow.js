@@ -43,7 +43,10 @@ async function executeWorkflow({ outputs, data }) {
     if (data.workflowId === '') throw new Error('empty-workflow');
 
     const { workflows } = await browser.storage.local.get('workflows');
-    const workflow = workflows.find(({ id }) => id === data.workflowId);
+    const workflowsArr = Array.isArray(workflows)
+      ? workflows
+      : Object.values(workflows);
+    const workflow = workflowsArr.find(({ id }) => id === data.workflowId);
 
     if (!workflow) {
       const errorInstance = new Error('no-workflow');
