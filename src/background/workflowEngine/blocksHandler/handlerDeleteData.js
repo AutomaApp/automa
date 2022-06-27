@@ -1,6 +1,4 @@
-import { getBlockConnection } from '../helper';
-
-function deleteData({ data, outputs }) {
+function deleteData({ data, id }) {
   return new Promise((resolve) => {
     data.deleteList.forEach((item) => {
       if (item.type === 'table') {
@@ -31,7 +29,7 @@ function deleteData({ data, outputs }) {
 
     resolve({
       data: '',
-      nextBlockId: getBlockConnection({ outputs }),
+      nextBlockId: this.getBlockConnections(id),
     });
   });
 }

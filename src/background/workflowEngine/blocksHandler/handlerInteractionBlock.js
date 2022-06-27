@@ -1,6 +1,5 @@
 import browser from 'webextension-polyfill';
 import { objectHasKey } from '@/utils/helper';
-import { getBlockConnection } from '../helper';
 
 async function checkAccess(blockName) {
   if (blockName === 'upload-file') {
@@ -24,8 +23,6 @@ async function checkAccess(blockName) {
 
 async function interactionHandler(block) {
   await checkAccess(block.name);
-
-  const nextBlockId = getBlockConnection(block);
 
   try {
     const data = await this._sendMessageToTab(block, {
@@ -67,10 +64,9 @@ async function interactionHandler(block) {
 
     return {
       data,
-      nextBlockId,
+      nextBlockId: this.getBlockConnections(block.id),
     };
   } catch (error) {
-    error.nextBlockId = nextBlockId;
     error.data = {
       name: block.name,
       selector: block.data.selector,

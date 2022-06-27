@@ -88,7 +88,7 @@
             @duplicate="duplicateElements"
           />
         </ui-tab-panel>
-        <ui-tab-panel value="logs" class="mt-24">
+        <ui-tab-panel value="logs" class="mt-24 container">
           <editor-logs
             :workflow-id="route.params.id"
             :workflow-states="workflowStore.states"
@@ -139,7 +139,7 @@ import defu from 'defu';
 import { useStore } from '@/stores/main';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
-import { useShortcut } from '@/composable/shortcut';
+import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { tasks } from '@/utils/shared';
 import { debounce, parseJSON, throttle } from '@/utils/helper';
 import { fetchApi } from '@/utils/api';
@@ -165,8 +165,6 @@ const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
-/* eslint-disable-next-line */
-const shortcut = useShortcut('editor:toggle-sidebar', toggleSidebar);
 
 const editor = shallowRef(null);
 
@@ -339,6 +337,8 @@ const onNodesChange = debounce((changes) => {
         editState.editing = false;
         editState.blockData = {};
       }
+
+      state.dataChanged = true;
     }
   });
 }, 250);
@@ -568,10 +568,16 @@ function copyElements(nodes, edges, initialPos) {
   };
 }
 function duplicateElements({ nodes, edges }) {
-  editor.value.removeSelectedNodes(editor.value.getSelectedNodes.value);
-  editor.value.removeSelectedEdges(editor.value.getSelectedEdges.value);
+  const selectedNodes = editor.value.getSelectedNodes.value;
+  const selectedEdges = editor.value.getSelectedEdges.value;
 
-  const { edges: newEdges, nodes: newNodes } = copyElements(nodes, edges);
+  const { edges: newEdges, nodes: newNodes } = copyElements(
+    nodes || selectedNodes,
+    edges || selectedEdges
+  );
+
+  editor.value.removeSelectedNodes(selectedNodes);
+  editor.value.removeSelectedEdges(selectedEdges);
 
   editor.value.addNodes(newNodes);
   editor.value.addEdges(newEdges);
@@ -601,6 +607,11 @@ function onKeydown({ ctrlKey, metaKey, key }) {
     pasteCopiedElements();
   }
 }
+
+const shortcut = useShortcut([
+  getShortcut('editor:toggle-sidebar', toggleSidebar),
+  getShortcut('editor:duplicate-block', duplicateElements),
+]);
 
 /* eslint-disable consistent-return */
 onBeforeRouteLeave(() => {

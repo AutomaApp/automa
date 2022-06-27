@@ -16,10 +16,15 @@ class WorkflowEngine {
 
     this.workerId = 0;
     this.workers = new Map();
+
+    this.extractedGroup = {};
+    this.connectionsMap = {};
     this.waitConnections = {};
 
     this.isDestroyed = false;
     this.isUsingProxy = false;
+
+    this.triggerBlockId = null;
 
     this.blocks = {};
     this.history = [];
@@ -89,22 +94,32 @@ class WorkflowEngine {
       return;
     }
 
-    const flow = this.workflow.drawflow;
-    const parsedFlow = typeof flow === 'string' ? parseJSON(flow, {}) : flow;
-    const blocks = parsedFlow?.drawflow?.Home.data;
-
-    if (!blocks) {
+    const { nodes, edges } = this.workflow.drawflow;
+    if (!nodes || nodes.length === 0) {
       console.error(`${this.workflow.name} doesn't have blocks`);
       return;
     }
 
-    const triggerBlock = Object.values(blocks).find(
-      ({ name }) => name === 'trigger'
-    );
+    const triggerBlock = nodes.find((node) => node.label === 'trigger');
     if (!triggerBlock) {
       console.error(`${this.workflow.name} doesn't have a trigger block`);
       return;
     }
+
+    this.triggerBlockId = triggerBlock.id;
+
+    this.blocks = nodes.reduce((acc, node) => {
+      acc[node.id] = node;
+
+      return acc;
+    }, {});
+    this.connectionsMap = edges.reduce((acc, { sourceHandle, target }) => {
+      if (!acc[sourceHandle]) acc[sourceHandle] = [];
+
+      acc[sourceHandle].push(target);
+
+      return acc;
+    }, {});
 
     const workflowTable = this.workflow.table || this.workflow.dataColumns;
     const columns = Array.isArray(workflowTable)
@@ -135,9 +150,8 @@ class WorkflowEngine {
       });
     }
 
-    this.blocks = blocks;
-    this.startedTimestamp = Date.now();
     this.workflow.table = columns;
+    this.startedTimestamp = Date.now();
 
     this.states.on('stop', this.onWorkflowStopped);
 
@@ -348,9 +362,9 @@ class WorkflowEngine {
     };
 
     this.workers.forEach((worker) => {
-      const { id, name, startedAt } = worker.currentBlock;
+      const { id, label, startedAt } = worker.currentBlock;
 
-      state.currentBlock.push({ id, name, startedAt });
+      state.currentBlock.push({ id, name: label, startedAt });
       state.tabIds.push(worker.activeTab.id);
     });
 

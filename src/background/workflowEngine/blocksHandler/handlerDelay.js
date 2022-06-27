@@ -1,5 +1,3 @@
-import { getBlockConnection } from '../helper';
-
 function delay(block) {
   return new Promise((resolve) => {
     const delayTime = +block.data.time || 500;
@@ -7,7 +5,7 @@ function delay(block) {
     setTimeout(() => {
       resolve({
         data: '',
-        nextBlockId: getBlockConnection(block),
+        nextBlockId: this.getBlockConnections(block.id),
       });
     }, delayTime);
   });

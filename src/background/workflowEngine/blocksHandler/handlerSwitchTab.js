@@ -1,8 +1,8 @@
 import browser from 'webextension-polyfill';
-import { getBlockConnection, attachDebugger } from '../helper';
+import { attachDebugger } from '../helper';
 
-export default async function ({ data, outputs }) {
-  const nextBlockId = getBlockConnection({ outputs });
+export default async function ({ data, id }) {
+  const nextBlockId = this.getBlockConnections(id);
   const generateError = (message, errorData) => {
     const error = new Error(message);
     error.nextBlockId = nextBlockId;

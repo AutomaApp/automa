@@ -111,8 +111,6 @@ export function convertData(data, type) {
   return result;
 }
 
-export function getBlockConnection(block, index = 1) {
-  const blockId = block.outputs[`output_${index}`];
-
-  return blockId;
+export function getBlockConnection(blockId, outputId = 1) {
+  return `${blockId}-output-${outputId}`;
 }

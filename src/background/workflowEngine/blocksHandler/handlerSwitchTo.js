@@ -1,8 +1,8 @@
 import { objectHasKey, sleep } from '@/utils/helper';
-import { getBlockConnection, getFrames } from '../helper';
+import { getFrames } from '../helper';
 
 async function switchTo(block) {
-  const nextBlockId = getBlockConnection(block);
+  const nextBlockId = this.getBlockConnections(block.id);
 
   try {
     if (block.data.windowType === 'main-window') {

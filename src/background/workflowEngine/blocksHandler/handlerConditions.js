@@ -1,7 +1,6 @@
 import compareBlockValue from '@/utils/compareBlockValue';
 import mustacheReplacer from '@/utils/referenceData/mustacheReplacer';
 import testConditions from '@/utils/testConditions';
-import { getBlockConnection } from '../helper';
 
 function checkConditions(data, conditionOptions) {
   return new Promise((resolve, reject) => {
@@ -42,14 +41,14 @@ function checkConditions(data, conditionOptions) {
   });
 }
 
-async function conditions({ data, outputs, id }, { prevBlockData, refData }) {
+async function conditions({ data, id }, { prevBlockData, refData }) {
   if (data.conditions.length === 0) {
     throw new Error('conditions-empty');
   }
 
   let resultData = '';
   let isConditionMet = false;
-  let outputIndex = data.conditions.length + 1;
+  let outputId = 'fallback';
 
   const replacedValue = {};
   const condition = data.conditions[0];
@@ -62,7 +61,7 @@ async function conditions({ data, outputs, id }, { prevBlockData, refData }) {
       refData,
       activeTab: this.activeTab.id,
       sendMessage: (payload) =>
-        this._sendMessageToTab({ ...payload.data, name: 'conditions', id }),
+        this._sendMessageToTab({ ...payload.data, label: 'conditions', id }),
     };
 
     const conditionsResult = await checkConditions(data, conditionPayload);
@@ -72,10 +71,10 @@ async function conditions({ data, outputs, id }, { prevBlockData, refData }) {
     }
     if (conditionsResult.match) {
       isConditionMet = true;
-      outputIndex = conditionsResult.index + 1;
+      outputId = data.conditions[conditionsResult.index].id;
     }
   } else {
-    data.conditions.forEach(({ type, value, compareValue }, index) => {
+    data.conditions.forEach(({ type, value, compareValue, id: itemId }) => {
       if (isConditionMet) return;
 
       const firstValue = mustacheReplacer(
@@ -93,8 +92,8 @@ async function conditions({ data, outputs, id }, { prevBlockData, refData }) {
       );
 
       if (isMatch) {
+        outputId = itemId;
         resultData = value;
-        outputIndex = index + 1;
         isConditionMet = true;
       }
     });
@@ -103,7 +102,7 @@ async function conditions({ data, outputs, id }, { prevBlockData, refData }) {
   return {
     replacedValue,
     data: resultData,
-    nextBlockId: getBlockConnection({ outputs }, outputIndex),
+    nextBlockId: this.getBlockConnections(id, outputId),
   };
 }
 

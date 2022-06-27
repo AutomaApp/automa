@@ -65,7 +65,7 @@ async function executeBlock(data) {
     }
   }
 
-  const handler = blocksHandler[toCamelCase(data.name)];
+  const handler = blocksHandler[toCamelCase(data.name || data.label)];
 
   if (handler) {
     const result = await handler(data);
@@ -74,7 +74,7 @@ async function executeBlock(data) {
     return result;
   }
 
-  const error = new Error(`"${data.name}" doesn't have a handler`);
+  const error = new Error(`"${data.label}" doesn't have a handler`);
   console.error(error);
 
   throw error;

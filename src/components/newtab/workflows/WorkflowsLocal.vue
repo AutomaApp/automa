@@ -163,6 +163,7 @@ import { shallowReactive, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import SelectionArea from '@viselect/vanilla';
 import { arraySorter } from '@/utils/helper';
+import { sendMessage } from '@/utils/message';
 import { useUserStore } from '@/stores/user';
 import { useDialog } from '@/composable/dialog';
 import { useWorkflowStore } from '@/stores/workflow';
@@ -263,6 +264,9 @@ const workflows = computed(() =>
   )
 );
 
+function executeWorkflow(workflow) {
+  sendMessage('workflow:execute', workflow, 'background');
+}
 function toggleDisableWorkflow({ id, isDisabled }) {
   workflowStore.update({
     id,

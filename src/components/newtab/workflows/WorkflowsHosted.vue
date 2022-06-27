@@ -13,6 +13,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDialog } from '@/composable/dialog';
+import { sendMessage } from '@/utils/message';
 import { arraySorter } from '@/utils/helper';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
@@ -64,5 +65,8 @@ async function deleteWorkflow(workflow) {
       }
     },
   });
+}
+function executeWorkflow(workflow) {
+  sendMessage('workflow:execute', workflow, 'background');
 }
 </script>

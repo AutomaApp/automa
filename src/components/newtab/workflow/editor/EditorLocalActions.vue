@@ -212,16 +212,12 @@ const dialog = useDialog();
 const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
 const sharedWorkflowStore = useSharedWorkflowStore();
-const shortcuts = useShortcut(
-  [
-    /* eslint-disable-next-line */
-    getShortcut('editor:save', saveWorkflow),
-    getShortcut('editor:execute-workflow', 'execute'),
-  ],
-  ({ data }) => {
-    emit(data);
-  }
-);
+const shortcuts = useShortcut([
+  /* eslint-disable-next-line */
+  getShortcut('editor:save', saveWorkflow),
+  /* eslint-disable-next-line */
+  getShortcut('editor:execute-workflow', executeWorkflow),
+]);
 
 const state = reactive({
   isUploadingHost: false,

@@ -151,7 +151,7 @@ export function openFilePicker(acceptedFileTypes = [], attrs = {}) {
       const { files } = event.target;
       const validFiles = [];
 
-      files.forEach((file) => {
+      Array.from(files).forEach((file) => {
         if (!acceptedFileTypes.includes(file.type)) return;
 
         validFiles.push(file);

@@ -1,21 +1,14 @@
 <template>
   <div v-if="currentLog.id" class="container pt-8 pb-4">
     <div class="flex items-center">
-      <router-link
-        v-if="state.goBackBtn"
-        v-slot="{ navigate }"
-        :to="backHistory"
-        custom
+      <button
+        v-tooltip:bottom="t('workflow.blocks.go-back.name')"
+        role="button"
+        class="h-12 px-1 transition mr-2 bg-input rounded-lg dark:text-gray-300 text-gray-600"
+        @click="goBack"
       >
-        <button
-          v-tooltip:bottom="t('workflow.blocks.go-back.name')"
-          role="button"
-          class="h-12 px-1 transition mr-2 bg-input rounded-lg dark:text-gray-300 text-gray-600"
-          @click="navigate"
-        >
-          <v-remixicon name="riArrowLeftSLine" />
-        </button>
-      </router-link>
+        <v-remixicon name="riArrowLeftSLine" />
+      </button>
       <div>
         <h1 class="text-2xl max-w-md text-overflow font-semibold">
           {{ currentLog.name }}
@@ -23,7 +16,9 @@
         <p class="text-gray-600 dark:text-gray-200">
           {{
             t(`log.description.text`, {
-              status: t(`log.description.status.${currentLog.status}`),
+              status: t(
+                `log.description.status.${currentLog.status || 'success'}`
+              ),
               date: dayjs(currentLog.startedAt).format('DD MMM'),
               duration: countDuration(currentLog.startedAt, currentLog.endedAt),
             })
@@ -100,7 +95,6 @@ const tabs = [
 const state = shallowReactive({
   activeTab: 'logs',
   workflowExists: false,
-  goBackBtn: ['/logs', '/workflows'].some((str) => backHistory?.includes(str)),
 });
 const tableData = shallowReactive({
   converted: false,
@@ -115,6 +109,9 @@ const currentLog = shallowRef({
   },
 });
 
+function goBack() {
+  router.go(-1);
+}
 function deleteLog() {
   dbLogs.items
     .where('id')

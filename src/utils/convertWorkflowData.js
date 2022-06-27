@@ -41,14 +41,18 @@ export default function (workflow) {
       let outputName = outputIndex + 1;
 
       const isLastIndex = outputs.length - 1 === outputIndex;
-      const isConditionsFallback = block.name === 'conditions';
+      const isConditionsBlock = block.name === 'conditions';
       const isFallbackBlock = block.html === 'BlockBasicWithFallback';
       const isBlockFallback = block.html === 'BlockBasic' && outputName >= 2;
       if (
-        (isConditionsFallback || isFallbackBlock || isBlockFallback) &&
+        (isConditionsBlock || isFallbackBlock || isBlockFallback) &&
         isLastIndex
       ) {
         outputName = 'fallback';
+      }
+
+      if (isConditionsBlock && !isLastIndex) {
+        outputName = block.data.conditions[outputIndex].id;
       }
 
       connections.forEach(({ node: outputId, output }) => {

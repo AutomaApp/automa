@@ -1,13 +1,11 @@
 import browser from 'webextension-polyfill';
-import { getBlockConnection, attachDebugger } from '../helper';
+import { attachDebugger } from '../helper';
 
 async function activeTab(block) {
-  const nextBlockId = getBlockConnection(block);
-
   try {
     const data = {
-      nextBlockId,
       data: '',
+      nextBlockId: this.getBlockConnections(block.id),
     };
 
     if (this.activeTab.id) {
@@ -51,7 +49,6 @@ async function activeTab(block) {
     return data;
   } catch (error) {
     console.error(error);
-    error.nextBlockId = nextBlockId;
     error.data = error.data || {};
 
     throw error;

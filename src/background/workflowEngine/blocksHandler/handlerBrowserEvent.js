@@ -1,6 +1,5 @@
 import browser from 'webextension-polyfill';
 import { isWhitespace } from '@/utils/helper';
-import { getBlockConnection } from '../helper';
 
 function handleEventListener(target, validate) {
   return (data, activeTab) => {
@@ -103,30 +102,22 @@ const events = {
   'window:close': handleEventListener(browser.windows.onRemoved),
 };
 
-export default async function ({ data, outputs }) {
-  const nextBlockId = getBlockConnection({ outputs });
+export default async function ({ data, id }) {
+  const currentEvent = events[data.eventName];
 
-  try {
-    const currentEvent = events[data.eventName];
-
-    if (!currentEvent) {
-      throw new Error(`Can't find ${data.eventName} event`);
-    }
-
-    const result = await currentEvent(data, this.activeTab);
-
-    if (data.eventName === 'tab:create' && data.setAsActiveTab) {
-      this.activeTab.id = result.tabId;
-      this.activeTab.url = result.url;
-    }
-
-    return {
-      nextBlockId,
-      data: result || '',
-    };
-  } catch (error) {
-    error.nextBlockId = nextBlockId;
-
-    throw error;
+  if (!currentEvent) {
+    throw new Error(`Can't find ${data.eventName} event`);
   }
+
+  const result = await currentEvent(data, this.activeTab);
+
+  if (data.eventName === 'tab:create' && data.setAsActiveTab) {
+    this.activeTab.id = result.tabId;
+    this.activeTab.url = result.url;
+  }
+
+  return {
+    data: result || '',
+    nextBlockId: this.getBlockConnections(id),
+  };
 }

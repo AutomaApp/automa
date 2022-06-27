@@ -1,15 +1,17 @@
 import testConditions from '@/utils/testConditions';
-import { getBlockConnection } from '../helper';
 
-async function whileLoop({ data, outputs, id }, { refData }) {
+async function whileLoop({ data, id }, { refData }) {
   const conditionPayload = {
     refData,
     activeTab: this.activeTab.id,
     sendMessage: (payload) =>
-      this._sendMessageToTab({ ...payload.data, name: 'conditions', id }),
+      this._sendMessageToTab({ ...payload.data, label: 'conditions', id }),
   };
   const result = await testConditions(data.conditions, conditionPayload);
-  const nextBlockId = getBlockConnection({ outputs }, result.isMatch ? 1 : 2);
+  const nextBlockId = this.getBlockConnections(
+    id,
+    result.isMatch ? 1 : 'fallback'
+  );
 
   return {
     data: '',

@@ -5,6 +5,7 @@ import { parseJSON, findTriggerBlock, sleep } from '@/utils/helper';
 import { fetchApi } from '@/utils/api';
 import getFile from '@/utils/getFile';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
+import convertWorkflowData from '@/utils/convertWorkflowData';
 import {
   registerSpecificDay,
   registerContextMenu,
@@ -72,7 +73,6 @@ const workflow = {
   },
   execute(workflowData, options) {
     if (workflowData.isDisabled) return null;
-
     if (workflowData.isProtected) {
       const flow = parseJSON(workflowData.drawflow, null);
 
@@ -83,7 +83,8 @@ const workflow = {
       }
     }
 
-    const engine = new WorkflowEngine(workflowData, {
+    const convertedWorkflow = convertWorkflowData(workflowData);
+    const engine = new WorkflowEngine(convertedWorkflow, {
       options,
       blocksHandler,
       logger: this.logger,
@@ -384,10 +385,13 @@ browser.runtime.onInstalled.addListener(async ({ reason }) => {
     }
 
     if (reason === 'update') {
-      const { workflows } = await browser.storage.local.get('workflows');
+      let { workflows } = await browser.storage.local.get('workflows');
       const alarmTypes = ['specific-day', 'date', 'interval'];
 
-      for (const { trigger, drawflow, id } of workflows) {
+      workflows = Array.isArray(workflows)
+        ? workflows
+        : Object.values(workflows);
+      workflows.forEach(({ trigger, drawflow, id }) => {
         let workflowTrigger = trigger?.data || trigger;
 
         if (!trigger) {
@@ -402,7 +406,7 @@ browser.runtime.onInstalled.addListener(async ({ reason }) => {
         } else if (triggerType === 'context-menu') {
           registerContextMenu(id, workflowTrigger);
         }
-      }
+      });
     }
   } catch (error) {
     console.error(error);

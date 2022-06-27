@@ -1,8 +1,8 @@
 import browser from 'webextension-polyfill';
 import { isWhitespace, parseJSON } from '@/utils/helper';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
+import convertWorkflowData from '@/utils/convertWorkflowData';
 import WorkflowEngine from '../engine';
-import { getBlockConnection } from '../helper';
 
 function workflowListener(workflow, options) {
   return new Promise((resolve, reject) => {
@@ -36,73 +36,71 @@ function workflowListener(workflow, options) {
   });
 }
 
-async function executeWorkflow({ outputs, data }) {
-  const nextBlockId = getBlockConnection({ outputs });
+async function executeWorkflow({ id: blockId, data }) {
+  if (data.workflowId === '') throw new Error('empty-workflow');
 
-  try {
-    if (data.workflowId === '') throw new Error('empty-workflow');
+  const { workflows } = await browser.storage.local.get('workflows');
+  let workflow = Array.isArray(workflows)
+    ? workflows.find(({ id }) => id === data.workflowId)
+    : workflows[data.workflowId];
+  if (!workflow) {
+    const errorInstance = new Error('no-workflow');
+    errorInstance.data = { workflowId: data.workflowId };
 
-    const { workflows } = await browser.storage.local.get('workflows');
-    const workflowsArr = Array.isArray(workflows)
-      ? workflows
-      : Object.values(workflows);
-    const workflow = workflowsArr.find(({ id }) => id === data.workflowId);
-
-    if (!workflow) {
-      const errorInstance = new Error('no-workflow');
-      errorInstance.data = { workflowId: data.workflowId };
-
-      throw errorInstance;
-    }
-    const options = {
-      options: {
-        data: {
-          globalData: isWhitespace(data.globalData) ? null : data.globalData,
-        },
-        parentWorkflow: {
-          id: this.engine.id,
-          name: this.engine.workflow.name,
-        },
-      },
-      events: {
-        onInit: (engine) => {
-          this.childWorkflowId = engine.id;
-        },
-        onDestroyed: (engine) => {
-          if (data.executeId) {
-            const { dataColumns, globalData, googleSheets, table } =
-              engine.referenceData;
-
-            this.engine.referenceData.workflow[data.executeId] = {
-              globalData,
-              dataColumns,
-              googleSheets,
-              table: table || dataColumns,
-            };
-          }
-        },
-      },
-      states: this.engine.states,
-      logger: this.engine.logger,
-      blocksHandler: this.engine.blocksHandler,
-    };
-
-    if (workflow.drawflow.includes(this.engine.workflow.id)) {
-      throw new Error('workflow-infinite-loop');
-    }
-
-    const result = await workflowListener(workflow, options);
-
-    return {
-      data: '',
-      logId: result.id,
-      nextBlockId,
-    };
-  } catch (error) {
-    error.nextBlockId = nextBlockId;
-
-    throw error;
+    throw errorInstance;
   }
+
+  workflow = convertWorkflowData(workflow);
+
+  const options = {
+    options: {
+      data: {
+        globalData: isWhitespace(data.globalData) ? null : data.globalData,
+      },
+      parentWorkflow: {
+        id: this.engine.id,
+        name: this.engine.workflow.name,
+      },
+    },
+    events: {
+      onInit: (engine) => {
+        this.childWorkflowId = engine.id;
+      },
+      onDestroyed: (engine) => {
+        if (data.executeId) {
+          const { dataColumns, globalData, googleSheets, table } =
+            engine.referenceData;
+
+          this.engine.referenceData.workflow[data.executeId] = {
+            globalData,
+            dataColumns,
+            googleSheets,
+            table: table || dataColumns,
+          };
+        }
+      },
+    },
+    states: this.engine.states,
+    logger: this.engine.logger,
+    blocksHandler: this.engine.blocksHandler,
+  };
+
+  const isWorkflowIncluded = workflow.nodes.some(
+    (node) =>
+      node.label === 'execute-workflow' &&
+      node.data.workflowId === this.engine.workflow.id
+  );
+  if (isWorkflowIncluded) {
+    throw new Error('workflow-infinite-loop');
+  }
+
+  const result = await workflowListener(workflow, options);
+
+  return {
+    data: '',
+    logId: result.id,
+    nextBlockId: this.getBlockConnections(blockId),
+  };
 }
 
 export default executeWorkflow;

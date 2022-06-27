@@ -1,9 +1,8 @@
 import browser from 'webextension-polyfill';
 import { isWhitespace } from '@/utils/helper';
-import { getBlockConnection } from '../helper';
 
-function setProxy({ data, outputs }) {
-  const nextBlockId = getBlockConnection({ outputs });
+function setProxy({ data, id }) {
+  const nextBlockId = this.getBlockConnections(id);
 
   return new Promise((resolve, reject) => {
     if (data.clearProxy) {

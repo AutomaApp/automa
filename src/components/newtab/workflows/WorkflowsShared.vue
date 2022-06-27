@@ -11,6 +11,7 @@
 <script setup>
 import { computed } from 'vue';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
+import { sendMessage } from '@/utils/message';
 import { arraySorter } from '@/utils/helper';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 
@@ -41,4 +42,8 @@ const workflows = computed(() => {
     order: props.sort.order,
   });
 });
+
+function executeWorkflow(workflow) {
+  sendMessage('workflow:execute', workflow, 'background');
+}
 </script>

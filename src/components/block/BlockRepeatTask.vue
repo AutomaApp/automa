@@ -46,7 +46,6 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { Handle, Position } from '@braks/vue-flow';
-import emitter from '@/lib/mitt';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
 
@@ -65,7 +64,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-defineEmits(['delete']);
+const emit = defineEmits(['delete', 'update']);
 
 const block = useEditorBlock(props.label);
 const componentId = useComponentId('block-delay');
@@ -77,8 +76,7 @@ function handleInput({ target }) {
 
   if (repeatFor < 0) return;
 
-  props.editor.updateNodeDataFromId(props.id, { repeatFor });
-  emitter.emit('editor:data-changed', props.id);
+  emit('update', { repeatFor });
 }
 </script>
 <style>
