@@ -17,10 +17,9 @@ export const useStore = defineStore('main', {
       deleteLogAfter: 30,
       editor: {
         arrow: false,
-        disableCurvature: false,
-        curvature: 0.5,
-        reroute_curvature: 0.5,
-        reroute_curvature_start_end: 0.5,
+        snapToGrid: false,
+        lineType: 'default',
+        snapGrid: { 0: 15, 1: 15 },
       },
     },
     retrieved: true,
@@ -32,8 +31,9 @@ export const useStore = defineStore('main', {
         this.retrieved = true;
       });
     },
-    updateSettings(settings = {}) {
-      deepmerge(this.settings, settings);
+    async updateSettings(settings = {}) {
+      this.settings = deepmerge(this.settings, settings);
+      await this.saveToStorage('settings');
     },
   },
 });

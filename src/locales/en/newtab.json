@@ -64,6 +64,10 @@
       "arrow": {
         "title": "Line arrow",
         "description": "Add an arrow at the end of the line"
+      },
+      "snapGrid": {
+        "title": "Snap to the grid",
+        "description": "Snap to the grid when moving a block"
       }
     },
     "deleteLog": {

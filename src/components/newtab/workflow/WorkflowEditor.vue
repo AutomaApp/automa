@@ -46,8 +46,15 @@
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { VueFlow, Background, MiniMap, useVueFlow } from '@braks/vue-flow';
+import {
+  VueFlow,
+  Background,
+  MiniMap,
+  useVueFlow,
+  MarkerType,
+} from '@braks/vue-flow';
 import cloneDeep from 'lodash.clonedeep';
+import { useStore } from '@/stores/main';
 import { tasks, categories } from '@/utils/shared';
 import EditorSearchBlocks from './editor/EditorSearchBlocks.vue';
 
@@ -105,6 +112,7 @@ const nodeTypes = blockComponents.keys().reduce((acc, key) => {
 const getPosition = (position) => (Array.isArray(position) ? position : [0, 0]);
 
 const { t } = useI18n();
+const store = useStore();
 const editor = useVueFlow({
   id: props.id,
   minZoom: 0.4,
@@ -118,9 +126,28 @@ const editor = useVueFlow({
 });
 editor.onConnect((params) => {
   params.class = `source-${params.sourceHandle} target-${params.targetHandle}`;
+  /* eslint-disable-next-line */
+  params = applyEdgeSettings(params);
+
   editor.addEdges([params]);
 });
 
+function applyEdgeSettings(edge) {
+  const settings = store.settings.editor;
+  if (settings.lineType !== 'default') {
+    edge.type = settings.lineType;
+  } else {
+    delete edge.type;
+  }
+
+  if (settings.arrow) {
+    edge.markerEnd = MarkerType.ArrowClosed;
+  } else {
+    delete edge.markerEnd;
+  }
+
+  return edge;
+}
 function minimapNodeClassName({ label }) {
   const { category } = tasks[label];
   const { color } = categories[category];
@@ -158,8 +185,16 @@ function onMousedown(event) {
   }
 }
 function applyFlowData() {
+  const settings = store.settings.editor;
+  const edges = (props.data.edges || []).map((edge) => applyEdgeSettings(edge));
+
+  if (settings.snapToGrid) {
+    editor.snapToGrid.value = true;
+    editor.snapGrid.value = Object.values(settings.snapGrid);
+  }
+
   editor.setNodes(props.data.nodes || []);
-  editor.setEdges(props.data.edges || []);
+  editor.setEdges(edges);
   editor.setTransform({
     x: props.data.x || 0,
     y: props.data.y || 0,

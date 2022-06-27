@@ -145,7 +145,7 @@ export const useWorkflowStore = defineStore('workflow', {
       if (!this.workflows[id]) return null;
 
       if (deep) {
-        deepmerge(this.workflows[id], data);
+        this.workflows[id] = deepmerge(this.workflows[id], data);
       } else {
         Object.assign(this.workflows[id], data);
       }
