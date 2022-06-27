@@ -48,7 +48,7 @@
       :key="data.itemId || data.blockId"
       :data="data"
       class="mt-4"
-      @change="$emit('update', { ...blockData, onError: $event })"
+      @change="$emit('update', { ...blockData, ...$event })"
     />
   </div>
 </template>

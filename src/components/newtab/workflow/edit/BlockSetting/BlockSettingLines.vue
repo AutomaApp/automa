@@ -56,7 +56,7 @@ const activeEdge = computed(() => state.edges[state.activeEdge]);
 
 const updateActiveEdge = debounce((name, value) => {
   const edge = editor.value.getEdge.value(state.activeEdge);
-  console.log(name, value);
+
   edge[name] = value;
   state.edges[state.activeEdge][name] = value;
 }, 250);

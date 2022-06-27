@@ -24,10 +24,16 @@
         v-model="state.activeTab"
         class="mt-4"
       >
+        <ui-tab-panel value="general">
+          <block-setting-general
+            v-model:data="state.settings"
+            @change="onDataChange('settings', $event)"
+          />
+        </ui-tab-panel>
         <ui-tab-panel value="on-error">
           <block-setting-on-error
-            v-model:data="state.onError"
-            @change="onErrorChange"
+            data="state.onError"
+            @change="onDataChange('onError', $event)"
           />
         </ui-tab-panel>
         <ui-tab-panel value="lines">
@@ -43,6 +49,7 @@ import { useI18n } from 'vue-i18n';
 import defu from 'defu';
 import BlockSettingLines from './BlockSetting/BlockSettingLines.vue';
 import BlockSettingOnError from './BlockSetting/BlockSettingOnError.vue';
+import BlockSettingGeneral from './BlockSetting/BlockSettingGeneral.vue';
 
 const props = defineProps({
   data: {
@@ -58,10 +65,19 @@ const emit = defineEmits(['change']);
 
 const { t } = useI18n();
 
+const browserType = BROWSER_TYPE;
+const supportedBlocks = ['forms', 'event-click', 'trigger-event'];
 const tabs = [
   { id: 'on-error', name: t('workflow.blocks.base.onError.button') },
   { id: 'lines', name: t('workflow.blocks.base.settings.line.title') },
 ];
+const isSupported =
+  browserType !== 'firefox' && supportedBlocks.includes(props.data.id);
+
+if (isSupported) {
+  tabs.unshift({ id: 'general', name: t('settings.menu.general') });
+}
+
 const defaultSettings = {
   onError: {
     retry: false,
@@ -70,20 +86,24 @@ const defaultSettings = {
     retryInterval: 2,
     toDo: 'error',
   },
+  general: {
+    debugMode: false,
+  },
 };
 
 const state = reactive({
   showModal: false,
   retrieved: false,
-  activeTab: 'on-error',
   onError: defaultSettings.onError,
+  settings: defaultSettings.general,
+  activeTab: !isSupported ? 'on-error' : 'general',
 });
 
-function onErrorChange(data) {
-  if (!state.retrieved) return;
+function onDataChange(key, data) {
+  if (!state.retrieved || !state.showModal) return;
 
-  state.onError = data;
-  emit('change', data);
+  state[key] = data;
+  emit('change', { [key]: data });
 }
 
 onMounted(() => {
@@ -91,9 +111,17 @@ onMounted(() => {
     props.data.data.onError || {},
     defaultSettings.onError
   );
-
   state.onError = onErrorSetting;
-  state.retrieved = true;
+
+  const generalSettings = defu(
+    props.data.data.settings,
+    defaultSettings.general
+  );
+  state.settings = generalSettings;
+
+  setTimeout(() => {
+    state.retrieved = true;
+  }, 1000);
 });
 </script>
 <style>

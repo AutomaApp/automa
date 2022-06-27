@@ -1,5 +1,6 @@
 import browser from 'webextension-polyfill';
 import { objectHasKey } from '@/utils/helper';
+import { attachDebugger } from '../helper';
 
 async function checkAccess(blockName) {
   if (blockName === 'upload-file') {
@@ -24,7 +25,16 @@ async function checkAccess(blockName) {
 async function interactionHandler(block) {
   await checkAccess(block.name);
 
+  const debugMode =
+    (block.data.settings?.debugMode ?? false) && !this.settings.debugMode;
+  const isChrome = BROWSER_TYPE === 'chrome';
+
   try {
+    if (debugMode && isChrome) {
+      await attachDebugger(this.activeTab.id);
+      block.debugMode = true;
+    }
+
     const data = await this._sendMessageToTab(block, {
       frameId: this.activeTab.frameId || 0,
     });
@@ -62,11 +72,19 @@ async function interactionHandler(block) {
       this.setVariable(block.data.variableName, data);
     }
 
+    if (debugMode && isChrome) {
+      chrome.debugger.detach({ tabId: this.activeTab.id });
+    }
+
     return {
       data,
       nextBlockId: this.getBlockConnections(block.id),
     };
   } catch (error) {
+    if (debugMode && isChrome) {
+      chrome.debugger.detach({ tabId: this.activeTab.id });
+    }
+
     error.data = {
       name: block.name,
       selector: block.data.selector,
