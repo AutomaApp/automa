@@ -43,7 +43,7 @@
         connections: data.id === 'wait-connections' ? data.connections : null,
       }"
     />
-    <on-block-error
+    <edit-block-settings
       v-if="!excludeOnError.includes(data.id)"
       :key="data.itemId || data.blockId"
       :data="data"
@@ -56,7 +56,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { excludeOnError } from '@/utils/shared';
-import OnBlockError from './edit/OnBlockError.vue';
+import EditBlockSettings from './edit/EditBlockSettings.vue';
 
 const editComponents = require.context(
   './edit',

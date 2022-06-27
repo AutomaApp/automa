@@ -255,6 +255,7 @@ provide('workflow', {
   editState,
   data: workflow,
 });
+provide('workflow-editor', editor);
 
 const updateBlockData = debounce((data) => {
   const node = editor.value.getNode.value(editState.blockData.blockId);

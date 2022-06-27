@@ -85,7 +85,7 @@ async function executeWorkflow({ id: blockId, data }) {
     blocksHandler: this.engine.blocksHandler,
   };
 
-  const isWorkflowIncluded = workflow.nodes.some(
+  const isWorkflowIncluded = workflow.drawflow.nodes.some(
     (node) =>
       node.label === 'execute-workflow' &&
       node.data.workflowId === this.engine.workflow.id

@@ -17,6 +17,16 @@
         "timeout": "Timeout (milliseconds)",
         "noPermission": "Automa don't have enough permission to do this action",
         "grantPermission": "Grant permission",
+        "settings": {
+          "title": "Block settings",
+          "line": {
+            "title": "Lines",
+            "label": "Line label",
+            "animated": "Animated",
+            "select": "Select line",
+            "to": "Line to {name} block",
+          }
+        },
         "toggle": {
           "enable": "Enable block",
           "disable": "Disable block",

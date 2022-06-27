@@ -1,5 +1,12 @@
 <template>
-  <vue-flow :id="props.id" :class="{ disabled: options.disabled }">
+  <vue-flow
+    :id="props.id"
+    :class="{ disabled: options.disabled }"
+    :default-edge-options="{
+      type: settings.lineType,
+      markerEnd: settings.arrow ? MarkerType.ArrowClosed : '',
+    }"
+  >
     <Background />
     <MiniMap v-if="minimap" :node-class-name="minimapNodeClassName" />
     <div
@@ -126,28 +133,11 @@ const editor = useVueFlow({
 });
 editor.onConnect((params) => {
   params.class = `source-${params.sourceHandle} target-${params.targetHandle}`;
-  /* eslint-disable-next-line */
-  params = applyEdgeSettings(params);
-
   editor.addEdges([params]);
 });
 
-function applyEdgeSettings(edge) {
-  const settings = store.settings.editor;
-  if (settings.lineType !== 'default') {
-    edge.type = settings.lineType;
-  } else {
-    delete edge.type;
-  }
+const settings = store.settings.editor;
 
-  if (settings.arrow) {
-    edge.markerEnd = MarkerType.ArrowClosed;
-  } else {
-    delete edge.markerEnd;
-  }
-
-  return edge;
-}
 function minimapNodeClassName({ label }) {
   const { category } = tasks[label];
   const { color } = categories[category];
@@ -185,16 +175,13 @@ function onMousedown(event) {
   }
 }
 function applyFlowData() {
-  const settings = store.settings.editor;
-  const edges = (props.data.edges || []).map((edge) => applyEdgeSettings(edge));
-
   if (settings.snapToGrid) {
     editor.snapToGrid.value = true;
     editor.snapGrid.value = Object.values(settings.snapGrid);
   }
 
   editor.setNodes(props.data.nodes || []);
-  editor.setEdges(edges);
+  editor.setEdges(props.data.edges || []);
   editor.setTransform({
     x: props.data.x || 0,
     y: props.data.y || 0,
