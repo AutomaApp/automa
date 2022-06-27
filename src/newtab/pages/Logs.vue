@@ -11,7 +11,7 @@
     <div v-if="logs" style="min-height: 320px">
       <shared-logs-table
         :logs="logs"
-        :running="workflowStore.workflowState"
+        :running="workflowStore.states"
         class="w-full"
       >
         <template #item-prepend="{ log }">

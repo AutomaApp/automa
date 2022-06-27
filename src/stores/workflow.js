@@ -93,6 +93,8 @@ export const useWorkflowStore = defineStore('workflow', {
   getters: {
     getById: (state) => (id) => state.workflows[id],
     getWorkflows: (state) => Object.values(state.workflows),
+    getWorkflowStates: (state) => (id) =>
+      state.states.filter(({ workflowId }) => workflowId === id),
   },
   actions: {
     async loadData() {

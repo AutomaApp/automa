@@ -35,7 +35,16 @@
         style="height: 48px"
       >
         <ui-tab value="editor">{{ t('common.editor') }}</ui-tab>
-        <ui-tab value="logs">{{ t('common.log', 2) }}</ui-tab>
+        <ui-tab value="logs">
+          {{ t('common.log', 2) }}
+          <span
+            v-if="workflowStates.length > 0"
+            class="ml-2 p-1 text-center inline-block text-xs rounded-full bg-accent text-white dark:text-black"
+            style="min-width: 25px"
+          >
+            {{ workflowStates.length }}
+          </span>
+        </ui-tab>
       </ui-tabs>
       <div class="flex-grow"></div>
       <ui-card padding="p-1">
@@ -93,17 +102,10 @@
         />
       </ui-tab-panel>
       <ui-tab-panel value="logs">
-        <shared-logs-table :logs="logs" class="w-full">
-          <template #item-append="{ log: itemLog }">
-            <td class="text-right">
-              <v-remixicon
-                name="riDeleteBin7Line"
-                class="inline-block text-red-500 cursor-pointer dark:text-red-400"
-                @click="deleteLog(itemLog.id)"
-              />
-            </td>
-          </template>
-        </shared-logs-table>
+        <editor-logs
+          :workflow-id="workflowId"
+          :workflow-states="workflowStates"
+        />
       </ui-tab-panel>
     </ui-tab-panels>
   </div>
@@ -115,15 +117,14 @@ import { useRoute, useRouter } from 'vue-router';
 import { sendMessage } from '@/utils/message';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
-import { useLiveQuery } from '@/composable/liveQuery';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { findTriggerBlock } from '@/utils/helper';
 import convertWorkflowData from '@/utils/convertWorkflowData';
+import { useWorkflowStore } from '@/stores/workflow';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
-import dbLogs from '@/db/logs';
 import getTriggerText from '@/utils/triggerText';
+import EditorLogs from '@/components/newtab/workflow/editor/EditorLogs.vue';
 import WorkflowEditor from '@/components/newtab/workflow/WorkflowEditor.vue';
-import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
 
 useGroupTooltip();
 
@@ -131,6 +132,7 @@ const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const dialog = useDialog();
+const workflowStore = useWorkflowStore();
 const hostedWorkflowStore = useHostedWorkflowStore();
 
 const workflowId = route.params.id;
@@ -145,9 +147,6 @@ const editorOptions = {
 
 /* eslint-disable-next-line */
 const shortcut = useShortcut('editor:execute-workflow', executeWorkflow);
-const logs = useLiveQuery(() =>
-  dbLogs.items.where('workflowId').equals(workflowId).toArray()
-);
 
 const state = reactive({
   editorKey: 0,
@@ -158,6 +157,9 @@ const state = reactive({
 });
 
 const workflow = computed(() => hostedWorkflowStore.getById(workflowId));
+const workflowStates = computed(() =>
+  workflowStore.getWorkflowStates(workflowId)
+);
 
 function syncWorkflow() {
   state.loadingSync = true;
@@ -204,9 +206,6 @@ function executeWorkflow() {
   };
 
   sendMessage('workflow:execute', payload, 'background');
-}
-function deleteLog(logId) {
-  dbLogs.items.where('id').equals(logId);
 }
 async function retrieveTriggerText() {
   const triggerBlock = findTriggerBlock(workflow.value.drawflow);

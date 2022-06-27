@@ -41,7 +41,7 @@ export const useFolderStore = defineStore('folder', {
     },
     load() {
       return browser.storage.local.get('folders').then(({ folders }) => {
-        this.items = folders;
+        this.items = folders || [];
         this.retrieved = true;
         return folders;
       });

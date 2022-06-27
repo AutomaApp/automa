@@ -45,11 +45,11 @@
           <ui-tab value="logs" class="flex items-center">
             {{ t('common.log', 2) }}
             <span
-              v-if="workflowStore.states.length > 0"
+              v-if="workflowStates.length > 0"
               class="ml-2 p-1 text-center inline-block text-xs rounded-full bg-accent text-white dark:text-black"
               style="min-width: 25px"
             >
-              {{ workflowStore.states.length }}
+              {{ workflowStates.length }}
             </span>
           </ui-tab>
         </ui-tabs>
@@ -91,7 +91,7 @@
         <ui-tab-panel value="logs" class="mt-24 container">
           <editor-logs
             :workflow-id="route.params.id"
-            :workflow-states="workflowStore.states"
+            :workflow-states="workflowStates"
           />
         </ui-tab-panel>
       </ui-tab-panels>
@@ -125,6 +125,7 @@
 </template>
 <script setup>
 import {
+  watch,
   provide,
   reactive,
   computed,
@@ -243,6 +244,9 @@ const workflowModals = {
 };
 
 const workflow = computed(() => workflowStore.getById(route.params.id));
+const workflowStates = computed(() =>
+  workflowStore.getWorkflowStates(route.params.id)
+);
 const activeWorkflowModal = computed(
   () => workflowModals[modalState.name] || {}
 );
@@ -408,6 +412,25 @@ function onEditorInit(instance) {
     instance.removeEdges([edge]);
   });
   instance.onNodesChange(onNodesChange);
+
+  const { blockId } = route.query;
+  if (blockId) {
+    const block = instance.getNode.value(blockId);
+    if (!block) return;
+
+    instance.addSelectedNodes([block]);
+    setTimeout(() => {
+      const editorContainer = document.querySelector('.vue-flow');
+      const { height, width } = editorContainer.getBoundingClientRect();
+      const { x, y } = block.position;
+
+      instance.setTransform({
+        y: -(y - height / 2),
+        x: -(x - width / 2) - 200,
+        zoom: 1,
+      });
+    }, 200);
+  }
 }
 function clearHighlightedElements() {
   const elements = document.querySelectorAll(
@@ -612,6 +635,13 @@ const shortcut = useShortcut([
   getShortcut('editor:toggle-sidebar', toggleSidebar),
   getShortcut('editor:duplicate-block', duplicateElements),
 ]);
+
+watch(
+  () => state.activeTab,
+  (value) => {
+    router.replace({ ...route, query: { tab: value } });
+  }
+);
 
 /* eslint-disable consistent-return */
 onBeforeRouteLeave(() => {
