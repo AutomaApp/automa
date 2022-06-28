@@ -41,7 +41,7 @@
     "@tiptap/extension-link": "^2.0.0-beta.41",
     "@tiptap/extension-placeholder": "^2.0.0-beta.51",
     "@tiptap/starter-kit": "^2.0.0-beta.189",
-    "@tiptap/vue-3": "^2.0.0-beta.90",
+    "@tiptap/vue-3": "^2.0.0-beta.96",
     "@viselect/vanilla": "^3.0.0-beta.13",
     "@vueuse/rxjs": "^8.7.4",
     "@vuex-orm/core": "^0.36.4",

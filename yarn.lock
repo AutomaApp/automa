@@ -1293,13 +1293,13 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-bold/-/extension-bold-2.0.0-beta.28.tgz#cf67c264a80434ffb2368f3dd37cf357ae0c2064"
   integrity sha512-DY8GOzw9xjmTFrnvTbgHUNxTnDfKrkDgrhe0SUvdkT2udntWp8umPdhPiD3vczLgHOJw6tX68qMRjbsR1ZPcHQ==
 
-"@tiptap/extension-bubble-menu@^2.0.0-beta.56":
-  version "2.0.0-beta.56"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-bubble-menu/-/extension-bubble-menu-2.0.0-beta.56.tgz#d99cb673610a3af7e12444f4538463c7c58bfa04"
-  integrity sha512-nZozwauICdaNPmDPrSn1JFd/9/2rLtK8i2vBOcqxWHObVROvu8ZlJspnrJv23vS6P7/ZO3e/QLVHpnn+1yVq3g==
+"@tiptap/extension-bubble-menu@^2.0.0-beta.61":
+  version "2.0.0-beta.61"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-bubble-menu/-/extension-bubble-menu-2.0.0-beta.61.tgz#cc61ce8b094fdbcec58f44f0fa39172a726c024c"
+  integrity sha512-T3Yx+y1sUnXAJjK1CUfsQewSxOpDca9KzKqN2H9c9RZ9UlorR9XmZg6YYW7m9a7adeihj+o3cCO9jRd8dV+nnA==
   dependencies:
-    prosemirror-state "^1.3.4"
-    prosemirror-view "^1.23.6"
+    prosemirror-state "1.4.1"
+    prosemirror-view "1.26.2"
     tippy.js "^6.3.7"
 
 "@tiptap/extension-bullet-list@^2.0.0-beta.29":
@@ -1339,13 +1339,13 @@
   dependencies:
     prosemirror-dropcursor "^1.5.0"
 
-"@tiptap/extension-floating-menu@^2.0.0-beta.51":
-  version "2.0.0-beta.51"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-floating-menu/-/extension-floating-menu-2.0.0-beta.51.tgz#a1e53fd1c1d2ac00025d7f094d2b62eb08e81902"
-  integrity sha512-rEe7jADK9xr2n2LJsrGEN3Dz7sEGC1JT/7AdTdaZBxQRQvwxTjomqYGrt+LnX+v0MYggh6swMzj7upJosnKbBg==
+"@tiptap/extension-floating-menu@^2.0.0-beta.56":
+  version "2.0.0-beta.56"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-floating-menu/-/extension-floating-menu-2.0.0-beta.56.tgz#c7428d9109d215bdbd9033f69782c4aadb2aabec"
+  integrity sha512-j/evHE/6UPGkIgXny9IGcAh0IrcnQmg0b2NBYebs2mqx9xYKYoe+0jVgNdLp/0M3MRgQCzyWTyatBDBFOUR2mw==
   dependencies:
-    prosemirror-state "^1.3.4"
-    prosemirror-view "^1.23.6"
+    prosemirror-state "1.4.1"
+    prosemirror-view "1.26.2"
     tippy.js "^6.3.7"
 
 "@tiptap/extension-gapcursor@^2.0.0-beta.38":
@@ -1457,15 +1457,15 @@
     "@tiptap/extension-strike" "^2.0.0-beta.29"
     "@tiptap/extension-text" "^2.0.0-beta.17"
 
-"@tiptap/vue-3@^2.0.0-beta.90":
-  version "2.0.0-beta.91"
-  resolved "https://registry.yarnpkg.com/@tiptap/vue-3/-/vue-3-2.0.0-beta.91.tgz#608b3247b641f38f977ce995829f750a6dd79779"
-  integrity sha512-CKwYGyWadFyFudHEu6gdbPgvbu397AxbqWZT2F1m24FvN8G7JS0wPCdl8dG0nUvNZZB2nWa0tRrhYrOweFzW1A==
+"@tiptap/vue-3@^2.0.0-beta.96":
+  version "2.0.0-beta.96"
+  resolved "https://registry.yarnpkg.com/@tiptap/vue-3/-/vue-3-2.0.0-beta.96.tgz#c91d3015cbf42bbdf22c98903a1af3f2116421ce"
+  integrity sha512-KjrZ4dkqK42VO2c+V/iBWdJfj1NPUGdme+erOX3ZKrSpzMEAc1pUDLgkyehtU2N16kaz2E70nfve2OGl8JotYA==
   dependencies:
-    "@tiptap/extension-bubble-menu" "^2.0.0-beta.56"
-    "@tiptap/extension-floating-menu" "^2.0.0-beta.51"
-    prosemirror-state "^1.3.4"
-    prosemirror-view "^1.23.6"
+    "@tiptap/extension-bubble-menu" "^2.0.0-beta.61"
+    "@tiptap/extension-floating-menu" "^2.0.0-beta.56"
+    prosemirror-state "1.4.1"
+    prosemirror-view "1.26.2"
 
 "@types/body-parser@*":
   version "1.19.2"
@@ -5787,10 +5787,10 @@ prosemirror-schema-list@^1.2.0:
     prosemirror-state "^1.0.0"
     prosemirror-transform "^1.0.0"
 
-prosemirror-state@^1.0.0, prosemirror-state@^1.2.2, prosemirror-state@^1.3.4, prosemirror-state@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/prosemirror-state/-/prosemirror-state-1.4.0.tgz#0b0c23b38d9f5bb23d19ad043cf8453d876c0414"
-  integrity sha512-mVDZdjNX/YT5FvypiwbphJe9psA5h+j9apsSszVRFc6oKFoIInvzdujh8QW9f9lwHtSYajLxNiM1hPhd0Sl1XA==
+prosemirror-state@1.4.1, prosemirror-state@^1.0.0, prosemirror-state@^1.2.2, prosemirror-state@^1.3.4, prosemirror-state@^1.4.0:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/prosemirror-state/-/prosemirror-state-1.4.1.tgz#f6e26c7b6a7e11206176689eb6ebbf91870953e1"
+  integrity sha512-U/LBDW2gNmVa07sz/D229XigSdDQ5CLFwVB1Vb32MJbAHHhWe/6pOc721faI17tqw4pZ49i1xfY/jEZ9tbIhPg==
   dependencies:
     prosemirror-model "^1.0.0"
     prosemirror-transform "^1.0.0"
@@ -5802,10 +5802,10 @@ prosemirror-transform@^1.0.0, prosemirror-transform@^1.1.0, prosemirror-transfor
   dependencies:
     prosemirror-model "^1.0.0"
 
-prosemirror-view@^1.0.0, prosemirror-view@^1.1.0, prosemirror-view@^1.23.6, prosemirror-view@^1.25.0:
-  version "1.26.1"
-  resolved "https://registry.yarnpkg.com/prosemirror-view/-/prosemirror-view-1.26.1.tgz#fcb6f6e6ca8712714bf7b84bfcdd49fb4617f48b"
-  integrity sha512-8MEuEFQ64zoIRSz24A97WhtSqtZynTwTsECt0kOh0TotNx/YRPKWozEmUJUmJGUYsFowZNdsI0gm1bvX1x3/9Q==
+prosemirror-view@1.26.2, prosemirror-view@^1.0.0, prosemirror-view@^1.1.0, prosemirror-view@^1.23.6, prosemirror-view@^1.25.0:
+  version "1.26.2"
+  resolved "https://registry.yarnpkg.com/prosemirror-view/-/prosemirror-view-1.26.2.tgz#e673894ecf26aea330b727622d561c51b41d31eb"
+  integrity sha512-CGKw+GadkfSBEwRAJTHCEKJ4DlV6/3IhAdjpwGyZHUHtbP7jX4Ol4zmi7xa2c6GOabDlIJLYXJydoNYLX7lNeQ==
   dependencies:
     prosemirror-model "^1.16.0"
     prosemirror-state "^1.0.0"
