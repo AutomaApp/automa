@@ -4,6 +4,8 @@
     :class="{ disabled: options.disabled }"
     :default-edge-options="{
       type: settings.lineType,
+      updatable: !options.disabled,
+      selectable: !options.disabled,
       markerEnd: settings.arrow ? MarkerType.ArrowClosed : '',
     }"
   >
@@ -57,8 +59,8 @@ import { onMounted, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {
   VueFlow,
-  Background,
   MiniMap,
+  Background,
   useVueFlow,
   MarkerType,
 } from '@braks/vue-flow';
@@ -136,6 +138,9 @@ const editor = useVueFlow({
 editor.onConnect((params) => {
   params.class = `source-${params.sourceHandle} target-${params.targetHandle}`;
   editor.addEdges([params]);
+});
+editor.onEdgeUpdate(({ edge, connection }) => {
+  Object.assign(edge, connection);
 });
 
 const settings = store.settings.editor;

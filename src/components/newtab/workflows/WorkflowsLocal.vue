@@ -106,7 +106,7 @@
       </shared-card>
     </div>
     <div
-      v-if="workflows.length > 18"
+      v-if="filteredWorkflows.length > 18"
       class="flex items-center justify-between mt-8"
     >
       <div>
@@ -118,14 +118,14 @@
         </select>
         {{
           t('components.pagination.text2', {
-            count: workflows.length,
+            count: filteredWorkflows.length,
           })
         }}
       </div>
       <ui-pagination
         v-model="pagination.currentPage"
         :per-page="pagination.perPage"
-        :records="workflows.length"
+        :records="filteredWorkflows.length"
       />
     </div>
   </template>

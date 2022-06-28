@@ -4,7 +4,8 @@ import defu from 'defu';
 import deepmerge from 'lodash.merge';
 import browser from 'webextension-polyfill';
 import { fetchApi } from '@/utils/api';
-import { firstWorkflows, tasks } from '@/utils/shared';
+import { tasks } from '@/utils/shared';
+import firstWorkflows from '@/utils/firstWorkflows';
 import {
   registerWorkflowTrigger,
   cleanWorkflowTriggers,

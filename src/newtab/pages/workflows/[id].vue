@@ -170,7 +170,7 @@ import EditorLogs from '@/components/newtab/workflow/editor/EditorLogs.vue';
 import EditorLocalCtxMenu from '@/components/newtab/workflow/editor/EditorLocalCtxMenu.vue';
 import EditorLocalActions from '@/components/newtab/workflow/editor/EditorLocalActions.vue';
 
-const nanoid = customAlphabet('1234567890abcdef', 7);
+const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 7);
 
 const { t } = useI18n();
 const store = useStore();
@@ -349,6 +349,7 @@ const updateHostedWorkflow = throttle(async () => {
   }
 }, 5000);
 const onNodesChange = debounce((changes) => {
+  console.log('nodes', changes);
   changes.forEach(({ type, id }) => {
     if (type === 'remove') {
       if (editState.blockData.blockId === id) {
@@ -361,6 +362,7 @@ const onNodesChange = debounce((changes) => {
   });
 }, 250);
 const onEdgesChange = debounce((changes) => {
+  console.log('edges', changes);
   changes.forEach(({ type }) => {
     if (state.dataChanged) return;
     state.dataChanged = type !== 'select';
@@ -405,6 +407,7 @@ function autoAlign() {
   editor.value.fitView();
 
   setTimeout(() => {
+    state.dataChanged = true;
     state.animateBlocks = false;
   }, 500);
 }
