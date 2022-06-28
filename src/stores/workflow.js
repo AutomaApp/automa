@@ -103,12 +103,16 @@ export const useWorkflowStore = defineStore('workflow', {
         'isFirstTime',
       ]);
 
-      const localWorkflows = isFirstTime ? firstWorkflows : workflows;
-      this.workflows = convertWorkflowsToObject(localWorkflows);
+      let localWorkflows = workflows;
 
       if (isFirstTime) {
+        localWorkflows = firstWorkflows.map((workflow) =>
+          defaultWorkflow(workflow)
+        );
         await browser.storage.local.set({ isFirstTime: false });
       }
+
+      this.workflows = convertWorkflowsToObject(localWorkflows);
 
       const storedStates = localStorage.getItem('workflowState') || '{}';
       const states = parseJSON(storedStates, {});

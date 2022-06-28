@@ -24,7 +24,7 @@
       >
         <template #header>
           <div class="flex items-center mb-4">
-            <template v-if="!workflow.isDisabled">
+            <template v-if="workflow && !workflow.isDisabled">
               <ui-img
                 v-if="workflow.icon.startsWith('http')"
                 :src="workflow.icon"

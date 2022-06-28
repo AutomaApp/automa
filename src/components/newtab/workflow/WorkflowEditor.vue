@@ -13,9 +13,10 @@
       v-if="editorControls"
       class="flex items-end absolute p-4 left-0 bottom-0 z-10"
     >
+      <slot name="controls-prepend" />
       <button
         v-tooltip.group="t('workflow.editor.resetZoom')"
-        class="p-2 rounded-lg bg-white dark:bg-gray-800 mr-2"
+        class="control-button mr-2"
         @click="editor.fitView()"
       >
         <v-remixicon name="riFullscreenLine" />
@@ -38,6 +39,7 @@
         </button>
       </div>
       <editor-search-blocks :editor="editor" />
+      <slot name="controls-append" />
     </div>
     <template v-for="(node, name) in nodeTypes" :key="name" #[name]="nodeProps">
       <component
@@ -201,4 +203,8 @@ onBeforeUnmount(() => {
 <style>
 @import '@braks/vue-flow/dist/style.css';
 @import '@braks/vue-flow/dist/theme-default.css';
+
+.control-button {
+  @apply p-2 rounded-lg bg-white dark:bg-gray-800 transition-colors;
+}
 </style>

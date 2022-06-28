@@ -16,8 +16,6 @@ export default function (workflow) {
   const nodes = [];
   const edges = [];
 
-  let edgeId = 0;
-
   function extractBlock(blockId) {
     if (tracedBlocks.has(blockId)) return;
 
@@ -64,12 +62,11 @@ export default function (workflow) {
           targetHandle,
           source: block.id,
           target: outputId,
-          id: `edge-${edgeId}`,
+          id: `vueflow__edge-${sourceHandle}-${targetHandle}`,
           class: `source-${sourceHandle} target-${targetHandle}`,
         });
 
         nextBlockIds.push(outputId);
-        edgeId += 1;
       });
     });
 

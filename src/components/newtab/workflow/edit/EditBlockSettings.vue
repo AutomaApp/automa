@@ -32,7 +32,7 @@
         </ui-tab-panel>
         <ui-tab-panel value="on-error">
           <block-setting-on-error
-            data="state.onError"
+            :data="state.onError"
             @change="onDataChange('onError', $event)"
           />
         </ui-tab-panel>

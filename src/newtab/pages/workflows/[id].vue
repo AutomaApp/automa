@@ -74,12 +74,23 @@
             v-if="state.workflowConverted"
             :id="route.params.id"
             :data="workflow.drawflow"
+            :class="{ 'animate-blocks': state.animateBlocks }"
             class="h-screen"
             @init="onEditorInit"
             @edit="initEditBlock"
             @update:node="state.dataChanged = true"
             @delete:node="state.dataChanged = true"
-          />
+          >
+            <template #controls-append>
+              <button
+                v-tooltip="t('workflow.autoAlign.title')"
+                class="control-button hoverable ml-2"
+                @click="autoAlign"
+              >
+                <v-remixicon name="riMagicLine" />
+              </button>
+            </template>
+          </workflow-editor>
           <editor-local-ctx-menu
             v-if="editor"
             :editor="editor"
@@ -137,6 +148,7 @@ import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { customAlphabet } from 'nanoid';
 import defu from 'defu';
+import dagre from 'dagre';
 import { useStore } from '@/stores/main';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
@@ -172,6 +184,7 @@ const editor = shallowRef(null);
 const state = reactive({
   showSidebar: true,
   dataChanged: false,
+  animateBlocks: false,
   workflowConverted: false,
   activeTab: route.query.tab || 'editor',
 });
@@ -347,7 +360,54 @@ const onNodesChange = debounce((changes) => {
     }
   });
 }, 250);
+const onEdgesChange = debounce((changes) => {
+  changes.forEach(({ type }) => {
+    if (state.dataChanged) return;
+    state.dataChanged = type !== 'select';
+  });
+}, 250);
 
+function autoAlign() {
+  state.animateBlocks = true;
+
+  const graph = new dagre.graphlib.Graph();
+  graph.setGraph({
+    rankdir: 'LR',
+    ranksep: 100,
+    ranker: 'tight-tree',
+  });
+  graph._isMultigraph = true;
+  graph.setDefaultEdgeLabel(() => ({}));
+  editor.value.getNodes.value.forEach(({ id, label, dimensions }) => {
+    graph.setNode(id, {
+      label,
+      width: dimensions.width,
+      height: dimensions.height,
+    });
+  });
+  editor.value.getEdges.value.forEach(({ source, target, id }) => {
+    graph.setEdge(source, target, { id });
+  });
+
+  dagre.layout(graph);
+  const nodeChanges = graph.nodes().map((nodeId) => {
+    const { x, y } = graph.node(nodeId);
+
+    return {
+      id: nodeId,
+      type: 'position',
+      dragging: false,
+      position: { x, y },
+    };
+  });
+
+  editor.value.applyNodeChanges(nodeChanges);
+  editor.value.fitView();
+
+  setTimeout(() => {
+    state.animateBlocks = false;
+  }, 500);
+}
 function toggleSidebar() {
   state.showSidebar = !state.showSidebar;
   localStorage.setItem('workflow:sidebar', state.showSidebar);
@@ -402,16 +462,11 @@ function onActionUpdated({ data, changedIndicator }) {
 }
 function onEditorInit(instance) {
   editor.value = instance;
-  instance.onEdgesChange((changes) => {
-    changes.forEach(({ type }) => {
-      if (state.dataChanged) return;
 
-      state.dataChanged = type !== 'select';
-    });
-  });
   instance.onEdgeDoubleClick(({ edge }) => {
     instance.removeEdges([edge]);
   });
+  instance.onEdgesChange(onEdgesChange);
   instance.onNodesChange(onNodesChange);
 
   const { blockId } = route.query;
@@ -694,5 +749,11 @@ onBeforeUnmount(() => {
 .dropable-area__node,
 .dropable-area__handle {
   @apply ring-4;
+}
+.animate-blocks {
+  .vue-flow__transformationpane,
+  .vue-flow__node {
+    transition: transform 300ms ease;
+  }
 }
 </style>

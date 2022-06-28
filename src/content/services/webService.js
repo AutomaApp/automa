@@ -1,7 +1,6 @@
 import { openDB } from 'idb';
 import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
-import cloneDeep from 'lodash.clonedeep';
 import { objectHasKey } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
 
@@ -50,25 +49,20 @@ function initWebListener() {
         const { workflows: workflowsStorage } = await browser.storage.local.get(
           'workflows'
         );
-        const copyWorkflow = cloneDeep(workflow);
-
-        copyWorkflow.table = copyWorkflow.table || copyWorkflow.dataColumns;
-        copyWorkflow.dataColumns = [];
 
         const workflowId = nanoid();
+        const workflowData = {
+          ...workflow,
+          id: workflowId,
+          dataColumns: [],
+          createdAt: Date.now(),
+          table: workflow.table || workflow.dataColumns,
+        };
 
         if (Array.isArray(workflowsStorage)) {
-          workflowsStorage.push({
-            ...copyWorkflow,
-            id: workflowId,
-            createdAt: Date.now(),
-          });
+          workflowsStorage.push(workflowData);
         } else {
-          workflowsStorage[workflowId] = {
-            ...copyWorkflow,
-            id: workflowId,
-            createdAt: Date.now(),
-          };
+          workflowsStorage[workflowId] = workflowData;
         }
 
         await browser.storage.local.set({ workflows: workflowsStorage });
