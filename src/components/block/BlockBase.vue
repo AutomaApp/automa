@@ -1,5 +1,5 @@
 <template>
-  <div class="block-base relative w-48" @dblclick="$emit('edit')">
+  <div class="block-base relative w-48" @dblclick.stop="$emit('edit')">
     <slot name="prepend" />
     <ui-card :class="contentClass" class="z-10 relative block-base__content">
       <slot></slot>

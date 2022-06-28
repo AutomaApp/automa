@@ -114,6 +114,15 @@
         "description": "Get the latest log data of a workflow",
         "data": "Log data"
       },
+      "tab-url": {
+        "name": "Get tab URL",
+        "description": "Get the tab URL",
+        "select": "Select tab",
+        "types": {
+          "active-tab": "Active tab",
+          "all": "All tabs"
+        }
+      },
       "reload-tab": {
         "name": "Reload tab",
         "description": "Reload the active tab"

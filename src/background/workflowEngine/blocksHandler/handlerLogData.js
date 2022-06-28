@@ -2,7 +2,6 @@ import dbLogs from '@/db/logs';
 
 export async function logData({ id, data }) {
   if (!data.workflowId) {
-    console.log(data);
     throw new Error('No workflow is selected');
   }
 

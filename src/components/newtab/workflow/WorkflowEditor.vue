@@ -3,9 +3,9 @@
     :id="props.id"
     :class="{ disabled: options.disabled }"
     :default-edge-options="{
+      updateable: true,
+      selectable: true,
       type: settings.lineType,
-      updatable: !options.disabled,
-      selectable: !options.disabled,
       markerEnd: settings.arrow ? MarkerType.ArrowClosed : '',
     }"
   >
@@ -137,6 +137,7 @@ const editor = useVueFlow({
 });
 editor.onConnect((params) => {
   params.class = `source-${params.sourceHandle} target-${params.targetHandle}`;
+  params.updateable = true;
   editor.addEdges([params]);
 });
 editor.onEdgeUpdate(({ edge, connection }) => {

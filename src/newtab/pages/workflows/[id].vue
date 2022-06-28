@@ -349,7 +349,6 @@ const updateHostedWorkflow = throttle(async () => {
   }
 }, 5000);
 const onNodesChange = debounce((changes) => {
-  console.log('nodes', changes);
   changes.forEach(({ type, id }) => {
     if (type === 'remove') {
       if (editState.blockData.blockId === id) {
@@ -362,7 +361,6 @@ const onNodesChange = debounce((changes) => {
   });
 }, 250);
 const onEdgesChange = debounce((changes) => {
-  console.log('edges', changes);
   changes.forEach(({ type }) => {
     if (state.dataChanged) return;
     state.dataChanged = type !== 'select';

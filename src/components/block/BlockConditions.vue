@@ -1,5 +1,9 @@
 <template>
-  <ui-card :id="componentId" class="w-64 relative" @dblclick="$emit('edit')">
+  <ui-card
+    :id="componentId"
+    class="w-64 relative"
+    @dblclick.stop="$emit('edit')"
+  >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div class="flex items-center">
       <div

@@ -9,7 +9,7 @@
     <ui-select
       :model-value="data.workflowId"
       :placeholder="t('workflow.blocks.execute-workflow.select')"
-      class="mt-4"
+      class="mt-4 w-full"
       @change="updateData({ workflowId: $event })"
     >
       <option
