@@ -3,7 +3,7 @@
     <ui-checkbox
       :model-value="data.assignVariable"
       block
-      class="mt-4"
+      class="mt-4 block-variable"
       @change="updateData({ assignVariable: $event })"
     >
       {{ t('workflow.variables.assign') }}

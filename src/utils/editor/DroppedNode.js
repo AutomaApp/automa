@@ -1,9 +1,9 @@
 import { customAlphabet } from 'nanoid';
-import { tasks, excludeOnError } from './shared';
+import { tasks, excludeOnError } from '../shared';
 
-const nanoid = customAlphabet('1234567890abcdef', 7);
+const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 7);
 
-class EditorUtils {
+class DroppedNode {
   static isNode(target) {
     if (target.closest('.vue-flow__handle')) return null;
 
@@ -162,4 +162,4 @@ class EditorUtils {
   }
 }
 
-export default EditorUtils;
+export default DroppedNode;

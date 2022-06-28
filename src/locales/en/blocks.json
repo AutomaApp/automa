@@ -109,6 +109,11 @@
         "from": "Data from",
         "allColumns": "[All columns]"
       },
+      "log-data": {
+        "name": "Get log data",
+        "description": "Get the latest log data of a workflow",
+        "data": "Log data"
+      },
       "reload-tab": {
         "name": "Reload tab",
         "description": "Reload the active tab"

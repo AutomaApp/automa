@@ -12,7 +12,7 @@
     <ui-modal
       v-model="state.showModal"
       :title="t('workflow.blocks.base.settings.title')"
-      content-class="max-w-xl block-settings"
+      content-class="max-w-xl modal-block-settings"
     >
       <ui-tabs v-model="state.activeTab" class="-mt-2">
         <ui-tab v-for="tab in tabs" :key="tab.id" :value="tab.id">
@@ -125,7 +125,7 @@ onMounted(() => {
 });
 </script>
 <style>
-.block-settings {
+.modal-block-settings {
   min-height: 500px;
 }
 </style>

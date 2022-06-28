@@ -1003,6 +1003,28 @@ export const tasks = {
       title: 'Hello world!',
     },
   },
+  'log-data': {
+    name: 'Get log data',
+    description: 'Get the latest log data of a workflow',
+    icon: 'riFileHistoryLine',
+    editComponent: 'EditLogData',
+    component: 'BlockBasic',
+    category: 'data',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    refDataKeys: ['message', 'title', 'iconUrl', 'imageUrl'],
+    data: {
+      disableBlock: false,
+      description: '',
+      workflowId: '',
+      dataColumn: '',
+      saveData: true,
+      assignVariable: false,
+      variableName: '',
+    },
+  },
 };
 
 export const categories = {
@@ -1027,6 +1049,11 @@ export const categories = {
     name: 'Online services',
     border: 'border-red-200 dark:border-red-300',
     color: 'bg-red-200 dark:bg-red-300 fill-red-200 dark:fill-red-300',
+  },
+  data: {
+    name: 'Data',
+    border: 'border-lime-200 dark:border-lime-300',
+    color: 'bg-lime-200 dark:bg-lime-300 fill-lime-200 dark:fill-lime-300',
   },
   conditions: {
     name: 'Conditions',

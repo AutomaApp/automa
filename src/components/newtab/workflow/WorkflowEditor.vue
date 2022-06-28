@@ -140,6 +140,11 @@ editor.onConnect((params) => {
   editor.addEdges([params]);
 });
 editor.onEdgeUpdate(({ edge, connection }) => {
+  const isBothOutput =
+    connection.sourceHandle.includes('output') &&
+    connection.targetHandle.includes('output');
+  if (isBothOutput) return;
+
   Object.assign(edge, connection);
 });
 

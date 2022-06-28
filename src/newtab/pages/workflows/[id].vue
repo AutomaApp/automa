@@ -157,7 +157,7 @@ import { tasks } from '@/utils/shared';
 import { debounce, parseJSON, throttle } from '@/utils/helper';
 import { fetchApi } from '@/utils/api';
 import browser from 'webextension-polyfill';
-import EditorUtils from '@/utils/EditorUtils';
+import DroppedNode from '@/utils/editor/DroppedNode';
 import convertWorkflowData from '@/utils/convertWorkflowData';
 import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
 import WorkflowEditor from '@/components/newtab/workflow/WorkflowEditor.vue';
@@ -533,9 +533,9 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
 
   clearHighlightedElements();
 
-  const nodeEl = EditorUtils.isNode(target);
+  const nodeEl = DroppedNode.isNode(target);
   if (nodeEl) {
-    EditorUtils.replaceNode(editor.value, { block, target: nodeEl });
+    DroppedNode.replaceNode(editor.value, { block, target: nodeEl });
     return;
   }
 
@@ -554,16 +554,16 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
   };
   editor.value.addNodes([newNode]);
 
-  const edgeEl = EditorUtils.isEdge(target);
-  const handleEl = EditorUtils.isHandle(target);
+  const edgeEl = DroppedNode.isEdge(target);
+  const handleEl = DroppedNode.isHandle(target);
 
   if (handleEl) {
-    EditorUtils.appendNode(editor.value, {
+    DroppedNode.appendNode(editor.value, {
       target: handleEl,
       nodeId: newNode.id,
     });
   } else if (edgeEl) {
-    EditorUtils.insertBetweenNode(editor.value, {
+    DroppedNode.insertBetweenNode(editor.value, {
       target: edgeEl,
       nodeId: newNode.id,
       outputs: block.outputs,
