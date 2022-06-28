@@ -320,7 +320,7 @@ async function setAsHostWorkflow(isHost) {
 }
 function shareWorkflow() {
   if (shared.value) {
-    router.push(`/${props.workflow.id}/shared`);
+    router.push(`/workflows/${props.workflow.id}/shared`);
     return;
   }
 

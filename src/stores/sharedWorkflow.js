@@ -19,6 +19,16 @@ export const useSharedWorkflowStore = defineStore('shared-workflows', {
         this.workflows[data.id] = data;
       }
     },
+    update({ id, data }) {
+      if (!this.workflows[id]) return null;
+
+      Object.assign(this.workflows[id], data);
+
+      return this.workflows[id];
+    },
+    delete(id) {
+      delete this.workflows[id];
+    },
     async fetchWorkflows(useCache = true) {
       const workflows = await cacheApi(
         'shared-workflows',

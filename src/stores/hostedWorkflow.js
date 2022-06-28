@@ -111,6 +111,7 @@ export const useHostedWorkflowStore = defineStore('hosted-workflows', {
       result.forEach(({ hostId, status, data }) => {
         if (status === 'deleted') {
           delete this.workflows[hostId];
+          cleanWorkflowTriggers(hostId);
           return;
         }
         if (status === 'updated') {

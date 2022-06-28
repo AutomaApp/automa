@@ -193,12 +193,12 @@ function applyFlowData() {
     editor.snapGrid.value = Object.values(settings.snapGrid);
   }
 
-  editor.setNodes(props.data.nodes || []);
-  editor.setEdges(props.data.edges || []);
+  editor.setNodes(props.data?.nodes || []);
+  editor.setEdges(props.data?.edges || []);
   editor.setTransform({
-    x: props.data.x || 0,
-    y: props.data.y || 0,
-    zoom: props.data.zoom || 1,
+    x: props.data?.x || 0,
+    y: props.data?.y || 0,
+    zoom: props.data?.zoom || 1,
   });
 }
 
