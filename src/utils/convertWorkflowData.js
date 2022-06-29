@@ -62,6 +62,8 @@ export default function (workflow) {
           targetHandle,
           source: block.id,
           target: outputId,
+          updatable: true,
+          selectable: true,
           id: `vueflow__edge-${sourceHandle}-${targetHandle}`,
           class: `source-${sourceHandle} target-${targetHandle}`,
         });

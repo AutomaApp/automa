@@ -34,8 +34,11 @@
 	}
 }
 
-.vue-flow__edge.selected .vue-flow__edge-path {
-	stroke: theme('colors.green.300');
+.vue-flow__edge {
+	cursor: pointer;
+	&.selected .vue-flow__edge-path {
+		stroke: theme('colors.green.300');
+	}
 }
 
 .vue-flow__edge-path {

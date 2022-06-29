@@ -51,7 +51,7 @@ const editorOptions = {
   disabled: true,
   fitViewOnInit: true,
   nodesDraggable: false,
-  edgesUpdateable: false,
+  edgesUpdatable: false,
   nodesConnectable: false,
 };
 

@@ -912,10 +912,10 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
-"@braks/vue-flow@^0.4.25":
-  version "0.4.25"
-  resolved "https://registry.yarnpkg.com/@braks/vue-flow/-/vue-flow-0.4.25.tgz#3aa96d8ba102e48deceb4b082fa2b4b15c3904e5"
-  integrity sha512-kQYAOonPLBUVzbXz8nmp1PSXXQ1pq7k5L8RsiRJ6FM4hpqRWWI+KG1p6IDdcACpbwoZ07XhPq7roLFX4M8u59Q==
+"@braks/vue-flow@^0.4.27":
+  version "0.4.27"
+  resolved "https://registry.yarnpkg.com/@braks/vue-flow/-/vue-flow-0.4.27.tgz#4f3b6ad14c9f3c65dc593490a141bd2c5d048438"
+  integrity sha512-iM54qI6pX7tOV2XQuMXETKePankHOy99DYDLBo4lCM5V7msNqcRwdiQDGbGTVCHgm0vTGaUzHh3Rr2skZ+SZyg==
   dependencies:
     "@vueuse/core" "^8.7.5"
     d3-drag "^3.0.0"
