@@ -67,7 +67,7 @@ export function waitTabLoaded({ tabId, listenError = false, ms = 10000 }) {
         reject(new Error('Timeout'));
       }, ms);
     }
-    if (listenError)
+    if (listenError && BROWSER_TYPE === 'chrome')
       browser.webNavigation.onErrorOccurred.addListener(onErrorOccurred);
 
     const activeTabStatus = () => {
