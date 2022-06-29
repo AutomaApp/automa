@@ -34,7 +34,7 @@ const defaultShortcut = {
   },
   'action:search': {
     id: 'action:search',
-    combo: 'mod+shift+f',
+    combo: 'mod+f',
   },
   'action:new': {
     id: 'action:new',

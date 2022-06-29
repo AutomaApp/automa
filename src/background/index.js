@@ -522,5 +522,29 @@ message.on('workflow:execute', (workflowData, sender) => {
   workflow.execute(workflowData, workflowData?.options || {});
 });
 message.on('workflow:stop', (id) => workflow.states.stop(id));
+message.on('workflow:added', (workflowId) => {
+  console.log(browser.runtime.getURL('/newtab.html'));
+  browser.tabs
+    .query({ url: browser.runtime.getURL('/newtab.html') })
+    .then((tabs) => {
+      console.log(tabs, tabs.length);
+      if (tabs.length >= 1) {
+        const lastTab = tabs.at(-1);
+
+        tabs.forEach((tab) => {
+          browser.tabs.sendMessage(tab.id, {
+            data: { workflowId },
+            type: 'workflow:added',
+          });
+        });
+
+        browser.tabs.update(lastTab.id, {
+          active: true,
+        });
+      } else {
+        openDashboard(`/workflows/${workflowId}?permission=true`);
+      }
+    });
+});
 
 browser.runtime.onMessage.addListener(message.listener());

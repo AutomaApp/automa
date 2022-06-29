@@ -2,55 +2,124 @@ import browser from 'webextension-polyfill';
 import { useWorkflowStore } from '@/stores/workflow';
 import { parseJSON, fileSaver, openFilePicker } from './helper';
 
+const contextMenuPermission =
+  BROWSER_TYPE === 'firefox' ? 'menus' : 'contextMenus';
+const checkPermission = (permissions) =>
+  browser.permissions.contains({ permissions });
+const requiredPermissions = {
+  trigger: {
+    name: contextMenuPermission,
+    hasPermission({ data }) {
+      if (data.type !== 'context-menu') return true;
+
+      return checkPermission([contextMenuPermission]);
+    },
+  },
+  clipboard: {
+    name: 'clipboardRead',
+    hasPermission() {
+      return checkPermission(['clipboardRead']);
+    },
+  },
+  notification: {
+    name: 'notifications',
+    hasPermission() {
+      return checkPermission(['notifications']);
+    },
+  },
+  'handle-download': {
+    name: 'downloads',
+    hasPermission() {
+      return checkPermission(['downloads']);
+    },
+  },
+  'save-assets': {
+    name: 'downloads',
+    hasPermission() {
+      return checkPermission(['downloads']);
+    },
+  },
+};
+
+export async function getWorkflowPermissions(drawflow) {
+  let blocks = [];
+  const permissions = [];
+  const drawflowData =
+    typeof drawflow === 'string' ? parseJSON(drawflow) : drawflow;
+
+  if (drawflowData.nodes) {
+    blocks = drawflowData.nodes;
+  } else {
+    blocks = Object.values(drawflowData.drawflow?.Home?.data || {});
+  }
+
+  for (const block of blocks) {
+    const name = block.label || block.name;
+    const permission = requiredPermissions[name];
+
+    if (permission && !permissions.includes(permission.name)) {
+      const hasPermission = await permission.hasPermission(block);
+      if (!hasPermission) permissions.push(permission.name);
+    }
+  }
+
+  return permissions;
+}
+
 export function importWorkflow(attrs = {}) {
-  openFilePicker(['application/json'], attrs)
-    .then((files) => {
-      const handleOnLoadReader = ({ target }) => {
-        const workflow = JSON.parse(target.result);
-        const workflowStore = useWorkflowStore();
+  return new Promise((resolve, reject) => {
+    openFilePicker(['application/json'], attrs)
+      .then((files) => {
+        const handleOnLoadReader = ({ target }) => {
+          const workflow = JSON.parse(target.result);
+          const workflowStore = useWorkflowStore();
 
-        if (workflow.includedWorkflows) {
-          Object.keys(workflow.includedWorkflows).forEach((workflowId) => {
-            const isWorkflowExists = Boolean(
-              workflowStore.workflows[workflowId]
-            );
+          if (workflow.includedWorkflows) {
+            Object.keys(workflow.includedWorkflows).forEach((workflowId) => {
+              const isWorkflowExists = Boolean(
+                workflowStore.workflows[workflowId]
+              );
 
-            if (isWorkflowExists) return;
+              if (isWorkflowExists) return;
 
-            const currentWorkflow = workflow.includedWorkflows[workflowId];
-            currentWorkflow.table =
-              currentWorkflow.table || currentWorkflow.dataColumns;
-            delete currentWorkflow.dataColumns;
+              const currentWorkflow = workflow.includedWorkflows[workflowId];
+              currentWorkflow.table =
+                currentWorkflow.table || currentWorkflow.dataColumns;
+              delete currentWorkflow.dataColumns;
 
-            workflowStore.insert({
-              ...currentWorkflow,
-              id: workflowId,
-              createdAt: Date.now(),
+              workflowStore.insert({
+                ...currentWorkflow,
+                id: workflowId,
+                createdAt: Date.now(),
+              });
             });
-          });
 
-          delete workflow.includedWorkflows;
-        }
+            delete workflow.includedWorkflows;
+          }
 
-        workflow.table = workflow.table || workflow.dataColumns;
-        delete workflow.dataColumns;
+          workflow.table = workflow.table || workflow.dataColumns;
+          delete workflow.dataColumns;
 
-        workflowStore.insert({
-          ...workflow,
-          createdAt: Date.now(),
+          workflowStore
+            .insert({
+              ...workflow,
+              createdAt: Date.now(),
+            })
+            .then(resolve);
+        };
+
+        files.forEach((file) => {
+          const reader = new FileReader();
+
+          reader.onload = handleOnLoadReader;
+          reader.readAsText(file);
         });
-      };
-
-      files.forEach((file) => {
-        const reader = new FileReader();
-
-        reader.onload = handleOnLoadReader;
-        reader.readAsText(file);
+      })
+      .catch((error) => {
+        console.error(error);
+        reject(error);
       });
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+  });
 }
 
 export function convertWorkflow(workflow, additionalKeys = []) {

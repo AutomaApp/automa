@@ -133,6 +133,10 @@
       @close="modalState.show = false"
     />
   </ui-modal>
+  <shared-permissions-modal
+    v-model="permissionState.showModal"
+    :permissions="permissionState.items"
+  />
 </template>
 <script setup>
 import {
@@ -153,9 +157,10 @@ import { useStore } from '@/stores/main';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
+import { getWorkflowPermissions } from '@/utils/workflowData';
 import { tasks } from '@/utils/shared';
-import { debounce, parseJSON, throttle } from '@/utils/helper';
 import { fetchApi } from '@/utils/api';
+import { debounce, parseJSON, throttle } from '@/utils/helper';
 import browser from 'webextension-polyfill';
 import DroppedNode from '@/utils/editor/DroppedNode';
 import convertWorkflowData from '@/utils/convertWorkflowData';
@@ -167,6 +172,7 @@ import WorkflowDataTable from '@/components/newtab/workflow/WorkflowDataTable.vu
 import WorkflowGlobalData from '@/components/newtab/workflow/WorkflowGlobalData.vue';
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
 import EditorLogs from '@/components/newtab/workflow/editor/EditorLogs.vue';
+import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
 import EditorLocalCtxMenu from '@/components/newtab/workflow/editor/EditorLocalCtxMenu.vue';
 import EditorLocalActions from '@/components/newtab/workflow/editor/EditorLocalActions.vue';
 
@@ -187,6 +193,10 @@ const state = reactive({
   animateBlocks: false,
   workflowConverted: false,
   activeTab: route.query.tab || 'editor',
+});
+const permissionState = reactive({
+  permissions: [],
+  showModal: false,
 });
 const modalState = reactive({
   name: '',
@@ -730,6 +740,15 @@ onMounted(() => {
   updateWorkflow({ drawflow: convertedData.drawflow }).then(() => {
     state.workflowConverted = true;
   });
+
+  if (route.query.permission) {
+    getWorkflowPermissions(workflow.value.drawflow).then((permissions) => {
+      if (permissions.length === 0) return;
+
+      permissionState.items = permissions;
+      permissionState.showModal = true;
+    });
+  }
 
   window.onbeforeunload = () => {
     updateHostedWorkflow();

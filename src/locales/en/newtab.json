@@ -22,6 +22,26 @@
       }
     }
   },
+  "workflowPermissions": {
+    "title": "Workflow permissions",
+    "description": "This workflow requires these permissions to run properly",
+    "contextMenus": {
+      "title": "Context menu",
+      "description": "To execute the workflow via the context menu"
+    },
+    "clipboard": {
+      "title": "Clipboard",
+      "description": "For accessing the clipboard data"
+    },
+    "notifications": {
+      "title": "Notification",
+      "description": "For displaying a notification"
+    },
+    "downloads": {
+      "title": "Download",
+      "description": "Saving the page assets and renaming the downloaded file"
+    }
+  },
   "updateMessage": {
     "text1": "Automa has been updated to v{version},",
     "text2": "see what's new."

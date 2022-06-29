@@ -66,6 +66,7 @@ function initWebListener() {
         }
 
         await browser.storage.local.set({ workflows: workflowsStorage });
+        sendMessage('workflow:added', workflowId, 'background');
       } catch (error) {
         console.error(error);
       }

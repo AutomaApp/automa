@@ -56,6 +56,7 @@ import iconFirefox from '@/assets/svg/logoFirefox.svg';
 import iconChrome from '@/assets/svg/logo.svg';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 import { compare } from 'compare-versions';
 import browser from 'webextension-polyfill';
 import { useStore } from '@/stores/main';
@@ -89,6 +90,7 @@ document.head.appendChild(iconElement);
 const { t } = useI18n();
 const store = useStore();
 const theme = useTheme();
+const router = useRouter();
 const userStore = useUserStore();
 const folderStore = useFolderStore();
 const workflowStore = useWorkflowStore();
@@ -179,6 +181,13 @@ window.addEventListener('storage', ({ key, newValue }) => {
   workflowStore.states = Object.values(states).filter(
     ({ isDestroyed }) => !isDestroyed
   );
+});
+browser.runtime.onMessage.addListener(({ type, data }) => {
+  if (type === 'workflow:added') {
+    workflowStore.loadData().then(() => {
+      router.push(`/workflows/${data.workflowId}?permission=true`);
+    });
+  }
 });
 
 (async () => {

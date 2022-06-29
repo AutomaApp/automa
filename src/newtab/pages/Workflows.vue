@@ -24,7 +24,7 @@
               <ui-list-item
                 v-close-popover
                 class="cursor-pointer"
-                @click="importWorkflow({ multiple: true })"
+                @click="openImportDialog"
               >
                 {{ t('workflow.import') }}
               </ui-list-item>
@@ -194,6 +194,10 @@
         </ui-button>
       </div>
     </ui-modal>
+    <shared-permissions-modal
+      v-model="permissionState.showModal"
+      :permissions="permissionState.items"
+    />
   </div>
 </template>
 <script setup>
@@ -203,15 +207,16 @@ import { useToast } from 'vue-toastification';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
 import { useGroupTooltip } from '@/composable/groupTooltip';
-import { importWorkflow } from '@/utils/workflowData';
 import { isWhitespace } from '@/utils/helper';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
+import { importWorkflow, getWorkflowPermissions } from '@/utils/workflowData';
 import WorkflowsLocal from '@/components/newtab/workflows/WorkflowsLocal.vue';
 import WorkflowsShared from '@/components/newtab/workflows/WorkflowsShared.vue';
 import WorkflowsHosted from '@/components/newtab/workflows/WorkflowsHosted.vue';
 import WorkflowsFolder from '@/components/newtab/workflows/WorkflowsFolder.vue';
+import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
 
 useGroupTooltip();
 const { t } = useI18n();
@@ -236,6 +241,10 @@ const addWorkflowModal = shallowReactive({
   name: '',
   show: false,
   description: '',
+});
+const permissionState = shallowReactive({
+  items: [],
+  showModal: false,
 });
 
 const hostedWorkflows = computed(() => hostedWorkflowStore.toArray);
@@ -284,6 +293,28 @@ function addHostedWorkflow() {
       }
     },
   });
+}
+async function openImportDialog() {
+  try {
+    const workflows = await importWorkflow({ multiple: true });
+    const insertedWorkflows = Object.values(workflows);
+    let requiredPermissions = [];
+
+    for (const workflow of insertedWorkflows) {
+      if (workflow.drawflow) {
+        const permissions = await getWorkflowPermissions(workflow.drawflow);
+        requiredPermissions.push(...permissions);
+      }
+    }
+
+    requiredPermissions = Array.from(new Set(requiredPermissions));
+    if (requiredPermissions.length === 0) return;
+
+    permissionState.items = requiredPermissions;
+    permissionState.showModal = true;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 const shortcut = useShortcut(['action:search', 'action:new'], ({ id }) => {
