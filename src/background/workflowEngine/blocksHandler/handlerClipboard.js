@@ -1,6 +1,28 @@
 import browser from 'webextension-polyfill';
 
-export default async function ({ data, id }) {
+function doCommand(command, value) {
+  const textarea = document.createElement('textarea');
+  document.body.appendChild(textarea);
+
+  if (command === 'paste') {
+    textarea.focus();
+    document.execCommand('paste');
+    textarea.remove();
+
+    return textarea.value;
+  }
+  if (command === 'copy') {
+    textarea.value = value;
+    textarea.select();
+    document.execCommand('copy');
+    textarea.blur();
+    textarea.remove();
+  }
+
+  return '';
+}
+
+export default async function ({ data, id, label }) {
   const hasPermission = await browser.permissions.contains({
     permissions: ['clipboardRead'],
   });
@@ -9,24 +31,38 @@ export default async function ({ data, id }) {
     throw new Error('no-clipboard-acces');
   }
 
-  const textarea = document.createElement('textarea');
-  document.body.appendChild(textarea);
-  textarea.focus();
-  document.execCommand('paste');
+  let valueToReturn = '';
 
-  const copiedText = textarea.value;
+  if (!data.type || data.type === 'get') {
+    const copiedText = doCommand('paste');
+    valueToReturn = copiedText;
 
-  if (data.assignVariable) {
-    this.setVariable(data.variableName, copiedText);
+    if (data.assignVariable) {
+      this.setVariable(data.variableName, copiedText);
+    }
+    if (data.saveData) {
+      this.addDataToColumn(data.dataColumn, copiedText);
+    }
+  } else if (data.type === 'insert') {
+    let text = '';
+
+    if (data.copySelectedText) {
+      if (!this.activeTab.id) throw new Error('no-tab');
+
+      text = await this._sendMessageToTab({
+        id,
+        label,
+      });
+    } else {
+      text = data.dataToCopy;
+    }
+
+    valueToReturn = text;
+    doCommand('copy', text);
   }
-  if (data.saveData) {
-    this.addDataToColumn(data.dataColumn, copiedText);
-  }
-
-  document.body.removeChild(textarea);
 
   return {
-    data: copiedText,
+    data: valueToReturn,
     nextBlockId: this.getBlockConnections(id),
   };
 }

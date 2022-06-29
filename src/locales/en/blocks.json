@@ -170,7 +170,12 @@
         "description": "Get the copied text from the clipboard",
         "data": "Clipboard data",
         "noPermission": "Don't have permission to access the clipboard",
-        "grantPermission": "Grant permission"
+        "grantPermission": "Grant permission",
+        "copySelection": "Copy the selected text on page",
+        "types": {
+          "get": "Get clipboard data",
+          "insert": "Insert text to clipboard"
+        }
       },
       "hover-element": {
         "name": "Hover element",

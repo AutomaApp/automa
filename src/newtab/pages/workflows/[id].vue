@@ -470,6 +470,13 @@ function onEditorInit(instance) {
   instance.onEdgesChange(onEdgesChange);
   instance.onNodesChange(onNodesChange);
 
+  instance.removeSelectedNodes(
+    instance.getSelectedNodes.value.map(({ id }) => id)
+  );
+  instance.removeSelectedEdges(
+    instance.getSelectedEdges.value.map(({ id }) => id)
+  );
+
   const { blockId } = route.query;
   if (blockId) {
     const block = instance.getNode.value(blockId);

@@ -749,13 +749,17 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     autocomplete: ['variableName'],
+    refDataKeys: ['dataToCopy'],
     data: {
       disableBlock: false,
       description: '',
+      type: 'get',
       assignVariable: false,
       variableName: '',
       saveData: true,
       dataColumn: '',
+      dataToCopy: '',
+      copySelectedText: false,
     },
   },
   'insert-data': {
