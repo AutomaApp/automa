@@ -54,7 +54,7 @@
     "defu": "^6.0.0",
     "dexie": "^3.2.2",
     "drawflow": "^0.0.58",
-    "idb": "^7.0.0",
+    "idb": "^7.0.2",
     "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.2",
     "mitt": "^3.0.0",
