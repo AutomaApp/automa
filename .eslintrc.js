@@ -34,6 +34,7 @@ module.exports = {
   rules: {
     camelcase: 'off',
     'no-await-in-loop': 'off',
+    'no-alert': 'off',
     'import/no-import-module-exports': 'off',
     'no-console': ['warn', { allow: ['warn', 'error'] }],
     'no-underscore-dangle': 'off',
