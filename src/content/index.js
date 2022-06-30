@@ -1,7 +1,6 @@
 import browser from 'webextension-polyfill';
 import findSelector from '@/lib/findSelector';
 import { toCamelCase } from '@/utils/helper';
-import { openDB } from 'idb';
 import cloneDeep from 'lodash.clonedeep';
 import { nanoid } from 'nanoid';
 import blocksHandler from './blocksHandler';
@@ -241,16 +240,11 @@ function messageListener({ data, source }) {
 async function autoInstall() {
   const link = window.location.href;
   if (/.+\.automa\.json$/.test(link)) {
+    const accept = window.confirm(
+      'Do you want to add this workflow into Automa?'
+    );
+    if (!accept) return;
     const workflow = JSON.parse(document.body.innerText);
-
-    const { workflows } = await browser.storage.local.get('workflows');
-    const db = await openDB('automa', 1, {
-      upgrade(event) {
-        event.createObjectStore('store');
-      },
-    });
-
-    await db.put('store', workflows, 'workflows');
 
     const { workflows: workflowsStorage } = await browser.storage.local.get(
       'workflows'
