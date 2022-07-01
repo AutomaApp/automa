@@ -164,7 +164,7 @@ async function syncBackupWorkflows() {
       lastBackup: new Date().toISOString(),
     });
 
-    await workflowStore.insertOrUpdate(backup);
+    await workflowStore.insertOrUpdate(backup, { checkUpdateDate: true });
 
     state.loadingSync = false;
   } catch (error) {

@@ -3,14 +3,12 @@ import { nanoid } from 'nanoid';
 import defu from 'defu';
 import deepmerge from 'lodash.merge';
 import browser from 'webextension-polyfill';
+import dayjs from 'dayjs';
 import { fetchApi } from '@/utils/api';
 import { tasks } from '@/utils/shared';
 import firstWorkflows from '@/utils/firstWorkflows';
-import {
-  registerWorkflowTrigger,
-  cleanWorkflowTriggers,
-} from '@/utils/workflowTrigger';
-import { parseJSON, findTriggerBlock } from '@/utils/helper';
+import { cleanWorkflowTriggers } from '@/utils/workflowTrigger';
+import { parseJSON } from '@/utils/helper';
 import { useUserStore } from './user';
 
 const defaultWorkflow = (data = null) => {
@@ -148,14 +146,12 @@ export const useWorkflowStore = defineStore('workflow', {
 
       return insertedWorkflows;
     },
-    async update({ id, data = {}, deep = false, checkLastUpdate = false }) {
+    async update({ id, data = {}, deep = false }) {
       const isFunction = typeof id === 'function';
       if (!isFunction && !this.workflows[id]) return null;
 
       const updatedWorkflows = {};
       const workflowUpdater = (workflowId) => {
-        console.log(checkLastUpdate);
-
         if (deep) {
           this.workflows[workflowId] = deepmerge(
             this.workflows[workflowId],
@@ -182,13 +178,21 @@ export const useWorkflowStore = defineStore('workflow', {
 
       return updatedWorkflows;
     },
-    async insertOrUpdate(data = []) {
+    async insertOrUpdate(data = [], { checkUpdateDate = false } = {}) {
       const insertedData = {};
 
       data.forEach((item) => {
-        if (this.workflows[item.id]) {
-          Object.assign(this.workflows[item.id], item);
-          insertedData[item.id] = this.workflows[item.id];
+        const currentWorkflow = this.workflows[item.id];
+        if (currentWorkflow) {
+          let insert = true;
+          if (checkUpdateDate && currentWorkflow.createdAt && item.updatedAt) {
+            insert = dayjs(currentWorkflow.updatedAt).isBefore(item.updatedAt);
+          }
+
+          if (insert) {
+            Object.assign(this.workflows[item.id], item);
+            insertedData[item.id] = this.workflows[item.id];
+          }
         } else {
           const workflow = defaultWorkflow(item);
           this.workflows[workflow.id] = workflow;
@@ -237,49 +241,6 @@ export const useWorkflowStore = defineStore('workflow', {
       await this.saveToStorage('workflows');
 
       return id;
-    },
-    async syncHostedWorkflows(hostIds = []) {
-      const ids = hostIds;
-
-      if (ids.length === 0) {
-        const userHosted = Object.values(this.userHosted);
-
-        Object.keys(this.hosted).forEach((hostId) => {
-          const isItsOwn = userHosted.find((item) => item.hostId === hostId);
-
-          if (isItsOwn) return;
-
-          ids.push({ hostId, updatedAt: this.hosted[hostId].updatedAt });
-        });
-      }
-
-      const response = await fetchApi('/workflows/hosted', {
-        method: 'POST',
-        body: JSON.stringify({ hosts: ids }),
-      });
-      const result = await response.json();
-
-      if (!response.ok) throw new Error(result.message);
-
-      result.forEach(({ hostId, status, data }) => {
-        if (status === 'deleted') {
-          delete this.hosted[hostId];
-          return;
-        }
-        if (status === 'updated') {
-          const triggerBlock = findTriggerBlock(data.drawflow);
-          registerWorkflowTrigger(hostId, triggerBlock);
-        }
-
-        data.hostId = hostId;
-        this.hosted[hostId] = data;
-      });
-
-      await browser.storage.local.set({
-        workflowHosts: this.hosted,
-      });
-
-      return this.hosted;
     },
   },
 });

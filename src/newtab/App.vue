@@ -122,7 +122,7 @@ async function fetchUserData() {
         });
       }
 
-      await workflowStore.insertOrUpdate(backup);
+      await workflowStore.insertOrUpdate(backup, { checkUpdateDate: true });
     }
 
     userStore.retrieved = true;
