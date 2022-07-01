@@ -19,6 +19,7 @@ const defaultWorkflow = (data = null) => {
     name: '',
     icon: 'riGlobalLine',
     folderId: null,
+    connectedTable: null,
     drawflow: {
       edges: [],
       position: { zoom: 1 },
@@ -40,6 +41,7 @@ const defaultWorkflow = (data = null) => {
     description: '',
     trigger: null,
     createdAt: Date.now(),
+    updatedAt: Date.now(),
     isDisabled: false,
     settings: {
       publicId: '',
@@ -146,18 +148,39 @@ export const useWorkflowStore = defineStore('workflow', {
 
       return insertedWorkflows;
     },
-    async update({ id, data = {}, deep = false }) {
-      if (!this.workflows[id]) return null;
+    async update({ id, data = {}, deep = false, checkLastUpdate = false }) {
+      const isFunction = typeof id === 'function';
+      if (!isFunction && !this.workflows[id]) return null;
 
-      if (deep) {
-        this.workflows[id] = deepmerge(this.workflows[id], data);
+      const updatedWorkflows = {};
+      const workflowUpdater = (workflowId) => {
+        console.log(checkLastUpdate);
+
+        if (deep) {
+          this.workflows[workflowId] = deepmerge(
+            this.workflows[workflowId],
+            data
+          );
+        } else {
+          Object.assign(this.workflows[workflowId], data);
+        }
+
+        this.workflows[workflowId].updatedAt = Date.now();
+        updatedWorkflows[workflowId] = this.workflows[workflowId];
+      };
+
+      if (isFunction) {
+        this.getWorkflows.forEach((workflow) => {
+          const isMatch = id(workflow) ?? false;
+          if (isMatch) workflowUpdater(workflow.id);
+        });
       } else {
-        Object.assign(this.workflows[id], data);
+        workflowUpdater(id);
       }
 
       await this.saveToStorage('workflows');
 
-      return this.workflows;
+      return updatedWorkflows;
     },
     async insertOrUpdate(data = []) {
       const insertedData = {};

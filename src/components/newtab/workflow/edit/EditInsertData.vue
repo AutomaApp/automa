@@ -38,7 +38,7 @@
             :placeholder="t('workflow.table.select')"
           >
             <option
-              v-for="column in workflow.data.value.table"
+              v-for="column in workflow.columns.value"
               :key="column.id"
               :value="column.id"
             >
@@ -78,7 +78,7 @@ const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
 
-const workflow = inject('workflow');
+const workflow = inject('workflow', {});
 const dataList = ref(JSON.parse(JSON.stringify(props.data.dataList)));
 
 function updateData(value) {

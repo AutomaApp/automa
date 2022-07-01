@@ -45,7 +45,7 @@
           </option>
           <option value="column">Column</option>
           <option
-            v-for="column in workflow.data.value.table"
+            v-for="column in workflow.columns.value"
             :key="column.id"
             :value="column.id"
           >

@@ -2,6 +2,7 @@ import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
 import { tasks } from '@/utils/shared';
 import { clearCache, sleep, parseJSON, isObject } from '@/utils/helper';
+import dbStorage from '@/db/storage';
 import Worker from './worker';
 
 class WorkflowEngine {
@@ -85,86 +86,114 @@ class WorkflowEngine {
     };
   }
 
-  init() {
-    if (this.workflow.isDisabled) return;
+  async init() {
+    try {
+      if (this.workflow.isDisabled) return;
 
-    if (!this.states) {
-      console.error(`"${this.workflow.name}" workflow doesn't have states`);
-      this.destroy('error');
-      return;
-    }
+      if (!this.states) {
+        console.error(`"${this.workflow.name}" workflow doesn't have states`);
+        this.destroy('error');
+        return;
+      }
 
-    const { nodes, edges } = this.workflow.drawflow;
-    if (!nodes || nodes.length === 0) {
-      console.error(`${this.workflow.name} doesn't have blocks`);
-      return;
-    }
+      const { nodes, edges } = this.workflow.drawflow;
+      if (!nodes || nodes.length === 0) {
+        console.error(`${this.workflow.name} doesn't have blocks`);
+        return;
+      }
 
-    const triggerBlock = nodes.find((node) => node.label === 'trigger');
-    if (!triggerBlock) {
-      console.error(`${this.workflow.name} doesn't have a trigger block`);
-      return;
-    }
+      const triggerBlock = nodes.find((node) => node.label === 'trigger');
+      if (!triggerBlock) {
+        console.error(`${this.workflow.name} doesn't have a trigger block`);
+        return;
+      }
 
-    this.triggerBlockId = triggerBlock.id;
+      this.triggerBlockId = triggerBlock.id;
 
-    this.blocks = nodes.reduce((acc, node) => {
-      acc[node.id] = node;
+      this.blocks = nodes.reduce((acc, node) => {
+        acc[node.id] = node;
 
-      return acc;
-    }, {});
-    this.connectionsMap = edges.reduce((acc, { sourceHandle, target }) => {
-      if (!acc[sourceHandle]) acc[sourceHandle] = [];
+        return acc;
+      }, {});
+      this.connectionsMap = edges.reduce((acc, { sourceHandle, target }) => {
+        if (!acc[sourceHandle]) acc[sourceHandle] = [];
 
-      acc[sourceHandle].push(target);
+        acc[sourceHandle].push(target);
 
-      return acc;
-    }, {});
+        return acc;
+      }, {});
 
-    const workflowTable = this.workflow.table || this.workflow.dataColumns;
-    const columns = Array.isArray(workflowTable)
-      ? workflowTable
-      : Object.values(workflowTable);
+      const workflowTable = this.workflow.table || this.workflow.dataColumns;
+      let columns = Array.isArray(workflowTable)
+        ? workflowTable
+        : Object.values(workflowTable);
 
-    columns.forEach(({ name, type, id }) => {
-      const columnId = id || name;
+      if (this.workflow.connectedTable) {
+        const connectedTable = await dbStorage.tablesItems
+          .where('id')
+          .equals(this.workflow.connectedTable)
+          .first();
+        const connectedTableData = await dbStorage.tablesData
+          .where('tableId')
+          .equals(connectedTable?.id)
+          .first();
+        if (connectedTable && connectedTableData) {
+          columns = Object.values(connectedTable.columns);
+          Object.assign(this.columns, connectedTableData.columnsIndex);
+          this.referenceData.table = connectedTableData.items || [];
+        } else {
+          this.workflow.connectedTable = null;
+        }
+      }
 
-      this.columnsId[name] = columnId;
-      this.columns[columnId] = { index: 0, name, type };
-    });
-
-    if (BROWSER_TYPE !== 'chrome') {
-      this.workflow.settings.debugMode = false;
-    }
-    if (this.workflow.settings.debugMode) {
-      chrome.debugger.onEvent.addListener(this.onDebugEvent);
-    }
-    if (this.workflow.settings.reuseLastState) {
-      const lastStateKey = `state:${this.workflow.id}`;
-      browser.storage.local.get(lastStateKey).then((value) => {
-        const lastState = value[lastStateKey];
-        if (!lastState) return;
-
-        Object.assign(this.columns, lastState.columns);
-        Object.assign(this.referenceData, lastState.referenceData);
+      const variables = await dbStorage.variables.toArray();
+      variables.forEach(({ name, value }) => {
+        this.referenceData.variables[`$$${name}`] = value;
       });
-    }
 
-    this.workflow.table = columns;
-    this.startedTimestamp = Date.now();
+      columns.forEach(({ name, type, id }) => {
+        const columnId = id || name;
 
-    this.states.on('stop', this.onWorkflowStopped);
+        this.columnsId[name] = columnId;
+        if (!this.columns[columnId])
+          this.columns[columnId] = { index: 0, name, type };
+      });
 
-    this.states
-      .add(this.id, {
+      if (BROWSER_TYPE !== 'chrome') {
+        this.workflow.settings.debugMode = false;
+      }
+      if (this.workflow.settings.debugMode) {
+        chrome.debugger.onEvent.addListener(this.onDebugEvent);
+      }
+      if (
+        this.workflow.settings.reuseLastState &&
+        !this.workflow.connectedTable
+      ) {
+        const lastStateKey = `state:${this.workflow.id}`;
+        const value = await browser.storage.local.get(lastStateKey);
+        const lastState = value[lastStateKey];
+
+        if (lastState) {
+          Object.assign(this.columns, lastState.columns);
+          Object.assign(this.referenceData, lastState.referenceData);
+        }
+      }
+
+      this.workflow.table = columns;
+      this.startedTimestamp = Date.now();
+
+      this.states.on('stop', this.onWorkflowStopped);
+
+      await this.states.add(this.id, {
         id: this.id,
         state: this.state,
         workflowId: this.workflow.id,
         parentState: this.parentWorkflow,
-      })
-      .then(() => {
-        this.addWorker({ blockId: triggerBlock.id });
       });
+      this.addWorker({ blockId: triggerBlock.id });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   resume({ id, state }) {
@@ -344,7 +373,47 @@ class WorkflowEngine {
         clearCache(this.workflow);
       }
 
+      const { table, variables } = this.referenceData;
+      const tableId = this.workflow.connectedTable;
+
+      await dbStorage.transaction(
+        'rw',
+        dbStorage.tablesItems,
+        dbStorage.tablesData,
+        dbStorage.variables,
+        async () => {
+          if (tableId) {
+            await dbStorage.tablesItems.update(tableId, {
+              modifiedAt: Date.now(),
+              rowsCount: table.length,
+            });
+            await dbStorage.tablesData.where('tableId').equals(tableId).modify({
+              items: table,
+              columnsIndex: this.columns,
+            });
+          }
+
+          for (const key in variables) {
+            if (key.startsWith('$$')) {
+              const varName = key.slice(2);
+              const varValue = variables[key];
+
+              const variable =
+                (await dbStorage.variables
+                  .where('name')
+                  .equals(varName)
+                  .first()) || {};
+              variable.name = varName;
+              variable.value = varValue;
+
+              await dbStorage.variables.put(variable);
+            }
+          }
+        }
+      );
+
       this.isDestroyed = true;
+      this.referenceData = {};
       this.eventListeners = {};
     } catch (error) {
       console.error(error);

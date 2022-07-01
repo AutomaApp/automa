@@ -162,6 +162,7 @@ import { tasks } from '@/utils/shared';
 import { fetchApi } from '@/utils/api';
 import { debounce, parseJSON, throttle } from '@/utils/helper';
 import browser from 'webextension-polyfill';
+import dbStorage from '@/db/storage';
 import DroppedNode from '@/utils/editor/DroppedNode';
 import convertWorkflowData from '@/utils/convertWorkflowData';
 import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
@@ -186,6 +187,7 @@ const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
 
 const editor = shallowRef(null);
+const connectedTable = shallowRef(null);
 
 const state = reactive({
   showSidebar: true,
@@ -222,6 +224,13 @@ const workflowModals = {
     component: WorkflowDataTable,
     title: t('workflow.table.title'),
     docs: 'https://docs.automa.site/api-reference/table.html',
+    events: {
+      /* eslint-disable-next-line */
+      connect: fetchConnectedTable,
+      disconnect() {
+        connectedTable.value = null;
+      },
+    },
   },
   'workflow-share': {
     icon: 'riShareLine',
@@ -273,10 +282,18 @@ const workflowStates = computed(() =>
 const activeWorkflowModal = computed(
   () => workflowModals[modalState.name] || {}
 );
+const workflowColumns = computed(() => {
+  if (connectedTable.value) {
+    return connectedTable.value.columns;
+  }
+
+  return workflow.value.table;
+});
 
 provide('workflow', {
   editState,
   data: workflow,
+  columns: workflowColumns,
 });
 provide('workflow-editor', editor);
 
@@ -704,6 +721,15 @@ function onKeydown({ ctrlKey, metaKey, key }) {
     pasteCopiedElements();
   }
 }
+async function fetchConnectedTable() {
+  const table = await dbStorage.tablesItems
+    .where('id')
+    .equals(workflow.value.connectedTable)
+    .first();
+  if (!table) return;
+
+  connectedTable.value = table;
+}
 
 const shortcut = useShortcut([
   getShortcut('editor:toggle-sidebar', toggleSidebar),
@@ -748,6 +774,10 @@ onMounted(() => {
       permissionState.items = permissions;
       permissionState.showModal = true;
     });
+  }
+
+  if (workflow.value.connectedTable) {
+    fetchConnectedTable();
   }
 
   window.onbeforeunload = () => {

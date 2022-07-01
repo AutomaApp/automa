@@ -5,6 +5,8 @@ import WorkflowHost from './pages/workflows/Host.vue';
 import WorkflowDetails from './pages/workflows/[id].vue';
 import WorkflowShared from './pages/workflows/Shared.vue';
 import ScheduledWorkflow from './pages/ScheduledWorkflow.vue';
+import Storage from './pages/Storage.vue';
+import StorageTables from './pages/storage/Tables.vue';
 import Logs from './pages/Logs.vue';
 import LogsDetails from './pages/logs/[id].vue';
 import LogsRunning from './pages/logs/Running.vue';
@@ -51,6 +53,16 @@ const routes = [
     name: 'workflow-host',
     path: '/workflows/:id/shared',
     component: WorkflowShared,
+  },
+  {
+    name: 'storage',
+    path: '/storage',
+    component: Storage,
+  },
+  {
+    name: 'storage-tables',
+    path: '/storage/tables/:id',
+    component: StorageTables,
   },
   {
     name: 'logs',

@@ -13,8 +13,6 @@ export async function logData({ id, data }) {
     urls = tabs.map((tab) => tab.url);
   }
 
-  console.log(urls, data);
-
   if (data.assignVariable) {
     this.setVariable(data.variableName, urls);
   }

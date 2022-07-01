@@ -54,7 +54,6 @@ const icons = {
 };
 
 function requestPermission() {
-  console.log(props.permissions);
   browser.permissions
     .request({ permissions: toRaw(props.permissions) })
     .then(() => {

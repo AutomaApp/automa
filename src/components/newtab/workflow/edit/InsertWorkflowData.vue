@@ -33,7 +33,7 @@
     @change="updateData({ dataColumn: $event })"
   >
     <option
-      v-for="column in [...columns, ...workflow.data.value.table]"
+      v-for="column in [...columns, ...workflow.columns.value]"
       :key="column.id"
       :value="column.id"
     >
@@ -64,7 +64,7 @@
         @change="updateData({ extraRowDataColumn: $event })"
       >
         <option
-          v-for="column in workflow.data.value.table"
+          v-for="column in [...columns, ...workflow.columns.value]"
           :key="column.id"
           :value="column.id"
         >

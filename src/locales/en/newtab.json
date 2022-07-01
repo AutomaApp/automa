@@ -22,6 +22,16 @@
       }
     }
   },
+  "storage": {
+    "title": "Storage",
+    "table": {
+      "add": "Add table",
+      "createdAt": "Created at",
+      "modifiedAt": "Modified at",
+      "rowsCount": "Rows count",
+      "delete": "Delete table"
+    }
+  },
   "workflowPermissions": {
     "title": "Workflow permissions",
     "description": "This workflow requires these permissions to run properly",
@@ -64,9 +74,6 @@
   "running": {
     "start": "Started on {date}",
     "message": "This only display the last 5 logs"
-  },
-  "storage": {
-    "title": "Storage"
   },
   "settings": {
     "theme": "Theme",

@@ -18,7 +18,11 @@
       />
       <select
         :id="selectId"
-        :class="{ 'pl-8': prependIcon }"
+        :disabled="disabled"
+        :class="{
+          'pl-8': prependIcon,
+          'opacity-75 pointer-events-none': disabled,
+        }"
         :value="modelValue"
         class="px-4 pr-10 transition rounded-lg bg-input bg-transparent py-2 z-10 appearance-none w-full h-full appearance-none"
         @change="emitValue"
@@ -62,6 +66,7 @@ export default {
       default: () => ({}),
     },
     block: Boolean,
+    disabled: Boolean,
     showDetail: Boolean,
   },
   emits: ['update:modelValue', 'change'],

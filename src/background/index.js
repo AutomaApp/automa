@@ -523,11 +523,9 @@ message.on('workflow:execute', (workflowData, sender) => {
 });
 message.on('workflow:stop', (id) => workflow.states.stop(id));
 message.on('workflow:added', (workflowId) => {
-  console.log(browser.runtime.getURL('/newtab.html'));
   browser.tabs
     .query({ url: browser.runtime.getURL('/newtab.html') })
     .then((tabs) => {
-      console.log(tabs, tabs.length);
       if (tabs.length >= 1) {
         const lastTab = tabs.at(-1);
 
