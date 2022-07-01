@@ -14,12 +14,34 @@ function queryBuilder(obj) {
   return str;
 }
 
-export function fetchApi(path, options) {
+export async function fetchApi(path, options) {
   const urlPath = path.startsWith('/') ? path : `/${path}`;
+  const headers = {};
+
+  if (urlPath.startsWith('/me')) {
+    let { session } = await browser.storage.local.get('session');
+    if (!session) throw new Error('Unauthorized');
+
+    const isExpired = Date.now() > session.expires_at * 1000 - 64000;
+
+    if (isExpired) {
+      const response = await fetchApi(
+        `/session/refresh?token=${session.refresh_token}`
+      );
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message);
+
+      session = result;
+      await browser.storage.local.set({ session });
+    }
+
+    headers.Authorization = `Bearer ${session.access_token}`;
+  }
 
   return fetch(`${secrets.baseApiUrl}${urlPath}`, {
     headers: {
       'Content-Type': 'application/json',
+      ...headers,
     },
     ...options,
   });

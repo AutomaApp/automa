@@ -6,18 +6,7 @@ export const finder = finderLib;
 
 export default function (element, options = {}) {
   let selector = finder(element, {
-    tagName: (name) => {
-      console.log(name);
-      return true;
-    },
-    attr: (name, value) => name === 'id' || (ariaAttrs.includes(name) && value),
-    ...options,
-  });
-  console.log({
-    tagName: (name) => {
-      console.log(name);
-      return true;
-    },
+    tagName: () => true,
     attr: (name, value) => name === 'id' || (ariaAttrs.includes(name) && value),
     ...options,
   });

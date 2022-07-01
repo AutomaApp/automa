@@ -1,8 +1,8 @@
 import { openDB } from 'idb';
 import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
-import { objectHasKey } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
+import { objectHasKey, parseJSON } from '@/utils/helper';
 
 function initWebListener() {
   const listeners = {};
@@ -37,6 +37,11 @@ function initWebListener() {
     });
 
     await db.put('store', workflows, 'workflows');
+
+    const session =
+      parseJSON(localStorage.getItem('supabase.auth.token'), null)
+        ?.currentSession ?? null;
+    await browser.storage.local.set({ session });
 
     const webListener = initWebListener();
     webListener.on('open-workflow', ({ workflowId }) => {

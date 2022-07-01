@@ -30,6 +30,6 @@ import StorageVariables from '@/components/newtab/storage/StorageVariables.vue';
 const { t } = useI18n();
 
 const state = reactive({
-  activeTab: 'variables',
+  activeTab: 'tables',
 });
 </script>

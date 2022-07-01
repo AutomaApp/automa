@@ -210,13 +210,12 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
     retrieved.value = true;
 
     await userStore.loadUser();
-    if (userStore.user) {
-      await Promise.allSettled([
-        sharedWorkflowStore.fetchWorkflows(),
-        fetchUserData(),
-      ]);
-    }
-    await syncHostedWorkflows();
+
+    await Promise.allSettled([
+      sharedWorkflowStore.fetchWorkflows(),
+      fetchUserData(),
+      syncHostedWorkflows(),
+    ]);
 
     autoDeleteLogs();
   } catch (error) {
