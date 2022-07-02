@@ -1,7 +1,6 @@
 import browser from 'webextension-polyfill';
 import findSelector from '@/lib/findSelector';
 import { toCamelCase } from '@/utils/helper';
-import cloneDeep from 'lodash.clonedeep';
 import { nanoid } from 'nanoid';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
@@ -249,16 +248,21 @@ async function autoInstall() {
     const { workflows: workflowsStorage } = await browser.storage.local.get(
       'workflows'
     );
-    const copyWorkflow = cloneDeep(workflow);
 
-    copyWorkflow.table = copyWorkflow.table || copyWorkflow.dataColumns;
-    copyWorkflow.dataColumns = [];
-
-    workflowsStorage.push({
+    const workflowId = nanoid();
+    const workflowData = {
       ...workflow,
-      id: nanoid(),
+      id: workflowId,
+      dataColumns: [],
       createdAt: Date.now(),
-    });
+      table: workflow.table || workflow.dataColumns,
+    };
+
+    if (Array.isArray(workflowsStorage)) {
+      workflowsStorage.push(workflowData);
+    } else {
+      workflowsStorage[workflowId] = workflowData;
+    }
 
     await browser.storage.local.set({ workflows: workflowsStorage });
 
