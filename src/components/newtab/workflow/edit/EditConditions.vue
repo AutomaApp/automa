@@ -15,13 +15,6 @@
       </ui-button>
       <div class="flex-grow"></div>
       <ui-button
-        v-tooltip:bottom="t('workflow.blocks.conditions.refresh')"
-        icon
-        @click="refreshConnections"
-      >
-        <v-remixicon name="riRefreshLine" />
-      </ui-button>
-      <ui-button
         v-tooltip:bottom="t('common.settings')"
         icon
         @click="state.showSettings = !state.showSettings"
@@ -126,7 +119,6 @@ import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid';
 import Draggable from 'vuedraggable';
 import { sleep } from '@/utils/helper';
-import emitter from '@/lib/mitt';
 import SharedConditionBuilder from '@/components/newtab/shared/SharedConditionBuilder/index.vue';
 
 const props = defineProps({
@@ -170,10 +162,6 @@ function editCondition(index) {
 function addCondition() {
   if (conditions.value.length >= 20) return;
 
-  emitter.emit('conditions-block:add', {
-    id: props.blockId,
-  });
-
   conditions.value.push({
     id: nanoid(),
     name: `Path ${conditions.value.length + 1}`,
@@ -187,11 +175,6 @@ function deleteCondition(index, id) {
     return edges.filter(
       (edge) => edge.sourceHandle === `${props.blockId}-output-${id}`
     );
-  });
-}
-function refreshConnections() {
-  emitter.emit('conditions-block:refresh', {
-    id: props.blockId,
   });
 }
 function updateData(value) {
