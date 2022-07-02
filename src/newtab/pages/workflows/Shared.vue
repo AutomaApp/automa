@@ -274,7 +274,8 @@ async function saveUpdatedSharedWorkflow() {
     const payload = {};
     changingKeys.forEach((key) => {
       if (key === 'drawflow') {
-        payload.drawflow = JSON.parse(workflow.value.drawflow);
+        const flow = workflow.value.drawflow;
+        payload.drawflow = typeof flow === 'string' ? JSON.parse(flow) : flow;
       } else {
         payload[key] = workflow.value[key];
       }
@@ -334,7 +335,7 @@ function insertToLocal() {
     version: browser.runtime.getManifest().version,
   };
 
-  workflowStore.insert(copy).then(() => {
+  workflowStore.insert(copy, { duplicateId: true }).then(() => {
     state.hasLocalCopy = true;
   });
 }

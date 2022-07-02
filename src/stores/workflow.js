@@ -11,7 +11,7 @@ import { cleanWorkflowTriggers } from '@/utils/workflowTrigger';
 import { parseJSON } from '@/utils/helper';
 import { useUserStore } from './user';
 
-const defaultWorkflow = (data = null) => {
+const defaultWorkflow = (data = null, options = {}) => {
   let workflowData = {
     id: nanoid(),
     name: '',
@@ -60,6 +60,10 @@ const defaultWorkflow = (data = null) => {
   };
 
   if (data) {
+    if (options.duplicateId && data.id) {
+      delete workflowData.id;
+    }
+
     if (data.drawflow?.nodes?.length > 0) {
       workflowData.drawflow.nodes = [];
     }
@@ -123,21 +127,25 @@ export const useWorkflowStore = defineStore('workflow', {
 
       this.retrieved = true;
     },
-    async insert(data = {}) {
+    async insert(data = {}, options = {}) {
       const insertedWorkflows = {};
 
       if (Array.isArray(data)) {
         data.forEach((item) => {
-          delete item.id;
+          if (!options.duplicateId) {
+            delete item.id;
+          }
 
-          const workflow = defaultWorkflow(item);
+          const workflow = defaultWorkflow(item, options);
           this.workflows[workflow.id] = workflow;
           insertedWorkflows[workflow.id] = workflow;
         });
       } else {
-        delete data.id;
+        if (!options.duplicateId) {
+          delete data.id;
+        }
 
-        const workflow = defaultWorkflow(data);
+        const workflow = defaultWorkflow(data, options);
         this.workflows[workflow.id] = workflow;
         insertedWorkflows[workflow.id] = workflow;
       }

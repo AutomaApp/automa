@@ -108,7 +108,7 @@ const prevVersion = localStorage.getItem('ext-version') || '0.0.0';
 async function fetchUserData() {
   try {
     const { backup, hosted } = await getUserWorkflows();
-    userStore.hostedWorkflows = hosted;
+    userStore.hostedWorkflows = hosted || {};
 
     if (backup && backup.length > 0) {
       const { lastBackup } = browser.storage.local.get('lastBackup');

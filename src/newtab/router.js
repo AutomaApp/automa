@@ -50,7 +50,7 @@ const routes = [
     component: WorkflowHost,
   },
   {
-    name: 'workflow-host',
+    name: 'workflow-shared',
     path: '/workflows/:id/shared',
     component: WorkflowShared,
   },

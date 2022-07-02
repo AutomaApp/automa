@@ -7,7 +7,11 @@ export const useSharedWorkflowStore = defineStore('shared-workflows', {
   }),
   getters: {
     toArray: (state) => Object.values(state.workflows),
-    getById: (state) => (id) => state.workflows[id],
+    getById: (state) => (id) => {
+      if (!state.workflows) return null;
+
+      return state.workflows[id] || null;
+    },
   },
   actions: {
     insert(data) {
@@ -57,7 +61,7 @@ export const useSharedWorkflowStore = defineStore('shared-workflows', {
         useCache
       );
 
-      this.workflows = workflows;
+      this.workflows = workflows || {};
     },
   },
 });

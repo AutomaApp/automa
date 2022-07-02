@@ -5,7 +5,20 @@
         {{ tableDetail.name }}
       </h1>
       <div class="flex-grow"></div>
-      <ui-button v-tooltip="'Delete table'" icon @click="deleteTable">
+      <ui-button
+        v-tooltip.group="'Clear data'"
+        icon
+        class="ml-2"
+        @click="clearData"
+      >
+        <v-remixicon name="riFileShredLine" />
+      </ui-button>
+      <ui-button
+        v-tooltip="'Delete table'"
+        icon
+        class="text-red-400 dark:text-red-300 ml-4"
+        @click="deleteTable"
+      >
         <v-remixicon name="riDeleteBin7Line" />
       </ui-button>
     </div>
@@ -15,15 +28,31 @@
         :placeholder="t('common.search')"
         prepend-icon="riSearch2Line"
       />
+      <div class="flex-grow" />
+      <div class="flex-1"></div>
       <ui-button class="ml-4" @click="editTable">
         <v-remixicon name="riPencilLine" class="mr-2 -ml-1" />
         <span>Edit table</span>
       </ui-button>
-      <div class="flex-1"></div>
-      <ui-button class="text-red-400 dark:text-red-300" @click="clearData">
-        <v-remixicon name="riDeleteBin7Line" class="mr-2 -ml-1" />
-        <span>Clear data</span>
-      </ui-button>
+      <ui-popover trigger-width class="ml-4">
+        <template #trigger>
+          <ui-button variant="accent">
+            <span>{{ t('log.exportData.title') }}</span>
+            <v-remixicon name="riArrowDropDownLine" class="ml-2 -mr-1" />
+          </ui-button>
+        </template>
+        <ui-list class="space-y-1">
+          <ui-list-item
+            v-for="type in dataExportTypes"
+            :key="type.id"
+            v-close-popover
+            class="cursor-pointer"
+            @click="exportData(type.id)"
+          >
+            {{ t(`log.exportData.types.${type.id}`) }}
+          </ui-list-item>
+        </ui-list>
+      </ui-popover>
     </div>
     <ui-table
       :headers="table.header"
@@ -91,8 +120,10 @@ import { useWorkflowStore } from '@/stores/workflow';
 import { useLiveQuery } from '@/composable/liveQuery';
 import { useDialog } from '@/composable/dialog';
 import { objectHasKey } from '@/utils/helper';
+import { dataExportTypes } from '@/utils/shared';
 import StorageEditTable from '@/components/newtab/storage/StorageEditTable.vue';
 import dbStorage from '@/db/storage';
+import dataExporter from '@/utils/dataExporter';
 
 const { t } = useI18n();
 const route = useRoute();
@@ -151,6 +182,13 @@ function additionalHeaders(headers) {
   });
 
   return headers;
+}
+function exportData(type) {
+  dataExporter(
+    tableData.value.items,
+    { name: tableDetail.value.name, type },
+    true
+  );
 }
 async function saveEditedTable({ columns, name, changes }) {
   const columnsChanges = Object.values(changes);

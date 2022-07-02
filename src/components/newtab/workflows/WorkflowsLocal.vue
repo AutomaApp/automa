@@ -82,13 +82,12 @@
         </template>
         <template #footer-content>
           <v-remixicon
-            v-if="sharedWorkflowStore.workflows[workflow.id]"
+            v-if="sharedWorkflowStore.getById(workflow.id)"
             v-tooltip:bottom.group="
               t('workflow.share.sharedAs', {
-                name: sharedWorkflowStore.workflows[workflow.id]?.name.slice(
-                  0,
-                  64
-                ),
+                name: sharedWorkflowStore
+                  .getById(workflow.id)
+                  ?.name.slice(0, 64),
               })
             "
             name="riShareLine"

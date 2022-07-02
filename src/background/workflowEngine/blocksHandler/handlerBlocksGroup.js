@@ -44,7 +44,7 @@ function blocksGroup({ data, id }, { prevBlockData }) {
 
     resolve({
       data: prevBlockData,
-      nextBlockId: this.getBlockConnections(data.blocks[0].itemId),
+      nextBlockId: [data.blocks[0].itemId],
     });
   });
 }
