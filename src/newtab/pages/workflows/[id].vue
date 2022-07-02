@@ -324,7 +324,8 @@ const updateHostedWorkflow = throttle(async () => {
 
   if (
     (!isBackup && !isHosted) ||
-    (workflowExist && Object.keys(workflowPayload.data).length === 0)
+    !workflowExist ||
+    Object.keys(workflowPayload.data).length === 0
   )
     return;
 

@@ -125,6 +125,10 @@ export const useWorkflowStore = defineStore('workflow', {
         ({ isDestroyed }) => !isDestroyed
       );
 
+      if (isFirstTime) {
+        await this.saveToStorage('workflows');
+      }
+
       this.retrieved = true;
     },
     async insert(data = {}, options = {}) {
