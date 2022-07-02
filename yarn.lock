@@ -4800,10 +4800,15 @@ multicast-dns@^7.2.5:
     dns-packet "^5.2.2"
     thunky "^1.0.2"
 
-nanoid@^3.2.0, nanoid@^3.3.4:
+nanoid@^3.3.4:
   version "3.3.4"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.4.tgz#730b67e3cd09e2deacf03c027c81c9d9dbc5e8ab"
   integrity sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==
+
+nanoid@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-4.0.0.tgz#6e144dee117609232c3f415c34b0e550e64999a5"
+  integrity sha512-IgBP8piMxe/gf73RTQx7hmnhwz0aaEXYakvqZyE302IXW3HyVNhdNGC+O2MwMAVhLEnvXlvKtGbtJf6wvHihCg==
 
 natural-compare@^1.4.0:
   version "1.4.0"
@@ -6404,11 +6409,6 @@ vue-i18n@^9.2.0-beta.29:
     "@intlify/shared" "9.2.0-beta.36"
     "@intlify/vue-devtools" "9.2.0-beta.36"
     "@vue/devtools-api" "^6.0.0-beta.13"
-
-vue-inspector-agnostic@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/vue-inspector-agnostic/-/vue-inspector-agnostic-1.0.0.tgz#e98d317a1c37619e84c69b1f216eab94970fa253"
-  integrity sha512-8awtLkMS1ohA6xplv/f/L6cJoAJNFO6vhHz61xjCJZMwPveMI45k1yMUkxmVJJOkZJoR8SCWSUN7RLbZeOUsRQ==
 
 vue-loader@^17.0.0:
   version "17.0.0"

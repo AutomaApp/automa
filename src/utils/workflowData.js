@@ -206,7 +206,7 @@ export function exportWorkflow(workflow) {
   });
   const url = URL.createObjectURL(blob);
 
-  fileSaver(`${workflow.name}.json`, url);
+  fileSaver(`${workflow.name}.automa.json`, url);
 }
 
 export default {

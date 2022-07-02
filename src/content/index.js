@@ -1,6 +1,8 @@
 import browser from 'webextension-polyfill';
 import findSelector from '@/lib/findSelector';
 import { toCamelCase } from '@/utils/helper';
+import cloneDeep from 'lodash.clonedeep';
+import { nanoid } from 'nanoid';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
 import shortcutListener from './services/shortcutListener';
@@ -233,3 +235,34 @@ function messageListener({ data, source }) {
     });
   });
 })();
+
+// Auto install only works on Chrome
+async function autoInstall() {
+  const link = window.location.href;
+  if (/.+\.automa\.json$/.test(link)) {
+    const accept = window.confirm(
+      'Do you want to add this workflow into Automa?'
+    );
+    if (!accept) return;
+    const workflow = JSON.parse(document.body.innerText);
+
+    const { workflows: workflowsStorage } = await browser.storage.local.get(
+      'workflows'
+    );
+    const copyWorkflow = cloneDeep(workflow);
+
+    copyWorkflow.table = copyWorkflow.table || copyWorkflow.dataColumns;
+    copyWorkflow.dataColumns = [];
+
+    workflowsStorage.push({
+      ...workflow,
+      id: nanoid(),
+      createdAt: Date.now(),
+    });
+
+    await browser.storage.local.set({ workflows: workflowsStorage });
+
+    alert('Workflow installed');
+  }
+}
+autoInstall();
