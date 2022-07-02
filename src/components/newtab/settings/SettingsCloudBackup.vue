@@ -281,18 +281,14 @@ async function backupWorkflowsToCloud(workflowId) {
 
       if (!findWorkflow) return acc;
 
-      const workflow = convertWorkflow(findWorkflow, [
-        'dataColumns',
-        'id',
-        '__id',
-      ]);
+      const workflow = convertWorkflow(findWorkflow, ['dataColumns', 'id']);
+
       delete workflow.extVersion;
+
       workflow.drawflow =
         typeof workflow.drawflow === 'string'
-          ? parseJSON(workflow.drawflow, { drawflow: { Home: { data: {} } } })
+          ? parseJSON(workflow.drawflow, { drawflow: { nodes: [], edges: [] } })
           : workflow.drawflow;
-
-      if (!workflow.__id) workflow.__id = null;
 
       acc.push(workflow);
 

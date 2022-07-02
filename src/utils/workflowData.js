@@ -122,6 +122,18 @@ export function importWorkflow(attrs = {}) {
   });
 }
 
+const defaultValue = {
+  name: '',
+  icon: '',
+  table: [],
+  settings: {},
+  globalData: '',
+  dataColumns: [],
+  description: '',
+  drawflow: { nodes: [], edges: [] },
+  version: browser.runtime.getManifest().version,
+};
+
 export function convertWorkflow(workflow, additionalKeys = []) {
   if (!workflow) return null;
 
@@ -141,7 +153,7 @@ export function convertWorkflow(workflow, additionalKeys = []) {
   };
 
   keys.forEach((key) => {
-    content[key] = workflow[key];
+    content[key] = workflow[key] ?? defaultValue[key];
   });
 
   return content;
