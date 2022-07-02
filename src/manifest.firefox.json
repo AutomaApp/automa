@@ -7,9 +7,7 @@
     }
   },
   "background": {
-    "scripts": [
-      "background.bundle.js"
-    ],
+    "scripts": ["background.bundle.js"],
     "persistent": false
   },
   "browser_action": {
@@ -30,30 +28,17 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "contentScript.bundle.js"
-      ],
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.bundle.js"],
       "all_frames": true
     },
     {
-      "matches": [
-        "*://*.automa.site/*",
-        "*://automa.vercel.app/*"
-      ],
-      "js": [
-        "webService.bundle.js"
-      ],
+      "matches": ["*://*.automa.site/*", "*://automa.vercel.app/*"],
+      "js": ["webService.bundle.js"],
       "all_frames": false
     }
   ],
-  "optional_permissions": [
-    "clipboardRead",
-    "downloads",
-    "notifications"
-  ],
+  "optional_permissions": ["clipboardRead", "downloads", "notifications"],
   "permissions": [
     "tabs",
     "proxy",

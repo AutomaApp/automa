@@ -231,12 +231,15 @@ html,
 body {
   @apply bg-gray-50 dark:bg-gray-900 text-black dark:text-gray-100;
 }
+
 body {
   min-height: 100vh;
 }
+
 #app {
   height: 100%;
 }
+
 h1,
 h2,
 h3 {

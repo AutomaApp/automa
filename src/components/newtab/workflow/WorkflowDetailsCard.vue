@@ -39,7 +39,12 @@
       <p class="font-semibold mt-1 text-overflow text-lg leading-tight">
         {{ workflow.name }}
       </p>
-      <p class="line-clamp leading-tight">
+      <p
+        class="leading-tight cursor-pointer"
+        :class="descriptionCollapsed ? 'line-clamp' : null"
+        @click="descriptionCollapsed = !descriptionCollapsed"
+      >
+        <!-- description here -->
         {{ workflow.description }}
       </p>
     </div>
@@ -150,6 +155,8 @@ const categoriesExpand = Object.keys(categories).reduce((acc, key) => {
 
   return acc;
 }, {});
+
+const descriptionCollapsed = ref(true);
 
 const query = ref('');
 const expandList = ref(categoriesExpand);
