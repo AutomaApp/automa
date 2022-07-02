@@ -133,3 +133,9 @@ export default {
   },
 };
 </script>
+<style>
+.input-ui input[type='color'] {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+</style>

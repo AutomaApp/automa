@@ -1,8 +1,7 @@
 import { parseJSON } from '@/utils/helper';
 import mustacheReplacer from '@/utils/referenceData/mustacheReplacer';
-import { getBlockConnection } from '../helper';
 
-function insertData({ outputs, data }, { refData }) {
+function insertData({ id, data }, { refData }) {
   return new Promise((resolve) => {
     const replacedValueList = {};
     data.dataList.forEach(({ name, value, type }) => {
@@ -21,7 +20,7 @@ function insertData({ outputs, data }, { refData }) {
     resolve({
       data: '',
       replacedValue: replacedValueList,
-      nextBlockId: getBlockConnection({ outputs }),
+      nextBlockId: this.getBlockConnections(id),
     });
   });
 }

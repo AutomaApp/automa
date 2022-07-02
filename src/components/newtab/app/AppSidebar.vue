@@ -47,18 +47,18 @@
       </router-link>
     </div>
     <div class="flex-grow"></div>
-    <ui-popover v-if="store.state.user" trigger="mouseenter" placement="right">
+    <ui-popover v-if="userStore.user" trigger="mouseenter" placement="right">
       <template #trigger>
         <span class="inline-block p-1 bg-box-transparent rounded-full">
           <img
-            :src="store.state.user.avatar_url"
+            :src="userStore.user.avatar_url"
             height="32"
             width="32"
             class="rounded-full"
           />
         </span>
       </template>
-      {{ store.state.user.username }}
+      {{ userStore.user.username }}
     </ui-popover>
     <ui-popover trigger="mouseenter" placement="right" class="my-4">
       <template #trigger>
@@ -87,10 +87,11 @@
 </template>
 <script setup>
 import { ref, computed } from 'vue';
-import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import browser from 'webextension-polyfill';
+import { useUserStore } from '@/stores/user';
+import { useWorkflowStore } from '@/stores/workflow';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { communities } from '@/utils/shared';
@@ -98,8 +99,9 @@ import { communities } from '@/utils/shared';
 useGroupTooltip();
 
 const { t } = useI18n();
-const store = useStore();
 const router = useRouter();
+const userStore = useUserStore();
+const workflowStore = useWorkflowStore();
 
 const extensionVersion = browser.runtime.getManifest().version;
 const tabs = [
@@ -116,10 +118,10 @@ const tabs = [
     shortcut: getShortcut('page:schedule', '/triggers'),
   },
   {
-    id: 'collection',
-    icon: 'riFolderLine',
-    path: '/collections',
-    shortcut: getShortcut('page:collections', '/collections'),
+    id: 'storage',
+    icon: 'riHardDrive2Line',
+    path: '/storage',
+    shortcut: getShortcut('page:storage', '/storage'),
   },
   {
     id: 'log',
@@ -136,7 +138,7 @@ const tabs = [
 ];
 const hoverIndicator = ref(null);
 const showHoverIndicator = ref(false);
-const runningWorkflowsLen = computed(() => store.state.workflowState.length);
+const runningWorkflowsLen = computed(() => workflowStore.states.length);
 
 useShortcut(
   tabs.map(({ shortcut }) => shortcut),

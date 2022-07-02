@@ -3,9 +3,10 @@ import Welcome from './pages/Welcome.vue';
 import Workflows from './pages/Workflows.vue';
 import WorkflowHost from './pages/workflows/Host.vue';
 import WorkflowDetails from './pages/workflows/[id].vue';
+import WorkflowShared from './pages/workflows/Shared.vue';
 import ScheduledWorkflow from './pages/ScheduledWorkflow.vue';
-import Collections from './pages/Collections.vue';
-import CollectionsDetails from './pages/collections/[id].vue';
+import Storage from './pages/Storage.vue';
+import StorageTables from './pages/storage/Tables.vue';
 import Logs from './pages/Logs.vue';
 import LogsDetails from './pages/logs/[id].vue';
 import LogsRunning from './pages/logs/Running.vue';
@@ -49,14 +50,19 @@ const routes = [
     component: WorkflowHost,
   },
   {
-    name: 'collections',
-    path: '/collections',
-    component: Collections,
+    name: 'workflow-shared',
+    path: '/workflows/:id/shared',
+    component: WorkflowShared,
   },
   {
-    name: 'collections-details',
-    path: '/collections/:id',
-    component: CollectionsDetails,
+    name: 'storage',
+    path: '/storage',
+    component: Storage,
+  },
+  {
+    name: 'storage-tables',
+    path: '/storage/tables/:id',
+    component: StorageTables,
   },
   {
     name: 'logs',

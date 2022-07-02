@@ -17,6 +17,16 @@
         "timeout": "Timeout (milliseconds)",
         "noPermission": "Automa don't have enough permission to do this action",
         "grantPermission": "Grant permission",
+        "settings": {
+          "title": "Block settings",
+          "line": {
+            "title": "Lines",
+            "label": "Line label",
+            "animated": "Animated",
+            "select": "Select line",
+            "to": "Line to {name} block",
+          }
+        },
         "toggle": {
           "enable": "Enable block",
           "disable": "Disable block",
@@ -99,6 +109,20 @@
         "from": "Data from",
         "allColumns": "[All columns]"
       },
+      "log-data": {
+        "name": "Get log data",
+        "description": "Get the latest log data of a workflow",
+        "data": "Log data"
+      },
+      "tab-url": {
+        "name": "Get tab URL",
+        "description": "Get the tab URL",
+        "select": "Select tab",
+        "types": {
+          "active-tab": "Active tab",
+          "all": "All tabs"
+        }
+      },
       "reload-tab": {
         "name": "Reload tab",
         "description": "Reload the active tab"
@@ -146,7 +170,12 @@
         "description": "Get the copied text from the clipboard",
         "data": "Clipboard data",
         "noPermission": "Don't have permission to access the clipboard",
-        "grantPermission": "Grant permission"
+        "grantPermission": "Grant permission",
+        "copySelection": "Copy the selected text on page",
+        "types": {
+          "get": "Get clipboard data",
+          "insert": "Insert text to clipboard"
+        }
       },
       "hover-element": {
         "name": "Hover element",

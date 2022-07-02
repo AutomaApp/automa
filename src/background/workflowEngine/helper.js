@@ -29,8 +29,17 @@ export function attachDebugger(tabId, prevTab) {
     if (prevTab && tabId !== prevTab)
       chrome.debugger.detach({ tabId: prevTab });
 
-    chrome.debugger.attach({ tabId }, '1.3', () => {
-      chrome.debugger.sendCommand({ tabId }, 'Page.enable', resolve);
+    chrome.debugger.getTargets((targets) => {
+      targets.forEach((target) => {
+        if (target.attached || target.tabId !== tabId) {
+          resolve();
+          return;
+        }
+
+        chrome.debugger.attach({ tabId }, '1.3', () => {
+          chrome.debugger.sendCommand({ tabId }, 'Page.enable', resolve);
+        });
+      });
     });
   });
 }
@@ -58,7 +67,7 @@ export function waitTabLoaded({ tabId, listenError = false, ms = 10000 }) {
         reject(new Error('Timeout'));
       }, ms);
     }
-    if (listenError)
+    if (listenError && BROWSER_TYPE === 'chrome')
       browser.webNavigation.onErrorOccurred.addListener(onErrorOccurred);
 
     const activeTabStatus = () => {
@@ -111,8 +120,6 @@ export function convertData(data, type) {
   return result;
 }
 
-export function getBlockConnection(block, index = 1) {
-  const blockId = block.outputs[`output_${index}`];
-
-  return blockId;
+export function getBlockConnection(blockId, outputId = 1) {
+  return `${blockId}-output-${outputId}`;
 }

@@ -30,7 +30,7 @@
     </p>
     <div class="mt-4 gap-2 mb-12 grid grid-cols-7">
       <a
-        v-for="contributor in store.state.contributors"
+        v-for="contributor in store.contributors"
         :key="contributor.username"
         v-tooltip.group="contributor.username"
         :href="contributor.url"
@@ -50,8 +50,8 @@
 <script setup>
 /* eslint-disable camelcase */
 import { onMounted } from 'vue';
-import { useStore } from 'vuex';
 import browser from 'webextension-polyfill';
+import { useStore } from '@/stores/main';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { communities } from '@/utils/shared';
 
@@ -96,10 +96,7 @@ onMounted(async () => {
       []
     );
 
-    store.commit('updateState', {
-      key: 'contributors',
-      value: contributors,
-    });
+    store.contributors = contributors;
   } catch (error) {
     console.error(error);
   }

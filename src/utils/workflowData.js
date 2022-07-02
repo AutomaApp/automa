@@ -1,67 +1,138 @@
 import browser from 'webextension-polyfill';
-import Workflow from '@/models/workflow';
-import { parseJSON, fileSaver, openFilePicker, isObject } from './helper';
+import { useWorkflowStore } from '@/stores/workflow';
+import { parseJSON, fileSaver, openFilePicker } from './helper';
+
+const contextMenuPermission =
+  BROWSER_TYPE === 'firefox' ? 'menus' : 'contextMenus';
+const checkPermission = (permissions) =>
+  browser.permissions.contains({ permissions });
+const requiredPermissions = {
+  trigger: {
+    name: contextMenuPermission,
+    hasPermission({ data }) {
+      if (data.type !== 'context-menu') return true;
+
+      return checkPermission([contextMenuPermission]);
+    },
+  },
+  clipboard: {
+    name: 'clipboardRead',
+    hasPermission() {
+      return checkPermission(['clipboardRead']);
+    },
+  },
+  notification: {
+    name: 'notifications',
+    hasPermission() {
+      return checkPermission(['notifications']);
+    },
+  },
+  'handle-download': {
+    name: 'downloads',
+    hasPermission() {
+      return checkPermission(['downloads']);
+    },
+  },
+  'save-assets': {
+    name: 'downloads',
+    hasPermission() {
+      return checkPermission(['downloads']);
+    },
+  },
+};
+
+export async function getWorkflowPermissions(drawflow) {
+  let blocks = [];
+  const permissions = [];
+  const drawflowData =
+    typeof drawflow === 'string' ? parseJSON(drawflow) : drawflow;
+
+  if (drawflowData.nodes) {
+    blocks = drawflowData.nodes;
+  } else {
+    blocks = Object.values(drawflowData.drawflow?.Home?.data || {});
+  }
+
+  for (const block of blocks) {
+    const name = block.label || block.name;
+    const permission = requiredPermissions[name];
+
+    if (permission && !permissions.includes(permission.name)) {
+      const hasPermission = await permission.hasPermission(block);
+      if (!hasPermission) permissions.push(permission.name);
+    }
+  }
+
+  return permissions;
+}
 
 export function importWorkflow(attrs = {}) {
-  openFilePicker(['application/json'], attrs)
-    .then((files) => {
-      const getDrawflow = ({ drawflow }) => {
-        if (isObject(drawflow)) return JSON.stringify(drawflow);
+  return new Promise((resolve, reject) => {
+    openFilePicker(['application/json'], attrs)
+      .then((files) => {
+        const handleOnLoadReader = ({ target }) => {
+          const workflow = JSON.parse(target.result);
+          const workflowStore = useWorkflowStore();
 
-        return drawflow;
-      };
-      const handleOnLoadReader = ({ target }) => {
-        const workflow = JSON.parse(target.result);
+          if (workflow.includedWorkflows) {
+            Object.keys(workflow.includedWorkflows).forEach((workflowId) => {
+              const isWorkflowExists = Boolean(
+                workflowStore.workflows[workflowId]
+              );
 
-        if (workflow.includedWorkflows) {
-          Object.keys(workflow.includedWorkflows).forEach((workflowId) => {
-            const isWorkflowExists = Workflow.query()
-              .where('id', workflowId)
-              .exists();
+              if (isWorkflowExists) return;
 
-            if (isWorkflowExists) return;
+              const currentWorkflow = workflow.includedWorkflows[workflowId];
+              currentWorkflow.table =
+                currentWorkflow.table || currentWorkflow.dataColumns;
+              delete currentWorkflow.dataColumns;
 
-            const currentWorkflow = workflow.includedWorkflows[workflowId];
-            currentWorkflow.table =
-              currentWorkflow.table || currentWorkflow.dataColumns;
-            delete currentWorkflow.dataColumns;
-
-            Workflow.insert({
-              data: {
+              workflowStore.insert({
                 ...currentWorkflow,
-                drawflow: getDrawflow(workflow.includedWorkflows[workflowId]),
                 id: workflowId,
                 createdAt: Date.now(),
-              },
+              });
             });
-          });
 
-          delete workflow.includedWorkflows;
-        }
+            delete workflow.includedWorkflows;
+          }
 
-        workflow.table = workflow.table || workflow.dataColumns;
-        delete workflow.dataColumns;
+          workflow.table = workflow.table || workflow.dataColumns;
+          delete workflow.dataColumns;
 
-        Workflow.insert({
-          data: {
-            ...workflow,
-            drawflow: getDrawflow(workflow),
-            createdAt: Date.now(),
-          },
+          workflowStore
+            .insert({
+              ...workflow,
+              createdAt: Date.now(),
+            })
+            .then(resolve);
+        };
+
+        files.forEach((file) => {
+          const reader = new FileReader();
+
+          reader.onload = handleOnLoadReader;
+          reader.readAsText(file);
         });
-      };
-
-      files.forEach((file) => {
-        const reader = new FileReader();
-
-        reader.onload = handleOnLoadReader;
-        reader.readAsText(file);
+      })
+      .catch((error) => {
+        console.error(error);
+        reject(error);
       });
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+  });
 }
+
+const defaultValue = {
+  name: '',
+  icon: '',
+  table: [],
+  settings: {},
+  globalData: '',
+  dataColumns: [],
+  description: '',
+  drawflow: { nodes: [], edges: [] },
+  version: browser.runtime.getManifest().version,
+};
 
 export function convertWorkflow(workflow, additionalKeys = []) {
   if (!workflow) return null;
@@ -82,35 +153,50 @@ export function convertWorkflow(workflow, additionalKeys = []) {
   };
 
   keys.forEach((key) => {
-    content[key] = workflow[key];
+    content[key] = workflow[key] ?? defaultValue[key];
   });
 
   return content;
 }
-function findIncludedWorkflows({ drawflow }, maxDepth = 3, workflows = {}) {
+function findIncludedWorkflows(
+  { drawflow },
+  store,
+  maxDepth = 3,
+  workflows = {}
+) {
   if (maxDepth === 0) return workflows;
 
-  const blocks = parseJSON(drawflow, null)?.drawflow.Home.data;
-
+  const flow = parseJSON(drawflow, drawflow);
+  const blocks = flow?.drawflow?.Home.data ?? flow.nodes ?? null;
   if (!blocks) return workflows;
 
-  Object.values(blocks).forEach(({ data, name }) => {
-    if (name !== 'execute-workflow' || workflows[data.workflowId]) return;
+  const checkWorkflow = (type, workflowId) => {
+    if (type !== 'execute-workflow' || workflows[workflowId]) return;
 
-    const workflow = Workflow.find(data.workflowId);
-
-    if (workflow && !workflow.isProtected) {
-      workflows[data.workflowId] = convertWorkflow(workflow);
-      findIncludedWorkflows(workflow, maxDepth - 1, workflows);
+    const workflow = store.getById(workflowId);
+    if (workflow) {
+      workflows[workflowId] = convertWorkflow(workflow);
+      findIncludedWorkflows(workflow, store, maxDepth - 1, workflows);
     }
-  });
+  };
+
+  if (flow.nodes) {
+    flow.nodes.forEach((node) => {
+      checkWorkflow(node.label, node.data.workflowId);
+    });
+  } else {
+    Object.values(blocks).forEach(({ data, name }) => {
+      checkWorkflow(name, data.workflowId);
+    });
+  }
 
   return workflows;
 }
 export function exportWorkflow(workflow) {
   if (workflow.isProtected) return;
 
-  const includedWorkflows = findIncludedWorkflows(workflow);
+  const workflowStore = useWorkflowStore();
+  const includedWorkflows = findIncludedWorkflows(workflow, workflowStore);
   const content = convertWorkflow(workflow);
 
   content.includedWorkflows = includedWorkflows;
@@ -120,7 +206,7 @@ export function exportWorkflow(workflow) {
   });
   const url = URL.createObjectURL(blob);
 
-  fileSaver(`${workflow.name}.json`, url);
+  fileSaver(`${workflow.name}.automa.json`, url);
 }
 
 export default {

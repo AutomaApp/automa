@@ -1,8 +1,4 @@
 <template>
-  <!-- <Head>
-    <link rel="icon" :href="icon" />
-  </Head> -->
-
   <template v-if="retrieved">
     <app-sidebar />
     <main class="pl-16">
@@ -53,51 +49,29 @@
   <div v-else class="py-8 text-center">
     <ui-spinner color="text-accent" size="28" />
   </div>
-  <ui-card
-    v-if="modalState.show"
-    class="fixed bottom-8 right-8 shadow-2xl border-2 w-72 group"
-  >
-    <button
-      class="absolute bg-white shadow-md rounded-full -right-2 -top-2 transition scale-0 group-hover:scale-100"
-      @click="closeModal"
-    >
-      <v-remixicon class="text-gray-600" name="riCloseLine" />
-    </button>
-    <h2 class="font-semibold text-lg">
-      {{ activeModal.title }}
-    </h2>
-    <p class="mt-1 dark:text-gray-100 text-gray-700">
-      {{ activeModal.body }}
-    </p>
-    <div class="space-y-2 mt-4">
-      <ui-button
-        :href="activeModal.url"
-        tag="a"
-        target="_blank"
-        rel="noopener"
-        class="w-full block"
-        variant="accent"
-      >
-        {{ activeModal.button }}
-      </ui-button>
-    </div>
-  </ui-card>
+  <app-survey />
 </template>
 <script setup>
 import iconFirefox from '@/assets/svg/logoFirefox.svg';
 import iconChrome from '@/assets/svg/logo.svg';
-import { ref, shallowReactive, computed } from 'vue';
-import { useStore } from 'vuex';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 import { compare } from 'compare-versions';
 import browser from 'webextension-polyfill';
-import dbLogs from '@/db/logs';
+import { useStore } from '@/stores/main';
+import { useUserStore } from '@/stores/user';
+import { useFolderStore } from '@/stores/folder';
+import { useWorkflowStore } from '@/stores/workflow';
 import { useTheme } from '@/composable/theme';
-import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
 import { parseJSON } from '@/utils/helper';
-import { fetchApi, getSharedWorkflows, getUserWorkflows } from '@/utils/api';
+import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
+import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
+import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
+import { getUserWorkflows } from '@/utils/api';
+import dbLogs from '@/db/logs';
 import dayjs from '@/lib/dayjs';
-import Workflow from '@/models/workflow';
+import AppSurvey from '@/components/newtab/app/AppSurvey.vue';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 import dataMigration from '@/utils/dataMigration';
 
@@ -116,145 +90,49 @@ document.head.appendChild(iconElement);
 const { t } = useI18n();
 const store = useStore();
 const theme = useTheme();
+const router = useRouter();
+const userStore = useUserStore();
+const folderStore = useFolderStore();
+const workflowStore = useWorkflowStore();
+const sharedWorkflowStore = useSharedWorkflowStore();
+const hostedWorkflowStore = useHostedWorkflowStore();
 
 theme.init();
 
 const retrieved = ref(false);
 const isUpdated = ref(false);
-const modalState = shallowReactive({
-  show: true,
-  type: 'survey',
-});
 
-const modalTypes = {
-  testimonial: {
-    title: 'Hi There 👋',
-    body: 'Thank you for using Automa, and if you have a great experience. Would you like to give us a testimonial?',
-    button: 'Give Testimonial',
-    url: 'https://testimonial.to/automa',
-  },
-  survey: {
-    title: "How do you think we're doing?",
-    body: 'To help us make Automa as best it can be, we need a few minutes of your time to get your feedback.',
-    button: 'Take Survey',
-    url: 'https://www.automa.site/survey',
-  },
-};
 const currentVersion = browser.runtime.getManifest().version;
 const prevVersion = localStorage.getItem('ext-version') || '0.0.0';
 
-const activeModal = computed(() => modalTypes[modalState.type]);
-
-async function syncHostWorkflow(hosts) {
-  const hostIds = [];
-  const workflowHosts = hosts || store.state.workflowHosts;
-  const localWorkflowHost = Object.values(store.state.hostWorkflows);
-
-  Object.keys(workflowHosts).forEach((hostId) => {
-    const isItsOwn = localWorkflowHost.find((item) => item.hostId === hostId);
-
-    if (isItsOwn) return;
-
-    hostIds.push({ hostId, updatedAt: workflowHosts[hostId].updatedAt });
-  });
-
-  try {
-    await store.dispatch('fetchWorkflowHosts', hostIds);
-  } catch (error) {
-    console.error(error);
-  }
-}
 async function fetchUserData() {
   try {
-    const response = await fetchApi('/me');
-    const user = await response.json();
+    const { backup, hosted } = await getUserWorkflows();
+    userStore.hostedWorkflows = hosted || {};
 
-    if (response.status !== 200) {
-      throw new Error(response.statusText);
-    }
+    if (backup && backup.length > 0) {
+      const { lastBackup } = browser.storage.local.get('lastBackup');
+      if (!lastBackup) {
+        const backupIds = backup.map(({ id }) => id);
 
-    const username = localStorage.getItem('username');
-
-    if (!user || username !== user.username) {
-      sessionStorage.removeItem('shared-workflows');
-      sessionStorage.removeItem('user-workflows');
-      sessionStorage.removeItem('backup-workflows');
-
-      await browser.storage.local.remove([
-        'backupIds',
-        'lastBackup',
-        'lastSync',
-      ]);
-
-      if (username !== user?.username) {
-        await Workflow.update({
-          where: ({ __id }) => __id !== null,
-          data: { __id: null },
+        userStore.backupIds = backupIds;
+        await browser.storage.local.set({
+          backupIds,
+          lastBackup: new Date().toISOString(),
         });
       }
 
-      if (!user) return;
+      await workflowStore.insertOrUpdate(backup, { checkUpdateDate: true });
     }
 
-    store.commit('updateState', {
-      key: 'user',
-      value: user,
-    });
-
-    const [sharedWorkflows, userWorkflows] = await Promise.allSettled([
-      getSharedWorkflows(),
-      getUserWorkflows(),
-    ]);
-
-    localStorage.setItem('username', user.username);
-
-    if (sharedWorkflows.status === 'fulfilled') {
-      store.commit('updateState', {
-        key: 'sharedWorkflows',
-        value: sharedWorkflows.value,
-      });
-    }
-
-    if (userWorkflows.status === 'fulfilled') {
-      const { backup, hosted } = userWorkflows.value;
-
-      store.commit('updateState', {
-        key: 'hostWorkflows',
-        value: hosted || {},
-      });
-
-      if (backup?.length > 0) {
-        const { lastBackup } = browser.storage.local.get('lastBackup');
-        if (!lastBackup) {
-          const backupIds = backup.map(({ id }) => id);
-
-          store.commit('updateState', {
-            key: 'backupIds',
-            value: backupIds,
-          });
-          await browser.storage.local.set({
-            backupIds,
-            lastBackup: new Date().toISOString(),
-          });
-        }
-
-        await Workflow.insertOrUpdate({
-          data: backup,
-        });
-      }
-    }
-
-    store.commit('updateState', {
-      key: 'userDataRetrieved',
-      value: true,
-    });
+    userStore.retrieved = true;
   } catch (error) {
     console.error(error);
   }
 }
 /* eslint-disable-next-line */
 function autoDeleteLogs() {
-  const deleteAfter = store.state.settings.deleteLogAfter;
+  const deleteAfter = store.settings.deleteLogAfter;
   if (deleteAfter === 'never') return;
 
   const lastCheck =
@@ -281,44 +159,35 @@ function autoDeleteLogs() {
       localStorage.setItem('checkDeleteLogs', Date.now());
     });
 }
-function closeModal() {
-  let value = true;
+async function syncHostedWorkflows() {
+  const hostIds = [];
+  const userHosted = userStore.getHostedWorkflows;
+  const hostedWorkflows = hostedWorkflowStore.workflows;
 
-  if (modalState.type === 'survey') {
-    value = new Date().toString();
-  }
+  Object.keys(hostedWorkflows).forEach((hostId) => {
+    const isItsOwn = userHosted.find((item) => item.hostId === hostId);
+    if (isItsOwn) return;
 
-  modalState.show = false;
-  localStorage.setItem(`has-${modalState.type}`, value);
-}
-function checkModal() {
-  const survey = localStorage.getItem('has-survey');
+    hostIds.push({ hostId, updatedAt: hostedWorkflows[hostId].updatedAt });
+  });
 
-  if (!survey) return;
-
-  const daysDiff = dayjs().diff(survey, 'day');
-  const showTestimonial =
-    daysDiff >= 2 && !localStorage.getItem('has-testimonial');
-
-  if (showTestimonial) {
-    modalState.show = true;
-    modalState.type = 'testimonial';
-  } else {
-    modalState.show = false;
-  }
+  await hostedWorkflowStore.fetchWorkflows(hostIds);
 }
 
 window.addEventListener('storage', ({ key, newValue }) => {
   if (key !== 'workflowState') return;
 
   const states = parseJSON(newValue, {});
-  store.commit('updateState', {
-    key: 'workflowState',
-    value: Object.values(states).filter(
-      ({ isDestroyed, parentState }) =>
-        !isDestroyed && !parentState?.isCollection
-    ),
-  });
+  workflowStore.states = Object.values(states).filter(
+    ({ isDestroyed }) => !isDestroyed
+  );
+});
+browser.runtime.onMessage.addListener(({ type, data }) => {
+  if (type === 'workflow:added') {
+    workflowStore.loadData().then(() => {
+      router.push(`/workflows/${data.workflowId}?permission=true`);
+    });
+  }
 });
 
 (async () => {
@@ -326,28 +195,28 @@ window.addEventListener('storage', ({ key, newValue }) => {
     const { isFirstTime } = await browser.storage.local.get('isFirstTime');
     isUpdated.value = !isFirstTime && compare(currentVersion, prevVersion, '>');
 
-    if (isFirstTime) {
-      modalState.show = false;
-      localStorage.setItem('has-testimonial', true);
-      localStorage.setItem('has-survey', Date.now());
-    } else {
-      checkModal();
-    }
-
     await Promise.allSettled([
-      store.dispatch('retrieve', ['workflows', 'collections', 'folders']),
-      store.dispatch('retrieveWorkflowState'),
+      folderStore.load(),
+      store.loadSettings(),
+      workflowStore.loadData(),
+      hostedWorkflowStore.loadData(),
     ]);
 
-    await loadLocaleMessages(store.state.settings.locale, 'newtab');
-    await setI18nLanguage(store.state.settings.locale);
+    await loadLocaleMessages(store.settings.locale, 'newtab');
+    await setI18nLanguage(store.settings.locale);
 
     await dataMigration();
 
     retrieved.value = true;
 
-    await fetchUserData();
-    await syncHostWorkflow();
+    await userStore.loadUser();
+
+    await Promise.allSettled([
+      sharedWorkflowStore.fetchWorkflows(),
+      fetchUserData(),
+      syncHostedWorkflows(),
+    ]);
+
     autoDeleteLogs();
   } catch (error) {
     retrieved.value = true;
@@ -362,12 +231,15 @@ html,
 body {
   @apply bg-gray-50 dark:bg-gray-900 text-black dark:text-gray-100;
 }
+
 body {
   min-height: 100vh;
 }
+
 #app {
   height: 100%;
 }
+
 h1,
 h2,
 h3 {

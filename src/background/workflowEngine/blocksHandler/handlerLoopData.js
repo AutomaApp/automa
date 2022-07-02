@@ -1,9 +1,6 @@
 import { parseJSON, isXPath } from '@/utils/helper';
-import { getBlockConnection } from '../helper';
 
-async function loopData({ data, id, outputs }, { refData }) {
-  const nextBlockId = getBlockConnection({ outputs });
-
+async function loopData({ data, id }, { refData }) {
   try {
     if (this.loopList[data.loopId]) {
       const index = this.loopList[data.loopId].index + 1;
@@ -43,7 +40,7 @@ async function loopData({ data, id, outputs }, { refData }) {
             : 'cssSelector';
           const { elements, url, loopId } = await this._sendMessageToTab({
             id,
-            name: 'loop-data',
+            label: 'loop-data',
             data: {
               max,
               findBy,
@@ -103,12 +100,10 @@ async function loopData({ data, id, outputs }, { refData }) {
     localStorage.setItem(`index:${id}`, this.loopList[data.loopId].index);
 
     return {
-      nextBlockId,
       data: refData.loopData[data.loopId],
+      nextBlockId: this.getBlockConnections(id),
     };
   } catch (error) {
-    error.nextBlockId = nextBlockId;
-
     if (data.loopThrough === 'elements') {
       error.data = { selector: data.elementSelector };
     }

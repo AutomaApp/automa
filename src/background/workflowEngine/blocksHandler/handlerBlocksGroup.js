@@ -1,8 +1,6 @@
-import { getBlockConnection } from '../helper';
-
-function blocksGroup({ data, outputs }, { prevBlockData }) {
+function blocksGroup({ data, id }, { prevBlockData }) {
   return new Promise((resolve) => {
-    const nextBlockId = getBlockConnection({ outputs });
+    const nextBlockId = this.getBlockConnections(id);
 
     if (data.blocks.length === 0) {
       resolve({
@@ -13,34 +11,40 @@ function blocksGroup({ data, outputs }, { prevBlockData }) {
       return;
     }
 
-    const blocks = data.blocks.reduce((acc, block, index) => {
-      let nextBlock = {
-        connections: [{ node: data.blocks[index + 1]?.itemId }],
-      };
+    if (!this.engine.extractedGroup[id]) {
+      const { blocks, connections } = data.blocks.reduce(
+        (acc, block, index) => {
+          const nextBlock = data.blocks[index + 1]?.itemId;
 
-      if (index === data.blocks.length - 1) {
-        nextBlock = nextBlockId;
-      }
+          acc.blocks[block.itemId] = {
+            label: block.id,
+            data: block.data,
+            id: nextBlock ? block.itemId : id,
+          };
 
-      acc[block.itemId] = {
-        ...block,
-        id: block.itemId,
-        name: block.id,
-        outputs: {
-          output_1: nextBlock,
+          if (nextBlock) {
+            const outputId = `${block.itemId}-output-1`;
+
+            if (!acc.connections[outputId]) {
+              acc.connections[outputId] = [];
+            }
+            acc.connections[outputId].push(nextBlock);
+          }
+
+          return acc;
         },
-      };
+        { blocks: {}, connections: {} }
+      );
 
-      return acc;
-    }, {});
+      Object.assign(this.engine.blocks, blocks);
+      Object.assign(this.engine.connectionsMap, connections);
 
-    Object.assign(this.engine.blocks, blocks);
+      this.engine.extractedGroup[id] = true;
+    }
 
     resolve({
       data: prevBlockData,
-      nextBlockId: {
-        connections: [{ node: data.blocks[0].itemId }],
-      },
+      nextBlockId: [data.blocks[0].itemId],
     });
   });
 }

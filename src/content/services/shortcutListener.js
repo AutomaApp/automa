@@ -32,6 +32,7 @@ function workflowShortcutsListener(findWorkflow, shortcutsObj) {
 
   const keyboardShortcuts = shortcuts.reduce((acc, [id, value]) => {
     const workflow = findWorkflow(id);
+    if (!workflow) return acc;
 
     (acc[value] = acc[value] || []).push({
       id,
@@ -65,8 +66,11 @@ export default async function () {
         'workflows',
         'workflowHosts',
       ]);
+    const workflowsArr = Array.isArray(workflows)
+      ? workflows
+      : Object.values(workflows);
     const findWorkflow = (id, publicId = false) => {
-      let workflow = workflows.find((item) => {
+      let workflow = workflowsArr.find((item) => {
         if (publicId) {
           return item.settings.publicId === id;
         }

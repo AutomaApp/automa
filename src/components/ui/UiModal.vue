@@ -32,7 +32,7 @@
                 ></v-remixicon>
               </div>
             </div>
-            <slot></slot>
+            <slot :close="closeModal"></slot>
           </ui-card>
         </div>
       </transition>

@@ -1,16 +1,14 @@
 <template>
   <block-base
     :id="componentId"
-    :minimap="editor.minimap"
     class="element-exists"
     style="width: 195px"
     @edit="editBlock"
-    @delete="editor.removeNodeId(`node-${block.id}`)"
+    @delete="$emit('delete', id)"
   >
+    <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div
-      :class="
-        block.data.disableBlock ? 'bg-box-transparent' : block.category.color
-      "
+      :class="data.disableBlock ? 'bg-box-transparent' : block.category.color"
       class="inline-block text-sm mb-2 p-2 rounded-lg dark:text-black"
     >
       <v-remixicon name="riFocus3Line" size="20" class="inline-block mr-1" />
@@ -18,13 +16,13 @@
     </div>
     <p
       :title="t('workflow.blocks.element-exists.selector')"
-      :class="{ 'font-mono': !block.data.description }"
+      :class="{ 'font-mono': !data.description }"
       class="text-overflow p-2 rounded-lg bg-box-transparent text-sm text-right mb-2"
       style="max-width: 200px"
     >
       {{
-        block.data.description ||
-        block.data.selector ||
+        data.description ||
+        data.selector ||
         t('workflow.blocks.element-exists.selector')
       }}
     </p>
@@ -34,43 +32,49 @@
       </span>
       {{ t('common.fallback') }}
     </p>
-    <input
-      type="text"
-      class="hidden trigger"
-      disabled="true"
-      @change="handleDataChanged"
+    <Handle :id="`${id}-output-1`" type="source" :position="Position.Right" />
+    <Handle
+      :id="`${id}-output-2`"
+      type="source"
+      :position="Position.Right"
+      style="top: auto; bottom: 12px"
     />
   </block-base>
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
+import { Handle, Position } from '@braks/vue-flow';
 import emitter from '@/lib/mitt';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
 import BlockBase from './BlockBase.vue';
 
 const props = defineProps({
-  editor: {
+  id: {
+    type: String,
+    default: '',
+  },
+  label: {
+    type: String,
+    default: '',
+  },
+  data: {
     type: Object,
     default: () => ({}),
   },
 });
+defineEmits(['delete']);
 
 const { t } = useI18n();
+const block = useEditorBlock(props.label);
 const componentId = useComponentId('block-delay');
-const block = useEditorBlock(`#${componentId}`, props.editor);
 
 function editBlock() {
   emitter.emit('editor:edit-block', {
     ...block.details,
-    data: block.data,
+    data: props.data,
     blockId: block.id,
   });
-}
-function handleDataChanged() {
-  const { data } = props.editor.getNodeFromId(block.id);
-
-  block.data = data;
 }
 </script>
 <style>

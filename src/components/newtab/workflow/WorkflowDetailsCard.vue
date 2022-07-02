@@ -1,6 +1,6 @@
 <template>
   <div class="px-4 flex items-start mb-2 mt-1">
-    <ui-popover :disabled="data.active === 'shared'" class="mr-2 h-8">
+    <ui-popover class="mr-2 h-8">
       <template #trigger>
         <span
           :title="t('workflow.sidebar.workflowIcon')"
@@ -39,7 +39,12 @@
       <p class="font-semibold mt-1 text-overflow text-lg leading-tight">
         {{ workflow.name }}
       </p>
-      <p class="line-clamp leading-tight">
+      <p
+        class="leading-tight cursor-pointer"
+        :class="descriptionCollapsed ? 'line-clamp' : null"
+        @click="descriptionCollapsed = !descriptionCollapsed"
+      >
+        <!-- description here -->
         {{ workflow.description }}
       </p>
     </div>
@@ -47,24 +52,13 @@
   <ui-input
     id="search-input"
     v-model="query"
-    :disabled="data.active === 'shared'"
     :placeholder="`${t('common.search')}... (${
       shortcut['action:search'].readable
     })`"
     prepend-icon="riSearch2Line"
     class="px-4 mt-4 mb-2"
   />
-  <div
-    :class="[data.active === 'shared' ? 'overflow-hidden' : 'overflow-auto']"
-    class="scroll bg-scroll px-4 flex-1 relative"
-  >
-    <div
-      v-show="data.active === 'shared'"
-      class="absolute h-full w-full bg-white dark:bg-black bg-opacity-10 dark:bg-opacity-10 backdrop-blur rounded-lg z-10 flex items-center justify-center"
-      style="top: 0; left: 50%; transform: translateX(-50%); width: 95%"
-    >
-      <p>{{ t('workflow.cantEdit') }}</p>
-    </div>
+  <div class="scroll bg-scroll px-4 flex-1 relative overflow-auto">
     <ui-expand
       v-for="(items, catId) in blocks"
       :key="catId"
@@ -122,10 +116,6 @@ defineProps({
     type: Object,
     default: () => ({}),
   },
-  data: {
-    type: Object,
-    default: () => ({}),
-  },
   dataChanged: {
     type: Boolean,
     default: false,
@@ -165,6 +155,8 @@ const categoriesExpand = Object.keys(categories).reduce((acc, key) => {
 
   return acc;
 }, {});
+
+const descriptionCollapsed = ref(true);
 
 const query = ref('');
 const expandList = ref(categoriesExpand);

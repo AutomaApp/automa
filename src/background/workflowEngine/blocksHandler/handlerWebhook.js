@@ -2,11 +2,10 @@ import objectPath from 'object-path';
 import { isWhitespace } from '@/utils/helper';
 import { executeWebhook } from '@/utils/webhookUtil';
 import mustacheReplacer from '@/utils/referenceData/mustacheReplacer';
-import { getBlockConnection } from '../helper';
 
-export async function webhook({ data, outputs }, { refData }) {
-  const nextBlockId = getBlockConnection({ outputs });
-  const fallbackOutput = getBlockConnection({ outputs }, 2);
+export async function webhook({ data, id }, { refData }) {
+  const nextBlockId = this.getBlockConnections(id);
+  const fallbackOutput = this.getBlockConnections(id, 'fallback');
 
   try {
     if (isWhitespace(data.url)) throw new Error('url-empty');

@@ -123,21 +123,22 @@
 <script setup>
 import { computed, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
 import browser from 'webextension-polyfill';
 import { fetchApi, cacheApi } from '@/utils/api';
 import { convertWorkflow } from '@/utils/workflowData';
 import { parseJSON } from '@/utils/helper';
+import { useUserStore } from '@/stores/user';
+import { useWorkflowStore } from '@/stores/workflow';
 import dayjs from '@/lib/dayjs';
-import Workflow from '@/models/workflow';
 import SettingsBackupItems from './SettingsBackupItems.vue';
 
 defineEmits(['close']);
 
 const { t } = useI18n();
-const store = useStore();
 const toast = useToast();
+const userStore = useUserStore();
+const workflowStore = useWorkflowStore();
 
 const state = reactive({
   query: '',
@@ -154,8 +155,8 @@ const backupState = reactive({
 });
 
 const workflows = computed(() =>
-  Workflow.query()
-    .where(({ name, id }) => {
+  workflowStore.getWorkflows
+    .filter(({ name, id }) => {
       const isInCloud = state.cloudWorkflows.some(
         (workflow) => workflow.id === id
       );
@@ -165,8 +166,7 @@ const workflows = computed(() =>
         !isInCloud
       );
     })
-    .orderBy('createdAt', 'desc')
-    .get()
+    .sort((a, b) => a.createdAt - b.createdAt)
 );
 const backupWorkflows = computed(() =>
   state.cloudWorkflows.filter(({ name }) =>
@@ -174,7 +174,7 @@ const backupWorkflows = computed(() =>
   )
 );
 const workflowLimit = computed(() => {
-  const maxWorkflow = store.state.user.limit.backupWorkflow;
+  const maxWorkflow = userStore.user.limit.backupWorkflow;
 
   return maxWorkflow - state.cloudWorkflows.length;
 });
@@ -277,22 +277,18 @@ async function backupWorkflowsToCloud(workflowId) {
 
     const workflowIds = workflowId ? [workflowId] : state.selectedWorkflows;
     const workflowsPayload = workflowIds.reduce((acc, id) => {
-      const findWorkflow = Workflow.find(id);
+      const findWorkflow = workflowStore.getById(id);
 
       if (!findWorkflow) return acc;
 
-      const workflow = convertWorkflow(findWorkflow, [
-        'dataColumns',
-        'id',
-        '__id',
-      ]);
+      const workflow = convertWorkflow(findWorkflow, ['dataColumns', 'id']);
+
       delete workflow.extVersion;
+
       workflow.drawflow =
         typeof workflow.drawflow === 'string'
-          ? parseJSON(workflow.drawflow, { drawflow: { Home: { data: {} } } })
+          ? parseJSON(workflow.drawflow, { drawflow: { nodes: [], edges: [] } })
           : workflow.drawflow;
-
-      if (!workflow.__id) workflow.__id = null;
 
       acc.push(workflow);
 
@@ -303,12 +299,13 @@ async function backupWorkflowsToCloud(workflowId) {
       method: 'POST',
       body: JSON.stringify({ workflows: workflowsPayload }),
     });
+    const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(response.statusText);
+      throw new Error(result.message);
     }
 
-    const { lastBackup, data, ids } = await response.json();
+    const { lastBackup, data, ids } = result;
 
     backupState.uploading = false;
     backupState.workflowId = '';
@@ -319,7 +316,7 @@ async function backupWorkflowsToCloud(workflowId) {
       );
       if (isExists) return;
 
-      state.cloudWorkflows.push(Workflow.find(id));
+      state.cloudWorkflows.push(workflowStore.getById(id));
     });
 
     state.lastSync = lastBackup;
@@ -333,7 +330,14 @@ async function backupWorkflowsToCloud(workflowId) {
     userWorkflows.backup = state.cloudWorkflows;
     sessionStorage.setItem('user-workflows', JSON.stringify(userWorkflows));
 
-    await Workflow.insertOrUpdate({ data });
+    await Promise.allSettled(
+      data.map(async () => {
+        workflowStore.update({
+          data,
+          id: data.id,
+        });
+      })
+    );
     await browser.storage.local.set({
       lastBackup,
       backupIds: ids,

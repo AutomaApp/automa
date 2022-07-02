@@ -11,7 +11,7 @@
     <div v-if="logs" style="min-height: 320px">
       <shared-logs-table
         :logs="logs"
-        :running="$store.state.workflowState"
+        :running="workflowStore.states"
         class="w-full"
       >
         <template #item-prepend="{ log }">
@@ -83,6 +83,7 @@ import { shallowReactive, ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDialog } from '@/composable/dialog';
 import dbLogs from '@/db/logs';
+import { useWorkflowStore } from '@/stores/workflow';
 import { useLiveQuery } from '@/composable/liveQuery';
 import LogsFilters from '@/components/newtab/logs/LogsFilters.vue';
 import LogsDataViewer from '@/components/newtab/logs/LogsDataViewer.vue';
@@ -90,6 +91,7 @@ import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
 
 const { t } = useI18n();
 const dialog = useDialog();
+const workflowStore = useWorkflowStore();
 const storedlogs = useLiveQuery(() => dbLogs.items.toArray());
 
 const savedSorts = JSON.parse(localStorage.getItem('logs-sorts') || '{}');
@@ -136,6 +138,7 @@ const filteredLogs = computed(() => {
 
       return searchFilter && statusFilter && dateFilter;
     })
+    .slice()
     .sort((a, b) => {
       const valueA = a[sortsBuilder.by];
       const valueB = b[sortsBuilder.by];
