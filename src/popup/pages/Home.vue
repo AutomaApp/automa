@@ -193,7 +193,6 @@ function deleteWorkflow({ id, name }) {
   });
 }
 function openDashboard(url) {
-  console.log(url);
   sendMessage('open:dashboard', url, 'background');
 }
 async function initElementSelector() {
