@@ -1,0 +1,47 @@
+.vue-flow__minimap {
+	@apply rounded-lg dark:bg-gray-800;
+}
+
+.vue-flow__node {
+	& > div {
+		@apply rounded-lg transition;
+	}
+	&.selected > div {
+		@apply ring-2 ring-accent;
+	}
+	&:hover,
+	&.selected {
+		.menu {
+			@apply translate-y-11;
+		}
+	}
+
+	.vue-flow__handle {
+		@apply h-4 w-4 rounded-full border-0;
+		&.target {
+			@apply bg-accent -ml-4;
+		}
+		&.source {
+			border-width: 3px;
+			@apply border-accent -mr-4 bg-white dark:bg-black;
+		}
+	}
+}
+
+.vue-flow.disabled {
+	.vue-flow__handle {
+		pointer-events: none;
+	}
+}
+
+.vue-flow__edge {
+	cursor: pointer;
+	&.selected .vue-flow__edge-path {
+		stroke: theme('colors.green.300');
+	}
+}
+
+.vue-flow__edge-path {
+  stroke: theme('colors.accent');
+  stroke-width: 3;
+}

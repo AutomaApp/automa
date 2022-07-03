@@ -7,10 +7,37 @@
       @change="updateData({ description: $event })"
     />
     <template v-if="permission.has.clipboardRead">
-      <p class="mt-4">
-        {{ t('workflow.blocks.clipboard.data') }}
-      </p>
-      <insert-workflow-data :data="data" variables @update="updateData" />
+      <ui-select
+        :model-value="data.type"
+        class="mt-4 w-full"
+        @change="updateData({ type: $event })"
+      >
+        <option v-for="type in types" :key="type" :value="type">
+          {{ t(`workflow.blocks.clipboard.types.${type}`) }}
+        </option>
+      </ui-select>
+      <insert-workflow-data
+        v-if="data.type === 'get'"
+        :data="data"
+        variables
+        @update="updateData"
+      />
+      <template v-else>
+        <ui-textarea
+          v-if="!data.copySelectedText"
+          :model-value="data.dataToCopy"
+          placeholder="Text"
+          class="mt-4"
+          @change="updateData({ dataToCopy: $event })"
+        />
+        <ui-checkbox
+          :model-value="data.copySelectedText"
+          class="mt-2"
+          @change="updateData({ copySelectedText: $event })"
+        >
+          {{ t('workflow.blocks.clipboard.copySelection') }}
+        </ui-checkbox>
+      </template>
     </template>
     <template v-else>
       <p class="mt-4">
@@ -34,6 +61,8 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update:data']);
+
+const types = ['get', 'insert'];
 
 const { t } = useI18n();
 const permission = useHasPermissions(['clipboardRead']);

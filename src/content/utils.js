@@ -135,6 +135,7 @@ export async function getElementPosition(element) {
   const elWindow = element.ownerDocument.defaultView;
   const isInFrame = elWindow !== window.top;
   const { width, height, x, y } = element.getBoundingClientRect();
+
   const position = {
     x: x + width / 2,
     y: y + height / 2,

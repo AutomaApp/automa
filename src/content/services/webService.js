@@ -1,9 +1,8 @@
 import { openDB } from 'idb';
 import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
-import cloneDeep from 'lodash.clonedeep';
-import { objectHasKey } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
+import { objectHasKey, parseJSON } from '@/utils/helper';
 
 function initWebListener() {
   const listeners = {};
@@ -39,6 +38,11 @@ function initWebListener() {
 
     await db.put('store', workflows, 'workflows');
 
+    const session =
+      parseJSON(localStorage.getItem('supabase.auth.token'), null)
+        ?.currentSession ?? null;
+    await browser.storage.local.set({ session });
+
     const webListener = initWebListener();
     webListener.on('open-workflow', ({ workflowId }) => {
       if (!workflowId) return;
@@ -50,18 +54,24 @@ function initWebListener() {
         const { workflows: workflowsStorage } = await browser.storage.local.get(
           'workflows'
         );
-        const copyWorkflow = cloneDeep(workflow);
 
-        copyWorkflow.table = copyWorkflow.table || copyWorkflow.dataColumns;
-        copyWorkflow.dataColumns = [];
-
-        workflowsStorage.push({
+        const workflowId = nanoid();
+        const workflowData = {
           ...workflow,
-          id: nanoid(),
+          id: workflowId,
+          dataColumns: [],
           createdAt: Date.now(),
-        });
+          table: workflow.table || workflow.dataColumns,
+        };
+
+        if (Array.isArray(workflowsStorage)) {
+          workflowsStorage.push(workflowData);
+        } else {
+          workflowsStorage[workflowId] = workflowData;
+        }
 
         await browser.storage.local.set({ workflows: workflowsStorage });
+        sendMessage('workflow:added', workflowId, 'background');
       } catch (error) {
         console.error(error);
       }

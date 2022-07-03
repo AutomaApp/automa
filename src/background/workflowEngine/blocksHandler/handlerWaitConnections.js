@@ -1,17 +1,20 @@
-import { getBlockConnection } from '../helper';
-
-async function waitConnections({ data, outputs, inputs, id }, { prevBlock }) {
+async function waitConnections({ data, id }, { prevBlock }) {
   return new Promise((resolve) => {
     let timeout;
     let resolved = false;
 
-    const nextBlockId = getBlockConnection({ outputs });
+    const nextBlockId = this.getBlockConnections(id);
     const destroyWorker =
       data.specificFlow && prevBlock?.id !== data.flowBlockId;
 
     const registerConnections = () => {
-      inputs.input_1.connections.forEach(({ node }) => {
-        this.engine.waitConnections[id][node] = {
+      const connections = this.engine.connectionsMap;
+      Object.keys(connections).forEach((key) => {
+        const isConnected = connections[key].includes(id);
+        if (!isConnected) return;
+
+        const prevBlockId = key.slice(0, key.indexOf('-output'));
+        this.engine.waitConnections[id][prevBlockId] = {
           isHere: false,
           isContinue: false,
         };

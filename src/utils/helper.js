@@ -31,11 +31,17 @@ export function sleep(timeout = 500) {
 export function findTriggerBlock(drawflow = {}) {
   if (!drawflow) return null;
 
-  const blocks = Object.values(drawflow.drawflow?.Home?.data);
+  if (drawflow.drawflow) {
+    const blocks = Object.values(drawflow.drawflow?.Home?.data);
+    if (!blocks) return null;
 
-  if (!blocks) return null;
+    return blocks.find(({ name }) => name === 'trigger');
+  }
+  if (drawflow.nodes) {
+    return drawflow.nodes.find((node) => node.label === 'trigger');
+  }
 
-  return blocks.find(({ name }) => name === 'trigger');
+  return null;
 }
 
 export function throttle(callback, limit) {
@@ -121,7 +127,7 @@ export function parseJSON(data, def) {
 export function parseFlow(flow) {
   const obj = typeof flow === 'string' ? parseJSON(flow, {}) : flow;
 
-  return obj?.drawflow?.Home.data;
+  return obj;
 }
 
 export function replaceMustache(str, replacer) {
@@ -145,7 +151,7 @@ export function openFilePicker(acceptedFileTypes = [], attrs = {}) {
       const { files } = event.target;
       const validFiles = [];
 
-      files.forEach((file) => {
+      Array.from(files).forEach((file) => {
         if (!acceptedFileTypes.includes(file.type)) return;
 
         validFiles.push(file);
@@ -236,4 +242,22 @@ export async function clearCache(workflow) {
     console.error(error);
     return false;
   }
+}
+
+export function arraySorter({ data, key, order = 'asc' }) {
+  const copyData = data.slice();
+
+  return copyData.sort((a, b) => {
+    let comparison = 0;
+    const itemA = a[key] || a;
+    const itemB = b[key] || b;
+
+    if (itemA > itemB) {
+      comparison = 1;
+    } else if (itemA < itemB) {
+      comparison = -1;
+    }
+
+    return order === 'desc' ? comparison * -1 : comparison;
+  });
 }

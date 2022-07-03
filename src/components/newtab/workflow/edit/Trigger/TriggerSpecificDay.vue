@@ -70,7 +70,7 @@
             <v-remixicon
               name="riDeleteBin7Line"
               class="cursor-pointer"
-              @click="removeDayTime(index, timeIndex)"
+              @click.stop="removeDayTime(index, timeIndex)"
             />
           </div>
         </div>

@@ -83,7 +83,10 @@ const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
 
-const regexExp = ref([...new Set(props.data.regexExp)]);
+const regexData = Array.isArray(props.data.regexExp)
+  ? props.data.regexExp
+  : Object.values(props.data.regexExp);
+const regexExp = ref([...new Set(regexData)]);
 
 const exps = [
   { id: 'g', name: 'global' },

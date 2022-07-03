@@ -58,7 +58,7 @@
 import { computed, shallowReactive, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
-import Workflow from '@/models/workflow';
+import { useWorkflowStore } from '@/stores/workflow';
 
 const SharedCodemirror = defineAsyncComponent(() =>
   import('@/components/newtab/shared/SharedCodemirror.vue')
@@ -78,21 +78,21 @@ const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
 const route = useRoute();
+const workflowStore = useWorkflowStore();
 
 const state = shallowReactive({
   showGlobalData: false,
 });
 
 const workflows = computed(() =>
-  Workflow.query()
-    .where(({ id, drawflow }) => {
+  workflowStore.getWorkflows
+    .filter(({ id, drawflow }) => {
       const flow =
         typeof drawflow === 'string' ? drawflow : JSON.stringify(drawflow);
 
       return id !== route.params.id && !flow.includes(route.params.id);
     })
-    .orderBy('name', 'asc')
-    .get()
+    .sort((a, b) => (a.name > b.name ? 1 : -1))
 );
 
 function updateData(value) {

@@ -3,7 +3,7 @@ import { toCamelCase, sleep, objectHasKey, isObject } from '@/utils/helper';
 import { tasks } from '@/utils/shared';
 import referenceData from '@/utils/referenceData';
 import injectContentScript from './injectContentScript';
-import { convertData, waitTabLoaded, getBlockConnection } from './helper';
+import { convertData, waitTabLoaded } from './helper';
 
 class Worker {
   constructor(id, engine) {
@@ -79,10 +79,15 @@ class Worker {
     this.engine.referenceData.variables[name] = value;
   }
 
+  getBlockConnections(blockId, outputIndex = 1) {
+    const outputId = `${blockId}-output-${outputIndex}`;
+    return this.engine.connectionsMap[outputId] || null;
+  }
+
   executeNextBlocks(connections, prevBlockData) {
-    connections.forEach(({ node }, index) => {
+    connections.forEach((nodeId, index) => {
       if (index === 0) {
-        this.executeBlock(this.engine.blocks[node], prevBlockData);
+        this.executeBlock(this.engine.blocks[nodeId], prevBlockData);
       } else {
         const state = structuredClone({
           windowId: this.windowId,
@@ -96,7 +101,7 @@ class Worker {
         this.engine.addWorker({
           state,
           prevBlockData,
-          blockId: node,
+          blockId: nodeId,
         });
       }
     });
@@ -123,9 +128,9 @@ class Worker {
       });
     }
 
-    const blockHandler = this.engine.blocksHandler[toCamelCase(block.name)];
+    const blockHandler = this.engine.blocksHandler[toCamelCase(block.label)];
     const handler =
-      !blockHandler && tasks[block.name].category === 'interaction'
+      !blockHandler && tasks[block.label].category === 'interaction'
         ? this.engine.blocksHandler.interactionBlock
         : blockHandler;
 
@@ -139,20 +144,21 @@ class Worker {
       ...this.engine.referenceData,
       activeTabUrl: this.activeTab.url,
     };
+
     const replacedBlock = referenceData({
       block,
       data: refData,
       refKeys:
         isRetry || block.data.disableBlock
           ? null
-          : tasks[block.name].refDataKeys,
+          : tasks[block.label].refDataKeys,
     });
     const blockDelay = this.settings?.blockDelay || 0;
     const addBlockLog = (status, obj = {}) => {
       this.engine.addLogHistory({
         prevBlockData,
         type: status,
-        name: block.name,
+        name: block.label,
         blockId: block.id,
         workerId: this.id,
         description: block.data.description,
@@ -168,7 +174,7 @@ class Worker {
       if (block.data.disableBlock) {
         result = {
           data: '',
-          nextBlockId: getBlockConnection(block),
+          nextBlockId: this.getBlockConnections(block.id),
         };
       } else {
         result = await handler.call(this, replacedBlock, {
@@ -186,17 +192,9 @@ class Worker {
         });
       }
 
-      let nodeConnections = null;
-
-      if (typeof result.nextBlockId === 'string') {
-        nodeConnections = [{ node: result.nextBlockId }];
-      } else {
-        nodeConnections = result.nextBlockId.connections;
-      }
-
-      if (nodeConnections.length > 0 && !result.destroyWorker) {
+      if (result.nextBlockId && !result.destroyWorker) {
         setTimeout(() => {
-          this.executeNextBlocks(nodeConnections, result.data);
+          this.executeNextBlocks(result.nextBlockId, result.data);
         }, blockDelay);
       } else {
         this.engine.destroyWorker(this.id);
@@ -213,17 +211,17 @@ class Worker {
           return;
         }
 
-        const nextBlocks = getBlockConnection(
-          block,
-          blockOnError.toDo === 'continue' ? 1 : 2
+        const nextBlocks = this.getBlockConnections(
+          block.id,
+          blockOnError.toDo === 'continue' ? 1 : 'fallback'
         );
-        if (blockOnError.toDo !== 'error' && nextBlocks?.connections) {
+        if (blockOnError.toDo !== 'error' && nextBlocks) {
           addBlockLog('error', {
             message: error.message,
             ...(error.data || {}),
           });
 
-          this.executeNextBlocks(nextBlocks.connections, prevBlockData);
+          this.executeNextBlocks(nextBlocks, prevBlockData);
 
           return;
         }
@@ -235,7 +233,7 @@ class Worker {
       });
 
       const { onError } = this.settings;
-      const nodeConnections = error.nextBlockId?.connections;
+      const nodeConnections = this.getBlockConnections(block.id);
 
       if (onError === 'keep-running' && nodeConnections) {
         setTimeout(() => {
@@ -248,15 +246,13 @@ class Worker {
 
         if (restartCount >= maxRestart) {
           localStorage.removeItem(restartKey);
-          this.engine.destroy();
+          this.engine.destroy('error');
           return;
         }
 
         this.reset();
 
-        const triggerBlock = Object.values(this.engine.blocks).find(
-          ({ name }) => name === 'trigger'
-        );
+        const triggerBlock = this.engine.blocks[this.engine.triggerBlockId];
         this.executeBlock(triggerBlock);
 
         localStorage.setItem(restartKey, restartCount + 1);
@@ -296,7 +292,7 @@ class Worker {
       loopData: {},
       workflow: {},
       googleSheets: {},
-      variables: this.engine.options.variables,
+      variables: this.engine.options?.variables || {},
       globalData: this.engine.referenceData.globalData,
     };
   }

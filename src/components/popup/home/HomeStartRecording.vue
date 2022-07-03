@@ -28,6 +28,7 @@
       <home-select-block
         v-if="activeWorkflow"
         :workflow="activeWorkflow"
+        @update="updateWorkflow"
         @record="$emit('record', $event)"
         @goBack="state.activeWorkflow = ''"
       />
@@ -78,7 +79,7 @@
 <script setup>
 import { reactive, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import Workflow from '@/models/workflow';
+import { useWorkflowStore } from '@/stores/workflow';
 import HomeSelectBlock from './HomeSelectBlock.vue';
 
 const emit = defineEmits(['update', 'close', 'record']);
@@ -86,7 +87,9 @@ const emit = defineEmits(['update', 'close', 'record']);
 emit('update', 'new');
 
 const tabs = ['new', 'existing'];
+
 const { t } = useI18n();
+const workflowStore = useWorkflowStore();
 
 const state = reactive({
   query: '',
@@ -95,13 +98,21 @@ const state = reactive({
   activeWorkflow: '',
 });
 
-const activeWorkflow = computed(() => Workflow.find(state.activeWorkflow));
+const activeWorkflow = computed(() =>
+  workflowStore.getById(state.activeWorkflow)
+);
 const workflows = computed(() =>
-  Workflow.query()
-    .where(({ name }) =>
+  workflowStore.getWorkflows
+    .filter(({ name }) =>
       name.toLocaleLowerCase().includes(state.query.toLocaleLowerCase())
     )
-    .orderBy('createdAt', 'desc')
-    .get()
+    .sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1))
 );
+
+function updateWorkflow(data) {
+  workflowStore.update({
+    data,
+    id: state.activeWorkflow,
+  });
+}
 </script>

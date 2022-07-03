@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 import { fileSaver } from '@/utils/helper';
-import { getBlockConnection, waitTabLoaded } from '../helper';
+import { waitTabLoaded } from '../helper';
 
 async function saveImage({ filename, uri, ext }) {
   const hasDownloadAccess = await browser.permissions.contains({
@@ -33,8 +33,7 @@ async function saveImage({ filename, uri, ext }) {
   image.src = uri;
 }
 
-async function takeScreenshot({ data, outputs, name }) {
-  const nextBlockId = getBlockConnection({ outputs });
+async function takeScreenshot({ data, id, label }) {
   const saveToComputer =
     typeof data.saveToComputer === 'undefined' || data.saveToComputer;
 
@@ -85,7 +84,7 @@ async function takeScreenshot({ data, outputs, name }) {
       screenshot = await (data.fullPage ||
       ['element', 'fullpage'].includes(data.type)
         ? this._sendMessageToTab({
-            name,
+            label,
             options,
             data: {
               type: data.type,
@@ -107,10 +106,11 @@ async function takeScreenshot({ data, outputs, name }) {
       await saveScreenshot(screenshot);
     }
 
-    return { data: screenshot, nextBlockId };
+    return {
+      data: screenshot,
+      nextBlockId: this.getBlockConnections(id),
+    };
   } catch (error) {
-    error.nextBlockId = nextBlockId;
-
     if (data.type === 'element') error.data = { selector: data.selector };
 
     throw error;

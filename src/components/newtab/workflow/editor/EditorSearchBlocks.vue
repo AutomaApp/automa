@@ -67,11 +67,13 @@ const props = defineProps({
 const { t } = useI18n();
 
 const initialState = {
-  zoom: 1,
   rectX: 0,
   rectY: 0,
-  canvasX: 0,
-  canvasY: 0,
+  position: {
+    x: 0,
+    y: 0,
+    zoom: 1,
+  },
 };
 
 const autocompleteEl = ref(null);
@@ -103,25 +105,22 @@ function toggleActiveSearch() {
   }
 }
 function extractBlocks() {
-  const { width, height } = props.editor.container.getBoundingClientRect();
+  const editorContainer = document.querySelector('.vue-flow');
+  editorContainer.classList.add('add-transition');
+  const { width, height } = editorContainer.getBoundingClientRect();
+
   initialState.rectX = width / 2;
   initialState.rectY = height / 2;
-  initialState.zoom = props.editor.zoom;
-  initialState.canvasX = props.editor.canvas_x;
-  initialState.canvasY = props.editor.canvas_y;
+  initialState.position = props.editor.getTransform();
 
-  const { drawflow } = props.editor.export();
-  state.autocompleteItems = Object.values(drawflow.Home.data).map(
-    ({ id, name, data, pos_x, pos_y }) => ({
+  state.autocompleteItems = props.editor.getNodes.value.map(
+    ({ computedPosition, id, data, label }) => ({
       id,
-      pos_x,
-      pos_y,
+      position: computedPosition,
       description: data.description || '',
-      name: t(`workflow.blocks.${name}.name`),
+      name: t(`workflow.blocks.${label}.name`),
     })
   );
-
-  props.editor.precanvas.style.transition = 'transform 300ms ease';
 }
 function clearHighlightedNodes() {
   document.querySelectorAll('.search-select-node').forEach((el) => {
@@ -130,8 +129,7 @@ function clearHighlightedNodes() {
 }
 function clearState() {
   if (!state.selected) {
-    const { canvasX, canvasY, zoom } = initialState;
-    props.editor.translate_to(canvasX, canvasY, zoom);
+    props.editor.setTransform(initialState.position);
   }
 
   state.query = '';
@@ -139,55 +137,61 @@ function clearState() {
   state.selected = false;
 
   Object.assign(initialState, {
-    zoom: 1,
     rectX: 0,
     rectY: 0,
-    canvasX: 0,
-    canvasY: 0,
+    position: {
+      x: 0,
+      y: 0,
+      zoom: 1,
+    },
   });
 
   autocompleteEl.value.state.showPopover = false;
   clearHighlightedNodes();
 
   setTimeout(() => {
-    props.editor.precanvas.style.transition = '';
+    const editorContainer = document.querySelector('.vue-flow');
+    editorContainer.classList.remove('add-transition');
   }, 500);
 }
 function blurInput() {
   document.querySelector('#search-blocks')?.blur();
 }
 function onSelectItem({ item }) {
-  if (props.editor.zoom !== 1) {
-    /* eslint-disable-next-line */
-    props.editor.zoom = 1;
-    props.editor.zoom_refresh();
-  }
+  const { x, y } = item.position;
+  const { rectX, rectY } = initialState;
 
   clearHighlightedNodes();
   document
-    .querySelector(`#node-${item.id}`)
+    .querySelector(`[data-id="${item.id}"]`)
     ?.classList.add('search-select-node');
 
-  const { rectX, rectY } = initialState;
-  props.editor.translate_to(
-    -(item.pos_x - rectX),
-    -(item.pos_y - rectY),
-    props.editor.zoom
-  );
+  props.editor.setTransform({
+    zoom: 1,
+    x: -(x - rectX),
+    y: -(y - rectY),
+  });
 }
 function onItemSelected(event) {
   state.selected = true;
+
+  const node = props.editor.getNode.value(event.item.id);
+  props.editor.addSelectedNodes([node]);
+
   onSelectItem(event);
   blurInput();
 }
 </script>
 <style scoped>
 input {
-  transition: width 250ms ease;
+  transition: width 300ms ease;
 }
 </style>
 <style>
-.search-select-node .drawflow_content_node {
+.search-select-node > div {
   @apply ring-4;
+}
+.vue-flow.add-transition .vue-flow__transformationpane {
+  transition: transform 250ms ease;
 }
 </style>

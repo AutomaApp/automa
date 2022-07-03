@@ -1,10 +1,10 @@
 <template>
   <div
-    :class="[workflowHostKeys.length === 0 ? 'h-48' : 'h-56']"
+    :class="[hostedWorkflowStore.toArray.length === 0 ? 'h-48' : 'h-56']"
     class="bg-accent rounded-b-2xl absolute top-0 left-0 w-full"
   ></div>
   <div
-    :class="[workflowHostKeys.length === 0 ? 'mb-6' : 'mb-2']"
+    :class="[hostedWorkflowStore.toArray.length === 0 ? 'mb-6' : 'mb-2']"
     class="dark placeholder-black relative z-10 text-white px-5 pt-8"
   >
     <div class="flex items-center mb-4">
@@ -46,7 +46,7 @@
       />
     </div>
     <ui-tabs
-      v-if="workflowHostKeys.length > 0"
+      v-if="hostedWorkflowStore.toArray.length > 0"
       v-model="state.activeTab"
       fill
       class="mt-1"
@@ -57,7 +57,7 @@
     </ui-tabs>
   </div>
   <div class="px-5 pb-5 space-y-2">
-    <ui-card v-if="Workflow.all().length === 0" class="text-center">
+    <ui-card v-if="workflowStore.getWorkflows.length === 0" class="text-center">
       <img src="@/assets/svg/alien.svg" />
       <p class="font-semibold">{{ t('message.empty') }}</p>
       <ui-button
@@ -73,7 +73,7 @@
       :key="workflow.id"
       :workflow="workflow"
       :tab="state.activeTab"
-      @details="openDashboard(`/workflows/${$event.id}`)"
+      @details="openWorkflowPage"
       @update="updateWorkflow(workflow.id, $event)"
       @execute="executeWorkflow"
       @rename="renameWorkflow"
@@ -108,12 +108,12 @@
 <script setup>
 import { computed, onMounted, shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useStore } from 'vuex';
 import browser from 'webextension-polyfill';
 import { useDialog } from '@/composable/dialog';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { sendMessage } from '@/utils/message';
-import Workflow from '@/models/workflow';
+import { useWorkflowStore } from '@/stores/workflow';
+import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import HomeWorkflowCard from '@/components/popup/home/HomeWorkflowCard.vue';
 import HomeStartRecording from '@/components/popup/home/HomeStartRecording.vue';
 
@@ -124,8 +124,9 @@ const recordingCardHeight = {
 };
 
 const { t } = useI18n();
-const store = useStore();
 const dialog = useDialog();
+const workflowStore = useWorkflowStore();
+const hostedWorkflowStore = useHostedWorkflowStore();
 
 useGroupTooltip();
 
@@ -137,41 +138,32 @@ const state = shallowReactive({
   newRecordingModal: false,
 });
 
-const workflowHostKeys = computed(() => Object.keys(store.state.workflowHosts));
-const workflowHosts = computed(() => {
+const hostedWorkflows = computed(() => {
   if (state.activeTab !== 'host') return [];
 
-  return workflowHostKeys.value.reduce((acc, key) => {
-    const workflow = store.state.workflowHosts[key];
-    const isMatch = workflow.name
-      .toLocaleLowerCase()
-      .includes(state.query.toLocaleLowerCase());
-
-    if (isMatch) acc.push({ ...workflow, id: key });
-
-    return acc;
-  }, []);
+  return hostedWorkflowStore.toArray.filter((workflow) =>
+    workflow.name.toLocaleLowerCase().includes(state.query.toLocaleLowerCase())
+  );
 });
 const localWorkflows = computed(() => {
   if (state.activeTab !== 'local') return [];
 
-  return Workflow.query()
-    .where(({ name }) =>
+  return workflowStore.getWorkflows
+    .filter(({ name }) =>
       name.toLocaleLowerCase().includes(state.query.toLocaleLowerCase())
     )
-    .orderBy('createdAt', 'desc')
-    .get();
+    .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
 });
 const workflows = computed(() =>
-  state.activeTab === 'local' ? localWorkflows.value : workflowHosts.value
+  state.activeTab === 'local' ? localWorkflows.value : hostedWorkflows.value
 );
 
 function executeWorkflow(workflow) {
   sendMessage('workflow:execute', workflow, 'background');
 }
 function updateWorkflow(id, data) {
-  return Workflow.update({
-    where: id,
+  return workflowStore.update({
+    id,
     data,
   });
 }
@@ -193,15 +185,9 @@ function deleteWorkflow({ id, name }) {
     body: t('message.delete', { name }),
     onConfirm: () => {
       if (state.activeTab === 'local') {
-        Workflow.delete(id);
+        workflowStore.delete(id);
       } else {
-        store.commit('deleteStateNested', `workflowHosts.${id}`);
-
-        if (workflowHostKeys.value.length === 0) {
-          state.activeTab = 'local';
-        }
-
-        browser.storage.local.set({ workflowHosts: store.state.workflowHosts });
+        hostedWorkflowStore.delete(id);
       }
     },
   });
@@ -273,10 +259,18 @@ async function recordWorkflow(options = {}) {
     console.error(error);
   }
 }
+function openWorkflowPage({ id, hostId }) {
+  let url = `/workflows/${id}`;
+
+  if (state.activeTab === 'host') {
+    url = `/workflows/${hostId}/host`;
+  }
+
+  openDashboard(url);
+}
 
 onMounted(async () => {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-
   state.haveAccess = /^(https?)/.test(tab.url);
 });
 </script>

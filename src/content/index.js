@@ -1,6 +1,7 @@
 import browser from 'webextension-polyfill';
 import findSelector from '@/lib/findSelector';
 import { toCamelCase } from '@/utils/helper';
+import { nanoid } from 'nanoid';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
 import shortcutListener from './services/shortcutListener';
@@ -65,7 +66,7 @@ async function executeBlock(data) {
     }
   }
 
-  const handler = blocksHandler[toCamelCase(data.name)];
+  const handler = blocksHandler[toCamelCase(data.name || data.label)];
 
   if (handler) {
     const result = await handler(data);
@@ -74,7 +75,7 @@ async function executeBlock(data) {
     return result;
   }
 
-  const error = new Error(`"${data.name}" doesn't have a handler`);
+  const error = new Error(`"${data.label}" doesn't have a handler`);
   console.error(error);
 
   throw error;
@@ -233,3 +234,39 @@ function messageListener({ data, source }) {
     });
   });
 })();
+
+// Auto install only works on Chrome
+async function autoInstall() {
+  const link = window.location.href;
+  if (/.+\.automa\.json$/.test(link)) {
+    const accept = window.confirm(
+      'Do you want to add this workflow into Automa?'
+    );
+    if (!accept) return;
+    const workflow = JSON.parse(document.body.innerText);
+
+    const { workflows: workflowsStorage } = await browser.storage.local.get(
+      'workflows'
+    );
+
+    const workflowId = nanoid();
+    const workflowData = {
+      ...workflow,
+      id: workflowId,
+      dataColumns: [],
+      createdAt: Date.now(),
+      table: workflow.table || workflow.dataColumns,
+    };
+
+    if (Array.isArray(workflowsStorage)) {
+      workflowsStorage.push(workflowData);
+    } else {
+      workflowsStorage[workflowId] = workflowData;
+    }
+
+    await browser.storage.local.set({ workflows: workflowsStorage });
+
+    alert('Workflow installed');
+  }
+}
+autoInstall();

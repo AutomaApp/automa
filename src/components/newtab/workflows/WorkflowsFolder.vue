@@ -81,8 +81,8 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDialog } from '@/composable/dialog';
 import { parseJSON } from '@/utils/helper';
-import Folder from '@/models/folder';
-import Workflow from '@/models/workflow';
+import { useFolderStore } from '@/stores/folder';
+import { useWorkflowStore } from '@/stores/workflow';
 
 defineProps({
   modelValue: {
@@ -94,8 +94,10 @@ const emit = defineEmits(['update:modelValue']);
 
 const { t } = useI18n();
 const dialog = useDialog();
+const folderStore = useFolderStore();
+const workflowStore = useWorkflowStore();
 
-const folders = computed(() => Folder.query().orderBy('name', 'asc').get());
+const folders = computed(() => folderStore.items);
 
 function onDragover(event, toggle) {
   const parent = event.target.closest('.ui-list-item');
@@ -112,11 +114,7 @@ function newFolder() {
     onConfirm(value) {
       if (!value || !value.trim()) return false;
 
-      Folder.insert({
-        data: {
-          name: value,
-        },
-      });
+      folderStore.addFolder(value);
 
       return true;
     },
@@ -129,7 +127,7 @@ function deleteFolder({ name, id }) {
     okText: t('common.delete'),
     okVariant: 'danger',
     onConfirm() {
-      Folder.delete(id);
+      folderStore.deleteFolder(id);
 
       emit('update:modelValue', '');
     },
@@ -144,24 +142,25 @@ function renameFolder({ id, name }) {
     onConfirm(newName) {
       if (!newName || !newName.trim()) return false;
 
-      Folder.update({
-        where: id,
-        data: { name: newName },
-      });
+      folderStore.updateFolder(id, { name: newName });
 
       return true;
     },
   });
 }
-function onWorkflowsDrop({ dataTransfer }, folderId) {
+async function onWorkflowsDrop({ dataTransfer }, folderId) {
   const ids = parseJSON(dataTransfer.getData('workflows'), null);
   if (!ids || !Array.isArray(ids)) return;
 
-  ids.forEach((id) => {
-    Workflow.update({
-      where: id,
-      data: { folderId },
-    });
-  });
+  try {
+    for (const id of ids) {
+      await workflowStore.update({
+        id,
+        data: { folderId },
+      });
+    }
+  } catch (error) {
+    console.error(error);
+  }
 }
 </script>

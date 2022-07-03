@@ -22,6 +22,36 @@
       }
     }
   },
+  "storage": {
+    "title": "Storage",
+    "table": {
+      "add": "Add table",
+      "createdAt": "Created at",
+      "modifiedAt": "Modified at",
+      "rowsCount": "Rows count",
+      "delete": "Delete table"
+    }
+  },
+  "workflowPermissions": {
+    "title": "Workflow permissions",
+    "description": "This workflow requires these permissions to run properly",
+    "contextMenus": {
+      "title": "Context menu",
+      "description": "To execute the workflow via the context menu"
+    },
+    "clipboard": {
+      "title": "Clipboard",
+      "description": "For accessing the clipboard data"
+    },
+    "notifications": {
+      "title": "Notification",
+      "description": "For displaying a notification"
+    },
+    "downloads": {
+      "title": "Download",
+      "description": "Saving the page assets and renaming the downloaded file"
+    }
+  },
   "updateMessage": {
     "text1": "Automa has been updated to v{version},",
     "text2": "see what's new."
@@ -45,9 +75,6 @@
     "start": "Started on {date}",
     "message": "This only display the last 5 logs"
   },
-  "storage": {
-    "title": "Storage"
-  },
   "settings": {
     "theme": "Theme",
     "shortcuts": {
@@ -64,6 +91,10 @@
       "arrow": {
         "title": "Line arrow",
         "description": "Add an arrow at the end of the line"
+      },
+      "snapGrid": {
+        "title": "Snap to the grid",
+        "description": "Snap to the grid when moving a block"
       }
     },
     "deleteLog": {
@@ -135,6 +166,9 @@
     "clickToEnable": "Click to enable",
     "toggleSidebar": "Toggle sidebar",
     "cantEdit": "Can't edit shared workflow",
+    "autoAlign": {
+      "title": "Auto-align"
+    },
     "searchBlocks": {
       "title": "Search blocks in the editor"
     },

@@ -1,4 +1,4 @@
-import { getBlockConnection, sendDebugCommand } from '../helper';
+import { sendDebugCommand } from '../helper';
 
 const overwriteDialog = (accept, promptText) => `
   const realConfirm = window.confirm;
@@ -17,9 +17,7 @@ const overwriteDialog = (accept, promptText) => `
   }
 `;
 
-function handleDialog({ data, outputs, id: blockId }) {
-  const nextBlockId = getBlockConnection({ outputs });
-
+function handleDialog({ data, id: blockId }) {
   return new Promise((resolve) => {
     if (!this.settings.debugMode || BROWSER_TYPE !== 'chrome') {
       const isScriptExist = this.preloadScripts.find(
@@ -57,7 +55,7 @@ function handleDialog({ data, outputs, id: blockId }) {
 
     resolve({
       data: '',
-      nextBlockId,
+      nextBlockId: this.getBlockConnections(blockId),
     });
   });
 }

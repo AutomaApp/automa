@@ -75,19 +75,19 @@
 </template>
 <script setup>
 import { computed, watch, shallowRef, onBeforeUnmount } from 'vue';
-import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { countDuration } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
+import { useWorkflowStore } from '@/stores/workflow';
 import dbLogs from '@/db/logs';
 import dayjs from '@/lib/dayjs';
 import LogsHistory from '@/components/newtab/logs/LogsHistory.vue';
 
 const { t } = useI18n();
-const store = useStore();
 const route = useRoute();
 const router = useRouter();
+const workflowStore = useWorkflowStore();
 
 const key = shallowRef(0);
 const interval = setInterval(() => {
@@ -95,7 +95,7 @@ const interval = setInterval(() => {
 }, 1000);
 
 const running = computed(() =>
-  store.state.workflowState.find(({ id }) => id === route.params.id)
+  workflowStore.states.find(({ id }) => id === route.params.id)
 );
 
 function stopWorkflow() {

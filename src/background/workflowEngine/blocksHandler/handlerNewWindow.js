@@ -1,33 +1,24 @@
 import browser from 'webextension-polyfill';
-import { getBlockConnection } from '../helper';
 
 export async function newWindow(block) {
-  const nextBlockId = getBlockConnection(block);
+  const { incognito, windowState } = block.data;
+  const windowOptions = { incognito, state: windowState };
 
-  try {
-    const { incognito, windowState } = block.data;
-    const windowOptions = { incognito, state: windowState };
+  if (windowState === 'normal') {
+    ['top', 'left', 'height', 'width'].forEach((key) => {
+      if (block.data[key] <= 0) return;
 
-    if (windowState === 'normal') {
-      ['top', 'left', 'height', 'width'].forEach((key) => {
-        if (block.data[key] <= 0) return;
-
-        windowOptions[key] = block.data[key];
-      });
-    }
-
-    const { id } = await browser.windows.create(windowOptions);
-    this.windowId = id;
-
-    return {
-      data: id,
-      nextBlockId,
-    };
-  } catch (error) {
-    error.nextBlockId = nextBlockId;
-
-    throw error;
+      windowOptions[key] = block.data[key];
+    });
   }
+
+  const { id } = await browser.windows.create(windowOptions);
+  this.windowId = id;
+
+  return {
+    data: id,
+    nextBlockId: this.getBlockConnections(block.id),
+  };
 }
 
 export default newWindow;
