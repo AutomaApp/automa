@@ -12,10 +12,7 @@ function elementExists(block) {
 
         resolve({
           data,
-          nextBlockId: this.getBlockConnections(
-            block.id,
-            data ? 1 : 'fallback'
-          ),
+          nextBlockId: this.getBlockConnections(block.id, data ? 1 : 2),
         });
       })
       .catch((error) => {

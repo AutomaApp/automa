@@ -32,7 +32,7 @@
         v-tooltip.group="t('common.dashboard')"
         icon
         :title="t('common.dashboard')"
-        @click="openDashboard"
+        @click="openDashboard('')"
       >
         <v-remixicon name="riHome5Line" />
       </ui-button>
@@ -193,6 +193,7 @@ function deleteWorkflow({ id, name }) {
   });
 }
 function openDashboard(url) {
+  console.log(url);
   sendMessage('open:dashboard', url, 'background');
 }
 async function initElementSelector() {
