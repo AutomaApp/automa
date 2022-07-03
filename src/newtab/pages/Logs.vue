@@ -156,7 +156,11 @@ const logs = computed(() =>
 );
 
 function deleteLog(id) {
-  dbLogs.items.where('id').equals(id).delete();
+  dbLogs.items.delete(id).then(() => {
+    dbLogs.ctxData.where('logId').equals(id).delete();
+    dbLogs.histories.where('logId').equals(id).delete();
+    dbLogs.logsData.where('logId').equals(id).delete();
+  });
 }
 function toggleSelectedLog(selected, logId) {
   if (selected) {

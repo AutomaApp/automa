@@ -114,7 +114,10 @@ export const useWorkflowStore = defineStore('workflow', {
         localWorkflows = firstWorkflows.map((workflow) =>
           defaultWorkflow(workflow)
         );
-        await browser.storage.local.set({ isFirstTime: false });
+        await browser.storage.local.set({
+          isFirstTime: false,
+          workflows: localWorkflows,
+        });
       }
 
       this.workflows = convertWorkflowsToObject(localWorkflows);
@@ -124,10 +127,6 @@ export const useWorkflowStore = defineStore('workflow', {
       this.states = Object.values(states).filter(
         ({ isDestroyed }) => !isDestroyed
       );
-
-      if (isFirstTime) {
-        await this.saveToStorage('workflows');
-      }
 
       this.retrieved = true;
     },

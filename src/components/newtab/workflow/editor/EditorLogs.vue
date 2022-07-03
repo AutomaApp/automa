@@ -50,4 +50,12 @@ const logs = useLiveQuery(() =>
     .limit(15)
     .sortBy('endedAt')
 );
+
+function deleteLog(logId) {
+  dbLogs.items.delete(logId).then(() => {
+    dbLogs.ctxData.where('logId').equals(logId).delete();
+    dbLogs.histories.where('logId').equals(logId).delete();
+    dbLogs.logsData.where('logId').equals(logId).delete();
+  });
+}
 </script>

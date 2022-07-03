@@ -3,7 +3,7 @@
     :id="componentId"
     class="element-exists"
     style="width: 195px"
-    @edit="editBlock"
+    @edit="$emit('edit')"
     @delete="$emit('delete', id)"
   >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
@@ -44,7 +44,6 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { Handle, Position } from '@braks/vue-flow';
-import emitter from '@/lib/mitt';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
 import BlockBase from './BlockBase.vue';
@@ -63,19 +62,11 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-defineEmits(['delete']);
+defineEmits(['delete', 'edit']);
 
 const { t } = useI18n();
 const block = useEditorBlock(props.label);
 const componentId = useComponentId('block-delay');
-
-function editBlock() {
-  emitter.emit('editor:edit-block', {
-    ...block.details,
-    data: props.data,
-    blockId: block.id,
-  });
-}
 </script>
 <style>
 .drawflow .element-exists .outputs {

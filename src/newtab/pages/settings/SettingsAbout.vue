@@ -68,6 +68,11 @@ const links = [
     url: 'https://docs.automa.site',
   },
   {
+    name: 'Blog',
+    icon: 'riArticleLine',
+    url: 'https://blog.automa.site',
+  },
+  {
     name: 'Donate',
     icon: 'riHandHeartLine',
     url: 'https://paypal.me/akholid060',

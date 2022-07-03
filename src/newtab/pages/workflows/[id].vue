@@ -713,7 +713,10 @@ function pasteCopiedElements(position) {
   editor.value.addNodes(nodes);
   editor.value.addEdges(edges);
 }
-function onKeydown({ ctrlKey, metaKey, key }) {
+function onKeydown({ ctrlKey, metaKey, key, target }) {
+  const els = ['INPUT', 'SELECT'];
+  if (els.includes(target.tagName)) return;
+
   const command = (keyName) => (ctrlKey || metaKey) && keyName === key;
 
   if (command('c')) {
