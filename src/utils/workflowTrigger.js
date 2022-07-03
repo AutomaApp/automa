@@ -13,6 +13,8 @@ export function registerContextMenu(workflowId, data) {
     const isFirefox = BROWSER_TYPE === 'firefox';
     const browserContext = isFirefox ? browser.menus : browser.contextMenus;
 
+    if (!browserContext) return;
+
     browserContext.create(
       {
         id: workflowId,
