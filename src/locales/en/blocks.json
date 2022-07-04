@@ -25,6 +25,7 @@
             "animated": "Animated",
             "select": "Select line",
             "to": "Line to {name} block",
+            "lineColor": "Line color"
           }
         },
         "toggle": {

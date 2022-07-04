@@ -10,8 +10,15 @@
       </option>
     </ui-select>
     <div v-if="activeEdge" class="mt-4">
-      <div class="flex items-center mt-2">
-        <label class="flex items-center mr-4 mt-5">
+      <ui-input
+        :model-value="activeEdge.label"
+        :label="t('workflow.blocks.base.settings.line.label')"
+        placeholder="A label"
+        class="w-full"
+        @change="updateActiveEdge('label', $event)"
+      />
+      <div class="flex items-center mt-4">
+        <label class="flex items-center mr-4 block">
           <ui-switch
             :model-value="activeEdge.animated"
             @change="updateActiveEdge('animated', $event)"
@@ -20,13 +27,19 @@
             {{ t('workflow.blocks.base.settings.line.animated') }}
           </span>
         </label>
-        <ui-input
-          :model-value="activeEdge.label"
-          :label="t('workflow.blocks.base.settings.line.label')"
-          placeholder="A label"
-          class="flex-1"
-          @change="updateActiveEdge('label', $event)"
-        />
+        <div class="w-32" />
+        <label class="flex items-center">
+          <input
+            :value="activeEdge.style?.stroke ?? null"
+            type="color"
+            name="color"
+            class="h-10 w-10 rounded-lg bg-input p-1"
+            @input="updateActiveEdge('style', { stroke: $event.target.value })"
+          />
+          <span class="ml-2">
+            {{ t('workflow.blocks.base.settings.line.lineColor') }}
+          </span>
+        </label>
       </div>
     </div>
   </div>
@@ -63,7 +76,7 @@ const updateActiveEdge = debounce((name, value) => {
 
 onMounted(() => {
   state.edges = editor.value.getEdges.value.reduce(
-    (acc, { id, source, targetNode, label, animated, labelStyle }) => {
+    (acc, { id, source, targetNode, label, animated, labelStyle, style }) => {
       if (source !== props.blockId) return acc;
 
       let name = t('workflow.blocks.base.settings.line.to', {
@@ -80,6 +93,8 @@ onMounted(() => {
         animated: animated ?? false,
         labelStyle: labelStyle || '',
       };
+
+      if (style) acc[id].style = style;
 
       return acc;
     },

@@ -7,8 +7,8 @@ export async function increaseVariable({ id, data }) {
     throw new Error(`Cant find "${data.variableName}" variable`);
   }
 
-  const currentVar = refVariables[data.variableName];
-  if (typeof currentVar !== 'number') {
+  const currentVar = +refVariables[data.variableName];
+  if (Number.isNaN(currentVar)) {
     throw new Error(
       `The "${data.variableName}" variable value is not a number`
     );

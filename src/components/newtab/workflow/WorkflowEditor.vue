@@ -203,6 +203,7 @@ function applyFlowData() {
 }
 
 onMounted(() => {
+  console.log(editor);
   applyFlowData();
   window.addEventListener('mousedown', onMousedown, true);
   emit('init', editor);
