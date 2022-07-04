@@ -101,6 +101,11 @@
         "start": "Start index",
         "end": "End index"
       },
+      "increase-variable": {
+        "name": "Increase variable",
+        "description": "Increase the value of a variable by specific amount",
+        "increase": "Increase by"
+      },
       "notification": {
         "name": "notification",
         "description": "Display a notification",

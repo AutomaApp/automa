@@ -1070,6 +1070,24 @@ export const tasks = {
       variableName: '',
     },
   },
+  'increase-variable': {
+    name: 'Increase variable',
+    description: 'Increase the value of a variable by specific amount',
+    icon: 'riIncreaseDecreaseLine',
+    editComponent: 'EditIncreaseVariable',
+    component: 'BlockBasic',
+    category: 'data',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      disableBlock: false,
+      description: '',
+      increaseBy: 1,
+      variableName: '',
+    },
+  },
 };
 
 export const categories = {
