@@ -35,7 +35,8 @@ export default function (data, enable) {
     return () => {};
   }
 
-  const block = tasks[data.name];
+  const block = tasks[data.label];
+  if (!block) return () => {};
   let container = document.querySelector('.automa-executed-block');
 
   if (!container) {
