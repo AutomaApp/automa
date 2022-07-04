@@ -126,7 +126,7 @@ const { t } = useI18n();
 const store = useStore();
 const editor = useVueFlow({
   id: props.id,
-  minZoom: 1,
+  minZoom: 0.7,
   edgeUpdaterRadius: 20,
   deleteKeyCode: 'Delete',
   elevateEdgesOnSelect: true,

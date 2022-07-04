@@ -1088,6 +1088,24 @@ export const tasks = {
       variableName: '',
     },
   },
+  'regex-variable': {
+    name: 'RegEx variable',
+    description: 'Matching a variable value against a regular expression',
+    icon: 'mdiRegex',
+    editComponent: 'EditRegexVariable',
+    component: 'BlockBasic',
+    category: 'data',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      disableBlock: false,
+      description: '',
+      expression: '',
+      flag: [],
+    },
+  },
 };
 
 export const categories = {

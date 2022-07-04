@@ -1,4 +1,4 @@
-export async function logData({ id, data }) {
+export async function sliceData({ id, data }) {
   const variable = this.engine.referenceData.variables[data.variableName];
   const payload = {
     data: variable,
@@ -24,4 +24,4 @@ export async function logData({ id, data }) {
   return payload;
 }
 
-export default logData;
+export default sliceData;

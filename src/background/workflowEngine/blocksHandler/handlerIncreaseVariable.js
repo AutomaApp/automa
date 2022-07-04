@@ -1,6 +1,6 @@
 import { objectHasKey } from '@/utils/helper';
 
-export async function logData({ id, data }) {
+export async function increaseVariable({ id, data }) {
   const refVariables = this.engine.referenceData.variables;
 
   if (!objectHasKey(refVariables, data.variableName)) {
@@ -22,4 +22,4 @@ export async function logData({ id, data }) {
   };
 }
 
-export default logData;
+export default increaseVariable;
