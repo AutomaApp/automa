@@ -1,6 +1,6 @@
 <template>
   <ui-card class="w-full max-w-2xl share-workflow overflow-auto scroll">
-    <template v-if="!store.state.user?.username">
+    <template v-if="!userStore.user?.username">
       <div class="flex items-center mb-12">
         <p>{{ t('workflow.share.title') }}</p>
         <div class="flex-grow"></div>
@@ -173,10 +173,11 @@
 </template>
 <script setup>
 import { reactive, watch } from 'vue';
-import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 import { fetchApi } from '@/utils/api';
+import { useUserStore } from '@/stores/user';
+import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
 import { workflowCategories } from '@/utils/shared';
 import { parseJSON, debounce } from '@/utils/helper';
 import { convertWorkflow } from '@/utils/workflowData';
@@ -193,7 +194,8 @@ const emit = defineEmits(['close', 'publish', 'change']);
 
 const { t } = useI18n();
 const toast = useToast();
-const store = useStore();
+const userStore = useUserStore();
+const sharedWorkflowStore = useSharedWorkflowStore();
 
 const menuItems = [
   { id: 'bold', name: 'Bold', icon: 'riBold', action: 'toggleBold' },
@@ -224,13 +226,6 @@ async function publishWorkflow() {
 
     delete workflow.extVersion;
 
-    const nodes = workflow.drawflow?.drawflow.Home.data;
-    Object.keys(nodes).forEach((nodeId) => {
-      if (nodes[nodeId].name !== 'loop-data') return;
-
-      nodes[nodeId].data.loopData = '';
-    });
-
     const response = await fetchApi('/me/workflows/shared', {
       method: 'POST',
       body: JSON.stringify({ workflow }),
@@ -246,13 +241,10 @@ async function publishWorkflow() {
 
     workflow.drawflow = props.workflow.drawflow;
 
-    store.commit('updateStateNested', {
-      path: `sharedWorkflows.${workflow.id}`,
-      value: workflow,
-    });
+    sharedWorkflowStore.insert(workflow);
     sessionStorage.setItem(
       'shared-workflows',
-      JSON.stringify(store.state.sharedWorkflows)
+      JSON.stringify(sharedWorkflowStore.shared)
     );
 
     state.isPublishing = false;

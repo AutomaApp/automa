@@ -53,11 +53,12 @@ import { onMounted, reactive, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import dayjs from 'dayjs';
 import browser from 'webextension-polyfill';
+import { useWorkflowStore } from '@/stores/workflow';
 import { findTriggerBlock } from '@/utils/helper';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
-import Workflow from '@/models/workflow';
 
 const { t } = useI18n();
+const workflowStore = useWorkflowStore();
 
 const triggersData = {};
 const state = reactive({
@@ -135,8 +136,10 @@ function scheduleText(data) {
         time: data.interval,
       });
       break;
-    case 'data':
-      dayjs(data.date).format('DD MMM YYYY, hh:mm:ss A');
+    case 'date':
+      text.schedule = dayjs(`${data.date}, ${data.time}`).format(
+        'DD MMM YYYY, hh:mm:ss A'
+      );
       break;
     default:
   }
@@ -202,21 +205,21 @@ async function refreshSchedule(id) {
 }
 
 onMounted(async () => {
-  const workflows = Workflow.all();
+  for (const workflow of workflowStore.getWorkflows) {
+    if (!workflow.isDisabled) {
+      let { trigger } = workflow;
 
-  for (const workflow of workflows) {
-    let { trigger } = workflow;
+      if (!trigger) {
+        const drawflow =
+          typeof workflow.drawflow === 'string'
+            ? JSON.parse(workflow.drawflow)
+            : workflow.drawflow;
+        trigger = findTriggerBlock(drawflow)?.data;
+      }
 
-    if (!trigger) {
-      const drawflow =
-        typeof workflow.drawflow === 'string'
-          ? JSON.parse(workflow.drawflow)
-          : workflow.drawflow;
-      trigger = findTriggerBlock(drawflow)?.data;
+      const obj = await getTriggerObj(trigger, workflow);
+      if (obj) state.triggers.push(obj);
     }
-
-    const obj = await getTriggerObj(trigger, workflow);
-    if (obj) state.triggers.push(obj);
   }
 });
 </script>

@@ -1,23 +1,14 @@
 import browser from 'webextension-polyfill';
-import { getBlockConnection } from '../helper';
 
-export async function reloadTab({ outputs }) {
-  const nextBlockId = getBlockConnection({ outputs });
+export async function reloadTab({ id }) {
+  if (!this.activeTab.id) throw new Error('no-tab');
 
-  try {
-    if (!this.activeTab.id) throw new Error('no-tab');
+  await browser.tabs.reload(this.activeTab.id);
 
-    await browser.tabs.reload(this.activeTab.id);
-
-    return {
-      data: '',
-      nextBlockId,
-    };
-  } catch (error) {
-    error.nextBlockId = nextBlockId;
-
-    throw error;
-  }
+  return {
+    data: '',
+    nextBlockId: this.getBlockConnections(id),
+  };
 }
 
 export default reloadTab;

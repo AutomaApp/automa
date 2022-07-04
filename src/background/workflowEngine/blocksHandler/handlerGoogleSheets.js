@@ -5,7 +5,6 @@ import {
   isWhitespace,
   parseJSON,
 } from '@/utils/helper';
-import { getBlockConnection } from '../helper';
 
 async function getSpreadsheetValues({ spreadsheetId, range, firstRowAsKey }) {
   const response = await googleSheets.getValues({ spreadsheetId, range });
@@ -93,50 +92,41 @@ async function updateSpreadsheetValues(
   }
 }
 
-export default async function ({ data, outputs }, { refData }) {
-  const nextBlockId = getBlockConnection({ outputs });
+export default async function ({ data, id }, { refData }) {
+  if (isWhitespace(data.spreadsheetId)) throw new Error('empty-spreadsheet-id');
+  if (isWhitespace(data.range)) throw new Error('empty-spreadsheet-range');
 
-  try {
-    if (isWhitespace(data.spreadsheetId))
-      throw new Error('empty-spreadsheet-id');
-    if (isWhitespace(data.range)) throw new Error('empty-spreadsheet-range');
+  let result = [];
 
-    let result = [];
+  if (data.type === 'get') {
+    const spreadsheetValues = await getSpreadsheetValues(data);
 
-    if (data.type === 'get') {
-      const spreadsheetValues = await getSpreadsheetValues(data);
+    result = spreadsheetValues;
 
-      result = spreadsheetValues;
-
-      if (data.refKey && !isWhitespace(data.refKey)) {
-        refData.googleSheets[data.refKey] = spreadsheetValues;
-      }
-    } else if (data.type === 'getRange') {
-      result = await getSpreadsheetRange(data);
-
-      if (data.assignVariable) {
-        this.setVariable(data.variableName, result);
-      }
-      if (data.saveData) {
-        this.addDataToColumn(data.dataColumn, result);
-      }
-    } else if (['update', 'append'].includes(data.type)) {
-      result = await updateSpreadsheetValues(
-        {
-          ...data,
-          append: data.type === 'append',
-        },
-        refData.table
-      );
+    if (data.refKey && !isWhitespace(data.refKey)) {
+      refData.googleSheets[data.refKey] = spreadsheetValues;
     }
+  } else if (data.type === 'getRange') {
+    result = await getSpreadsheetRange(data);
 
-    return {
-      nextBlockId,
-      data: result,
-    };
-  } catch (error) {
-    error.nextBlockId = nextBlockId;
-
-    throw error;
+    if (data.assignVariable) {
+      this.setVariable(data.variableName, result);
+    }
+    if (data.saveData) {
+      this.addDataToColumn(data.dataColumn, result);
+    }
+  } else if (['update', 'append'].includes(data.type)) {
+    result = await updateSpreadsheetValues(
+      {
+        ...data,
+        append: data.type === 'append',
+      },
+      refData.table
+    );
   }
+
+  return {
+    data: result,
+    nextBlockId: this.getBlockConnections(id),
+  };
 }

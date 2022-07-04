@@ -1,5 +1,3 @@
-import { getBlockConnection } from '../helper';
-
 function loopBreakpoint(block, { prevBlockData }) {
   const currentLoop = this.loopList[block.data.loopId];
 
@@ -20,7 +18,7 @@ function loopBreakpoint(block, { prevBlockData }) {
     ) {
       resolve({
         data: '',
-        nextBlockId: currentLoop.blockId,
+        nextBlockId: [currentLoop.blockId],
       });
     } else {
       if (currentLoop.type === 'elements') {
@@ -36,7 +34,7 @@ function loopBreakpoint(block, { prevBlockData }) {
 
       resolve({
         data: prevBlockData,
-        nextBlockId: getBlockConnection(block),
+        nextBlockId: this.getBlockConnections(block.id),
       });
     }
   });

@@ -1,5 +1,4 @@
 import browser from 'webextension-polyfill';
-import { getBlockConnection } from '../helper';
 
 const getFileExtension = (str) => /(?:\.([^.]+))?$/.exec(str)[1];
 function determineFilenameListener(item, suggest) {
@@ -28,8 +27,8 @@ function determineFilenameListener(item, suggest) {
   return false;
 }
 
-function handleDownload({ data, outputs }) {
-  const nextBlockId = getBlockConnection({ outputs });
+function handleDownload({ data, id: blockId }) {
+  const nextBlockId = this.getBlockConnections(blockId);
   const getFilesname = () =>
     JSON.parse(sessionStorage.getItem('rename-downloaded-files')) || {};
 

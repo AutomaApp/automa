@@ -35,6 +35,7 @@
 <script setup>
 import { onMounted, ref, reactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import cloneDeep from 'lodash.clonedeep';
 import { debounce } from '@/utils/helper';
 import SettingsTable from './settings/SettingsTable.vue';
 import SettingsBlocks from './settings/SettingsBlocks.vue';
@@ -81,16 +82,15 @@ const settings = reactive({
 
 watch(
   settings,
-  debounce((newSettings) => {
-    emit('update', {
-      settings: newSettings,
-    });
+  debounce(() => {
+    emit('update', { settings });
   }, 500),
   { deep: true }
 );
 
 onMounted(() => {
-  Object.assign(settings, props.workflow.settings);
+  const copySettings = cloneDeep(props.workflow.settings);
+  Object.assign(settings, copySettings);
 });
 </script>
 <style>

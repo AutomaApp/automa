@@ -1,5 +1,3 @@
-import { nanoid } from 'nanoid';
-
 export const tasks = {
   trigger: {
     name: 'Trigger',
@@ -751,13 +749,17 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     autocomplete: ['variableName'],
+    refDataKeys: ['dataToCopy'],
     data: {
       disableBlock: false,
       description: '',
+      type: 'get',
       assignVariable: false,
       variableName: '',
       saveData: true,
       dataColumn: '',
+      dataToCopy: '',
+      copySelectedText: false,
     },
   },
   'insert-data': {
@@ -765,7 +767,7 @@ export const tasks = {
     description: 'Insert data into table or variable',
     icon: 'riDatabase2Line',
     component: 'BlockBasic',
-    category: 'general',
+    category: 'data',
     editComponent: 'EditInsertData',
     inputs: 1,
     outputs: 1,
@@ -954,7 +956,7 @@ export const tasks = {
     icon: 'riDeleteBin7Line',
     editComponent: 'EditDeleteData',
     component: 'BlockBasic',
-    category: 'general',
+    category: 'data',
     inputs: 1,
     outputs: 1,
     allowedInputs: true,
@@ -1005,28 +1007,82 @@ export const tasks = {
       title: 'Hello world!',
     },
   },
+  'log-data': {
+    name: 'Get log data',
+    description: 'Get the latest log data of a workflow',
+    icon: 'riFileHistoryLine',
+    editComponent: 'EditLogData',
+    component: 'BlockBasic',
+    category: 'data',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      disableBlock: false,
+      description: '',
+      workflowId: '',
+      dataColumn: '',
+      saveData: true,
+      assignVariable: false,
+      variableName: '',
+    },
+  },
+  'tab-url': {
+    name: 'Get tab URL',
+    description: 'Get the tab URL',
+    icon: 'riLinksLine',
+    editComponent: 'EditTabURL',
+    component: 'BlockBasic',
+    category: 'browser',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      disableBlock: false,
+      description: '',
+      type: 'active-tab',
+      dataColumn: '',
+      saveData: true,
+      assignVariable: false,
+      variableName: '',
+    },
+  },
 };
 
 export const categories = {
   interaction: {
     name: 'Web interaction',
-    color: 'bg-green-200 dark:bg-green-300',
+    border: 'border-green-200 dark:border-green-300',
+    color: 'bg-green-200 dark:bg-green-300 fill-green-200 dark:fill-green-300',
   },
   browser: {
     name: 'Browser',
-    color: 'bg-orange-200 dark:bg-orange-300',
+    border: 'border-orange-200 dark:border-orange-300',
+    color:
+      'bg-orange-200 dark:bg-orange-300 fill-orange-200 dark:fill-orange-300',
   },
   general: {
     name: 'General',
-    color: 'bg-yellow-200 dark:bg-yellow-300',
+    border: 'border-yellow-200 dark:border-yellow-300',
+    color:
+      'bg-yellow-200 dark:bg-yellow-300 fill-yellow-200 dark:fill-yellow-300',
   },
   onlineServices: {
     name: 'Online services',
-    color: 'bg-red-200 dark:bg-red-300',
+    border: 'border-red-200 dark:border-red-300',
+    color: 'bg-red-200 dark:bg-red-300 fill-red-200 dark:fill-red-300',
+  },
+  data: {
+    name: 'Data',
+    border: 'border-lime-200 dark:border-lime-300',
+    color: 'bg-lime-200 dark:bg-lime-300 fill-lime-200 dark:fill-lime-300',
   },
   conditions: {
     name: 'Conditions',
-    color: 'bg-blue-200 dark:bg-blue-300',
+    border: 'border-blue-200 dark:border-blue-300',
+    color: 'bg-blue-200 dark:bg-blue-300 fill-blue-200 dark:fill-blue-300',
   },
 };
 
@@ -1058,22 +1114,6 @@ export const dataExportTypes = [
   { name: 'JSON', id: 'json' },
   { name: 'CSV', id: 'csv' },
   { name: 'Plain text', id: 'plain-text' },
-];
-
-export const firstWorkflows = [
-  {
-    id: nanoid(),
-    name: 'Google search',
-    createdAt: Date.now(),
-    drawflow: `{"drawflow":{"Home":{"data":{"d634ff22-5dfe-44dc-83d2-842412bd9fbf":{"id":"d634ff22-5dfe-44dc-83d2-842412bd9fbf","name":"trigger","data":{"type":"manual","interval":10},"class":"trigger","html":"BlockBasic","typenode":"vue","inputs":{},"outputs":{"output_1":{"connections":[{"node":"b9e7e0d4-e86a-4635-a352-31c63723fef4","output":"input_1"}]}},"pos_x":50,"pos_y":300},"b9e7e0d4-e86a-4635-a352-31c63723fef4":{"id":"b9e7e0d4-e86a-4635-a352-31c63723fef4","name":"new-tab","data":{"url":"https://google.com","active":true},"class":"new-tab","html":"BlockBasic","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"d634ff22-5dfe-44dc-83d2-842412bd9fbf","input":"output_1"}]}},"outputs":{"output_1":{"connections":[{"node":"09f3a14c-0514-4287-93b0-aa92b0064fba","output":"input_1"}]}},"pos_x":278,"pos_y":268},"09f3a14c-0514-4287-93b0-aa92b0064fba":{"id":"09f3a14c-0514-4287-93b0-aa92b0064fba","name":"forms","data":{"description":"Type query","selector":"[name='q']","markEl":false,"multiple":false,"selected":true,"type":"text-field","value":"Automa Extension","delay":"120","events":[]},"class":"forms","html":"BlockBasic","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"b9e7e0d4-e86a-4635-a352-31c63723fef4","input":"output_1"}]}},"outputs":{"output_1":{"connections":[{"node":"5f76370d-aa3d-4258-8319-230fcfc49a3a","output":"input_1"}]}},"pos_x":551,"pos_y":290},"5f76370d-aa3d-4258-8319-230fcfc49a3a":{"id":"5f76370d-aa3d-4258-8319-230fcfc49a3a","name":"event-click","data":{"description":"Click search","selector":"center:nth-child(1) > .gNO89b","markEl":false,"multiple":false},"class":"event-click","html":"BlockBasic","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"09f3a14c-0514-4287-93b0-aa92b0064fba","input":"output_1"}]}},"outputs":{"output_1":{"connections":[]}},"pos_x":794,"pos_y":308}}}}}`,
-  },
-  {
-    id: nanoid(),
-    name: 'Generate lorem ipsum',
-    createdAt: Date.now(),
-    drawflow:
-      '{"drawflow":{"Home":{"data":{"c5774692-0be4-457f-82be-d5e4b3344ad7":{"id":"c5774692-0be4-457f-82be-d5e4b3344ad7","name":"trigger","data":{"disableBlock":false,"description":"","type":"manual","interval":60,"delay":5,"date":"","time":"00:00","url":"","shortcut":"","activeInInput":false,"isUrlRegex":false,"days":[]},"class":"trigger","html":"BlockBasic","typenode":"vue","inputs":{},"outputs":{"output_1":{"connections":[{"node":"10a0429e-b8c4-4c04-9ea3-df169cea78e4","output":"input_1"}]}},"pos_x":50,"pos_y":300},"10a0429e-b8c4-4c04-9ea3-df169cea78e4":{"id":"10a0429e-b8c4-4c04-9ea3-df169cea78e4","name":"new-tab","data":{"disableBlock":false,"description":"","url":"http://lipsum.com","userAgent":"","active":true,"inGroup":false,"waitTabLoaded":false,"updatePrevTab":true,"customUserAgent":false},"class":"new-tab","html":"BlockBasic","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"c5774692-0be4-457f-82be-d5e4b3344ad7","input":"output_1"},{"node":"2f5fec61-a318-4e2b-b7d3-bc7328bd282c","input":"output_2"}]}},"outputs":{"output_1":{"connections":[{"node":"24bdec44-1e80-4cee-9139-00545b8d33d9","output":"input_1"}]}},"pos_x":285,"pos_y":282},"df24edcc-4c29-49f5-8a29-0e572a4bc6ae":{"id":"df24edcc-4c29-49f5-8a29-0e572a4bc6ae","name":"delay","data":{"time":"1000"},"class":"delay","html":"BlockDelay","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"24bdec44-1e80-4cee-9139-00545b8d33d9","input":"output_1"}]}},"outputs":{"output_1":{"connections":[{"node":"2d93c1de-42ca-4f39-8e61-e3e55529fbba","output":"input_1"}]}},"pos_x":833,"pos_y":297},"24bdec44-1e80-4cee-9139-00545b8d33d9":{"id":"24bdec44-1e80-4cee-9139-00545b8d33d9","name":"element-scroll","data":{"disableBlock":false,"description":"","findBy":"cssSelector","waitForSelector":false,"waitSelectorTimeout":5000,"selector":"#amount","markEl":false,"multiple":false,"scrollY":0,"scrollX":0,"incX":false,"incY":false,"smooth":true,"scrollIntoView":true},"class":"element-scroll","html":"BlockBasic","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"10a0429e-b8c4-4c04-9ea3-df169cea78e4","input":"output_1"},{"node":"2f5fec61-a318-4e2b-b7d3-bc7328bd282c","input":"output_1"}]}},"outputs":{"output_1":{"connections":[{"node":"df24edcc-4c29-49f5-8a29-0e572a4bc6ae","output":"input_1"}]}},"pos_x":566,"pos_y":317},"2d93c1de-42ca-4f39-8e61-e3e55529fbba":{"id":"2d93c1de-42ca-4f39-8e61-e3e55529fbba","name":"forms","data":{"disableBlock":false,"description":"Lipsum length","findBy":"cssSelector","waitForSelector":false,"waitSelectorTimeout":5000,"selector":"#amount","markEl":false,"multiple":false,"selected":true,"clearValue":true,"getValue":false,"saveData":false,"dataColumn":"","assignVariable":false,"variableName":"","type":"text-field","value":"3","delay":0,"events":[]},"class":"forms","html":"BlockBasic","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"df24edcc-4c29-49f5-8a29-0e572a4bc6ae","input":"output_1"}]}},"outputs":{"output_1":{"connections":[{"node":"0f3e2baa-8d6d-4323-8ac7-362f1be39ecb","output":"input_1"}]}},"pos_x":1058,"pos_y":327},"0f3e2baa-8d6d-4323-8ac7-362f1be39ecb":{"id":"0f3e2baa-8d6d-4323-8ac7-362f1be39ecb","name":"event-click","data":{"disableBlock":false,"description":"Generate button","findBy":"cssSelector","waitForSelector":false,"waitSelectorTimeout":5000,"selector":"#generate","markEl":false,"multiple":false},"class":"event-click","html":"BlockBasic","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"2d93c1de-42ca-4f39-8e61-e3e55529fbba","input":"output_1"}]}},"outputs":{"output_1":{"connections":[{"node":"fb9be12f-8995-4876-8bfe-79323769474b","output":"input_1"}]}},"pos_x":1309,"pos_y":329},"fb9be12f-8995-4876-8bfe-79323769474b":{"id":"fb9be12f-8995-4876-8bfe-79323769474b","name":"delay","data":{"disableBlock":false,"time":2000},"class":"delay","html":"BlockDelay","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"0f3e2baa-8d6d-4323-8ac7-362f1be39ecb","input":"output_1"}]}},"outputs":{"output_1":{"connections":[{"node":"7205fcf2-deda-445e-9690-4e36adb52585","output":"input_1"}]}},"pos_x":1566,"pos_y":310},"7205fcf2-deda-445e-9690-4e36adb52585":{"id":"7205fcf2-deda-445e-9690-4e36adb52585","name":"get-text","data":{"disableBlock":false,"description":"Get text result","findBy":"cssSelector","waitForSelector":false,"waitSelectorTimeout":5000,"selector":"#lipsum","markEl":false,"multiple":false,"regex":"","prefixText":"","suffixText":"","regexExp":["g","g"],"dataColumn":"","saveData":true,"includeTags":false,"addExtraRow":false,"assignVariable":false,"variableName":"","extraRowValue":"","extraRowDataColumn":""},"class":"get-text","html":"BlockBasic","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"fb9be12f-8995-4876-8bfe-79323769474b","input":"output_1"}]}},"outputs":{"output_1":{"connections":[{"node":"3d3e8fac-97fa-4c3d-84bc-a3db18740184","output":"input_1"}]}},"pos_x":1823,"pos_y":337},"3d3e8fac-97fa-4c3d-84bc-a3db18740184":{"id":"3d3e8fac-97fa-4c3d-84bc-a3db18740184","name":"repeat-task","data":{"disableBlock":false,"repeatFor":2},"class":"repeat-task","html":"BlockRepeatTask","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"7205fcf2-deda-445e-9690-4e36adb52585","input":"output_1"}]}},"outputs":{"output_1":{"connections":[{"node":"4d39ecd5-f33f-4e57-b11d-2f26b1076334","output":"input_1"}]},"output_2":{"connections":[{"node":"2f5fec61-a318-4e2b-b7d3-bc7328bd282c","output":"input_1","points":[{"pos_x":2290.2500152587886,"pos_y":542.0000076293943},{"pos_x":1125.2500152587886,"pos_y":552.0000076293943}]}]}},"pos_x":2073,"pos_y":293.5},"2f5fec61-a318-4e2b-b7d3-bc7328bd282c":{"id":"2f5fec61-a318-4e2b-b7d3-bc7328bd282c","name":"go-back","data":{"disableBlock":false,"onError":{"retry":false,"enable":true,"retryTimes":1,"retryInterval":2,"toDo":"fallback"}},"class":"go-back","html":"BlockBasic","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"3d3e8fac-97fa-4c3d-84bc-a3db18740184","input":"output_2"}]}},"outputs":{"output_1":{"connections":[{"node":"24bdec44-1e80-4cee-9139-00545b8d33d9","output":"input_1","points":[{"pos_x":1305.2500152587886,"pos_y":829.5000076293943},{"pos_x":545.250015258789,"pos_y":834.499988555908}]}]},"output_2":{"connections":[{"node":"10a0429e-b8c4-4c04-9ea3-df169cea78e4","output":"input_1","points":[{"pos_x":1464.4999694824214,"pos_y":694.2499923706052},{"pos_x":1464.4999694824214,"pos_y":484.2499923706054},{"pos_x":266.99996948242176,"pos_y":464.2499923706054}]}]}},"pos_x":1135.5,"pos_y":628},"4d39ecd5-f33f-4e57-b11d-2f26b1076334":{"id":"4d39ecd5-f33f-4e57-b11d-2f26b1076334","name":"export-data","data":{"disableBlock":false,"name":"Lipsum","refKey":"","type":"plain-text","description":"","variableName":"","addBOMHeader":false,"onConflict":"uniquify","dataToExport":"data-columns"},"class":"export-data","html":"BlockBasic","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"3d3e8fac-97fa-4c3d-84bc-a3db18740184","input":"output_1"}]}},"outputs":{"output_1":{"connections":[]}},"pos_x":2409.75,"pos_y":289}}}}}',
-  },
 ];
 
 export const workflowCategories = {

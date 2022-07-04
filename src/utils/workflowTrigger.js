@@ -162,7 +162,6 @@ export function registerSpecificDate(workflowId, data) {
 
   if (data.date) {
     const [hour, minute] = data.time.split(':');
-
     date = dayjs(data.date).hour(hour).minute(minute).second(0).valueOf();
   }
 
@@ -229,8 +228,9 @@ export async function registerWorkflowTrigger(workflowId, { data }) {
       'keyboard-shortcut': registerKeyboardShortcut,
     };
 
-    if (triggersHandler[data.type])
+    if (triggersHandler[data.type]) {
       await triggersHandler[data.type](workflowId, data);
+    }
   } catch (error) {
     console.error(error);
   }

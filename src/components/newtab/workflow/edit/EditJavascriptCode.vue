@@ -141,7 +141,7 @@ const availableFuncs = [
 const state = reactive({
   activeTab: 'code',
   code: `${props.data.code}`,
-  preloadScripts: [...(props.data.preloadScripts || [])],
+  preloadScripts: [...Object.values(props.data.preloadScripts || [])],
   showCodeModal: false,
 });
 

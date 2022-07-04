@@ -1,5 +1,4 @@
 import browser from 'webextension-polyfill';
-import { getBlockConnection } from '../helper';
 
 async function closeWindow(data, windowId) {
   const windowIds = [];
@@ -37,29 +36,21 @@ async function closeTab(data, tabId) {
   if (tabIds) await browser.tabs.remove(tabIds);
 }
 
-export default async function ({ data, outputs }) {
-  const nextBlockId = getBlockConnection({ outputs });
+export default async function ({ data, id }) {
+  if (data.closeType === 'window') {
+    await closeWindow(data, this.windowId);
 
-  try {
-    if (data.closeType === 'window') {
-      await closeWindow(data, this.windowId);
+    this.windowId = null;
+  } else {
+    await closeTab(data, this.activeTab.id);
 
-      this.windowId = null;
-    } else {
-      await closeTab(data, this.activeTab.id);
-
-      if (data.activeTab) {
-        this.activeTab.id = null;
-      }
+    if (data.activeTab) {
+      this.activeTab.id = null;
     }
-
-    return {
-      nextBlockId,
-      data: '',
-    };
-  } catch (error) {
-    error.nextBlockId = nextBlockId;
-
-    throw error;
   }
+
+  return {
+    data: '',
+    nextBlockId: this.getBlockConnections(id),
+  };
 }

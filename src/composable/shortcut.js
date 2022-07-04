@@ -34,7 +34,7 @@ const defaultShortcut = {
   },
   'action:search': {
     id: 'action:search',
-    combo: 'mod+shift+f',
+    combo: 'mod+f',
   },
   'action:new': {
     id: 'action:new',
@@ -65,7 +65,7 @@ const customShortcut = parseJSON(localStorage.getItem('shortcuts', {})) || {};
 
 export const mapShortcuts = defu(customShortcut, defaultShortcut);
 
-const os = navigator.appVersion.indexOf('Win') !== -1 ? 'win' : 'mac';
+const os = navigator.appVersion.indexOf('Mac') !== -1 ? 'mac' : 'win';
 export function getReadableShortcut(str) {
   const list = {
     option: {

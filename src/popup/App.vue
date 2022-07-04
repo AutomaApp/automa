@@ -6,13 +6,17 @@
 </template>
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import browser from 'webextension-polyfill';
+import { useStore } from '@/stores/main';
+import { useWorkflowStore } from '@/stores/workflow';
+import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
 
 const store = useStore();
 const router = useRouter();
+const workflowStore = useWorkflowStore();
+const hostedWorkflowStore = useHostedWorkflowStore();
 
 const retrieved = ref(false);
 
@@ -22,9 +26,12 @@ browser.storage.local.get('isRecording').then(({ isRecording }) => {
 
 onMounted(async () => {
   try {
-    await store.dispatch('retrieve');
-    await loadLocaleMessages(store.state.settings.locale, 'popup');
-    await setI18nLanguage(store.state.settings.locale);
+    await store.loadSettings();
+    await loadLocaleMessages(store.settings.locale, 'popup');
+    await setI18nLanguage(store.settings.locale);
+
+    await workflowStore.loadData();
+    await hostedWorkflowStore.loadData();
 
     retrieved.value = true;
   } catch (error) {

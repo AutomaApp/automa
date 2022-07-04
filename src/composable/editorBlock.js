@@ -1,40 +1,20 @@
-import { reactive, nextTick } from 'vue';
+import { reactive, onMounted } from 'vue';
 import { tasks, categories } from '@/utils/shared';
 
-export function useEditorBlock(selector, editor) {
+export function useEditorBlock(label) {
   const block = reactive({
-    id: '',
-    data: {},
     details: {},
     category: {},
-    retrieved: false,
-    containerEl: null,
   });
 
-  nextTick(() => {
-    const rootElement = editor.rootElement || document;
-    const element = rootElement.querySelector(selector);
+  onMounted(() => {
+    if (!label) return;
 
-    if (block.id || !element) return;
+    const details = tasks[label];
 
-    block.containerEl = element.parentElement.parentElement;
-    block.id = block.containerEl.id.replace('node-', '');
-
-    if (block.id) {
-      const { name, data } = editor.getNodeFromId(block.id);
-      const details = tasks[name];
-
-      block.details = { id: name, ...details };
-      block.data = data || details.data;
-      block.category = categories[details.category];
-    }
-
-    setTimeout(() => {
-      editor.updateConnectionNodes(`node-${block.id}`);
-    }, 200);
+    block.details = { id: label, ...details };
+    block.category = categories[details.category];
   });
-
-  block.retrieved = true;
 
   return block;
 }

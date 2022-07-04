@@ -15,13 +15,6 @@
       </ui-button>
       <div class="flex-grow"></div>
       <ui-button
-        v-tooltip:bottom="t('workflow.blocks.conditions.refresh')"
-        icon
-        @click="refreshConnections"
-      >
-        <v-remixicon name="riRefreshLine" />
-      </ui-button>
-      <ui-button
         v-tooltip:bottom="t('common.settings')"
         icon
         @click="state.showSettings = !state.showSettings"
@@ -68,6 +61,7 @@
       item-key="id"
       tag="ui-list"
       class="space-y-1"
+      @end="onEnd"
     >
       <template #item="{ element, index }">
         <ui-list-item class="group cursor-move">
@@ -85,7 +79,7 @@
             name="riDeleteBin7Line"
             size="20"
             class="ml-2 -mr-1 cursor-pointer"
-            @click="deleteCondition(index)"
+            @click="deleteCondition(index, element.id)"
           />
         </ui-list-item>
       </template>
@@ -124,11 +118,15 @@ import { ref, watch, onMounted, shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid';
 import Draggable from 'vuedraggable';
-import emitter from '@/lib/mitt';
+import { sleep } from '@/utils/helper';
 import SharedConditionBuilder from '@/components/newtab/shared/SharedConditionBuilder/index.vue';
 
 const props = defineProps({
   data: {
+    type: Object,
+    default: () => ({}),
+  },
+  editor: {
     type: Object,
     default: () => ({}),
   },
@@ -164,31 +162,28 @@ function editCondition(index) {
 function addCondition() {
   if (conditions.value.length >= 20) return;
 
-  emitter.emit('conditions-block:add', {
-    id: props.blockId,
-  });
-
   conditions.value.push({
     id: nanoid(),
     name: `Path ${conditions.value.length + 1}`,
     conditions: [],
   });
 }
-function deleteCondition(index) {
+function deleteCondition(index, id) {
   conditions.value.splice(index, 1);
 
-  emitter.emit('conditions-block:delete', {
-    index,
-    id: props.blockId,
-  });
-}
-function refreshConnections() {
-  emitter.emit('conditions-block:refresh', {
-    id: props.blockId,
+  props.editor.removeEdges((edges) => {
+    return edges.filter(
+      (edge) => edge.sourceHandle === `${props.blockId}-output-${id}`
+    );
   });
 }
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
+}
+async function onEnd() {
+  props.editor.addSelectedNodes([]);
+  await sleep(1000);
+  props.editor.addSelectedNodes([props.editor.getNode.value(props.blockId)]);
 }
 
 watch(

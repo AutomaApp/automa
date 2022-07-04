@@ -57,10 +57,11 @@ import { nanoid } from 'nanoid';
 import defu from 'defu';
 import browser from 'webextension-polyfill';
 import { tasks } from '@/utils/shared';
-import Workflow from '@/models/workflow';
+import { useWorkflowStore } from '@/stores/workflow';
 
 const { t } = useI18n();
 const router = useRouter();
+const workflowStore = useWorkflowStore();
 
 const state = reactive({
   name: '',
@@ -74,36 +75,39 @@ function generateDrawflow(startBlock, startBlockData) {
   const triggerId = startBlock?.id || nanoid();
   let prevNodeId = startBlock?.id || triggerId;
 
-  const nodes = {
-    [triggerId]: {
-      pos_x: 50,
-      pos_y: 300,
-      inputs: {},
-      outputs: {
-        output_1: {
-          connections: [{ node: nextNodeId, output: 'input_1' }],
-        },
+  const nodes = [];
+  const edges = [];
+
+  const addEdge = (data = {}) => {
+    edges.push({
+      ...data,
+      id: nanoid(),
+      class: `source-${data.sourceHandle} targte-${data.targetHandle}`,
+    });
+  };
+  addEdge({
+    source: prevNodeId,
+    target: nextNodeId,
+    targetHandle: `${nextNodeId}-input-1`,
+    sourceHandle: startBlock?.output || `${prevNodeId}-output-1`,
+  });
+
+  if (!startBlock) {
+    nodes.push({
+      position: {
+        x: 50,
+        y: 300,
       },
       id: triggerId,
-      typenode: 'vue',
-      name: 'trigger',
-      class: 'trigger',
-      html: 'BlockBasic',
+      label: 'trigger',
+      type: 'BlockBasic',
       data: tasks.trigger.data,
-      ...startBlockData,
-    },
-  };
-
-  if (startBlock) {
-    nodes[triggerId].outputs[startBlock.output]?.connections.push({
-      node: nextNodeId,
-      output: 'input_1',
     });
   }
 
   const position = {
-    y: startBlockData ? startBlockData.pos_y + 50 : 300,
-    x: startBlockData ? startBlockData.pos_x + 120 : 260,
+    y: startBlockData ? startBlockData.position.y + 120 : 300,
+    x: startBlockData ? startBlockData.position.x + 280 : 320,
   };
   const groups = {};
 
@@ -128,45 +132,36 @@ function generateDrawflow(startBlock, startBlockData) {
 
     const node = {
       id: nextNodeId,
-      name: block.id,
-      class: block.id,
-      typenode: 'vue',
-      pos_x: position.x,
-      pos_y: position.y,
-      inputs: { input_1: { connections: [] } },
-      outputs: { output_1: { connections: [] } },
-      html: tasks[block.id].component,
+      label: block.id,
+      type: tasks[block.id].component,
       data: defu(block.data, tasks[block.id].data),
+      position: JSON.parse(JSON.stringify(position)),
     };
-
-    node.inputs.input_1.connections.push({
-      node: prevNodeId,
-      input: index === 0 && startBlock ? startBlock.output : 'output_1',
-    });
-
-    const isLastIndex = index === state.flows.length - 1;
 
     prevNodeId = nextNodeId;
     nextNodeId = nanoid();
 
-    if (!isLastIndex) {
-      node.outputs.output_1.connections.push({
-        node: nextNodeId,
-        output: 'input_1',
+    if (index !== state.flows.length - 1) {
+      addEdge({
+        target: nextNodeId,
+        source: prevNodeId,
+        targetHandle: `${nextNodeId}-input-1`,
+        sourceHandle: `${prevNodeId}-output-1`,
       });
     }
 
     const inNewRow = (index + 1) % 5 === 0;
-    const blockNameLen = tasks[block.id].name.length * 14 + 120;
-    position.x = inNewRow ? 50 : position.x + blockNameLen;
+
+    position.x = inNewRow ? 50 : position.x + 280;
     position.y = inNewRow ? position.y + 150 : position.y;
 
-    nodes[node.id] = node;
+    nodes.push(node);
   });
 
-  if (startBlock) return nodes;
-
-  return { drawflow: { Home: { data: nodes } } };
+  return {
+    edges,
+    nodes,
+  };
 }
 async function stopRecording() {
   if (state.isGenerating) return;
@@ -176,30 +171,28 @@ async function stopRecording() {
 
     if (state.flows.length !== 0) {
       if (state.workflowId) {
-        const workflow = Workflow.find(state.workflowId);
-        const drawflow =
-          typeof workflow.drawflow === 'string'
-            ? JSON.parse(workflow.drawflow)
-            : workflow.drawflow;
-        const node = drawflow.drawflow.Home.data[state.connectFrom.id];
-        const updatedDrawflow = generateDrawflow(state.connectFrom, node);
+        const workflow = workflowStore.getById(state.workflowId);
+        const startBlock = workflow.drawflow.nodes.find(
+          (node) => node.id === state.connectFrom.id
+        );
+        const updatedDrawflow = generateDrawflow(state.connectFrom, startBlock);
 
-        Object.assign(drawflow.drawflow.Home.data, updatedDrawflow);
+        const drawflow = {
+          ...workflow.drawflow,
+          nodes: [...workflow.drawflow.nodes, ...updatedDrawflow.nodes],
+          edges: [...workflow.drawflow.edges, ...updatedDrawflow.edges],
+        };
 
-        await Workflow.update({
-          where: state.workflowId,
-          data: {
-            drawflow: JSON.stringify(drawflow),
-          },
+        await workflowStore.update({
+          id: state.workflowId,
+          data: { drawflow },
         });
       } else {
         const drawflow = generateDrawflow();
 
-        await Workflow.insert({
-          data: {
-            name: state.name,
-            drawflow: JSON.stringify(drawflow),
-          },
+        await workflowStore.insert({
+          drawflow,
+          name: state.name,
         });
       }
     }
