@@ -221,7 +221,7 @@ async function publishWorkflow() {
     const workflow = convertWorkflow(state.workflow, ['id', 'category']);
     workflow.name = workflow.name || 'unnamed';
     workflow.content = state.workflow.content || null;
-    workflow.drawflow = parseJSON(workflow.drawflow, {});
+    workflow.drawflow = parseJSON(workflow.drawflow, workflow.drawflow);
     workflow.description = state.workflow.description.slice(0, 300);
 
     delete workflow.extVersion;
