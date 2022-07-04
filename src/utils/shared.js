@@ -1049,6 +1049,27 @@ export const tasks = {
       variableName: '',
     },
   },
+  'slice-variable': {
+    name: 'Slice variable',
+    description: 'Extracts a section of a variable value',
+    icon: 'riSliceLine',
+    editComponent: 'EditSliceVariable',
+    component: 'BlockBasic',
+    category: 'data',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      disableBlock: false,
+      description: '',
+      endIdxEnabled: false,
+      startIdxEnabled: true,
+      endIndex: 0,
+      startIndex: 0,
+      variableName: '',
+    },
+  },
 };
 
 export const categories = {

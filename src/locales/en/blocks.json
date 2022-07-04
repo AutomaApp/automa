@@ -95,6 +95,12 @@
         "specificFlow": "Only continue a specific flow",
         "selectFlow": "Select flow"
       },
+      "slice-variable": {
+        "name": "Slice variable",
+        "description": "Extracts a section of a variable value",
+        "start": "Start index",
+        "end": "End index"
+      },
       "notification": {
         "name": "notification",
         "description": "Display a notification",
