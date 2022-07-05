@@ -1,9 +1,15 @@
 <template>
   <div>
+    <ui-textarea
+      :model-value="data.description"
+      :placeholder="t('common.description')"
+      class="w-full"
+      @change="updateData({ description: $event })"
+    />
     <ui-select
       :model-value="data.findTabBy"
       label="Find tab by"
-      class="w-full mb-2"
+      class="w-full mb-2 mt-3"
       @change="updateData({ findTabBy: $event })"
     >
       <option v-for="type in types" :key="type.id" :value="type.id">
