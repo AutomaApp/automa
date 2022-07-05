@@ -21,7 +21,7 @@ export async function webhook({ data, id }, { refData }) {
     const response = await executeWebhook({ ...data, headers: newHeaders });
 
     if (!response.ok) {
-      if (fallbackOutput.connections.length > 0) {
+      if (fallbackOutput && fallbackOutput.length > 0) {
         return {
           data: '',
           nextBlockId: fallbackOutput,

@@ -1108,6 +1108,30 @@ export const tasks = {
       flag: [],
     },
   },
+  'data-mapping': {
+    name: 'Data mapping',
+    description: 'Map data of a variable or table',
+    icon: 'riMindMap',
+    editComponent: 'EditDataMapping',
+    component: 'BlockBasic',
+    category: 'data',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      disableBlock: false,
+      description: '',
+      expression: '',
+      dataSource: 'table',
+      sources: [],
+      varSourceName: '',
+      dataColumn: '',
+      saveData: false,
+      assignVariable: false,
+      variableName: '',
+    },
+  },
 };
 
 export const categories = {

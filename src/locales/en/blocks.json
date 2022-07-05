@@ -106,6 +106,16 @@
         "name": "RegEx variable",
         "description": "Matching a variable value against a regular expression"
       },
+      "data-mapping": {
+        "source": "Source",
+        "destination": "Destination",
+        "name": "Data mapping",
+        "edit": "Edit data map",
+        "dataSource": "Data source",
+        "description": "Map data of a variable or table",
+        "addSource": "Add source",
+        "addDestination": "Add destination"
+      },
       "increase-variable": {
         "name": "Increase variable",
         "description": "Increase the value of a variable by specific amount",
