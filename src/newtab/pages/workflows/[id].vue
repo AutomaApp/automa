@@ -714,8 +714,8 @@ function pasteCopiedElements(position) {
   editor.value.addEdges(edges);
 }
 function onKeydown({ ctrlKey, metaKey, key, target }) {
-  const els = ['INPUT', 'SELECT'];
-  if (els.includes(target.tagName)) return;
+  const els = ['INPUT', 'SELECT', 'TEXTAREA'];
+  if (els.includes(target.tagName) || target.isContentEditable) return;
 
   const command = (keyName) => (ctrlKey || metaKey) && keyName === key;
 
