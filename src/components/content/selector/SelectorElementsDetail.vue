@@ -127,25 +127,16 @@ function copySelector(name, value) {
   rootElement.shadowRoot
     .querySelector(`[data-testid="${name}"] input`)
     ?.select();
-  const input = rootElement.shadowRoot.querySelector(`select#select--1`)?.value;
-  if (input === 'css') {
-    navigator.clipboard
-      .writeText(
-        `${props.selectedElements[0].tagName.toLowerCase()}[${name}="${value}"]`
-      )
-      .catch((error) => {
-        document.execCommand('copy');
-        console.error(error);
-      });
-  } else {
-    navigator.clipboard
-      .writeText(
-        `//${props.selectedElements[0].tagName.toLowerCase()}[@${name}='${value}']`
-      )
-      .catch((error) => {
-        document.execCommand('copy');
-        console.error(error);
-      });
-  }
+  const type = rootElement.shadowRoot.querySelector(`select#select--1`)?.value;
+  navigator.clipboard
+    .writeText(
+      type === 'css'
+        ? `${props.selectedElements[0].tagName.toLowerCase()}[${name}="${value}"]`
+        : `//${props.selectedElements[0].tagName.toLowerCase()}[@${name}='${value}']`
+    )
+    .catch((error) => {
+      document.execCommand('copy');
+      console.error(error);
+    });
 }
 </script>
