@@ -64,6 +64,11 @@ function initWebListener() {
           table: workflow.table || workflow.dataColumns,
         };
 
+        workflowData.drawflow =
+          typeof workflowData.drawflow === 'string'
+            ? parseJSON(workflowData.drawflow, workflowData.drawflow)
+            : workflowData.drawflow;
+
         if (Array.isArray(workflowsStorage)) {
           workflowsStorage.push(workflowData);
         } else {

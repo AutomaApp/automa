@@ -35,9 +35,9 @@
   </template>
   <div
     v-else-if="state.connectedTable"
-    class="py-2 px-4 rounded-md bg-green-200 dark:bg-green-300 flex items-center mb-4"
+    class="py-2 px-4 rounded-md bg-green-200 dark:bg-green-300 flex items-center mb-4 text-black"
   >
-    <p class="mr-1 text-black">
+    <p class="mr-1">
       This workflow is connected to the
       <router-link
         :to="`/storage/tables/${state.connectedTable.id}`"
