@@ -41,7 +41,7 @@
             >
               <template #prepend>
                 <button
-                  class="absolute ml-2 left-0 w-2"
+                  class="absolute ml-2"
                   @click="copySelector(name, value)"
                 >
                   <v-remixicon name="riFileCopyLine" />
@@ -101,7 +101,7 @@ import { inject } from 'vue';
 import SelectorBlocks from './SelectorBlocks.vue';
 import SelectorElementList from './SelectorElementList.vue';
 
-defineProps({
+const props = defineProps({
   activeTab: {
     type: String,
     default: '',
@@ -127,9 +127,25 @@ function copySelector(name, value) {
   rootElement.shadowRoot
     .querySelector(`[data-testid="${name}"] input`)
     ?.select();
-  navigator.clipboard.writeText(`[${name}="${value}"]`).catch((error) => {
-    document.execCommand('copy');
-    console.error(error);
-  });
+  const input = rootElement.shadowRoot.querySelector(`select#select--1`)?.value;
+  if (input === 'css') {
+    navigator.clipboard
+      .writeText(
+        `${props.selectedElements[0].tagName.toLowerCase()}[${name}="${value}"]`
+      )
+      .catch((error) => {
+        document.execCommand('copy');
+        console.error(error);
+      });
+  } else {
+    navigator.clipboard
+      .writeText(
+        `//${props.selectedElements[0].tagName.toLowerCase()}[@${name}='${value}']`
+      )
+      .catch((error) => {
+        document.execCommand('copy');
+        console.error(error);
+      });
+  }
 }
 </script>
