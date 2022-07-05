@@ -40,6 +40,14 @@ export const functions = {
 
     return value.length ?? value;
   },
+  slice(value, start, end) {
+    if (!value || !value.slice) return value;
+
+    const startIndex = Number.isNaN(+start) ? 0 : +start;
+    const endIndex = Number.isNaN(+end) ? value.length : +end;
+
+    return value.slice(startIndex, endIndex);
+  },
   randData(str) {
     const getRand = (data) => data[Math.floor(Math.random() * data.length)];
     const lowercase = 'abcdefghijklmnopqrstuvwxyz';
