@@ -31,13 +31,23 @@
             >
               {{ name }}
             </p>
-            <input
-              :value="value"
+            <ui-input
+              :model-value="value"
               :placeholder="!value ? 'EMPTY' : null"
+              :data-testid="name"
+              :title="name"
               readonly
-              title="Attribute value"
-              class="bg-transparent w-full"
-            />
+              class="w-full"
+            >
+              <template #prepend>
+                <button
+                  class="absolute ml-2 left-0 w-2"
+                  @click="copySelector(name, value)"
+                >
+                  <v-remixicon name="riFileCopyLine" />
+                </button>
+              </template>
+            </ui-input>
           </div>
         </template>
       </selector-element-list>
@@ -87,6 +97,7 @@
   </ui-tab-panels>
 </template>
 <script setup>
+import { inject } from 'vue';
 import SelectorBlocks from './SelectorBlocks.vue';
 import SelectorElementList from './SelectorElementList.vue';
 
@@ -109,4 +120,16 @@ defineProps({
   },
 });
 defineEmits(['update:activeTab', 'execute', 'highlight', 'update']);
+
+const rootElement = inject('rootElement');
+
+function copySelector(name, value) {
+  rootElement.shadowRoot
+    .querySelector(`[data-testid="${name}"] input`)
+    ?.select();
+  navigator.clipboard.writeText(`[${name}="${value}"]`).catch((error) => {
+    document.execCommand('copy');
+    console.error(error);
+  });
+}
 </script>
