@@ -122,9 +122,11 @@ export const tasks = {
       disableBlock: false,
       description: '',
       url: '',
+      tabIndex: 0,
       matchPattern: '',
       activeTab: true,
       createIfNoMatch: false,
+      findTabBy: 'match-patterns',
     },
   },
   'new-window': {
