@@ -12,36 +12,65 @@ export default async function ({ data, id }) {
     return error;
   };
   this.windowId = null;
+
+  let tab = null;
   const activeTab = data.activeTab ?? true;
-  let [tab] = await browser.tabs.query({ url: data.matchPattern });
+  const findTabBy = data.findTabBy || 'match-patterns';
+  const isPrevNext = ['next-tab', 'prev-tab'].includes(findTabBy);
 
-  if (!tab) {
-    if (data.createIfNoMatch) {
-      if (!data.url.startsWith('http')) {
-        throw generateError('invalid-active-tab', { url: data.url });
+  if (!this.activeTab.id && isPrevNext) {
+    throw new Error('no-tab');
+  }
+
+  const tabs =
+    findTabBy !== 'match-patterns' ? await browser.tabs.query({}) : [];
+
+  if (findTabBy === 'match-patterns') {
+    [tab] = await browser.tabs.query({ url: data.matchPattern });
+
+    if (!tab) {
+      if (data.createIfNoMatch) {
+        if (!data.url.startsWith('http')) {
+          throw generateError('invalid-active-tab', { url: data.url });
+        }
+
+        tab = await browser.tabs.create({
+          active: activeTab,
+          url: data.url,
+          windowId: this.windowId,
+        });
+      } else {
+        throw generateError('no-match-tab', { pattern: data.matchPattern });
       }
-
-      tab = await browser.tabs.create({
-        active: activeTab,
-        url: data.url,
-        windowId: this.windowId,
-      });
-    } else {
-      throw generateError('no-match-tab', { pattern: data.matchPattern });
     }
-  } else {
-    await browser.tabs.update(tab.id, { active: activeTab });
+  } else if (isPrevNext) {
+    const incrementBy = findTabBy.includes('next') ? 1 : -1;
+    let tabIndex = tabs.findIndex((item) => item.id === this.activeTab.id);
+
+    tabIndex += incrementBy;
+
+    if (tabIndex < 0) tabIndex = tabs.length - 1;
+    else if (tabIndex > tabs.length - 1) tabIndex = 0;
+
+    tab = tabs[tabIndex];
+  } else if (findTabBy === 'tab-index') {
+    tab = tabs[data.tabIndex];
+
+    if (!tab)
+      throw generateError(`Can't find a tab with ${data.tabIndex} index`);
   }
 
-  if (this.settings.debugMode) {
-    await attachDebugger(tab.id, this.activeTab.id);
-    this.debugAttached = true;
-  }
+  await browser.tabs.update(tab.id, { active: activeTab });
 
   this.activeTab.id = tab.id;
   this.activeTab.frameId = 0;
   this.activeTab.url = tab.url;
   this.windowId = tab.windowId;
+
+  if (this.settings.debugMode) {
+    await attachDebugger(tab.id, this.activeTab.id);
+    this.debugAttached = true;
+  }
 
   if (this.preloadScripts.length > 0) {
     const preloadScripts = this.preloadScripts.map((script) =>

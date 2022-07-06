@@ -20,7 +20,7 @@ const defaultWorkflow = (data = null, options = {}) => {
     connectedTable: null,
     drawflow: {
       edges: [],
-      position: { zoom: 1 },
+      zoom: 1.3,
       nodes: [
         {
           position: {

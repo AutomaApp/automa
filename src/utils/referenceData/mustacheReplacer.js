@@ -7,6 +7,7 @@ const refKeys = {
   dataColumn: 'table',
   dataColumns: 'table',
 };
+const isAllNums = (...args) => args.every((arg) => !Number.isNaN(+arg));
 
 /* eslint-disable prefer-destructuring, no-useless-escape */
 export const functions = {
@@ -39,6 +40,34 @@ export const functions = {
     const value = parseJSON(str, str);
 
     return value.length ?? value;
+  },
+  slice(value, start, end) {
+    if (!value || !value.slice) return value;
+
+    const startIndex = Number.isNaN(+start) ? 0 : +start;
+    const endIndex = Number.isNaN(+end) ? value.length : +end;
+
+    return value.slice(startIndex, endIndex);
+  },
+  multiply(value, multiplyBy) {
+    if (!isAllNums(value, multiplyBy)) return value;
+
+    return +value * +multiplyBy;
+  },
+  increment(value, incrementBy) {
+    if (!isAllNums(value, incrementBy)) return value;
+
+    return +value + +incrementBy;
+  },
+  divide(value, divideBy) {
+    if (!isAllNums(value, divideBy)) return value;
+
+    return +value / +divideBy;
+  },
+  subtract(value, subtractBy) {
+    if (!isAllNums(value, subtractBy)) return value;
+
+    return +value - +subtractBy;
   },
   randData(str) {
     const getRand = (data) => data[Math.floor(Math.random() * data.length)];
@@ -167,7 +196,7 @@ function replacer(str, { regex, tagLen, modifyPath, data }) {
     }
 
     result = typeof result === 'string' ? result : JSON.stringify(result);
-    replaceResult.list[match] = result.slice(0, 512);
+    replaceResult.list[match] = result?.slice(0, 512) ?? result;
 
     return result;
   });

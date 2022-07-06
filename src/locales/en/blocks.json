@@ -25,6 +25,7 @@
             "animated": "Animated",
             "select": "Select line",
             "to": "Line to {name} block",
+            "lineColor": "Line color"
           }
         },
         "toggle": {
@@ -94,6 +95,37 @@
         "description": "Wait for all connections before continuing to the next block",
         "specificFlow": "Only continue a specific flow",
         "selectFlow": "Select flow"
+      },
+      "slice-variable": {
+        "name": "Slice variable",
+        "description": "Extracts a section of a variable value",
+        "start": "Start index",
+        "end": "End index"
+      },
+      "regex-variable": {
+        "name": "RegEx variable",
+        "description": "Matching a variable value against a regular expression"
+      },
+      "data-mapping": {
+        "source": "Source",
+        "destination": "Destination",
+        "name": "Data mapping",
+        "edit": "Edit data map",
+        "dataSource": "Data source",
+        "description": "Map data of a variable or table",
+        "addSource": "Add source",
+        "addDestination": "Add destination"
+      },
+      "sort-data": {
+        "name": "Sort data",
+        "description": "Sort the items of data",
+        "property": "Sort by the item's property",
+        "addProperty": "Add property"
+      },
+      "increase-variable": {
+        "name": "Increase variable",
+        "description": "Increase the value of a variable by specific amount",
+        "increase": "Increase by"
       },
       "notification": {
         "name": "notification",

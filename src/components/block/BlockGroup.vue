@@ -22,7 +22,7 @@
         />
       </div>
       <input
-        :model-value="data.name"
+        :value="data.name"
         :placeholder="t('workflow.blocks.blocks-group.groupName')"
         type="text"
         class="bg-transparent w-full focus:ring-0"

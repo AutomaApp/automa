@@ -57,6 +57,7 @@ export function waitTabLoaded({ tabId, listenError = false, ms = 10000 }) {
       )
         return;
 
+      clearTimeout(timeout);
       browser.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
       reject(new Error(details.error));
     };

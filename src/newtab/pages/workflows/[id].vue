@@ -714,8 +714,8 @@ function pasteCopiedElements(position) {
   editor.value.addEdges(edges);
 }
 function onKeydown({ ctrlKey, metaKey, key, target }) {
-  const els = ['INPUT', 'SELECT'];
-  if (els.includes(target.tagName)) return;
+  const els = ['INPUT', 'SELECT', 'TEXTAREA'];
+  if (els.includes(target.tagName) || target.isContentEditable) return;
 
   const command = (keyName) => (ctrlKey || metaKey) && keyName === key;
 
@@ -744,6 +744,14 @@ watch(
   () => state.activeTab,
   (value) => {
     router.replace({ ...route, query: { tab: value } });
+  }
+);
+watch(
+  () => route.params.id,
+  (value, oldValue) => {
+    if (value && oldValue && value !== oldValue) {
+      window.location.reload();
+    }
   }
 );
 
