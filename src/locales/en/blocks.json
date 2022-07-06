@@ -116,6 +116,12 @@
         "addSource": "Add source",
         "addDestination": "Add destination"
       },
+      "sort-data": {
+        "name": "Sort data",
+        "description": "Sort the items of data",
+        "property": "Sort by the item's property",
+        "addProperty": "Add property"
+      },
       "increase-variable": {
         "name": "Increase variable",
         "description": "Increase the value of a variable by specific amount",

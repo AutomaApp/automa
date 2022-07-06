@@ -155,7 +155,7 @@ const workflow = inject('workflow');
 
 const state = reactive({
   query: '',
-  showModal: true,
+  showModal: false,
   autocompleteItems: [],
   sources: [...props.data.sources],
 });
