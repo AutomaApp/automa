@@ -746,6 +746,14 @@ watch(
     router.replace({ ...route, query: { tab: value } });
   }
 );
+watch(
+  () => route.params.id,
+  (value, oldValue) => {
+    if (value && oldValue && value !== oldValue) {
+      window.location.reload();
+    }
+  }
+);
 
 /* eslint-disable consistent-return */
 onBeforeRouteLeave(() => {
