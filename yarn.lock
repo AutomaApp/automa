@@ -3052,11 +3052,6 @@ dot-case@^3.0.4:
     no-case "^3.0.4"
     tslib "^2.0.3"
 
-drawflow@^0.0.58:
-  version "0.0.58"
-  resolved "https://registry.yarnpkg.com/drawflow/-/drawflow-0.0.58.tgz#bdbb4919825d22287046f1b0437fa4847aaa96f2"
-  integrity sha512-vvtDTuSPEFf3CPk86Z89YFXNwxALfio50FM8wDL328hK7sBha1V+eQfCFn+pV2m/f90XNg6rgKJYdOQ4QlQisA==
-
 eastasianwidth@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/eastasianwidth/-/eastasianwidth-0.2.0.tgz#696ce2ec0aa0e6ea93a397ffcf24aa7840c827cb"
