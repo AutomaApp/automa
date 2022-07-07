@@ -91,7 +91,7 @@
               </button>
               <ui-card padding="p-0 ml-2 undo-redo">
                 <button
-                  v-tooltip="
+                  v-tooltip.group="
                     `${t('workflow.undo')} (${
                       shortcut['action:undo'].readable
                     })`
@@ -103,7 +103,7 @@
                   <v-remixicon name="riArrowGoBackLine" />
                 </button>
                 <button
-                  v-tooltip="
+                  v-tooltip.group="
                     `${t('workflow.redo')} (${
                       shortcut['action:redo'].readable
                     })`
@@ -186,8 +186,9 @@ import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { getWorkflowPermissions } from '@/utils/workflowData';
 import { tasks } from '@/utils/shared';
 import { fetchApi } from '@/utils/api';
-import { debounce, parseJSON, throttle } from '@/utils/helper';
+import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useCommandManager } from '@/composable/commandManager';
+import { debounce, parseJSON, throttle } from '@/utils/helper';
 import browser from 'webextension-polyfill';
 import dbStorage from '@/db/storage';
 import DroppedNode from '@/utils/editor/DroppedNode';
@@ -208,6 +209,8 @@ import EditorLocalActions from '@/components/newtab/workflow/editor/EditorLocalA
 let editorCommands = null;
 const executeCommandTimeout = null;
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 7);
+
+useGroupTooltip();
 
 const { t } = useI18n();
 const store = useStore();
@@ -861,6 +864,7 @@ watch(
 watch(
   () => route.params.id,
   (value, oldValue) => {
+    if (route.name !== 'workflows-details') return;
     if (value && oldValue && value !== oldValue) {
       window.location.reload();
     }

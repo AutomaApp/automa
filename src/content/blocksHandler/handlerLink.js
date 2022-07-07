@@ -10,8 +10,7 @@ async function link(block) {
   markElement(element, block);
 
   const url = element.href;
-
-  if (url) window.location.href = url;
+  if (url) window.open(url, '_self');
 
   return url;
 }

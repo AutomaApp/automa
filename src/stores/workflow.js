@@ -17,6 +17,7 @@ const defaultWorkflow = (data = null, options = {}) => {
     name: '',
     icon: 'riGlobalLine',
     folderId: null,
+    content: null,
     connectedTable: null,
     drawflow: {
       edges: [],
