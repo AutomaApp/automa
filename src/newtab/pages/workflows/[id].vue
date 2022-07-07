@@ -174,6 +174,7 @@ import {
   shallowRef,
   onBeforeUnmount,
 } from 'vue';
+import { getNodesInside } from '@braks/vue-flow';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { customAlphabet } from 'nanoid';
@@ -580,6 +581,42 @@ function onActionUpdated({ data, changedIndicator }) {
   workflowPayload.data = { ...workflowPayload.data, ...data };
   updateHostedWorkflow();
 }
+function isNodesInGroup(nodes) {
+  const groupNodes = editor.value.getNodes.value.filter(
+    (node) => node.label === 'blocks-group-2'
+  );
+
+  const nodeInGroup = new Set();
+  const filteredNodes = nodes.filter((node) => node.label !== 'blocks-group-2');
+
+  groupNodes.forEach(({ computedPosition, dimensions, id }) => {
+    const rect = { ...computedPosition, ...dimensions };
+    const nodesInGroup = getNodesInside(filteredNodes, rect);
+
+    nodesInGroup.forEach((node) => {
+      state.dataChanged = true;
+
+      if (node.parentNode === id) {
+        nodeInGroup.add(node.id);
+        return;
+      }
+
+      nodeInGroup.add(node.id);
+
+      const currentNode = editor.value.getNode.value(node.id);
+      currentNode.parentNode = id;
+      currentNode.position.x -= 450;
+    });
+  });
+  filteredNodes.forEach((node) => {
+    if (nodeInGroup.has(node.id)) return;
+
+    const currentNode = editor.value.getNode.value(node.id);
+    if (!currentNode.parentNode) return;
+
+    currentNode.parentNode = undefined;
+  });
+}
 function onEditorInit(instance) {
   editor.value = instance;
 
@@ -591,7 +628,10 @@ function onEditorInit(instance) {
   // instance.onEdgeUpdateEnd(({ edge }) => {
   //   editorCommands.state.edges[edge.id] = edge;
   // });
+
   instance.onNodeDragStop(({ nodes }) => {
+    isNodesInGroup(nodes);
+
     nodes.forEach((node) => {
       editorCommands.state.nodes[node.id] = node;
     });

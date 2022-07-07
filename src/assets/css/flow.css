@@ -16,6 +16,10 @@
 		}
 	}
 
+	&.vue-flow__node-BlockGroup2 {
+		z-index: 0 !important;
+	}
+
 	.vue-flow__handle {
 		@apply h-4 w-4 rounded-full border-0;
 		&.target {
