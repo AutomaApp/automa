@@ -32,6 +32,14 @@ const defaultShortcut = {
     id: 'page:settings',
     combo: 'option+s',
   },
+  'action:undo': {
+    id: 'action:undo',
+    combo: 'mod+z',
+  },
+  'action:redo': {
+    id: 'action:redo',
+    combo: 'mod+shift+z',
+  },
   'action:search': {
     id: 'action:search',
     combo: 'mod+f',

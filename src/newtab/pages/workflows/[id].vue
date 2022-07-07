@@ -89,6 +89,32 @@
               >
                 <v-remixicon name="riMagicLine" />
               </button>
+              <ui-card padding="p-0 ml-2 undo-redo">
+                <button
+                  v-tooltip="
+                    `${t('workflow.undo')} (${
+                      shortcut['action:undo'].readable
+                    })`
+                  "
+                  :disabled="!commandManager.state.value.canUndo"
+                  class="p-2 rounded-lg transition-colors"
+                  @click="executeCommand('undo')"
+                >
+                  <v-remixicon name="riArrowGoBackLine" />
+                </button>
+                <button
+                  v-tooltip="
+                    `${t('workflow.redo')} (${
+                      shortcut['action:redo'].readable
+                    })`
+                  "
+                  :disabled="!commandManager.state.value.canRedo"
+                  class="p-2 rounded-lg transition-colors"
+                  @click="executeCommand('redo')"
+                >
+                  <v-remixicon name="riArrowGoForwardLine" />
+                </button>
+              </ui-card>
             </template>
           </workflow-editor>
           <editor-local-ctx-menu
@@ -161,9 +187,11 @@ import { getWorkflowPermissions } from '@/utils/workflowData';
 import { tasks } from '@/utils/shared';
 import { fetchApi } from '@/utils/api';
 import { debounce, parseJSON, throttle } from '@/utils/helper';
+import { useCommandManager } from '@/composable/commandManager';
 import browser from 'webextension-polyfill';
 import dbStorage from '@/db/storage';
 import DroppedNode from '@/utils/editor/DroppedNode';
+import EditorCommands from '@/utils/editor/EditorCommands';
 import convertWorkflowData from '@/utils/convertWorkflowData';
 import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
 import WorkflowEditor from '@/components/newtab/workflow/WorkflowEditor.vue';
@@ -177,6 +205,8 @@ import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissions
 import EditorLocalCtxMenu from '@/components/newtab/workflow/editor/EditorLocalCtxMenu.vue';
 import EditorLocalActions from '@/components/newtab/workflow/editor/EditorLocalActions.vue';
 
+let editorCommands = null;
+const executeCommandTimeout = null;
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 7);
 
 const { t } = useI18n();
@@ -185,6 +215,7 @@ const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
+const commandManager = useCommandManager();
 
 const editor = shallowRef(null);
 const connectedTable = shallowRef(null);
@@ -193,6 +224,7 @@ const state = reactive({
   showSidebar: true,
   dataChanged: false,
   animateBlocks: false,
+  isExecuteCommand: false,
   workflowConverted: false,
   activeTab: route.query.tab || 'editor',
 });
@@ -376,8 +408,50 @@ const updateHostedWorkflow = throttle(async () => {
     workflowPayload.isUpdating = false;
   }
 }, 5000);
-const onNodesChange = debounce((changes) => {
-  changes.forEach(({ type, id }) => {
+const onEdgesChange = debounce((changes) => {
+  // const edgeChanges = { added: [], removed: [] };
+
+  changes.forEach(({ type }) => {
+    // if (type === 'remove') {
+    //   edgeChanges.removed.push(id);
+    // } else if (type === 'add') {
+    //   edgeChanges.added.push(item);
+    // }
+
+    if (state.dataChanged) return;
+    state.dataChanged = type !== 'select';
+  });
+
+  // if (state.isExecuteCommand) return;
+
+  // let command = null;
+
+  // if (edgeChanges.added.length > 0) {
+  //   command = editorCommands.edgeAdded(edgeChanges.added);
+  // } else if (edgeChanges.removed.length > 0) {
+  //   command = editorCommands.edgeRemoved(edgeChanges.removed);
+  // }
+
+  // if (command) commandManager.add(command);
+}, 250);
+
+function executeCommand(type) {
+  state.isExecuteCommand = true;
+
+  if (type === 'undo') {
+    commandManager.undo();
+  } else if (type === 'redo') {
+    commandManager.redo();
+  }
+
+  clearTimeout(executeCommandTimeout);
+  setTimeout(() => {
+    state.isExecuteCommand = false;
+  }, 500);
+}
+function onNodesChange(changes) {
+  const nodeChanges = { added: [], removed: [] };
+  changes.forEach(({ type, id, item }) => {
     if (type === 'remove') {
       if (editState.blockData.blockId === id) {
         editState.editing = false;
@@ -385,16 +459,26 @@ const onNodesChange = debounce((changes) => {
       }
 
       state.dataChanged = true;
+      nodeChanges.removed.push(id);
+    } else if (type === 'add') {
+      nodeChanges.added.push(item);
     }
   });
-}, 250);
-const onEdgesChange = debounce((changes) => {
-  changes.forEach(({ type }) => {
-    if (state.dataChanged) return;
-    state.dataChanged = type !== 'select';
-  });
-}, 250);
 
+  if (state.isExecuteCommand) return;
+
+  let command = null;
+
+  if (nodeChanges.added.length > 0) {
+    command = editorCommands.nodeAdded(nodeChanges.added);
+  } else if (nodeChanges.removed.length > 0) {
+    command = editorCommands.nodeRemoved(nodeChanges.removed);
+  }
+
+  if (command) {
+    commandManager.add(command);
+  }
+}
 function autoAlign() {
   state.animateBlocks = true;
 
@@ -420,6 +504,10 @@ function autoAlign() {
   dagre.layout(graph);
   const nodeChanges = graph.nodes().map((nodeId) => {
     const { x, y } = graph.node(nodeId);
+
+    if (editorCommands.state.nodes[nodeId]) {
+      editorCommands.state.nodes[nodeId].position = { x, y };
+    }
 
     return {
       id: nodeId,
@@ -492,11 +580,19 @@ function onActionUpdated({ data, changedIndicator }) {
 function onEditorInit(instance) {
   editor.value = instance;
 
+  instance.onEdgesChange(onEdgesChange);
+  instance.onNodesChange(onNodesChange);
   instance.onEdgeDoubleClick(({ edge }) => {
     instance.removeEdges([edge]);
   });
-  instance.onEdgesChange(onEdgesChange);
-  instance.onNodesChange(onNodesChange);
+  // instance.onEdgeUpdateEnd(({ edge }) => {
+  //   editorCommands.state.edges[edge.id] = edge;
+  // });
+  instance.onNodeDragStop(({ nodes }) => {
+    nodes.forEach((node) => {
+      editorCommands.state.nodes[node.id] = node;
+    });
+  });
 
   instance.removeSelectedNodes(
     instance.getSelectedNodes.value.map(({ id }) => id)
@@ -504,6 +600,20 @@ function onEditorInit(instance) {
   instance.removeSelectedEdges(
     instance.getSelectedEdges.value.map(({ id }) => id)
   );
+
+  const convertToObj = (array) =>
+    array.reduce((acc, item) => {
+      acc[item.id] = item;
+
+      return acc;
+    }, {});
+  setTimeout(() => {
+    const commandInitState = {
+      nodes: convertToObj(instance.getNodes.value),
+      edges: convertToObj(instance.getEdges.value),
+    };
+    editorCommands = new EditorCommands(instance, commandInitState);
+  }, 1000);
 
   const { blockId } = route.query;
   if (blockId) {
@@ -738,6 +848,8 @@ async function fetchConnectedTable() {
 const shortcut = useShortcut([
   getShortcut('editor:toggle-sidebar', toggleSidebar),
   getShortcut('editor:duplicate-block', duplicateElements),
+  getShortcut('action:undo', () => executeCommand('undo')),
+  getShortcut('action:redo', () => executeCommand('redo')),
 ]);
 
 watch(
@@ -823,6 +935,14 @@ onBeforeUnmount(() => {
   .vue-flow__transformationpane,
   .vue-flow__node {
     transition: transform 300ms ease;
+  }
+}
+.undo-redo {
+  button:not(:disabled):hover {
+    @apply bg-box-transparent;
+  }
+  button:disabled {
+    @apply text-gray-500 dark:text-gray-300;
   }
 }
 </style>
