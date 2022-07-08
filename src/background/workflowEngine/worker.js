@@ -334,7 +334,7 @@ class Worker {
       const noConnection = error.message?.startsWith(
         'Could not establish connection'
       );
-      const channelClosed = error.message.includes('message channel closed');
+      const channelClosed = error.message?.includes('message channel closed');
 
       if (noConnection || channelClosed) {
         const isScriptInjected = await injectContentScript(
