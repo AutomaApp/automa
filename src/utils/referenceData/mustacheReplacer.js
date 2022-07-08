@@ -185,7 +185,7 @@ function replacer(str, { regex, tagLen, modifyPath, data }) {
 
         Object.assign(replaceResult.list, list);
 
-        return value;
+        return parseJSON(value, value);
       });
 
       result = funcRef.apply({ refData: data }, funcParams);

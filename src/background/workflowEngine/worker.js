@@ -331,7 +331,12 @@ class Worker {
       return data;
     } catch (error) {
       console.error(error);
-      if (error.message?.startsWith('Could not establish connection')) {
+      const noConnection = error.message?.startsWith(
+        'Could not establish connection'
+      );
+      const channelClosed = error.message.includes('message channel closed');
+
+      if (noConnection || channelClosed) {
         const isScriptInjected = await injectContentScript(
           this.activeTab.id,
           this.activeTab.frameId
