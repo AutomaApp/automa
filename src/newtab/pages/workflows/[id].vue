@@ -336,11 +336,12 @@ provide('workflow-editor', editor);
 const updateBlockData = debounce((data) => {
   const node = editor.value.getNode.value(editState.blockData.blockId);
   const dataCopy = JSON.parse(JSON.stringify(data));
-
+  console.log(editState.blockData);
   if (editState.blockData.itemId) {
     const itemIndex = node.data.blocks.findIndex(
       ({ itemId }) => itemId === editState.blockData.itemId
     );
+    console.log(itemIndex, node.data);
     if (itemIndex === -1) return;
 
     node.data.blocks[itemIndex].data = dataCopy;
@@ -995,7 +996,7 @@ onBeforeUnmount(() => {
     @apply bg-box-transparent;
   }
   button:disabled {
-    @apply text-gray-500 dark:text-gray-300;
+    @apply text-gray-500 dark:text-gray-400;
   }
 }
 </style>
