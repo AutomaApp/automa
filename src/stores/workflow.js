@@ -53,7 +53,7 @@ const defaultWorkflow = (data = null, options = {}) => {
       inputAutocomplete: true,
       onError: 'stop-workflow',
       executedBlockOnWeb: false,
-      insertDefaultColumn: true,
+      insertDefaultColumn: false,
       defaultColumnName: 'column',
     },
     version: browser.runtime.getManifest().version,

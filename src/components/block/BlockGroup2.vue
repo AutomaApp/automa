@@ -8,7 +8,7 @@
     style="
       min-width: 400px;
       min-height: 300px;
-      border-color: '#2563eb';
+      border-color: #2563eb;
       background-color: rgb(37, 99, 235, 0.3);
     "
   >
@@ -20,6 +20,12 @@
         class="px-4 py-2 bg-white rounded-lg"
         @input="emit('update', { name: $event.target.value })"
       />
+      <div class="flex-1" />
+      <v-remixicon
+        name="riDeleteBin7Line"
+        class="cursor-pointer"
+        @click="$emit('delete', id)"
+      />
     </div>
     <span
       ref="dragHandle"
@@ -30,7 +36,6 @@
 </template>
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { debounce } from '@/utils/helper';
 
 defineProps({
   id: {
@@ -70,7 +75,7 @@ const initialRect = {
 
 const dragHandle = ref(null);
 
-const onMousemove = debounce((event) => {
+function onMousemove(event) {
   event.preventDefault();
   event.stopPropagation();
 
@@ -81,7 +86,7 @@ const onMousemove = debounce((event) => {
   parent.style.height = `${height}px`;
 
   emit('update', { height, width });
-}, 100);
+}
 
 function onMouseup() {
   document.documentElement.removeEventListener('mouseup', onMouseup);

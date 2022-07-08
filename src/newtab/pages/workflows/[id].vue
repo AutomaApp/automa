@@ -494,31 +494,39 @@ function autoAlign() {
   });
   graph._isMultigraph = true;
   graph.setDefaultEdgeLabel(() => ({}));
-  editor.value.getNodes.value.forEach(({ id, label, dimensions }) => {
-    graph.setNode(id, {
-      label,
-      width: dimensions.width,
-      height: dimensions.height,
-    });
-  });
+  editor.value.getNodes.value.forEach(
+    ({ id, label, dimensions, parentNode }) => {
+      if (label === 'blocks-group-2' || parentNode) return;
+
+      graph.setNode(id, {
+        label,
+        width: dimensions.width,
+        height: dimensions.height,
+      });
+    }
+  );
   editor.value.getEdges.value.forEach(({ source, target, id }) => {
     graph.setEdge(source, target, { id });
   });
 
   dagre.layout(graph);
-  const nodeChanges = graph.nodes().map((nodeId) => {
-    const { x, y } = graph.node(nodeId);
+  const nodeChanges = [];
+  graph.nodes().forEach((nodeId) => {
+    const graphNode = graph.node(nodeId);
+    if (!graphNode) return;
+
+    const { x, y } = graphNode;
 
     if (editorCommands.state.nodes[nodeId]) {
       editorCommands.state.nodes[nodeId].position = { x, y };
     }
 
-    return {
+    nodeChanges.push({
       id: nodeId,
       type: 'position',
       dragging: false,
       position: { x, y },
-    };
+    });
   });
 
   editor.value.applyNodeChanges(nodeChanges);
@@ -731,12 +739,13 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
   if (isTriggerExists) return;
 
   const position = editor.value.project({ x: clientX - 360, y: clientY - 18 });
+  const nodeId = nanoid();
   const newNode = {
     position,
-    id: nanoid(),
     label: block.id,
     data: block.data,
     type: block.component,
+    id: block.id === 'blocks-group-2' ? `group-${nodeId}` : nodeId,
   };
   editor.value.addNodes([newNode]);
 

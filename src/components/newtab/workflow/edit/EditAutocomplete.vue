@@ -1,6 +1,6 @@
 <template>
   <ui-autocomplete
-    :disabled="disabled"
+    :disabled="true"
     :items="autocompleteList"
     :trigger-char="['{{', '}}']"
     :custom-filter="autocompleteFilter"
