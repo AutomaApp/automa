@@ -89,7 +89,7 @@
   </ui-card>
 </template>
 <script setup>
-import { inject, computed } from 'vue';
+import { inject, computed, shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
@@ -116,6 +116,10 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  events: {
+    type: Object,
+    default: () => ({}),
+  },
 });
 const emit = defineEmits(['update', 'delete', 'edit']);
 
@@ -137,13 +141,11 @@ const block = useEditorBlock(props.label);
 
 const workflow = inject('workflow', {});
 
-const blocks = computed(() => {
-  const nodesArr = Array.isArray(props.data.blocks)
+const blocks = computed(() =>
+  Array.isArray(props.data.blocks)
     ? props.data.blocks
-    : Object.values(props.data.blocks);
-
-  return [...nodesArr];
-});
+    : Object.values(props.data.blocks)
+);
 
 function onDragStart(item, event) {
   event.dataTransfer.setData(
@@ -205,8 +207,10 @@ function handleDrop(event) {
     emit('delete', blockId);
   }
 
-  const copyBlocks = [...props.data.blocks];
-  copyBlocks.push({ id, data, itemId: nanoid(5) });
+  const copyBlocks = [
+    ...props.data.blocks,
+    shallowReactive({ id, data, itemId: nanoid(5) }),
+  ];
   emit('update', { blocks: copyBlocks });
 }
 </script>
