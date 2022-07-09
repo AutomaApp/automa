@@ -36,13 +36,13 @@
         <div class="flex-grow"></div>
         <button
           class="mr-2 hoverable p-1 rounded-md transition"
-          @click.stop="state.hide = !state.hide"
+          @click.stop.prevent="state.hide = !state.hide"
         >
           <v-remixicon :name="state.hide ? 'riEyeOffLine' : 'riEyeLine'" />
         </button>
         <button
           class="hoverable p-1 rounded-md transition"
-          @click.stop="destroy"
+          @click.stop.prevent="destroy"
         >
           <v-remixicon name="riCloseLine" />
         </button>
