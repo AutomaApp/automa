@@ -1,5 +1,6 @@
 import { reactive } from 'vue';
 
-export const css = reactive({
+export const store = reactive({
   whiteSpace: 'pre',
+  statePrettier: Math.random(),
 });

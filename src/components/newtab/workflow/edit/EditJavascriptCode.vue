@@ -63,6 +63,12 @@
               <span>
                 <span
                   class="underline cursor-pointer select-none"
+                  @click="store.statePrettier = Math.random()"
+                  >prettier</span
+                >
+                &bull;
+                <span
+                  class="underline cursor-pointer select-none"
                   @click="modifyWhiteSpace"
                   >wrap line</span
                 >
@@ -122,13 +128,13 @@ import { watch, reactive, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { syntaxTree } from '@codemirror/language';
 import { autocompletion, snippet } from '@codemirror/autocomplete';
-import { css } from '../../settings/jsBlockWrap';
+import { store } from '../../settings/jsBlockWrap';
 
 function modifyWhiteSpace() {
-  if (css.whiteSpace === 'pre') {
-    css.whiteSpace = 'pre-wrap';
+  if (store.whiteSpace === 'pre') {
+    store.whiteSpace = 'pre-wrap';
   } else {
-    css.whiteSpace = 'pre';
+    store.whiteSpace = 'pre';
   }
 }
 

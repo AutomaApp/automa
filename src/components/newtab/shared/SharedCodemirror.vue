@@ -20,7 +20,9 @@ import { keymap } from '@codemirror/view';
 import { javascript } from '@codemirror/lang-javascript';
 import { EditorState } from '@codemirror/state';
 import { EditorView, basicSetup } from 'codemirror';
-import { css } from '../settings/jsBlockWrap';
+import { format } from 'prettier';
+import { store } from '../settings/jsBlockWrap';
+import parserBabel from './parser-babel.mjs';
 
 const props = defineProps({
   lang: {
@@ -97,10 +99,34 @@ onMounted(() => {
 onBeforeUnmount(() => {
   view?.destroy();
 });
+
+let savedStatePrettier = store.statePrettier;
+watch(store, (value) => {
+  if (value.statePrettier !== savedStatePrettier) {
+    // prettier logic here
+    const code = props.modelValue;
+
+    view.dispatch({
+      changes: {
+        from: 0,
+        to: view.state.doc.length,
+        insert: format(code, {
+          parser: 'babel',
+          plugins: [parserBabel],
+        }),
+      },
+    });
+
+    savedStatePrettier = value.statePrettier;
+  }
+});
 </script>
 <style>
+.cm-content {
+  flex-basis: fit-content;
+}
 .cm-line {
-  white-space: v-bind(css.whiteSpace);
+  white-space: v-bind(store.whiteSpace);
 }
 .codemirror.hide-gutters .cm-gutters {
   display: none !important;
