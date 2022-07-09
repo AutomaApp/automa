@@ -56,8 +56,17 @@
             class="overflow-auto"
           />
           <template v-if="!data.everyNewTab">
-            <p class="mt-1 text-sm">
-              {{ t('workflow.blocks.javascript-code.availabeFuncs') }}
+            <p class="mt-1 text-sm flex justify-between">
+              <span>{{
+                t('workflow.blocks.javascript-code.availabeFuncs')
+              }}</span>
+              <span>
+                <span
+                  class="underline cursor-pointer select-none"
+                  @click="modifyWhiteSpace"
+                  >wrap line</span
+                >
+              </span>
             </p>
             <p
               class="space-x-1 whitespace-nowrap overflow-x-auto overflow-y-hidden pb-1 scroll"
@@ -113,6 +122,15 @@ import { watch, reactive, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { syntaxTree } from '@codemirror/language';
 import { autocompletion, snippet } from '@codemirror/autocomplete';
+import { css } from '../../settings/jsBlockWrap';
+
+function modifyWhiteSpace() {
+  if (css.whiteSpace === 'pre') {
+    css.whiteSpace = 'pre-wrap';
+  } else {
+    css.whiteSpace = 'pre';
+  }
+}
 
 const SharedCodemirror = defineAsyncComponent(() =>
   import('@/components/newtab/shared/SharedCodemirror.vue')

@@ -20,6 +20,7 @@ import { keymap } from '@codemirror/view';
 import { javascript } from '@codemirror/lang-javascript';
 import { EditorState } from '@codemirror/state';
 import { EditorView, basicSetup } from 'codemirror';
+import { css } from '../settings/jsBlockWrap';
 
 const props = defineProps({
   lang: {
@@ -98,6 +99,9 @@ onBeforeUnmount(() => {
 });
 </script>
 <style>
+.cm-line {
+  white-space: v-bind(css.whiteSpace);
+}
 .codemirror.hide-gutters .cm-gutters {
   display: none !important;
 }
