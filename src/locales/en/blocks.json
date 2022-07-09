@@ -230,6 +230,10 @@
         "activeTabLoaded": "Active tab",
         "setAsActiveTab": "Set as active tab"
       },
+      "blocks-group-2": {
+        "name": "@:workflow.blocks.blocks-group.name 2",
+        "description": "@:workflow.blocks.blocks-group.description"
+      },
       "blocks-group": {
         "name": "Blocks group",
         "groupName": "Group name",

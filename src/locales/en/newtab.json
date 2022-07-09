@@ -166,6 +166,8 @@
     "clickToEnable": "Click to enable",
     "toggleSidebar": "Toggle sidebar",
     "cantEdit": "Can't edit shared workflow",
+    "undo": "Undo",
+    "redo": "Redo",
     "autoAlign": {
       "title": "Auto-align"
     },

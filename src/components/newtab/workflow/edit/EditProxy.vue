@@ -27,7 +27,7 @@
       label="Port"
       placeholder="443"
       class="w-full mb-2"
-      @change="updateData({ port: +$event })"
+      @change="updateData({ port: $event })"
     />
     <label for="input-bypass" class="input-label">
       {{ t('workflow.blocks.proxy.bypass.label') }}

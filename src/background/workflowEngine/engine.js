@@ -217,7 +217,7 @@ class WorkflowEngine {
   }
 
   addLogHistory(detail) {
-    if (['blocks-group', 'delay'].includes(detail.name)) return;
+    if (detail.name === 'blocks-group') return;
 
     const isLimit = this.history.length >= 1001;
     const notErrorLog = detail.type !== 'error';
@@ -228,6 +228,7 @@ class WorkflowEngine {
     detail.id = this.logHistoryId;
 
     if (
+      detail.name !== 'delay' ||
       detail.replacedValue ||
       detail.name === 'javascript-code' ||
       (tasks[detail.name]?.refDataKeys && this.saveLog)

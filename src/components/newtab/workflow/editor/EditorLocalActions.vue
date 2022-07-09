@@ -1,9 +1,14 @@
 <template>
-  <ui-card
-    v-if="!workflow.isProtected"
-    padding="p-1"
-    class="flex items-center pointer-events-auto"
-  >
+  <ui-card padding="p-1 pointer-events-auto mr-4">
+    <button
+      v-tooltip.group="'Workflow note'"
+      class="hoverable p-2 rounded-lg"
+      @click="state.showNoteModal = true"
+    >
+      <v-remixicon name="riFileEditLine" />
+    </button>
+  </ui-card>
+  <ui-card padding="p-1" class="flex items-center pointer-events-auto">
     <ui-popover>
       <template #trigger>
         <button
@@ -168,6 +173,20 @@
       </ui-button>
     </div>
   </ui-modal>
+  <ui-modal
+    v-model="state.showNoteModal"
+    title="Workflow note"
+    content-class="max-w-2xl"
+  >
+    <shared-wysiwyg
+      :model-value="workflow.content || ''"
+      :limit="1000"
+      class="bg-box-transparent p-4 rounded-lg overflow-auto scroll"
+      placeholder="Write note here..."
+      style="max-height: calc(100vh - 12rem); min-height: 400px"
+      @change="updateWorkflow({ content: $event }, true)"
+    />
+  </ui-modal>
 </template>
 <script setup>
 import { reactive, computed } from 'vue';
@@ -186,6 +205,7 @@ import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { parseJSON } from '@/utils/helper';
 import { exportWorkflow, convertWorkflow } from '@/utils/workflowData';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
+import SharedWysiwyg from '@/components/newtab/shared/SharedWysiwyg.vue';
 
 const props = defineProps({
   isDataChanged: {
@@ -220,6 +240,7 @@ const shortcuts = useShortcut([
 ]);
 
 const state = reactive({
+  showNoteModal: false,
   isUploadingHost: false,
 });
 const renameState = reactive({

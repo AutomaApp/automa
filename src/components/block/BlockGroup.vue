@@ -30,12 +30,13 @@
       />
     </div>
     <draggable
-      v-model="state.blocks"
+      :model-value="blocks"
       item-key="itemId"
       class="px-4 pb-4 overflow-auto nowheel scroll text-sm space-y-1 max-h-60"
       @mousedown.stop
       @dragover.prevent
       @drop="handleDrop"
+      @update:modelValue="$emit('update', { blocks: $event })"
     >
       <template #item="{ element, index }">
         <div
@@ -88,12 +89,11 @@
   </ui-card>
 </template>
 <script setup>
-import { watch, reactive, onMounted, inject } from 'vue';
+import { inject, computed, shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import { Handle, Position } from '@braks/vue-flow';
-import cloneDeep from 'lodash.clonedeep';
 import draggable from 'vuedraggable';
 import { tasks } from '@/utils/shared';
 import { useComponentId } from '@/composable/componentId';
@@ -116,6 +116,10 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  events: {
+    type: Object,
+    default: () => ({}),
+  },
 });
 const emit = defineEmits(['update', 'delete', 'edit']);
 
@@ -135,12 +139,13 @@ const toast = useToast();
 const componentId = useComponentId('blocks-group');
 const block = useEditorBlock(props.label);
 
-const state = reactive({
-  blocks: [],
-  retrieved: false,
-});
-
 const workflow = inject('workflow', {});
+
+const blocks = computed(() =>
+  Array.isArray(props.data.blocks)
+    ? props.data.blocks
+    : Object.values(props.data.blocks)
+);
 
 function onDragStart(item, event) {
   event.dataTransfer.setData(
@@ -153,12 +158,14 @@ function onDragEnd(itemId) {
     const blockEl = document.querySelector(`[group-item-id="${itemId}"]`);
 
     if (blockEl) {
-      const blockIndex = state.blocks.findIndex(
+      const blockIndex = blocks.value.findIndex(
         (item) => item.itemId === itemId
       );
 
       if (blockIndex !== -1) {
-        state.blocks.splice(blockIndex, 1);
+        const copyBlocks = [...props.data.blocks];
+        copyBlocks.splice(blockIndex, 1);
+        emit('update', { blocks: copyBlocks });
       }
     }
   }, 200);
@@ -167,12 +174,15 @@ function editBlock(payload) {
   emit('edit', payload);
 }
 function deleteItem(index, itemId) {
+  const copyBlocks = [...props.data.blocks];
+
   if (workflow.editState.blockData.itemId === itemId) {
     workflow.editState.editing = false;
     workflow.editState.blockData = false;
   }
 
-  state.blocks.splice(index, 1);
+  copyBlocks.splice(index, 1);
+  emit('update', { blocks: copyBlocks });
 }
 function handleDrop(event) {
   event.preventDefault();
@@ -197,26 +207,10 @@ function handleDrop(event) {
     emit('delete', blockId);
   }
 
-  state.blocks.push({ id, data, itemId: nanoid(5) });
+  const copyBlocks = [
+    ...props.data.blocks,
+    shallowReactive({ id, data, itemId: nanoid(5) }),
+  ];
+  emit('update', { blocks: copyBlocks });
 }
-
-watch(
-  () => state.blocks,
-  () => {
-    if (!state.retrieved) return;
-    emit('update', { blocks: state.blocks });
-  },
-  { deep: true }
-);
-
-onMounted(() => {
-  const copiedBlocks = cloneDeep(props.data.blocks);
-  state.blocks = Array.isArray(copiedBlocks)
-    ? copiedBlocks
-    : Object.values(copiedBlocks);
-
-  setTimeout(() => {
-    state.retrieved = true;
-  }, 500);
-});
 </script>
