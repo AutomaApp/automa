@@ -853,8 +853,12 @@ function duplicateElements({ nodes, edges }) {
     edges || selectedEdges
   );
 
-  editor.value.removeSelectedNodes(selectedNodes);
-  editor.value.removeSelectedEdges(selectedEdges);
+  selectedNodes.forEach((node) => {
+    node.selected = false;
+  });
+  selectedEdges.forEach((edge) => {
+    edge.selected = false;
+  });
 
   editor.value.addNodes(newNodes);
   editor.value.addEdges(newEdges);
