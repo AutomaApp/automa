@@ -122,9 +122,9 @@ export function useShortcut(shortcuts, handler) {
     if (shortcutId) event.preventDefault();
 
     if (typeof params.data === 'function') {
-      params.data(params);
+      params.data(params, event);
     } else if (handler) {
-      handler(params);
+      handler(params, event);
     }
   };
   const addShortcutData = ({ combo, id, readable, ...rest }) => {

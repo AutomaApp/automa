@@ -174,6 +174,7 @@ import {
   shallowRef,
   onBeforeUnmount,
 } from 'vue';
+import cloneDeep from 'lodash.clonedeep';
 import { getNodesInside } from '@braks/vue-flow';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
@@ -809,14 +810,17 @@ function copyElements(nodes, edges, initialPos) {
       }
     }
 
-    return {
+    const copyNode = cloneDeep({
       type,
       data,
       label,
       id: newNodeId,
       selected: true,
       position: nodePos,
-    };
+    });
+    copyNode.data = reactive(copyNode.data);
+
+    return copyNode;
   });
   const newEdges = edges.reduce(
     (acc, { target, targetHandle, source, sourceHandle }) => {
@@ -825,7 +829,7 @@ function copyElements(nodes, edges, initialPos) {
 
       if (!targetId || !sourceId) return acc;
 
-      acc.push({
+      const copyEdge = cloneDeep({
         selected: true,
         target: targetId,
         source: sourceId,
@@ -833,6 +837,7 @@ function copyElements(nodes, edges, initialPos) {
         targetHandle: targetHandle.replace(target, targetId),
         sourceHandle: sourceHandle.replace(source, sourceId),
       });
+      acc.push(copyEdge);
 
       return acc;
     },
@@ -900,12 +905,18 @@ async function fetchConnectedTable() {
 
   connectedTable.value = table;
 }
+function undoRedoCommand(type, { target }) {
+  const els = ['INPUT', 'SELECT', 'TEXTAREA'];
+  if (els.includes(target.tagName) || target.isContentEditable) return;
+
+  executeCommand(type);
+}
 
 const shortcut = useShortcut([
   getShortcut('editor:toggle-sidebar', toggleSidebar),
   getShortcut('editor:duplicate-block', duplicateElements),
-  getShortcut('action:undo', () => executeCommand('undo')),
-  getShortcut('action:redo', () => executeCommand('redo')),
+  getShortcut('action:undo', (_, event) => undoRedoCommand('undo', event)),
+  getShortcut('action:redo', (_, event) => undoRedoCommand('redo', event)),
 ]);
 
 watch(
