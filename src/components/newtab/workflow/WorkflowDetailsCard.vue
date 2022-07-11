@@ -41,7 +41,7 @@
       </p>
       <p
         class="leading-tight cursor-pointer"
-        :class="descriptionCollapsed ? 'line-clamp' : null"
+        :class="descriptionCollapsed ? 'line-clamp' : 'whitespace-pre-wrap'"
         @click="descriptionCollapsed = !descriptionCollapsed"
       >
         <!-- description here -->
