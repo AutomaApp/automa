@@ -43,7 +43,7 @@
     "@tiptap/starter-kit": "^2.0.0-beta.190",
     "@tiptap/vue-3": "^2.0.0-beta.96",
     "@viselect/vanilla": "^3.0.0-beta.13",
-    "@vueuse/rxjs": "^8.7.4",
+    "@vueuse/rxjs": "^8.9.2",
     "@vuex-orm/core": "^0.36.4",
     "codemirror": "^6.0.0",
     "compare-versions": "^4.1.2",
