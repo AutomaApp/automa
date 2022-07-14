@@ -20,7 +20,7 @@ function generateLoopSelectors(elements, { max, attrId, frameSelector }) {
 export default async function loopElements(block) {
   const elements = await handleSelector(block);
   if (!elements) throw new Error('element-not-found');
-
+  console.log(block);
   let frameSelector = '';
   if (block.data.$frameSelector) {
     frameSelector = `${block.data.$frameSelector} |> `;

@@ -702,6 +702,8 @@ export const tasks = {
       variableName: '',
       referenceKey: '',
       elementSelector: '',
+      waitForSelector: false,
+      waitSelectorTimeout: 5000,
       resumeLastWorkflow: false,
       loopThrough: 'data-columns',
     },

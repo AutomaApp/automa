@@ -46,6 +46,8 @@ async function loopData({ data, id }, { refData }) {
               findBy,
               multiple: true,
               selector: data.elementSelector,
+              waitForSelector: data.waitForSelector ?? false,
+              waitSelectorTimeout: data.waitSelectorTimeout ?? 5000,
             },
           });
           this.loopEls.push({
