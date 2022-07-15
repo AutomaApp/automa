@@ -26,6 +26,7 @@
         <ui-button class="mr-2" @click="$emit('close')">
           {{ t('common.cancel') }}
         </ui-button>
+        <ui-button class="mr-2" @click="saveDraft"> Save draft </ui-button>
         <ui-button
           :loading="state.isPublishing"
           variant="accent"
@@ -86,9 +87,10 @@
   </ui-card>
 </template>
 <script setup>
-import { reactive, watch } from 'vue';
+import { reactive, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
+import browser from 'webextension-polyfill';
 import { fetchApi } from '@/utils/api';
 import { useUserStore } from '@/stores/user';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
@@ -166,6 +168,16 @@ async function publishWorkflow() {
     state.isPublishing = false;
   }
 }
+function saveDraft() {
+  const key = `draft:${props.workflow.id}`;
+  browser.storage.local.set({
+    [key]: {
+      content: state.workflow.content,
+      category: state.workflow.category,
+      description: state.workflow.description,
+    },
+  });
+}
 
 watch(
   () => state.workflow,
@@ -174,6 +186,13 @@ watch(
   }, 200),
   { deep: true }
 );
+
+onMounted(() => {
+  const key = `draft:${props.workflow.id}`;
+  browser.storage.local.get(key).then((data) => {
+    Object.assign(state.workflow, data[key]);
+  });
+});
 </script>
 <style scoped>
 .share-workflow {

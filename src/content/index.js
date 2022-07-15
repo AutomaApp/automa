@@ -65,7 +65,6 @@ async function executeBlock(data) {
       return result;
     }
   }
-
   const handler = blocksHandler[toCamelCase(data.name || data.label)];
 
   if (handler) {

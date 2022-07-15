@@ -15,9 +15,22 @@
         "selector": "元素选择器",
         "selectorOptions": "选择器选项",
         "timeout": "超时 (毫秒)",
+        "noPermission": "Automa 没有足够的权限执行此操作",
+        "grantPermission": "授予权限",
+        "settings": {
+          "title": "模块设置",
+          "line": {
+            "title": "线段",
+            "label": "线段标签",
+            "animated": "动画",
+            "select": "选择线段",
+            "to": "连线到 {name} 模块",
+            "lineColor": "线段颜色"
+          }
+        },
         "toggle": {
           "enable": "启用模块",
-          "disable": "禁用模块",
+          "disable": "禁用模块"
         },
         "onError": {
           "info": "这些规则适用于模块发生错误时",
@@ -27,7 +40,7 @@
           "fallbackTitle": "当模块中发生错误时执行",
           "times": {
             "name": "次数",
-            "description": "重试操作的次数",
+            "description": "重试操作的次数"
           },
           "interval": {
             "name": "间隔",
@@ -83,6 +96,37 @@
         "specificFlow": "只继续一个特定的流程",
         "selectFlow": "选择流程"
       },
+      "slice-variable": {
+        "name": "切片变量",
+        "description": "提取变量值的一部分",
+        "start": "开始序列",
+        "end": "结束序列"
+      },
+      "regex-variable": {
+        "name": "RegEx 变量",
+        "description": "将变量值与正则表达式匹配"
+      },
+      "data-mapping": {
+        "source": "源",
+        "destination": "目的",
+        "name": "数据映射",
+        "edit": "编辑数据图",
+        "dataSource": "数据源",
+        "description": "映射变量或表的数据",
+        "addSource": "添加源",
+        "addDestination": "添加目的"
+      },
+      "sort-data": {
+        "name": "排序数据",
+        "description": "对数据项进行排序",
+        "property": "根据属性排序数据项",
+        "addProperty": "添加属性"
+      },
+      "increase-variable": {
+        "name": "增加变量",
+        "description": "将变量的值增加特定数量",
+        "increase": "增加自"
+      },
       "notification": {
         "name": "通知",
         "description": "显示通知",
@@ -97,6 +141,20 @@
         "from": "数据来自",
         "allColumns": "[全部列]"
       },
+      "log-data": {
+        "name": "获取日志数据",
+        "description": "获取工作流的最新日志数据",
+        "data": "日志数据"
+      },
+      "tab-url": {
+        "name": "获取标签页 URL",
+        "description": "获取标签页 URL",
+        "select": "选择标签页",
+        "types": {
+          "active-tab": "活动标签页",
+          "all": "所有标签页"
+        }
+      },
       "reload-tab": {
         "name": "重载标签页",
         "description": "重新加载激活的标签页"
@@ -105,8 +163,8 @@
         "name": "按键",
         "description": "按键或组合键",
         "target": "目标元素 (可选项)",
-        "key": "Key",
-        "detect": "Detect key"
+        "key": "按键",
+        "detect": "检测按键"
       },
       "save-assets": {
         "name": "保存资源",
@@ -144,7 +202,12 @@
         "description": "从剪贴板获取复制的文本",
         "data": "剪贴板数据",
         "noPermission": "没有访问剪贴板的权限",
-        "grantPermission": "授予权限"
+        "grantPermission": "授予权限",
+        "copySelection": "复制页面上的选定文本",
+        "types": {
+          "get": "获取剪贴板数据",
+          "insert": "将文本插入剪贴板"
+        }
       },
       "hover-element": {
         "name": "悬停元素",
@@ -166,6 +229,10 @@
         "timeout": "超时 (毫秒)",
         "activeTabLoaded": "活动标签页",
         "setAsActiveTab": "设为活动标签页"
+      },
+      "blocks-group-2": {
+        "name": "@:workflow.blocks.blocks-group.name 2",
+        "description": "@:workflow.blocks.blocks-group.description"
       },
       "blocks-group": {
         "name": "模块组",
@@ -241,7 +308,7 @@
           "characterData": {
             "title": "字符数据",
             "description": "监测目标元素内的字符数据/文本的变化"
-          },
+          }
         },
         "items": {
           "manual": "手动",
@@ -388,7 +455,7 @@
             "data-columns": "表格",
             "google-sheets": "Google sheets",
             "variable": "变量"
-          },
+          }
         }
       },
       "element-scroll": {

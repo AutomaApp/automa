@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "1.15.2",
+  "version": "1.15.3",
   "description": "An extension for automating your browser by connecting blocks",
   "license": "MIT",
   "repository": {
@@ -43,7 +43,7 @@
     "@tiptap/starter-kit": "^2.0.0-beta.190",
     "@tiptap/vue-3": "^2.0.0-beta.96",
     "@viselect/vanilla": "^3.0.0-beta.13",
-    "@vueuse/rxjs": "^8.7.4",
+    "@vueuse/rxjs": "^8.9.2",
     "@vuex-orm/core": "^0.36.4",
     "codemirror": "^6.0.0",
     "compare-versions": "^4.1.2",
@@ -67,7 +67,7 @@
     "v-remixicon": "^0.1.1",
     "vue": "^3.2.37",
     "vue-i18n": "^9.2.0-beta.29",
-    "vue-router": "^4.0.11",
+    "vue-router": "^4.1.2",
     "vue-toastification": "^2.0.0-rc.5",
     "vuedraggable": "^4.1.0",
     "vuex": "^4.0.2",

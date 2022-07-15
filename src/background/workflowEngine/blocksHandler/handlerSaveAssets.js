@@ -13,7 +13,7 @@ function getFilename(url) {
   }
 }
 
-export default async function ({ data, id, name }) {
+export default async function ({ data, id, label }) {
   const hasPermission = await browser.permissions.contains({
     permissions: ['downloads'],
   });
@@ -43,8 +43,8 @@ export default async function ({ data, id, name }) {
   if (data.type === 'element') {
     sources = await this._sendMessageToTab({
       id,
-      name,
       data,
+      label,
       tabId: this.activeTab.id,
     });
 
