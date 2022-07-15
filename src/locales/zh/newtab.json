@@ -8,6 +8,50 @@
     "text": "从阅读文档或浏览 Automa 市场中的工作流开始.",
     "marketplace": "市场"
   },
+  "scheduledWorkflow": {
+    "title": "计划的工作流",
+    "nextRun": "下次运行",
+    "active": "激活",
+    "refresh": "刷新",
+    "schedule":{
+      "title": "计划",
+      "types": {
+        "everyDay": "每天",
+        "general": "每 {time}",
+        "interval": "每 {time} 分"
+      }
+    }
+  },
+  "storage": {
+    "title": "存储",
+    "table": {
+      "add": "添加表格",
+      "createdAt": "创建于",
+      "modifiedAt": "修改于",
+      "rowsCount": "行数",
+      "delete": "删除表格"
+    }
+  },
+  "workflowPermissions": {
+    "title": "工作流权限",
+    "description": "此工作流需要这些权限才能正常运行",
+    "contextMenus": {
+      "title": "上下文菜单",
+      "description": "通过上下文菜单执行工作流"
+    },
+    "clipboard": {
+      "title": "剪贴板",
+      "description": "用于访问剪贴板数据"
+    },
+    "notifications": {
+      "title": "通知",
+      "description": "用于显示通知"
+    },
+    "downloads": {
+      "title": "下载",
+      "description": "保存并重命名下载的文件"
+    }
+  },
   "updateMessage": {
     "text1": "Automa 已更新为 v{version},",
     "text2": "看看有什么新东西."
@@ -27,6 +71,10 @@
     "clickHere": "点击这里",
     "text": "您需要先登录才能执行此操作"
   },
+  "running": {
+    "start": "开始于 {date}",
+    "message": "仅显示最后 5 条日志"
+  },
   "settings": {
     "theme": "主题",
     "shortcuts": {
@@ -43,6 +91,10 @@
       "arrow": {
         "title": "箭头线",
         "description": "添加箭头到线的尾端"
+      },
+      "snapGrid": {
+        "title": "对齐网格",
+        "description": "移动模块时对齐网格"
       }
     },
     "deleteLog": {
@@ -114,6 +166,11 @@
     "clickToEnable": "单击启用",
     "toggleSidebar": "切换侧栏",
     "cantEdit": "无法编辑共享的工作流",
+    "undo": "撤销",
+    "redo": "重做",
+    "autoAlign": {
+      "title": "自动对齐"
+    },
     "searchBlocks": {
       "title": "在编辑器中搜索模块"
     },
