@@ -13,7 +13,7 @@
     "nextRun": "下次运行",
     "active": "激活",
     "refresh": "刷新",
-    "schedule":{
+    "schedule": {
       "title": "计划",
       "types": {
         "everyDay": "每天",
@@ -161,7 +161,6 @@
     "name": "工作流名称",
     "rename": "重命名工作流",
     "backupCloud": "备份工作流到云端",
-    "add": "添加工作流",
     "add": "添加工作流",
     "clickToEnable": "单击启用",
     "toggleSidebar": "切换侧栏",
@@ -317,7 +316,7 @@
       "tabLoadTimeout": {
         "title": "标签页载入超时",
         "description": "加载标签的最大时间，以毫秒为单位，通过0来禁用超时。"
-      },
+      }
     }
   },
   "collection": {
@@ -358,7 +357,6 @@
     "messages": {
       "url-empty": "URL 为空",
       "invalid-url": "URL 无效",
-      "no-permission": "没有权限",
       "conditions-empty": "条件为空",
       "invalid-proxy-host": "无效的代理主机",
       "workflow-disabled": "工作流已禁用",

@@ -30,7 +30,7 @@
         },
         "toggle": {
           "enable": "启用模块",
-          "disable": "禁用模块",
+          "disable": "禁用模块"
         },
         "onError": {
           "info": "这些规则适用于模块发生错误时",
@@ -40,7 +40,7 @@
           "fallbackTitle": "当模块中发生错误时执行",
           "times": {
             "name": "次数",
-            "description": "重试操作的次数",
+            "description": "重试操作的次数"
           },
           "interval": {
             "name": "间隔",
@@ -202,7 +202,7 @@
         "description": "从剪贴板获取复制的文本",
         "data": "剪贴板数据",
         "noPermission": "没有访问剪贴板的权限",
-        "grantPermission": "授予权限"
+        "grantPermission": "授予权限",
         "copySelection": "复制页面上的选定文本",
         "types": {
           "get": "获取剪贴板数据",
@@ -308,7 +308,7 @@
           "characterData": {
             "title": "字符数据",
             "description": "监测目标元素内的字符数据/文本的变化"
-          },
+          }
         },
         "items": {
           "manual": "手动",
@@ -455,7 +455,7 @@
             "data-columns": "表格",
             "google-sheets": "Google sheets",
             "variable": "变量"
-          },
+          }
         }
       },
       "element-scroll": {
