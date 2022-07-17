@@ -1,8 +1,9 @@
 import browser from 'webextension-polyfill';
 import { isWhitespace, sleep } from '@/utils/helper';
+import mustacheReplacer from '@/utils/referenceData/mustacheReplacer';
 import { waitTabLoaded, attachDebugger, sendDebugCommand } from '../helper';
 
-async function newTab({ id, data }) {
+async function newTab({ id, data }, { refData }) {
   if (this.windowId) {
     try {
       await browser.windows.get(this.windowId);
@@ -11,13 +12,15 @@ async function newTab({ id, data }) {
     }
   }
 
-  const isInvalidUrl = !/^https?/.test(data.url);
+  const _url = mustacheReplacer(data.url, refData).value;
+
+  const isInvalidUrl = !/^https?/.test(_url);
 
   if (isInvalidUrl) {
     const error = new Error(
-      isWhitespace(data.url) ? 'url-empty' : 'invalid-active-tab'
+      isWhitespace(_url) ? 'url-empty' : 'invalid-active-tab'
     );
-    error.data = { url: data.url };
+    error.data = { url: _url };
 
     throw error;
   }
@@ -27,18 +30,18 @@ async function newTab({ id, data }) {
 
   if (data.updatePrevTab && this.activeTab.id) {
     tab = await browser.tabs.update(this.activeTab.id, {
-      url: data.url,
+      url: _url,
       active: data.active,
     });
   } else {
     tab = await browser.tabs.create({
-      url: data.url,
+      url: _url,
       active: data.active,
       windowId: this.windowId,
     });
   }
 
-  this.activeTab.url = data.url;
+  this.activeTab.url = _url;
   if (tab) {
     if (this.settings.debugMode || data.customUserAgent) {
       await attachDebugger(tab.id, this.activeTab.id);
@@ -98,7 +101,7 @@ async function newTab({ id, data }) {
   }
 
   return {
-    data: data.url,
+    data: _url,
     nextBlockId: this.getBlockConnections(id),
   };
 }
