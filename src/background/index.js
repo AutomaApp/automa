@@ -320,6 +320,12 @@ browser.alarms.onAlarm.addListener(async ({ name }) => {
 
       return;
     }
+  } else if (data && data.type === 'date') {
+    const [hour, minute] = data.time.split(':');
+    const date = dayjs(data.date).hour(hour).minute(minute).second(0);
+
+    const isAfter = dayjs().isAfter(date);
+    if (isAfter) return;
   }
 
   workflow.execute(currentWorkflow);
