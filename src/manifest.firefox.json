@@ -30,11 +30,13 @@
     {
       "matches": ["<all_urls>"],
       "js": ["contentScript.bundle.js"],
+      "run_at": "document_start",
       "all_frames": true
     },
     {
       "matches": ["*://*.automa.site/*", "*://automa.vercel.app/*"],
       "js": ["webService.bundle.js"],
+      "run_at": "document_start",
       "all_frames": false
     }
   ],
