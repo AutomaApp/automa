@@ -531,7 +531,14 @@ message.on('workflow:execute', (workflowData, sender) => {
   workflow.execute(workflowData, workflowData?.options || {});
 });
 message.on('workflow:stop', (id) => workflow.states.stop(id));
-message.on('workflow:added', (workflowId) => {
+message.on('workflow:added', ({ workflowId, teamId, source = 'community' }) => {
+  let path = `/workflows/${workflowId}`;
+
+  if (source === 'team') {
+    if (!teamId) return;
+    path = `/teams/${teamId}/workflows/${workflowId}`;
+  }
+
   browser.tabs
     .query({ url: browser.runtime.getURL('/newtab.html') })
     .then((tabs) => {
@@ -540,7 +547,7 @@ message.on('workflow:added', (workflowId) => {
 
         tabs.forEach((tab) => {
           browser.tabs.sendMessage(tab.id, {
-            data: { workflowId },
+            data: { workflowId, teamId, source },
             type: 'workflow:added',
           });
         });
@@ -549,7 +556,7 @@ message.on('workflow:added', (workflowId) => {
           active: true,
         });
       } else {
-        openDashboard(`/workflows/${workflowId}?permission=true`);
+        openDashboard(`${path}?permission=true`);
       }
     });
 });

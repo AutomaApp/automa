@@ -55,14 +55,37 @@
         </transition-expand>
       </div>
     </ui-popover>
-    <button
-      v-tooltip.group="t('workflow.share.title')"
-      :class="{ 'text-primary': shared }"
-      class="hoverable p-2 rounded-lg"
-      @click="shareWorkflow"
-    >
-      <v-remixicon name="riShareLine" />
-    </button>
+    <ui-popover :disabled="userDontHaveTeamAccess">
+      <template #trigger>
+        <button
+          v-tooltip.group="t('workflow.share.title')"
+          :class="{ 'text-primary': shared }"
+          class="hoverable p-2 rounded-lg"
+          @click="shareWorkflow(!userDontHaveTeamAccess)"
+        >
+          <v-remixicon name="riShareLine" />
+        </button>
+      </template>
+      <p class="font-semibold">Share the workflow</p>
+      <ui-list class="mt-2 space-y-1 w-56">
+        <ui-list-item
+          v-close-popover
+          class="cursor-pointer"
+          @click="shareWorkflowWithTeam"
+        >
+          <v-remixicon name="riTeamLine" class="-ml-1 mr-2" />
+          With your team
+        </ui-list-item>
+        <ui-list-item
+          v-close-popover
+          class="cursor-pointer"
+          @click="shareWorkflow()"
+        >
+          <v-remixicon name="riGroupLine" class="-ml-1 mr-2" />
+          With the community
+        </ui-list-item>
+      </ui-list>
+    </ui-popover>
   </ui-card>
   <ui-card padding="p-1 ml-4 pointer-events-auto">
     <button
@@ -251,6 +274,9 @@ const renameState = reactive({
 
 const shared = computed(() => sharedWorkflowStore.getById(props.workflow.id));
 const hosted = computed(() => userStore.hostedWorkflows[props.workflow.id]);
+const userDontHaveTeamAccess = computed(
+  () => !userStore.validateTeamAccess(['owner', 'create'])
+);
 
 function updateWorkflow(data = {}, changedIndicator = false) {
   return workflowStore
@@ -339,7 +365,11 @@ async function setAsHostWorkflow(isHost) {
     toast.error(error.message);
   }
 }
-function shareWorkflow() {
+function shareWorkflowWithTeam() {
+  emit('modal', 'workflow-share-team');
+}
+function shareWorkflow(disabled = false) {
+  if (disabled) return;
   if (shared.value) {
     router.push(`/workflows/${props.workflow.id}/shared`);
     return;

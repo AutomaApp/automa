@@ -16,6 +16,7 @@ import SettingsAbout from './pages/settings/SettingsAbout.vue';
 import SettingsShortcuts from './pages/settings/SettingsShortcuts.vue';
 import SettingsBackup from './pages/settings/SettingsBackup.vue';
 import SettingsEditor from './pages/settings/SettingsEditor.vue';
+import TeamWorkflows from './pages/teams/[teamId]/workflows/[id].vue';
 
 const routes = [
   {
@@ -38,6 +39,11 @@ const routes = [
     name: 'schedule',
     path: '/schedule',
     component: ScheduledWorkflow,
+  },
+  {
+    name: 'team-workflows',
+    path: '/teams/:teamId/workflows/:id',
+    component: TeamWorkflows,
   },
   {
     name: 'workflows-details',

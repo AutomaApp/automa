@@ -11,6 +11,13 @@ export const useUserStore = defineStore('user', {
   }),
   getters: {
     getHostedWorkflows: (state) => Object.values(state.hostedWorkflows),
+    validateTeamAccess:
+      (state) =>
+      (access = []) => {
+        if (!state.user?.team) return false;
+
+        return access.some((item) => state.user.team.access.includes(item));
+      },
   },
   actions: {
     async loadUser() {
@@ -41,6 +48,7 @@ export const useUserStore = defineStore('user', {
         this.backupIds = backupIds || [];
 
         this.user = user;
+        this.retrieved = true;
       } catch (error) {
         console.error(error);
       }

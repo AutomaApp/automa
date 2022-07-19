@@ -248,8 +248,11 @@ export const useWorkflowStore = defineStore('workflow', {
         }
       }
 
-      await browser.storage.local.remove(`state:${id}`);
-
+      await browser.storage.local.remove([
+        `state:${id}`,
+        `draft:${id}`,
+        `draft-team:${id}`,
+      ]);
       await this.saveToStorage('workflows');
 
       return id;

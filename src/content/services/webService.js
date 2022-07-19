@@ -1,6 +1,7 @@
 import { openDB } from 'idb';
 import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
+import cloneDeep from 'lodash.clonedeep';
 import { sendMessage } from '@/utils/message';
 import { objectHasKey, parseJSON } from '@/utils/helper';
 
@@ -22,7 +23,7 @@ function initWebListener() {
   return { on };
 }
 
-(async () => {
+window.addEventListener('DOMContentLoaded', async () => {
   try {
     document.body.setAttribute(
       'data-atm-ext-installed',
@@ -76,12 +77,47 @@ function initWebListener() {
         }
 
         await browser.storage.local.set({ workflows: workflowsStorage });
-        sendMessage('workflow:added', workflowId, 'background');
+        sendMessage('workflow:added', { workflowId }, 'background');
       } catch (error) {
         console.error(error);
       }
     });
+    webListener.on('add-team-workflow', async ({ workflow }) => {
+      let { teamWorkflows } = await browser.storage.local.get('teamWorkflows');
+
+      let workflowData = {
+        ...workflow,
+        createdAt: Date.now(),
+        table: workflow.table ?? [],
+      };
+      workflowData.drawflow =
+        typeof workflowData.drawflow === 'string'
+          ? parseJSON(workflowData.drawflow, workflowData.drawflow)
+          : workflowData.drawflow;
+
+      if (!teamWorkflows) teamWorkflows = {};
+      if (!teamWorkflows[workflowData.teamId])
+        teamWorkflows[workflowData.teamId] = {};
+
+      const workflowToMerge =
+        teamWorkflows[workflowData.teamId][workflow.id] || null;
+      if (workflowToMerge) {
+        workflowData = cloneDeep(workflowToMerge, workflowData);
+      }
+
+      teamWorkflows[workflowData.teamId][workflow.id] = workflowData;
+      await browser.storage.local.set({ teamWorkflows });
+      sendMessage(
+        'workflow:added',
+        {
+          workflowId: workflowData.id,
+          teamId: workflowData.teamId,
+          source: 'team',
+        },
+        'background'
+      );
+    });
   } catch (error) {
     console.error(error);
   }
-})();
+});

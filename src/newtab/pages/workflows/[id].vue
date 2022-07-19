@@ -92,9 +92,7 @@
               <ui-card padding="p-0 ml-2 undo-redo">
                 <button
                   v-tooltip.group="
-                    `${t('workflow.undo')} (${
-                      shortcut['action:undo'].readable
-                    })`
+                    `${t('workflow.undo')} (${getReadableShortcut('mod+z')})`
                   "
                   :disabled="!commandManager.state.value.canUndo"
                   class="p-2 rounded-lg transition-colors"
@@ -104,9 +102,9 @@
                 </button>
                 <button
                   v-tooltip.group="
-                    `${t('workflow.redo')} (${
-                      shortcut['action:redo'].readable
-                    })`
+                    `${t('workflow.redo')} (${getReadableShortcut(
+                      'mod+shift+z'
+                    )})`
                   "
                   :disabled="!commandManager.state.value.canRedo"
                   class="p-2 rounded-lg transition-colors"
@@ -184,7 +182,11 @@ import dagre from 'dagre';
 import { useStore } from '@/stores/main';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
-import { useShortcut, getShortcut } from '@/composable/shortcut';
+import {
+  useShortcut,
+  getShortcut,
+  getReadableShortcut,
+} from '@/composable/shortcut';
 import { getWorkflowPermissions } from '@/utils/workflowData';
 import { tasks } from '@/utils/shared';
 import { fetchApi } from '@/utils/api';
@@ -199,6 +201,7 @@ import convertWorkflowData from '@/utils/convertWorkflowData';
 import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
 import WorkflowEditor from '@/components/newtab/workflow/WorkflowEditor.vue';
 import WorkflowSettings from '@/components/newtab/workflow/WorkflowSettings.vue';
+import WorkflowShareTeam from '@/components/newtab/workflow/WorkflowShareTeam.vue';
 import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
 import WorkflowDataTable from '@/components/newtab/workflow/WorkflowDataTable.vue';
 import WorkflowGlobalData from '@/components/newtab/workflow/WorkflowGlobalData.vue';
@@ -272,6 +275,25 @@ const workflowModals = {
   'workflow-share': {
     icon: 'riShareLine',
     component: WorkflowShare,
+    attrs: {
+      blur: true,
+      persist: true,
+      customContent: true,
+    },
+    events: {
+      close() {
+        modalState.show = false;
+        modalState.name = '';
+      },
+      publish() {
+        modalState.show = false;
+        modalState.name = '';
+      },
+    },
+  },
+  'workflow-share-team': {
+    icon: 'riShareLine',
+    component: WorkflowShareTeam,
     attrs: {
       blur: true,
       persist: true,
@@ -884,7 +906,13 @@ function pasteCopiedElements(position) {
   editor.value.addNodes(nodes);
   editor.value.addEdges(edges);
 }
-function onKeydown({ ctrlKey, metaKey, key, target }) {
+function undoRedoCommand(type, { target }) {
+  const els = ['INPUT', 'SELECT', 'TEXTAREA'];
+  if (els.includes(target.tagName) || target.isContentEditable) return;
+
+  executeCommand(type);
+}
+function onKeydown({ ctrlKey, metaKey, shiftKey, key, target }) {
   const els = ['INPUT', 'SELECT', 'TEXTAREA'];
   if (els.includes(target.tagName) || target.isContentEditable) return;
 
@@ -894,6 +922,8 @@ function onKeydown({ ctrlKey, metaKey, key, target }) {
     copySelectedElements();
   } else if (command('v')) {
     pasteCopiedElements();
+  } else if (command('z')) {
+    undoRedoCommand(shiftKey ? 'redo' : 'undo');
   }
 }
 async function fetchConnectedTable() {
@@ -905,18 +935,10 @@ async function fetchConnectedTable() {
 
   connectedTable.value = table;
 }
-function undoRedoCommand(type, { target }) {
-  const els = ['INPUT', 'SELECT', 'TEXTAREA'];
-  if (els.includes(target.tagName) || target.isContentEditable) return;
-
-  executeCommand(type);
-}
 
 const shortcut = useShortcut([
   getShortcut('editor:toggle-sidebar', toggleSidebar),
   getShortcut('editor:duplicate-block', duplicateElements),
-  getShortcut('action:undo', (_, event) => undoRedoCommand('undo', event)),
-  getShortcut('action:redo', (_, event) => undoRedoCommand('redo', event)),
 ]);
 
 watch(

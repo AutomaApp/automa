@@ -1,9 +1,9 @@
 <template>
   <div class="container pt-8 pb-4">
-    <h1 class="text-2xl font-semibold mb-8 capitalize">
+    <h1 class="text-2xl font-semibold capitalize">
       {{ t('common.workflow', 2) }}
     </h1>
-    <div class="flex items-start">
+    <div class="flex items-start mt-8">
       <div class="w-60 sticky top-8">
         <div class="flex w-full">
           <ui-button
@@ -48,6 +48,16 @@
             <span class="ml-4 capitalize">
               {{ t('workflow.browse') }}
             </span>
+          </ui-list-item>
+          <ui-list-item
+            v-if="userTeamWorkflows.length > 0 || userStore.user?.team"
+            :active="state.activeTab === 'team-workflows'"
+            color="bg-box-transparent font-semibold"
+            class="cursor-pointer"
+            @click="state.activeTab = 'team-workflows'"
+          >
+            <v-remixicon name="riTeamLine" />
+            <span class="ml-4"> Team Workflows </span>
           </ui-list-item>
           <ui-expand
             :model-value="true"
@@ -144,6 +154,12 @@
           </div>
         </div>
         <ui-tab-panels v-model="state.activeTab" class="flex-1 mt-6">
+          <ui-tab-panel value="team-workflows">
+            <workflows-user-team
+              :search="state.query"
+              :sort="{ by: state.sortBy, order: state.sortOrder }"
+            />
+          </ui-tab-panel>
           <ui-tab-panel value="shared" class="workflows-container">
             <workflows-shared
               :search="state.query"
@@ -210,12 +226,14 @@ import { useGroupTooltip } from '@/composable/groupTooltip';
 import { isWhitespace } from '@/utils/helper';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import { importWorkflow, getWorkflowPermissions } from '@/utils/workflowData';
 import WorkflowsLocal from '@/components/newtab/workflows/WorkflowsLocal.vue';
 import WorkflowsShared from '@/components/newtab/workflows/WorkflowsShared.vue';
 import WorkflowsHosted from '@/components/newtab/workflows/WorkflowsHosted.vue';
 import WorkflowsFolder from '@/components/newtab/workflows/WorkflowsFolder.vue';
+import WorkflowsUserTeam from '@/components/newtab/workflows/WorkflowsUserTeam.vue';
 import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
 
 useGroupTooltip();
@@ -224,6 +242,7 @@ const toast = useToast();
 const dialog = useDialog();
 const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
+const teamWorkflowStore = useTeamWorkflowStore();
 const hostedWorkflowStore = useHostedWorkflowStore();
 
 const sorts = ['name', 'createdAt'];
@@ -232,7 +251,7 @@ const savedSorts = JSON.parse(localStorage.getItem('workflow-sorts') || '{}');
 const state = shallowReactive({
   query: '',
   activeFolder: '',
-  activeTab: 'local',
+  activeTab: 'team-workflows',
   perPage: savedSorts.perPage || 18,
   sortBy: savedSorts.sortBy || 'createdAt',
   sortOrder: savedSorts.sortOrder || 'desc',
@@ -248,6 +267,7 @@ const permissionState = shallowReactive({
 });
 
 const hostedWorkflows = computed(() => hostedWorkflowStore.toArray);
+const userTeamWorkflows = computed(() => teamWorkflowStore.toArray);
 
 function clearAddWorkflowModal() {
   Object.assign(addWorkflowModal, {
