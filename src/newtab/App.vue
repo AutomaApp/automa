@@ -219,10 +219,9 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
     await setI18nLanguage(store.settings.locale);
 
     await dataMigration();
+    await userStore.loadUser();
 
     retrieved.value = true;
-
-    await userStore.loadUser();
 
     await Promise.allSettled([
       sharedWorkflowStore.fetchWorkflows(),

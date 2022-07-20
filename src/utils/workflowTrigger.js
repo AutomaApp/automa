@@ -13,7 +13,10 @@ export function registerContextMenu(workflowId, data) {
     const isFirefox = BROWSER_TYPE === 'firefox';
     const browserContext = isFirefox ? browser.menus : browser.contextMenus;
 
-    if (!browserContext) return;
+    if (!browserContext) {
+      reject(new Error("Don't have context menu permission"));
+      return;
+    }
 
     browserContext.create(
       {
@@ -235,6 +238,7 @@ export async function registerWorkflowTrigger(workflowId, { data }) {
     }
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 

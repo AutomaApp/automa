@@ -1,7 +1,7 @@
 <template>
   <div v-if="workflow" class="flex h-screen">
     <div
-      v-if="state.showSidebar"
+      v-if="state.showSidebar && haveEditAccess"
       class="w-80 bg-white dark:bg-gray-800 py-6 relative border-l border-gray-100 dark:border-gray-700 dark:border-opacity-50 flex flex-col"
     >
       <workflow-edit-block
@@ -24,11 +24,41 @@
       <div
         class="absolute w-full flex items-center z-10 left-0 p-4 top-0 pointer-events-none"
       >
+        <ui-card
+          v-if="!haveEditAccess"
+          padding="px-2 mr-4"
+          class="flex items-center overflow-hidden"
+          style="min-width: 150px; height: 48px"
+        >
+          <span class="inline-block">
+            <ui-img
+              v-if="workflow.icon.startsWith('http')"
+              :src="workflow.icon"
+              class="w-8 h-8"
+            />
+            <v-remixicon v-else :name="workflow.icon" size="26" />
+          </span>
+          <div class="ml-2 max-w-sm">
+            <p
+              :class="{ 'text-lg': !workflow.description }"
+              class="font-semibold leading-tight text-overflow"
+            >
+              {{ workflow.name }}
+            </p>
+            <p
+              :class="{ 'text-sm': workflow.description }"
+              class="text-gray-600 leading-tight dark:text-gray-200 text-overflow"
+            >
+              {{ workflow.description }}
+            </p>
+          </div>
+        </ui-card>
         <ui-tabs
           v-model="state.activeTab"
           class="border-none px-2 rounded-lg h-full space-x-1 bg-white dark:bg-gray-800 pointer-events-auto"
         >
           <button
+            v-if="haveEditAccess"
             v-tooltip="
               `${t('workflow.toggleSidebar')} (${
                 shortcut['editor:toggle-sidebar'].readable
@@ -58,7 +88,10 @@
           :editor="editor"
           :workflow="workflow"
           :is-data-changed="state.dataChanged"
+          :is-team="isTeamWorkflow"
+          :can-edit="haveEditAccess"
           @update="onActionUpdated"
+          @permission="checkWorkflowPermission"
           @modal="(modalState.name = $event), (modalState.show = true)"
         />
       </div>
@@ -74,6 +107,7 @@
             v-if="state.workflowConverted"
             :id="route.params.id"
             :data="workflow.drawflow"
+            :disabled="isTeamWorkflow && !haveEditAccess"
             :class="{ 'animate-blocks': state.animateBlocks }"
             class="h-screen"
             @init="onEditorInit"
@@ -81,7 +115,7 @@
             @update:node="state.dataChanged = true"
             @delete:node="state.dataChanged = true"
           >
-            <template #controls-append>
+            <template v-if="!isTeamWorkflow || haveEditAccess" #controls-append>
               <button
                 v-tooltip="t('workflow.autoAlign.title')"
                 class="control-button hoverable ml-2"
@@ -160,6 +194,7 @@
   <shared-permissions-modal
     v-model="permissionState.showModal"
     :permissions="permissionState.items"
+    @granted="registerTrigger"
   />
 </template>
 <script setup>
@@ -182,6 +217,7 @@ import dagre from 'dagre';
 import { useStore } from '@/stores/main';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import {
   useShortcut,
   getShortcut,
@@ -193,6 +229,7 @@ import { fetchApi } from '@/utils/api';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useCommandManager } from '@/composable/commandManager';
 import { debounce, parseJSON, throttle } from '@/utils/helper';
+import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
 import browser from 'webextension-polyfill';
 import dbStorage from '@/db/storage';
 import DroppedNode from '@/utils/editor/DroppedNode';
@@ -224,6 +261,10 @@ const router = useRouter();
 const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
 const commandManager = useCommandManager();
+const teamWorkflowStore = useTeamWorkflowStore();
+
+const { teamId, id: workflowId } = route.params;
+const isTeamWorkflow = route.name === 'team-workflows';
 
 const editor = shallowRef(null);
 const connectedTable = shallowRef(null);
@@ -334,7 +375,18 @@ const workflowModals = {
   },
 };
 
-const workflow = computed(() => workflowStore.getById(route.params.id));
+const haveEditAccess = computed(() => {
+  if (!isTeamWorkflow) return true;
+
+  return userStore.validateTeamAccess(['edit', 'owner', 'create']);
+});
+const workflow = computed(() => {
+  if (isTeamWorkflow) {
+    return teamWorkflowStore.getById(teamId, workflowId);
+  }
+
+  return workflowStore.getById(workflowId);
+});
 const workflowStates = computed(() =>
   workflowStore.getWorkflowStates(route.params.id)
 );
@@ -357,6 +409,7 @@ provide('workflow', {
 provide('workflow-editor', editor);
 
 const updateBlockData = debounce((data) => {
+  if (!haveEditAccess.value) return;
   const node = editor.value.getNode.value(editState.blockData.blockId);
   const dataCopy = JSON.parse(JSON.stringify(data));
 
@@ -375,6 +428,7 @@ const updateBlockData = debounce((data) => {
   state.dataChanged = true;
 }, 250);
 const updateHostedWorkflow = throttle(async () => {
+  if (isTeamWorkflow) return;
   if (!userStore.user || workflowPayload.isUpdating) return;
 
   const isHosted = userStore.hostedWorkflows[route.params.id];
@@ -462,6 +516,12 @@ const onEdgesChange = debounce((changes) => {
   // if (command) commandManager.add(command);
 }, 250);
 
+function registerTrigger() {
+  const triggerBlock = workflow.value.drawflow.nodes.find(
+    (node) => node.label === 'trigger'
+  );
+  registerWorkflowTrigger(workflowId, triggerBlock);
+}
 function executeCommand(type) {
   state.isExecuteCommand = true;
 
@@ -597,12 +657,23 @@ function initEditBlock(data) {
 }
 async function updateWorkflow(data) {
   try {
-    await workflowStore.update({
-      data,
-      id: route.params.id,
-    });
+    if (isTeamWorkflow) {
+      if (!haveEditAccess.value && !data.globalData) return;
+      await teamWorkflowStore.update({
+        data,
+        teamId,
+        id: workflowId,
+      });
+    } else {
+      await workflowStore.update({
+        data,
+        id: route.params.id,
+      });
+    }
+
     workflowPayload.data = { ...workflowPayload.data, ...data };
-    await updateHostedWorkflow();
+
+    if (!isTeamWorkflow) await updateHostedWorkflow();
   } catch (error) {
     console.error(error);
   }
@@ -935,6 +1006,14 @@ async function fetchConnectedTable() {
 
   connectedTable.value = table;
 }
+function checkWorkflowPermission() {
+  getWorkflowPermissions(workflow.value.drawflow).then((permissions) => {
+    if (permissions.length === 0) return;
+
+    permissionState.items = permissions;
+    permissionState.showModal = true;
+  });
+}
 
 const shortcut = useShortcut([
   getShortcut('editor:toggle-sidebar', toggleSidebar),
@@ -961,7 +1040,7 @@ watch(
 onBeforeRouteLeave(() => {
   updateHostedWorkflow();
 
-  if (!state.dataChanged) return;
+  if (!state.dataChanged || !haveEditAccess.value) return;
 
   const confirm = window.confirm(t('message.notSaved'));
 
@@ -981,14 +1060,8 @@ onMounted(() => {
     state.workflowConverted = true;
   });
 
-  if (route.query.permission) {
-    getWorkflowPermissions(workflow.value.drawflow).then((permissions) => {
-      if (permissions.length === 0) return;
-
-      permissionState.items = permissions;
-      permissionState.showModal = true;
-    });
-  }
+  if (route.query.permission || (isTeamWorkflow && !haveEditAccess.value))
+    checkWorkflowPermission();
 
   if (workflow.value.connectedTable) {
     fetchConnectedTable();
@@ -997,7 +1070,7 @@ onMounted(() => {
   window.onbeforeunload = () => {
     updateHostedWorkflow();
 
-    if (state.dataChanged) {
+    if (state.dataChanged && haveEditAccess.value) {
       return t('message.notSaved');
     }
   };

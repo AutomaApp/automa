@@ -42,7 +42,7 @@ const props = defineProps({
     default: () => [],
   },
 });
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'granted']);
 
 const { t } = useI18n();
 
@@ -58,6 +58,7 @@ function requestPermission() {
     .request({ permissions: toRaw(props.permissions) })
     .then(() => {
       emit('update:modelValue', false);
+      emit('granted', true);
     });
 }
 </script>

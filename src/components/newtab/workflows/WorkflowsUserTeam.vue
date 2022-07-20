@@ -38,7 +38,7 @@
       <template #footer-content>
         <span
           :class="tagColors[workflow.tag]"
-          class="text-sm rounded-md capitalize p-1"
+          class="text-sm rounded-md text-black capitalize p-1"
         >
           {{ workflow.tag }}
         </span>
@@ -54,6 +54,7 @@ import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { sendMessage } from '@/utils/message';
 import { arraySorter } from '@/utils/helper';
 import { useDialog } from '@/composable/dialog';
+import { tagColors } from '@/utils/shared';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 
 const props = defineProps({
@@ -70,10 +71,6 @@ const props = defineProps({
   },
 });
 
-const tagColors = {
-  stage: 'bg-yellow-200',
-  production: 'bg-green-200',
-};
 const menu = [
   {
     id: 'delete',

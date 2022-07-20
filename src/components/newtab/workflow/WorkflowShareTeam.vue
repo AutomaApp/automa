@@ -1,9 +1,12 @@
 <template>
   <ui-card class="w-full max-w-4xl share-workflow overflow-auto scroll">
-    <h1 class="text-xl font-semibold">Share workflow with team</h1>
-    <p class="text-gray-600 dark:text-gray-200">
-      This workflow will be shared with your team
-    </p>
+    <template v-if="!isUpdate">
+      <h1 class="text-xl font-semibold">Share workflow with team</h1>
+      <p class="text-gray-600 dark:text-gray-200">
+        This workflow will be shared with your team
+      </p>
+    </template>
+    <p v-else class="font-semibold">Update workflow</p>
     <div class="flex items-start mt-4">
       <div class="flex-1 mr-8">
         <ui-input
@@ -51,32 +54,46 @@
         </shared-wysiwyg>
       </div>
       <div class="w-64 sticky top-4 pb-4">
-        <div class="flex">
+        <template v-if="isUpdate">
           <ui-button
-            v-tooltip="'Save as draft'"
-            :disabled="state.isPublishing"
-            icon
-            @click="saveDraft"
-          >
-            <v-remixicon name="riSaveLine" />
-          </ui-button>
-          <ui-button
-            :loading="state.isPublishing"
-            :disabled="!state.workflow.name.trim()"
             variant="accent"
-            class="w-full ml-2"
-            @click="publishWorkflow"
+            class="w-full"
+            @click="$emit('update', state.workflow)"
           >
-            Publish
+            Update
           </ui-button>
-        </div>
-        <ui-button
-          :disabled="state.isPublishing"
-          class="mt-2 w-full"
-          @click="$emit('close')"
-        >
-          Cancel
-        </ui-button>
+          <ui-button class="w-full mt-2" @click="$emit('close')">
+            {{ t('common.cancel') }}
+          </ui-button>
+        </template>
+        <template v-else>
+          <div class="flex">
+            <ui-button
+              v-tooltip="'Save as draft'"
+              :disabled="state.isPublishing"
+              icon
+              @click="saveDraft"
+            >
+              <v-remixicon name="riSaveLine" />
+            </ui-button>
+            <ui-button
+              :loading="state.isPublishing"
+              :disabled="!state.workflow.name.trim()"
+              variant="accent"
+              class="w-full ml-2"
+              @click="publishWorkflow"
+            >
+              Publish
+            </ui-button>
+          </div>
+          <ui-button
+            :disabled="state.isPublishing"
+            class="mt-2 w-full"
+            @click="$emit('close')"
+          >
+            Cancel
+          </ui-button>
+        </template>
         <ui-select
           v-model="state.workflow.category"
           class="mt-4 w-full"
@@ -109,7 +126,7 @@ import { useToast } from 'vue-toastification';
 import browser from 'webextension-polyfill';
 import { fetchApi } from '@/utils/api';
 import { useUserStore } from '@/stores/user';
-import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { workflowCategories } from '@/utils/shared';
 import { parseJSON, debounce } from '@/utils/helper';
 import { convertWorkflow } from '@/utils/workflowData';
@@ -122,12 +139,12 @@ const props = defineProps({
   },
   isUpdate: Boolean,
 });
-const emit = defineEmits(['close', 'publish', 'change']);
+const emit = defineEmits(['close', 'publish', 'change', 'update']);
 
 const { t } = useI18n();
 const toast = useToast();
 const userStore = useUserStore();
-const sharedWorkflowStore = useSharedWorkflowStore();
+const teamWorkflowStore = useTeamWorkflowStore();
 
 const state = reactive({
   contentLength: 0,
@@ -166,12 +183,7 @@ async function publishWorkflow() {
 
     workflow.drawflow = props.workflow.drawflow;
 
-    sharedWorkflowStore.insert(workflow);
-    sessionStorage.setItem(
-      'shared-workflows',
-      JSON.stringify(sharedWorkflowStore.shared)
-    );
-
+    teamWorkflowStore.insert(workflow);
     state.isPublishing = false;
 
     emit('publish');
@@ -210,14 +222,16 @@ watch(
 );
 
 onMounted(() => {
-  const key = `draft-team:${props.workflow.id}`;
-  browser.storage.local.get(key).then((data) => {
-    Object.assign(state.workflow, data[key]);
+  if (!props.isUpdate) {
+    const key = `draft-team:${props.workflow.id}`;
+    browser.storage.local.get(key).then((data) => {
+      Object.assign(state.workflow, data[key]);
 
-    if (!state.workflow.tag) {
-      state.workflow.tag = 'stage';
-    }
-  });
+      if (!state.workflow.tag) {
+        state.workflow.tag = 'stage';
+      }
+    });
+  }
 });
 </script>
 <style scoped>

@@ -1214,6 +1214,11 @@ export const categories = {
   },
 };
 
+export const tagColors = {
+  stage: 'bg-yellow-200 dark:bg-yellow-300',
+  production: 'bg-green-200 dark:bg-green-300',
+};
+
 export const eventList = [
   { id: 'click', name: 'Click', type: 'mouse-event' },
   { id: 'dblclick', name: 'Double Click', type: 'mouse-event' },

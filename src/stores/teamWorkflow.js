@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import browser from 'webextension-polyfill';
+import lodashDeepmerge from 'lodash.merge';
 
 export const useTeamWorkflowStore = defineStore('team-workflows', {
   storageMap: {
@@ -23,7 +24,7 @@ export const useTeamWorkflowStore = defineStore('team-workflows', {
     },
   },
   actions: {
-    insert(teamId, data) {
+    async insert(teamId, data) {
       if (!this.workflows[teamId]) this.workflows[teamId] = {};
 
       if (Array.isArray(data)) {
@@ -33,13 +34,25 @@ export const useTeamWorkflowStore = defineStore('team-workflows', {
       } else {
         this.workflows[data.id] = data;
       }
+
+      await this.saveToStorage('workflows');
     },
-    update({ id, data }) {
-      if (!this.workflows[id]) return null;
+    async update({ teamId, id, data, deepmerge = false }) {
+      const isWorkflowExists = Boolean(this.workflows[teamId]?.[id]);
+      if (!isWorkflowExists) return null;
 
-      Object.assign(this.workflows[id], data);
+      if (deepmerge) {
+        this.workflows[teamId][id] = lodashDeepmerge(
+          this.workflows[teamId][id],
+          data
+        );
+      } else {
+        Object.assign(this.workflows[teamId][id], data);
+      }
 
-      return this.workflows[id];
+      await this.saveToStorage('workflows');
+
+      return this.workflows[teamId][id];
     },
     async delete(teamId, id) {
       if (!this.workflows[teamId]) return;

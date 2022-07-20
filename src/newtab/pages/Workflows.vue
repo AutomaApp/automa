@@ -251,7 +251,7 @@ const savedSorts = JSON.parse(localStorage.getItem('workflow-sorts') || '{}');
 const state = shallowReactive({
   query: '',
   activeFolder: '',
-  activeTab: 'team-workflows',
+  activeTab: 'local',
   perPage: savedSorts.perPage || 18,
   sortBy: savedSorts.sortBy || 'createdAt',
   sortOrder: savedSorts.sortOrder || 'desc',

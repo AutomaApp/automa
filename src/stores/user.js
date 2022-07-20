@@ -39,7 +39,10 @@ export const useUserStore = defineStore('user', {
             'lastBackup',
           ]);
 
-          if (!user) return;
+          if (!user) {
+            this.retrieved = true;
+            return;
+          }
         }
 
         localStorage.setItem('username', user?.username);
@@ -50,6 +53,7 @@ export const useUserStore = defineStore('user', {
         this.user = user;
         this.retrieved = true;
       } catch (error) {
+        this.retrieved = true;
         console.error(error);
       }
     },
