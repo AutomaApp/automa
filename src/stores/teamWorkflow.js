@@ -32,7 +32,7 @@ export const useTeamWorkflowStore = defineStore('team-workflows', {
           this.workflows[teamId][item.id] = item;
         });
       } else {
-        this.workflows[data.id] = data;
+        this.workflows[teamId][data.id] = data;
       }
 
       await this.saveToStorage('workflows');

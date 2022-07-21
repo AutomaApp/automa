@@ -9,13 +9,29 @@
     <p v-else class="font-semibold">Update workflow</p>
     <div class="flex items-start mt-4">
       <div class="flex-1 mr-8">
-        <ui-input
-          v-model="state.workflow.name"
-          :label="t('workflow.name')"
-          type="text"
-          name="workflow name"
-          class="w-full"
-        />
+        <div class="flex items-center">
+          <ui-input
+            v-model="state.workflow.name"
+            :label="t('workflow.name')"
+            type="text"
+            name="workflow name"
+            class="flex-1"
+          />
+          <ui-select
+            v-if="!isUpdate"
+            v-model="state.activeTeam"
+            label="Select team"
+            class="ml-4"
+          >
+            <option
+              v-for="team in state.userTeams"
+              :key="team.id"
+              :value="team.id"
+            >
+              {{ team.name }}
+            </option>
+          </ui-select>
+        </div>
         <div class="relative mb-2 mt-2">
           <label
             for="short-description"
@@ -60,7 +76,7 @@
             class="w-full"
             @click="$emit('update', state.workflow)"
           >
-            Update
+            Save
           </ui-button>
           <ui-button class="w-full mt-2" @click="$emit('close')">
             {{ t('common.cancel') }}
@@ -124,6 +140,7 @@ import { reactive, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 import browser from 'webextension-polyfill';
+import cloneDeep from 'lodash.clonedeep';
 import { fetchApi } from '@/utils/api';
 import { useUserStore } from '@/stores/user';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
@@ -147,6 +164,8 @@ const userStore = useUserStore();
 const teamWorkflowStore = useTeamWorkflowStore();
 
 const state = reactive({
+  userTeams: [],
+  activeTeam: null,
   contentLength: 0,
   isPublishing: false,
   workflow: JSON.parse(JSON.stringify(props.workflow)),
@@ -165,13 +184,10 @@ async function publishWorkflow() {
 
     delete workflow.extVersion;
 
-    const response = await fetchApi(
-      `/teams/${userStore.user.team.id}/workflows`,
-      {
-        method: 'POST',
-        body: JSON.stringify({ workflow }),
-      }
-    );
+    const response = await fetchApi(`/teams/${state.activeTeam}/workflows`, {
+      method: 'POST',
+      body: JSON.stringify({ workflow }),
+    });
     const result = await response.json();
 
     if (!response.ok) {
@@ -181,9 +197,11 @@ async function publishWorkflow() {
       throw error;
     }
 
+    workflow.id = result.id;
+    workflow.createdAt = Date.now();
     workflow.drawflow = props.workflow.drawflow;
 
-    teamWorkflowStore.insert(workflow);
+    await teamWorkflowStore.insert(state.activeTeam, cloneDeep(workflow));
     state.isPublishing = false;
 
     emit('publish');
@@ -231,6 +249,11 @@ onMounted(() => {
         state.workflow.tag = 'stage';
       }
     });
+
+    state.userTeams = userStore.user.teams.filter((team) =>
+      team.access.some((item) => ['owner', 'create'].includes(item))
+    );
+    if (state.userTeams[0]) state.activeTeam = state.userTeams[0].id;
   }
 });
 </script>

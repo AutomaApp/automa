@@ -378,7 +378,7 @@ const workflowModals = {
 const haveEditAccess = computed(() => {
   if (!isTeamWorkflow) return true;
 
-  return userStore.validateTeamAccess(['edit', 'owner', 'create']);
+  return userStore.validateTeamAccess(teamId, ['edit', 'owner', 'create']);
 });
 const workflow = computed(() => {
   if (isTeamWorkflow) {

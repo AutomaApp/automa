@@ -458,7 +458,9 @@ onMounted(() => {
   browser.storage.local
     .get(['recording', 'workflows'])
     .then(({ recording, workflows }) => {
-      const workflow = workflows.find(({ id }) => recording.workflowId === id);
+      const workflow = Object.values(workflows).find(
+        ({ id }) => recording.workflowId === id
+      );
 
       addBlockState.workflowColumns = workflow?.table || [];
     });

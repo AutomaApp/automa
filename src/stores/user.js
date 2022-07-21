@@ -13,10 +13,13 @@ export const useUserStore = defineStore('user', {
     getHostedWorkflows: (state) => Object.values(state.hostedWorkflows),
     validateTeamAccess:
       (state) =>
-      (access = []) => {
-        if (!state.user?.team) return false;
+      (teamId, access = []) => {
+        const currentTeam = state.user?.teams?.find(
+          ({ id }) => teamId === id || +teamId === id
+        );
+        if (!currentTeam) return false;
 
-        return access.some((item) => state.user.team.access.includes(item));
+        return access.some((item) => currentTeam.access.includes(item));
       },
   },
   actions: {

@@ -66,13 +66,13 @@
         </transition-expand>
       </div>
     </ui-popover>
-    <ui-popover :disabled="userDontHaveTeamAccess">
+    <ui-popover :disabled="userDontHaveTeamsAccess">
       <template #trigger>
         <button
           v-tooltip.group="t('workflow.share.title')"
           :class="{ 'text-primary': shared }"
           class="hoverable p-2 rounded-lg"
-          @click="shareWorkflow(!userDontHaveTeamAccess)"
+          @click="shareWorkflow(!userDontHaveTeamsAccess)"
         >
           <v-remixicon name="riShareLine" />
         </button>
@@ -355,6 +355,8 @@ const shortcuts = useShortcut([
   getShortcut('editor:execute-workflow', executeWorkflow),
 ]);
 
+const { teamId } = router.currentRoute.value.params;
+
 const state = reactive({
   triggerText: '',
   loadingSync: false,
@@ -371,9 +373,13 @@ const renameState = reactive({
 
 const shared = computed(() => sharedWorkflowStore.getById(props.workflow.id));
 const hosted = computed(() => userStore.hostedWorkflows[props.workflow.id]);
-const userDontHaveTeamAccess = computed(
-  () => !userStore.validateTeamAccess(['owner', 'create'])
-);
+const userDontHaveTeamsAccess = computed(() => {
+  if (props.isTeam || !userStore.user.teams) return false;
+
+  return !userStore.user.teams.some((team) =>
+    team.access.some((item) => ['owner', 'create'].includes(item))
+  );
+});
 
 function updateWorkflow(data = {}, changedIndicator = false) {
   let store = null;
@@ -381,8 +387,8 @@ function updateWorkflow(data = {}, changedIndicator = false) {
   if (props.isTeam) {
     store = teamWorkflow.update({
       data,
+      teamId,
       id: props.workflow.id,
-      teamId: router.currentRoute.value.params.teamId,
     });
   } else {
     store = workflowStore.update({
@@ -512,7 +518,11 @@ function clearRenameModal() {
 async function publishWorkflow() {
   if (!props.canEdit) return;
 
-  const workflowPaylod = convertWorkflow(props.workflow, ['id']);
+  const workflowPaylod = convertWorkflow(props.workflow, [
+    'id',
+    'tag',
+    'content',
+  ]);
   workflowPaylod.drawflow = parseJSON(
     props.workflow.drawflow,
     props.workflow.drawflow
@@ -524,7 +534,7 @@ async function publishWorkflow() {
 
   try {
     const response = await fetchApi(
-      `/teams/${userStore.user.team.id}/workflows/${props.workflow.id}`,
+      `/teams/${teamId}/workflows/${props.workflow.id}`,
       {
         method: 'PATCH',
         body: JSON.stringify({ workflow: workflowPaylod }),
@@ -624,7 +634,7 @@ async function syncWorkflow() {
 
   try {
     const response = await fetchApi(
-      `/teams/${userStore.user.team.id}/workflows/${props.workflow.id}`
+      `/teams/${teamId}/workflows/${props.workflow.id}`
     );
     const result = await response.json();
 
@@ -633,9 +643,9 @@ async function syncWorkflow() {
     }
 
     await teamWorkflow.update({
+      teamId,
       data: result,
       id: props.workflow.id,
-      teamId: router.currentRoute.value.params.teamId,
     });
 
     const convertedData = convertWorkflowData(result);

@@ -49,16 +49,32 @@
               {{ t('workflow.browse') }}
             </span>
           </ui-list-item>
-          <ui-list-item
-            v-if="userTeamWorkflows.length > 0 || userStore.user?.team"
-            :active="state.activeTab === 'team-workflows'"
-            color="bg-box-transparent font-semibold"
-            class="cursor-pointer"
-            @click="state.activeTab = 'team-workflows'"
+          <ui-expand
+            v-if="userTeamWorkflows.length > 0 || userStore.user?.teams"
+            append-icon
+            header-class="px-4 py-2 rounded-lg mb-1 hoverable w-full flex items-center"
           >
-            <v-remixicon name="riTeamLine" />
-            <span class="ml-4"> Team Workflows </span>
-          </ui-list-item>
+            <template #header>
+              <v-remixicon name="riTeamLine" />
+              <span class="ml-4 capitalize flex-1 text-left">
+                Team Workflows
+              </span>
+            </template>
+            <ui-list class="space-y-1">
+              <ui-list-item
+                v-for="team in userStore.user.teams"
+                :key="team.id"
+                :active="state.teamId === team.id || +state.teamId === team.id"
+                color="bg-box-transparent font-semibold"
+                class="pl-14 cursor-pointer"
+                @click="updateActiveTab({ activeTab: 'team', teamId: team.id })"
+              >
+                <span class="text-overflow">
+                  {{ team.name }}
+                </span>
+              </ui-list-item>
+            </ui-list>
+          </ui-expand>
           <ui-expand
             :model-value="true"
             append-icon
@@ -76,7 +92,7 @@
                 :active="state.activeTab === 'local'"
                 color="bg-box-transparent font-semibold"
                 class="pl-14"
-                @click="state.activeTab = 'local'"
+                @click="updateActiveTab({ activeTab: 'local' })"
               >
                 <span class="capitalize">
                   {{ t('workflow.type.local') }}
@@ -88,7 +104,7 @@
                 tag="button"
                 color="bg-box-transparent font-semibold"
                 class="pl-14"
-                @click="state.activeTab = 'shared'"
+                @click="updateActiveTab({ activeTab: 'shared' })"
               >
                 <span class="capitalize">
                   {{ t('workflow.type.shared') }}
@@ -100,7 +116,7 @@
                 color="bg-box-transparent font-semibold"
                 tag="button"
                 class="pl-14"
-                @click="state.activeTab = 'host'"
+                @click="updateActiveTab({ activeTab: 'host' })"
               >
                 <span class="capitalize">
                   {{ t('workflow.type.host') }}
@@ -154,8 +170,9 @@
           </div>
         </div>
         <ui-tab-panels v-model="state.activeTab" class="flex-1 mt-6">
-          <ui-tab-panel value="team-workflows">
+          <ui-tab-panel value="team">
             <workflows-user-team
+              :team-id="state.teamId"
               :search="state.query"
               :sort="{ by: state.sortBy, order: state.sortOrder }"
             />
@@ -219,6 +236,7 @@
 <script setup>
 import { computed, shallowReactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
@@ -240,18 +258,21 @@ useGroupTooltip();
 const { t } = useI18n();
 const toast = useToast();
 const dialog = useDialog();
+const router = useRouter();
 const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
 const teamWorkflowStore = useTeamWorkflowStore();
 const hostedWorkflowStore = useHostedWorkflowStore();
 
 const sorts = ['name', 'createdAt'];
+const { teamId, active } = router.currentRoute.value.query;
 
 const savedSorts = JSON.parse(localStorage.getItem('workflow-sorts') || '{}');
 const state = shallowReactive({
   query: '',
   activeFolder: '',
-  activeTab: 'local',
+  teamId: teamId || '',
+  activeTab: active || 'local',
   perPage: savedSorts.perPage || 18,
   sortBy: savedSorts.sortBy || 'createdAt',
   sortOrder: savedSorts.sortOrder || 'desc',
@@ -275,6 +296,11 @@ function clearAddWorkflowModal() {
     show: false,
     description: '',
   });
+}
+function updateActiveTab(data = {}) {
+  if (data.activeTab !== 'team') data.teamId = '';
+
+  Object.assign(state, data);
 }
 function addWorkflow() {
   workflowStore.insert({
@@ -353,6 +379,16 @@ watch(
       'workflow-sorts',
       JSON.stringify({ sortOrder, sortBy, perPage })
     );
+  }
+);
+watch(
+  () => [state.activeTab, state.teamId],
+  ([activeTab, teamIdQuery]) => {
+    const query = { active: activeTab };
+
+    if (teamIdQuery) query.teamId = teamIdQuery;
+
+    router.replace({ ...router.currentRoute.value, query });
   }
 );
 </script>

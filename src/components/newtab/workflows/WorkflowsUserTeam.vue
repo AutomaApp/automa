@@ -16,7 +16,7 @@
       Browse workflows that been shared by your team
     </p>
     <ui-button
-      :href="`http://localhost:3002/workflows?teamId=${userStore.user.team.id}&workflowsBy=team`"
+      :href="`http://localhost:3002/workflows?teamId=${teamId}&workflowsBy=team`"
       tag="a"
       target="_blank"
       variant="accent"
@@ -33,7 +33,7 @@
       :menu="menu"
       @menuSelected="onMenuSelected"
       @execute="executeWorkflow(workflow)"
-      @click="$router.push(`/teams/${workflow.teamId}/workflows/${$event.id}`)"
+      @click="$router.push(`/teams/${teamId}/workflows/${$event.id}`)"
     >
       <template #footer-content>
         <span
@@ -62,6 +62,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  teamId: {
+    type: [String, Number],
+    default: '',
+  },
   sort: {
     type: Object,
     default: () => ({
@@ -85,9 +89,7 @@ const dialog = useDialog();
 const userStore = useUserStore();
 const teamWorkflowStore = useTeamWorkflowStore();
 
-const teamWorkflows = computed(() =>
-  teamWorkflowStore.getByTeam(userStore.user?.team?.id)
-);
+const teamWorkflows = computed(() => teamWorkflowStore.getByTeam(props.teamId));
 const workflows = computed(() => {
   const filtered = teamWorkflows.value.filter(({ name }) =>
     name.toLocaleLowerCase().includes(props.search.toLocaleLowerCase())
