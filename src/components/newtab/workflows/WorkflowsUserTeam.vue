@@ -30,7 +30,7 @@
       v-for="workflow in workflows"
       :key="workflow.id"
       :data="workflow"
-      :menu="menu"
+      :menu="workflowMenus"
       @menuSelected="onMenuSelected"
       @execute="executeWorkflow(workflow)"
       @click="$router.push(`/teams/${teamId}/workflows/${$event.id}`)"
@@ -49,6 +49,8 @@
 <script setup>
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useToast } from 'vue-toastification';
+import { fetchApi } from '@/utils/api';
 import { useUserStore } from '@/stores/user';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { sendMessage } from '@/utils/message';
@@ -79,16 +81,36 @@ const menu = [
   {
     id: 'delete',
     name: 'Delete',
+    hasAccess: true,
     icon: 'riDeleteBin7Line',
-    class: 'text-red-400',
+    attrs: {
+      class: 'text-red-400 dark:text-gray-500',
+    },
+  },
+  {
+    id: 'delete-team',
+    name: 'Delete from team',
+    icon: 'riDeleteBin7Line',
+    permissions: ['owner', 'create'],
+    attrs: {
+      class: 'text-red-400 dark:text-gray-500',
+    },
   },
 ];
 
 const { t } = useI18n();
+const toast = useToast();
 const dialog = useDialog();
 const userStore = useUserStore();
 const teamWorkflowStore = useTeamWorkflowStore();
 
+const workflowMenus = computed(() =>
+  menu.filter((item) => {
+    if (!item.permissions) return true;
+
+    return userStore.validateTeamAccess(props.teamId, item.permissions);
+  })
+);
 const teamWorkflows = computed(() => teamWorkflowStore.getByTeam(props.teamId));
 const workflows = computed(() => {
   const filtered = teamWorkflows.value.filter(({ name }) =>
@@ -106,15 +128,42 @@ function executeWorkflow(workflow) {
   sendMessage('workflow:execute', workflow, 'background');
 }
 function onMenuSelected({ id, data }) {
-  if (id !== 'delete') return;
+  if (id === 'delete') {
+    dialog.confirm({
+      title: t('workflow.delete'),
+      okVariant: 'danger',
+      body: t('message.delete', { name: data.name }),
+      onConfirm: () => {
+        teamWorkflowStore.delete(data.teamId, data.id);
+      },
+    });
+  } else if (id === 'delete-team') {
+    dialog.confirm({
+      async: true,
+      title: 'Delete workflow from team',
+      okVariant: 'danger',
+      body: `Are you sure want to delete the "${data.name}" workflow from this team?`,
+      onConfirm: async () => {
+        try {
+          const response = await fetchApi(
+            `/teams/${props.teamId}/workflows/${data.id}`,
+            { method: 'DELETE' }
+          );
+          const result = await response.json();
 
-  dialog.confirm({
-    title: t('workflow.delete'),
-    okVariant: 'danger',
-    body: t('message.delete', { name: data.name }),
-    onConfirm: () => {
-      teamWorkflowStore.delete(data.teamId, data.id);
-    },
-  });
+          if (!response.ok && response.status !== 404)
+            throw new Error(result.message);
+
+          await teamWorkflowStore.delete(props.teamId, data.id);
+
+          return true;
+        } catch (error) {
+          toast.error('Something went wrong');
+          console.error(error);
+          return false;
+        }
+      },
+    });
+  }
 }
 </script>

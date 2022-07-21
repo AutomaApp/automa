@@ -165,12 +165,22 @@
         <ui-list-item
           v-for="item in moreActions"
           :key="item.id"
+          v-bind="item.attrs || {}"
           v-close-popover
           class="cursor-pointer"
           @click="item.action"
         >
           <v-remixicon :name="item.icon" class="mr-2 -ml-1" />
           {{ item.name }}
+        </ui-list-item>
+        <ui-list-item
+          v-if="userStore.validateTeamAccess(teamId, ['owner', 'create'])"
+          v-close-popover
+          class="cursor-pointer text-red-400 dark:text-red-500"
+          @click="deleteFromTeam"
+        >
+          <v-remixicon name="riDeleteBin7Line" class="mr-2 -ml-1" />
+          <span>Delete from team</span>
         </ui-list-item>
       </ui-list>
     </ui-popover>
@@ -346,7 +356,7 @@ const router = useRouter();
 const dialog = useDialog();
 const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
-const teamWorkflow = useTeamWorkflowStore();
+const teamWorkflowStore = useTeamWorkflowStore();
 const sharedWorkflowStore = useSharedWorkflowStore();
 const shortcuts = useShortcut([
   /* eslint-disable-next-line */
@@ -385,7 +395,7 @@ function updateWorkflow(data = {}, changedIndicator = false) {
   let store = null;
 
   if (props.isTeam) {
-    store = teamWorkflow.update({
+    store = teamWorkflowStore.update({
       data,
       teamId,
       id: props.workflow.id,
@@ -507,6 +517,35 @@ function shareWorkflow(disabled = false) {
     });
   }
 }
+function deleteFromTeam() {
+  dialog.confirm({
+    async: true,
+    title: 'Delete workflow from team',
+    okVariant: 'danger',
+    body: `Are you sure want to delete the "${props.workflow.name}" workflow from this team?`,
+    onConfirm: async () => {
+      try {
+        const response = await fetchApi(
+          `/teams/${teamId}/workflows/${props.workflow.id}`,
+          { method: 'DELETE' }
+        );
+        const result = await response.json();
+
+        if (!response.ok && response.status !== 404)
+          throw new Error(result.message);
+
+        await teamWorkflowStore.delete(teamId, props.workflow.id);
+        router.replace(`/workflows?active=team&teamId=${teamId}`);
+
+        return true;
+      } catch (error) {
+        toast.error('Something went wrong');
+        console.error(error);
+        return false;
+      }
+    },
+  });
+}
 function clearRenameModal() {
   Object.assign(renameState, {
     id: '',
@@ -577,7 +616,12 @@ function deleteWorkflow() {
     okVariant: 'danger',
     body: t('message.delete', { name: props.workflow.name }),
     onConfirm: async () => {
-      await workflowStore.delete(props.workflow.id);
+      if (props.isTeam) {
+        await teamWorkflowStore.delete(teamId, props.workflow.id);
+      } else {
+        await workflowStore.delete(props.workflow.id);
+      }
+
       router.replace('/');
     },
   });
@@ -638,11 +682,14 @@ async function syncWorkflow() {
     );
     const result = await response.json();
 
-    if (!response.ok) {
-      throw new Error(result.message);
+    if (response.status === 404) {
+      await teamWorkflowStore.delete(teamId, props.workflow.id);
+      router.replace(`/workflows?active=team&teamId=${teamId}`);
+      return;
     }
+    if (!response.ok) throw new Error(result.message);
 
-    await teamWorkflow.update({
+    await teamWorkflowStore.update({
       teamId,
       data: result,
       id: props.workflow.id,
@@ -709,6 +756,9 @@ const moreActions = [
     action: deleteWorkflow,
     name: t('common.delete'),
     icon: 'riDeleteBin7Line',
+    attrs: {
+      class: 'text-red-400 dark:text-gray-500',
+    },
   },
 ];
 </script>

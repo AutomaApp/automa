@@ -32,7 +32,7 @@
               v-for="item in menu"
               :key="item.id"
               v-close-popover
-              :class="menu.class"
+              v-bind="item.attrs || {}"
               class="cursor-pointer"
               @click="$emit('menuSelected', { id: item.id, data })"
             >

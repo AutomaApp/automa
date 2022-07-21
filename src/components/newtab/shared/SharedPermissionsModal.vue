@@ -48,7 +48,7 @@ const { t } = useI18n();
 
 const icons = {
   downloads: 'riDownloadLine',
-  cliboards: 'riClipboardLine',
+  clipboardRead: 'riClipboardLine',
   contextMenus: 'riFileListLine',
   notifications: 'riNotification3Line',
 };

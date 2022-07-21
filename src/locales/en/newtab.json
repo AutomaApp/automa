@@ -39,7 +39,7 @@
       "title": "Context menu",
       "description": "To execute the workflow via the context menu"
     },
-    "clipboard": {
+    "clipboardRead": {
       "title": "Clipboard",
       "description": "For accessing the clipboard data"
     },
