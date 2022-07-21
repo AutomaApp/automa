@@ -112,7 +112,7 @@ const options = {
         type: 'asset/resource',
         dependency: { not: [/node_modules/] },
         generator: {
-          filename: '[name].[ext]',
+          filename: '[name][ext]',
         },
       },
       {
