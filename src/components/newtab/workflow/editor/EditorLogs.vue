@@ -47,7 +47,7 @@ const logs = useLiveQuery(() =>
     .where('workflowId')
     .equals(props.workflowId)
     .reverse()
-    .limit(15)
+    .limit(14)
     .sortBy('endedAt')
 );
 

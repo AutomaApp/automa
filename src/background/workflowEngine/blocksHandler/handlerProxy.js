@@ -51,7 +51,7 @@ function setProxy({ data, id }) {
       return;
     }
 
-    if (data.port !== 0) {
+    if (data.port && !Number.isNaN(+data.port)) {
       config.rules.singleProxy.port = +data.port;
     }
 

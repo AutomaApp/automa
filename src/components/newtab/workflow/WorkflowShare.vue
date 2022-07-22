@@ -26,6 +26,7 @@
         <ui-button class="mr-2" @click="$emit('close')">
           {{ t('common.cancel') }}
         </ui-button>
+        <ui-button class="mr-2" @click="saveDraft"> Save draft </ui-button>
         <ui-button
           :loading="state.isPublishing"
           variant="accent"
@@ -74,92 +75,6 @@
         class="prose prose-zinc dark:prose-invert max-w-none content-editor p-4 bg-box-transparent rounded-lg relative"
         @count="state.contentLength = $event"
       >
-        <template #prepend="{ editor }">
-          <div
-            class="p-2 rounded-lg backdrop-blur flex items-center sticky top-0 z-50 bg-box-transparent space-x-1 mb-2"
-          >
-            <button
-              :class="{
-                'bg-box-transparent text-primary': editor.isActive('heading', {
-                  level: 1,
-                }),
-              }"
-              title="Heading 1"
-              class="editor-menu-btn hoverable"
-              @click="editor.commands.toggleHeading({ level: 1 })"
-            >
-              <v-remixicon name="riH1" />
-            </button>
-            <button
-              :class="{
-                'bg-box-transparent text-primary': editor.isActive('heading', {
-                  level: 2,
-                }),
-              }"
-              title="Heading 2"
-              class="editor-menu-btn hoverable"
-              @click="editor.commands.toggleHeading({ level: 2 })"
-            >
-              <v-remixicon name="riH2" />
-            </button>
-            <span
-              class="w-px h-5 bg-gray-300 dark:bg-gray-600"
-              style="margin: 0 12px"
-            ></span>
-            <button
-              v-for="item in menuItems"
-              :key="item.id"
-              :title="item.name"
-              :class="{
-                'bg-box-transparent text-primary': editor.isActive(item.id),
-              }"
-              class="editor-menu-btn hoverable"
-              @click="editor.chain().focus()[item.action]().run()"
-            >
-              <v-remixicon :name="item.icon" />
-            </button>
-            <span
-              class="w-px h-5 bg-gray-300 dark:bg-gray-600"
-              style="margin: 0 12px"
-            ></span>
-            <button
-              :class="{
-                'bg-box-transparent text-primary':
-                  editor.isActive('blockquote'),
-              }"
-              title="Blockquote"
-              class="editor-menu-btn hoverable"
-              @click="editor.commands.toggleBlockquote()"
-            >
-              <v-remixicon name="riDoubleQuotesL" />
-            </button>
-            <button
-              title="Insert image"
-              class="editor-menu-btn hoverable"
-              @click="insertImage(editor)"
-            >
-              <v-remixicon name="riImageLine" />
-            </button>
-            <button
-              :class="{
-                'bg-box-transparent text-primary': editor.isActive('link'),
-              }"
-              title="Link"
-              class="editor-menu-btn hoverable"
-              @click="setLink(editor)"
-            >
-              <v-remixicon name="riLinkM" />
-            </button>
-            <button
-              v-show="editor.isActive('link')"
-              title="Remove link"
-              class="editor-menu-btn hoverable"
-              @click="editor.commands.unsetLink()"
-            >
-              <v-remixicon name="riLinkUnlinkM" />
-            </button>
-          </div>
-        </template>
         <template #append>
           <p
             class="text-sm text-gray-600 dark:text-gray-200 absolute bottom-2 right-2"
@@ -172,9 +87,10 @@
   </ui-card>
 </template>
 <script setup>
-import { reactive, watch } from 'vue';
+import { reactive, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
+import browser from 'webextension-polyfill';
 import { fetchApi } from '@/utils/api';
 import { useUserStore } from '@/stores/user';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
@@ -196,17 +112,6 @@ const { t } = useI18n();
 const toast = useToast();
 const userStore = useUserStore();
 const sharedWorkflowStore = useSharedWorkflowStore();
-
-const menuItems = [
-  { id: 'bold', name: 'Bold', icon: 'riBold', action: 'toggleBold' },
-  { id: 'italic', name: 'Italic', icon: 'riItalic', action: 'toggleItalic' },
-  {
-    id: 'strike',
-    name: 'Strikethrough',
-    icon: 'riStrikethrough2',
-    action: 'toggleStrike',
-  },
-];
 
 const state = reactive({
   contentLength: 0,
@@ -263,31 +168,15 @@ async function publishWorkflow() {
     state.isPublishing = false;
   }
 }
-function setLink(editor) {
-  const previousUrl = editor.getAttributes('link').href;
-  const url = window.prompt('URL', previousUrl);
-
-  if (url === null) return;
-
-  if (url === '') {
-    editor.chain().focus().extendMarkRange('link').unsetLink().run();
-
-    return;
-  }
-
-  editor
-    .chain()
-    .focus()
-    .extendMarkRange('link')
-    .setLink({ href: url, target: '_blank' })
-    .run();
-}
-function insertImage(editor) {
-  const url = window.prompt('URL');
-
-  if (url) {
-    editor.chain().focus().setImage({ src: url }).run();
-  }
+function saveDraft() {
+  const key = `draft:${props.workflow.id}`;
+  browser.storage.local.set({
+    [key]: {
+      content: state.workflow.content,
+      category: state.workflow.category,
+      description: state.workflow.description,
+    },
+  });
 }
 
 watch(
@@ -297,6 +186,13 @@ watch(
   }, 200),
   { deep: true }
 );
+
+onMounted(() => {
+  const key = `draft:${props.workflow.id}`;
+  browser.storage.local.get(key).then((data) => {
+    Object.assign(state.workflow, data[key]);
+  });
+});
 </script>
 <style scoped>
 .share-workflow {

@@ -47,9 +47,11 @@ export default function ({
       });
     }
   } else {
+    const tagName = selectedElement.tagName.toLowerCase();
+    const candidate = findSelector(selectedElement, finderOptions);
     selector =
       selectorType === 'css'
-        ? findSelector(selectedElement, finderOptions)
+        ? `${candidate.startsWith(tagName) ? '' : tagName}${candidate}`
         : generateXPath(selectedElement);
   }
 

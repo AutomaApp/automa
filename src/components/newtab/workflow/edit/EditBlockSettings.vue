@@ -66,7 +66,7 @@ const emit = defineEmits(['change']);
 const { t } = useI18n();
 
 const browserType = BROWSER_TYPE;
-const supportedBlocks = ['forms', 'event-click', 'trigger-event'];
+const supportedBlocks = ['forms', 'event-click', 'trigger-event', 'press-key'];
 const tabs = [
   { id: 'on-error', name: t('workflow.blocks.base.onError.button') },
   { id: 'lines', name: t('workflow.blocks.base.settings.line.title') },

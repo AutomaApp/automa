@@ -1,6 +1,90 @@
 <template>
   <div class="wysiwyg-editor">
     <slot v-if="editor" name="prepend" :editor="editor" />
+    <div
+      v-if="editor"
+      class="p-2 rounded-lg backdrop-blur flex items-center sticky top-0 z-50 bg-box-transparent space-x-1 mb-2"
+    >
+      <button
+        :class="{
+          'bg-box-transparent text-primary': editor.isActive('heading', {
+            level: 1,
+          }),
+        }"
+        title="Heading 1"
+        class="editor-menu-btn hoverable"
+        @click="editor.commands.toggleHeading({ level: 1 })"
+      >
+        <v-remixicon name="riH1" />
+      </button>
+      <button
+        :class="{
+          'bg-box-transparent text-primary': editor.isActive('heading', {
+            level: 2,
+          }),
+        }"
+        title="Heading 2"
+        class="editor-menu-btn hoverable"
+        @click="editor.commands.toggleHeading({ level: 2 })"
+      >
+        <v-remixicon name="riH2" />
+      </button>
+      <span
+        class="w-px h-5 bg-gray-300 dark:bg-gray-600"
+        style="margin: 0 12px"
+      ></span>
+      <button
+        v-for="item in menuItems"
+        :key="item.id"
+        :title="item.name"
+        :class="{
+          'bg-box-transparent text-primary': editor.isActive(item.id),
+        }"
+        class="editor-menu-btn hoverable"
+        @click="editor.chain().focus()[item.action]().run()"
+      >
+        <v-remixicon :name="item.icon" />
+      </button>
+      <span
+        class="w-px h-5 bg-gray-300 dark:bg-gray-600"
+        style="margin: 0 12px"
+      ></span>
+      <button
+        :class="{
+          'bg-box-transparent text-primary': editor.isActive('blockquote'),
+        }"
+        title="Blockquote"
+        class="editor-menu-btn hoverable"
+        @click="editor.commands.toggleBlockquote()"
+      >
+        <v-remixicon name="riDoubleQuotesL" />
+      </button>
+      <button
+        title="Insert image"
+        class="editor-menu-btn hoverable"
+        @click="insertImage(editor)"
+      >
+        <v-remixicon name="riImageLine" />
+      </button>
+      <button
+        :class="{
+          'bg-box-transparent text-primary': editor.isActive('link'),
+        }"
+        title="Link"
+        class="editor-menu-btn hoverable"
+        @click="setLink(editor)"
+      >
+        <v-remixicon name="riLinkM" />
+      </button>
+      <button
+        v-show="editor.isActive('link')"
+        title="Remove link"
+        class="editor-menu-btn hoverable"
+        @click="editor.commands.unsetLink()"
+      >
+        <v-remixicon name="riLinkUnlinkM" />
+      </button>
+    </div>
     <editor-content :editor="editor" />
     <slot name="append" />
   </div>
@@ -35,6 +119,43 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'count', 'change']);
 
 const editor = shallowRef(null);
+const menuItems = [
+  { id: 'bold', name: 'Bold', icon: 'riBold', action: 'toggleBold' },
+  { id: 'italic', name: 'Italic', icon: 'riItalic', action: 'toggleItalic' },
+  {
+    id: 'strike',
+    name: 'Strikethrough',
+    icon: 'riStrikethrough2',
+    action: 'toggleStrike',
+  },
+];
+
+function setLink() {
+  const previousUrl = editor.value.getAttributes('link').href;
+  const url = window.prompt('URL', previousUrl);
+
+  if (url === null) return;
+
+  if (url === '') {
+    editor.value.chain().focus().extendMarkRange('link').unsetLink().run();
+
+    return;
+  }
+
+  editor.value
+    .chain()
+    .focus()
+    .extendMarkRange('link')
+    .setLink({ href: url, target: '_blank' })
+    .run();
+}
+function insertImage() {
+  const url = window.prompt('URL');
+
+  if (url) {
+    editor.value.chain().focus().setImage({ src: url }).run();
+  }
+}
 
 watch(
   () => props.modelValue,

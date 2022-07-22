@@ -126,11 +126,11 @@ const { t } = useI18n();
 const store = useStore();
 const editor = useVueFlow({
   id: props.id,
-  minZoom: 0.4,
+  minZoom: 0.6,
   edgeUpdaterRadius: 20,
   deleteKeyCode: 'Delete',
   elevateEdgesOnSelect: true,
-  defaultZoom: props.data?.zoom ?? 0.7,
+  defaultZoom: props.data?.zoom ?? 1,
   multiSelectionKeyCode: isMac ? 'Meta' : 'Control',
   defaultPosition: getPosition(props.data?.position),
   ...props.options,

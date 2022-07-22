@@ -16,7 +16,7 @@
         icon
         class="ml-2"
         title="Select a list of elements"
-        @click="$emit('update:selectList', !selectList)"
+        @click.stop.prevent="$emit('update:selectList', !selectList)"
       >
         <v-remixicon name="riListUnordered" />
       </ui-button>
@@ -29,7 +29,10 @@
         @change="$emit('selector', $event)"
       >
         <template #prepend>
-          <button class="absolute ml-2 left-0" @click="copySelector">
+          <button
+            class="absolute ml-2 left-0"
+            @click.stop.prevent="copySelector"
+          >
             <v-remixicon name="riFileCopyLine" />
           </button>
         </template>
@@ -38,11 +41,11 @@
         <button
           class="mr-1 ml-2"
           title="Parent element"
-          @click="$emit('parent')"
+          @click.stop.prevent="$emit('parent')"
         >
           <v-remixicon rotate="90" name="riArrowLeftLine" />
         </button>
-        <button title="Child element" @click="$emit('child')">
+        <button title="Child element" @click.stop.prevent="$emit('child')">
           <v-remixicon rotate="-90" name="riArrowLeftLine" />
         </button>
       </template>

@@ -18,7 +18,7 @@
             :padding="padding"
             :class="[contentClass]"
           >
-            <div class="mb-4">
+            <div class="mb-4 modal-ui__content-header">
               <div class="flex items-center justify-between">
                 <span class="content-header">
                   <slot name="header">{{ title }}</slot>

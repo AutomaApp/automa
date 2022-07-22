@@ -414,8 +414,11 @@ browser.runtime.onInstalled.addListener(async ({ reason }) => {
 });
 browser.runtime.onStartup.addListener(async () => {
   const { workflows } = await browser.storage.local.get('workflows');
+  const workflowsArr = Array.isArray(workflows)
+    ? workflows
+    : Object.values(workflows);
 
-  for (const currWorkflow of workflows) {
+  for (const currWorkflow of workflowsArr) {
     let triggerBlock = currWorkflow.trigger;
 
     if (!triggerBlock) {

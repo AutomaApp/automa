@@ -23,7 +23,7 @@ async function checkAccess(blockName) {
 }
 
 async function interactionHandler(block) {
-  await checkAccess(block.name);
+  await checkAccess(block.label);
 
   const debugMode =
     (block.data.settings?.debugMode ?? false) && !this.settings.debugMode;
@@ -40,7 +40,7 @@ async function interactionHandler(block) {
     });
 
     if (
-      (block.data.saveData && block.name !== 'forms') ||
+      (block.data.saveData && block.label !== 'forms') ||
       (block.data.getValue && block.data.saveData)
     ) {
       const currentColumnType =
@@ -86,7 +86,7 @@ async function interactionHandler(block) {
     }
 
     error.data = {
-      name: block.name,
+      name: block.label,
       selector: block.data.selector,
     };
 

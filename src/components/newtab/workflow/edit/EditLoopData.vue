@@ -44,16 +44,33 @@
       class="w-full mt-2"
       @change="updateData({ variableName: $event })"
     />
-    <edit-autocomplete v-else-if="data.loopThrough === 'elements'" class="mt-2">
+    <template v-else-if="data.loopThrough === 'elements'">
+      <edit-autocomplete class="mt-2">
+        <ui-input
+          :model-value="data.elementSelector"
+          :label="t('workflow.blocks.base.selector')"
+          autocomplete="off"
+          placeholder="CSS Selector or XPath"
+          class="w-full"
+          @change="updateData({ elementSelector: $event })"
+        />
+      </edit-autocomplete>
+      <ui-checkbox
+        :model-value="data.waitForSelector"
+        block
+        class="mt-1"
+        @change="updateData({ waitForSelector: $event })"
+      >
+        {{ t('workflow.blocks.base.waitSelector.title') }}
+      </ui-checkbox>
       <ui-input
-        :model-value="data.elementSelector"
-        :label="t('workflow.blocks.base.selector')"
-        autocomplete="off"
-        placeholder="CSS Selector or XPath"
-        class="w-full"
-        @change="updateData({ elementSelector: $event })"
+        v-if="data.waitForSelector"
+        :model-value="data.waitSelectorTimeout"
+        :label="t('workflow.blocks.base.waitSelector.timeout')"
+        class="mt-1 w-full"
+        @change="updateData({ waitSelectorTimeout: +$event })"
       />
-    </edit-autocomplete>
+    </template>
     <ui-button
       v-else-if="data.loopThrough === 'custom-data'"
       class="w-full mt-4"

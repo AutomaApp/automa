@@ -17,10 +17,11 @@ const defaultWorkflow = (data = null, options = {}) => {
     name: '',
     icon: 'riGlobalLine',
     folderId: null,
+    content: null,
     connectedTable: null,
     drawflow: {
       edges: [],
-      position: { zoom: 1 },
+      zoom: 1.3,
       nodes: [
         {
           position: {
@@ -52,7 +53,7 @@ const defaultWorkflow = (data = null, options = {}) => {
       inputAutocomplete: true,
       onError: 'stop-workflow',
       executedBlockOnWeb: false,
-      insertDefaultColumn: true,
+      insertDefaultColumn: false,
       defaultColumnName: 'column',
     },
     version: browser.runtime.getManifest().version,
