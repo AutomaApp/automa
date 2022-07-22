@@ -682,12 +682,13 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     refDataKeys: [
+      'maxLoop',
       'loopData',
       'variableName',
       'referenceKey',
       'elementSelector',
     ],
-    autocomplete: ['variableName', 'loopId', 'maxLoop'],
+    autocomplete: ['variableName', 'loopId'],
     data: {
       disableBlock: false,
       loopId: '',
