@@ -105,12 +105,14 @@ function stopWorkflow() {
 watch(
   running,
   async () => {
+    if (!route.name.startsWith('logs')) return;
     if (!running.value && route.params.id) {
       const log = await dbLogs.items
         .where('id')
         .equals(route.params.id)
         .first();
-      let path = 'logs';
+
+      let path = '/logs';
 
       if (log) {
         path = `/logs/${route.params.id}`;
