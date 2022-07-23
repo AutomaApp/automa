@@ -81,8 +81,9 @@
             />
           </router-link>
           <router-link
+            v-if="getBlockPath(item.blockId)"
             v-show="currentLog.workflowId && item.blockId"
-            :to="`/workflows/${currentLog.workflowId}?blockId=${item.blockId}`"
+            :to="getBlockPath(item.blockId)"
           >
             <v-remixicon
               name="riExternalLinkLine"
@@ -214,5 +215,15 @@ function translateLog(log) {
   );
 
   return copyLog;
+}
+function getBlockPath(blockId) {
+  const { workflowId, teamId } = props.currentLog;
+  let path = `/workflows/${workflowId}`;
+
+  if (workflowId.startsWith('team') && !teamId) return null;
+
+  path = `/teams/${teamId}/workflows/${workflowId}`;
+
+  return `${path}?blockId=${blockId}`;
 }
 </script>

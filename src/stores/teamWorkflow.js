@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import browser from 'webextension-polyfill';
 import lodashDeepmerge from 'lodash.merge';
+import { cleanWorkflowTriggers } from '@/utils/workflowTrigger';
 
 export const useTeamWorkflowStore = defineStore('team-workflows', {
   storageMap: {
@@ -58,7 +59,9 @@ export const useTeamWorkflowStore = defineStore('team-workflows', {
       if (!this.workflows[teamId]) return;
 
       delete this.workflows[teamId][id];
+
       await this.saveToStorage('workflows');
+      await cleanWorkflowTriggers(id);
     },
     async loadData() {
       const { teamWorkflows } = await browser.storage.local.get(

@@ -384,7 +384,7 @@ const renameState = reactive({
 const shared = computed(() => sharedWorkflowStore.getById(props.workflow.id));
 const hosted = computed(() => userStore.hostedWorkflows[props.workflow.id]);
 const userDontHaveTeamsAccess = computed(() => {
-  if (props.isTeam || !userStore.user.teams) return false;
+  if (props.isTeam || !userStore.user.teams) return true;
 
   return !userStore.user.teams.some((team) =>
     team.access.some((item) => ['owner', 'create'].includes(item))

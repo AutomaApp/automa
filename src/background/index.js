@@ -18,6 +18,9 @@ import blocksHandler from './workflowEngine/blocksHandler';
 import WorkflowLogger from './WorkflowLogger';
 
 const validateUrl = (str) => str?.startsWith('http');
+const flattenTeamWorkflows = (workflows) =>
+  Object.values(Object.values(workflows)[0]);
+
 const browserStorage = {
   async get(key) {
     try {
@@ -53,6 +56,19 @@ const workflow = {
   states: new WorkflowState({ storage: localStateStorage }),
   logger: new WorkflowLogger({ storage: browserStorage }),
   async get(workflowId) {
+    if (!workflowId) return null;
+
+    if (workflowId.startsWith('team_')) {
+      const { teamWorkflows } = await browser.storage.local.get(
+        'teamWorkflows'
+      );
+      if (!teamWorkflows) return null;
+
+      const workflows = flattenTeamWorkflows(teamWorkflows);
+
+      return workflows.find((item) => item.id === workflowId);
+    }
+
     const { workflows, workflowHosts } = await browser.storage.local.get([
       'workflows',
       'workflowHosts',
@@ -419,10 +435,23 @@ browser.runtime.onInstalled.addListener(async ({ reason }) => {
   }
 });
 browser.runtime.onStartup.addListener(async () => {
-  const { workflows } = await browser.storage.local.get('workflows');
-  const workflowsArr = Array.isArray(workflows)
-    ? workflows
-    : Object.values(workflows);
+  const { workflows, workflowHosts, teamWorkflows } =
+    await browser.storage.local.get([
+      'workflows',
+      'workflowHosts',
+      'teamWorkflows',
+    ]);
+  const convertToArr = (value) =>
+    Array.isArray(value) ? value : Object.values(value);
+
+  const workflowsArr = convertToArr(workflows);
+
+  if (workflowHosts) {
+    workflowsArr.push(...convertToArr(workflowHosts));
+  }
+  if (teamWorkflows) {
+    workflowsArr.push(...flattenTeamWorkflows(teamWorkflows));
+  }
 
   for (const currWorkflow of workflowsArr) {
     let triggerBlock = currWorkflow.trigger;
@@ -559,6 +588,9 @@ message.on('workflow:added', ({ workflowId, teamId, source = 'community' }) => {
         openDashboard(`${path}?permission=true`);
       }
     });
+});
+message.on('workflow:register', ({ triggerBlock, workflowId }) => {
+  registerWorkflowTrigger(workflowId, triggerBlock);
 });
 
 browser.runtime.onMessage.addListener(message.listener());

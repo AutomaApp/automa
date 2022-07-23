@@ -147,6 +147,7 @@ import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { workflowCategories } from '@/utils/shared';
 import { parseJSON, debounce } from '@/utils/helper';
 import { convertWorkflow } from '@/utils/workflowData';
+import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
 import SharedWysiwyg from '@/components/newtab/shared/SharedWysiwyg.vue';
 
 const props = defineProps({
@@ -198,11 +199,21 @@ async function publishWorkflow() {
     }
 
     workflow.id = result.id;
+    workflow.teamId = result.teamId;
     workflow.createdAt = Date.now();
     workflow.drawflow = props.workflow.drawflow;
 
     await teamWorkflowStore.insert(state.activeTeam, cloneDeep(workflow));
     state.isPublishing = false;
+
+    const triggerBlock = workflow.drawflow.nodes?.find(
+      (node) => node.label === 'trigger'
+    );
+    if (triggerBlock) {
+      await registerWorkflowTrigger(workflow.id, triggerBlock);
+    }
+
+    toast('Successfully share the workflow with your team');
 
     emit('publish');
   } catch (error) {

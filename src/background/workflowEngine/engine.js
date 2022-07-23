@@ -189,6 +189,7 @@ class WorkflowEngine {
         state: this.state,
         workflowId: this.workflow.id,
         parentState: this.parentWorkflow,
+        teamId: this.workflow.teamId || null,
       });
       this.addWorker({ blockId: triggerBlock.id });
     } catch (error) {
@@ -317,12 +318,13 @@ class WorkflowEngine {
       this.executeQueue();
 
       if (!this.workflow.isTesting) {
-        const { name, id } = this.workflow;
+        const { name, id, teamId } = this.workflow;
 
         await this.logger.add({
           detail: {
             name,
             status,
+            teamId,
             message,
             id: this.id,
             workflowId: id,

@@ -56,7 +56,8 @@
               {{ t(`workflow.blocks.${block.name}.name`) }}
             </p>
             <router-link
-              :to="`/workflows/${running.workflowId}?block=${block.id}`"
+              v-if="getBlockPath(block.id)"
+              :to="getBlockPath(block.id)"
               title="Go to block"
               class="invisible group-hover:visible"
             >
@@ -100,6 +101,16 @@ const running = computed(() =>
 
 function stopWorkflow() {
   sendMessage('workflow:stop', running.value.id, 'background');
+}
+function getBlockPath(blockId) {
+  const { workflowId, teamId } = running.value;
+  let path = `/workflows/${workflowId}`;
+
+  if (workflowId.startsWith('team') && !teamId) return null;
+
+  path = `/teams/${teamId}/workflows/${workflowId}`;
+
+  return `${path}?blockId=${blockId}`;
 }
 
 watch(

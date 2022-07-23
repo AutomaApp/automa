@@ -1,7 +1,7 @@
 import { openDB } from 'idb';
 import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
-import cloneDeep from 'lodash.clonedeep';
+import deepmerge from 'lodash.merge';
 import { sendMessage } from '@/utils/message';
 import { objectHasKey, parseJSON } from '@/utils/helper';
 
@@ -45,6 +45,11 @@ window.addEventListener('DOMContentLoaded', async () => {
     await browser.storage.local.set({ session });
 
     const webListener = initWebListener();
+    webListener.on('open-dashboard', ({ path }) => {
+      if (!path) return;
+
+      sendMessage('open:dashboard', path, 'background');
+    });
     webListener.on('open-workflow', ({ workflowId }) => {
       if (!workflowId) return;
 
@@ -102,11 +107,23 @@ window.addEventListener('DOMContentLoaded', async () => {
       const workflowToMerge =
         teamWorkflows[workflowData.teamId][workflow.id] || null;
       if (workflowToMerge) {
-        workflowData = cloneDeep(workflowToMerge, workflowData);
+        workflowData = deepmerge(workflowToMerge, workflowData);
       }
 
       teamWorkflows[workflowData.teamId][workflow.id] = workflowData;
       await browser.storage.local.set({ teamWorkflows });
+
+      const triggerBlock = workflowData.drawflow.nodes?.find(
+        (node) => node.label === 'trigger'
+      );
+      if (triggerBlock) {
+        await sendMessage(
+          'workflow:register',
+          { triggerBlock, workflowId: workflowData.id },
+          'background'
+        );
+      }
+
       sendMessage(
         'workflow:added',
         {
@@ -115,6 +132,18 @@ window.addEventListener('DOMContentLoaded', async () => {
           source: 'team',
         },
         'background'
+      );
+    });
+    webListener.on('check-team-workflow', async ({ teamId, workflowId }) => {
+      const { teamWorkflows } = await browser.storage.local.get(
+        'teamWorkflows'
+      );
+      const workflowExist = Boolean(teamWorkflows?.[teamId]?.[workflowId]);
+
+      window.dispatchEvent(
+        new CustomEvent('__automa-team-workflow__', {
+          detail: { exists: workflowExist },
+        })
       );
     });
   } catch (error) {
