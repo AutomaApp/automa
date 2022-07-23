@@ -50,7 +50,7 @@
             </span>
           </ui-list-item>
           <ui-expand
-            v-if="userTeamWorkflows.length > 0 || userStore.user?.teams"
+            v-if="userStore.user?.teams.length > 0"
             append-icon
             header-class="px-4 py-2 rounded-lg mb-1 hoverable w-full flex items-center"
           >
@@ -65,6 +65,7 @@
                 v-for="team in userStore.user.teams"
                 :key="team.id"
                 :active="state.teamId === team.id || +state.teamId === team.id"
+                :title="team.name"
                 color="bg-box-transparent font-semibold"
                 class="pl-14 cursor-pointer"
                 @click="updateActiveTab({ activeTab: 'team', teamId: team.id })"
@@ -244,7 +245,6 @@ import { useGroupTooltip } from '@/composable/groupTooltip';
 import { isWhitespace } from '@/utils/helper';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
-import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import { importWorkflow, getWorkflowPermissions } from '@/utils/workflowData';
 import WorkflowsLocal from '@/components/newtab/workflows/WorkflowsLocal.vue';
@@ -261,7 +261,6 @@ const dialog = useDialog();
 const router = useRouter();
 const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
-const teamWorkflowStore = useTeamWorkflowStore();
 const hostedWorkflowStore = useHostedWorkflowStore();
 
 const sorts = ['name', 'createdAt'];
@@ -288,7 +287,6 @@ const permissionState = shallowReactive({
 });
 
 const hostedWorkflows = computed(() => hostedWorkflowStore.toArray);
-const userTeamWorkflows = computed(() => teamWorkflowStore.toArray);
 
 function clearAddWorkflowModal() {
   Object.assign(addWorkflowModal, {
