@@ -15,7 +15,14 @@
           <v-remixicon :name="data.icon || icon" />
         </span>
         <div class="flex-grow"></div>
+        <span
+          v-if="data.isDisabled"
+          class="text-sm text-gray-600 dark:text-gray-200"
+        >
+          Disabled
+        </span>
         <button
+          v-else
           class="invisible group-hover:visible"
           @click="$emit('execute', data)"
         >

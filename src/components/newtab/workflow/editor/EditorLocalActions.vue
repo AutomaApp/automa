@@ -139,7 +139,7 @@
     >
       <v-remixicon name="riFlashlightLine" />
     </button>
-    <ui-popover v-if="canEdit">
+    <ui-popover>
       <template #trigger>
         <button class="rounded-lg p-2 hoverable">
           <v-remixicon name="riMore2Line" />
@@ -174,7 +174,11 @@
           {{ item.name }}
         </ui-list-item>
         <ui-list-item
-          v-if="userStore.validateTeamAccess(teamId, ['owner', 'create'])"
+          v-if="
+            isTeam &&
+            canEdit &&
+            userStore.validateTeamAccess(teamId, ['owner', 'create'])
+          "
           v-close-popover
           class="cursor-pointer text-red-400 dark:text-red-500"
           @click="deleteFromTeam"
@@ -744,15 +748,18 @@ const moreActions = [
     icon: 'riDownloadLine',
     name: t('common.export'),
     action: () => exportWorkflow(props.workflow),
+    hasAccess: props.isTeam ? props.canEdit : true,
   },
   {
     id: 'rename',
     icon: 'riPencilLine',
+    hasAccess: props.isTeam ? props.canEdit : true,
     name: props.isTeam ? 'Edit detail' : t('common.rename'),
     action: initRenameWorkflow,
   },
   {
     id: 'delete',
+    hasAccess: true,
     action: deleteWorkflow,
     name: t('common.delete'),
     icon: 'riDeleteBin7Line',
@@ -760,5 +767,5 @@ const moreActions = [
       class: 'text-red-400 dark:text-gray-500',
     },
   },
-];
+].filter((item) => item.hasAccess);
 </script>
