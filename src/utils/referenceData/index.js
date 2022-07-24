@@ -6,6 +6,7 @@ export default function ({ block, refKeys, data }) {
   if (!refKeys || refKeys.length === 0) return block;
 
   const copyBlock = cloneDeep(block);
+  const options = { stringify: block.label === 'webhook' };
   const addReplacedValue = (value) => {
     if (!copyBlock.replacedValue) copyBlock.replacedValue = {};
 
@@ -19,7 +20,7 @@ export default function ({ block, refKeys, data }) {
 
     if (Array.isArray(currentData)) {
       currentData.forEach((str, index) => {
-        const replacedStr = mustacheReplacer(str, data);
+        const replacedStr = mustacheReplacer(str, data, options);
 
         addReplacedValue(replacedStr.list);
         objectPath.set(
@@ -29,7 +30,7 @@ export default function ({ block, refKeys, data }) {
         );
       });
     } else if (typeof currentData === 'string') {
-      const replacedStr = mustacheReplacer(currentData, data);
+      const replacedStr = mustacheReplacer(currentData, data, options);
 
       addReplacedValue(replacedStr.list);
       objectPath.set(copyBlock.data, blockDataKey, replacedStr.value);

@@ -156,13 +156,13 @@ export function keyParser(key, data) {
   return { dataKey: 'table', path };
 }
 
-function replacer(str, { regex, tagLen, modifyPath, data }) {
+function replacer(str, { regex, tagLen, modifyPath, data, stringify }) {
   const replaceResult = {
     list: {},
     value: str,
   };
 
-  replaceResult.value = str.replace(regex, (match) => {
+  replaceResult.value = str.replace(regex, (match, p1, offset) => {
     let key = match.slice(tagLen, -tagLen).trim();
 
     if (!key) return '';
@@ -195,7 +195,19 @@ function replacer(str, { regex, tagLen, modifyPath, data }) {
       result = objectPath.get(data[dataKey], path) ?? match;
     }
 
-    result = typeof result === 'string' ? result : JSON.stringify(result);
+    result =
+      typeof result === 'string' && !stringify
+        ? result
+        : JSON.stringify(result);
+
+    if (stringify) {
+      const isQuote = (char) => char === '"';
+      const isInsideQuote =
+        isQuote(str[offset - 1]) && isQuote(str[match.length + offset]);
+
+      if (isInsideQuote) result = result.slice(1, -1);
+    }
+
     replaceResult.list[match] = result?.slice(0, 512) ?? result;
 
     return result;
@@ -204,7 +216,7 @@ function replacer(str, { regex, tagLen, modifyPath, data }) {
   return replaceResult;
 }
 
-export default function (str, refData) {
+export default function (str, refData, { stringify = false } = {}) {
   if (!str || typeof str !== 'string') return '';
 
   const data = { ...refData, functions };
@@ -213,6 +225,7 @@ export default function (str, refData) {
   const replacedStr = replacer(`${str}`, {
     data,
     tagLen: 2,
+    stringify,
     regex: /\{\{(.*?)\}\}/g,
     modifyPath: (path) => {
       const { value, list } = replacer(path, {
