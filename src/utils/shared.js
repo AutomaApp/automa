@@ -468,7 +468,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['selector', 'value'],
+    refDataKeys: ['selector', 'value', 'optionPosition'],
     autocomplete: ['variableName'],
     data: {
       disableBlock: false,
@@ -484,6 +484,8 @@ export const tasks = {
       getValue: false,
       saveData: false,
       dataColumn: '',
+      selectOptionBy: 'value',
+      optionPosition: '1',
       assignVariable: false,
       variableName: '',
       type: 'text-field',
