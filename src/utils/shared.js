@@ -1124,8 +1124,11 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['replaceVal'],
     data: {
       disableBlock: false,
+      method: 'match',
+      replaceVal: '',
       description: '',
       expression: '',
       flag: [],

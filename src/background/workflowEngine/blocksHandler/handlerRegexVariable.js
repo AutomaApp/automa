@@ -7,16 +7,24 @@ export async function regexVariable({ id, data }) {
     throw new Error(`Cant find "${data.variableName}" variable`);
   }
 
-  const currentVar = refVariables[data.variableName];
-  if (typeof currentVar !== 'string') {
+  const str = refVariables[data.variableName];
+  if (typeof str !== 'string') {
     throw new Error(
       `The value of the "${data.variableName}" variable is not a string/text`
     );
   }
 
+  const method = data.method || 'match';
   const regex = new RegExp(data.expression, data.flag.join(''));
-  const matches = currentVar.match(regex);
-  const newValue = matches && !data.flag.includes('g') ? matches[0] : matches;
+
+  let newValue = '';
+
+  if (method === 'match') {
+    const matches = str.match(regex);
+    newValue = matches && !data.flag.includes('g') ? matches[0] : matches;
+  } else if (method === 'replace') {
+    newValue = str.replace(regex, data.replaceVal ?? '');
+  }
 
   refVariables[data.variableName] = newValue;
 
