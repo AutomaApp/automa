@@ -83,6 +83,15 @@
             </span>
           </ui-tab>
         </ui-tabs>
+        <ui-card v-if="isTeamWorkflow" padding="p-1 ml-4 pointer-events-auto">
+          <ui-input
+            v-tooltip="'Workflow URL'"
+            prepend-icon="riLinkM"
+            :model-value="`https://automa.site/teams/${teamId}/workflows/${workflow.id}`"
+            readonly
+            @click="$event.target.select()"
+          />
+        </ui-card>
         <div class="flex-grow pointer-events-none" />
         <editor-local-actions
           :editor="editor"
