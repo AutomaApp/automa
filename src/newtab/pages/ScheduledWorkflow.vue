@@ -16,12 +16,16 @@
     >
       <template #item-name="{ item }">
         <router-link
-          :to="`/workflows/${item.workflowId}`"
+          v-if="item.path"
+          :to="item.path"
           class="block h-full w-full"
           style="min-height: 20px"
         >
           {{ item.name }}
         </router-link>
+        <span v-else>
+          {{ item.name }}
+        </span>
       </template>
       <template #item-schedule="{ item }">
         <p v-tooltip="{ content: item.scheduleDetail, allowHTML: true }">
@@ -53,12 +57,18 @@ import { onMounted, reactive, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import dayjs from 'dayjs';
 import browser from 'webextension-polyfill';
+import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
-import { findTriggerBlock } from '@/utils/helper';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
+import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
+import { findTriggerBlock, objectHasKey } from '@/utils/helper';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
 
 const { t } = useI18n();
+const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
+const teamWorkflowStore = useTeamWorkflowStore();
+const hostedWorkflowStore = useHostedWorkflowStore();
 
 const triggersData = {};
 const state = reactive({
@@ -90,6 +100,10 @@ const tableHeaders = [
     text: t('scheduledWorkflow.nextRun'),
   },
   {
+    value: 'location',
+    text: 'Location',
+  },
+  {
     value: 'active',
     align: 'center',
     text: t('scheduledWorkflow.active'),
@@ -116,13 +130,16 @@ function scheduleText(data) {
 
   switch (data.type) {
     case 'specific-day': {
+      let rows = '';
+
       const days = data.days.map((item) => {
         const day = t(`workflow.blocks.trigger.days.${item.id}`);
-        text.scheduleDetail += `${day}: ${item.times.join(', ')}<br>`;
+        rows += `<tr><td>${day}</td> <td>${item.times.join(', ')}</td></tr>`;
 
         return day;
       });
 
+      text.scheduleDetail = `<table><tbody>${rows}</tbody></table>`;
       text.schedule =
         data.days.length >= 6
           ? t('scheduledWorkflow.schedule.types.everyDay')
@@ -198,28 +215,75 @@ async function refreshSchedule(id) {
     );
     if (triggerIndex === -1) return;
 
-    state.triggers[triggerIndex] = triggerObj;
+    Object.assign(state.triggers[triggerIndex], triggerObj);
   } catch (error) {
     console.error(error);
   }
 }
+async function getWorkflowTrigger(workflow, { location, path }) {
+  if (workflow.isDisabled) return;
+
+  let { trigger } = workflow;
+
+  if (!trigger) {
+    const drawflow =
+      typeof workflow.drawflow === 'string'
+        ? JSON.parse(workflow.drawflow)
+        : workflow.drawflow;
+    trigger = findTriggerBlock(drawflow)?.data;
+  }
+
+  const obj = await getTriggerObj(trigger, workflow);
+
+  if (obj) {
+    obj.path = path;
+    obj.location = location;
+    state.triggers.push(obj);
+  }
+}
+function iterateWorkflows({ workflows, path, location }) {
+  const promises = workflows.map(async (workflow) => {
+    const workflowPath = path(workflow);
+
+    await getWorkflowTrigger(workflow, { path: workflowPath, location });
+  });
+
+  return Promise.allSettled(promises);
+}
 
 onMounted(async () => {
-  for (const workflow of workflowStore.getWorkflows) {
-    if (!workflow.isDisabled) {
-      let { trigger } = workflow;
+  try {
+    await iterateWorkflows({
+      location: 'Local',
+      path: ({ id }) => `/workflows/${id}`,
+      workflows: workflowStore.getWorkflows,
+    });
+    await iterateWorkflows({
+      location: 'Hosted',
+      workflows: hostedWorkflowStore.toArray,
+      path: ({ id }) => `/workflows/${id}/hosted`,
+    });
 
-      if (!trigger) {
-        const drawflow =
-          typeof workflow.drawflow === 'string'
-            ? JSON.parse(workflow.drawflow)
-            : workflow.drawflow;
-        trigger = findTriggerBlock(drawflow)?.data;
-      }
-
-      const obj = await getTriggerObj(trigger, workflow);
-      if (obj) state.triggers.push(obj);
+    const teamsObj = {};
+    if (userStore.user?.teams) {
+      userStore.user.teams.forEach((team) => {
+        teamsObj[team.id] = team.name;
+      });
     }
+
+    Object.keys(teamWorkflowStore?.workflows || {}).forEach((teamId) => {
+      const teamExist = objectHasKey(teamsObj);
+      const teamName = teamsObj[teamId] ?? '(unknown)';
+
+      iterateWorkflows({
+        location: `Team: ${teamName.slice(0, 24)}`,
+        workflows: teamWorkflowStore.getByTeam(teamId),
+        path: ({ id }) =>
+          teamExist ? null : `/teams/${teamId}/workflows/${id}`,
+      });
+    });
+  } catch (error) {
+    console.error(error);
   }
 });
 </script>
