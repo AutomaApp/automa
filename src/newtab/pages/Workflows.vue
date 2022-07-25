@@ -50,7 +50,7 @@
             </span>
           </ui-list-item>
           <ui-expand
-            v-if="userStore.user?.teams.length > 0"
+            v-if="userStore.user?.teams?.length > 0"
             append-icon
             header-class="px-4 py-2 rounded-lg mb-1 hoverable w-full flex items-center"
           >

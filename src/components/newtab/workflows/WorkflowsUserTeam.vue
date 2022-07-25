@@ -16,7 +16,7 @@
       Browse workflows that been shared by your team
     </p>
     <ui-button
-      :href="`http://localhost:3002/workflows?teamId=${teamId}&workflowsBy=team`"
+      :href="`http://www.automa.site/workflows?teamId=${teamId}&workflowsBy=team`"
       tag="a"
       target="_blank"
       variant="accent"
