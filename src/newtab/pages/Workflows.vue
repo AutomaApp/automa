@@ -112,7 +112,7 @@
                 </span>
               </ui-list-item>
               <ui-list-item
-                v-if="hostedWorkflows.length > 0"
+                v-if="hostedWorkflows?.length > 0"
                 :active="state.activeTab === 'host'"
                 color="bg-box-transparent font-semibold"
                 tag="button"

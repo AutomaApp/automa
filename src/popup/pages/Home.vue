@@ -1,10 +1,10 @@
 <template>
   <div
-    :class="[hostedWorkflowStore.toArray.length === 0 ? 'h-48' : 'h-56']"
+    :class="[!showTab ? 'h-48' : 'h-56']"
     class="bg-accent rounded-b-2xl absolute top-0 left-0 w-full"
   ></div>
   <div
-    :class="[hostedWorkflowStore.toArray.length === 0 ? 'mb-6' : 'mb-2']"
+    :class="[!showTab ? 'mb-6' : 'mb-2']"
     class="dark placeholder-black relative z-10 text-white px-5 pt-8"
   >
     <div class="flex items-center mb-4">
@@ -41,22 +41,33 @@
       <ui-input
         v-model="state.query"
         :placeholder="`${t('common.search')}...`"
+        autocomplete="off"
         prepend-icon="riSearch2Line"
         class="w-full search-input"
       />
     </div>
     <ui-tabs
-      v-if="hostedWorkflowStore.toArray.length > 0"
+      v-if="showTab"
       v-model="state.activeTab"
       fill
       class="mt-1"
+      @change="onTabChange"
     >
-      <ui-tab v-for="type in workflowTypes" :key="type" :value="type">
-        {{ t(`home.workflow.type.${type}`) }}
+      <ui-tab value="local">
+        {{ t(`home.workflow.type.local`) }}
       </ui-tab>
+      <ui-tab v-if="hostedWorkflowStore.toArray.length > 0" value="host">
+        {{ t(`home.workflow.type.host`) }}
+      </ui-tab>
+      <ui-tab v-if="userStore.user?.teams" value="team"> Teams </ui-tab>
     </ui-tabs>
   </div>
-  <div class="px-5 pb-5 space-y-2">
+  <home-team-workflows
+    v-if="state.retrieved"
+    v-show="state.activeTab === 'team'"
+    :search="state.query"
+  />
+  <div v-if="state.activeTab !== 'team'" class="px-5 pb-5 space-y-2">
     <ui-card v-if="workflowStore.getWorkflows.length === 0" class="text-center">
       <img src="@/assets/svg/alien.svg" />
       <p class="font-semibold">{{ t('message.empty') }}</p>
@@ -109,15 +120,17 @@
 import { computed, onMounted, shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import browser from 'webextension-polyfill';
+import { useUserStore } from '@/stores/user';
 import { useDialog } from '@/composable/dialog';
-import { useGroupTooltip } from '@/composable/groupTooltip';
 import { sendMessage } from '@/utils/message';
 import { useWorkflowStore } from '@/stores/workflow';
+import { useGroupTooltip } from '@/composable/groupTooltip';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import HomeWorkflowCard from '@/components/popup/home/HomeWorkflowCard.vue';
+import HomeTeamWorkflows from '@/components/popup/home/HomeTeamWorkflows.vue';
 import HomeStartRecording from '@/components/popup/home/HomeStartRecording.vue';
 
-const workflowTypes = ['local', 'host'];
 const recordingCardHeight = {
   new: 255,
   existing: 480,
@@ -125,14 +138,18 @@ const recordingCardHeight = {
 
 const { t } = useI18n();
 const dialog = useDialog();
+const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
+const teamWorkflowStore = useTeamWorkflowStore();
 const hostedWorkflowStore = useHostedWorkflowStore();
 
 useGroupTooltip();
 
 const state = shallowReactive({
   query: '',
+  teams: [],
   cardHeight: 255,
+  retrieved: false,
   haveAccess: true,
   activeTab: 'local',
   newRecordingModal: false,
@@ -156,6 +173,9 @@ const localWorkflows = computed(() => {
 });
 const workflows = computed(() =>
   state.activeTab === 'local' ? localWorkflows.value : hostedWorkflows.value
+);
+const showTab = computed(
+  () => hostedWorkflowStore.toArray.length > 0 || userStore.user?.teams
 );
 
 function executeWorkflow(workflow) {
@@ -268,10 +288,25 @@ function openWorkflowPage({ id, hostId }) {
 
   openDashboard(url);
 }
+function onTabChange(value) {
+  localStorage.setItem('popup-tab', value);
+}
 
 onMounted(async () => {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   state.haveAccess = /^(https?)/.test(tab.url);
+
+  await userStore.loadUser({ storage: localStorage, ttl: 1000 * 60 * 5 });
+  await teamWorkflowStore.loadData();
+
+  let activeTab = localStorage.getItem('popup-tab') || 'local';
+
+  if (activeTab === 'team' && !userStore.user?.teams) activeTab = 'local';
+  else if (activeTab === 'host' && hostedWorkflowStore.toArray.length < 0)
+    activeTab = 'local';
+
+  state.retrieved = true;
+  state.activeTab = activeTab;
 });
 </script>
 <style>

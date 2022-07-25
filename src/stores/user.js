@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import browser from 'webextension-polyfill';
-import { fetchApi } from '@/utils/api';
+import { fetchApi, cacheApi } from '@/utils/api';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -23,12 +23,25 @@ export const useUserStore = defineStore('user', {
       },
   },
   actions: {
-    async loadUser() {
+    async loadUser(options = false) {
       try {
-        const response = await fetchApi('/me');
-        const user = await response.json();
+        const user = await cacheApi(
+          'user-profile',
+          async () => {
+            try {
+              const response = await fetchApi('/me');
+              const result = await response.json();
 
-        if (!response.ok) throw new Error(response.message);
+              if (!response.ok) throw new Error(response.message);
+
+              return result;
+            } catch (error) {
+              console.error(error);
+              return null;
+            }
+          },
+          options
+        );
 
         const username = localStorage.getItem('username');
         if (!user || username !== user.username) {
