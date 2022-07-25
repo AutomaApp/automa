@@ -58,7 +58,7 @@
         element-name="Select element options"
         @highlight="
           $emit('highlight', {
-            index: $event.element.index,
+            index: $event.element.elIndex,
             highlight: $event.highlight,
           })
         "

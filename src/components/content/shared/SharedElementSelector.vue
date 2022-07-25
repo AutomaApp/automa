@@ -95,12 +95,21 @@ const onScroll = debounce(() => {
   lastScrollPosY = window.scrollY;
 }, 100);
 
-function getElementRectWithOffset(element, withAttribute) {
+function getElementRectWithOffset(
+  element,
+  { withAttribute, withElOptions } = {}
+) {
   const rect = getElementRect(element, withAttribute);
 
   if (frameElementRect) {
     rect.y += frameElementRect.top;
     rect.x += frameElementRect.left;
+  }
+  if (withElOptions && element.tagName === 'SELECT') {
+    rect.options = Array.from(element.querySelectorAll('option')).map((el) => ({
+      name: el.innerText,
+      value: el.textContent,
+    }));
   }
 
   return rect;
@@ -178,6 +187,7 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
   }
 
   let elementsRect = [];
+  const withElOptions = type === 'selected';
   const withAttribute = props.withAttributes && type === 'selected';
 
   if (isSelectList) {
@@ -190,12 +200,14 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
     if (type === 'hovered') hoveredElements = elements;
 
     elementsRect = elements.map((el) =>
-      getElementRectWithOffset(el, withAttribute)
+      getElementRectWithOffset(el, { withAttribute, withElOptions })
     );
   } else {
     if (type === 'hovered') hoveredElements = [target];
 
-    elementsRect = [getElementRectWithOffset(target, withAttribute)];
+    elementsRect = [
+      getElementRectWithOffset(target, { withAttribute, withElOptions }),
+    ];
   }
 
   elementsState[type] = elementsRect;
@@ -216,8 +228,17 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
       selector = `${frameSelector} |> ${selector}`;
     }
 
+    const selectElements = elementsRect.reduce((acc, rect, index) => {
+      if (rect.tagName !== 'SELECT') return acc;
+
+      acc.push({ ...rect, elIndex: index });
+
+      return acc;
+    }, []);
+
     emit('selected', {
       selector,
+      selectElements,
       elements: elementsRect,
       path: getElementPath(target),
     });
