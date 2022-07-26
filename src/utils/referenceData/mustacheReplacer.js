@@ -1,6 +1,7 @@
 import objectPath from 'object-path';
 import dayjs from '@/lib/dayjs';
 import { parseJSON } from '@/utils/helper';
+import credentialUtil from '@/utils/credentialUtil';
 
 const refKeys = {
   table: 'table',
@@ -191,8 +192,12 @@ function replacer(str, { regex, tagLen, modifyPath, data, stringify }) {
       result = funcRef.apply({ refData: data }, funcParams);
     } else {
       const { dataKey, path } = keyParser(key, data);
-
       result = objectPath.get(data[dataKey], path) ?? match;
+
+      if (dataKey === 'secrets') {
+        result =
+          typeof result !== 'string' ? {} : credentialUtil.decrypt(result);
+      }
     }
 
     result =

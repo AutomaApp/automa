@@ -32,6 +32,10 @@
       "delete": "Delete table"
     }
   },
+  "credential": {
+    "title": "Credential | Credentials",
+    "add": "Add credential"
+  },
   "workflowPermissions": {
     "title": "Workflow permissions",
     "description": "This workflow requires these permissions to run properly",

@@ -60,6 +60,7 @@ class WorkflowEngine {
     this.referenceData = {
       variables,
       table: [],
+      secrets: {},
       loopData: {},
       workflow: {},
       googleSheets: {},
@@ -145,6 +146,11 @@ class WorkflowEngine {
           this.workflow.connectedTable = null;
         }
       }
+
+      const credentials = await dbStorage.credentials.toArray();
+      credentials.forEach(({ name, value }) => {
+        this.referenceData.secrets[name] = value;
+      });
 
       const variables = await dbStorage.variables.toArray();
       variables.forEach(({ name, value }) => {
