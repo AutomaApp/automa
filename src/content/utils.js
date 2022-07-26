@@ -5,6 +5,11 @@ export function elementSelectorInstance() {
 
   if (rootElementExist) {
     rootElementExist.style.display = 'block';
+    document.documentElement.style.setProperty(
+      'font-size',
+      '16px',
+      'important'
+    );
 
     return true;
   }
