@@ -34,7 +34,11 @@
   },
   "credential": {
     "title": "Credential | Credentials",
-    "add": "Add credential"
+    "add": "Add credential",
+    "use": {
+      "title": "Used credentials",
+      "description": "This workflow using these credentials"
+    }
   },
   "workflowPermissions": {
     "title": "Workflow permissions",

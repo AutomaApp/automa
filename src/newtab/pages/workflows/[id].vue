@@ -93,6 +93,7 @@
           />
         </ui-card>
         <div class="flex-grow pointer-events-none" />
+        <editor-used-credentials v-if="editor" :editor="editor" />
         <editor-local-actions
           :editor="editor"
           :workflow="workflow"
@@ -256,6 +257,7 @@ import EditorLogs from '@/components/newtab/workflow/editor/EditorLogs.vue';
 import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
 import EditorLocalCtxMenu from '@/components/newtab/workflow/editor/EditorLocalCtxMenu.vue';
 import EditorLocalActions from '@/components/newtab/workflow/editor/EditorLocalActions.vue';
+import EditorUsedCredentials from '@/components/newtab/workflow/editor/EditorUsedCredentials.vue';
 
 let editorCommands = null;
 const executeCommandTimeout = null;
