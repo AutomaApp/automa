@@ -22,6 +22,7 @@
             v-model="state.activeTeam"
             label="Select team"
             class="ml-4"
+            style="max-width: 220px"
           >
             <option
               v-for="team in state.userTeams"

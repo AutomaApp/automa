@@ -9,7 +9,10 @@
       to use these workflows
     </template>
   </p>
-  <div v-else-if="teamWorkflows.length === 0" class="text-center">
+  <div
+    v-else-if="!isUnknownTeam && teamWorkflows.length === 0"
+    class="text-center"
+  >
     <img src="@/assets/svg/files-and-folder.svg" class="mx-auto w-96" />
     <p class="text-lg font-semibold">Nothing to see here</p>
     <p class="text-gray-600 dark:text-gray-200">
@@ -31,9 +34,10 @@
       :key="workflow.id"
       :data="workflow"
       :menu="workflowMenus"
+      :disabled="isUnknownTeam"
       @menuSelected="onMenuSelected"
       @execute="executeWorkflow(workflow)"
-      @click="$router.push(`/teams/${teamId}/workflows/${$event.id}`)"
+      @click="openWorkflowPage"
     >
       <template #footer-content>
         <span
@@ -49,6 +53,7 @@
 <script setup>
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import { fetchApi } from '@/utils/api';
 import { useUserStore } from '@/stores/user';
@@ -60,6 +65,7 @@ import { tagColors } from '@/utils/shared';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 
 const props = defineProps({
+  active: Boolean,
   search: {
     type: String,
     default: '',
@@ -101,9 +107,11 @@ const menu = [
 const { t } = useI18n();
 const toast = useToast();
 const dialog = useDialog();
+const router = useRouter();
 const userStore = useUserStore();
 const teamWorkflowStore = useTeamWorkflowStore();
 
+const isUnknownTeam = computed(() => props.teamId === '(unknown)');
 const workflowMenus = computed(() =>
   menu.filter((item) => {
     if (!item.permissions) return true;
@@ -111,8 +119,25 @@ const workflowMenus = computed(() =>
     return userStore.validateTeamAccess(props.teamId, item.permissions);
   })
 );
-const teamWorkflows = computed(() => teamWorkflowStore.getByTeam(props.teamId));
+const teamWorkflows = computed(() => {
+  if (isUnknownTeam.value) {
+    return Object.keys(teamWorkflowStore.workflows).reduce((acc, teamId) => {
+      const teamExist = userStore.user?.teams?.some(
+        (team) => team.id === teamId || team.id === +teamId
+      );
+      if (!teamExist) {
+        acc.push(...Object.values(teamWorkflowStore.workflows[teamId]));
+      }
+
+      return acc;
+    }, []);
+  }
+
+  return teamWorkflowStore.getByTeam(props.teamId);
+});
 const workflows = computed(() => {
+  if (!props.active) return [];
+
   const filtered = teamWorkflows.value.filter(({ name }) =>
     name.toLocaleLowerCase().includes(props.search.toLocaleLowerCase())
   );
@@ -165,5 +190,10 @@ function onMenuSelected({ id, data }) {
       },
     });
   }
+}
+function openWorkflowPage({ id }) {
+  if (isUnknownTeam.value) return;
+
+  router.push(`/teams/${props.teamId}/workflows/${id}`);
 }
 </script>

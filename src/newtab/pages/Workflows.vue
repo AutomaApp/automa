@@ -50,7 +50,7 @@
             </span>
           </ui-list-item>
           <ui-expand
-            v-if="userStore.user?.teams?.length > 0"
+            v-if="state.teams.length > 0"
             append-icon
             header-class="px-4 py-2 rounded-lg mb-1 hoverable w-full flex items-center"
           >
@@ -62,7 +62,7 @@
             </template>
             <ui-list class="space-y-1">
               <ui-list-item
-                v-for="team in userStore.user.teams"
+                v-for="team in state.teams"
                 :key="team.id"
                 :active="state.teamId === team.id || +state.teamId === team.id"
                 :title="team.name"
@@ -171,8 +171,9 @@
           </div>
         </div>
         <ui-tab-panels v-model="state.activeTab" class="flex-1 mt-6">
-          <ui-tab-panel value="team">
+          <ui-tab-panel value="team" cache>
             <workflows-user-team
+              :active="state.activeTab === 'team'"
               :team-id="state.teamId"
               :search="state.query"
               :sort="{ by: state.sortBy, order: state.sortOrder }"
@@ -235,7 +236,7 @@
   </div>
 </template>
 <script setup>
-import { computed, shallowReactive, watch } from 'vue';
+import { computed, shallowReactive, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
@@ -245,6 +246,7 @@ import { useGroupTooltip } from '@/composable/groupTooltip';
 import { isWhitespace } from '@/utils/helper';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import { importWorkflow, getWorkflowPermissions } from '@/utils/workflowData';
 import WorkflowsLocal from '@/components/newtab/workflows/WorkflowsLocal.vue';
@@ -261,17 +263,22 @@ const dialog = useDialog();
 const router = useRouter();
 const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
+const teamWorkflowStore = useTeamWorkflowStore();
 const hostedWorkflowStore = useHostedWorkflowStore();
 
 const sorts = ['name', 'createdAt'];
 const { teamId, active } = router.currentRoute.value.query;
-
 const savedSorts = JSON.parse(localStorage.getItem('workflow-sorts') || '{}');
+const validTeamId = userStore.user?.teams?.some(
+  ({ id }) => id === teamId || id === +teamId
+);
+
 const state = shallowReactive({
+  teams: [],
   query: '',
   activeFolder: '',
-  teamId: teamId || '',
   activeTab: active || 'local',
+  teamId: validTeamId ? teamId : '',
   perPage: savedSorts.perPage || 18,
   sortBy: savedSorts.sortBy || 'createdAt',
   sortOrder: savedSorts.sortOrder || 'desc',
@@ -389,6 +396,24 @@ watch(
     router.replace({ ...router.currentRoute.value, query });
   }
 );
+
+onMounted(() => {
+  const teams = [];
+  const unknownInputted = false;
+  Object.keys(teamWorkflowStore.workflows).forEach((id) => {
+    const userTeam = userStore.user?.teams?.find(
+      (team) => team.id === id || team.id === +id
+    );
+
+    if (userTeam) {
+      teams.push({ name: userTeam.name, id: userTeam.id });
+    } else if (!unknownInputted) {
+      teams.unshift({ name: '(unknown)', id: '(unknown)' });
+    }
+  });
+
+  state.teams = teams;
+});
 </script>
 <style>
 .workflow-sort select {

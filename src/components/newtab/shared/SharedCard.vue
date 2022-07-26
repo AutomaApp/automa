@@ -22,7 +22,7 @@
           Disabled
         </span>
         <button
-          v-else
+          v-else-if="!disabled"
           class="invisible group-hover:visible"
           @click="$emit('execute', data)"
         >
@@ -72,6 +72,7 @@ import { shallowReactive } from 'vue';
 import dayjs from '@/lib/dayjs';
 
 const props = defineProps({
+  disabled: Boolean,
   data: {
     type: Object,
     default: () => ({}),
