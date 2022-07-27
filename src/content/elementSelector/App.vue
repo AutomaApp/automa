@@ -287,12 +287,6 @@ onMounted(() => {
     cardRect.y = 20;
     cardRect.width = width;
     cardRect.height = height;
-
-    document.documentElement.style.setProperty(
-      'font-size',
-      '16px',
-      'important'
-    );
   }, 500);
 
   attachListeners();

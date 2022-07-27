@@ -26,6 +26,7 @@ export const tasks = {
       days: [],
       contextMenuName: '',
       contextTypes: [],
+      parameters: [],
       observeElement: {
         selector: '',
         baseSelector: '',

@@ -764,7 +764,7 @@ const moreActions = [
     name: t('common.delete'),
     icon: 'riDeleteBin7Line',
     attrs: {
-      class: 'text-red-400 dark:text-gray-500',
+      class: 'text-red-400 dark:text-red-500',
     },
   },
 ].filter((item) => item.hasAccess);

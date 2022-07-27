@@ -26,10 +26,58 @@
         />
       </keep-alive>
     </transition-expand>
+    <ui-button class="mt-4" @click="state.showModal = true">
+      <v-remixicon name="riCommandLine" class="mr-2 -ml-1" />
+      <span>Parameters</span>
+    </ui-button>
+    <ui-modal
+      v-model="state.showModal"
+      title="Parameters"
+      content-class="max-w-2xl"
+    >
+      <p class="leading-tight">
+        These parameters will be used when the workflow is executed from the
+        command palette
+      </p>
+      <ul
+        class="space-y-2 mt-2 overflow-auto scroll"
+        style="max-height: calc(100vh - 15rem)"
+      >
+        <li
+          v-for="(param, index) in state.parameters"
+          :key="index"
+          class="flex items-end space-x-2"
+        >
+          <ui-input
+            v-model="param.name"
+            label="Name"
+            placeholder="Parameter name"
+          />
+          <ui-select v-model="param.type" label="Type">
+            <option v-for="type in paramTypes" :key="type.id" :value="type.id">
+              {{ type.name }}
+            </option>
+          </ui-select>
+          <ui-input
+            v-model="param.placeholder"
+            label="Placeholder (optional)"
+            placeholder="A parameter"
+          />
+          <ui-button icon @click="state.parameters.splice(index, 1)">
+            <v-remixicon name="riDeleteBin7Line" />
+          </ui-button>
+        </li>
+      </ul>
+      <ui-button variant="accent" class="mt-4" @click="addParameter">
+        Add parameter
+      </ui-button>
+    </ui-modal>
   </div>
 </template>
 <script setup>
+import { reactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import cloneDeep from 'lodash.clonedeep';
 import TriggerDate from './Trigger/TriggerDate.vue';
 import TriggerInterval from './Trigger/TriggerInterval.vue';
 import TriggerVisitWeb from './Trigger/TriggerVisitWeb.vue';
@@ -46,8 +94,6 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:data']);
 
-const { t } = useI18n();
-
 const triggers = {
   manual: null,
   interval: TriggerInterval,
@@ -59,8 +105,34 @@ const triggers = {
   'visit-web': TriggerVisitWeb,
   'keyboard-shortcut': TriggerKeyboardShortcut,
 };
+const paramTypes = [
+  { id: 'string', name: 'String' },
+  { id: 'number', name: 'Number' },
+];
+
+const { t } = useI18n();
+
+const state = reactive({
+  showModal: false,
+  parameters: cloneDeep(props.data.parameters || []),
+});
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }
+function addParameter() {
+  state.parameters.push({
+    name: 'Param',
+    type: 'string',
+    placeholder: 'Text',
+  });
+}
+
+watch(
+  () => state.parameters,
+  (parameters) => {
+    updateData({ parameters });
+  },
+  { deep: true }
+);
 </script>

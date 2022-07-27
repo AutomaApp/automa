@@ -53,6 +53,7 @@
   ],
   "web_accessible_resources": [
     "/elementSelector.css",
+    "/icon-128.png",
     "/Inter-roman-latin.var.woff2",
     "/locales/*",
     "elementSelector.bundle.js"

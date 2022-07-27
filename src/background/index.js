@@ -107,40 +107,36 @@ const workflow = {
       states: this.states,
     });
 
-    if (options?.resume) {
-      engine.resume(options.state);
-    } else {
-      engine.init();
-      engine.on('destroyed', ({ id, status }) => {
-        if (status === 'stopped') return;
+    engine.init();
+    engine.on('destroyed', ({ id, status }) => {
+      if (status === 'stopped') return;
 
-        browser.permissions
-          .contains({ permissions: ['notifications'] })
-          .then((hasPermission) => {
-            if (!hasPermission || !workflowData.settings.notification) return;
+      browser.permissions
+        .contains({ permissions: ['notifications'] })
+        .then((hasPermission) => {
+          if (!hasPermission || !workflowData.settings.notification) return;
 
-            const name = workflowData.name.slice(0, 32);
+          const name = workflowData.name.slice(0, 32);
 
-            browser.notifications.create(`logs:${id}`, {
-              type: 'basic',
-              iconUrl: browser.runtime.getURL('icon-128.png'),
-              title: status === 'success' ? 'Success' : 'Error',
-              message: `${
-                status === 'success' ? 'Successfully' : 'Failed'
-              } to run the "${name}" workflow`,
-            });
+          browser.notifications.create(`logs:${id}`, {
+            type: 'basic',
+            iconUrl: browser.runtime.getURL('icon-128.png'),
+            title: status === 'success' ? 'Success' : 'Error',
+            message: `${
+              status === 'success' ? 'Successfully' : 'Failed'
+            } to run the "${name}" workflow`,
           });
-      });
+        });
+    });
 
-      const lastCheckStatus = localStorage.getItem('check-status');
-      const isSameDay = dayjs().isSame(lastCheckStatus, 'day');
-      if (!isSameDay) {
-        fetchApi('/status')
-          .then((response) => response.json())
-          .then(() => {
-            localStorage.setItem('check-status', new Date());
-          });
-      }
+    const lastCheckStatus = localStorage.getItem('check-status');
+    const isSameDay = dayjs().isSame(lastCheckStatus, 'day');
+    if (!isSameDay) {
+      fetchApi('/status')
+        .then((response) => response.json())
+        .then(() => {
+          localStorage.setItem('check-status', new Date());
+        });
     }
 
     return engine;
@@ -556,6 +552,7 @@ message.on('workflow:execute', (workflowData, sender) => {
 
     workflowData.options.tabId = sender.tab.id;
   }
+  console.log(workflowData, 'anu');
 
   workflow.execute(workflowData, workflowData?.options || {});
 });
