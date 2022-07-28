@@ -1,5 +1,9 @@
 <template>
-  <ui-card padding="p-1" class="pointer-events-auto mr-4">
+  <ui-card
+    v-if="credentials.length > 0"
+    padding="p-1"
+    class="pointer-events-auto mr-4"
+  >
     <ui-popover v-tooltip="t('credential.use.title')" @show="checkCredentials">
       <template #trigger>
         <button class="p-2 hoverable transition">

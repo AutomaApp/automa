@@ -399,7 +399,7 @@ watch(
 
 onMounted(() => {
   const teams = [];
-  const unknownInputted = false;
+  let unknownInputted = false;
   Object.keys(teamWorkflowStore.workflows).forEach((id) => {
     const userTeam = userStore.user?.teams?.find(
       (team) => team.id === id || team.id === +id
@@ -408,6 +408,7 @@ onMounted(() => {
     if (userTeam) {
       teams.push({ name: userTeam.name, id: userTeam.id });
     } else if (!unknownInputted) {
+      unknownInputted = true;
       teams.unshift({ name: '(unknown)', id: '(unknown)' });
     }
   });

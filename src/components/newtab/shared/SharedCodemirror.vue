@@ -13,16 +13,16 @@
 </template>
 <script setup>
 import { onMounted, ref, onBeforeUnmount, watch } from 'vue';
-import { json } from '@codemirror/lang-json';
-import { indentWithTab } from '@codemirror/commands';
-import { oneDark } from '@codemirror/theme-one-dark';
 import { keymap } from '@codemirror/view';
-import { javascript } from '@codemirror/lang-javascript';
+import { css } from '@codemirror/lang-css';
+import { json } from '@codemirror/lang-json';
+import { html } from '@codemirror/lang-html';
 import { EditorState } from '@codemirror/state';
 import { EditorView, basicSetup } from 'codemirror';
-import { format } from 'prettier';
+import { indentWithTab } from '@codemirror/commands';
+import { oneDark } from '@codemirror/theme-one-dark';
+import { javascript } from '@codemirror/lang-javascript';
 import { store } from '../settings/jsBlockWrap';
-import parserBabel from './parser-babel.mjs';
 
 const props = defineProps({
   lang: {
@@ -49,6 +49,8 @@ const props = defineProps({
 const emit = defineEmits(['change', 'update:modelValue']);
 
 let view = null;
+const langs = { json, javascript, html, css };
+
 const containerEl = ref(null);
 
 const updateListener = EditorView.updateListener.of((event) => {
@@ -71,10 +73,10 @@ const state = EditorState.create({
     oneDark,
     basicSetup,
     updateListener,
+    langs[props.lang]?.(),
     EditorState.tabSize.of(2),
     keymap.of([indentWithTab]),
     EditorState.readOnly.of(props.readonly),
-    props.lang === 'javascript' ? javascript() : json(),
     ...customExtension,
   ],
 });
@@ -98,27 +100,6 @@ onMounted(() => {
 });
 onBeforeUnmount(() => {
   view?.destroy();
-});
-
-let savedStatePrettier = store.statePrettier;
-watch(store, (value) => {
-  if (value.statePrettier !== savedStatePrettier) {
-    // prettier logic here
-    const code = props.modelValue;
-
-    view.dispatch({
-      changes: {
-        from: 0,
-        to: view.state.doc.length,
-        insert: format(code, {
-          parser: 'babel',
-          plugins: [parserBabel],
-        }),
-      },
-    });
-
-    savedStatePrettier = value.statePrettier;
-  }
 });
 </script>
 <style>

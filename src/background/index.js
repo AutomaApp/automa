@@ -552,7 +552,6 @@ message.on('workflow:execute', (workflowData, sender) => {
 
     workflowData.options.tabId = sender.tab.id;
   }
-  console.log(workflowData, 'anu');
 
   workflow.execute(workflowData, workflowData?.options || {});
 });

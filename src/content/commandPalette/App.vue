@@ -348,6 +348,8 @@ watch(
       state.retrieved = true;
     } else if (!state.active) {
       clearParamsState();
+      state.query = '';
+      state.selectedIndex = -1;
     }
   }
 );

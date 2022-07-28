@@ -1184,6 +1184,33 @@ export const tasks = {
       variableName: '',
     },
   },
+  'create-element': {
+    name: 'Create element',
+    description: 'Create an element and insert it into the page',
+    icon: 'riHtml5Line',
+    editComponent: 'EditCreateElement',
+    component: 'BlockBasic',
+    category: 'interaction',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    refDataKeys: ['html'],
+    data: {
+      disableBlock: false,
+      description: '',
+      javascript: '',
+      html: '',
+      css: '',
+      preloadScripts: [],
+      elementWrapper: 'div',
+      findBy: 'cssSelector',
+      insertAt: 'after',
+      waitForSelector: false,
+      waitSelectorTimeout: 5000,
+      selector: 'body',
+    },
+  },
 };
 
 export const categories = {

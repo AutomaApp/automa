@@ -31,6 +31,8 @@
   },
   "dependencies": {
     "@braks/vue-flow": "^0.4.30",
+    "@codemirror/lang-css": "^6.0.0",
+    "@codemirror/lang-html": "^6.1.0",
     "@codemirror/lang-javascript": "^6.0.0",
     "@codemirror/lang-json": "^6.0.0",
     "@codemirror/language": "^6.0.0",

@@ -54,7 +54,9 @@
             {{ t('workflow.blocks.base.multiple.text') }}
           </ui-checkbox>
           <ui-checkbox
-            v-if="(data.findBy || 'cssSelector') === 'cssSelector'"
+            v-if="
+              !hideMarkEl && (data.findBy || 'cssSelector') === 'cssSelector'
+            "
             :model-value="data.markEl"
             :title="t('workflow.blocks.base.markElement.title')"
             @change="updateData({ markEl: $event })"
@@ -93,6 +95,10 @@ const props = defineProps({
     default: () => ({}),
   },
   hide: {
+    type: Boolean,
+    default: false,
+  },
+  hideMarkEl: {
     type: Boolean,
     default: false,
   },

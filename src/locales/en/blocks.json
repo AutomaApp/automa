@@ -213,6 +213,22 @@
         "name": "Hover element",
         "description": "Hover over an element"
       },
+      "create-element": {
+        "name": "Create element",
+        "description": "Create an element and insert it into the page",
+        "edit": "Edit element",
+        "wrap": "Wrap the element inside",
+        "insertEl": {
+          "title": "Insert element",
+          "items": {
+            "before": "As first child",
+            "after": "As last child",
+            "next-sibling": "As next sibling",
+            "prev-sibling": "As previous sibling",
+            "replace": "Replace target element"
+          }
+        }
+      },
       "upload-file": {
         "name": "Upload file",
         "description": "Upload file into <input type=\"file\"> element",
