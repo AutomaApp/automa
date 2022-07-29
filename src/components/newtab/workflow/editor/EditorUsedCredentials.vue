@@ -6,7 +6,7 @@
   >
     <ui-popover v-tooltip="t('credential.use.title')" @show="checkCredentials">
       <template #trigger>
-        <button class="p-2 hoverable transition">
+        <button class="p-2 hoverable transition rounded-lg">
           <v-remixicon name="riKey2Line" />
         </button>
       </template>
@@ -50,7 +50,7 @@
   </ui-card>
 </template>
 <script setup>
-import { shallowRef } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { tasks } from '@/utils/shared';
 
@@ -63,7 +63,7 @@ const props = defineProps({
 
 const { t } = useI18n();
 
-const credentials = shallowRef([]);
+const credentials = ref([]);
 
 function checkCredentials() {
   const regex = /\{\{\s*secrets@(.*?)\}\}/;
@@ -113,4 +113,6 @@ function jumpToBlock(nodeId) {
     editorContainer.classList.remove('add-transition');
   }, 300);
 }
+
+onMounted(checkCredentials);
 </script>

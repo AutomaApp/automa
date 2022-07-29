@@ -90,7 +90,7 @@ const menu = [
     hasAccess: true,
     icon: 'riDeleteBin7Line',
     attrs: {
-      class: 'text-red-400 dark:text-gray-500',
+      class: 'text-red-400 dark:text-red-500',
     },
   },
   {
@@ -99,7 +99,7 @@ const menu = [
     icon: 'riDeleteBin7Line',
     permissions: ['owner', 'create'],
     attrs: {
-      class: 'text-red-400 dark:text-gray-500',
+      class: 'text-red-400 dark:text-red-500',
     },
   },
 ];

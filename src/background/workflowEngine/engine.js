@@ -203,16 +203,6 @@ class WorkflowEngine {
     }
   }
 
-  resume({ id, state }) {
-    this.id = id;
-
-    Object.keys(state).forEach((key) => {
-      this[key] = state[key];
-    });
-
-    this.init(state.currentBlock);
-  }
-
   addWorker(detail) {
     this.workerId += 1;
 
@@ -363,7 +353,9 @@ class WorkflowEngine {
         status,
         message,
         id: this.id,
-        currentBlock: this.currentBlock,
+        endedTimestamp,
+        history: this.history,
+        startedTimestamp: this.startedTimestamp,
       });
 
       if (this.workflow.settings.reuseLastState) {

@@ -3,7 +3,7 @@
     <ui-card
       v-for="workflow in workflows"
       :key="workflow.id"
-      class="w-full flex items-center space-x-2 hover:ring-2 hover:ring-gray-900"
+      class="w-full flex items-center relative space-x-2 hover:ring-2 hover:ring-gray-900"
     >
       <div
         class="flex-1 text-overflow cursor-pointer mr-4"
@@ -12,12 +12,13 @@
         <p class="leading-tight text-overflow">{{ workflow.name }}</p>
         <div class="text-gray-500 flex items-center">
           <span>{{ dayjs(workflow.createdAt).fromNow() }}</span>
+          <div class="flex-grow" />
           <span
-            :title="`Team name: ${workflow.teamName}`"
-            class="inline-block text-overflow px-2 text-sm ml-2 text-gray-600 py-1 rounded-md bg-box-transparent w-full"
+            :class="tagColors[workflow.tag]"
+            class="text-overflow px-2 text-sm ml-2 text-gray-600 py-1 rounded-md"
             style="max-width: 120px"
           >
-            {{ workflow.teamName }}
+            {{ workflow.tag }}
           </span>
         </div>
       </div>
@@ -33,6 +34,7 @@ import { computed, onMounted, shallowRef } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { sendMessage } from '@/utils/message';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
+import { tagColors } from '@/utils/shared';
 import dayjs from '@/lib/dayjs';
 
 const props = defineProps({
@@ -64,18 +66,20 @@ function executeWorkflow(workflow) {
 onMounted(() => {
   if (!userStore.user?.teams) return;
 
-  teamWorkflows.value = userStore.user.teams.reduce((acc, team) => {
-    const currentWorkflows = teamWorkflowStore
-      .getByTeam(team.id)
-      .map((workflow) => {
-        workflow.teamId = team.id;
-        workflow.teamName = team.name;
+  teamWorkflows.value = userStore.user.teams
+    .reduce((acc, team) => {
+      const currentWorkflows = teamWorkflowStore
+        .getByTeam(team.id)
+        .map((workflow) => {
+          workflow.teamId = team.id;
+          workflow.teamName = team.name;
 
-        return workflow;
-      });
-    acc.push(...currentWorkflows);
+          return workflow;
+        });
+      acc.push(...currentWorkflows);
 
-    return acc;
-  }, []);
+      return acc;
+    }, [])
+    .sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1));
 });
 </script>

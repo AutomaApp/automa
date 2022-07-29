@@ -1195,7 +1195,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['html'],
+    refDataKeys: ['html', 'css'],
     data: {
       disableBlock: false,
       description: '',

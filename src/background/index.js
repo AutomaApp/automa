@@ -6,6 +6,7 @@ import { fetchApi } from '@/utils/api';
 import getFile from '@/utils/getFile';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
 import convertWorkflowData from '@/utils/convertWorkflowData';
+import getBlockMessage from '@/utils/getBlockMessage';
 import {
   registerSpecificDay,
   registerContextMenu,
@@ -108,26 +109,70 @@ const workflow = {
     });
 
     engine.init();
-    engine.on('destroyed', ({ id, status }) => {
-      if (status === 'stopped') return;
+    engine.on(
+      'destroyed',
+      ({ id, status, history, startedTimestamp, endedTimestamp }) => {
+        if (
+          workflowData.id.startsWith('team_') &&
+          workflowData.teamId &&
+          status === 'error'
+        ) {
+          let message = '';
 
-      browser.permissions
-        .contains({ permissions: ['notifications'] })
-        .then((hasPermission) => {
-          if (!hasPermission || !workflowData.settings.notification) return;
+          const historyItem = history.at(-1);
+          if (historyItem && historyItem.type === 'error') {
+            message = getBlockMessage(historyItem);
+          }
 
-          const name = workflowData.name.slice(0, 32);
+          const workflowHistory = history.map((item) => {
+            delete item.blockId;
+            delete item.logId;
+            delete item.prevBlockData;
+            delete item.workerId;
 
-          browser.notifications.create(`logs:${id}`, {
-            type: 'basic',
-            iconUrl: browser.runtime.getURL('icon-128.png'),
-            title: status === 'success' ? 'Success' : 'Error',
-            message: `${
-              status === 'success' ? 'Successfully' : 'Failed'
-            } to run the "${name}" workflow`,
+            item.description = item.description || '';
+
+            return item;
           });
-        });
-    });
+          const payload = {
+            status,
+            message,
+            endedTimestamp,
+            startedTimestamp,
+            history: workflowHistory,
+          };
+
+          fetchApi(`/teams/${workflowData.teamId}/workflows/logs`, {
+            method: 'POST',
+            body: JSON.stringify({
+              workflowLog: payload,
+              workflowId: workflowData.id,
+            }),
+          }).catch((error) => {
+            console.error(error);
+          });
+        }
+
+        if (status !== 'stopped') {
+          browser.permissions
+            .contains({ permissions: ['notifications'] })
+            .then((hasPermission) => {
+              if (!hasPermission || !workflowData.settings.notification) return;
+
+              const name = workflowData.name.slice(0, 32);
+
+              browser.notifications.create(`logs:${id}`, {
+                type: 'basic',
+                iconUrl: browser.runtime.getURL('icon-128.png'),
+                title: status === 'success' ? 'Success' : 'Error',
+                message: `${
+                  status === 'success' ? 'Successfully' : 'Failed'
+                } to run the "${name}" workflow`,
+              });
+            });
+        }
+      }
+    );
 
     const lastCheckStatus = localStorage.getItem('check-status');
     const isSameDay = dayjs().isSame(lastCheckStatus, 'day');
