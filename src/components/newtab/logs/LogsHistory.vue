@@ -220,9 +220,9 @@ function getBlockPath(blockId) {
   const { workflowId, teamId } = props.currentLog;
   let path = `/workflows/${workflowId}`;
 
-  if (workflowId.startsWith('team') && !teamId) return null;
-
-  path = `/teams/${teamId}/workflows/${workflowId}`;
+  if (workflowId.startsWith('team') && teamId) {
+    path = `/teams/${teamId}/workflows/${workflowId}`;
+  }
 
   return `${path}?blockId=${blockId}`;
 }

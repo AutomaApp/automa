@@ -120,7 +120,7 @@ const workflow = {
         blockDetail,
       }) => {
         if (
-          workflowData.id.startsWith('team_') &&
+          workflowData.id.startsWith('team') &&
           workflowData.teamId &&
           status === 'error'
         ) {

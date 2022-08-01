@@ -1,13 +1,14 @@
-import { objectHasKey } from '@/utils/helper';
+import objectPath from 'object-path';
 
 export async function regexVariable({ id, data }) {
   const refVariables = this.engine.referenceData.variables;
+  const variableExist = objectPath.has(refVariables, data.variableName);
 
-  if (!objectHasKey(refVariables, data.variableName)) {
+  if (!variableExist) {
     throw new Error(`Cant find "${data.variableName}" variable`);
   }
 
-  const str = refVariables[data.variableName];
+  const str = objectPath.get(refVariables, data.variableName);
   if (typeof str !== 'string') {
     throw new Error(
       `The value of the "${data.variableName}" variable is not a string/text`
@@ -26,7 +27,11 @@ export async function regexVariable({ id, data }) {
     newValue = str.replace(regex, data.replaceVal ?? '');
   }
 
-  refVariables[data.variableName] = newValue;
+  objectPath.set(
+    this.engine.referenceData.variables,
+    data.variableName,
+    newValue
+  );
 
   return {
     data: newValue,

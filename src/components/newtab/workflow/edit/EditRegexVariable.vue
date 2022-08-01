@@ -24,6 +24,7 @@
       </option>
     </ui-select>
     <ui-input
+      v-if="data.method === 'replace'"
       :model-value="data.replaceVal"
       label="Replace with"
       placeholder="(empty)"

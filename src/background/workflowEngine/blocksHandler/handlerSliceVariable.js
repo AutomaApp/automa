@@ -1,5 +1,10 @@
+import objectPath from 'object-path';
+
 export async function sliceData({ id, data }) {
-  const variable = this.engine.referenceData.variables[data.variableName];
+  const variable = objectPath.get(
+    this.engine.referenceData.variables,
+    data.variableName
+  );
   const payload = {
     data: variable,
     nextBlockId: this.getBlockConnections(id),
@@ -19,7 +24,11 @@ export async function sliceData({ id, data }) {
 
   const slicedVariable = variable.slice(startIndex, endIndex);
   payload.data = slicedVariable;
-  this.engine.referenceData.variables[data.variableName] = slicedVariable;
+  objectPath.set(
+    this.engine.referenceData.variables,
+    data.variableName,
+    slicedVariable
+  );
 
   return payload;
 }
