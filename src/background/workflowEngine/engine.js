@@ -293,7 +293,7 @@ class WorkflowEngine {
     }
   }
 
-  async destroy(status, message) {
+  async destroy(status, message, blockDetail) {
     try {
       if (this.isDestroyed) return;
       if (this.isUsingProxy) browser.proxy.settings.clear({});
@@ -352,6 +352,7 @@ class WorkflowEngine {
       this.dispatchEvent('destroyed', {
         status,
         message,
+        blockDetail,
         id: this.id,
         endedTimestamp,
         history: this.history,

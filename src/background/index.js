@@ -111,21 +111,21 @@ const workflow = {
     engine.init();
     engine.on(
       'destroyed',
-      ({ id, status, history, startedTimestamp, endedTimestamp }) => {
+      ({
+        id,
+        status,
+        history,
+        startedTimestamp,
+        endedTimestamp,
+        blockDetail,
+      }) => {
         if (
           workflowData.id.startsWith('team_') &&
           workflowData.teamId &&
           status === 'error'
         ) {
-          let message = '';
-
-          const historyItem = history.at(-1);
-          if (historyItem && historyItem.type === 'error') {
-            message = getBlockMessage(historyItem);
-          }
-
+          const message = getBlockMessage(blockDetail);
           const workflowHistory = history.map((item) => {
-            delete item.blockId;
             delete item.logId;
             delete item.prevBlockData;
             delete item.workerId;
@@ -140,6 +140,7 @@ const workflow = {
             endedTimestamp,
             startedTimestamp,
             history: workflowHistory,
+            blockId: blockDetail.blockId,
           };
 
           fetchApi(`/teams/${workflowData.teamId}/workflows/logs`, {

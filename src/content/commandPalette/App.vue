@@ -248,10 +248,10 @@ function onKeydown(event) {
     return;
   }
 
-  if ((!(ctrlKey || metaKey) && !shiftKey) || key.toLowerCase() !== 'a') return;
-
-  event.preventDefault();
-  state.active = true;
+  if ((ctrlKey || metaKey) && shiftKey && key.toLowerCase() === 'a') {
+    event.preventDefault();
+    state.active = true;
+  }
 }
 function onInputKeydown(event) {
   const { key } = event;
