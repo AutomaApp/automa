@@ -71,12 +71,12 @@ function checkCredentials() {
 
   props.editor.getNodes.value.forEach(({ label, id, data }) => {
     const keys = tasks[label]?.refDataKeys;
-    if (!keys) return;
+    if (!keys || !data) return;
 
     const usedCredentials = new Set();
 
     keys.forEach((key) => {
-      const match = data[key]?.match(regex);
+      const match = data[key]?.match?.(regex);
       if (!match || !match[1]) return;
 
       usedCredentials.add(match[1]);
