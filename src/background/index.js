@@ -59,7 +59,7 @@ const workflow = {
   async get(workflowId) {
     if (!workflowId) return null;
 
-    if (workflowId.startsWith('team_')) {
+    if (workflowId.startsWith('team')) {
       const { teamWorkflows } = await browser.storage.local.get(
         'teamWorkflows'
       );
@@ -119,36 +119,41 @@ const workflow = {
         endedTimestamp,
         blockDetail,
       }) => {
-        if (
-          workflowData.id.startsWith('team') &&
-          workflowData.teamId &&
-          status === 'error'
-        ) {
-          const message = getBlockMessage(blockDetail);
-          const workflowHistory = history.map((item) => {
-            delete item.logId;
-            delete item.prevBlockData;
-            delete item.workerId;
-
-            item.description = item.description || '';
-
-            return item;
-          });
+        if (workflowData.id.startsWith('team') && workflowData.teamId) {
           const payload = {
             status,
-            message,
-            endedTimestamp,
-            startedTimestamp,
-            history: workflowHistory,
-            blockId: blockDetail.blockId,
+            workflowId: workflowData.id,
+            workflowLog: {
+              status,
+              endedTimestamp,
+              startedTimestamp,
+            },
           };
+
+          if (status === 'error') {
+            const message = getBlockMessage(blockDetail);
+            const workflowHistory = history.map((item) => {
+              delete item.logId;
+              delete item.prevBlockData;
+              delete item.workerId;
+
+              item.description = item.description || '';
+
+              return item;
+            });
+            payload.workflowLog = {
+              status,
+              message,
+              endedTimestamp,
+              startedTimestamp,
+              history: workflowHistory,
+              blockId: blockDetail.blockId,
+            };
+          }
 
           fetchApi(`/teams/${workflowData.teamId}/workflows/logs`, {
             method: 'POST',
-            body: JSON.stringify({
-              workflowLog: payload,
-              workflowId: workflowData.id,
-            }),
+            body: JSON.stringify(payload),
           }).catch((error) => {
             console.error(error);
           });
