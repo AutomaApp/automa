@@ -2810,10 +2810,10 @@ css-select@^4.1.3:
     domutils "^2.8.0"
     nth-check "^2.0.1"
 
-css-selector-generator@^3.6.1:
-  version "3.6.1"
-  resolved "https://registry.yarnpkg.com/css-selector-generator/-/css-selector-generator-3.6.1.tgz#bfe7ea59cb987cc7597e6f80fd57581e85fa0f65"
-  integrity sha512-00CD9cAH1bYKi/7UztQmsnp1MJjeBMV7hMAR39wG/jDI2ef2BS9ZqW3gKpBN+vJOxB4rNrQG4xJfmgx5ZFCFHQ==
+css-selector-generator@^3.6.3:
+  version "3.6.3"
+  resolved "https://registry.yarnpkg.com/css-selector-generator/-/css-selector-generator-3.6.3.tgz#a085395a741d812b808d0aa7192a94fb8df8713a"
+  integrity sha512-NQyQLIyIS2FdP2P71g82ivbgw73B95ehXwVegeN42vBUuqaahSrQfJU+YTm4gbOHyoHkhmiKz0kbGCZ5WHCvsQ==
   dependencies:
     cartesian "^1.0.1"
     iselement "^1.1.4"
