@@ -1,6 +1,7 @@
 import { finder as finderLib } from '@medv/finder';
 
-const ariaAttrs = ['aria-label', 'aria-labelledby'];
+// const ariaAttrs = ['aria-label', 'aria-labelledby'];
+const ariaAttrs = ['data-testid'];
 
 export const finder = finderLib;
 
