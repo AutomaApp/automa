@@ -28,6 +28,19 @@
         </span>
       </div>
     </div>
+    <p class="font-semibold mt-8">Zoom</p>
+    <div class="flex items-center mt-1 space-x-4">
+      <ui-input
+        v-model.number="settings.minZoom"
+        type="number"
+        label="Min zoom"
+      />
+      <ui-input
+        v-model.number="settings.maxZoom"
+        type="number"
+        label="Max zoom"
+      />
+    </div>
     <ui-list class="mt-8 space-y-2">
       <ui-list-item small>
         <ui-switch v-model="settings.arrow" />
