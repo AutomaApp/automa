@@ -21,7 +21,6 @@ async function loopData({ data, id }, { refData }) {
       };
     } else {
       const maxLoop = +data.maxLoop || 0;
-      console.log(maxLoop);
       const getLoopData = {
         numbers: () => data.fromNumber,
         table: () => refData.table,

@@ -1203,7 +1203,6 @@ export const tasks = {
       html: '',
       css: '',
       preloadScripts: [],
-      elementWrapper: 'div',
       findBy: 'cssSelector',
       insertAt: 'after',
       waitForSelector: false,

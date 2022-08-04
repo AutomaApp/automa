@@ -42,24 +42,7 @@
         style="height: calc(100vh - 12rem)"
       >
         <ui-tab-panel value="html" class="h-full">
-          <div class="flex items-center mb-4">
-            <ui-select
-              v-model="blockData.elementWrapper"
-              :label="$t('workflow.blocks.create-element.wrap')"
-            >
-              <option v-for="item in elementsWrapper" :key="item" :value="item">
-                {{ item.toUpperCase() }} element
-              </option>
-            </ui-select>
-            <ui-input
-              :model-value="`automa-${blockId}`"
-              readonly
-              class="ml-4 w-48"
-              label="Element wrapper id"
-            />
-          </div>
           <shared-codemirror
-            v-show="['button', 'div'].includes(blockData.elementWrapper)"
             v-model="blockData.html"
             lang="html"
             class="h-full"
@@ -164,7 +147,6 @@ const insertOptions = [
   'next-sibling',
   'replace',
 ];
-const elementsWrapper = ['div', 'button', 'input', 'textarea'];
 const tabs = [
   { id: 'html', name: 'HTML' },
   { id: 'css', name: 'CSS' },

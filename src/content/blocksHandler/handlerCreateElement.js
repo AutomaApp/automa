@@ -52,21 +52,10 @@ async function createElement(block) {
   });
 
   if (data.insertAt === 'replace') {
-    const elementWrapper = createNode(
-      data.elementWrapper,
-      { id: baseId },
-      data.html
-    );
-
-    targetElement.replaceWith(elementWrapper);
+    const fragments = createNode('template', {}, data.html);
+    targetElement.replaceWith(fragments.content);
   } else {
-    const tag = data.elementWrapper;
-    let htmlStr = `<${tag} id="${baseId}">${data.html}</${tag}/>`;
-
-    const form = ['input', 'select'];
-    if (form.includes(tag)) htmlStr = `<${tag} id="${baseId}" />`;
-
-    targetElement.insertAdjacentHTML(positions[data.insertAt], htmlStr);
+    targetElement.insertAdjacentHTML(positions[data.insertAt], data.html);
   }
 
   if (data.css) {
