@@ -222,9 +222,9 @@ import { getNodesInside } from '@braks/vue-flow';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { customAlphabet } from 'nanoid';
+import { useToast } from 'vue-toastification';
 import defu from 'defu';
 import dagre from 'dagre';
-import { useStore } from '@/stores/main';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
@@ -266,7 +266,7 @@ const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 7);
 useGroupTooltip();
 
 const { t } = useI18n();
-const store = useStore();
+const toast = useToast();
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
@@ -973,20 +973,47 @@ function duplicateElements({ nodes, edges }) {
   editor.value.addEdges(newEdges);
 }
 function copySelectedElements(data = {}) {
-  store.copiedEls.nodes = data.nodes || editor.value.getSelectedNodes.value;
-  store.copiedEls.edges = data.edges || editor.value.getSelectedEdges.value;
+  const nodes = data.nodes || editor.value.getSelectedNodes.value;
+  const edges = data.edges || editor.value.getSelectedEdges.value;
+
+  const clipboardData = JSON.stringify({
+    name: 'automa-blocks',
+    data: { nodes, edges },
+  });
+  navigator.clipboard.writeText(clipboardData).catch((error) => {
+    console.error(error);
+  });
 }
-function pasteCopiedElements(position) {
+async function pasteCopiedElements(position) {
   editor.value.removeSelectedNodes(editor.value.getSelectedNodes.value);
   editor.value.removeSelectedEdges(editor.value.getSelectedEdges.value);
 
-  const { nodes, edges } = copyElements(
-    store.copiedEls.nodes,
-    store.copiedEls.edges,
-    position
-  );
-  editor.value.addNodes(nodes);
-  editor.value.addEdges(edges);
+  const permission = await navigator.permissions.query({
+    name: 'clipboard-read',
+  });
+  if (permission.state === 'denied') {
+    toast.error('Automa require clipboard permission to paste blocks');
+    return;
+  }
+
+  try {
+    const copiedText = await navigator.clipboard.readText();
+    const blocks = parseJSON(copiedText);
+
+    if (blocks && blocks.name === 'automa-blocks') {
+      const { nodes, edges } = copyElements(
+        blocks.data.nodes,
+        blocks.data.edges,
+        position
+      );
+      editor.value.addNodes(nodes);
+      editor.value.addEdges(edges);
+
+      return;
+    }
+  } catch (error) {
+    console.error(error);
+  }
 }
 function undoRedoCommand(type, { target }) {
   const els = ['INPUT', 'SELECT', 'TEXTAREA'];

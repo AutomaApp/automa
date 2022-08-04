@@ -29,7 +29,6 @@
 <script setup>
 import { onMounted, reactive, markRaw } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useStore } from '@/stores/main';
 import { getReadableShortcut, getShortcut } from '@/composable/shortcut';
 
 const props = defineProps({
@@ -41,7 +40,6 @@ const props = defineProps({
 const emit = defineEmits(['copy', 'paste', 'duplicate']);
 
 const { t } = useI18n();
-const store = useStore();
 const state = reactive({
   show: false,
   items: [],
@@ -90,9 +88,7 @@ function showCtxMenu(items = [], event) {
 
   state.items = items.map((key) => markRaw(menuItems[key]));
 
-  if (store.copiedEls.nodes.length > 0) {
-    state.items.unshift(markRaw(menuItems.paste));
-  }
+  state.items.unshift(markRaw(menuItems.paste));
 
   state.position = {
     getReferenceClientRect: () => ({
@@ -122,8 +118,6 @@ onMounted(() => {
     ctxData = { nodes: [], edges: [edge] };
   });
   props.editor.onPaneContextMenu((event) => {
-    if (store.copiedEls.nodes.length === 0) return;
-
     showCtxMenu([], event);
     ctxData = {
       nodes: [],
