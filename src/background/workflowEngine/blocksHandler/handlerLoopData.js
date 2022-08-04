@@ -21,6 +21,7 @@ async function loopData({ data, id }, { refData }) {
       };
     } else {
       const maxLoop = +data.maxLoop || 0;
+      console.log(maxLoop);
       const getLoopData = {
         numbers: () => data.fromNumber,
         table: () => refData.table,
@@ -79,7 +80,9 @@ async function loopData({ data, id }, { refData }) {
       }
 
       const maxToLoop =
-        maxLoop >= currLoopData.length ? currLoopData.length : maxLoop;
+        maxLoop >= currLoopData.length
+          ? currLoopData.length
+          : maxLoop || currLoopData.length;
       this.loopList[data.loopId] = {
         index,
         blockId: id,
