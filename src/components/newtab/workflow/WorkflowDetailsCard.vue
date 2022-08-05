@@ -87,15 +87,33 @@
             $event.dataTransfer.setData('block', JSON.stringify(block))
           "
         >
-          <a
-            :href="`https://docs.automa.site/blocks/${block.id}.html`"
-            :title="t('common.docs')"
-            target="_blank"
-            rel="noopener"
-            class="absolute top-px right-2 top-2 text-gray-600 dark:text-gray-300 invisible group-hover:visible"
+          <div
+            class="flex items-center absolute right-2 invisible group-hover:visible top-2"
           >
-            <v-remixicon name="riInformationLine" size="18" />
-          </a>
+            <a
+              :href="`https://docs.automa.site/blocks/${block.id}.html`"
+              :title="t('common.docs')"
+              target="_blank"
+              rel="noopener"
+              class="text-gray-600 dark:text-gray-300"
+            >
+              <v-remixicon name="riInformationLine" size="18" />
+            </a>
+            <span
+              title="Pin block"
+              class="cursor-pointer ml-1"
+              @click="pinBlock(block)"
+            >
+              <v-remixicon
+                size="18"
+                :name="
+                  pinnedBlocks.includes(block.id)
+                    ? 'riPushpin2Fill'
+                    : 'riPushpin2Line'
+                "
+              />
+            </span>
+          </div>
           <v-remixicon :name="block.icon" size="24" class="mb-2" />
           <p class="leading-tight text-overflow capitalize">
             {{ block.name }}
@@ -106,8 +124,9 @@
   </div>
 </template>
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import browser from 'webextension-polyfill';
 import { useShortcut } from '@/composable/shortcut';
 import { tasks, categories } from '@/utils/shared';
 
@@ -159,6 +178,7 @@ const categoriesExpand = Object.keys(categories).reduce((acc, key) => {
 const descriptionCollapsed = ref(true);
 
 const query = ref('');
+const pinnedBlocks = ref([]);
 const expandList = ref(categoriesExpand);
 
 const blocks = computed(() =>
@@ -193,4 +213,16 @@ function getBlockTitle({ description, id }) {
 
   return blockDescription;
 }
+function pinBlock({ id }) {
+  const index = pinnedBlocks.value.indexOf(id);
+
+  if (index !== -1) pinnedBlocks.value.splice(index, 1);
+  else pinnedBlocks.value.push(id);
+}
+
+onMounted(() => {
+  browser.storage.local.get('pinnedBlocks').then((item) => {
+    pinnedBlocks.value = item.pinnedBlocks || [];
+  });
+});
 </script>

@@ -6,7 +6,6 @@ export default function ({ block, refKeys, data }) {
   if (!refKeys || refKeys.length === 0) return block;
 
   const copyBlock = cloneDeep(block);
-  const options = { stringify: block.label === 'webhook' };
   const addReplacedValue = (value) => {
     if (!copyBlock.replacedValue) copyBlock.replacedValue = {};
 
@@ -14,6 +13,9 @@ export default function ({ block, refKeys, data }) {
   };
 
   refKeys.forEach((blockDataKey) => {
+    const options = {
+      stringify: block.label === 'webhook' && blockDataKey === 'body',
+    };
     const currentData = objectPath.get(copyBlock.data, blockDataKey);
 
     if (!currentData) return;

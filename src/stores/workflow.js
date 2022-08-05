@@ -202,8 +202,10 @@ export const useWorkflowStore = defineStore('workflow', {
           }
 
           if (insert) {
-            Object.assign(this.workflows[item.id], item);
-            insertedData[item.id] = this.workflows[item.id];
+            const mergedData = deepmerge(this.workflows[item.id], item);
+
+            this.workflows[item.id] = mergedData;
+            insertedData[item.id] = mergedData;
           }
         } else {
           const workflow = defaultWorkflow(item);
