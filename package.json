@@ -56,6 +56,7 @@
     "defu": "^6.0.0",
     "dexie": "^3.2.2",
     "idb": "^7.0.2",
+    "jsonpath": "^1.1.1",
     "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.2",
     "mitt": "^3.0.0",

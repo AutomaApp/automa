@@ -1,7 +1,8 @@
 import objectPath from 'object-path';
+import jsonpath from 'jsonpath';
 import dayjs from '@/lib/dayjs';
-import { parseJSON } from '@/utils/helper';
 import credentialUtil from '@/utils/credentialUtil';
+import { parseJSON, isObject } from '@/utils/helper';
 
 const refKeys = {
   table: 'table',
@@ -102,6 +103,11 @@ export const functions = {
       /\?[a-zA-Z]/g,
       (char) => mapSamples[char.at(-1)]?.() ?? char
     );
+  },
+  filter(data, exps) {
+    if (!isObject(data) && !Array.isArray(data)) return data;
+
+    return jsonpath.query(data, exps);
   },
 };
 
