@@ -43,7 +43,8 @@
     "clipboardRead",
     "downloads",
     "contextMenus",
-    "notifications"
+    "notifications",
+    "cookies"
   ],
   "permissions": [
     "tabs",

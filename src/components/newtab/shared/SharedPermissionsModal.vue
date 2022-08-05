@@ -47,6 +47,7 @@ const emit = defineEmits(['update:modelValue', 'granted']);
 const { t } = useI18n();
 
 const icons = {
+  cookies: 'mdiCookieOutline',
   downloads: 'riDownloadLine',
   clipboardRead: 'riClipboardLine',
   contextMenus: 'riFileListLine',

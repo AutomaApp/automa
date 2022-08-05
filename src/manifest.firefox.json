@@ -40,7 +40,7 @@
       "all_frames": false
     }
   ],
-  "optional_permissions": ["clipboardRead", "downloads", "notifications"],
+  "optional_permissions": ["clipboardRead", "downloads", "notifications", "cookies"],
   "permissions": [
     "tabs",
     "proxy",

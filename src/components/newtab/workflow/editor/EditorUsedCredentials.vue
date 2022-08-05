@@ -52,6 +52,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import objectPath from 'object-path';
 import { tasks } from '@/utils/shared';
 
 const props = defineProps({
@@ -76,7 +77,8 @@ function checkCredentials() {
     const usedCredentials = new Set();
 
     keys.forEach((key) => {
-      const match = data[key]?.match?.(regex);
+      const str = objectPath.get(data, key);
+      const match = str?.match?.(regex);
       if (!match || !match[1]) return;
 
       usedCredentials.add(match[1]);

@@ -96,6 +96,16 @@
         "specificFlow": "Only continue a specific flow",
         "selectFlow": "Select flow"
       },
+      "cookie": {
+        "name": "Cookie",
+        "description": "Get, set, or remove cookies",
+        "types": {
+          "get": "Get cookies",
+          "set": "Set cookie",
+          "remove": "Remove cookies",
+          "getAll": "Get all cookies"
+        }
+      },
       "slice-variable": {
         "name": "Slice variable",
         "description": "Extracts a section of a variable value",
