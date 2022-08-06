@@ -159,18 +159,19 @@ function runWorkflow(index, { data, params }) {
     return acc;
   }, {});
   const payload = {
-    ...data,
-    options: {
-      checkParams: false,
-      data: { variables },
+    name: 'background--workflow:execute',
+    data: {
+      ...data,
+      options: {
+        checkParams: false,
+        data: { variables },
+      },
     },
   };
+  const isFirefox = BROWSER_TYPE === 'firefox';
 
   browser.runtime
-    .sendMessage({
-      name: 'background--workflow:execute',
-      data: payload,
-    })
+    .sendMessage(isFirefox ? JSON.stringify(payload) : payload)
     .then(() => {
       deleteWorkflow(index);
     });

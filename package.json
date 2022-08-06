@@ -29,7 +29,7 @@
     "*.{js,ts,vue}": "eslint --fix"
   },
   "dependencies": {
-    "@braks/vue-flow": "^0.4.30",
+    "@braks/vue-flow": "^0.4.35",
     "@codemirror/autocomplete": "^6.1.0",
     "@codemirror/lang-css": "^6.0.0",
     "@codemirror/lang-html": "^6.1.0",

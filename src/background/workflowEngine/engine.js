@@ -130,6 +130,7 @@ class WorkflowEngine {
           browser.windows.create({
             type: 'popup',
             width: 480,
+            height: window.screen.availHeight,
             url: browser.runtime.getURL(
               `/params.html?workflowId=${this.workflow.id}`
             ),
