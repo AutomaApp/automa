@@ -58,6 +58,10 @@
     "downloads": {
       "title": "Download",
       "description": "Saving the page assets and renaming the downloaded file"
+    },
+    "cookies": {
+      "title": "Cookies",
+      "description": "Read, set, or remove cookies"
     }
   },
   "updateMessage": {
