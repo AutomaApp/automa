@@ -109,6 +109,34 @@ class WorkflowEngine {
         return;
       }
 
+      const checkParams = this.options?.checkParams ?? true;
+      const hasParams = triggerBlock.data.parameters?.length > 0;
+      if (checkParams && hasParams) {
+        this.eventListeners = {};
+
+        const paramUrl = browser.runtime.getURL('params.html');
+        const tabs = await browser.tabs.query({});
+        const paramTab = tabs.find((tab) => tab.url?.includes(paramUrl));
+
+        if (paramTab) {
+          browser.tabs.sendMessage(paramTab.id, {
+            name: 'workflow:params',
+            data: this.workflow,
+          });
+
+          browser.windows.update(paramTab.windowId, { focused: true });
+        } else {
+          browser.windows.create({
+            type: 'popup',
+            width: 480,
+            url: browser.runtime.getURL(
+              `/params.html?workflowId=${this.workflow.id}`
+            ),
+          });
+        }
+        return;
+      }
+
       this.triggerBlockId = triggerBlock.id;
 
       this.blocks = nodes.reduce((acc, node) => {

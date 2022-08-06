@@ -13,7 +13,6 @@ import {
   registerWorkflowTrigger,
 } from '../utils/workflowTrigger';
 import WorkflowState from './WorkflowState';
-import CollectionEngine from './collectionEngine';
 import WorkflowEngine from './workflowEngine/engine';
 import blocksHandler from './workflowEngine/blocksHandler';
 import WorkflowLogger from './WorkflowLogger';
@@ -588,14 +587,6 @@ message.on('get:file', (path) => getFile(path));
 message.on('get:tab-screenshot', (options) =>
   browser.tabs.captureVisibleTab(options)
 );
-
-message.on('collection:execute', (collection) => {
-  const engine = new CollectionEngine(collection, {
-    states: workflow.states,
-    logger: workflow.logger,
-  });
-  engine.init();
-});
 
 message.on('workflow:execute', (workflowData, sender) => {
   if (workflowData.includeTabId) {

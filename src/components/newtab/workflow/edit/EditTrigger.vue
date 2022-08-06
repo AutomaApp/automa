@@ -35,12 +35,8 @@
       title="Parameters"
       content-class="max-w-2xl"
     >
-      <p class="leading-tight">
-        These parameters will be used when the workflow is executed from the
-        command palette
-      </p>
       <ul
-        class="space-y-2 mt-2 overflow-auto scroll"
+        class="space-y-2 mt-2 pb-1 overflow-auto scroll"
         style="max-height: calc(100vh - 15rem)"
       >
         <li
@@ -122,7 +118,7 @@ function updateData(value) {
 }
 function addParameter() {
   state.parameters.push({
-    name: 'Param',
+    name: 'param',
     type: 'string',
     placeholder: 'Text',
   });

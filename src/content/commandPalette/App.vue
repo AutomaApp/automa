@@ -197,8 +197,8 @@ function clearParamsState() {
 function sendExecuteCommand(workflow, options = {}) {
   const workflowData = {
     ...workflow,
-    options,
     includeTabId: true,
+    options: { ...options, checkParams: false },
   };
 
   sendMessage('workflow:execute', workflowData, 'background');
