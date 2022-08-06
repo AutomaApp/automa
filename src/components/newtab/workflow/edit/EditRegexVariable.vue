@@ -13,7 +13,25 @@
       class="mt-2 w-full"
       @change="updateData({ variableName: $event })"
     />
-    <div class="flex items-end mt-2">
+    <ui-select
+      :model-value="data.method"
+      label="Method"
+      class="mt-2 w-full"
+      @change="updateData({ method: $event })"
+    >
+      <option v-for="method in methods" :key="method.id" :value="method.id">
+        {{ method.name }}
+      </option>
+    </ui-select>
+    <ui-input
+      v-if="data.method === 'replace'"
+      :model-value="data.replaceVal"
+      label="Replace with"
+      placeholder="(empty)"
+      class="mt-2 w-full"
+      @change="updateData({ replaceVal: $event })"
+    />
+    <div class="flex items-end mt-3">
       <div class="flex-1 mr-2">
         <label
           class="ml-1 block text-gray-600 dark:text-gray-200 text-sm"
@@ -67,12 +85,17 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:data']);
 
-const { t } = useI18n();
+const methods = [
+  { id: 'match', name: 'Match value' },
+  { id: 'replace', name: 'Replace value' },
+];
 const flags = [
   { id: 'g', name: 'global' },
   { id: 'i', name: 'ignore case' },
   { id: 'm', name: 'multiline' },
 ];
+
+const { t } = useI18n();
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });

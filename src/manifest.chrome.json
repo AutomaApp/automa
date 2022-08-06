@@ -25,6 +25,7 @@
     {
       "matches": ["<all_urls>"],
       "js": ["contentScript.bundle.js"],
+      "run_at": "document_start",
       "all_frames": true
     },
     {
@@ -34,6 +35,7 @@
         "*://automa.vercel.app/*"
       ],
       "js": ["webService.bundle.js"],
+      "run_at": "document_start",
       "all_frames": false
     }
   ],
@@ -41,7 +43,8 @@
     "clipboardRead",
     "downloads",
     "contextMenus",
-    "notifications"
+    "notifications",
+    "cookies"
   ],
   "permissions": [
     "tabs",
@@ -56,6 +59,7 @@
   "web_accessible_resources": [
     "/elementSelector.css",
     "/Inter-roman-latin.var.woff2",
+    "/icon-128.png",
     "/locales/*",
     "elementSelector.bundle.js"
   ]

@@ -39,6 +39,12 @@ const requiredPermissions = {
       return checkPermission(['downloads']);
     },
   },
+  cookie: {
+    name: 'cookies',
+    hasPermission() {
+      return checkPermission(['cookies']);
+    },
+  },
 };
 
 export async function getWorkflowPermissions(drawflow) {

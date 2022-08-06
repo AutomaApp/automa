@@ -63,12 +63,6 @@
               <span>
                 <span
                   class="underline cursor-pointer select-none"
-                  @click="store.statePrettier = Math.random()"
-                  >prettier</span
-                >
-                &bull;
-                <span
-                  class="underline cursor-pointer select-none"
                   @click="modifyWhiteSpace"
                   >wrap line</span
                 >

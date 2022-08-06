@@ -2,7 +2,7 @@
   <div class="wysiwyg-editor">
     <slot v-if="editor" name="prepend" :editor="editor" />
     <div
-      v-if="editor"
+      v-if="editor && !readonly"
       class="p-2 rounded-lg backdrop-blur flex items-center sticky top-0 z-50 bg-box-transparent space-x-1 mb-2"
     >
       <button
@@ -115,6 +115,7 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  readonly: Boolean,
 });
 const emit = defineEmits(['update:modelValue', 'count', 'change']);
 
@@ -172,6 +173,7 @@ watch(
 onMounted(() => {
   editor.value = new Editor({
     content: props.modelValue,
+    editable: !props.readonly,
     onUpdate: () => {
       const editorValue = editor.value.getJSON();
 

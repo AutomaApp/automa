@@ -1,7 +1,7 @@
 <template>
   <vue-flow
     :id="props.id"
-    :class="{ disabled: options.disabled }"
+    :class="{ disabled: isDisabled }"
     :default-edge-options="{
       updatable: true,
       selectable: true,
@@ -55,7 +55,7 @@
   </vue-flow>
 </template>
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue';
+import { onMounted, onBeforeUnmount, watch, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {
   VueFlow,
@@ -96,6 +96,7 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  disabled: Boolean,
 });
 const emit = defineEmits(['edit', 'init', 'update:node', 'delete:node']);
 
@@ -126,11 +127,12 @@ const { t } = useI18n();
 const store = useStore();
 const editor = useVueFlow({
   id: props.id,
-  minZoom: 0.6,
   edgeUpdaterRadius: 20,
   deleteKeyCode: 'Delete',
   elevateEdgesOnSelect: true,
   defaultZoom: props.data?.zoom ?? 1,
+  minZoom: Math.abs(+store.settings.editor.minZoom || 0.5),
+  maxZoom: Math.abs(+store.settings.editor.maxZoom || 1.2),
   multiSelectionKeyCode: isMac ? 'Meta' : 'Control',
   defaultPosition: getPosition(props.data?.position),
   ...props.options,
@@ -150,6 +152,7 @@ editor.onEdgeUpdate(({ edge, connection }) => {
 });
 
 const settings = store.settings.editor;
+const isDisabled = computed(() => props.options.disabled ?? props.disabled);
 
 function minimapNodeClassName({ label }) {
   const { category } = tasks[label];
@@ -158,7 +161,7 @@ function minimapNodeClassName({ label }) {
   return color;
 }
 function updateBlockData(nodeId, data = {}) {
-  if (props.options.disabled) return;
+  if (isDisabled.value) return;
 
   const node = editor.getNode.value(nodeId);
   node.data = { ...node.data, ...data };
@@ -166,7 +169,7 @@ function updateBlockData(nodeId, data = {}) {
   emit('update:node', node);
 }
 function editBlock({ id, label, data }, additionalData = {}) {
-  if (props.options.disabled) return;
+  if (isDisabled.value) return;
 
   emit('edit', {
     id: label,
@@ -176,13 +179,13 @@ function editBlock({ id, label, data }, additionalData = {}) {
   });
 }
 function deleteBlock(nodeId) {
-  if (props.options.disabled) return;
+  if (isDisabled.value) return;
 
   editor.removeNodes([nodeId]);
   emit('delete:node', nodeId);
 }
 function onMousedown(event) {
-  if (props.options.disabled && event.shiftKey) {
+  if (isDisabled.value && event.shiftKey) {
     event.stopPropagation();
     event.preventDefault();
   }
@@ -201,6 +204,23 @@ function applyFlowData() {
     zoom: props.data?.zoom || 1,
   });
 }
+
+watch(
+  () => props.disabled,
+  (value) => {
+    const keys = [
+      'nodesDraggable',
+      'edgesUpdatable',
+      'nodesConnectable',
+      'elementsSelectable',
+    ];
+
+    keys.forEach((key) => {
+      editor[key].value = !value;
+    });
+  },
+  { immediate: true }
+);
 
 onMounted(() => {
   applyFlowData();

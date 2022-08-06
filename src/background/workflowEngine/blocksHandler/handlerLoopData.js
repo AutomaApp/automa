@@ -20,6 +20,7 @@ async function loopData({ data, id }, { refData }) {
         $index: index,
       };
     } else {
+      const maxLoop = +data.maxLoop || 0;
       const getLoopData = {
         numbers: () => data.fromNumber,
         table: () => refData.table,
@@ -34,7 +35,6 @@ async function loopData({ data, id }, { refData }) {
           return parseJSON(variableVal, variableVal);
         },
         elements: async () => {
-          const max = +data.maxLoop || 0;
           const findBy = isXPath(data.elementSelector)
             ? 'xpath'
             : 'cssSelector';
@@ -42,8 +42,8 @@ async function loopData({ data, id }, { refData }) {
             id,
             label: 'loop-data',
             data: {
-              max,
               findBy,
+              max: maxLoop,
               multiple: true,
               selector: data.elementSelector,
               waitForSelector: data.waitForSelector ?? false,
@@ -52,9 +52,9 @@ async function loopData({ data, id }, { refData }) {
           });
           this.loopEls.push({
             url,
-            max,
             loopId,
             findBy,
+            max: maxLoop,
             blockId: id,
             selector: data.elementSelector,
           });
@@ -78,6 +78,10 @@ async function loopData({ data, id }, { refData }) {
         }
       }
 
+      const maxToLoop =
+        maxLoop >= currLoopData.length
+          ? currLoopData.length
+          : maxLoop || currLoopData.length;
       this.loopList[data.loopId] = {
         index,
         blockId: id,
@@ -87,7 +91,7 @@ async function loopData({ data, id }, { refData }) {
         maxLoop:
           data.loopThrough === 'numbers'
             ? data.toNumber + 1 - data.fromNumber
-            : +data.maxLoop || currLoopData.length,
+            : maxToLoop,
       };
       /* eslint-disable-next-line */
       refData.loopData[data.loopId] = {

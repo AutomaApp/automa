@@ -108,6 +108,7 @@ const state = reactive({
   isDragging: false,
   selectList: false,
   isExecuting: false,
+  selectElements: [],
   selectorType: 'css',
   selectedElements: [],
   activeTab: 'attributes',
@@ -173,7 +174,7 @@ const updateSelector = debounce((selector) => {
 function toggleHighlightElement({ index, highlight }) {
   state.selectedElements[index].highlight = highlight;
 }
-function onElementsSelected({ selector, elements, path }) {
+function onElementsSelected({ selector, elements, path, selectElements }) {
   if (path) {
     selectedElement.path = path;
     selectedElement.pathIndex = 0;
@@ -181,6 +182,7 @@ function onElementsSelected({ selector, elements, path }) {
 
   state.elSelector = selector;
   state.selectedElements = elements || [];
+  state.selectElements = selectElements || [];
 }
 function onMousemove({ clientX, clientY }) {
   if (!state.isDragging) return;
@@ -285,12 +287,6 @@ onMounted(() => {
     cardRect.y = 20;
     cardRect.width = width;
     cardRect.height = height;
-
-    document.documentElement.style.setProperty(
-      'font-size',
-      '16px',
-      'important'
-    );
   }, 500);
 
   attachListeners();

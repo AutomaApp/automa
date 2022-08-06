@@ -1,0 +1,7 @@
+Source code in this repository is variously licensed under the GNU Affero General Public License (AGPL), or the Automa Commercial License (https://www.automa.site/license/commercial/).
+
+* Outside of the top-level "business" directory, source code in a given file is licensed under the AGPL.
+
+* Within the the top-level "business" directory, source code in a given file is licensed under the Automa Commercial License, unless otherwise noted.
+
+When built, binary files are generated for the AGPL source code and the Automa Commercial License source code. Binaries located at business.automa.site are released under the Automa Commercial License. Binaries located at all non-business paths are released under the AGPL.

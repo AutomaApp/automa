@@ -41,6 +41,7 @@ class WorkflowEngine {
         name: this.workflow.settings?.defaultColumnName || 'column',
       },
     };
+    this.rowData = {};
 
     this.logHistoryId = 0;
 
@@ -60,6 +61,7 @@ class WorkflowEngine {
     this.referenceData = {
       variables,
       table: [],
+      secrets: {},
       loopData: {},
       workflow: {},
       googleSheets: {},
@@ -108,6 +110,35 @@ class WorkflowEngine {
         return;
       }
 
+      const checkParams = this.options?.checkParams ?? true;
+      const hasParams = triggerBlock.data.parameters?.length > 0;
+      if (checkParams && hasParams) {
+        this.eventListeners = {};
+
+        const paramUrl = browser.runtime.getURL('params.html');
+        const tabs = await browser.tabs.query({});
+        const paramTab = tabs.find((tab) => tab.url?.includes(paramUrl));
+
+        if (paramTab) {
+          browser.tabs.sendMessage(paramTab.id, {
+            name: 'workflow:params',
+            data: this.workflow,
+          });
+
+          browser.windows.update(paramTab.windowId, { focused: true });
+        } else {
+          browser.windows.create({
+            type: 'popup',
+            width: 480,
+            height: window.screen.availHeight,
+            url: browser.runtime.getURL(
+              `/params.html?workflowId=${this.workflow.id}`
+            ),
+          });
+        }
+        return;
+      }
+
       this.triggerBlockId = triggerBlock.id;
 
       this.blocks = nodes.reduce((acc, node) => {
@@ -146,6 +177,11 @@ class WorkflowEngine {
         }
       }
 
+      const credentials = await dbStorage.credentials.toArray();
+      credentials.forEach(({ name, value }) => {
+        this.referenceData.secrets[name] = value;
+      });
+
       const variables = await dbStorage.variables.toArray();
       variables.forEach(({ name, value }) => {
         this.referenceData.variables[`$$${name}`] = value;
@@ -153,6 +189,8 @@ class WorkflowEngine {
 
       columns.forEach(({ name, type, id }) => {
         const columnId = id || name;
+
+        this.rowData[name] = null;
 
         this.columnsId[name] = columnId;
         if (!this.columns[columnId])
@@ -189,21 +227,12 @@ class WorkflowEngine {
         state: this.state,
         workflowId: this.workflow.id,
         parentState: this.parentWorkflow,
+        teamId: this.workflow.teamId || null,
       });
       this.addWorker({ blockId: triggerBlock.id });
     } catch (error) {
       console.error(error);
     }
-  }
-
-  resume({ id, state }) {
-    this.id = id;
-
-    Object.keys(state).forEach((key) => {
-      this[key] = state[key];
-    });
-
-    this.init(state.currentBlock);
   }
 
   addWorker(detail) {
@@ -296,7 +325,7 @@ class WorkflowEngine {
     }
   }
 
-  async destroy(status, message) {
+  async destroy(status, message, blockDetail) {
     try {
       if (this.isDestroyed) return;
       if (this.isUsingProxy) browser.proxy.settings.clear({});
@@ -317,12 +346,13 @@ class WorkflowEngine {
       this.executeQueue();
 
       if (!this.workflow.isTesting) {
-        const { name, id } = this.workflow;
+        const { name, id, teamId } = this.workflow;
 
         await this.logger.add({
           detail: {
             name,
             status,
+            teamId,
             message,
             id: this.id,
             workflowId: id,
@@ -354,8 +384,11 @@ class WorkflowEngine {
       this.dispatchEvent('destroyed', {
         status,
         message,
+        blockDetail,
         id: this.id,
-        currentBlock: this.currentBlock,
+        endedTimestamp,
+        history: this.history,
+        startedTimestamp: this.startedTimestamp,
       });
 
       if (this.workflow.settings.reuseLastState) {

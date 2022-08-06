@@ -6,18 +6,21 @@ import { fetchApi } from '@/utils/api';
 import getFile from '@/utils/getFile';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
 import convertWorkflowData from '@/utils/convertWorkflowData';
+import getBlockMessage from '@/utils/getBlockMessage';
 import {
   registerSpecificDay,
   registerContextMenu,
   registerWorkflowTrigger,
 } from '../utils/workflowTrigger';
 import WorkflowState from './WorkflowState';
-import CollectionEngine from './collectionEngine';
 import WorkflowEngine from './workflowEngine/engine';
 import blocksHandler from './workflowEngine/blocksHandler';
 import WorkflowLogger from './WorkflowLogger';
 
 const validateUrl = (str) => str?.startsWith('http');
+const flattenTeamWorkflows = (workflows) =>
+  Object.values(Object.values(workflows)[0]);
+
 const browserStorage = {
   async get(key) {
     try {
@@ -53,6 +56,19 @@ const workflow = {
   states: new WorkflowState({ storage: localStateStorage }),
   logger: new WorkflowLogger({ storage: browserStorage }),
   async get(workflowId) {
+    if (!workflowId) return null;
+
+    if (workflowId.startsWith('team')) {
+      const { teamWorkflows } = await browser.storage.local.get(
+        'teamWorkflows'
+      );
+      if (!teamWorkflows) return null;
+
+      const workflows = flattenTeamWorkflows(teamWorkflows);
+
+      return workflows.find((item) => item.id === workflowId);
+    }
+
     const { workflows, workflowHosts } = await browser.storage.local.get([
       'workflows',
       'workflowHosts',
@@ -91,40 +107,86 @@ const workflow = {
       states: this.states,
     });
 
-    if (options?.resume) {
-      engine.resume(options.state);
-    } else {
-      engine.init();
-      engine.on('destroyed', ({ id, status }) => {
-        if (status === 'stopped') return;
+    engine.init();
+    engine.on(
+      'destroyed',
+      ({
+        id,
+        status,
+        history,
+        startedTimestamp,
+        endedTimestamp,
+        blockDetail,
+      }) => {
+        if (workflowData.id.startsWith('team') && workflowData.teamId) {
+          const payload = {
+            status,
+            workflowId: workflowData.id,
+            workflowLog: {
+              status,
+              endedTimestamp,
+              startedTimestamp,
+            },
+          };
 
-        browser.permissions
-          .contains({ permissions: ['notifications'] })
-          .then((hasPermission) => {
-            if (!hasPermission || !workflowData.settings.notification) return;
+          if (status === 'error') {
+            const message = getBlockMessage(blockDetail);
+            const workflowHistory = history.map((item) => {
+              delete item.logId;
+              delete item.prevBlockData;
+              delete item.workerId;
 
-            const name = workflowData.name.slice(0, 32);
+              item.description = item.description || '';
 
-            browser.notifications.create(`logs:${id}`, {
-              type: 'basic',
-              iconUrl: browser.runtime.getURL('icon-128.png'),
-              title: status === 'success' ? 'Success' : 'Error',
-              message: `${
-                status === 'success' ? 'Successfully' : 'Failed'
-              } to run the "${name}" workflow`,
+              return item;
             });
-          });
-      });
+            payload.workflowLog = {
+              status,
+              message,
+              endedTimestamp,
+              startedTimestamp,
+              history: workflowHistory,
+              blockId: blockDetail.blockId,
+            };
+          }
 
-      const lastCheckStatus = localStorage.getItem('check-status');
-      const isSameDay = dayjs().isSame(lastCheckStatus, 'day');
-      if (!isSameDay) {
-        fetchApi('/status')
-          .then((response) => response.json())
-          .then(() => {
-            localStorage.setItem('check-status', new Date());
+          fetchApi(`/teams/${workflowData.teamId}/workflows/logs`, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+          }).catch((error) => {
+            console.error(error);
           });
+        }
+
+        if (status !== 'stopped') {
+          browser.permissions
+            .contains({ permissions: ['notifications'] })
+            .then((hasPermission) => {
+              if (!hasPermission || !workflowData.settings.notification) return;
+
+              const name = workflowData.name.slice(0, 32);
+
+              browser.notifications.create(`logs:${id}`, {
+                type: 'basic',
+                iconUrl: browser.runtime.getURL('icon-128.png'),
+                title: status === 'success' ? 'Success' : 'Error',
+                message: `${
+                  status === 'success' ? 'Successfully' : 'Failed'
+                } to run the "${name}" workflow`,
+              });
+            });
+        }
       }
+    );
+
+    const lastCheckStatus = localStorage.getItem('check-status');
+    const isSameDay = dayjs().isSame(lastCheckStatus, 'day');
+    if (!isSameDay) {
+      fetchApi('/status')
+        .then((response) => response.json())
+        .then(() => {
+          localStorage.setItem('check-status', new Date());
+        });
     }
 
     return engine;
@@ -320,6 +382,12 @@ browser.alarms.onAlarm.addListener(async ({ name }) => {
 
       return;
     }
+  } else if (data && data.type === 'date') {
+    const [hour, minute] = data.time.split(':');
+    const date = dayjs(data.date).hour(hour).minute(minute).second(0);
+
+    const isAfter = dayjs().isAfter(date);
+    if (isAfter) return;
   }
 
   workflow.execute(currentWorkflow);
@@ -413,10 +481,23 @@ browser.runtime.onInstalled.addListener(async ({ reason }) => {
   }
 });
 browser.runtime.onStartup.addListener(async () => {
-  const { workflows } = await browser.storage.local.get('workflows');
-  const workflowsArr = Array.isArray(workflows)
-    ? workflows
-    : Object.values(workflows);
+  const { workflows, workflowHosts, teamWorkflows } =
+    await browser.storage.local.get([
+      'workflows',
+      'workflowHosts',
+      'teamWorkflows',
+    ]);
+  const convertToArr = (value) =>
+    Array.isArray(value) ? value : Object.values(value);
+
+  const workflowsArr = convertToArr(workflows);
+
+  if (workflowHosts) {
+    workflowsArr.push(...convertToArr(workflowHosts));
+  }
+  if (teamWorkflows) {
+    workflowsArr.push(...flattenTeamWorkflows(teamWorkflows));
+  }
 
   for (const currWorkflow of workflowsArr) {
     let triggerBlock = currWorkflow.trigger;
@@ -507,14 +588,6 @@ message.on('get:tab-screenshot', (options) =>
   browser.tabs.captureVisibleTab(options)
 );
 
-message.on('collection:execute', (collection) => {
-  const engine = new CollectionEngine(collection, {
-    states: workflow.states,
-    logger: workflow.logger,
-  });
-  engine.init();
-});
-
 message.on('workflow:execute', (workflowData, sender) => {
   if (workflowData.includeTabId) {
     if (!workflowData.options) workflowData.options = {};
@@ -525,7 +598,14 @@ message.on('workflow:execute', (workflowData, sender) => {
   workflow.execute(workflowData, workflowData?.options || {});
 });
 message.on('workflow:stop', (id) => workflow.states.stop(id));
-message.on('workflow:added', (workflowId) => {
+message.on('workflow:added', ({ workflowId, teamId, source = 'community' }) => {
+  let path = `/workflows/${workflowId}`;
+
+  if (source === 'team') {
+    if (!teamId) return;
+    path = `/teams/${teamId}/workflows/${workflowId}`;
+  }
+
   browser.tabs
     .query({ url: browser.runtime.getURL('/newtab.html') })
     .then((tabs) => {
@@ -534,7 +614,7 @@ message.on('workflow:added', (workflowId) => {
 
         tabs.forEach((tab) => {
           browser.tabs.sendMessage(tab.id, {
-            data: { workflowId },
+            data: { workflowId, teamId, source },
             type: 'workflow:added',
           });
         });
@@ -543,9 +623,12 @@ message.on('workflow:added', (workflowId) => {
           active: true,
         });
       } else {
-        openDashboard(`/workflows/${workflowId}?permission=true`);
+        openDashboard(`${path}?permission=true`);
       }
     });
+});
+message.on('workflow:register', ({ triggerBlock, workflowId }) => {
+  registerWorkflowTrigger(workflowId, triggerBlock);
 });
 
 browser.runtime.onMessage.addListener(message.listener());

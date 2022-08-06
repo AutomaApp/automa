@@ -63,6 +63,7 @@ import { useStore } from '@/stores/main';
 import { useUserStore } from '@/stores/user';
 import { useFolderStore } from '@/stores/folder';
 import { useWorkflowStore } from '@/stores/workflow';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useTheme } from '@/composable/theme';
 import { parseJSON } from '@/utils/helper';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
@@ -94,6 +95,7 @@ const router = useRouter();
 const userStore = useUserStore();
 const folderStore = useFolderStore();
 const workflowStore = useWorkflowStore();
+const teamWorkflowStore = useTeamWorkflowStore();
 const sharedWorkflowStore = useSharedWorkflowStore();
 const hostedWorkflowStore = useHostedWorkflowStore();
 
@@ -107,6 +109,8 @@ const prevVersion = localStorage.getItem('ext-version') || '0.0.0';
 
 async function fetchUserData() {
   try {
+    if (!useRouter.user) return;
+
     const { backup, hosted } = await getUserWorkflows();
     userStore.hostedWorkflows = hosted || {};
 
@@ -184,9 +188,17 @@ window.addEventListener('storage', ({ key, newValue }) => {
 });
 browser.runtime.onMessage.addListener(({ type, data }) => {
   if (type === 'workflow:added') {
-    workflowStore.loadData().then(() => {
-      router.push(`/workflows/${data.workflowId}?permission=true`);
-    });
+    if (data.source === 'team') {
+      teamWorkflowStore.loadData().then(() => {
+        router.push(
+          `/teams/${data.teamId}/workflows/${data.workflowId}?permission=true`
+        );
+      });
+    } else {
+      workflowStore.loadData().then(() => {
+        router.push(`/workflows/${data.workflowId}?permission=true`);
+      });
+    }
   }
 });
 
@@ -199,6 +211,7 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
       folderStore.load(),
       store.loadSettings(),
       workflowStore.loadData(),
+      teamWorkflowStore.loadData(),
       hostedWorkflowStore.loadData(),
     ]);
 
@@ -206,10 +219,9 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
     await setI18nLanguage(store.settings.locale);
 
     await dataMigration();
+    await userStore.loadUser({ useCache: true });
 
     retrieved.value = true;
-
-    await userStore.loadUser();
 
     await Promise.allSettled([
       sharedWorkflowStore.fetchWorkflows(),

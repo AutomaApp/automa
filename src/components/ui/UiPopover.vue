@@ -77,10 +77,10 @@ export default {
       () => props.disabled,
       (value) => {
         if (value) {
-          instance.value.enable();
-        } else {
           instance.value.hide();
           instance.value.disable();
+        } else {
+          instance.value.enable();
         }
       }
     );

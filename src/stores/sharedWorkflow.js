@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { fetchApi, cacheApi } from '@/utils/api';
+import { useUserStore } from './user';
 
 export const useSharedWorkflowStore = defineStore('shared-workflows', {
   state: () => ({
@@ -34,6 +35,9 @@ export const useSharedWorkflowStore = defineStore('shared-workflows', {
       delete this.workflows[id];
     },
     async fetchWorkflows(useCache = true) {
+      const userStore = useUserStore();
+      if (!userStore.user) return;
+
       const workflows = await cacheApi(
         'shared-workflows',
         async () => {

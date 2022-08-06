@@ -32,9 +32,9 @@
   @apply dark:border-gray-700;
 }
 
-body {
-  font-family: 'Inter var';
-  font-size: 16px;
+body, :host {
+  font-family: 'Inter var' !important;
+  font-size: 16px !important;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   @apply bg-gray-50 dark:bg-gray-900 leading-normal;
 }

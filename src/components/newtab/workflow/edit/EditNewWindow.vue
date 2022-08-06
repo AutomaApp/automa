@@ -7,9 +7,26 @@
       @change="updateData({ description: $event })"
     />
     <ui-select
+      :model-value="data.type"
+      class="mt-4 w-full"
+      label="Type"
+      @change="updateData({ type: $event })"
+    >
+      <option v-for="type in windowType" :key="type" :value="type">
+        {{ type }}
+      </option>
+    </ui-select>
+    <ui-input
+      :model-value="data.url"
+      class="mt-2 w-full"
+      label="URL (optional)"
+      placeholder="https://example.com"
+      @change="updateData({ url: $event })"
+    />
+    <ui-select
       :model-value="data.windowState"
-      class="w-full mt-4"
-      :placeholder="t('workflow.blocks.new-window.windowState.placeholder')"
+      class="w-full mt-2"
+      :label="t('workflow.blocks.new-window.windowState.placeholder')"
       @change="updateData({ windowState: $event })"
     >
       <option v-for="state in windowStates" :key="state" :value="state">
@@ -79,6 +96,7 @@ const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
 
+const windowType = ['normal', 'popup', 'panel'];
 const windowStates = ['normal', 'minimized', 'maximized', 'fullscreen'];
 const allowInIncognito = ref(false);
 

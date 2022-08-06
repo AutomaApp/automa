@@ -1,5 +1,12 @@
 <template>
-  <ui-card padding="p-1 pointer-events-auto mr-4">
+  <span
+    v-if="isTeam && workflow.tag"
+    :class="tagColors[workflow.tag]"
+    class="text-sm rounded-md text-black capitalize p-1 mr-2"
+  >
+    {{ workflow.tag }}
+  </span>
+  <ui-card v-if="!isTeam || !canEdit" padding="p-1 pointer-events-auto">
     <button
       v-tooltip.group="'Workflow note'"
       class="hoverable p-2 rounded-lg"
@@ -8,7 +15,11 @@
       <v-remixicon name="riFileEditLine" />
     </button>
   </ui-card>
-  <ui-card padding="p-1" class="flex items-center pointer-events-auto">
+  <ui-card
+    v-if="!isTeam"
+    padding="p-1"
+    class="flex items-center pointer-events-auto ml-4"
+  >
     <ui-popover>
       <template #trigger>
         <button
@@ -55,14 +66,37 @@
         </transition-expand>
       </div>
     </ui-popover>
-    <button
-      v-tooltip.group="t('workflow.share.title')"
-      :class="{ 'text-primary': shared }"
-      class="hoverable p-2 rounded-lg"
-      @click="shareWorkflow"
-    >
-      <v-remixicon name="riShareLine" />
-    </button>
+    <ui-popover :disabled="userDontHaveTeamsAccess">
+      <template #trigger>
+        <button
+          v-tooltip.group="t('workflow.share.title')"
+          :class="{ 'text-primary': shared }"
+          class="hoverable p-2 rounded-lg"
+          @click="shareWorkflow(!userDontHaveTeamsAccess)"
+        >
+          <v-remixicon name="riShareLine" />
+        </button>
+      </template>
+      <p class="font-semibold">Share the workflow</p>
+      <ui-list class="mt-2 space-y-1 w-56">
+        <ui-list-item
+          v-close-popover
+          class="cursor-pointer"
+          @click="shareWorkflowWithTeam"
+        >
+          <v-remixicon name="riTeamLine" class="-ml-1 mr-2" />
+          With your team
+        </ui-list-item>
+        <ui-list-item
+          v-close-popover
+          class="cursor-pointer"
+          @click="shareWorkflow()"
+        >
+          <v-remixicon name="riGroupLine" class="-ml-1 mr-2" />
+          With the community
+        </ui-list-item>
+      </ui-list>
+    </ui-popover>
   </ui-card>
   <ui-card padding="p-1 ml-4 pointer-events-auto">
     <button
@@ -97,14 +131,30 @@
       {{ t('common.disabled') }}
     </button>
   </ui-card>
-  <ui-card padding="p-1 ml-4 space-x-1 pointer-events-auto">
+  <ui-card padding="p-1 ml-4 space-x-1 pointer-events-auto flex items-center">
+    <button
+      v-if="!canEdit"
+      v-tooltip.group="state.triggerText"
+      class="p-2 hoverable rounded-lg"
+    >
+      <v-remixicon name="riFlashlightLine" />
+    </button>
     <ui-popover>
       <template #trigger>
         <button class="rounded-lg p-2 hoverable">
           <v-remixicon name="riMore2Line" />
         </button>
       </template>
-      <ui-list class="w-36">
+      <ui-list style="min-width: 9rem">
+        <ui-list-item
+          v-if="isTeam && canEdit"
+          v-close-popover
+          class="cursor-pointer"
+          @click="syncWorkflow"
+        >
+          <v-remixicon name="riRefreshLine" class="mr-2 -ml-1" />
+          <span>{{ t('workflow.host.sync.title') }}</span>
+        </ui-list-item>
         <ui-list-item
           class="cursor-pointer"
           @click="updateWorkflow({ isDisabled: !workflow.isDisabled })"
@@ -115,6 +165,7 @@
         <ui-list-item
           v-for="item in moreActions"
           :key="item.id"
+          v-bind="item.attrs || {}"
           v-close-popover
           class="cursor-pointer"
           @click="item.action"
@@ -122,9 +173,23 @@
           <v-remixicon :name="item.icon" class="mr-2 -ml-1" />
           {{ item.name }}
         </ui-list-item>
+        <ui-list-item
+          v-if="
+            isTeam &&
+            canEdit &&
+            userStore.validateTeamAccess(teamId, ['owner', 'create'])
+          "
+          v-close-popover
+          class="cursor-pointer text-red-400 dark:text-red-500"
+          @click="deleteFromTeam"
+        >
+          <v-remixicon name="riDeleteBin7Line" class="mr-2 -ml-1" />
+          <span>Delete from team</span>
+        </ui-list-item>
       </ui-list>
     </ui-popover>
     <ui-button
+      v-if="!isTeam"
       :title="shortcuts['editor:save'].readable"
       variant="accent"
       class="relative"
@@ -144,7 +209,56 @@
       <v-remixicon name="riSaveLine" class="mr-2 -ml-1 my-1" />
       {{ t('common.save') }}
     </ui-button>
+    <ui-button
+      v-else-if="!canEdit"
+      v-tooltip.group="'Sync workflow'"
+      :loading="state.loadingSync"
+      variant="accent"
+      @click="syncWorkflow"
+    >
+      <v-remixicon name="riRefreshLine" class="mr-2 -ml-1" />
+      <span>
+        {{ t('workflow.host.sync.title') }}
+      </span>
+    </ui-button>
+    <template v-else>
+      <ui-button
+        v-tooltip="`Save workflow (${shortcuts['editor:save'].readable})`"
+        class="mr-2"
+        icon
+        @click="saveWorkflow"
+      >
+        <span
+          v-if="isDataChanged"
+          class="flex h-3 w-3 absolute top-0 left-0 -ml-1 -mt-1"
+        >
+          <span
+            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"
+          ></span>
+          <span
+            class="relative inline-flex rounded-full h-3 w-3 bg-blue-600"
+          ></span>
+        </span>
+        <v-remixicon name="riSaveLine" />
+      </ui-button>
+      <ui-button
+        v-tooltip="'Publish workflow update'"
+        :loading="state.isPublishing"
+        variant="accent"
+        @click="publishWorkflow"
+      >
+        Publish
+      </ui-button>
+    </template>
   </ui-card>
+  <ui-modal v-model="state.showEditDescription" persist blur custom-content>
+    <workflow-share-team
+      :workflow="workflow"
+      :is-update="true"
+      @update="updateWorkflowDescription"
+      @close="state.showEditDescription = false"
+    />
+  </ui-modal>
   <ui-modal v-model="renameState.showModal" title="Workflow">
     <ui-input
       v-model="renameState.name"
@@ -181,6 +295,7 @@
     <shared-wysiwyg
       :model-value="workflow.content || ''"
       :limit="1000"
+      :readonly="!canEdit"
       class="bg-box-transparent p-4 rounded-lg overflow-auto scroll"
       placeholder="Write note here..."
       style="max-height: calc(100vh - 12rem); min-height: 400px"
@@ -198,14 +313,19 @@ import { sendMessage } from '@/utils/message';
 import { fetchApi } from '@/utils/api';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
 import { useDialog } from '@/composable/dialog';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
-import { parseJSON } from '@/utils/helper';
+import { tagColors } from '@/utils/shared';
+import { parseJSON, findTriggerBlock } from '@/utils/helper';
 import { exportWorkflow, convertWorkflow } from '@/utils/workflowData';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
+import getTriggerText from '@/utils/triggerText';
+import convertWorkflowData from '@/utils/convertWorkflowData';
 import SharedWysiwyg from '@/components/newtab/shared/SharedWysiwyg.vue';
+import WorkflowShareTeam from '@/components/newtab/workflow/WorkflowShareTeam.vue';
 
 const props = defineProps({
   isDataChanged: {
@@ -220,8 +340,17 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  changedData: {
+    type: Object,
+    default: () => ({}),
+  },
+  canEdit: {
+    type: Boolean,
+    default: true,
+  },
+  isTeam: Boolean,
 });
-const emit = defineEmits(['modal', 'change', 'update']);
+const emit = defineEmits(['modal', 'change', 'update', 'permission']);
 
 useGroupTooltip();
 
@@ -231,6 +360,7 @@ const router = useRouter();
 const dialog = useDialog();
 const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
+const teamWorkflowStore = useTeamWorkflowStore();
 const sharedWorkflowStore = useSharedWorkflowStore();
 const shortcuts = useShortcut([
   /* eslint-disable-next-line */
@@ -239,9 +369,15 @@ const shortcuts = useShortcut([
   getShortcut('editor:execute-workflow', executeWorkflow),
 ]);
 
+const { teamId } = router.currentRoute.value.params;
+
 const state = reactive({
+  triggerText: '',
+  loadingSync: false,
+  isPublishing: false,
   showNoteModal: false,
   isUploadingHost: false,
+  showEditDescription: false,
 });
 const renameState = reactive({
   name: '',
@@ -251,18 +387,46 @@ const renameState = reactive({
 
 const shared = computed(() => sharedWorkflowStore.getById(props.workflow.id));
 const hosted = computed(() => userStore.hostedWorkflows[props.workflow.id]);
+const userDontHaveTeamsAccess = computed(() => {
+  if (props.isTeam || !userStore.user?.teams) return true;
+
+  return !userStore.user.teams.some((team) =>
+    team.access.some((item) => ['owner', 'create'].includes(item))
+  );
+});
 
 function updateWorkflow(data = {}, changedIndicator = false) {
-  return workflowStore
-    .update({
+  let store = null;
+
+  if (props.isTeam) {
+    store = teamWorkflowStore.update({
+      data,
+      teamId,
+      id: props.workflow.id,
+    });
+  } else {
+    store = workflowStore.update({
       data,
       id: props.workflow.id,
-    })
-    .then((result) => {
-      emit('update', { data, changedIndicator });
-
-      return result;
     });
+  }
+
+  return store.then((result) => {
+    emit('update', { data, changedIndicator });
+
+    return result;
+  });
+}
+function updateWorkflowDescription(value) {
+  const keys = ['description', 'category', 'content', 'tag', 'name'];
+  const payload = {};
+
+  keys.forEach((key) => {
+    payload[key] = value[key];
+  });
+
+  updateWorkflow(payload);
+  state.showEditDescription = false;
 }
 function executeWorkflow() {
   sendMessage(
@@ -339,7 +503,11 @@ async function setAsHostWorkflow(isHost) {
     toast.error(error.message);
   }
 }
-function shareWorkflow() {
+function shareWorkflowWithTeam() {
+  emit('modal', 'workflow-share-team');
+}
+function shareWorkflow(disabled = false) {
+  if (disabled) return;
   if (shared.value) {
     router.push(`/workflows/${props.workflow.id}/shared`);
     return;
@@ -353,6 +521,35 @@ function shareWorkflow() {
     });
   }
 }
+function deleteFromTeam() {
+  dialog.confirm({
+    async: true,
+    title: 'Delete workflow from team',
+    okVariant: 'danger',
+    body: `Are you sure want to delete the "${props.workflow.name}" workflow from this team?`,
+    onConfirm: async () => {
+      try {
+        const response = await fetchApi(
+          `/teams/${teamId}/workflows/${props.workflow.id}`,
+          { method: 'DELETE' }
+        );
+        const result = await response.json();
+
+        if (!response.ok && response.status !== 404)
+          throw new Error(result.message);
+
+        await teamWorkflowStore.delete(teamId, props.workflow.id);
+        router.replace(`/workflows?active=team&teamId=${teamId}`);
+
+        return true;
+      } catch (error) {
+        toast.error('Something went wrong');
+        console.error(error);
+        return false;
+      }
+    },
+  });
+}
 function clearRenameModal() {
   Object.assign(renameState, {
     id: '',
@@ -361,7 +558,49 @@ function clearRenameModal() {
     showModal: false,
   });
 }
+async function publishWorkflow() {
+  if (!props.canEdit) return;
+
+  const workflowPaylod = convertWorkflow(props.workflow, [
+    'id',
+    'tag',
+    'content',
+  ]);
+  workflowPaylod.drawflow = parseJSON(
+    props.workflow.drawflow,
+    props.workflow.drawflow
+  );
+  delete workflowPaylod.id;
+  delete workflowPaylod.extVersion;
+
+  state.isPublishing = true;
+
+  try {
+    const response = await fetchApi(
+      `/teams/${teamId}/workflows/${props.workflow.id}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ workflow: workflowPaylod }),
+      }
+    );
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message);
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error('Something went wrong');
+  } finally {
+    state.isPublishing = false;
+  }
+}
 function initRenameWorkflow() {
+  if (props.isTeam) {
+    state.showEditDescription = true;
+    return;
+  }
+
   Object.assign(renameState, {
     showModal: true,
     name: `${props.workflow.name}`,
@@ -381,7 +620,12 @@ function deleteWorkflow() {
     okVariant: 'danger',
     body: t('message.delete', { name: props.workflow.name }),
     onConfirm: async () => {
-      await workflowStore.delete(props.workflow.id);
+      if (props.isTeam) {
+        await teamWorkflowStore.delete(teamId, props.workflow.id);
+      } else {
+        await workflowStore.delete(props.workflow.id);
+      }
+
       router.replace('/');
     },
   });
@@ -417,41 +661,111 @@ async function saveWorkflow() {
     console.error(error);
   }
 }
+async function retrieveTriggerText() {
+  if (props.canEdit) return;
+
+  const triggerBlock = findTriggerBlock(props.workflow.drawflow);
+  if (!triggerBlock) return;
+
+  state.triggerText = await getTriggerText(
+    triggerBlock.data,
+    t,
+    router.currentRoute.value.params.id,
+    true
+  );
+}
+async function syncWorkflow() {
+  state.loadingSync = true;
+
+  if (props.canEdit)
+    toast('Syncing workflow...', { timeout: false, id: 'sync' });
+
+  try {
+    const response = await fetchApi(
+      `/teams/${teamId}/workflows/${props.workflow.id}`
+    );
+    const result = await response.json();
+
+    if (response.status === 404) {
+      await teamWorkflowStore.delete(teamId, props.workflow.id);
+      router.replace(`/workflows?active=team&teamId=${teamId}`);
+      return;
+    }
+    if (!response.ok) throw new Error(result.message);
+
+    await teamWorkflowStore.update({
+      teamId,
+      data: result,
+      id: props.workflow.id,
+    });
+
+    const convertedData = convertWorkflowData(result);
+    props.editor.setNodes(convertedData.drawflow.nodes || []);
+    props.editor.setEdges(convertedData.drawflow.edges || []);
+    props.editor.fitView();
+
+    await retrieveTriggerText();
+
+    const triggerBlock = convertedData.drawflow.nodes.find(
+      (node) => node.label === 'trigger'
+    );
+    registerWorkflowTrigger(props.workflow.id, triggerBlock);
+    emit('permission');
+  } catch (error) {
+    toast.error(error.message);
+    console.error(error);
+  } finally {
+    state.loadingSync = false;
+    toast.dismiss('sync');
+  }
+}
+
+retrieveTriggerText();
+
 const modalActions = [
   {
     id: 'table',
+    hasAccess: props.canEdit,
     name: t('workflow.table.title'),
     icon: 'riTable2',
   },
   {
+    hasAccess: true,
     id: 'global-data',
     name: t('common.globalData'),
     icon: 'riDatabase2Line',
   },
   {
     id: 'settings',
+    hasAccess: props.canEdit,
     name: t('common.settings'),
     icon: 'riSettings3Line',
   },
-];
+].filter((item) => item.hasAccess);
 const moreActions = [
   {
     id: 'export',
-    name: t('common.export'),
     icon: 'riDownloadLine',
+    name: t('common.export'),
     action: () => exportWorkflow(props.workflow),
+    hasAccess: props.isTeam ? props.canEdit : true,
   },
   {
     id: 'rename',
     icon: 'riPencilLine',
-    name: t('common.rename'),
+    hasAccess: props.isTeam ? props.canEdit : true,
+    name: props.isTeam ? 'Edit detail' : t('common.rename'),
     action: initRenameWorkflow,
   },
   {
     id: 'delete',
+    hasAccess: true,
     action: deleteWorkflow,
     name: t('common.delete'),
     icon: 'riDeleteBin7Line',
+    attrs: {
+      class: 'text-red-400 dark:text-red-500',
+    },
   },
-];
+].filter((item) => item.hasAccess);
 </script>

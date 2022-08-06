@@ -21,9 +21,11 @@ export function useHasPermissions(permissions) {
           handlePermission(permission, true);
         });
 
-        if (needReload) {
+        if (typeof needReload === 'boolean' && needReload) {
           alert('Automa needs to reload to make this feature work');
-          browser.runtime.reload();
+          browser.runtime.getBackgroundPage().then((background) => {
+            background.location.reload();
+          });
         }
       })
       .catch((error) => {

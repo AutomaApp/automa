@@ -1,7 +1,7 @@
 <template>
   <div v-if="workflow" class="flex h-screen">
     <div
-      v-if="state.showSidebar"
+      v-if="state.showSidebar && haveEditAccess"
       class="w-80 bg-white dark:bg-gray-800 py-6 relative border-l border-gray-100 dark:border-gray-700 dark:border-opacity-50 flex flex-col"
     >
       <workflow-edit-block
@@ -24,11 +24,41 @@
       <div
         class="absolute w-full flex items-center z-10 left-0 p-4 top-0 pointer-events-none"
       >
+        <ui-card
+          v-if="!haveEditAccess"
+          padding="px-2 mr-4"
+          class="flex items-center overflow-hidden"
+          style="min-width: 150px; height: 48px"
+        >
+          <span class="inline-block">
+            <ui-img
+              v-if="workflow.icon.startsWith('http')"
+              :src="workflow.icon"
+              class="w-8 h-8"
+            />
+            <v-remixicon v-else :name="workflow.icon" size="26" />
+          </span>
+          <div class="ml-2 max-w-sm">
+            <p
+              :class="{ 'text-lg': !workflow.description }"
+              class="font-semibold leading-tight text-overflow"
+            >
+              {{ workflow.name }}
+            </p>
+            <p
+              :class="{ 'text-sm': workflow.description }"
+              class="text-gray-600 leading-tight dark:text-gray-200 text-overflow"
+            >
+              {{ workflow.description }}
+            </p>
+          </div>
+        </ui-card>
         <ui-tabs
           v-model="state.activeTab"
           class="border-none px-2 rounded-lg h-full space-x-1 bg-white dark:bg-gray-800 pointer-events-auto"
         >
           <button
+            v-if="haveEditAccess"
             v-tooltip="
               `${t('workflow.toggleSidebar')} (${
                 shortcut['editor:toggle-sidebar'].readable
@@ -53,12 +83,25 @@
             </span>
           </ui-tab>
         </ui-tabs>
+        <ui-card v-if="isTeamWorkflow" padding="p-1 ml-4 pointer-events-auto">
+          <ui-input
+            v-tooltip="'Workflow URL'"
+            prepend-icon="riLinkM"
+            :model-value="`https://automa.site/teams/${teamId}/workflows/${workflow.id}`"
+            readonly
+            @click="$event.target.select()"
+          />
+        </ui-card>
         <div class="flex-grow pointer-events-none" />
+        <editor-used-credentials v-if="editor" :editor="editor" />
         <editor-local-actions
           :editor="editor"
           :workflow="workflow"
           :is-data-changed="state.dataChanged"
+          :is-team="isTeamWorkflow"
+          :can-edit="haveEditAccess"
           @update="onActionUpdated"
+          @permission="checkWorkflowPermission"
           @modal="(modalState.name = $event), (modalState.show = true)"
         />
       </div>
@@ -74,6 +117,7 @@
             v-if="state.workflowConverted"
             :id="route.params.id"
             :data="workflow.drawflow"
+            :disabled="isTeamWorkflow && !haveEditAccess"
             :class="{ 'animate-blocks': state.animateBlocks }"
             class="h-screen"
             @init="onEditorInit"
@@ -81,7 +125,7 @@
             @update:node="state.dataChanged = true"
             @delete:node="state.dataChanged = true"
           >
-            <template #controls-append>
+            <template v-if="!isTeamWorkflow || haveEditAccess" #controls-append>
               <button
                 v-tooltip="t('workflow.autoAlign.title')"
                 class="control-button hoverable ml-2"
@@ -92,9 +136,7 @@
               <ui-card padding="p-0 ml-2 undo-redo">
                 <button
                   v-tooltip.group="
-                    `${t('workflow.undo')} (${
-                      shortcut['action:undo'].readable
-                    })`
+                    `${t('workflow.undo')} (${getReadableShortcut('mod+z')})`
                   "
                   :disabled="!commandManager.state.value.canUndo"
                   class="p-2 rounded-lg transition-colors"
@@ -104,9 +146,9 @@
                 </button>
                 <button
                   v-tooltip.group="
-                    `${t('workflow.redo')} (${
-                      shortcut['action:redo'].readable
-                    })`
+                    `${t('workflow.redo')} (${getReadableShortcut(
+                      'mod+shift+z'
+                    )})`
                   "
                   :disabled="!commandManager.state.value.canRedo"
                   class="p-2 rounded-lg transition-colors"
@@ -162,6 +204,7 @@
   <shared-permissions-modal
     v-model="permissionState.showModal"
     :permissions="permissionState.items"
+    @granted="registerTrigger"
   />
 </template>
 <script setup>
@@ -179,18 +222,24 @@ import { getNodesInside } from '@braks/vue-flow';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { customAlphabet } from 'nanoid';
+import { useToast } from 'vue-toastification';
 import defu from 'defu';
 import dagre from 'dagre';
-import { useStore } from '@/stores/main';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
-import { useShortcut, getShortcut } from '@/composable/shortcut';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
+import {
+  useShortcut,
+  getShortcut,
+  getReadableShortcut,
+} from '@/composable/shortcut';
 import { getWorkflowPermissions } from '@/utils/workflowData';
 import { tasks } from '@/utils/shared';
 import { fetchApi } from '@/utils/api';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useCommandManager } from '@/composable/commandManager';
 import { debounce, parseJSON, throttle } from '@/utils/helper';
+import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
 import browser from 'webextension-polyfill';
 import dbStorage from '@/db/storage';
 import DroppedNode from '@/utils/editor/DroppedNode';
@@ -199,6 +248,7 @@ import convertWorkflowData from '@/utils/convertWorkflowData';
 import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
 import WorkflowEditor from '@/components/newtab/workflow/WorkflowEditor.vue';
 import WorkflowSettings from '@/components/newtab/workflow/WorkflowSettings.vue';
+import WorkflowShareTeam from '@/components/newtab/workflow/WorkflowShareTeam.vue';
 import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
 import WorkflowDataTable from '@/components/newtab/workflow/WorkflowDataTable.vue';
 import WorkflowGlobalData from '@/components/newtab/workflow/WorkflowGlobalData.vue';
@@ -207,6 +257,7 @@ import EditorLogs from '@/components/newtab/workflow/editor/EditorLogs.vue';
 import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
 import EditorLocalCtxMenu from '@/components/newtab/workflow/editor/EditorLocalCtxMenu.vue';
 import EditorLocalActions from '@/components/newtab/workflow/editor/EditorLocalActions.vue';
+import EditorUsedCredentials from '@/components/newtab/workflow/editor/EditorUsedCredentials.vue';
 
 let editorCommands = null;
 const executeCommandTimeout = null;
@@ -215,12 +266,16 @@ const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 7);
 useGroupTooltip();
 
 const { t } = useI18n();
-const store = useStore();
+const toast = useToast();
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
 const commandManager = useCommandManager();
+const teamWorkflowStore = useTeamWorkflowStore();
+
+const { teamId, id: workflowId } = route.params;
+const isTeamWorkflow = route.name === 'team-workflows';
 
 const editor = shallowRef(null);
 const connectedTable = shallowRef(null);
@@ -288,6 +343,25 @@ const workflowModals = {
       },
     },
   },
+  'workflow-share-team': {
+    icon: 'riShareLine',
+    component: WorkflowShareTeam,
+    attrs: {
+      blur: true,
+      persist: true,
+      customContent: true,
+    },
+    events: {
+      close() {
+        modalState.show = false;
+        modalState.name = '';
+      },
+      publish() {
+        modalState.show = false;
+        modalState.name = '';
+      },
+    },
+  },
   'global-data': {
     width: 'max-w-2xl',
     icon: 'riDatabase2Line',
@@ -312,7 +386,18 @@ const workflowModals = {
   },
 };
 
-const workflow = computed(() => workflowStore.getById(route.params.id));
+const haveEditAccess = computed(() => {
+  if (!isTeamWorkflow) return true;
+
+  return userStore.validateTeamAccess(teamId, ['edit', 'owner', 'create']);
+});
+const workflow = computed(() => {
+  if (isTeamWorkflow) {
+    return teamWorkflowStore.getById(teamId, workflowId);
+  }
+
+  return workflowStore.getById(workflowId);
+});
 const workflowStates = computed(() =>
   workflowStore.getWorkflowStates(route.params.id)
 );
@@ -335,6 +420,7 @@ provide('workflow', {
 provide('workflow-editor', editor);
 
 const updateBlockData = debounce((data) => {
+  if (!haveEditAccess.value) return;
   const node = editor.value.getNode.value(editState.blockData.blockId);
   const dataCopy = JSON.parse(JSON.stringify(data));
 
@@ -353,6 +439,7 @@ const updateBlockData = debounce((data) => {
   state.dataChanged = true;
 }, 250);
 const updateHostedWorkflow = throttle(async () => {
+  if (isTeamWorkflow) return;
   if (!userStore.user || workflowPayload.isUpdating) return;
 
   const isHosted = userStore.hostedWorkflows[route.params.id];
@@ -440,6 +527,12 @@ const onEdgesChange = debounce((changes) => {
   // if (command) commandManager.add(command);
 }, 250);
 
+function registerTrigger() {
+  const triggerBlock = workflow.value.drawflow.nodes.find(
+    (node) => node.label === 'trigger'
+  );
+  registerWorkflowTrigger(workflowId, triggerBlock);
+}
 function executeCommand(type) {
   state.isExecuteCommand = true;
 
@@ -575,12 +668,23 @@ function initEditBlock(data) {
 }
 async function updateWorkflow(data) {
   try {
-    await workflowStore.update({
-      data,
-      id: route.params.id,
-    });
+    if (isTeamWorkflow) {
+      if (!haveEditAccess.value && !data.globalData) return;
+      await teamWorkflowStore.update({
+        data,
+        teamId,
+        id: workflowId,
+      });
+    } else {
+      await workflowStore.update({
+        data,
+        id: route.params.id,
+      });
+    }
+
     workflowPayload.data = { ...workflowPayload.data, ...data };
-    await updateHostedWorkflow();
+
+    if (!isTeamWorkflow) await updateHostedWorkflow();
   } catch (error) {
     console.error(error);
   }
@@ -869,22 +973,55 @@ function duplicateElements({ nodes, edges }) {
   editor.value.addEdges(newEdges);
 }
 function copySelectedElements(data = {}) {
-  store.copiedEls.nodes = data.nodes || editor.value.getSelectedNodes.value;
-  store.copiedEls.edges = data.edges || editor.value.getSelectedEdges.value;
+  const nodes = data.nodes || editor.value.getSelectedNodes.value;
+  const edges = data.edges || editor.value.getSelectedEdges.value;
+
+  const clipboardData = JSON.stringify({
+    name: 'automa-blocks',
+    data: { nodes, edges },
+  });
+  navigator.clipboard.writeText(clipboardData).catch((error) => {
+    console.error(error);
+  });
 }
-function pasteCopiedElements(position) {
+async function pasteCopiedElements(position) {
   editor.value.removeSelectedNodes(editor.value.getSelectedNodes.value);
   editor.value.removeSelectedEdges(editor.value.getSelectedEdges.value);
 
-  const { nodes, edges } = copyElements(
-    store.copiedEls.nodes,
-    store.copiedEls.edges,
-    position
-  );
-  editor.value.addNodes(nodes);
-  editor.value.addEdges(edges);
+  const permission = await navigator.permissions.query({
+    name: 'clipboard-read',
+  });
+  if (permission.state === 'denied') {
+    toast.error('Automa require clipboard permission to paste blocks');
+    return;
+  }
+
+  try {
+    const copiedText = await navigator.clipboard.readText();
+    const blocks = parseJSON(copiedText);
+
+    if (blocks && blocks.name === 'automa-blocks') {
+      const { nodes, edges } = copyElements(
+        blocks.data.nodes,
+        blocks.data.edges,
+        position
+      );
+      editor.value.addNodes(nodes);
+      editor.value.addEdges(edges);
+
+      return;
+    }
+  } catch (error) {
+    console.error(error);
+  }
 }
-function onKeydown({ ctrlKey, metaKey, key, target }) {
+function undoRedoCommand(type, { target }) {
+  const els = ['INPUT', 'SELECT', 'TEXTAREA'];
+  if (els.includes(target.tagName) || target.isContentEditable) return;
+
+  executeCommand(type);
+}
+function onKeydown({ ctrlKey, metaKey, shiftKey, key, target }) {
   const els = ['INPUT', 'SELECT', 'TEXTAREA'];
   if (els.includes(target.tagName) || target.isContentEditable) return;
 
@@ -894,6 +1031,8 @@ function onKeydown({ ctrlKey, metaKey, key, target }) {
     copySelectedElements();
   } else if (command('v')) {
     pasteCopiedElements();
+  } else if (command('z')) {
+    undoRedoCommand(shiftKey ? 'redo' : 'undo');
   }
 }
 async function fetchConnectedTable() {
@@ -905,18 +1044,18 @@ async function fetchConnectedTable() {
 
   connectedTable.value = table;
 }
-function undoRedoCommand(type, { target }) {
-  const els = ['INPUT', 'SELECT', 'TEXTAREA'];
-  if (els.includes(target.tagName) || target.isContentEditable) return;
+function checkWorkflowPermission() {
+  getWorkflowPermissions(workflow.value.drawflow).then((permissions) => {
+    if (permissions.length === 0) return;
 
-  executeCommand(type);
+    permissionState.items = permissions;
+    permissionState.showModal = true;
+  });
 }
 
 const shortcut = useShortcut([
   getShortcut('editor:toggle-sidebar', toggleSidebar),
   getShortcut('editor:duplicate-block', duplicateElements),
-  getShortcut('action:undo', (_, event) => undoRedoCommand('undo', event)),
-  getShortcut('action:redo', (_, event) => undoRedoCommand('redo', event)),
 ]);
 
 watch(
@@ -939,7 +1078,7 @@ watch(
 onBeforeRouteLeave(() => {
   updateHostedWorkflow();
 
-  if (!state.dataChanged) return;
+  if (!state.dataChanged || !haveEditAccess.value) return;
 
   const confirm = window.confirm(t('message.notSaved'));
 
@@ -959,14 +1098,8 @@ onMounted(() => {
     state.workflowConverted = true;
   });
 
-  if (route.query.permission) {
-    getWorkflowPermissions(workflow.value.drawflow).then((permissions) => {
-      if (permissions.length === 0) return;
-
-      permissionState.items = permissions;
-      permissionState.showModal = true;
-    });
-  }
+  if (route.query.permission || (isTeamWorkflow && !haveEditAccess.value))
+    checkWorkflowPermission();
 
   if (workflow.value.connectedTable) {
     fetchConnectedTable();
@@ -975,7 +1108,7 @@ onMounted(() => {
   window.onbeforeunload = () => {
     updateHostedWorkflow();
 
-    if (state.dataChanged) {
+    if (state.dataChanged && haveEditAccess.value) {
       return t('message.notSaved');
     }
   };

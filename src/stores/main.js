@@ -16,6 +16,8 @@ export const useStore = defineStore('main', {
       locale: 'en',
       deleteLogAfter: 30,
       editor: {
+        minZoom: 0.6,
+        maxZoom: 1.3,
         arrow: false,
         snapToGrid: false,
         lineType: 'default',

@@ -40,6 +40,11 @@ const routes = [
     component: ScheduledWorkflow,
   },
   {
+    name: 'team-workflows',
+    path: '/teams/:teamId/workflows/:id',
+    component: WorkflowDetails,
+  },
+  {
     name: 'workflows-details',
     path: '/workflows/:id',
     component: WorkflowDetails,

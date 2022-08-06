@@ -1,10 +1,11 @@
 import Dexie from 'dexie';
 
 const dbStorage = new Dexie('storage');
-dbStorage.version(1).stores({
+dbStorage.version(2).stores({
   tablesData: '++id, tableId',
   tablesItems: '++id, name, createdAt, modifiedAt',
   variables: '++id, &name',
+  credentials: '++id, &name',
 });
 
 export default dbStorage;

@@ -17,7 +17,7 @@ async function contentScriptExist(tabId, frameId = 0) {
 export default function (tabId, frameId = 0) {
   return new Promise((resolve) => {
     const currentFrameId = typeof frameId !== 'number' ? 0 : frameId;
-    const tryCount = 0;
+    let tryCount = 0;
 
     (async function tryExecute() {
       try {
@@ -25,6 +25,8 @@ export default function (tabId, frameId = 0) {
           resolve(false);
           return;
         }
+
+        tryCount += 1;
 
         await browser.tabs.executeScript(tabId, {
           allFrames: true,

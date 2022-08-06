@@ -14,6 +14,9 @@ const renderContent = (content, contentType) => {
 
 const filterHeaders = (headers) => {
   const filteredHeaders = {};
+
+  if (!headers) return filteredHeaders;
+
   headers.forEach((item) => {
     if (item.name && item.value) {
       filteredHeaders[item.name] = item.value;

@@ -32,6 +32,14 @@
       "delete": "Delete table"
     }
   },
+  "credential": {
+    "title": "Credential | Credentials",
+    "add": "Add credential",
+    "use": {
+      "title": "Used credentials",
+      "description": "This workflow using these credentials"
+    }
+  },
   "workflowPermissions": {
     "title": "Workflow permissions",
     "description": "This workflow requires these permissions to run properly",
@@ -39,7 +47,7 @@
       "title": "Context menu",
       "description": "To execute the workflow via the context menu"
     },
-    "clipboard": {
+    "clipboardRead": {
       "title": "Clipboard",
       "description": "For accessing the clipboard data"
     },
@@ -50,6 +58,10 @@
     "downloads": {
       "title": "Download",
       "description": "Saving the page assets and renaming the downloaded file"
+    },
+    "cookies": {
+      "title": "Cookies",
+      "description": "Read, set, or remove cookies"
     }
   },
   "updateMessage": {
@@ -358,7 +370,6 @@
     "messages": {
       "url-empty": "URL is empty",
       "invalid-url": "URL is not valid",
-      "no-permission": "Don't have permission",
       "conditions-empty": "Conditions is empty",
       "invalid-proxy-host": "Invalid proxy host",
       "workflow-disabled": "Workflow is disabled",

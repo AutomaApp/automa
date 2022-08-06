@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
 import shortcutListener from './services/shortcutListener';
+import initCommandPalette from './commandPalette';
 // import elementObserver from './elementObserver';
 import { elementSelectorInstance } from './utils';
 
@@ -130,6 +131,8 @@ function messageListener({ data, source }) {
 
 (() => {
   if (window.isAutomaInjected) return;
+
+  initCommandPalette();
 
   window.isAutomaInjected = true;
   window.addEventListener('message', messageListener);

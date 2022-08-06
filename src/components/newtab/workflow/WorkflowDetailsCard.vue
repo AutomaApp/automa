@@ -59,57 +59,32 @@
     class="px-4 mt-4 mb-2"
   />
   <div class="scroll bg-scroll px-4 flex-1 relative overflow-auto">
-    <ui-expand
+    <workflow-block-list
+      v-if="pinnedBlocksList.length > 0"
+      :model-value="true"
+      :blocks="pinnedBlocksList"
+      :category="pinnedCategory"
+      :pinned="pinnedBlocks"
+      @pin="pinBlock"
+    />
+    <workflow-block-list
       v-for="(items, catId) in blocks"
       :key="catId"
-      v-model="expandList[catId]"
-      hide-header-icon
-      header-class="flex items-center py-2 focus:ring-0 w-full text-left text-gray-600 dark:text-gray-200"
-    >
-      <template #header="{ show }">
-        <span
-          :class="categories[catId].color"
-          class="h-3 w-3 rounded-full"
-        ></span>
-        <p class="capitalize flex-1 ml-2">
-          {{ categories[catId].name }}
-        </p>
-        <v-remixicon :name="show ? 'riSubtractLine' : 'riAddLine'" size="20" />
-      </template>
-      <div class="grid grid-cols-2 gap-2 mb-4">
-        <div
-          v-for="block in items"
-          :key="block.id"
-          :title="getBlockTitle(block)"
-          draggable="true"
-          class="transform select-none cursor-move relative p-4 rounded-lg bg-input transition group"
-          @dragstart="
-            $event.dataTransfer.setData('block', JSON.stringify(block))
-          "
-        >
-          <a
-            :href="`https://docs.automa.site/blocks/${block.id}.html`"
-            :title="t('common.docs')"
-            target="_blank"
-            rel="noopener"
-            class="absolute top-px right-2 top-2 text-gray-600 dark:text-gray-300 invisible group-hover:visible"
-          >
-            <v-remixicon name="riInformationLine" size="18" />
-          </a>
-          <v-remixicon :name="block.icon" size="24" class="mb-2" />
-          <p class="leading-tight text-overflow capitalize">
-            {{ block.name }}
-          </p>
-        </div>
-      </div>
-    </ui-expand>
+      :model-value="true"
+      :blocks="items"
+      :category="categories[catId]"
+      :pinned="pinnedBlocks"
+      @pin="pinBlock"
+    />
   </div>
 </template>
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, watch, toRaw } from 'vue';
 import { useI18n } from 'vue-i18n';
+import browser from 'webextension-polyfill';
 import { useShortcut } from '@/composable/shortcut';
 import { tasks, categories } from '@/utils/shared';
+import WorkflowBlockList from './WorkflowBlockList.vue';
 
 defineProps({
   workflow: {
@@ -130,6 +105,10 @@ const shortcut = useShortcut('action:search', () => {
   searchInput?.focus();
 });
 
+const pinnedCategory = {
+  name: 'Pinned blocks',
+  color: 'bg-accent',
+};
 const icons = [
   'riGlobalLine',
   'riFileTextLine',
@@ -150,28 +129,29 @@ const blocksArr = Object.entries(tasks).map(([key, block]) => ({
   id: key,
   name: t(`workflow.blocks.${key}.name`),
 }));
-const categoriesExpand = Object.keys(categories).reduce((acc, key) => {
-  acc[key] = true;
-
-  return acc;
-}, {});
 
 const descriptionCollapsed = ref(true);
 
 const query = ref('');
-const expandList = ref(categoriesExpand);
+const pinnedBlocks = ref([]);
 
 const blocks = computed(() =>
   blocksArr.reduce((arr, block) => {
     if (
       block.name.toLocaleLowerCase().includes(query.value.toLocaleLowerCase())
     ) {
-      expandList.value[block.category] = true;
       (arr[block.category] = arr[block.category] || []).push(block);
     }
 
     return arr;
   }, {})
+);
+const pinnedBlocksList = computed(() =>
+  pinnedBlocks.value
+    .map((id) => ({ ...tasks[id], id, name: t(`workflow.blocks.${id}.name`) }))
+    .filter(({ name }) =>
+      name.toLocaleLowerCase().includes(query.value.toLocaleLowerCase())
+    )
 );
 
 function updateWorkflowIcon(value) {
@@ -181,16 +161,26 @@ function updateWorkflowIcon(value) {
 
   emit('update', { icon: iconUrl });
 }
-function getBlockTitle({ description, id }) {
-  const blockPath = `workflow.blocks.${id}`;
-  let blockDescription = t(
-    `${blockPath}.${description ? 'description' : 'name'}`
-  );
+function pinBlock({ id }) {
+  const index = pinnedBlocks.value.indexOf(id);
 
-  if (description) {
-    blockDescription = `[${t(`${blockPath}.name`)}]\n${blockDescription}`;
-  }
-
-  return blockDescription;
+  if (index !== -1) pinnedBlocks.value.splice(index, 1);
+  else pinnedBlocks.value.push(id);
 }
+
+watch(
+  pinnedBlocks,
+  () => {
+    browser.storage.local.set({
+      pinnedBlocks: toRaw(pinnedBlocks.value),
+    });
+  },
+  { deep: true }
+);
+
+onMounted(() => {
+  browser.storage.local.get('pinnedBlocks').then((item) => {
+    pinnedBlocks.value = item.pinnedBlocks || [];
+  });
+});
 </script>

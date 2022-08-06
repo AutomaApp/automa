@@ -69,7 +69,10 @@ class Worker {
       this.engine.referenceData.table[currentColumn.index][columnName] =
         convertedValue;
     } else {
-      this.engine.referenceData.table.push({ [columnName]: convertedValue });
+      this.engine.referenceData.table.push({
+        ...this.engine.rowData,
+        [columnName]: convertedValue,
+      });
     }
 
     currentColumn.index += 1;
@@ -227,10 +230,10 @@ class Worker {
         }
       }
 
-      addBlockLog('error', {
-        message: error.message,
-        ...(error.data || {}),
-      });
+      const errorLogItem = { message: error.message, ...(error.data || {}) };
+      addBlockLog('error', errorLogItem);
+
+      errorLogItem.blockId = block.id;
 
       const { onError } = this.settings;
       const nodeConnections = this.getBlockConnections(block.id);
@@ -246,7 +249,7 @@ class Worker {
 
         if (restartCount >= maxRestart) {
           localStorage.removeItem(restartKey);
-          this.engine.destroy('error');
+          this.engine.destroy('error', error.message, errorLogItem);
           return;
         }
 
@@ -257,7 +260,7 @@ class Worker {
 
         localStorage.setItem(restartKey, restartCount + 1);
       } else {
-        this.engine.destroy('error', error.message);
+        this.engine.destroy('error', error.message, errorLogItem);
       }
     }
   }

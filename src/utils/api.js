@@ -1,6 +1,6 @@
 import secrets from 'secrets';
 import browser from 'webextension-polyfill';
-import { parseJSON } from './helper';
+import { parseJSON, isObject } from './helper';
 
 function queryBuilder(obj) {
   let str = '';
@@ -16,32 +16,10 @@ function queryBuilder(obj) {
 
 export async function fetchApi(path, options) {
   const urlPath = path.startsWith('/') ? path : `/${path}`;
-  const headers = {};
-
-  if (urlPath.startsWith('/me')) {
-    let { session } = await browser.storage.local.get('session');
-    if (!session) throw new Error('Unauthorized');
-
-    const isExpired = Date.now() > session.expires_at * 1000 - 64000;
-
-    if (isExpired) {
-      const response = await fetchApi(
-        `/session/refresh?token=${session.refresh_token}`
-      );
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.message);
-
-      session = result;
-      await browser.storage.local.set({ session });
-    }
-
-    headers.Authorization = `Bearer ${session.access_token}`;
-  }
 
   return fetch(`${secrets.baseApiUrl}${urlPath}`, {
     headers: {
       'Content-Type': 'application/json',
-      ...headers,
     },
     ...options,
   });
@@ -84,14 +62,24 @@ export const googleSheets = {
 };
 
 export async function cacheApi(key, callback, useCache = true) {
-  const tenMinutes = 1000 * 10;
-  const tenMinutesAgo = Date.now() - tenMinutes;
+  const isBoolOpts = typeof useCache === 'boolean';
+  const options = {
+    ttl: 10000 * 10,
+    storage: sessionStorage,
+    useCache: isBoolOpts ? useCache : true,
+  };
+  if (!isBoolOpts && isObject(useCache)) {
+    Object.assign(options, useCache);
+  }
+
+  const timeToLive = options.ttl;
+  const currentTime = Date.now() - timeToLive;
 
   const timerKey = `cache-time:${key}`;
-  const cacheResult = parseJSON(sessionStorage.getItem(key), null);
-  const cacheTime = +sessionStorage.getItem(timerKey) || Date.now();
+  const cacheResult = parseJSON(options.storage.getItem(key), null);
+  const cacheTime = +options.storage.getItem(timerKey) || Date.now();
 
-  if (useCache && cacheResult && tenMinutesAgo < cacheTime) {
+  if (options.useCache && cacheResult && currentTime < cacheTime) {
     return cacheResult;
   }
 
@@ -102,8 +90,8 @@ export async function cacheApi(key, callback, useCache = true) {
     cacheData = result?.cacheData;
   }
 
-  sessionStorage.setItem(timerKey, Date.now());
-  sessionStorage.setItem(key, JSON.stringify(cacheData));
+  options.storage.setItem(timerKey, Date.now());
+  options.storage.setItem(key, JSON.stringify(cacheData));
 
   return result;
 }

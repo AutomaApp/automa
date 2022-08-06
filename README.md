@@ -73,3 +73,8 @@ Thanks to everyone who has submitted issues, made suggestions, and generally hel
 <a href="https://github.com/kholid060/automa/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=kholid060/automa" />
 </a>
+
+## License
+Source code in this repository is variously licensed under the GNU Affero General Public License (AGPL), or the [Automa Commercial License](https://www.automa.site/license/commercial/).
+
+See [LICENSE.txt](./LICENSE.txt) for details.

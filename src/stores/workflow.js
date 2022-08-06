@@ -109,7 +109,7 @@ export const useWorkflowStore = defineStore('workflow', {
         'isFirstTime',
       ]);
 
-      let localWorkflows = workflows;
+      let localWorkflows = workflows || {};
 
       if (isFirstTime) {
         localWorkflows = firstWorkflows.map((workflow) =>
@@ -202,8 +202,10 @@ export const useWorkflowStore = defineStore('workflow', {
           }
 
           if (insert) {
-            Object.assign(this.workflows[item.id], item);
-            insertedData[item.id] = this.workflows[item.id];
+            const mergedData = deepmerge(this.workflows[item.id], item);
+
+            this.workflows[item.id] = mergedData;
+            insertedData[item.id] = mergedData;
           }
         } else {
           const workflow = defaultWorkflow(item);
@@ -248,8 +250,11 @@ export const useWorkflowStore = defineStore('workflow', {
         }
       }
 
-      await browser.storage.local.remove(`state:${id}`);
-
+      await browser.storage.local.remove([
+        `state:${id}`,
+        `draft:${id}`,
+        `draft-team:${id}`,
+      ]);
       await this.saveToStorage('workflows');
 
       return id;

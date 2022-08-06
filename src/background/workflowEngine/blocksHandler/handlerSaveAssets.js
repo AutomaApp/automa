@@ -19,7 +19,10 @@ export default async function ({ data, id, label }) {
   });
 
   if (!hasPermission) {
-    throw new Error('no-permission');
+    const error = new Error('no-permission');
+    error.data = { permission: 'downloads' };
+
+    throw error;
   }
 
   let sources = [data.url];

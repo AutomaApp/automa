@@ -54,7 +54,7 @@ async function inputText({ data, element, isEditable }) {
   element?.focus();
   const elementKey = isEditable ? 'textContent' : 'value';
 
-  if (data.delay > 0 && !document.hidden) {
+  if (data.delay > 0 && !document.hidden && !isEditable) {
     for (let index = 0; index < data.value.length; index += 1) {
       const currentChar = data.value[index];
       element[elementKey] += currentChar;
@@ -107,18 +107,45 @@ export default async function (element, data) {
     return;
   }
 
+  element?.focus();
+
   if (data.type === 'checkbox' || data.type === 'radio') {
-    element?.focus();
     element.checked = data.selected;
     formEvent(element, { type: data.type, value: data.selected });
-    element?.blur();
-    return;
+  } else if (data.type === 'select') {
+    let optionValue = data.value;
+
+    const options = element.querySelectorAll('option');
+    const getOptionValue = (index) => {
+      if (!options) return element.value;
+
+      let optionIndex = index;
+      const maxIndex = options.length - 1;
+
+      if (index < 0) optionIndex = 0;
+      else if (index > maxIndex) optionIndex = maxIndex;
+
+      return options[optionIndex]?.value || element.value;
+    };
+
+    switch (data.selectOptionBy) {
+      case 'first-option':
+        optionValue = getOptionValue(0);
+        break;
+      case 'last-option':
+        optionValue = getOptionValue(options.length - 1);
+        break;
+      case 'custom-position':
+        optionValue = getOptionValue(+data.optionPosition - 1 ?? 0);
+        break;
+      default:
+    }
+
+    if (optionValue) {
+      element.value = optionValue;
+      formEvent(element, data);
+    }
   }
 
-  if (data.type === 'select') {
-    element?.focus();
-    element.value = data.value;
-    element?.blur();
-    formEvent(element, data);
-  }
+  element?.blur();
 }
