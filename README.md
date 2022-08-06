@@ -77,4 +77,4 @@ Thanks to everyone who has submitted issues, made suggestions, and generally hel
 ## License
 Source code in this repository is variously licensed under the GNU Affero General Public License (AGPL), or the [Automa Commercial License](https://www.automa.site/license/commercial/).
 
-See [LICENSE](./LICENSE) for details.
+See [LICENSE.txt](./LICENSE.txt) for details.
