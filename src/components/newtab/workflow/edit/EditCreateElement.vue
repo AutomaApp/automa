@@ -1,9 +1,9 @@
 <template>
   <edit-interaction-base
-    v-bind="{ data }"
+    :data="blockData"
     hide-mark-el
     hide-multiple
-    @change="updateData"
+    @change="updateSelector"
   >
     <ui-select
       v-model="blockData.insertAt"
@@ -167,6 +167,9 @@ function addPreloadScript() {
     src: '',
     type: 'script',
   });
+}
+function updateSelector(data) {
+  Object.assign(blockData, data);
 }
 
 watch(blockData, (newValue) => {
