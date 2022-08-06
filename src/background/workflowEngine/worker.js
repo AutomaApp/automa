@@ -69,7 +69,10 @@ class Worker {
       this.engine.referenceData.table[currentColumn.index][columnName] =
         convertedValue;
     } else {
-      this.engine.referenceData.table.push({ [columnName]: convertedValue });
+      this.engine.referenceData.table.push({
+        ...this.engine.rowData,
+        [columnName]: convertedValue,
+      });
     }
 
     currentColumn.index += 1;

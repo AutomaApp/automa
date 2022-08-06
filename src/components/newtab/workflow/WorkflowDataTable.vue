@@ -23,7 +23,8 @@
       <ui-input
         v-model="state.query"
         autofocus
-        :placeholder="t('workflow.table.placeholder')"
+        autocomplete="off"
+        :placeholder="t('workflow.table.column.name')"
         class="mr-2 flex-1"
         @keyup.enter="addColumn"
         @keyup.esc="$emit('close')"
@@ -56,46 +57,55 @@
   </div>
   <div
     class="overflow-y-auto scroll"
-    style="max-height: 600px; height: calc(100vh - 13rem)"
+    style="max-height: 500px; height: calc(100vh - 13rem)"
   >
     <p v-if="columns.length === 0" class="text-center mt-4">
       {{ t('message.noData') }}
     </p>
-    <ul v-else class="space-y-2 py-1">
-      <li
-        v-for="(column, index) in columns"
-        :key="column.id"
-        class="flex items-center space-x-2"
-      >
-        <ui-input
-          :disabled="Boolean(workflow.connectedTable)"
-          :model-value="columns[index].name"
-          :placeholder="t('workflow.table.column.name')"
-          class="flex-1"
-          @blur="updateColumnName(index, $event.target)"
-        />
-        <ui-select
-          v-model="columns[index].type"
-          :disabled="Boolean(workflow.connectedTable)"
-          :placeholder="t('workflow.table.column.type')"
-          class="flex-1"
-        >
-          <option v-for="type in dataTypes" :key="type.id" :value="type.id">
-            {{ type.name }}
-          </option>
-        </ui-select>
-        <button
-          v-if="!Boolean(workflow.connectedTable)"
-          @click="state.columns.splice(index, 1)"
-        >
-          <v-remixicon name="riDeleteBin7Line" />
-        </button>
-      </li>
-    </ul>
+    <draggable
+      v-else
+      v-model="columns"
+      handle=".column-handle"
+      item-key="id"
+      class="py-1 space-y-2"
+    >
+      <template #item="{ index }">
+        <li class="flex items-center space-x-2">
+          <v-remixicon
+            name="mdiDrag"
+            class="mr-2 cursor-move -ml-1 column-handle"
+          />
+          <ui-input
+            :disabled="Boolean(workflow.connectedTable)"
+            :model-value="state.columns[index].name"
+            :placeholder="t('workflow.table.column.name')"
+            class="flex-1"
+            @blur="updateColumnName(index, $event.target)"
+          />
+          <ui-select
+            v-model="state.columns[index].type"
+            :disabled="Boolean(workflow.connectedTable)"
+            :placeholder="t('workflow.table.column.type')"
+            class="flex-1"
+          >
+            <option v-for="type in dataTypes" :key="type.id" :value="type.id">
+              {{ type.name }}
+            </option>
+          </ui-select>
+          <button
+            v-if="!Boolean(workflow.connectedTable)"
+            @click="state.columns.splice(index, 1)"
+          >
+            <v-remixicon name="riDeleteBin7Line" />
+          </button>
+        </li>
+      </template>
+    </draggable>
   </div>
 </template>
 <script setup>
 import { computed, onMounted, watch, reactive } from 'vue';
+import Draggable from 'vuedraggable';
 import { nanoid } from 'nanoid';
 import { useI18n } from 'vue-i18n';
 import dbStorage from '@/db/storage';
@@ -126,10 +136,15 @@ const state = reactive({
   tableList: [],
   connectedTable: null,
 });
-const columns = computed(() => {
-  if (state.connectedTable) return state.connectedTable.columns;
+const columns = computed({
+  get() {
+    if (state.connectedTable) return state.connectedTable.columns;
 
-  return state.columns.filter(({ name }) => name.includes(state.query));
+    return state.columns;
+  },
+  set(value) {
+    state.columns = value;
+  },
 });
 
 function getColumnName(name) {

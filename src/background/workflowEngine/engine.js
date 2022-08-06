@@ -41,6 +41,7 @@ class WorkflowEngine {
         name: this.workflow.settings?.defaultColumnName || 'column',
       },
     };
+    this.rowData = {};
 
     this.logHistoryId = 0;
 
@@ -187,6 +188,8 @@ class WorkflowEngine {
 
       columns.forEach(({ name, type, id }) => {
         const columnId = id || name;
+
+        this.rowData[name] = null;
 
         this.columnsId[name] = columnId;
         if (!this.columns[columnId])
