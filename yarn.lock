@@ -1769,19 +1769,12 @@
   resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-9.1.0.tgz#194d4bd47f7acb91e348c0f436e678ddf7ee235b"
   integrity sha512-8OEhlog1iaAGTD3LICZ8oBGQdYeMwByvXetOtAOZCJOzyCRSwqwdggTsmVZZ1rkgYIEqgUBk942AsAPwM21s6A==
 
-"@vueuse/rxjs@^8.9.2":
-  version "8.9.4"
-  resolved "https://registry.yarnpkg.com/@vueuse/rxjs/-/rxjs-8.9.4.tgz#57eaabbf1f02ae0d847d8f5672a125ec351859df"
-  integrity sha512-dsWdXrznWtccWb/dta5enWJ+uvBxQuprhxdZnAKL8tqcx06hmXoqolzsOzzGdMIy3SIHA9adiVwhsSMzyb26jg==
+"@vueuse/rxjs@^9.1.0":
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/rxjs/-/rxjs-9.1.0.tgz#dfb904e98679b3a1b5658f0a3c1de243c3863d45"
+  integrity sha512-7mpLavhE1v9YsK6X3YGFMFhYLmwIDmOc0NMGjzsPmIXPXYH0DsWBOaqpwVvpDSOuLfAYZpk0KEkltKYWHUUupA==
   dependencies:
-    "@vueuse/shared" "8.9.4"
-    vue-demi "*"
-
-"@vueuse/shared@8.9.4":
-  version "8.9.4"
-  resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-8.9.4.tgz#c9741c30ffb666b50d62f0dd80b76119fd47573e"
-  integrity sha512-wt+T30c4K6dGRMVqPddexEVLa28YwxW5OFIPmzUHICjphfAuBFTTdDoyqREZNDOFJZ44ARH1WWQNCUK8koJ+Ag==
-  dependencies:
+    "@vueuse/shared" "9.1.0"
     vue-demi "*"
 
 "@vueuse/shared@9.1.0":
