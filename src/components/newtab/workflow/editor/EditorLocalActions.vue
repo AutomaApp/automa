@@ -98,7 +98,7 @@
       </ui-list>
     </ui-popover>
   </ui-card>
-  <ui-card padding="p-1 ml-4 pointer-events-auto">
+  <ui-card v-if="canEdit" padding="p-1 ml-4 pointer-events-auto">
     <button
       v-for="item in modalActions"
       :key="item.id"
@@ -725,23 +725,20 @@ retrieveTriggerText();
 const modalActions = [
   {
     id: 'table',
-    hasAccess: props.canEdit,
     name: t('workflow.table.title'),
     icon: 'riTable2',
   },
   {
-    hasAccess: true,
     id: 'global-data',
     name: t('common.globalData'),
     icon: 'riDatabase2Line',
   },
   {
     id: 'settings',
-    hasAccess: props.canEdit,
     name: t('common.settings'),
     icon: 'riSettings3Line',
   },
-].filter((item) => item.hasAccess);
+];
 const moreActions = [
   {
     id: 'export',

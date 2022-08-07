@@ -407,7 +407,7 @@ onMounted(() => {
 
     if (userTeam) {
       teams.push({ name: userTeam.name, id: userTeam.id });
-    } else if (!unknownInputted) {
+    } else if (!unknownInputted && teamWorkflowStore.getByTeam(id).length > 0) {
       unknownInputted = true;
       teams.unshift({ name: '(unknown)', id: '(unknown)' });
     }
