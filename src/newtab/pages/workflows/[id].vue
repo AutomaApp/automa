@@ -988,10 +988,10 @@ async function pasteCopiedElements(position) {
   editor.value.removeSelectedNodes(editor.value.getSelectedNodes.value);
   editor.value.removeSelectedEdges(editor.value.getSelectedEdges.value);
 
-  const permission = await navigator.permissions.query({
-    name: 'clipboard-read',
+  const permission = await browser.permissions.request({
+    permissions: ['clipboardRead'],
   });
-  if (permission.state === 'denied') {
+  if (!permission) {
     toast.error('Automa require clipboard permission to paste blocks');
     return;
   }

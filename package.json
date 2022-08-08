@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "1.16.0",
+  "version": "1.16.1",
   "description": "An extension for automating your browser by connecting blocks",
   "license": "MIT",
   "repository": {
@@ -29,7 +29,7 @@
     "*.{js,ts,vue}": "eslint --fix"
   },
   "dependencies": {
-    "@braks/vue-flow": "^0.4.35",
+    "@braks/vue-flow": "0.4.30",
     "@codemirror/autocomplete": "^6.1.0",
     "@codemirror/lang-css": "^6.0.0",
     "@codemirror/lang-html": "^6.1.0",
@@ -45,7 +45,7 @@
     "@tiptap/starter-kit": "^2.0.0-beta.191",
     "@tiptap/vue-3": "^2.0.0-beta.96",
     "@viselect/vanilla": "^3.0.0-beta.13",
-    "@vueuse/rxjs": "^8.9.2",
+    "@vueuse/rxjs": "^9.1.0",
     "@vuex-orm/core": "^0.36.4",
     "codemirror": "^6.0.1",
     "compare-versions": "^4.1.2",
@@ -101,7 +101,7 @@
     "eslint-plugin-vue": "^9.3.0",
     "file-loader": "^6.2.0",
     "fs-extra": "^10.1.0",
-    "html-loader": "^3.1.2",
+    "html-loader": "^4.1.0",
     "html-webpack-plugin": "^5.5.0",
     "lint-staged": "^13.0.2",
     "mini-css-extract-plugin": "^2.3.0",

@@ -7,19 +7,17 @@ function doCommand(command, value) {
   if (command === 'paste') {
     textarea.focus();
     document.execCommand('paste');
-    textarea.remove();
-
-    return textarea.value;
-  }
-  if (command === 'copy') {
+    value = textarea.value;
+  } else if (command === 'copy') {
     textarea.value = value;
     textarea.select();
     document.execCommand('copy');
     textarea.blur();
-    textarea.remove();
   }
 
-  return '';
+  textarea.remove();
+
+  return value;
 }
 
 export default async function ({ data, id, label }) {

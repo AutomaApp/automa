@@ -219,7 +219,7 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
     await setI18nLanguage(store.settings.locale);
 
     await dataMigration();
-    await userStore.loadUser({ useCache: true });
+    await userStore.loadUser({ useCache: false, ttl: 2 });
 
     retrieved.value = true;
 
