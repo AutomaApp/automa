@@ -52,6 +52,7 @@ function formEvent(element, data) {
 }
 async function inputText({ data, element, isEditable }) {
   element?.focus();
+  element?.click();
   const elementKey = isEditable ? 'textContent' : 'value';
 
   if (data.delay > 0 && !document.hidden) {

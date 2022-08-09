@@ -1052,6 +1052,23 @@ function checkWorkflowPermission() {
     permissionState.showModal = true;
   });
 }
+function checkWorkflowUpdate() {
+  const updatedAt = encodeURIComponent(workflow.value.updatedAt);
+  fetchApi(
+    `/teams/${teamId}/workflows/${workflowId}/check-update?updatedAt=${updatedAt}`
+  )
+    .then((response) => response.json())
+    .then((result) => {
+      if (!result) return;
+
+      updateWorkflow(result).then(() => {
+        window.location.reload();
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
 
 const shortcut = useShortcut([
   getShortcut('editor:toggle-sidebar', toggleSidebar),
@@ -1100,6 +1117,10 @@ onMounted(() => {
 
   if (route.query.permission || (isTeamWorkflow && !haveEditAccess.value))
     checkWorkflowPermission();
+
+  if (isTeamWorkflow && !haveEditAccess.value && workflow.value.updatedAt) {
+    checkWorkflowUpdate();
+  }
 
   if (workflow.value.connectedTable) {
     fetchConnectedTable();
