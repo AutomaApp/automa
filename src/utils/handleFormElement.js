@@ -54,7 +54,7 @@ async function inputText({ data, element, isEditable }) {
   element?.focus();
   const elementKey = isEditable ? 'textContent' : 'value';
 
-  if (data.delay > 0 && !document.hidden && !isEditable) {
+  if (data.delay > 0 && !document.hidden) {
     for (let index = 0; index < data.value.length; index += 1) {
       const currentChar = data.value[index];
       element[elementKey] += currentChar;
