@@ -1062,7 +1062,9 @@ function checkWorkflowUpdate() {
       if (!result) return;
 
       updateWorkflow(result).then(() => {
-        window.location.reload();
+        editor.value.setNodes(result.drawflow.nodes || []);
+        editor.value.setEdges(result.drawflow.edges || []);
+        editor.value.fitView();
       });
     })
     .catch((error) => {
