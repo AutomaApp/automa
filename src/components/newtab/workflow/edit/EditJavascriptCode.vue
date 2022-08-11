@@ -32,6 +32,13 @@
     >
       {{ t('workflow.blocks.javascript-code.everyNewTab') }}
     </ui-checkbox>
+    <ui-checkbox
+      :model-value="data.runBeforeLoad"
+      class="mt-2"
+      @change="updateData({ runBeforeLoad: $event })"
+    >
+      Run before page loaded
+    </ui-checkbox>
     <ui-modal v-model="state.showCodeModal" content-class="max-w-3xl">
       <template #header>
         <ui-tabs v-model="state.activeTab" class="border-none">

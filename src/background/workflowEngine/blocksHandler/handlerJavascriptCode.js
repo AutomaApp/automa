@@ -24,7 +24,11 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
   if (!data.code.includes('automaNextBlock'))
     payload.data.code += `\nautomaNextBlock()`;
 
-  const result = await this._sendMessageToTab(payload);
+  const result = await this._sendMessageToTab(
+    payload,
+    {},
+    data.runBeforeLoad ?? false
+  );
   if (result) {
     if (result.columns.data?.$error) {
       throw new Error(result.columns.data.message);

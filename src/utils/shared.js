@@ -530,6 +530,7 @@ export const tasks = {
       code: 'console.log("Hello world!");\nautomaNextBlock()',
       preloadScripts: [],
       everyNewTab: false,
+      runBeforeLoad: false,
     },
   },
   'trigger-event': {
@@ -1208,6 +1209,7 @@ export const tasks = {
       preloadScripts: [],
       findBy: 'cssSelector',
       insertAt: 'after',
+      runBeforeLoad: false,
       waitForSelector: false,
       waitSelectorTimeout: 5000,
       selector: 'body',

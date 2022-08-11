@@ -14,6 +14,13 @@
         {{ $t(`workflow.blocks.create-element.insertEl.items.${item}`) }}
       </option>
     </ui-select>
+    <ui-checkbox
+      :model-value="data.runBeforeLoad"
+      class="mt-2"
+      @change="updateData({ runBeforeLoad: $event })"
+    >
+      Run before page loaded
+    </ui-checkbox>
     <ui-button
       variant="accent"
       class="w-full mt-4"
