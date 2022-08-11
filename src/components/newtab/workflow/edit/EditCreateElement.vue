@@ -77,6 +77,7 @@
           </div>
           <shared-codemirror
             v-model="blockData.javascript"
+            :extensions="codemirrorExts"
             lang="javascript"
             class="h-full"
           />
@@ -117,7 +118,13 @@
 </template>
 <script setup>
 import { reactive, watch, defineAsyncComponent } from 'vue';
+import { autocompletion } from '@codemirror/autocomplete';
 import cloneDeep from 'lodash.clonedeep';
+import {
+  automaFuncsSnippets,
+  automaFuncsCompletion,
+  completeFromGlobalScope,
+} from '@/utils/codeEditorAutocomplete';
 import EditInteractionBase from './EditInteractionBase.vue';
 
 const SharedCodemirror = defineAsyncComponent(() =>
@@ -151,6 +158,19 @@ const tabs = [
   { id: 'html', name: 'HTML' },
   { id: 'css', name: 'CSS' },
   { id: 'javascript', name: 'JavaScript' },
+];
+
+const autocompleteList = [
+  automaFuncsSnippets.automaExecWorkflow,
+  automaFuncsSnippets.automaRefData,
+];
+const codemirrorExts = [
+  autocompletion({
+    override: [
+      automaFuncsCompletion(autocompleteList),
+      completeFromGlobalScope,
+    ],
+  }),
 ];
 
 const blockData = reactive(cloneDeep(props.data));

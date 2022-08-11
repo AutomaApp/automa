@@ -124,4 +124,9 @@ onBeforeUnmount(() => {
   font-family: 'Source Code Pro', Fira code, Fira Mono, Consolas, Menlo, Courier,
     monospace !important;
 }
+
+.cm-tooltip-autocomplete {
+  margin-left: -385px;
+  margin-top: -22px;
+}
 </style>
