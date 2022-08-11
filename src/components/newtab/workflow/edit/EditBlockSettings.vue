@@ -1,14 +1,20 @@
 <template>
   <div class="block-settings">
-    <ui-button
-      :class="{ 'text-primary': state.onError.enable }"
-      @click="state.showModal = true"
+    <slot
+      name="button"
+      :active="state.onError.enable"
+      :show="() => (state.showModal = true)"
     >
-      <v-remixicon name="riShieldLine" class="-ml-1 mr-2" />
-      <span>
-        {{ t('workflow.blocks.base.settings.title') }}
-      </span>
-    </ui-button>
+      <ui-button
+        :class="{ 'text-primary': state.onError.enable }"
+        @click="state.showModal = true"
+      >
+        <v-remixicon name="riShieldLine" class="-ml-1 mr-2" />
+        <span>
+          {{ t('workflow.blocks.base.settings.title') }}
+        </span>
+      </ui-button>
+    </slot>
     <ui-modal
       v-model="state.showModal"
       :title="t('workflow.blocks.base.settings.title')"
@@ -31,10 +37,12 @@
           />
         </ui-tab-panel>
         <ui-tab-panel value="on-error">
-          <block-setting-on-error
-            :data="state.onError"
-            @change="onDataChange('onError', $event)"
-          />
+          <slot name="on-error">
+            <block-setting-on-error
+              :data="state.onError"
+              @change="onDataChange('onError', $event)"
+            />
+          </slot>
         </ui-tab-panel>
         <ui-tab-panel value="lines">
           <block-setting-lines :block-id="data.blockId" />
@@ -56,9 +64,9 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
-  editor: {
-    type: Object,
-    default: () => ({}),
+  onErrorLabel: {
+    type: String,
+    default: '',
   },
 });
 const emit = defineEmits(['change']);
@@ -68,7 +76,10 @@ const { t } = useI18n();
 const browserType = BROWSER_TYPE;
 const supportedBlocks = ['forms', 'event-click', 'trigger-event', 'press-key'];
 const tabs = [
-  { id: 'on-error', name: t('workflow.blocks.base.onError.button') },
+  {
+    id: 'on-error',
+    name: props.onErrorLabel || t('workflow.blocks.base.onError.button'),
+  },
   { id: 'lines', name: t('workflow.blocks.base.settings.line.title') },
 ];
 const isSupported =
