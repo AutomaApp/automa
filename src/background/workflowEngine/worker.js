@@ -70,7 +70,6 @@ class Worker {
         convertedValue;
     } else {
       this.engine.referenceData.table.push({
-        ...this.engine.rowData,
         [columnName]: convertedValue,
       });
     }

@@ -31,7 +31,7 @@ const keys = {
   ],
 };
 
-async function cookie({ data }) {
+async function cookie({ data, id }) {
   const hasPermission = await browser.permissions.contains({
     permissions: ['cookies'],
   });
@@ -62,7 +62,10 @@ async function cookie({ data }) {
     }
   }
 
-  return result;
+  return {
+    data: result,
+    nextBlockId: this.getBlockConnections(id),
+  };
 }
 
 export default cookie;

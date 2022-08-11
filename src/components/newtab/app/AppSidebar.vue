@@ -47,7 +47,11 @@
       </router-link>
     </div>
     <div class="flex-grow"></div>
-    <ui-popover v-if="userStore.user" trigger="mouseenter" placement="right">
+    <ui-popover
+      v-if="userStore.user"
+      trigger="mouseenter click"
+      placement="right"
+    >
       <template #trigger>
         <span class="inline-block p-1 bg-box-transparent rounded-full">
           <img
@@ -58,7 +62,26 @@
           />
         </span>
       </template>
-      {{ userStore.user.username }}
+      <div class="w-44">
+        <div class="flex items-center">
+          <p class="flex-1 text-overflow">
+            {{ userStore.user.username }}
+          </p>
+          <span
+            title="Subscription"
+            :class="subColors[userStore.user.subscription]"
+            class="px-2 py-1 rounded-md text-sm capitalize"
+          >
+            {{ userStore.user.subscription }}
+          </span>
+        </div>
+        <p
+          v-if="userStore.user.level"
+          class="text-gray-600 dark:text-gray-200 mt-1"
+        >
+          Level: {{ userStore.user.level }}
+        </p>
+      </div>
     </ui-popover>
     <ui-popover trigger="mouseenter" placement="right" class="my-4">
       <template #trigger>
@@ -104,6 +127,11 @@ const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
 
 const extensionVersion = browser.runtime.getManifest().version;
+const subColors = {
+  free: 'bg-box-transparent',
+  pro: 'bg-accent text-white',
+  business: 'bg-accent text-white',
+};
 const tabs = [
   {
     id: 'workflow',

@@ -206,22 +206,22 @@ function replacer(str, { regex, tagLen, modifyPath, data, stringify }) {
       }
     }
 
-    result =
+    let finalResult =
       typeof result === 'string' && !stringify
         ? result
         : JSON.stringify(result);
 
-    if (stringify) {
+    if (stringify && typeof result === 'string') {
       const isQuote = (char) => char === '"';
       const isInsideQuote =
         isQuote(str[offset - 1]) && isQuote(str[match.length + offset]);
 
-      if (isInsideQuote) result = result.slice(1, -1);
+      if (isInsideQuote) finalResult = finalResult.slice(1, -1);
     }
 
-    replaceResult.list[match] = result?.slice(0, 512) ?? result;
+    replaceResult.list[match] = finalResult?.slice(0, 512) ?? finalResult;
 
-    return result;
+    return finalResult;
   });
 
   return replaceResult;
