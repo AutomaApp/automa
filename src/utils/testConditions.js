@@ -18,7 +18,10 @@ const comparisons = {
   lt: (a, b) => isNumStr(a) < isNumStr(b),
   lte: (a, b) => isNumStr(a) <= isNumStr(b),
   cnt: (a, b) => a?.includes(b) ?? false,
+  cni: (a, b) =>
+    a?.toLocaleLowerCase().includes(b?.toLocaleLowerCase()) ?? false,
   nct: (a, b) => !comparisons.cnt(a, b),
+  nci: (a, b) => !comparisons.cni(a, b),
   stw: (a, b) => a?.startsWith(b) ?? false,
   enw: (a, b) => a?.endsWith(b) ?? false,
   rgx: (a, b) => {
