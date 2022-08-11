@@ -603,6 +603,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     data: {
+      description: '',
       disableBlock: false,
       conditions: [],
       retryConditions: false,

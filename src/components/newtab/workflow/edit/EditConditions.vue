@@ -1,6 +1,12 @@
 <template>
   <div>
-    <div class="mb-4 flex items-center space-x-2">
+    <ui-textarea
+      :model-value="data.description"
+      class="w-full"
+      :placeholder="t('common.description')"
+      @change="updateData({ description: $event })"
+    />
+    <div class="my-4 flex items-center space-x-2">
       <p v-if="state.showSettings" class="font-semibold">
         {{ t('common.settings') }}
       </p>

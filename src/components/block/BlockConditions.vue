@@ -25,6 +25,12 @@
         @click="$emit('edit')"
       />
     </div>
+    <p
+      v-show="data.description"
+      class="text-gray-600 mt-2 dark:text-gray-200 text-overflow leading-tight"
+    >
+      {{ data.description }}
+    </p>
     <ul
       v-if="data.conditions && data.conditions.length !== 0"
       class="mt-4 space-y-2"
