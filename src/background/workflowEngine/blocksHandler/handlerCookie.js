@@ -5,7 +5,7 @@ function getValues(data, keys) {
   keys.forEach((key) => {
     const value = data[key];
 
-    if (!value && typeof value !== 'boolean') return;
+    if (!value) return;
 
     values[key] = value;
   });
