@@ -28,9 +28,21 @@
         >
           {{ t(`workflow.blocks.${block.details.id}.name`) }}
         </p>
-        <p class="text-gray-600 dark:text-gray-200 text-overflow leading-tight">
+        <p
+          :class="{ 'mb-1': data.description && data.loopId }"
+          class="text-gray-600 dark:text-gray-200 text-overflow leading-tight"
+        >
           {{ data.description }}
         </p>
+        <span
+          v-if="data.loopId"
+          class="bg-box-transparent rounded-br-lg text-gray-600 dark:text-gray-200 text-overflow rounded-sm py-px px-1 text-xs absolute bottom-0 right-0"
+          title="Loop Id (click to copy)"
+          style="max-width: 40%; cursor: pointer"
+          @click.stop="copyLoopId"
+        >
+          {{ data.loopId }}
+        </span>
       </div>
     </div>
     <slot :block="block"></slot>
@@ -118,5 +130,8 @@ function handleStartDrag(event) {
   };
 
   event.dataTransfer.setData('block', JSON.stringify(payload));
+}
+function copyLoopId() {
+  navigator.clipboard.writeText(props.data.loopId);
 }
 </script>
