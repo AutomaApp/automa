@@ -4,11 +4,14 @@
     :class="{ 'hide-gutters': !lineNumbers }"
     class="codemirror relative overflow-auto rounded-lg"
   >
-    <span
-      class="text-sm text-gray-300 absolute bottom-2 right-2 z-10 pointer-events-none z-10"
+    <div
+      class="absolute text-xs text-gray-600 dark:text-gray-200 px-2 items-center bottom-0 left-0 w-full h-6 flex z-10"
     >
-      {{ lang }}
-    </span>
+      <div class="flex-grow" />
+      <span>
+        {{ lang }}
+      </span>
+    </div>
   </div>
 </template>
 <script setup>
@@ -116,6 +119,7 @@ onBeforeUnmount(() => {
 .cm-editor {
   height: 100%;
   font-size: 15px;
+  @apply pb-6;
 }
 
 .cm-editor .cm-gutters,
