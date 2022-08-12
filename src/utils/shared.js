@@ -66,6 +66,7 @@ export const tasks = {
       workflowId: '',
       globalData: '',
       description: '',
+      insertAllVars: false,
     },
   },
   'active-tab': {
