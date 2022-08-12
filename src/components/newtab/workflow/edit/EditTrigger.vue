@@ -37,17 +37,24 @@
     >
       <ul
         class="space-y-2 mt-2 pb-1 overflow-auto scroll"
-        style="max-height: calc(100vh - 15rem)"
+        style="max-height: calc(100vh - 15rem); min-height: 200px"
       >
+        <p
+          v-if="state.parameters.length === 0"
+          class="my-4 text-center text-gray-600 dark:text-gray-200"
+        >
+          No parameters
+        </p>
         <li
           v-for="(param, index) in state.parameters"
           :key="index"
           class="flex items-end space-x-2"
         >
           <ui-input
-            v-model="param.name"
+            :model-value="param.name"
             label="Name"
             placeholder="Parameter name"
+            @change="updateParam(index, $event)"
           />
           <ui-select v-model="param.type" label="Type">
             <option v-for="type in paramTypes" :key="type.id" :value="type.id">
@@ -122,6 +129,9 @@ function addParameter() {
     type: 'string',
     placeholder: 'Text',
   });
+}
+function updateParam(index, value) {
+  state.parameters[index].name = value.replace(/\s/g, '_');
 }
 
 watch(
