@@ -350,6 +350,7 @@ export const tasks = {
       includeTags: false,
       addExtraRow: false,
       assignVariable: false,
+      useTextContent: false,
       variableName: '',
       extraRowValue: '',
       extraRowDataColumn: '',
