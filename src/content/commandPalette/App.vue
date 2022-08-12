@@ -166,6 +166,7 @@ const state = shallowReactive({
   query: '',
   active: false,
   workflows: [],
+  shortcutKeys: [],
   selectedIndex: -1,
 });
 const paramsState = shallowReactive({
@@ -237,7 +238,7 @@ function executeWorkflow(workflow) {
   paramsState.inputtedVal = '';
 }
 function onKeydown(event) {
-  const { ctrlKey, shiftKey, metaKey, key } = event;
+  const { ctrlKey, altKey, metaKey, key, shiftKey } = event;
 
   if (key === 'Escape') {
     if (paramsState.active) {
@@ -248,7 +249,14 @@ function onKeydown(event) {
     return;
   }
 
-  if ((ctrlKey || metaKey) && shiftKey && key.toLowerCase() === 'a') {
+  const automaShortcut = state.shortcutKeys.every((shortcutKey) => {
+    if (shortcutKey === 'mod') return ctrlKey || metaKey;
+    if (shortcutKey === 'shift') return shiftKey;
+    if (shortcutKey === 'option') return altKey;
+
+    return shortcutKey === key.toLowerCase();
+  });
+  if (automaShortcut) {
     event.preventDefault();
     state.active = true;
   }
@@ -373,6 +381,13 @@ watch(
 );
 
 onMounted(() => {
+  browser.storage.local.get('automaShortcut').then(({ automaShortcut }) => {
+    let keys = ['mod', 'shift', 'a'];
+    if (automaShortcut) keys = automaShortcut.split('+');
+
+    state.shortcutKeys = keys;
+  });
+
   window.addEventListener('keydown', onKeydown);
 });
 onBeforeUnmount(() => {

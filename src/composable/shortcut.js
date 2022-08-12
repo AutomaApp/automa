@@ -16,10 +16,6 @@ const defaultShortcut = {
     id: 'page:schedule',
     combo: 'option+t',
   },
-  'page:collections': {
-    id: 'page:collections',
-    combo: 'option+c',
-  },
   'page:logs': {
     id: 'page:logs',
     combo: 'option+l',
