@@ -52,7 +52,7 @@
     "crypto-js": "^4.1.1",
     "css-selector-generator": "^3.6.3",
     "dagre": "^0.8.5",
-    "dayjs": "^1.10.7",
+    "dayjs": "^1.11.5",
     "defu": "^6.0.0",
     "dexie": "^3.2.2",
     "idb": "^7.0.2",
