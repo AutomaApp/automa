@@ -91,7 +91,7 @@
     "core-js": "^3.23.3",
     "cross-env": "^7.0.3",
     "css-loader": "^6.7.1",
-    "eslint": "^8.21.0",
+    "eslint": "^8.22.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-friendly-formatter": "^4.0.1",
