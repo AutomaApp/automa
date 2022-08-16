@@ -28,12 +28,12 @@
             @input="onInput"
             @keydown="onInputKeydown"
           />
-          <template v-for="key in shortcutKeys" :key="key">
+          <template v-for="key in state.shortcutKeys" :key="key">
             <span
-              class="rounded-md bg-box-transparent p-1 text-gray-600 ml-1 text-xs text-center inline-block border-2 border-gray-300 font-semibold"
+              class="rounded-md bg-box-transparent capitalize p-1 text-gray-600 ml-1 text-xs text-center inline-block border-2 border-gray-300 font-semibold"
               style="min-width: 29px; font-family: inherit"
             >
-              {{ key }}
+              {{ getReadableShortcut(key) }}
             </span>
           </template>
         </label>
@@ -150,6 +150,7 @@ import {
   inject,
 } from 'vue';
 import browser from 'webextension-polyfill';
+import { getReadableShortcut } from '@/composable/shortcut';
 import { sendMessage } from '@/utils/message';
 import { debounce } from '@/utils/helper';
 
@@ -157,9 +158,7 @@ const defaultPlaceholders = {
   string: 'Text',
   number: '123123',
 };
-const isMac = navigator.appVersion.indexOf('Mac') !== -1;
 const logoUrl = browser.runtime.getURL('/icon-128.png');
-const shortcutKeys = [isMac ? '⌘' : 'Ctrl', 'Shift', 'A'];
 
 const inputRef = ref(null);
 const state = shallowReactive({
