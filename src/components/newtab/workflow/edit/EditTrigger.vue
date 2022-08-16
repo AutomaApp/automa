@@ -33,10 +33,10 @@
     <ui-modal
       v-model="state.showModal"
       title="Parameters"
-      content-class="max-w-2xl"
+      content-class="max-w-4xl"
     >
-      <ul
-        class="space-y-2 mt-2 pb-1 overflow-auto scroll"
+      <div
+        class="overflow-auto scroll"
         style="max-height: calc(100vh - 15rem); min-height: 200px"
       >
         <p
@@ -45,32 +45,58 @@
         >
           No parameters
         </p>
-        <li
-          v-for="(param, index) in state.parameters"
-          :key="index"
-          class="flex items-end space-x-2"
-        >
-          <ui-input
-            :model-value="param.name"
-            label="Name"
-            placeholder="Parameter name"
-            @change="updateParam(index, $event)"
-          />
-          <ui-select v-model="param.type" label="Type">
-            <option v-for="type in paramTypes" :key="type.id" :value="type.id">
-              {{ type.name }}
-            </option>
-          </ui-select>
-          <ui-input
-            v-model="param.placeholder"
-            label="Placeholder (optional)"
-            placeholder="A parameter"
-          />
-          <ui-button icon @click="state.parameters.splice(index, 1)">
-            <v-remixicon name="riDeleteBin7Line" />
-          </ui-button>
-        </li>
-      </ul>
+        <table v-else class="w-full">
+          <thead>
+            <tr class="text-sm text-left">
+              <th>Name</th>
+              <th>Type</th>
+              <th>Placeholder</th>
+              <th>Default Value</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(param, index) in state.parameters" :key="index">
+              <td>
+                <ui-input
+                  :model-value="param.name"
+                  placeholder="Parameter name"
+                  @change="updateParam(index, $event)"
+                />
+              </td>
+              <td>
+                <ui-select v-model="param.type">
+                  <option
+                    v-for="type in paramTypes"
+                    :key="type.id"
+                    :value="type.id"
+                  >
+                    {{ type.name }}
+                  </option>
+                </ui-select>
+              </td>
+              <td>
+                <ui-input
+                  v-model="param.placeholder"
+                  placeholder="A parameter"
+                />
+              </td>
+              <td>
+                <ui-input
+                  v-model="param.defaultValue"
+                  :type="param.type === 'number' ? 'number' : 'text'"
+                  placeholder="NULL"
+                />
+              </td>
+              <td>
+                <ui-button icon @click="state.parameters.splice(index, 1)">
+                  <v-remixicon name="riDeleteBin7Line" />
+                </ui-button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <ui-button variant="accent" class="mt-4" @click="addParameter">
         Add parameter
       </ui-button>
@@ -128,6 +154,7 @@ function addParameter() {
     name: 'param',
     type: 'string',
     placeholder: 'Text',
+    defaultValue: '',
   });
 }
 function updateParam(index, value) {
@@ -142,3 +169,9 @@ watch(
   { deep: true }
 );
 </script>
+<style scoped>
+table th,
+table td {
+  @apply p-1 font-normal;
+}
+</style>
