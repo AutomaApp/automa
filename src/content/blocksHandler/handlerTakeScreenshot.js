@@ -62,7 +62,7 @@ async function takeScreenshot(tabId, options) {
 
   return imageUrl;
 }
-async function captureElementScreenshot({ selector, tabId, options }) {
+async function captureElement({ selector, tabId, options }) {
   const element = document.querySelector(selector);
 
   if (!element) {
@@ -78,21 +78,45 @@ async function captureElementScreenshot({ selector, tabId, options }) {
   const imageUrl = await takeScreenshot(tabId, options);
   const image = await loadAsyncImg(imageUrl);
 
+  let { marginLeft, marginTop } = getComputedStyle(element);
+  const getNum = (str) => {
+    const num = parseInt(str, 10);
+
+    return num < 0 ? 0 : num;
+  };
+  marginLeft = getNum(marginLeft);
+  marginTop = getNum(marginTop);
+
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
   const { height, width, x, y } = element.getBoundingClientRect();
 
-  canvas.width = width;
-  canvas.height = height;
+  const newX = x + marginLeft / 2;
+  const newY = y + marginTop / 2;
+  const newWidth = width + marginLeft;
+  const newHeight = height + marginTop;
 
-  context.drawImage(image, x, y, width, height, 0, 0, width, height);
+  canvas.width = newWidth;
+  canvas.height = newHeight;
+
+  context.drawImage(
+    image,
+    newX,
+    newY,
+    newWidth,
+    newHeight,
+    0,
+    0,
+    newWidth,
+    newHeight
+  );
 
   return canvasToBase64(canvas, options);
 }
 
 export default async function ({ tabId, options, data: { type, selector } }) {
   if (type === 'element') {
-    const imageUrl = await captureElementScreenshot({
+    const imageUrl = await captureElement({
       tabId,
       options,
       selector,
