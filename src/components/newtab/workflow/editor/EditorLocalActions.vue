@@ -586,6 +586,12 @@ async function publishWorkflow() {
     const result = await response.json();
 
     if (!response.ok) {
+      if (response.status === 404) {
+        await teamWorkflowStore.delete(teamId, props.workflow.id);
+        router.replace('/');
+        return;
+      }
+
       throw new Error(result.message);
     }
   } catch (error) {

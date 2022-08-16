@@ -52,13 +52,19 @@
           v-model:selectorType="state.selectorType"
           v-model:selectList="state.selectList"
           :selector="state.elSelector"
+          :settings-active="state.showSettings"
           :selected-count="state.selectedElements.length"
+          @settings="state.showSettings = $event"
           @selector="updateSelector"
           @parent="selectElementPath('up')"
           @child="selectElementPath('down')"
         />
         <selector-elements-detail
-          v-if="!state.hide && state.selectedElements.length > 0"
+          v-if="
+            !state.showSettings &&
+            !state.hide &&
+            state.selectedElements.length > 0
+          "
           v-model:active-tab="state.activeTab"
           v-bind="{
             elSelector: state.elSelector,
@@ -68,6 +74,52 @@
           @highlight="toggleHighlightElement"
           @execute="state.isExecuting = $event"
         />
+        <div v-if="state.showSettings && !state.hide" class="mt-4">
+          <p class="font-semibold mb-4">Selector settings</p>
+          <ul class="space-y-4">
+            <li>
+              <label class="flex items-center space-x-2">
+                <ui-switch v-model="selectorSettings.idName" />
+                <p>Include element id</p>
+              </label>
+            </li>
+            <li>
+              <label class="flex items-center space-x-2">
+                <ui-switch v-model="selectorSettings.tagName" />
+                <p>Include tag name</p>
+              </label>
+            </li>
+            <li>
+              <label class="flex items-center space-x-2">
+                <ui-switch v-model="selectorSettings.className" />
+                <p>Include class name</p>
+              </label>
+            </li>
+            <li>
+              <label class="flex items-center space-x-2">
+                <ui-switch v-model="selectorSettings.attr" />
+                <p>Include attributes</p>
+              </label>
+              <template v-if="selectorSettings.attr">
+                <label
+                  class="ml-1 text-sm text-gray-600 mt-2 block"
+                  for="automa-attribute-names"
+                >
+                  Attribute names
+                </label>
+                <ui-textarea
+                  id="automa-attribute-names"
+                  v-model="selectorSettings.attrNames"
+                  label="Attribute name"
+                  placeholder="data-testid, aria-label, type"
+                />
+                <span class="text-sm">
+                  Use commas to separate the attribute
+                </span>
+              </template>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -77,18 +129,29 @@
     :list="state.selectList"
     :selector-type="state.selectorType"
     :selected-els="state.selectedElements"
+    :selector-settings="getSelectorOptions(selectorSettings)"
     with-attributes
     @selected="onElementsSelected"
   />
 </template>
 <script setup>
-import { reactive, ref, watch, inject, onMounted, onBeforeUnmount } from 'vue';
+import {
+  reactive,
+  ref,
+  watch,
+  inject,
+  onMounted,
+  onBeforeUnmount,
+  toRaw,
+} from 'vue';
+import browser from 'webextension-polyfill';
 import { debounce } from '@/utils/helper';
 import findSelector from '@/lib/findSelector';
 import FindElement from '@/utils/FindElement';
 import SelectorQuery from '@/components/content/selector/SelectorQuery.vue';
 import SharedElementSelector from '@/components/content/shared/SharedElementSelector.vue';
 import SelectorElementsDetail from '@/components/content/selector/SelectorElementsDetail.vue';
+import getSelectorOptions from './getSelectorOptions';
 import { getElementRect } from '../utils';
 
 const originalFontSize = document.documentElement.style.fontSize;
@@ -109,6 +172,7 @@ const state = reactive({
   selectList: false,
   isExecuting: false,
   selectElements: [],
+  showSettings: false,
   selectorType: 'css',
   selectedElements: [],
   activeTab: 'attributes',
@@ -118,6 +182,13 @@ const cardRect = reactive({
   y: 0,
   height: 0,
   width: 0,
+});
+const selectorSettings = reactive({
+  idName: true,
+  tagName: true,
+  attr: true,
+  className: true,
+  attrNames: 'data-testid',
 });
 
 const cardElementObserver = new ResizeObserver(([entry]) => {
@@ -227,7 +298,7 @@ function selectElementPath(type) {
   state.selectedElements = [getElementRect(element, true)];
   state.elSelector = selectedElement.cache.has(element)
     ? selectedElement.cache.get(element)
-    : findSelector(element);
+    : findSelector(element, getSelectorOptions(selectorSettings));
 }
 function onMouseup() {
   if (state.isDragging) state.isDragging = false;
@@ -278,8 +349,22 @@ watch(
     document.body.toggleAttribute('automa-isDragging', value);
   }
 );
+watch(
+  selectorSettings,
+  (settings) => {
+    browser.storage.local.set({
+      selectorSettings: toRaw(settings),
+    });
+  },
+  { deep: true }
+);
 
 onMounted(() => {
+  browser.storage.local.get('selectorSettings').then((storage) => {
+    const settings = storage.selectorSettings || {};
+    Object.assign(selectorSettings, settings);
+  });
+
   setTimeout(() => {
     const { height, width } = cardEl.value.getBoundingClientRect();
 

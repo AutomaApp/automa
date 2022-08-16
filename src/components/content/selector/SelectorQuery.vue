@@ -10,16 +10,27 @@
         <option value="css">CSS Selector</option>
         <option value="xpath">XPath</option>
       </ui-select>
-      <ui-button
-        v-if="selectorType === 'css'"
-        :class="{ 'text-primary': selectList }"
-        icon
-        class="ml-2"
-        title="Select a list of elements"
-        @click.stop.prevent="$emit('update:selectList', !selectList)"
-      >
-        <v-remixicon name="riListUnordered" />
-      </ui-button>
+      <template v-if="selectorType === 'css'">
+        <ui-button
+          :class="{ 'text-primary': selectList }"
+          icon
+          class="ml-2"
+          title="Select a list of elements"
+          @click.stop.prevent="$emit('update:selectList', !selectList)"
+        >
+          <v-remixicon name="riListUnordered" />
+        </ui-button>
+        <ui-button
+          icon
+          class="ml-2"
+          title="Selector settings"
+          @click="$emit('settings', !settingsActive)"
+        >
+          <v-remixicon
+            :name="settingsActive ? 'riCloseLine' : 'riSettings3Line'"
+          />
+        </ui-button>
+      </template>
     </div>
     <div class="mt-2 flex items-center">
       <ui-input
@@ -73,6 +84,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  settingsActive: Boolean,
 });
 defineEmits([
   'change',
@@ -80,6 +92,7 @@ defineEmits([
   'parent',
   'child',
   'selector',
+  'settings',
   'update:selectorType',
   'update:selectList',
 ]);

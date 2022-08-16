@@ -5,13 +5,15 @@ export default function ({
   list,
   target,
   selectorType,
-  hoveredElements,
   frameElement,
+  hoveredElements,
+  selectorSettings,
 }) {
   let selector = '';
 
+  const selectorOptions = selectorSettings || {};
   const [selectedElement] = hoveredElements;
-  const finderOptions = {};
+  const finderOptions = { ...selectorOptions };
   let documentCtx = document;
 
   if (frameElement) {
@@ -25,6 +27,7 @@ export default function ({
     if (isInList) {
       const childSelector = findSelector(target, {
         root: isInList,
+        ...selectorOptions,
         idName: () => false,
       });
       const listSelector = isInList.getAttribute('automa-el-list');
