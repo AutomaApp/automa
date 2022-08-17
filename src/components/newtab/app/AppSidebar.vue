@@ -75,12 +75,6 @@
             {{ userStore.user.subscription }}
           </span>
         </div>
-        <p
-          v-if="userStore.user.level"
-          class="text-gray-600 dark:text-gray-200 mt-1"
-        >
-          Level: {{ userStore.user.level }}
-        </p>
       </div>
     </ui-popover>
     <ui-popover trigger="mouseenter" placement="right" class="my-4">

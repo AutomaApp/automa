@@ -6,9 +6,7 @@
     >
       <workflow-edit-block
         v-if="editState.editing"
-        v-model:autocomplete="autocompleteState.cache"
         :data="editState.blockData"
-        :data-changed="autocompleteState.dataChanged"
         :workflow="workflow"
         :editor="editor"
         @update="updateBlockData"
@@ -218,7 +216,6 @@ import {
   onBeforeUnmount,
 } from 'vue';
 import cloneDeep from 'lodash.clonedeep';
-import { getNodesInside } from '@braks/vue-flow';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { customAlphabet } from 'nanoid';
@@ -236,6 +233,7 @@ import {
 import { getWorkflowPermissions } from '@/utils/workflowData';
 import { tasks } from '@/utils/shared';
 import { fetchApi } from '@/utils/api';
+import { functions } from '@/utils/referenceData/mustacheReplacer';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useCommandManager } from '@/composable/commandManager';
 import { debounce, parseJSON, throttle } from '@/utils/helper';
@@ -301,8 +299,8 @@ const editState = reactive({
   editing: false,
 });
 const autocompleteState = reactive({
-  cache: new Map(),
-  dataChanged: false,
+  blocks: {},
+  common: {},
 });
 const workflowPayload = {
   data: {},
@@ -385,7 +383,31 @@ const workflowModals = {
     },
   },
 };
+const autocompleteKeys = {
+  loopId: 'loopData',
+  refKey: 'googleSheets',
+  variableName: 'variables',
+};
 
+const autocompleteList = computed(() => {
+  const autocompleteData = {
+    loopData: {},
+    googleSheets: {},
+    table: {},
+    ...Object.keys(functions),
+    globalData: autocompleteState.common.globalData,
+    variables: { ...autocompleteState.common.variables },
+  };
+
+  Object.values(autocompleteState.blocks).forEach((item) => {
+    Object.keys(item).forEach((key) => {
+      const autocompleteKey = autocompleteKeys[key] || [];
+      autocompleteData[autocompleteKey][item[key]] = '';
+    });
+  });
+
+  return autocompleteData;
+});
 const haveEditAccess = computed(() => {
   if (!isTeamWorkflow) return true;
 
@@ -418,21 +440,36 @@ provide('workflow', {
   columns: workflowColumns,
 });
 provide('workflow-editor', editor);
+provide('autocompleteData', autocompleteList);
 
 const updateBlockData = debounce((data) => {
   if (!haveEditAccess.value) return;
   const node = editor.value.getNode.value(editState.blockData.blockId);
   const dataCopy = JSON.parse(JSON.stringify(data));
 
+  let autocompleteId = '';
+
   if (editState.blockData.itemId) {
     const itemIndex = node.data.blocks.findIndex(
       ({ itemId }) => itemId === editState.blockData.itemId
     );
-    if (itemIndex === -1) return;
 
-    node.data.blocks[itemIndex].data = dataCopy;
+    if (itemIndex !== -1) {
+      node.data.blocks[itemIndex].data = dataCopy;
+      autocompleteId = editState.blockData.itemId;
+    }
   } else {
     node.data = dataCopy;
+    autocompleteId = editState.blockData.blockId;
+  }
+
+  if (autocompleteState.blocks[autocompleteId]) {
+    const { id, blockId } = editState.blockData;
+    Object.assign(
+      autocompleteState.blocks,
+      /* eslint-disable-next-line */
+      extractAutocopmleteData(id, { data, id: blockId })
+    );
   }
 
   editState.blockData.data = data;
@@ -527,6 +564,67 @@ const onEdgesChange = debounce((changes) => {
   // if (command) commandManager.add(command);
 }, 250);
 
+function extractAutocopmleteData(label, { data, id }) {
+  const autocompleteData = { [id]: {} };
+  const getData = (blockName, blockData) => {
+    const keys = tasks[blockName]?.autocomplete;
+    const dataList = {};
+    if (!keys) return dataList;
+
+    keys.forEach((key) => {
+      const value = blockData[key];
+      if (!value) return;
+
+      dataList[key] = value;
+    });
+
+    return dataList;
+  };
+
+  if (label === 'blocks-group') {
+    data.blocks.forEach((block) => {
+      autocompleteData[block.itemId] = getData(block.id, block.data);
+    });
+  } else {
+    autocompleteData[id] = getData(label, data);
+  }
+
+  return autocompleteData;
+}
+async function initAutocomplete() {
+  const autocompleteCache = sessionStorage.getItem(
+    `autocomplete:${workflowId}`
+  );
+  if (autocompleteCache) {
+    const objData = parseJSON(autocompleteCache, {});
+    autocompleteState.blocks = objData;
+  } else {
+    const autocompleteData = {};
+    workflow.value.drawflow.nodes.forEach(({ label, id, data }) => {
+      Object.assign(
+        autocompleteData,
+        extractAutocopmleteData(label, { data, id })
+      );
+    });
+
+    autocompleteState.blocks = autocompleteData;
+  }
+
+  try {
+    const storageVars = await dbStorage.variables.toArray();
+    autocompleteState.common.globalData = parseJSON(
+      workflow.value.globalData,
+      {}
+    );
+    autocompleteState.common.variables = {};
+
+    storageVars.forEach((variable) => {
+      autocompleteState.common.variables[`$$${variable.name}`] = {};
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
 function registerTrigger() {
   const triggerBlock = workflow.value.drawflow.nodes.find(
     (node) => node.label === 'trigger'
@@ -694,42 +792,6 @@ function onActionUpdated({ data, changedIndicator }) {
   workflowPayload.data = { ...workflowPayload.data, ...data };
   updateHostedWorkflow();
 }
-function isNodesInGroup(nodes) {
-  const groupNodes = editor.value.getNodes.value.filter(
-    (node) => node.label === 'blocks-group-2'
-  );
-
-  const nodeInGroup = new Set();
-  const filteredNodes = nodes.filter((node) => node.label !== 'blocks-group-2');
-
-  groupNodes.forEach(({ computedPosition, dimensions, id }) => {
-    const rect = { ...computedPosition, ...dimensions };
-    const nodesInGroup = getNodesInside(filteredNodes, rect);
-
-    nodesInGroup.forEach((node) => {
-      state.dataChanged = true;
-
-      if (node.parentNode === id) {
-        nodeInGroup.add(node.id);
-        return;
-      }
-
-      nodeInGroup.add(node.id);
-
-      const currentNode = editor.value.getNode.value(node.id);
-      currentNode.parentNode = id;
-      currentNode.position.x -= 450;
-    });
-  });
-  filteredNodes.forEach((node) => {
-    if (nodeInGroup.has(node.id)) return;
-
-    const currentNode = editor.value.getNode.value(node.id);
-    if (!currentNode.parentNode) return;
-
-    currentNode.parentNode = undefined;
-  });
-}
 function onEditorInit(instance) {
   editor.value = instance;
 
@@ -743,8 +805,6 @@ function onEditorInit(instance) {
   // });
 
   instance.onNodeDragStop(({ nodes }) => {
-    isNodesInGroup(nodes);
-
     nodes.forEach((node) => {
       editorCommands.state.nodes[node.id] = node;
     });
@@ -1052,6 +1112,25 @@ function checkWorkflowPermission() {
     permissionState.showModal = true;
   });
 }
+function checkWorkflowUpdate() {
+  const updatedAt = encodeURIComponent(workflow.value.updatedAt);
+  fetchApi(
+    `/teams/${teamId}/workflows/${workflowId}/check-update?updatedAt=${updatedAt}`
+  )
+    .then((response) => response.json())
+    .then((result) => {
+      if (!result) return;
+
+      updateWorkflow(result).then(() => {
+        editor.value.setNodes(result.drawflow.nodes || []);
+        editor.value.setEdges(result.drawflow.edges || []);
+        editor.value.fitView();
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
 
 const shortcut = useShortcut([
   getShortcut('editor:toggle-sidebar', toggleSidebar),
@@ -1101,9 +1180,15 @@ onMounted(() => {
   if (route.query.permission || (isTeamWorkflow && !haveEditAccess.value))
     checkWorkflowPermission();
 
+  if (isTeamWorkflow && !haveEditAccess.value && workflow.value.updatedAt) {
+    checkWorkflowUpdate();
+  }
+
   if (workflow.value.connectedTable) {
     fetchConnectedTable();
   }
+
+  initAutocomplete();
 
   window.onbeforeunload = () => {
     updateHostedWorkflow();

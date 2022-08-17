@@ -32,6 +32,13 @@
     >
       {{ t('workflow.blocks.javascript-code.everyNewTab') }}
     </ui-checkbox>
+    <ui-checkbox
+      :model-value="data.runBeforeLoad"
+      class="mt-2"
+      @change="updateData({ runBeforeLoad: $event })"
+    >
+      Run before page loaded
+    </ui-checkbox>
     <ui-modal v-model="state.showCodeModal" content-class="max-w-3xl">
       <template #header>
         <ui-tabs v-model="state.activeTab" class="border-none">
@@ -120,8 +127,12 @@
 <script setup>
 import { watch, reactive, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { syntaxTree } from '@codemirror/language';
-import { autocompletion, snippet } from '@codemirror/autocomplete';
+import { autocompletion } from '@codemirror/autocomplete';
+import {
+  automaFuncsSnippets,
+  automaFuncsCompletion,
+  completeFromGlobalScope,
+} from '@/utils/codeEditorAutocomplete';
 import { store } from '../../settings/jsBlockWrap';
 
 function modifyWhiteSpace() {
@@ -155,6 +166,7 @@ const availableFuncs = [
   },
   { name: 'automaResetTimeout()', id: 'automaresettimeout' },
 ];
+const autocompleteList = Object.values(automaFuncsSnippets).slice(0, 4);
 
 const state = reactive({
   activeTab: 'code',
@@ -169,96 +181,15 @@ function updateData(value) {
 function addScript() {
   state.preloadScripts.push({ src: '', removeAfterExec: true });
 }
-const dontCompleteIn = [
-  'String',
-  'TemplateString',
-  'LineComment',
-  'BlockComment',
-  'VariableDefinition',
-  'PropertyDefinition',
-];
-/* eslint-disable no-template-curly-in-string */
-function automaFuncsCompletion(context) {
-  const word = context.matchBefore(/\w*/);
-  const nodeBefore = syntaxTree(context.state).resolveInner(context.pos, -1);
 
-  if (
-    (word.from === word.to && !context.explicit) ||
-    dontCompleteIn.includes(nodeBefore.name)
-  )
-    return null;
-
-  return {
-    from: word.from,
-    options: [
-      {
-        label: 'automaNextBlock',
-        type: 'function',
-        apply: snippet('automaNextBlock(${data})'),
-        info: () => {
-          const container = document.createElement('div');
-
-          container.innerHTML = `
-            <code>automaNextBlock(<i>data</i>, <i>insert?</i>)</code>
-            <p class="mt-2">
-              Execute the next block
-              <a href="https://docs.automa.site/blocks/javascript-code.html#automanextblock-data" target="_blank" class="underline">
-                Read more
-              </a>
-            </p>
-          `;
-
-          return container;
-        },
-      },
-      {
-        label: 'automaSetVariable',
-        type: 'function',
-        apply: snippet("automaSetVariable('${name}', ${value})"),
-        info: () => {
-          const container = document.createElement('div');
-
-          container.innerHTML = `
-            <code>automaRefData(<i>name</i>, <i>value</i>)</code>
-            <p class="mt-2">
-              Set the value of a variable
-            </p>
-          `;
-
-          return container;
-        },
-      },
-      {
-        label: 'automaRefData',
-        type: 'function',
-        apply: snippet("automaRefData('${keyword}', '${path}')"),
-        info: () => {
-          const container = document.createElement('div');
-
-          container.innerHTML = `
-            <code>automaRefData(<i>keyword</i>, <i>path</i>)</code>
-            <p class="mt-2">
-              Use this function to
-              <a href="https://docs.automa.site/api-reference/reference-data.html" target="_blank" class="underline">
-                reference data
-              </a>
-            </p>
-          `;
-
-          return container;
-        },
-      },
-      {
-        label: 'automaResetTimeout',
-        type: 'function',
-        info: 'Reset javascript execution timeout',
-        apply: 'automaResetTimeout()',
-      },
+const codemirrorExts = [
+  autocompletion({
+    override: [
+      automaFuncsCompletion(autocompleteList),
+      completeFromGlobalScope,
     ],
-  };
-}
-
-const codemirrorExts = [autocompletion({ override: [automaFuncsCompletion] })];
+  }),
+];
 
 watch(
   () => state.code,

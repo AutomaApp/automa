@@ -153,7 +153,7 @@ function runWorkflow(index, { data, params }) {
   };
 
   const variables = params.reduce((acc, param) => {
-    const value = getParamVal[param.type](param.value);
+    const value = getParamVal[param.type](param.value || param.defaultValue);
     acc[param.name] = value;
 
     return acc;

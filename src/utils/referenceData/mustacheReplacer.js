@@ -72,6 +72,11 @@ export const functions = {
     return +value - +subtractBy;
   },
   randData(str) {
+    if (Array.isArray(str)) {
+      const index = Math.floor(Math.random() * str.length);
+      return str[index];
+    }
+
     const getRand = (data) => data[Math.floor(Math.random() * data.length)];
     const lowercase = 'abcdefghijklmnopqrstuvwxyz';
     const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';

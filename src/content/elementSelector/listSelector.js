@@ -83,7 +83,10 @@ export function getElementList(el, maxDepth = 50, paths = []) {
   return siblings;
 }
 
-export default function (target, { frameElement, onlyInList } = {}) {
+export default function (
+  target,
+  { frameElement, onlyInList, selectorSettings } = {}
+) {
   if (!target) return [];
 
   const automaListEl = target.closest('[automa-el-list]');
@@ -98,6 +101,7 @@ export default function (target, { frameElement, onlyInList } = {}) {
 
     const childSelector = findSelector(target, {
       root: automaListEl,
+      ...(selectorSettings || {}),
       idName: () => false,
     });
     const elements = documentCtx.querySelectorAll(

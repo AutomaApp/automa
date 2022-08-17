@@ -51,12 +51,30 @@ async function executeWorkflow({ id: blockId, data }) {
   }
 
   workflow = convertWorkflowData(workflow);
+  const optionsParams = { variables: {} };
+
+  if (!isWhitespace(data.globalData))
+    optionsParams.globalData = data.globalData;
+
+  if (data.insertAllVars) {
+    optionsParams.variables = JSON.parse(
+      JSON.stringify(this.engine.referenceData.variables)
+    );
+  } else if (data.insertVars) {
+    const varsName = data.insertVars.split(',');
+    varsName.forEach((name) => {
+      const varName = name.trim();
+      const value = this.engine.referenceData.variables[varName];
+
+      if (!value && typeof value !== 'boolean') return;
+
+      optionsParams.variables[varName] = value;
+    });
+  }
 
   const options = {
     options: {
-      data: {
-        globalData: isWhitespace(data.globalData) ? null : data.globalData,
-      },
+      data: optionsParams,
       parentWorkflow: {
         id: this.engine.id,
         name: this.engine.workflow.name,

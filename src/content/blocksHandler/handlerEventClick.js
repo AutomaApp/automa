@@ -5,7 +5,7 @@ import handleSelector from '../handleSelector';
 function eventClick(block) {
   return new Promise((resolve, reject) => {
     const dispatchClickEvents = (element, eventFn) => {
-      const eventOpts = { bubbles: true };
+      const eventOpts = { bubbles: true, view: window };
 
       element.dispatchEvent(new MouseEvent('mousedown', eventOpts));
       element.dispatchEvent(new MouseEvent('mouseup', eventOpts));

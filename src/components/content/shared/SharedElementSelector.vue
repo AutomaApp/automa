@@ -57,6 +57,10 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  selectorSettings: {
+    type: Object,
+    default: () => ({}),
+  },
   list: Boolean,
   hide: Boolean,
   pause: Boolean,
@@ -170,11 +174,13 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
         withAttributes: props.withAttributes,
       };
 
-      if (type === 'selected')
+      if (type === 'selected') {
         Object.assign(payload, {
           click: true,
           selectorType: props.selectorType,
+          selectorSettings: props.selectorSettings,
         });
+      }
 
       target.contentWindow.postMessage(payload, '*');
       frameElement = target;
@@ -221,6 +227,7 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
       hoveredElements,
       list: isSelectList,
       selectorType: props.selectorType,
+      selectorSettings: props.selectorSettings,
     });
 
     if (frameElement) {

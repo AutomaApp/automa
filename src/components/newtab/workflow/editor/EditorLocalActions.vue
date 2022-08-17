@@ -586,6 +586,12 @@ async function publishWorkflow() {
     const result = await response.json();
 
     if (!response.ok) {
+      if (response.status === 404) {
+        await teamWorkflowStore.delete(teamId, props.workflow.id);
+        router.replace('/');
+        return;
+      }
+
       throw new Error(result.message);
     }
   } catch (error) {
@@ -674,12 +680,7 @@ async function retrieveTriggerText() {
     true
   );
 }
-async function syncWorkflow() {
-  state.loadingSync = true;
-
-  if (props.canEdit)
-    toast('Syncing workflow...', { timeout: false, id: 'sync' });
-
+async function fetchSyncWorkflow() {
   try {
     const response = await fetchApi(
       `/teams/${teamId}/workflows/${props.workflow.id}`
@@ -717,6 +718,23 @@ async function syncWorkflow() {
   } finally {
     state.loadingSync = false;
     toast.dismiss('sync');
+  }
+}
+async function syncWorkflow() {
+  state.loadingSync = true;
+
+  if (props.canEdit) {
+    dialog.confirm({
+      title: 'Sync workflow',
+      okText: 'Sync',
+      body: 'This action will overwrite the current workflow with the one that stored in cloud',
+      onConfirm: () => {
+        fetchSyncWorkflow();
+        toast('Syncing workflow...', { timeout: false, id: 'sync' });
+      },
+    });
+  } else {
+    fetchSyncWorkflow();
   }
 }
 

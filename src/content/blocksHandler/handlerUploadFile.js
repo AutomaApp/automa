@@ -7,7 +7,6 @@ function injectFiles(element, files) {
   if (element.tagName !== 'INPUT' || notFileTypeAttr) return;
 
   element.files = files;
-
   element.dispatchEvent(new Event('change', { bubbles: true }));
 }
 
@@ -17,13 +16,25 @@ export default async function (block) {
   if (!elements) throw new Error('element-not-found');
 
   const getFile = async (path) => {
-    const file = await sendMessage('get:file', path, 'background');
-    const name = file.path?.replace(/^.*[\\/]/, '') || '';
-    const blob = await fetch(file.objUrl).then((response) => response.blob());
+    let fileObject;
 
-    URL.revokeObjectURL(file.objUrl);
+    if (!path.startsWith('file') && !path.startsWith('http')) {
+      const [filename, mime, base64] = path.split('|');
+      const response = await fetch(base64);
+      const arrayBuffer = await response.arrayBuffer();
 
-    return new File([blob], name, { type: file.type });
+      fileObject = new File([arrayBuffer], filename, { type: mime });
+    } else {
+      const file = await sendMessage('get:file', path, 'background');
+      const name = file.path?.replace(/^.*[\\/]/, '') || '';
+      const blob = await fetch(file.objUrl).then((response) => response.blob());
+
+      URL.revokeObjectURL(file.objUrl);
+
+      fileObject = new File([blob], name, { type: file.type });
+    }
+
+    return fileObject;
   };
   const filesPromises = await Promise.all(block.data.filePaths.map(getFile));
   const dataTransfer = filesPromises.reduce((acc, file) => {

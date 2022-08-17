@@ -57,6 +57,13 @@
     >
       {{ t('workflow.blocks.get-text.includeTags') }}
     </ui-checkbox>
+    <ui-checkbox
+      :model-value="data.useTextContent"
+      class="mt-2"
+      @change="updateData({ useTextContent: $event })"
+    >
+      Use <code>textContent</code>
+    </ui-checkbox>
     <hr />
     <insert-workflow-data
       :data="data"

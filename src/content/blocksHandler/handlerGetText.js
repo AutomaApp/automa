@@ -11,6 +11,7 @@ function getText(block) {
       suffixText,
       multiple,
       includeTags,
+      useTextContent,
     } = block.data;
 
     if (regexData) {
@@ -19,7 +20,15 @@ function getText(block) {
 
     handleSelector(block, {
       onSelected(element) {
-        let text = includeTags ? element.outerHTML : element.innerText;
+        let text = '';
+
+        if (includeTags) {
+          text = element.outerHTML;
+        } else if (useTextContent) {
+          text = element.textContent;
+        } else {
+          text = element.innerText;
+        }
 
         if (regex) text = text.match(regex)?.join(' ') ?? text;
 

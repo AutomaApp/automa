@@ -37,6 +37,7 @@
           <shared-codemirror
             v-if="name === 'code'"
             v-model="inputsData[index].data[name]"
+            :extensions="codemirrorExts"
             class="code-condition mt-2"
             style="margin-left: 0"
           />
@@ -72,7 +73,13 @@
 import { ref, watch, defineAsyncComponent } from 'vue';
 import { nanoid } from 'nanoid';
 import { useI18n } from 'vue-i18n';
+import { autocompletion } from '@codemirror/autocomplete';
 import cloneDeep from 'lodash.clonedeep';
+import {
+  automaFuncsSnippets,
+  automaFuncsCompletion,
+  completeFromGlobalScope,
+} from '@/utils/codeEditorAutocomplete';
 import { conditionBuilder } from '@/utils/shared';
 import EditAutocomplete from '../../workflow/edit/EditAutocomplete.vue';
 
@@ -92,6 +99,15 @@ const props = defineProps({
 });
 const emit = defineEmits(['update']);
 
+const autocompleteList = [automaFuncsSnippets.automaRefData];
+const codemirrorExts = [
+  autocompletion({
+    override: [
+      automaFuncsCompletion(autocompleteList),
+      completeFromGlobalScope,
+    ],
+  }),
+];
 const conditionOperators = conditionBuilder.compareTypes.reduce((acc, type) => {
   if (!acc[type.category]) acc[type.category] = [];
 

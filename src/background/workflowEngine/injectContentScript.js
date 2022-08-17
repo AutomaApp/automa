@@ -30,7 +30,7 @@ export default function (tabId, frameId = 0) {
 
         await browser.tabs.executeScript(tabId, {
           allFrames: true,
-          runAt: 'document_end',
+          runAt: 'document_start',
           file: './contentScript.bundle.js',
         });
         const isScriptExists = await contentScriptExist(tabId, currentFrameId);

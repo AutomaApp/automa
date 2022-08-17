@@ -27,7 +27,7 @@ async function handleCreateElement(block, { refData }) {
     payload.refData = { ...refData, secrets: {} };
   }
 
-  await this._sendMessageToTab(payload);
+  await this._sendMessageToTab(payload, {}, data.runBeforeLoad ?? false);
 
   return {
     data: '',

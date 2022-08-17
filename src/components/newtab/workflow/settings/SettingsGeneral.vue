@@ -107,6 +107,14 @@
         {{ t('workflow.settings.publicId.description') }}
       </p>
     </div>
+    <a
+      href="https://docs.automa.site/blocks/trigger.html#trigger-using-js-customevent"
+      target="_blank"
+      rel="noopener"
+      class="mr-2 text-gray-600 dark:text-gray-200"
+    >
+      <v-remixicon name="riInformationLine" />
+    </a>
     <ui-input
       :model-value="settings.publicId"
       placeholder="myWorkflowPublicId"

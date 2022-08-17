@@ -299,7 +299,7 @@ class Worker {
     };
   }
 
-  async _sendMessageToTab(payload, options = {}) {
+  async _sendMessageToTab(payload, options = {}, runBeforeLoad = false) {
     try {
       if (!this.activeTab.id) {
         const error = new Error('no-tab');
@@ -308,10 +308,12 @@ class Worker {
         throw error;
       }
 
-      await waitTabLoaded({
-        tabId: this.activeTab.id,
-        ms: this.settings?.tabLoadTimeout ?? 30000,
-      });
+      if (!runBeforeLoad) {
+        await waitTabLoaded({
+          tabId: this.activeTab.id,
+          ms: this.settings?.tabLoadTimeout ?? 30000,
+        });
+      }
 
       const { executedBlockOnWeb, debugMode } = this.settings;
       const messagePayload = {
@@ -333,7 +335,7 @@ class Worker {
       return data;
     } catch (error) {
       console.error(error);
-      const noConnection = error.message?.startsWith(
+      const noConnection = error.message?.includes(
         'Could not establish connection'
       );
       const channelClosed = error.message?.includes('message channel closed');
@@ -345,7 +347,11 @@ class Worker {
         );
 
         if (isScriptInjected) {
-          const result = await this._sendMessageToTab(payload, options);
+          const result = await this._sendMessageToTab(
+            payload,
+            options,
+            runBeforeLoad
+          );
           return result;
         }
         error.message = 'Could not establish connection to the active tab';

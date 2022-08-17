@@ -23,7 +23,7 @@
           <edit-autocomplete class="mr-2">
             <ui-input
               v-model="filePaths[index]"
-              :placeholder="t('workflow.blocks.upload-file.filePath')"
+              placeholder="URL/File path/base64"
               autocomplete="off"
               class="w-full"
             />
