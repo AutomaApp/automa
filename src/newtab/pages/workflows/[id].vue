@@ -117,7 +117,8 @@
             :data="workflow.drawflow"
             :disabled="isTeamWorkflow && !haveEditAccess"
             :class="{ 'animate-blocks': state.animateBlocks }"
-            class="h-screen"
+            class="h-screen workflow-editor"
+            tabindex="0"
             @init="onEditorInit"
             @edit="initEditBlock"
             @update:node="state.dataChanged = true"
@@ -1083,10 +1084,14 @@ function undoRedoCommand(type, { target }) {
 }
 function onKeydown({ ctrlKey, metaKey, shiftKey, key, target }) {
   const els = ['INPUT', 'SELECT', 'TEXTAREA'];
-  if (els.includes(target.tagName) || target.isContentEditable) return;
+  if (
+    els.includes(target.tagName) ||
+    target.isContentEditable ||
+    !target.classList.contains('workflow-editor')
+  )
+    return;
 
   const command = (keyName) => (ctrlKey || metaKey) && keyName === key;
-
   if (command('c')) {
     copySelectedElements();
   } else if (command('v')) {
