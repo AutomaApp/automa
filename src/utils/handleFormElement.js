@@ -1,4 +1,4 @@
-import { sleep } from '@/utils/helper';
+import { sleep, objectHasKey } from '@/utils/helper';
 import { keyDefinitions } from '@/utils/USKeyboardLayout';
 import simulateEvent from './simulateEvent';
 
@@ -7,9 +7,17 @@ const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
   'value'
 ).set;
 function reactJsEvent(element, value) {
+  console.dir(element);
+  console.log(
+    objectHasKey(element, '_valueTracker'),
+    element.parentElement.hasChildNodes(element)
+  );
+  console.log(!element._valueTracker, element._valueTracker, element);
   if (!element._valueTracker) return;
 
+  const previousValue = element.value;
   nativeInputValueSetter.call(element, value);
+  element._valueTracker.setValue(previousValue);
 }
 
 function formEvent(element, data) {
@@ -57,10 +65,10 @@ async function inputText({ data, element, isEditable }) {
 
   if (data.delay > 0 && !document.hidden) {
     for (let index = 0; index < data.value.length; index += 1) {
+      if (elementKey === 'value') reactJsEvent(element, element.value);
+
       const currentChar = data.value[index];
       element[elementKey] += currentChar;
-
-      if (elementKey === 'value') reactJsEvent(element, element.value);
 
       formEvent(element, {
         type: 'text-field',
@@ -71,9 +79,9 @@ async function inputText({ data, element, isEditable }) {
       await sleep(data.delay);
     }
   } else {
-    element[elementKey] += data.value;
-
     if (elementKey === 'value') reactJsEvent(element, element.value);
+
+    element[elementKey] += data.value;
 
     formEvent(element, {
       isEditable,
@@ -102,7 +110,11 @@ export default async function (element, data) {
   }
 
   if (data.type === 'text-field' && textFields.includes(element.tagName)) {
-    if (data.clearValue) element.value = '';
+    if (data.clearValue) {
+      element?.select();
+      reactJsEvent(element, '');
+      element.value = '';
+    }
 
     await inputText({ data, element });
     return;

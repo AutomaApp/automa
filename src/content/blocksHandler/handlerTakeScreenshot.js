@@ -78,31 +78,23 @@ async function captureElement({ selector, tabId, options }) {
   const imageUrl = await takeScreenshot(tabId, options);
   const image = await loadAsyncImg(imageUrl);
 
-  let { marginLeft, marginTop } = getComputedStyle(element);
-  const getNum = (str) => {
-    const num = parseInt(str, 10);
-
-    return num < 0 ? 0 : num;
-  };
-  marginLeft = getNum(marginLeft);
-  marginTop = getNum(marginTop);
-
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
   const { height, width, x, y } = element.getBoundingClientRect();
 
-  const newX = x + marginLeft / 2;
-  const newY = y + marginTop / 2;
-  const newWidth = width + marginLeft;
-  const newHeight = height + marginTop;
+  const diffHeight = image.height / window.innerHeight;
+  const diffWidth = image.width / window.innerWidth;
+
+  const newWidth = width * diffWidth;
+  const newHeight = height * diffHeight;
 
   canvas.width = newWidth;
   canvas.height = newHeight;
 
   context.drawImage(
     image,
-    newX,
-    newY,
+    x * diffHeight,
+    y * diffWidth,
     newWidth,
     newHeight,
     0,
