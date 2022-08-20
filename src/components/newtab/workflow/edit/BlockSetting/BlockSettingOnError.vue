@@ -1,5 +1,8 @@
 <template>
-  <div class="on-block-error">
+  <div
+    class="on-block-error overflow-auto scroll"
+    style="max-height: calc(100vh - 13rem)"
+  >
     <div
       class="p-4 rounded-lg bg-green-200 dark:bg-green-300 flex items-start text-black"
     >
@@ -16,7 +19,7 @@
         </span>
       </label>
       <template v-if="state.enable">
-        <div class="mt-2">
+        <div class="mt-4">
           <label class="inline-flex">
             <ui-switch v-model="state.retry" />
             <span class="ml-2">
@@ -65,7 +68,7 @@
             </div>
           </div>
         </transition-expand>
-        <ui-select v-model="state.toDo" class="mt-2 w-56">
+        <ui-select v-model="state.toDo" class="w-56 mt-2">
           <option
             v-for="type in toDoTypes"
             :key="type"
@@ -76,12 +79,84 @@
             {{ t(`workflow.blocks.base.onError.toDo.${type}`) }}
           </option>
         </ui-select>
+        <div class="mt-4 flex items-center justify-between">
+          <label class="inline-flex">
+            <ui-switch v-model="state.insertData" />
+            <span class="ml-2">
+              {{ t('workflow.blocks.base.onError.insertData.name') }}
+            </span>
+          </label>
+          <ui-button
+            v-if="state.insertData"
+            class="text-sm"
+            @click="addDataToInsert"
+          >
+            Add item
+          </ui-button>
+        </div>
+        <transition-expand>
+          <table v-if="state.insertData" class="mt-2 w-full">
+            <thead>
+              <tr class="text-left text-sm">
+                <th>Type</th>
+                <th>Name</th>
+                <th>Value</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) in state.dataToInsert" :key="index">
+                <td>
+                  <ui-select v-model="item.type">
+                    <option value="table">
+                      {{ t('workflow.table.title') }}
+                    </option>
+                    <option value="variable">
+                      {{ t('workflow.variables.title') }}
+                    </option>
+                  </ui-select>
+                </td>
+                <td>
+                  <ui-select
+                    v-if="item.type === 'table'"
+                    v-model="item.name"
+                    placeholder="Select column"
+                    class="mt-1 w-full"
+                  >
+                    <option
+                      v-for="column in workflow.columns.value"
+                      :key="column.id"
+                      :value="column.id"
+                    >
+                      {{ column.name }}
+                    </option>
+                  </ui-select>
+                  <ui-input
+                    v-else
+                    v-model="item.name"
+                    placeholder="Variable name"
+                  />
+                </td>
+                <td>
+                  <ui-input v-model="item.value" placeholder="EMPTY" />
+                </td>
+                <td>
+                  <v-remixicon
+                    name="riCloseLine"
+                    class="text-gray-600 dark:text-gray-200 cursor-pointer"
+                    @click="state.dataToInsert.splice(index, 1)"
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </transition-expand>
       </template>
     </div>
   </div>
 </template>
 <script setup>
-import { reactive, watch, onMounted } from 'vue';
+import { reactive, watch, onMounted, inject } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps({
@@ -97,6 +172,18 @@ const toDoTypes = ['error', 'continue', 'fallback'];
 const { t } = useI18n();
 const state = reactive({});
 
+const workflow = inject('workflow', {});
+
+function addDataToInsert() {
+  if (!state.dataToInsert) state.dataToInsert = [];
+
+  state.dataToInsert.push({
+    type: 'table',
+    name: '',
+    value: '',
+  });
+}
+
 watch(
   () => state,
   (onError) => {
@@ -110,6 +197,13 @@ onMounted(() => {
 });
 </script>
 <style scoped>
+table th,
+table,
+td {
+  font-weight: normal;
+  @apply p-1;
+}
+
 .to-do-type.is-active {
   @apply bg-accent dark:text-black text-gray-100 !important;
 }

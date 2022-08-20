@@ -96,6 +96,8 @@ const defaultSettings = {
     retryTimes: 1,
     retryInterval: 2,
     toDo: 'error',
+    insertData: false,
+    dataToInsert: [],
   },
   general: {
     debugMode: false,

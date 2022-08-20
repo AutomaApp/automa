@@ -1,7 +1,14 @@
 import browser from 'webextension-polyfill';
-import { toCamelCase, sleep, objectHasKey, isObject } from '@/utils/helper';
+import {
+  toCamelCase,
+  sleep,
+  objectHasKey,
+  parseJSON,
+  isObject,
+} from '@/utils/helper';
 import { tasks } from '@/utils/shared';
 import referenceData from '@/utils/referenceData';
+import mustacheReplacer from '@/utils/referenceData/mustacheReplacer';
 import injectContentScript from './injectContentScript';
 import { convertData, waitTabLoaded } from './helper';
 
@@ -211,6 +218,19 @@ class Worker {
           await this.executeBlock(replacedBlock, prevBlockData, true);
 
           return;
+        }
+
+        if (blockOnError.insertData) {
+          blockOnError.dataToInsert.forEach((item) => {
+            let value = mustacheReplacer(item.value, refData)?.value;
+            value = parseJSON(value, value);
+
+            if (item.type === 'variable') {
+              this.setVariable(item.name, value);
+            } else {
+              this.addDataToColumn(item.name, value);
+            }
+          });
         }
 
         const nextBlocks = this.getBlockConnections(
