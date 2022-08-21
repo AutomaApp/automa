@@ -17,8 +17,11 @@ export default async function (block) {
 
   const getFile = async (path) => {
     let fileObject;
-
-    if (!path.startsWith('file') && !path.startsWith('http')) {
+    if (
+      path.includes('|') &&
+      !path.startsWith('file') &&
+      !path.startsWith('http')
+    ) {
       const [filename, mime, base64] = path.split('|');
       const response = await fetch(base64);
       const arrayBuffer = await response.arrayBuffer();

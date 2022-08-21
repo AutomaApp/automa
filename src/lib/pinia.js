@@ -1,4 +1,4 @@
-import { markRaw, toRaw } from 'vue';
+import { markRaw } from 'vue';
 import { createPinia } from 'pinia';
 import browser from 'webextension-polyfill';
 
@@ -9,7 +9,9 @@ function saveToStoragePlugin({ store, options }) {
     const storageKey = options.storageMap[key];
     if (!storageKey || !store.retrieved) return null;
 
-    return newBrowser.storage.local.set({ [storageKey]: toRaw(store[key]) });
+    const value = JSON.parse(JSON.stringify(store[key]));
+
+    return newBrowser.storage.local.set({ [storageKey]: value });
   };
 }
 

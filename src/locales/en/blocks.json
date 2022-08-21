@@ -52,6 +52,9 @@
             "continue": "Continue flow",
             "fallback": "Execute fallback",
             "restart": "Restart flow"
+          },
+          "insertData": {
+            "name": "Insert data"
           }
         },
         "table": {

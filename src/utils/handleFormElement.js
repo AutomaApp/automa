@@ -1,4 +1,4 @@
-import { sleep, objectHasKey } from '@/utils/helper';
+import { sleep } from '@/utils/helper';
 import { keyDefinitions } from '@/utils/USKeyboardLayout';
 import simulateEvent from './simulateEvent';
 
@@ -7,12 +7,6 @@ const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
   'value'
 ).set;
 function reactJsEvent(element, value) {
-  console.dir(element);
-  console.log(
-    objectHasKey(element, '_valueTracker'),
-    element.parentElement.hasChildNodes(element)
-  );
-  console.log(!element._valueTracker, element._valueTracker, element);
   if (!element._valueTracker) return;
 
   const previousValue = element.value;
