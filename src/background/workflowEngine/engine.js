@@ -177,16 +177,6 @@ class WorkflowEngine {
         }
       }
 
-      const credentials = await dbStorage.credentials.toArray();
-      credentials.forEach(({ name, value }) => {
-        this.referenceData.secrets[name] = value;
-      });
-
-      const variables = await dbStorage.variables.toArray();
-      variables.forEach(({ name, value }) => {
-        this.referenceData.variables[`$$${name}`] = value;
-      });
-
       columns.forEach(({ name, type, id }) => {
         const columnId = id || name;
 
@@ -221,6 +211,16 @@ class WorkflowEngine {
       this.startedTimestamp = Date.now();
 
       this.states.on('stop', this.onWorkflowStopped);
+
+      const credentials = await dbStorage.credentials.toArray();
+      credentials.forEach(({ name, value }) => {
+        this.referenceData.secrets[name] = value;
+      });
+
+      const variables = await dbStorage.variables.toArray();
+      variables.forEach(({ name, value }) => {
+        this.referenceData.variables[`$$${name}`] = value;
+      });
 
       await this.states.add(this.id, {
         id: this.id,
