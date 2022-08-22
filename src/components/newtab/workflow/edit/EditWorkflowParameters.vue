@@ -21,7 +21,7 @@
       </thead>
       <tbody>
         <template v-for="(param, index) in state.parameters" :key="index">
-          <tr>
+          <tr class="align-top">
             <td>
               <ui-input
                 :model-value="param.name"
@@ -30,7 +30,10 @@
               />
             </td>
             <td>
-              <ui-select v-model="param.type">
+              <ui-select
+                :model-value="param.type"
+                @change="updateParamType(index, $event)"
+              >
                 <option
                   v-for="type in paramTypes"
                   :key="type.id"
@@ -49,6 +52,7 @@
                 v-if="paramTypes[param.type].valueComp"
                 v-model="param.defaultValue"
                 :param-data="param"
+                max-width="250px"
               />
               <ui-input
                 v-else
@@ -134,6 +138,12 @@ function addParameter() {
 }
 function updateParam(index, value) {
   state.parameters[index].name = value.replace(/\s/g, '_');
+}
+function updateParamType(index, type) {
+  const param = state.parameters[index];
+
+  param.type = type;
+  param.data = paramTypes[type].data || {};
 }
 
 watch(
