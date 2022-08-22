@@ -17,47 +17,46 @@ const overwriteDialog = (accept, promptText) => `
   }
 `;
 
-function handleDialog({ data, id: blockId }) {
-  return new Promise((resolve) => {
-    if (!this.settings.debugMode || BROWSER_TYPE !== 'chrome') {
-      const isScriptExist = this.preloadScripts.find(
-        ({ id }) => id === blockId
-      );
+async function handleDialog({ data, id: blockId }) {
+  if (!this.settings.debugMode || BROWSER_TYPE !== 'chrome') {
+    const isScriptExist = this.preloadScripts.some(({ id }) => id === blockId);
 
-      if (!isScriptExist) {
-        this.preloadScripts.push({
-          id: blockId,
-          isBlock: true,
-          name: 'javascript-code',
-          data: {
-            everyNewTab: true,
-            code: overwriteDialog(data.accept, data.promptText),
-          },
-        });
-      }
-    } else {
-      this.dialogParams = {
-        accept: data.accept,
-        promptText: data.promptText,
+    if (!isScriptExist) {
+      const payload = {
+        id: blockId,
+        isBlock: true,
+        name: 'javascript-code',
+        data: {
+          everyNewTab: true,
+          code: overwriteDialog(data.accept, data.promptText),
+        },
       };
 
-      const methodName = 'Page.javascriptDialogOpening';
-      if (!this.engine.eventListeners[methodName]) {
-        this.engine.on(methodName, () => {
-          sendDebugCommand(
-            this.activeTab.id,
-            'Page.handleJavaScriptDialog',
-            this.dialogParams
-          );
-        });
-      }
+      this.preloadScripts.push(payload);
+      await this._sendMessageToTab(payload, {}, true);
     }
+  } else {
+    this.dialogParams = {
+      accept: data.accept,
+      promptText: data.promptText,
+    };
 
-    resolve({
-      data: '',
-      nextBlockId: this.getBlockConnections(blockId),
-    });
-  });
+    const methodName = 'Page.javascriptDialogOpening';
+    if (!this.engine.eventListeners[methodName]) {
+      this.engine.on(methodName, () => {
+        sendDebugCommand(
+          this.activeTab.id,
+          'Page.handleJavaScriptDialog',
+          this.dialogParams
+        );
+      });
+    }
+  }
+
+  return {
+    data: '',
+    nextBlockId: this.getBlockConnections(blockId),
+  };
 }
 
 export default handleDialog;

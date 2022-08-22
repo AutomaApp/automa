@@ -74,7 +74,7 @@ export default async function ({ data, id }) {
 
   if (this.preloadScripts.length > 0) {
     const preloadScripts = this.preloadScripts.map((script) =>
-      this._sendMessageToTab(script)
+      this._sendMessageToTab(script, {}, true)
     );
     await Promise.allSettled(preloadScripts);
   }
