@@ -37,7 +37,7 @@ function rem2px(input, fontSize = 16) {
 }
 
 module.exports = {
-  content: ['./src/**/*.{js,jsx,ts,tsx,vue}'],
+  content: ['./src/**/*.{js,jsx,ts,tsx,vue}', './business/**/*.{js,jsx,ts,tsx,vue}'],
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     borderRadius: rem2px(defaultTheme.borderRadius),
