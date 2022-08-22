@@ -40,9 +40,10 @@
   </teleport>
 </template>
 <script setup>
-import { reactive, watch, onMounted, onBeforeUnmount } from 'vue';
+import { reactive, watch, onMounted, onBeforeUnmount, toRaw } from 'vue';
 import { finder } from '@medv/finder';
 import { debounce } from '@/utils/helper';
+import getSelectorOptions from '@/content/elementSelector/getSelectorOptions';
 import { generateXPath, getElementPath, getElementRect } from '@/content/utils';
 import findElementList from '@/content/elementSelector/listSelector';
 import generateElementsSelector from '@/content/elementSelector/generateElementsSelector';
@@ -178,7 +179,7 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
         Object.assign(payload, {
           click: true,
           selectorType: props.selectorType,
-          selectorSettings: props.selectorSettings,
+          selectorSettings: toRaw(props.selectorSettings),
         });
       }
 
@@ -221,17 +222,18 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
   if (type === 'selected') {
     if (!frameElement) resetFramesElements();
 
+    const selectorOptions = getSelectorOptions(props.selectorSettings);
     let selector = generateElementsSelector({
       target,
       frameElement,
       hoveredElements,
       list: isSelectList,
       selectorType: props.selectorType,
-      selectorSettings: props.selectorSettings,
+      selectorSettings: selectorOptions,
     });
 
     if (frameElement) {
-      const frameSelector = finder(frameElement);
+      const frameSelector = finder(frameElement, selectorOptions);
       selector = `${frameSelector} |> ${selector}`;
     }
 
@@ -261,7 +263,6 @@ function onClick(event) {
 }
 function onMessage({ data }) {
   if (data.type !== 'automa:iframe-element-rect') return;
-
   if (data.click) {
     const frameSelector =
       props.selectorType === 'css'

@@ -129,7 +129,7 @@
     :list="state.selectList"
     :selector-type="state.selectorType"
     :selected-els="state.selectedElements"
-    :selector-settings="getSelectorOptions(selectorSettings)"
+    :selector-settings="selectorSettings"
     with-attributes
     @selected="onElementsSelected"
   />
