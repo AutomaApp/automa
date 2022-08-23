@@ -95,7 +95,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['url'],
+    refDataKeys: ['url', 'userAgent'],
     data: {
       disableBlock: false,
       description: '',

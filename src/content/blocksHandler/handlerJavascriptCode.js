@@ -27,7 +27,9 @@ function automaResetTimeout() {
 }
 
 function javascriptCode(block) {
-  const automaScript = getAutomaScript(block.refData, block.data.everyNewTab);
+  const automaScript = block.data.everyNewTab
+    ? ''
+    : getAutomaScript(block.refData, block.data.everyNewTab);
 
   return new Promise((resolve, reject) => {
     let documentCtx = document;
@@ -143,7 +145,8 @@ function javascriptCode(block) {
       } else {
         resolve();
       }
-      documentCtx.body.appendChild(script);
+
+      documentCtx.documentElement.appendChild(script);
     });
   });
 }

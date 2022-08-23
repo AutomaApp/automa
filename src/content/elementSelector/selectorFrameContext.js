@@ -2,6 +2,7 @@ import FindElement from '@/utils/FindElement';
 import { getElementRect } from '../utils';
 import findElementList from './listSelector';
 import generateElementsSelector from './generateElementsSelector';
+import getSelectorOptions from './getSelectorOptions';
 
 let hoveredElements = [];
 let prevSelectedElement = null;
@@ -38,6 +39,7 @@ function getElementsRect(data) {
       list: data.list,
       target: selectedElement,
       selectorType: data.selectorType,
+      selectorSettings: getSelectorOptions(data.selectorSettings || {}),
     });
 
     payload.selector = selector;
