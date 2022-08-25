@@ -52,6 +52,7 @@
                 v-if="paramTypes[param.type].valueComp"
                 v-model="param.defaultValue"
                 :param-data="param"
+                :editor="true"
                 max-width="250px"
               />
               <ui-input
@@ -101,7 +102,7 @@
 <script setup>
 import { reactive, watch } from 'vue';
 import cloneDeep from 'lodash.clonedeep';
-import { workflowParameters } from '@business';
+import * as workflowParameters from '@business/parameters';
 
 const props = defineProps({
   data: {

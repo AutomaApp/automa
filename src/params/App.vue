@@ -81,7 +81,7 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue';
 import browser from 'webextension-polyfill';
-import { workflowParameters } from '@business';
+import * as workflowParameters from '@business/parameters';
 import dayjs from '@/lib/dayjs';
 import { useTheme } from '@/composable/theme';
 

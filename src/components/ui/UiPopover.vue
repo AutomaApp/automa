@@ -148,3 +148,8 @@ export default {
   },
 };
 </script>
+<style>
+.ui-popover.content-full .ui-popover__trigger {
+  width: 100%;
+}
+</style>

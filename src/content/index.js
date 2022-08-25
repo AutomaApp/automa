@@ -2,6 +2,7 @@ import browser from 'webextension-polyfill';
 import findSelector from '@/lib/findSelector';
 import { toCamelCase } from '@/utils/helper';
 import { nanoid } from 'nanoid';
+import handleSelector from './handleSelector';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
 import shortcutListener from './services/shortcutListener';
@@ -67,9 +68,8 @@ async function executeBlock(data) {
     }
   }
   const handler = blocksHandler[toCamelCase(data.name || data.label)];
-
   if (handler) {
-    const result = await handler(data);
+    const result = await handler(data, { handleSelector });
     removeExecutedBlock();
 
     return result;

@@ -1,3 +1,4 @@
+import customHandlers from '@business/blocks/contentHandler';
 import { toCamelCase } from '@/utils/helper';
 
 const blocksHandler = require.context('./blocksHandler', false, /\.js$/);
@@ -9,4 +10,7 @@ const handlers = blocksHandler.keys().reduce((acc, key) => {
   return acc;
 }, {});
 
-export default handlers;
+export default {
+  ...customHandlers,
+  ...handlers,
+};

@@ -17,29 +17,31 @@
       @change="updateData({ variableName: $event })"
     />
   </template>
-  <ui-checkbox
-    :model-value="data.saveData"
-    block
-    class="mt-4"
-    @change="updateData({ saveData: $event })"
-  >
-    {{ t('workflow.blocks.base.table.checkbox') }}
-  </ui-checkbox>
-  <ui-select
-    v-if="data.saveData"
-    :model-value="data.dataColumn"
-    :placeholder="t('workflow.blocks.base.table.select')"
-    class="w-full mt-2"
-    @change="updateData({ dataColumn: $event })"
-  >
-    <option
-      v-for="column in [...columns, ...workflow.columns.value]"
-      :key="column.id"
-      :value="column.id"
+  <template v-if="table">
+    <ui-checkbox
+      :model-value="data.saveData"
+      block
+      class="mt-4"
+      @change="updateData({ saveData: $event })"
     >
-      {{ column.name }}
-    </option>
-  </ui-select>
+      {{ t('workflow.blocks.base.table.checkbox') }}
+    </ui-checkbox>
+    <ui-select
+      v-if="data.saveData"
+      :model-value="data.dataColumn"
+      :placeholder="t('workflow.blocks.base.table.select')"
+      class="w-full mt-2"
+      @change="updateData({ dataColumn: $event })"
+    >
+      <option
+        v-for="column in [...columns, ...workflow.columns.value]"
+        :key="column.id"
+        :value="column.id"
+      >
+        {{ column.name }}
+      </option>
+    </ui-select>
+  </template>
   <template v-if="extraRow">
     <ui-checkbox
       :model-value="data.addExtraRow"
@@ -82,6 +84,10 @@ defineProps({
   data: {
     type: Object,
     default: () => ({}),
+  },
+  table: {
+    type: Boolean,
+    default: true,
   },
   extraRow: Boolean,
   variables: Boolean,

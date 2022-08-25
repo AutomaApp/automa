@@ -54,7 +54,7 @@ export function queryElements(data, documentCtx = document) {
 
 export default async function (
   { data, id, frameSelector, debugMode },
-  { onSelected, onError, onSuccess } = {}
+  { onSelected, onError, onSuccess, withDocument } = {}
 ) {
   if (!data || !data.selector) {
     if (onError) onError(new Error('selector-empty'));
@@ -95,6 +95,12 @@ export default async function (
     );
 
     if (onSuccess) onSuccess();
+    if (withDocument) {
+      return {
+        elements,
+        document: documentCtx,
+      };
+    }
 
     return elements;
   } catch (error) {

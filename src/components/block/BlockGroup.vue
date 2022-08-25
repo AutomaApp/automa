@@ -52,7 +52,12 @@
           />
           <div class="leading-tight flex-1 overflow-hidden">
             <p class="text-overflow">
-              {{ t(`workflow.blocks.${element.id}.name`) }}
+              {{
+                getTranslation(
+                  `workflow.blocks.${element.id}.name`,
+                  tasks[element.id].name
+                )
+              }}
             </p>
             <p
               :title="element.data.description"
@@ -134,7 +139,7 @@ const excludeBlocks = [
   'element-exists',
 ];
 
-const { t } = useI18n();
+const { t, te } = useI18n();
 const toast = useToast();
 const componentId = useComponentId('blocks-group');
 const block = useEditorBlock(props.label);
@@ -183,6 +188,9 @@ function deleteItem(index, itemId) {
 
   copyBlocks.splice(index, 1);
   emit('update', { blocks: copyBlocks });
+}
+function getTranslation(key, defText = '') {
+  return te(key) ? t(key) : defText;
 }
 function handleDrop(event) {
   event.preventDefault();

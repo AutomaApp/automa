@@ -210,6 +210,7 @@
 import {
   watch,
   provide,
+  markRaw,
   reactive,
   computed,
   onMounted,
@@ -239,6 +240,7 @@ import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useCommandManager } from '@/composable/commandManager';
 import { debounce, parseJSON, throttle } from '@/utils/helper';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
+import customBlocks from '@business/blocks';
 import browser from 'webextension-polyfill';
 import dbStorage from '@/db/storage';
 import DroppedNode from '@/utils/editor/DroppedNode';
@@ -257,6 +259,8 @@ import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissions
 import EditorLocalCtxMenu from '@/components/newtab/workflow/editor/EditorLocalCtxMenu.vue';
 import EditorLocalActions from '@/components/newtab/workflow/editor/EditorLocalActions.vue';
 import EditorUsedCredentials from '@/components/newtab/workflow/editor/EditorUsedCredentials.vue';
+
+const blocks = { ...tasks, ...customBlocks };
 
 let editorCommands = null;
 const executeCommandTimeout = null;
@@ -568,7 +572,7 @@ const onEdgesChange = debounce((changes) => {
 function extractAutocopmleteData(label, { data, id }) {
   const autocompleteData = { [id]: {} };
   const getData = (blockName, blockData) => {
-    const keys = tasks[blockName]?.autocomplete;
+    const keys = blocks[blockName]?.autocomplete;
     const dataList = {};
     if (!keys) return dataList;
 
@@ -735,24 +739,31 @@ function toggleSidebar() {
   localStorage.setItem('workflow:sidebar', state.showSidebar);
 }
 function initEditBlock(data) {
-  const { editComponent, data: blockDefData } = tasks[data.id];
+  const { editComponent, data: blockDefData, name } = blocks[data.id];
   const blockData = defu(data.data, blockDefData);
+  const blockEditComponent =
+    typeof editComponent === 'string' ? editComponent : markRaw(editComponent);
 
-  editState.blockData = { ...data, editComponent, data: blockData };
+  editState.blockData = {
+    ...data,
+    editComponent: blockEditComponent,
+    name,
+    data: blockData,
+  };
 
   if (data.id === 'wait-connections') {
     const connections = editor.value.getEdges.value.reduce(
       (acc, { target, sourceNode, source }) => {
         if (target !== data.blockId) return acc;
 
-        let name = t(`workflow.blocks.${sourceNode.label}.name`);
+        let blockName = t(`workflow.blocks.${sourceNode.label}.name`);
 
         const { description } = sourceNode.data;
-        if (description) name += ` (${description})`;
+        if (description) blockName += ` (${description})`;
 
         acc.push({
-          name,
           id: source,
+          name: blockName,
         });
 
         return acc;
@@ -1059,12 +1070,12 @@ async function pasteCopiedElements(position) {
 
   try {
     const copiedText = await navigator.clipboard.readText();
-    const blocks = parseJSON(copiedText);
+    const workflowBlocks = parseJSON(copiedText);
 
-    if (blocks && blocks.name === 'automa-blocks') {
+    if (workflowBlocks && workflowBlocks.name === 'automa-blocks') {
       const { nodes, edges } = copyElements(
-        blocks.data.nodes,
-        blocks.data.edges,
+        workflowBlocks.data.nodes,
+        workflowBlocks.data.edges,
         position
       );
       editor.value.addNodes(nodes);

@@ -7,7 +7,7 @@
         <v-remixicon name="riArrowLeftLine" />
       </button>
       <p class="font-semibold inline-block capitalize">
-        {{ t(`workflow.blocks.${data.id}.name`) }}
+        {{ getBlockName() }}
       </p>
       <a
         :title="t('common.docs')"
@@ -33,7 +33,7 @@
       />
     </div>
     <component
-      :is="components[data.editComponent]"
+      :is="getEditComponent()"
       v-if="blockData"
       :key="data.itemId || data.blockId"
       v-model:data="blockData"
@@ -56,6 +56,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { excludeOnError } from '@/utils/shared';
+import customEditComponents from '@business/blocks/editComponents';
 import EditBlockSettings from './edit/EditBlockSettings.vue';
 
 const editComponents = require.context(
@@ -63,7 +64,6 @@ const editComponents = require.context(
   false,
   /^(?:.*\/)?Edit[^/]*\.vue$/
 );
-
 /* eslint-disable-next-line */
 const components = editComponents.keys().reduce((acc, key) => {
   const name = key.replace(/(.\/)|\.vue$/g, '');
@@ -73,6 +73,8 @@ const components = editComponents.keys().reduce((acc, key) => {
 
   return acc;
 }, {});
+
+Object.assign(components, customEditComponents);
 
 const props = defineProps({
   data: {
@@ -95,7 +97,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['close', 'update', 'update:autocomplete']);
 
-const { t } = useI18n();
+const { t, te } = useI18n();
 
 const blockData = computed({
   get() {
@@ -105,6 +107,18 @@ const blockData = computed({
     emit('update', data);
   },
 });
+
+function getEditComponent() {
+  const editComp = props.data.editComponent;
+  if (typeof editComp === 'object') return editComp;
+
+  return components[editComp];
+}
+function getBlockName() {
+  const key = `workflow.blocks.${props.data.id}.name`;
+
+  return te(key) ? t(key) : props.data.name;
+}
 </script>
 <style>
 #workflow-edit-block hr {

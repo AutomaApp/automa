@@ -1,4 +1,7 @@
+import customBlocks from '@business/blocks';
+
 export const tasks = {
+  ...customBlocks,
   trigger: {
     name: 'Trigger',
     description: 'Block where workflow will start executing',

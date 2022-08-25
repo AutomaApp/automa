@@ -38,7 +38,10 @@
               <ui-spinner color="text-accent" size="20" />
               <span class="align-middle inline-block ml-3 text-overflow">
                 {{
-                  t(`workflow.blocks.${item.state.currentBlock[0].name}.name`)
+                  getTranslation(
+                    `workflow.blocks.${item.state.currentBlock[0].name}.name`,
+                    item.state.currentBlock[0].name
+                  )
                 }}
               </span>
             </td>
@@ -133,6 +136,9 @@ const state = reactive({
   selected: [],
 });
 
+function getTranslation(key, defText = '') {
+  return te(key) ? t(key) : defText;
+}
 function stopWorkflow(stateId) {
   sendMessage('workflow:stop', stateId, 'background');
 }
