@@ -102,7 +102,7 @@
   <ui-modal
     v-model="backupState.modal"
     :title="t('settings.backupWorkflows.cloud.title')"
-    content-class="max-w-4xl"
+    content-class="max-w-5xl"
   >
     <settings-cloud-backup
       v-model:ids="backupState.ids"

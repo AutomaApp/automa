@@ -69,7 +69,7 @@
               workflow,
               'DD MMMM YYYY, hh:mm A'
             )}`"
-            class="ml-4 mr-8"
+            class="ml-4 w-3/12 mr-8"
           >
             {{ formatDate(workflow, 'DD MMM YYYY') }}
           </p>
@@ -78,14 +78,31 @@
             color="text-accent"
             class="ml-4"
           />
-          <button
-            v-else-if="!backupState.deleting"
-            class="ml-4 invisible group-hover:visible"
-            :aria-label="t('settings.backupWorkflows.cloud.delete')"
-            @click="deleteBackup(workflow.id)"
-          >
-            <v-remixicon name="riDeleteBin7Line" />
-          </button>
+          <div v-else class="ml-4 invisible group-hover:visible">
+            <button
+              v-if="workflow.hasLocalCopy"
+              title="Sync cloud backup to local"
+              @click="syncCloudToLocal(workflow)"
+            >
+              <v-remixicon name="riRefreshLine" />
+            </button>
+            <button
+              v-else
+              title="Add to local"
+              @click="syncCloudToLocal(workflow)"
+            >
+              <v-remixicon name="riDownloadCloud2Line" />
+            </button>
+            <button
+              v-if="!backupState.deleting"
+              :aria-label="t('settings.backupWorkflows.cloud.delete')"
+              class="ml-4"
+              title="Delete backup"
+              @click="deleteBackup(workflow.id)"
+            >
+              <v-remixicon name="riDeleteBin7Line" />
+            </button>
+          </div>
         </settings-backup-items>
       </template>
       <template v-else>
@@ -105,16 +122,28 @@
             color="text-accent"
             class="ml-4"
           />
-          <button
-            v-else-if="
-              !backupState.uploading &&
-              state.selectedWorkflows.length <= workflowLimit
-            "
-            class="ml-4 invisible group-hover:visible"
-            @click="backupWorkflowsToCloud(workflow.id)"
-          >
-            <v-remixicon name="riUploadCloud2Line" />
-          </button>
+          <template v-else>
+            <button
+              v-if="workflow.isInCloud"
+              @click="updateCloudBackup(workflow)"
+            >
+              <v-remixicon
+                name="riRefreshLine"
+                title="Sync local workflow to cloud backup"
+              />
+            </button>
+            <button
+              v-else-if="
+                !backupState.uploading &&
+                state.selectedWorkflows.length <= workflowLimit
+              "
+              class="ml-4 invisible group-hover:visible"
+              title="Backup workflow"
+              @click="backupWorkflowsToCloud(workflow.id)"
+            >
+              <v-remixicon name="riUploadCloud2Line" />
+            </button>
+          </template>
         </settings-backup-items>
       </template>
     </div>
@@ -154,17 +183,20 @@ const backupState = reactive({
   uploading: false,
 });
 
-const workflows = computed(() =>
-  workflowStore.getWorkflows
-    .filter(({ name, id }) => {
-      const isInCloud = state.cloudWorkflows.some(
-        (workflow) => workflow.id === id
-      );
+const localWorkflows = computed(() =>
+  workflowStore.getWorkflows.map((workflow) => {
+    const isInCloud = state.cloudWorkflows.some(
+      (item) => item.id === workflow.id
+    );
+    workflow.isInCloud = isInCloud;
 
-      return (
-        name.toLocaleLowerCase().includes(state.query.toLowerCase()) &&
-        !isInCloud
-      );
+    return workflow;
+  })
+);
+const workflows = computed(() =>
+  localWorkflows.value
+    .filter(({ name }) => {
+      return name.toLocaleLowerCase().includes(state.query.toLowerCase());
     })
     .sort((a, b) => a.createdAt - b.createdAt)
 );
@@ -174,13 +206,41 @@ const backupWorkflows = computed(() =>
   )
 );
 const workflowLimit = computed(() => {
-  const maxWorkflow = userStore.user.limit.backupWorkflow;
+  const maxWorkflow = userStore.user?.limit?.backupWorkflow ?? 15;
 
   return maxWorkflow - state.cloudWorkflows.length;
 });
 
 function formatDate(workflow, format) {
   return dayjs(workflow.updatedAt || Date.now()).format(format);
+}
+async function syncCloudToLocal(workflow) {
+  try {
+    backupState.uploading = true;
+    backupState.workflowId = workflow.id;
+
+    const response = await fetchApi(`/me/workflows/${workflow.id}`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message);
+
+    workflowStore.insertOrUpdate({
+      data,
+      id: workflow.id,
+    });
+
+    const index = state.cloudWorkflows.findIndex(
+      (item) => item.id === workflow.id
+    );
+    if (index !== -1) {
+      state.cloudWorkflows[index].hasLocalCopy = true;
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error('Something went wrong');
+  } finally {
+    backupState.workflowId = '';
+    backupState.loading = false;
+  }
 }
 function selectAllCloud(value) {
   if (value) {
@@ -260,11 +320,57 @@ async function fetchCloudWorkflows() {
       return result;
     });
 
-    state.cloudWorkflows = data;
+    state.cloudWorkflows = data.map((item) => {
+      const hasLocalCopy = Boolean(workflowStore.workflows[item.id]);
+      item.hasLocalCopy = hasLocalCopy;
+
+      return item;
+    });
     state.backupRetrieved = true;
   } catch (error) {
     console.error(error);
     state.loadingBackup = false;
+  }
+}
+async function updateCloudBackup(workflow) {
+  try {
+    backupState.loading = true;
+    backupState.workflowId = workflow.id;
+
+    const keys = [
+      'description',
+      'drawflow',
+      'globalData',
+      'icon',
+      'name',
+      'settings',
+      'table',
+    ];
+    const payload = {};
+
+    keys.forEach((key) => {
+      payload[key] = workflow[key];
+    });
+
+    const response = await fetchApi(`/me/workflows/${workflow.id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ workflow: payload }),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message);
+
+    const index = state.cloudWorkflows.findIndex(
+      (item) => item.id === workflow.id
+    );
+    if (index !== -1) {
+      state.cloudWorkflows[index].updatedAt = Date.now();
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error('Something went wrong!');
+  } finally {
+    backupState.workflowId = '';
+    backupState.loading = false;
   }
 }
 async function backupWorkflowsToCloud(workflowId) {
@@ -362,6 +468,6 @@ onMounted(async () => {
 <style>
 .cloud-backup .content {
   height: calc(100vh - 10rem);
-  max-height: 1200px;
+  max-height: 800px;
 }
 </style>
