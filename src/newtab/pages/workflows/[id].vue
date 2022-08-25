@@ -268,7 +268,7 @@ const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 7);
 
 useGroupTooltip();
 
-const { t } = useI18n();
+const { t, te } = useI18n();
 const toast = useToast();
 const route = useRoute();
 const router = useRouter();
@@ -756,10 +756,14 @@ function initEditBlock(data) {
       (acc, { target, sourceNode, source }) => {
         if (target !== data.blockId) return acc;
 
-        let blockName = t(`workflow.blocks.${sourceNode.label}.name`);
+        const blockNameKey = `workflow.blocks.${sourceNode.label}.name`;
+        let blockName = te(blockNameKey)
+          ? t(blockNameKey)
+          : tasks[sourceNode.label].name;
 
-        const { description } = sourceNode.data;
-        if (description) blockName += ` (${description})`;
+        const { description, name: groupName } = sourceNode.data;
+        if (description || groupName)
+          blockName += ` (${description || groupName})`;
 
         acc.push({
           id: source,
