@@ -8,6 +8,18 @@ const renderContent = (content, contentType) => {
   if (contentType === 'application/x-www-form-urlencoded') {
     return new URLSearchParams(renderedJson);
   }
+  if (contentType === 'multipart/form-data') {
+    if (!Array.isArray(renderedJson) || !Array.isArray(renderedJson[0])) {
+      throw new Error('The body must be 2D Array');
+    }
+
+    const formData = new FormData();
+    renderedJson.forEach((data) => {
+      formData.append(...data);
+    });
+
+    return formData;
+  }
 
   return JSON.stringify(renderedJson);
 };
@@ -27,6 +39,7 @@ const filterHeaders = (headers) => {
 
 const contentTypes = {
   json: 'application/json',
+  'form-data': 'multipart/form-data',
   form: 'application/x-www-form-urlencoded',
 };
 const notHaveBody = ['GET', 'DELETE'];
