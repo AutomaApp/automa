@@ -1399,6 +1399,18 @@ export const elementsHighlightData = {
   },
 };
 
+export const excludeGroupBlocks = [
+  'trigger',
+  'repeat-task',
+  'loop-data',
+  'loop-breakpoint',
+  'blocks-group',
+  'conditions',
+  'webhook',
+  'element-exists',
+  'while-loop',
+];
+
 export const conditionBuilder = {
   valueTypes: [
     {

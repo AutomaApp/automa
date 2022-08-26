@@ -161,6 +161,8 @@
           <editor-local-ctx-menu
             v-if="editor"
             :editor="editor"
+            @group="groupBlocks"
+            @ungroup="ungroupBlocks"
             @copy="copySelectedElements"
             @paste="pasteCopiedElements"
             @duplicate="duplicateElements"
@@ -233,8 +235,8 @@ import {
   getReadableShortcut,
 } from '@/composable/shortcut';
 import { getWorkflowPermissions } from '@/utils/workflowData';
-import { tasks } from '@/utils/shared';
 import { fetchApi } from '@/utils/api';
+import { tasks, excludeGroupBlocks } from '@/utils/shared';
 import { functions } from '@/utils/referenceData/mustacheReplacer';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useCommandManager } from '@/composable/commandManager';
@@ -569,6 +571,73 @@ const onEdgesChange = debounce((changes) => {
   // if (command) commandManager.add(command);
 }, 250);
 
+function groupBlocks({ position }) {
+  const nodesToDelete = [];
+  const nodes = editor.value.getSelectedNodes.value;
+  const groupBlocksList = nodes.reduce((acc, node) => {
+    if (excludeGroupBlocks.includes(node.label)) return acc;
+
+    acc.push({
+      id: node.label,
+      itemId: node.id,
+      data: node.data,
+    });
+    nodesToDelete.push(node);
+
+    return acc;
+  }, []);
+
+  editor.value.removeNodes(nodesToDelete);
+
+  const { component, data } = blocks['blocks-group'];
+  editor.value.addNodes([
+    {
+      id: nanoid(),
+      type: component,
+      label: 'blocks-group',
+      data: { ...data, blocks: groupBlocksList },
+      position: editor.value.project({
+        x: position.clientX - 360,
+        y: position.clientY,
+      }),
+    },
+  ]);
+}
+function ungroupBlocks({ nodes }) {
+  const [node] = nodes;
+  if (!node || node.label !== 'blocks-group') return;
+
+  const edges = [];
+  const position = { ...node.position };
+  const copyBlocks = cloneDeep(node.data?.blocks || []);
+  const groupBlocksList = copyBlocks.map((item, index) => {
+    const nextNode = copyBlocks[index + 1];
+    if (nextNode) {
+      edges.push({
+        source: item.itemId,
+        target: nextNode.itemId,
+        sourceHandle: `${item.itemId}-output-1`,
+        targetHandle: `${nextNode.itemId}-input-1`,
+      });
+    }
+
+    item.label = item.id;
+    item.id = item.itemId;
+    item.position = { ...position };
+    item.type = blocks[item.label].component;
+
+    delete item.itemId;
+
+    position.x += 250;
+
+    return item;
+  });
+
+  editor.value.removeNodes(nodes);
+  editor.value.addNodes(groupBlocksList);
+  editor.value.addSelectedNodes(groupBlocksList);
+  editor.value.addEdges(edges);
+}
 function extractAutocopmleteData(label, { data, id }) {
   const autocompleteData = { [id]: {} };
   const getData = (blockName, blockData) => {

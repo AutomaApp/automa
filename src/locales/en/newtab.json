@@ -268,7 +268,9 @@
       "resetZoom": "Reset zoom",
       "duplicate": "Duplicate",
       "copy": "Copy",
-      "paste": "Paste"
+      "paste": "Paste",
+      "group": "Group blocks",
+      "ungroup": "Ungroup blocks"
     },
     "settings": {
       "saveLog": "Save workflow log",
