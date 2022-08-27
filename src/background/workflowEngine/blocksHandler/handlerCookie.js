@@ -51,7 +51,19 @@ async function cookie({ data, id }) {
     values.expirationDate = Date.now() / 1000 + +values.expirationDate;
   }
 
-  const result = await browser.cookies[key](values);
+  let result = null;
+
+  if (data.type === 'remove' && !data.name) {
+    const cookies = await browser.cookies.getAll({ url: data.url });
+    const removePromise = cookies.map(({ name }) =>
+      browser.cookies.remove({ name, url: data.url })
+    );
+    await Promise.allSettled(removePromise);
+
+    result = cookies;
+  } else {
+    result = await browser.cookies[key](values);
+  }
 
   if (data.type === 'get') {
     if (data.assignVariable) {
