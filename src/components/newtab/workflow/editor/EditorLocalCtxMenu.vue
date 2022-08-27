@@ -10,7 +10,7 @@
         v-for="item in state.items"
         :key="item.id"
         v-close-popover
-        class="cursor-pointer justify-between"
+        class="cursor-pointer text-sm justify-between"
         @click="item.event"
       >
         <span>
@@ -38,7 +38,14 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-const emit = defineEmits(['copy', 'paste', 'duplicate', 'group', 'ungroup']);
+const emit = defineEmits([
+  'copy',
+  'paste',
+  'duplicate',
+  'group',
+  'ungroup',
+  'saveBlock',
+]);
 
 const { t } = useI18n();
 const state = reactive({
@@ -64,6 +71,13 @@ const menuItems = {
     event: () => {
       props.editor.removeEdges(ctxData.edges);
       props.editor.removeNodes(ctxData.nodes);
+    },
+  },
+  saveToFolder: {
+    id: 'saveToFolder',
+    name: t('workflow.blocksFolder.save'),
+    event: () => {
+      emit('saveBlock', ctxData);
     },
   },
   copy: {
@@ -123,11 +137,11 @@ function clearContextMenu() {
 
 onMounted(() => {
   props.editor.onNodeContextMenu(({ event, node }) => {
-    const items = ['copy', 'duplicate', 'delete'];
+    const items = ['copy', 'duplicate', 'saveToFolder', 'delete'];
     if (node.label === 'blocks-group') {
-      items.splice(2, 0, 'ungroup');
+      items.splice(3, 0, 'ungroup');
     } else if (!excludeGroupBlocks.includes(node.label)) {
-      items.splice(2, 0, 'group');
+      items.splice(3, 0, 'group');
     }
 
     showCtxMenu(items, event);
@@ -150,7 +164,10 @@ onMounted(() => {
     };
   });
   props.editor.onSelectionContextMenu(({ event }) => {
-    showCtxMenu(['copy', 'duplicate', 'group', 'delete'], event);
+    showCtxMenu(
+      ['copy', 'duplicate', 'saveToFolder', 'group', 'delete'],
+      event
+    );
     ctxData = {
       nodes: props.editor.getSelectedNodes.value,
       edges: props.editor.getSelectedEdges.value,

@@ -35,7 +35,7 @@
                 @change="updateParamType(index, $event)"
               >
                 <option
-                  v-for="type in paramTypes"
+                  v-for="type in paramTypesArr"
                   :key="type.id"
                   :value="type.id"
                 >
@@ -123,6 +123,7 @@ const paramTypes = {
   },
   ...workflowParameters,
 };
+const paramTypesArr = Object.values(paramTypes).filter((item) => item.id);
 
 const state = reactive({
   parameters: cloneDeep(props.data || []),

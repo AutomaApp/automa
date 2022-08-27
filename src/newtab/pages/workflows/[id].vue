@@ -117,21 +117,17 @@
             :data="workflow.drawflow"
             :disabled="isTeamWorkflow && !haveEditAccess"
             :class="{ 'animate-blocks': state.animateBlocks }"
-            class="h-screen workflow-editor"
+            class="h-screen focus:outline-none workflow-editor"
             tabindex="0"
             @init="onEditorInit"
             @edit="initEditBlock"
             @update:node="state.dataChanged = true"
             @delete:node="state.dataChanged = true"
           >
-            <template v-if="!isTeamWorkflow || haveEditAccess" #controls-append>
-              <button
-                v-tooltip="t('workflow.autoAlign.title')"
-                class="control-button hoverable ml-2"
-                @click="autoAlign"
-              >
-                <v-remixicon name="riMagicLine" />
-              </button>
+            <template
+              v-if="!isTeamWorkflow || haveEditAccess"
+              #controls-prepend
+            >
               <ui-card padding="p-0 ml-2 undo-redo">
                 <button
                   v-tooltip.group="
@@ -156,8 +152,26 @@
                   <v-remixicon name="riArrowGoForwardLine" />
                 </button>
               </ui-card>
+              <button
+                v-tooltip="t('workflow.blocksFolder.title')"
+                class="control-button hoverable ml-2"
+                @click="blockFolderModal.showList = !blockFolderModal.showList"
+              >
+                <v-remixicon name="riFolderOpenLine" />
+              </button>
+              <button
+                v-tooltip="t('workflow.autoAlign.title')"
+                class="control-button hoverable ml-2"
+                @click="autoAlign"
+              >
+                <v-remixicon name="riMagicLine" />
+              </button>
             </template>
           </workflow-editor>
+          <editor-local-saved-blocks
+            v-if="blockFolderModal.showList"
+            @close="blockFolderModal.showList = false"
+          />
           <editor-local-ctx-menu
             v-if="editor"
             :editor="editor"
@@ -165,6 +179,7 @@
             @ungroup="ungroupBlocks"
             @copy="copySelectedElements"
             @paste="pasteCopiedElements"
+            @saveBlock="initBlockFolder"
             @duplicate="duplicateElements"
           />
         </ui-tab-panel>
@@ -207,6 +222,32 @@
     :permissions="permissionState.items"
     @granted="registerTrigger"
   />
+  <ui-modal
+    v-model="blockFolderModal.showModal"
+    :title="t('workflow.blocksFolder.add')"
+  >
+    <ui-input
+      v-model="blockFolderModal.name"
+      :placeholder="t('common.name')"
+      autofocus
+      class="w-full"
+      @keyup.enter="saveBlockToFolder"
+    />
+    <ui-textarea
+      v-model="blockFolderModal.description"
+      :label="t('common.description')"
+      placeholder="Description..."
+      class="w-full mt-4"
+    />
+    <div class="flex items-center justify-end space-x-4 mt-6">
+      <ui-button @click="clearBlockFolderModal">
+        {{ t('common.cancel') }}
+      </ui-button>
+      <ui-button variant="accent" class="w-20" @click="saveBlockToFolder">
+        {{ t('common.add') }}
+      </ui-button>
+    </div>
+  </ui-modal>
 </template>
 <script setup>
 import {
@@ -261,6 +302,7 @@ import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissions
 import EditorLocalCtxMenu from '@/components/newtab/workflow/editor/EditorLocalCtxMenu.vue';
 import EditorLocalActions from '@/components/newtab/workflow/editor/EditorLocalActions.vue';
 import EditorUsedCredentials from '@/components/newtab/workflow/editor/EditorUsedCredentials.vue';
+import EditorLocalSavedBlocks from '@/components/newtab/workflow/editor/EditorLocalSavedBlocks.vue';
 
 const blocks = { ...tasks, ...customBlocks };
 
@@ -292,6 +334,13 @@ const state = reactive({
   isExecuteCommand: false,
   workflowConverted: false,
   activeTab: route.query.tab || 'editor',
+});
+const blockFolderModal = reactive({
+  name: '',
+  nodes: [],
+  description: '',
+  showList: false,
+  showModal: false,
 });
 const permissionState = reactive({
   permissions: [],
@@ -571,6 +620,57 @@ const onEdgesChange = debounce((changes) => {
   // if (command) commandManager.add(command);
 }, 250);
 
+function initBlockFolder({ nodes }) {
+  Object.assign(blockFolderModal, {
+    nodes,
+    showModal: true,
+  });
+}
+function clearBlockFolderModal() {
+  Object.assign(blockFolderModal, {
+    name: '',
+    nodes: [],
+    showModal: false,
+    description: '',
+  });
+}
+async function saveBlockToFolder() {
+  try {
+    let { savedBlocks } = await browser.storage.local.get('savedBlocks');
+    if (!savedBlocks) savedBlocks = [];
+
+    const seen = new Set();
+    const nodeList = [
+      ...editor.value.getSelectedNodes.value,
+      ...blockFolderModal.nodes,
+    ].reduce((acc, node) => {
+      if (seen.has(node.id)) return acc;
+
+      const { label, data, position, id } = node;
+      acc.push(cloneDeep({ label, data, position, id }));
+      seen.add(node.id);
+
+      return acc;
+    }, []);
+    const edges = editor.value.getSelectedEdges.value.map(
+      ({ source, target, targetHandle, sourceHandle, id }) =>
+        cloneDeep({ id, source, target, targetHandle, sourceHandle })
+    );
+
+    savedBlocks.push({
+      id: nanoid(5),
+      data: { nodes: nodeList, edges },
+      name: blockFolderModal.name || 'unnamed',
+      description: blockFolderModal.description,
+    });
+
+    await browser.storage.local.set({ savedBlocks });
+
+    clearBlockFolderModal();
+  } catch (error) {
+    console.error(error);
+  }
+}
 function groupBlocks({ position }) {
   const nodesToDelete = [];
   const nodes = editor.value.getSelectedNodes.value;
@@ -586,6 +686,8 @@ function groupBlocks({ position }) {
 
     return acc;
   }, []);
+
+  if (groupBlocksList.length === 0) return;
 
   editor.value.removeNodes(nodesToDelete);
 
@@ -972,6 +1074,19 @@ function onDragoverEditor({ target }) {
   }
 }
 function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
+  const savedBlocks = parseJSON(dataTransfer.getData('savedBlocks'), null);
+  if (savedBlocks) {
+    const { nodes, edges } = savedBlocks.data;
+    /* eslint-disable-next-line */
+    const newElements = copyElements(nodes, edges, { clientX, clientY });
+
+    editor.value.addNodes(newElements.nodes);
+    editor.value.addEdges(newElements.edges);
+
+    state.dataChanged = true;
+    return;
+  }
+
   const block = parseJSON(dataTransfer.getData('block'), null);
   if (!block) return;
 
@@ -1060,12 +1175,12 @@ function copyElements(nodes, edges, initialPos) {
     }
 
     const copyNode = cloneDeep({
-      type,
       data,
       label,
       id: newNodeId,
       selected: true,
       position: nodePos,
+      type: type || blocks[label].component,
     });
     copyNode.data = reactive(copyNode.data);
 
