@@ -10,7 +10,7 @@
         v-for="item in state.items"
         :key="item.id"
         v-close-popover
-        class="cursor-pointer justify-between"
+        class="cursor-pointer text-sm justify-between"
         @click="item.event"
       >
         <span>
@@ -29,6 +29,7 @@
 <script setup>
 import { onMounted, reactive, markRaw } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { excludeGroupBlocks } from '@/utils/shared';
 import { getReadableShortcut, getShortcut } from '@/composable/shortcut';
 
 const props = defineProps({
@@ -37,7 +38,14 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-const emit = defineEmits(['copy', 'paste', 'duplicate']);
+const emit = defineEmits([
+  'copy',
+  'paste',
+  'duplicate',
+  'group',
+  'ungroup',
+  'saveBlock',
+]);
 
 const { t } = useI18n();
 const state = reactive({
@@ -65,12 +73,31 @@ const menuItems = {
       props.editor.removeNodes(ctxData.nodes);
     },
   },
+  saveToFolder: {
+    id: 'saveToFolder',
+    name: t('workflow.blocksFolder.save'),
+    event: () => {
+      emit('saveBlock', ctxData);
+    },
+  },
   copy: {
     id: 'copy',
     name: t('workflow.editor.copy'),
     icon: 'riFileCopyLine',
     event: () => emit('copy', ctxData),
     shortcut: getReadableShortcut('mod+c'),
+  },
+  group: {
+    id: 'group',
+    name: t('workflow.editor.group'),
+    icon: 'riFolderZipLine',
+    event: () => emit('group', ctxData),
+  },
+  ungroup: {
+    id: 'ungroup',
+    name: t('workflow.editor.ungroup'),
+    icon: 'riFolderOpenLine',
+    event: () => emit('ungroup', ctxData),
   },
   duplicate: {
     id: 'duplicate',
@@ -110,8 +137,19 @@ function clearContextMenu() {
 
 onMounted(() => {
   props.editor.onNodeContextMenu(({ event, node }) => {
-    showCtxMenu(['copy', 'duplicate', 'delete'], event);
-    ctxData = { nodes: [node], edges: [] };
+    const items = ['copy', 'duplicate', 'saveToFolder', 'delete'];
+    if (node.label === 'blocks-group') {
+      items.splice(3, 0, 'ungroup');
+    } else if (!excludeGroupBlocks.includes(node.label)) {
+      items.splice(3, 0, 'group');
+    }
+
+    showCtxMenu(items, event);
+    ctxData = {
+      edges: [],
+      nodes: [node],
+      position: { clientX: event.clientX, clientY: event.clientY },
+    };
   });
   props.editor.onEdgeContextMenu(({ event, edge }) => {
     showCtxMenu(['delete'], event);
@@ -126,10 +164,14 @@ onMounted(() => {
     };
   });
   props.editor.onSelectionContextMenu(({ event }) => {
-    showCtxMenu(['copy', 'duplicate', 'delete'], event);
+    showCtxMenu(
+      ['copy', 'duplicate', 'saveToFolder', 'group', 'delete'],
+      event
+    );
     ctxData = {
       nodes: props.editor.getSelectedNodes.value,
       edges: props.editor.getSelectedEdges.value,
+      position: { clientX: event.clientX, clientY: event.clientY },
     };
   });
 });

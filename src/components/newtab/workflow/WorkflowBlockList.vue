@@ -43,7 +43,12 @@
             />
           </span>
         </div>
-        <v-remixicon :name="block.icon" size="24" class="mb-2" />
+        <v-remixicon
+          :path="getIconPath(block.icon)"
+          :name="block.icon"
+          size="24"
+          class="mb-2"
+        />
         <p class="leading-tight text-overflow capitalize">
           {{ block.name }}
         </p>
@@ -70,18 +75,25 @@ defineProps({
 });
 defineEmits(['pin']);
 
-const { t } = useI18n();
+const { t, te } = useI18n();
 
-function getBlockTitle({ description, id }) {
+function getBlockTitle({ description, id, name }) {
   const blockPath = `workflow.blocks.${id}`;
-  let blockDescription = t(
-    `${blockPath}.${description ? 'description' : 'name'}`
-  );
+  const descPath = `${blockPath}.${description ? 'description' : 'name'}`;
+  let blockDescription = te(descPath) ? t(descPath) : name;
 
   if (description) {
     blockDescription = `[${t(`${blockPath}.name`)}]\n${blockDescription}`;
   }
 
   return blockDescription;
+}
+function getIconPath(path) {
+  if (path && path.startsWith('path')) {
+    const { 1: iconPath } = path.split(':');
+    return iconPath;
+  }
+
+  return '';
 }
 </script>

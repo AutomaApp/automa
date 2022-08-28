@@ -49,7 +49,7 @@ class WorkflowEngine {
     let { globalData } = workflow;
 
     if (options && options?.data) {
-      globalData = options.data.globalData;
+      globalData = options.data.globalData || globalData;
       variables = isObject(options.data.variables)
         ? options?.data.variables
         : {};

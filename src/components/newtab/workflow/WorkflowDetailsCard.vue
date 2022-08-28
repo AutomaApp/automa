@@ -84,6 +84,7 @@ import { useI18n } from 'vue-i18n';
 import browser from 'webextension-polyfill';
 import { useShortcut } from '@/composable/shortcut';
 import { tasks, categories } from '@/utils/shared';
+import customBlocks from '@business/blocks';
 import WorkflowBlockList from './WorkflowBlockList.vue';
 
 defineProps({
@@ -98,7 +99,7 @@ defineProps({
 });
 const emit = defineEmits(['update']);
 
-const { t } = useI18n();
+const { t, te } = useI18n();
 const shortcut = useShortcut('action:search', () => {
   const searchInput = document.querySelector('#search-input input');
 
@@ -124,11 +125,17 @@ const icons = [
   'riCommandLine',
 ];
 
-const blocksArr = Object.entries(tasks).map(([key, block]) => ({
-  ...block,
-  id: key,
-  name: t(`workflow.blocks.${key}.name`),
-}));
+const blocksArr = Object.entries({ ...tasks, ...customBlocks }).map(
+  ([key, block]) => {
+    const localeKey = `workflow.blocks.${key}.name`;
+
+    return {
+      ...block,
+      id: key,
+      name: te(localeKey) ? t(localeKey) : block.name,
+    };
+  }
+);
 
 const descriptionCollapsed = ref(true);
 

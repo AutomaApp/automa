@@ -45,7 +45,14 @@
 	}
 }
 
+.dark .vue-flow__edge-path:hover {
+	stroke: theme('colors.yellow.400');
+}
 .vue-flow__edge-path {
   stroke: theme('colors.accent');
-  stroke-width: 3;
+  stroke-width: 4;
+  transition: stroke 100ms ease;
+  &:hover {
+		stroke: theme('colors.yellow.500');
+  }
 }

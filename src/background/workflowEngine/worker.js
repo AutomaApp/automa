@@ -144,6 +144,7 @@ class Worker {
         : blockHandler;
 
     if (!handler) {
+      console.error(`${block.label} doesn't have handler`);
       this.engine.destroy('stopped');
       return;
     }

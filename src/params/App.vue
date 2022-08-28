@@ -41,18 +41,27 @@
           </div>
         </template>
         <div class="px-4 pb-4">
-          <div class="space-y-2">
-            <ui-input
-              v-for="(param, paramIdx) in workflow.params"
-              :key="paramIdx"
-              v-model="param.value"
-              :type="param.inputType"
-              :label="param.name"
-              :placeholder="param.placeholder"
-              class="w-full"
-              @keyup.enter="runWorkflow(index, workflow)"
-            />
-          </div>
+          <ul class="space-y-2">
+            <li v-for="(param, paramIdx) in workflow.params" :key="paramIdx">
+              <component
+                :is="workflowParameters[param.type].valueComp"
+                v-if="workflowParameters[param.type]"
+                v-model="param.value"
+                :label="param.name"
+                :param-data="param"
+                class="w-full"
+              />
+              <ui-input
+                v-else
+                v-model="param.value"
+                :type="param.inputType"
+                :label="param.name"
+                :placeholder="param.placeholder"
+                class="w-full"
+                @keyup.enter="runWorkflow(index, workflow)"
+              />
+            </li>
+          </ul>
           <div class="flex items-center mt-6">
             <p>{{ dayjs(workflow.addedDate).fromNow() }}</p>
             <div class="flex-grow" />
@@ -72,6 +81,7 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue';
 import browser from 'webextension-polyfill';
+import * as workflowParameters from '@business/parameters';
 import dayjs from '@/lib/dayjs';
 import { useTheme } from '@/composable/theme';
 
@@ -150,10 +160,15 @@ function runWorkflow(index, { data, params }) {
   const getParamVal = {
     string: (str) => str,
     number: (num) => (Number.isNaN(+num) ? 0 : +num),
+    default: (value) => value,
   };
 
   const variables = params.reduce((acc, param) => {
-    const value = getParamVal[param.type](param.value || param.defaultValue);
+    const valueFunc =
+      getParamVal[param.type] ||
+      workflowParameters[param.type]?.getValue ||
+      getParamVal.default;
+    const value = valueFunc(param.value || param.defaultValue);
     acc[param.name] = value;
 
     return acc;

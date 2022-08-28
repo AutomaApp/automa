@@ -13,9 +13,12 @@
     <MiniMap v-if="minimap" :node-class-name="minimapNodeClassName" />
     <div
       v-if="editorControls"
-      class="flex items-end absolute p-4 left-0 bottom-0 z-10"
+      class="flex items-end absolute w-full p-4 left-0 bottom-0 z-10 pr-60"
     >
       <slot name="controls-prepend" />
+      <editor-search-blocks :editor="editor" />
+      <slot name="controls-append" />
+      <div class="flex-grow pointer-events-none" />
       <button
         v-tooltip.group="t('workflow.editor.resetZoom')"
         class="control-button mr-2"
@@ -40,8 +43,6 @@
           <v-remixicon name="riAddLine" />
         </button>
       </div>
-      <editor-search-blocks :editor="editor" />
-      <slot name="controls-append" />
     </div>
     <template v-for="(node, name) in nodeTypes" :key="name" #[name]="nodeProps">
       <component
@@ -67,6 +68,7 @@ import {
 import cloneDeep from 'lodash.clonedeep';
 import { useStore } from '@/stores/main';
 import { tasks, categories } from '@/utils/shared';
+import customBlocks from '@business/blocks';
 import EditorSearchBlocks from './editor/EditorSearchBlocks.vue';
 
 const props = defineProps({
@@ -151,11 +153,12 @@ editor.onEdgeUpdate(({ edge, connection }) => {
   Object.assign(edge, connection);
 });
 
+const blocks = { ...tasks, ...customBlocks };
 const settings = store.settings.editor;
 const isDisabled = computed(() => props.options.disabled ?? props.disabled);
 
 function minimapNodeClassName({ label }) {
-  const { category } = tasks[label];
+  const { category } = blocks[label];
   const { color } = categories[category];
 
   return color;

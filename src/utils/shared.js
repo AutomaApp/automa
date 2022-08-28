@@ -1,4 +1,7 @@
+import customBlocks from '@business/blocks';
+
 export const tasks = {
+  ...customBlocks,
   trigger: {
     name: 'Trigger',
     description: 'Block where workflow will start executing',
@@ -1348,6 +1351,7 @@ export const excludeOnError = [
 
 export const contentTypes = [
   { name: 'application/json', value: 'json' },
+  { name: 'multipart/form-data', value: 'form-data' },
   { name: 'application/x-www-form-urlencoded', value: 'form' },
 ];
 
@@ -1394,6 +1398,18 @@ export const elementsHighlightData = {
     fill: 'rgba(251, 191, 36, 0.1)',
   },
 };
+
+export const excludeGroupBlocks = [
+  'trigger',
+  'repeat-task',
+  'loop-data',
+  'loop-breakpoint',
+  'blocks-group',
+  'conditions',
+  'webhook',
+  'element-exists',
+  'while-loop',
+];
 
 export const conditionBuilder = {
   valueTypes: [

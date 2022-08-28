@@ -3,6 +3,7 @@
     <slot name="prepend" />
     <template v-if="!hide">
       <ui-textarea
+        v-if="!hideDescription"
         :model-value="data.description"
         :placeholder="t('common.description')"
         class="w-full mb-2"
@@ -110,6 +111,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  hideDescription: Boolean,
 });
 const emit = defineEmits(['update:data', 'change']);
 

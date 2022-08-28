@@ -19,14 +19,17 @@
         :class="data.disableBlock ? 'bg-box-transparent' : block.category.color"
         class="inline-block p-2 mr-2 rounded-lg dark:text-black"
       >
-        <v-remixicon :name="block.details.icon || 'riGlobalLine'" />
+        <v-remixicon
+          :path="getIconPath(block.details.icon)"
+          :name="block.details.icon || 'riGlobalLine'"
+        />
       </span>
       <div class="overflow-hidden flex-1">
         <p
           v-if="block.details.id"
           class="font-semibold leading-tight text-overflow whitespace-nowrap"
         >
-          {{ t(`workflow.blocks.${block.details.id}.name`) }}
+          {{ getBlockName() }}
         </p>
         <p
           :class="{ 'mb-1': data.description && data.loopId }"
@@ -117,7 +120,7 @@ const props = defineProps({
 });
 defineEmits(['delete', 'edit', 'update']);
 
-const { t } = useI18n();
+const { t, te } = useI18n();
 const block = useEditorBlock(props.label);
 const componentId = useComponentId('block-base');
 
@@ -133,5 +136,18 @@ function handleStartDrag(event) {
 }
 function copyLoopId() {
   navigator.clipboard.writeText(props.data.loopId);
+}
+function getBlockName() {
+  const key = `workflow.blocks.${block.details.id}.name`;
+
+  return te(key) ? t(key) : block.details.name;
+}
+function getIconPath(path) {
+  if (path && path.startsWith('path')) {
+    const { 1: iconPath } = path.split(':');
+    return iconPath;
+  }
+
+  return '';
 }
 </script>

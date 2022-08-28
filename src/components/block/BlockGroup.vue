@@ -52,7 +52,12 @@
           />
           <div class="leading-tight flex-1 overflow-hidden">
             <p class="text-overflow">
-              {{ t(`workflow.blocks.${element.id}.name`) }}
+              {{
+                getTranslation(
+                  `workflow.blocks.${element.id}.name`,
+                  tasks[element.id].name
+                )
+              }}
             </p>
             <p
               :title="element.data.description"
@@ -95,7 +100,7 @@ import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
 import { Handle, Position } from '@braks/vue-flow';
 import draggable from 'vuedraggable';
-import { tasks } from '@/utils/shared';
+import { tasks, excludeGroupBlocks } from '@/utils/shared';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
 
@@ -123,18 +128,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['update', 'delete', 'edit']);
 
-const excludeBlocks = [
-  'trigger',
-  'repeat-task',
-  'loop-data',
-  'loop-breakpoint',
-  'blocks-group',
-  'conditions',
-  'webhook',
-  'element-exists',
-];
-
-const { t } = useI18n();
+const { t, te } = useI18n();
 const toast = useToast();
 const componentId = useComponentId('blocks-group');
 const block = useEditorBlock(props.label);
@@ -184,6 +178,9 @@ function deleteItem(index, itemId) {
   copyBlocks.splice(index, 1);
   emit('update', { blocks: copyBlocks });
 }
+function getTranslation(key, defText = '') {
+  return te(key) ? t(key) : defText;
+}
 function handleDrop(event) {
   event.preventDefault();
   event.stopPropagation();
@@ -193,7 +190,7 @@ function handleDrop(event) {
 
   const { id, data, blockId } = droppedBlock;
 
-  if (excludeBlocks.includes(id)) {
+  if (excludeGroupBlocks.includes(id)) {
     toast.error(
       t('workflow.blocks.blocks-group.cantAdd', {
         blockName: t(`workflow.blocks.${id}.name`),

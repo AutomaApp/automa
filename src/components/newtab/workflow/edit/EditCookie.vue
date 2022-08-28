@@ -34,7 +34,9 @@
       />
       <ui-input
         :model-value="data.name"
-        :label="`Name ${isOptional(isGetOrSet)}`"
+        :label="`Name ${
+          data.type === 'get' && !data.getAll ? '' : '(optional)'
+        }`"
         class="mt-2 w-full"
         placeholder="site-cookie"
         @change="updateData({ name: $event })"
@@ -129,7 +131,6 @@ const { t } = useI18n();
 const permission = useHasPermissions(['cookies']);
 
 const types = ['get', 'set', 'remove'];
-const isOptional = (optional = false) => (optional ? '(optional)' : '');
 
 const isGetOrSet = computed(
   () =>

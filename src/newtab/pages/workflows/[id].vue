@@ -117,21 +117,17 @@
             :data="workflow.drawflow"
             :disabled="isTeamWorkflow && !haveEditAccess"
             :class="{ 'animate-blocks': state.animateBlocks }"
-            class="h-screen workflow-editor"
+            class="h-screen focus:outline-none workflow-editor"
             tabindex="0"
             @init="onEditorInit"
             @edit="initEditBlock"
             @update:node="state.dataChanged = true"
             @delete:node="state.dataChanged = true"
           >
-            <template v-if="!isTeamWorkflow || haveEditAccess" #controls-append>
-              <button
-                v-tooltip="t('workflow.autoAlign.title')"
-                class="control-button hoverable ml-2"
-                @click="autoAlign"
-              >
-                <v-remixicon name="riMagicLine" />
-              </button>
+            <template
+              v-if="!isTeamWorkflow || haveEditAccess"
+              #controls-prepend
+            >
               <ui-card padding="p-0 ml-2 undo-redo">
                 <button
                   v-tooltip.group="
@@ -156,13 +152,34 @@
                   <v-remixicon name="riArrowGoForwardLine" />
                 </button>
               </ui-card>
+              <button
+                v-tooltip="t('workflow.blocksFolder.title')"
+                class="control-button hoverable ml-2"
+                @click="blockFolderModal.showList = !blockFolderModal.showList"
+              >
+                <v-remixicon name="riFolderOpenLine" />
+              </button>
+              <button
+                v-tooltip="t('workflow.autoAlign.title')"
+                class="control-button hoverable ml-2"
+                @click="autoAlign"
+              >
+                <v-remixicon name="riMagicLine" />
+              </button>
             </template>
           </workflow-editor>
+          <editor-local-saved-blocks
+            v-if="blockFolderModal.showList"
+            @close="blockFolderModal.showList = false"
+          />
           <editor-local-ctx-menu
             v-if="editor"
             :editor="editor"
+            @group="groupBlocks"
+            @ungroup="ungroupBlocks"
             @copy="copySelectedElements"
             @paste="pasteCopiedElements"
+            @saveBlock="initBlockFolder"
             @duplicate="duplicateElements"
           />
         </ui-tab-panel>
@@ -205,11 +222,38 @@
     :permissions="permissionState.items"
     @granted="registerTrigger"
   />
+  <ui-modal
+    v-model="blockFolderModal.showModal"
+    :title="t('workflow.blocksFolder.add')"
+  >
+    <ui-input
+      v-model="blockFolderModal.name"
+      :placeholder="t('common.name')"
+      autofocus
+      class="w-full"
+      @keyup.enter="saveBlockToFolder"
+    />
+    <ui-textarea
+      v-model="blockFolderModal.description"
+      :label="t('common.description')"
+      placeholder="Description..."
+      class="w-full mt-4"
+    />
+    <div class="flex items-center justify-end space-x-4 mt-6">
+      <ui-button @click="clearBlockFolderModal">
+        {{ t('common.cancel') }}
+      </ui-button>
+      <ui-button variant="accent" class="w-20" @click="saveBlockToFolder">
+        {{ t('common.add') }}
+      </ui-button>
+    </div>
+  </ui-modal>
 </template>
 <script setup>
 import {
   watch,
   provide,
+  markRaw,
   reactive,
   computed,
   onMounted,
@@ -232,13 +276,14 @@ import {
   getReadableShortcut,
 } from '@/composable/shortcut';
 import { getWorkflowPermissions } from '@/utils/workflowData';
-import { tasks } from '@/utils/shared';
 import { fetchApi } from '@/utils/api';
+import { tasks, excludeGroupBlocks } from '@/utils/shared';
 import { functions } from '@/utils/referenceData/mustacheReplacer';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useCommandManager } from '@/composable/commandManager';
 import { debounce, parseJSON, throttle } from '@/utils/helper';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
+import customBlocks from '@business/blocks';
 import browser from 'webextension-polyfill';
 import dbStorage from '@/db/storage';
 import DroppedNode from '@/utils/editor/DroppedNode';
@@ -257,6 +302,9 @@ import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissions
 import EditorLocalCtxMenu from '@/components/newtab/workflow/editor/EditorLocalCtxMenu.vue';
 import EditorLocalActions from '@/components/newtab/workflow/editor/EditorLocalActions.vue';
 import EditorUsedCredentials from '@/components/newtab/workflow/editor/EditorUsedCredentials.vue';
+import EditorLocalSavedBlocks from '@/components/newtab/workflow/editor/EditorLocalSavedBlocks.vue';
+
+const blocks = { ...tasks, ...customBlocks };
 
 let editorCommands = null;
 const executeCommandTimeout = null;
@@ -264,7 +312,7 @@ const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 7);
 
 useGroupTooltip();
 
-const { t } = useI18n();
+const { t, te } = useI18n();
 const toast = useToast();
 const route = useRoute();
 const router = useRouter();
@@ -286,6 +334,13 @@ const state = reactive({
   isExecuteCommand: false,
   workflowConverted: false,
   activeTab: route.query.tab || 'editor',
+});
+const blockFolderModal = reactive({
+  name: '',
+  nodes: [],
+  description: '',
+  showList: false,
+  showModal: false,
 });
 const permissionState = reactive({
   permissions: [],
@@ -565,10 +620,130 @@ const onEdgesChange = debounce((changes) => {
   // if (command) commandManager.add(command);
 }, 250);
 
+function initBlockFolder({ nodes }) {
+  Object.assign(blockFolderModal, {
+    nodes,
+    showModal: true,
+  });
+}
+function clearBlockFolderModal() {
+  Object.assign(blockFolderModal, {
+    name: '',
+    nodes: [],
+    showModal: false,
+    description: '',
+  });
+}
+async function saveBlockToFolder() {
+  try {
+    let { savedBlocks } = await browser.storage.local.get('savedBlocks');
+    if (!savedBlocks) savedBlocks = [];
+
+    const seen = new Set();
+    const nodeList = [
+      ...editor.value.getSelectedNodes.value,
+      ...blockFolderModal.nodes,
+    ].reduce((acc, node) => {
+      if (seen.has(node.id)) return acc;
+
+      const { label, data, position, id } = node;
+      acc.push(cloneDeep({ label, data, position, id }));
+      seen.add(node.id);
+
+      return acc;
+    }, []);
+    const edges = editor.value.getSelectedEdges.value.map(
+      ({ source, target, targetHandle, sourceHandle, id }) =>
+        cloneDeep({ id, source, target, targetHandle, sourceHandle })
+    );
+
+    savedBlocks.push({
+      id: nanoid(5),
+      data: { nodes: nodeList, edges },
+      name: blockFolderModal.name || 'unnamed',
+      description: blockFolderModal.description,
+    });
+
+    await browser.storage.local.set({ savedBlocks });
+
+    clearBlockFolderModal();
+  } catch (error) {
+    console.error(error);
+  }
+}
+function groupBlocks({ position }) {
+  const nodesToDelete = [];
+  const nodes = editor.value.getSelectedNodes.value;
+  const groupBlocksList = nodes.reduce((acc, node) => {
+    if (excludeGroupBlocks.includes(node.label)) return acc;
+
+    acc.push({
+      id: node.label,
+      itemId: node.id,
+      data: node.data,
+    });
+    nodesToDelete.push(node);
+
+    return acc;
+  }, []);
+
+  if (groupBlocksList.length === 0) return;
+
+  editor.value.removeNodes(nodesToDelete);
+
+  const { component, data } = blocks['blocks-group'];
+  editor.value.addNodes([
+    {
+      id: nanoid(),
+      type: component,
+      label: 'blocks-group',
+      data: { ...data, blocks: groupBlocksList },
+      position: editor.value.project({
+        x: position.clientX - 360,
+        y: position.clientY,
+      }),
+    },
+  ]);
+}
+function ungroupBlocks({ nodes }) {
+  const [node] = nodes;
+  if (!node || node.label !== 'blocks-group') return;
+
+  const edges = [];
+  const position = { ...node.position };
+  const copyBlocks = cloneDeep(node.data?.blocks || []);
+  const groupBlocksList = copyBlocks.map((item, index) => {
+    const nextNode = copyBlocks[index + 1];
+    if (nextNode) {
+      edges.push({
+        source: item.itemId,
+        target: nextNode.itemId,
+        sourceHandle: `${item.itemId}-output-1`,
+        targetHandle: `${nextNode.itemId}-input-1`,
+      });
+    }
+
+    item.label = item.id;
+    item.id = item.itemId;
+    item.position = { ...position };
+    item.type = blocks[item.label].component;
+
+    delete item.itemId;
+
+    position.x += 250;
+
+    return item;
+  });
+
+  editor.value.removeNodes(nodes);
+  editor.value.addNodes(groupBlocksList);
+  editor.value.addSelectedNodes(groupBlocksList);
+  editor.value.addEdges(edges);
+}
 function extractAutocopmleteData(label, { data, id }) {
   const autocompleteData = { [id]: {} };
   const getData = (blockName, blockData) => {
-    const keys = tasks[blockName]?.autocomplete;
+    const keys = blocks[blockName]?.autocomplete;
     const dataList = {};
     if (!keys) return dataList;
 
@@ -735,24 +910,35 @@ function toggleSidebar() {
   localStorage.setItem('workflow:sidebar', state.showSidebar);
 }
 function initEditBlock(data) {
-  const { editComponent, data: blockDefData } = tasks[data.id];
+  const { editComponent, data: blockDefData, name } = blocks[data.id];
   const blockData = defu(data.data, blockDefData);
+  const blockEditComponent =
+    typeof editComponent === 'string' ? editComponent : markRaw(editComponent);
 
-  editState.blockData = { ...data, editComponent, data: blockData };
+  editState.blockData = {
+    ...data,
+    editComponent: blockEditComponent,
+    name,
+    data: blockData,
+  };
 
   if (data.id === 'wait-connections') {
     const connections = editor.value.getEdges.value.reduce(
       (acc, { target, sourceNode, source }) => {
         if (target !== data.blockId) return acc;
 
-        let name = t(`workflow.blocks.${sourceNode.label}.name`);
+        const blockNameKey = `workflow.blocks.${sourceNode.label}.name`;
+        let blockName = te(blockNameKey)
+          ? t(blockNameKey)
+          : tasks[sourceNode.label].name;
 
-        const { description } = sourceNode.data;
-        if (description) name += ` (${description})`;
+        const { description, name: groupName } = sourceNode.data;
+        if (description || groupName)
+          blockName += ` (${description || groupName})`;
 
         acc.push({
-          name,
           id: source,
+          name: blockName,
         });
 
         return acc;
@@ -888,6 +1074,19 @@ function onDragoverEditor({ target }) {
   }
 }
 function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
+  const savedBlocks = parseJSON(dataTransfer.getData('savedBlocks'), null);
+  if (savedBlocks) {
+    const { nodes, edges } = savedBlocks.data;
+    /* eslint-disable-next-line */
+    const newElements = copyElements(nodes, edges, { clientX, clientY });
+
+    editor.value.addNodes(newElements.nodes);
+    editor.value.addEdges(newElements.edges);
+
+    state.dataChanged = true;
+    return;
+  }
+
   const block = parseJSON(dataTransfer.getData('block'), null);
   if (!block) return;
 
@@ -976,12 +1175,12 @@ function copyElements(nodes, edges, initialPos) {
     }
 
     const copyNode = cloneDeep({
-      type,
       data,
       label,
       id: newNodeId,
       selected: true,
       position: nodePos,
+      type: type || blocks[label].component,
     });
     copyNode.data = reactive(copyNode.data);
 
@@ -1059,12 +1258,12 @@ async function pasteCopiedElements(position) {
 
   try {
     const copiedText = await navigator.clipboard.readText();
-    const blocks = parseJSON(copiedText);
+    const workflowBlocks = parseJSON(copiedText);
 
-    if (blocks && blocks.name === 'automa-blocks') {
+    if (workflowBlocks && workflowBlocks.name === 'automa-blocks') {
       const { nodes, edges } = copyElements(
-        blocks.data.nodes,
-        blocks.data.edges,
+        workflowBlocks.data.nodes,
+        workflowBlocks.data.edges,
         position
       );
       editor.value.addNodes(nodes);

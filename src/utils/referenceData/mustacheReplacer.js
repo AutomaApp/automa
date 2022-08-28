@@ -168,18 +168,19 @@ export function keyParser(key, data) {
   return { dataKey: 'table', path };
 }
 
-function replacer(str, { regex, tagLen, modifyPath, data, stringify }) {
+function replacer(str, { regex, tagLen, modifyPath, data }) {
   const replaceResult = {
     list: {},
     value: str,
   };
 
-  replaceResult.value = str.replace(regex, (match, p1, offset) => {
+  replaceResult.value = str.replace(regex, (match) => {
     let key = match.slice(tagLen, -tagLen).trim();
 
     if (!key) return '';
 
     let result = '';
+    let stringify = false;
     const isFunction = extractStrFunction(key);
     const funcRef = isFunction && data.functions[isFunction.name];
 
@@ -202,7 +203,13 @@ function replacer(str, { regex, tagLen, modifyPath, data, stringify }) {
 
       result = funcRef.apply({ refData: data }, funcParams);
     } else {
-      const { dataKey, path } = keyParser(key, data);
+      /* eslint-disable-next-line */
+      let { dataKey, path } = keyParser(key, data);
+      if (dataKey.startsWith('!')) {
+        stringify = true;
+        dataKey = dataKey.slice(1);
+      }
+
       result = objectPath.get(data[dataKey], path) ?? match;
 
       if (dataKey === 'secrets') {
@@ -211,18 +218,10 @@ function replacer(str, { regex, tagLen, modifyPath, data, stringify }) {
       }
     }
 
-    let finalResult =
+    const finalResult =
       typeof result === 'string' && !stringify
         ? result
         : JSON.stringify(result);
-
-    if (stringify && typeof result === 'string') {
-      const isQuote = (char) => char === '"';
-      const isInsideQuote =
-        isQuote(str[offset - 1]) && isQuote(str[match.length + offset]);
-
-      if (isInsideQuote) finalResult = finalResult.slice(1, -1);
-    }
 
     replaceResult.list[match] = finalResult?.slice(0, 512) ?? finalResult;
 
@@ -232,7 +231,7 @@ function replacer(str, { regex, tagLen, modifyPath, data, stringify }) {
   return replaceResult;
 }
 
-export default function (str, refData, { stringify = false } = {}) {
+export default function (str, refData) {
   if (!str || typeof str !== 'string') return '';
 
   const data = { ...refData, functions };
@@ -241,7 +240,6 @@ export default function (str, refData, { stringify = false } = {}) {
   const replacedStr = replacer(`${str}`, {
     data,
     tagLen: 2,
-    stringify,
     regex: /\{\{(.*?)\}\}/g,
     modifyPath: (path) => {
       const { value, list } = replacer(path, {

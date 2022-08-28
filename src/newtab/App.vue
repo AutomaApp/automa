@@ -109,7 +109,7 @@ const prevVersion = localStorage.getItem('ext-version') || '0.0.0';
 
 async function fetchUserData() {
   try {
-    if (!useRouter.user) return;
+    if (!userStore.user) return;
 
     const { backup, hosted } = await getUserWorkflows();
     userStore.hostedWorkflows = hosted || {};

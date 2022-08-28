@@ -27,5 +27,6 @@ get-pass-key.js
 getPassKey.js
 
 /business/prod
+/business/test
 
 .idea

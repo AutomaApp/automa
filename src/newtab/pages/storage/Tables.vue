@@ -287,7 +287,10 @@ function deleteRow(item) {
   dbStorage.tablesData
     .where('tableId')
     .equals(tableId)
-    .modify({ items: toRaw(tableData.value.items) })
+    .modify({
+      items: toRaw(tableData.value.items),
+      columnsIndex: toRaw(columnsIndex),
+    })
     .then(() => {
       triggerRef(table);
     });
