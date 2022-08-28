@@ -53,7 +53,7 @@
     "css-selector-generator": "^3.6.4",
     "dagre": "^0.8.5",
     "dayjs": "^1.11.5",
-    "defu": "^6.0.0",
+    "defu": "^6.1.0",
     "dexie": "^3.2.2",
     "html2canvas": "^1.4.1",
     "idb": "^7.0.2",
