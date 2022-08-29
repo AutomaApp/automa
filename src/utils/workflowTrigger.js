@@ -123,8 +123,12 @@ export function registerSpecificDay(workflowId, data) {
   if (data.days.length === 0) return null;
 
   const getDate = (dayId, time) => {
-    const [hour, minute] = time.split(':');
-    const date = dayjs().day(dayId).hour(hour).minute(minute).second(0);
+    const [hour, minute, seconds] = time.split(':');
+    const date = dayjs()
+      .day(dayId)
+      .hour(hour)
+      .minute(minute)
+      .second(seconds || 0);
 
     return date.valueOf();
   };
@@ -166,8 +170,12 @@ export function registerSpecificDate(workflowId, data) {
   let date = Date.now() + 60000;
 
   if (data.date) {
-    const [hour, minute] = data.time.split(':');
-    date = dayjs(data.date).hour(hour).minute(minute).second(0).valueOf();
+    const [hour, minute, second] = data.time.split(':');
+    date = dayjs(data.date)
+      .hour(hour)
+      .minute(minute)
+      .second(second || 0)
+      .valueOf();
   }
 
   return browser.alarms.create(workflowId, {

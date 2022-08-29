@@ -34,7 +34,12 @@
       </div>
     </ui-popover>
     <div class="flex items-center">
-      <ui-input v-model="tempDate.time" type="time" class="flex-1 mr-2" />
+      <ui-input
+        v-model="tempDate.time"
+        type="time"
+        class="flex-1 mr-2"
+        step="1"
+      />
       <ui-button variant="accent" @click="addTime">
         {{ t('workflow.blocks.trigger.addTime') }}
       </ui-button>
@@ -64,12 +69,13 @@
           <div
             v-for="(time, timeIndex) in day.times"
             :key="time"
-            class="flex items-center px-4 py-2 border rounded-lg group"
+            class="flex items-center p-2 border rounded-lg group"
           >
             <span class="flex-1"> {{ formatTime(time) }} </span>
             <v-remixicon
               name="riDeleteBin7Line"
               class="cursor-pointer"
+              size="18"
               @click.stop="removeDayTime(index, timeIndex)"
             />
           </div>
@@ -117,9 +123,13 @@ const sortedDaysArr = computed(() =>
 );
 
 function formatTime(time) {
-  const [hour, minute] = time.split(':');
+  const [hour, minute, seconds] = time.split(':');
 
-  return dayjs().hour(hour).minute(minute).format('hh:mm A');
+  return dayjs()
+    .hour(hour)
+    .minute(minute)
+    .second(seconds || 0)
+    .format('hh:mm:ss A');
 }
 function removeDayTime(index, timeIndex) {
   daysArr.value[index].times.splice(timeIndex, 1);

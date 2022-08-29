@@ -25,6 +25,7 @@
           min,
           max,
           list,
+          step,
         }"
         :id="componentId"
         v-autofocus="autofocus"
@@ -105,6 +106,10 @@ export default {
       default: null,
     },
     autocomplete: {
+      type: String,
+      default: null,
+    },
+    step: {
       type: String,
       default: null,
     },
