@@ -114,6 +114,21 @@ export const functions = {
 
     return jsonpath.query(data, exps);
   },
+  replace(value, search, replace) {
+    if (!value) return value;
+
+    return value.replace(search, replace);
+  },
+  toLowerCase(value) {
+    if (!value) return value;
+
+    return value.toLowerCase();
+  },
+  toUpperCase(value) {
+    if (!value) return value;
+
+    return value.toUpperCase();
+  },
 };
 
 export function extractStrFunction(str) {
@@ -124,8 +139,8 @@ export function extractStrFunction(str) {
   if (!extractedStr) return null;
   const { 1: name, 2: funcParams } = extractedStr;
   const params = funcParams
-    .split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/)
-    .map((param) => param?.trim().replace(/^['"]|['"]$/g, '') || '');
+    .split(/,(?=(?:[^'"]*['"][^'"]*['"])*[^'"]*$)/)
+    .map((param) => param.trim().replace(/^['"]|['"]$/g, '') || '');
 
   return {
     name,
