@@ -8,7 +8,7 @@
     />
     <ui-input
       :model-value="data.host"
-      placeholder="socks5://1.2.3.4"
+      placeholder="socks5://1.2.3.4:1080"
       class="w-full mb-2"
       @change="updateData({ host: $event })"
     >

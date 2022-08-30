@@ -21,12 +21,20 @@ function setProxy({ data, id }) {
       },
     };
 
+    let proxyPort = data.port;
+
     if (!isWhitespace(data.host)) {
       let proxyHost = data.host;
 
       const schemeRegex = /^https?|socks4|socks5/i;
       if (schemeRegex.test(data.host)) {
-        const [scheme, host] = data.host.split(/:\/\/(.*)/);
+        /* eslint-disable-next-line */
+        let [scheme, host] = data.host.split(/:\/\/(.*)/);
+
+        if (host.includes(':')) {
+          [host, proxyPort] = host.split(':');
+        }
+
         proxyHost = host;
         config.rules.singleProxy.scheme = scheme;
       }
@@ -51,8 +59,8 @@ function setProxy({ data, id }) {
       return;
     }
 
-    if (data.port && !Number.isNaN(+data.port)) {
-      config.rules.singleProxy.port = +data.port;
+    if (proxyPort && !Number.isNaN(+proxyPort)) {
+      config.rules.singleProxy.port = +proxyPort;
     }
 
     chrome.proxy.settings.set({ value: config, scope: 'regular' }, () => {
