@@ -223,10 +223,7 @@ async function syncCloudToLocal(workflow) {
     const data = await response.json();
     if (!response.ok) throw new Error(data.message);
 
-    workflowStore.insertOrUpdate({
-      data,
-      id: workflow.id,
-    });
+    await workflowStore.insertOrUpdate([data]);
 
     const index = state.cloudWorkflows.findIndex(
       (item) => item.id === workflow.id

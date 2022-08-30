@@ -98,7 +98,7 @@ function javascriptCode(block) {
 
       script.setAttribute(scriptAttr, '');
       script.classList.add('automa-custom-js');
-      script.innerHTML = `(() => {
+      script.textContent = `(() => {
         ${automaScript}
 
         try {

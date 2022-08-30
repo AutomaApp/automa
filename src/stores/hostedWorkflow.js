@@ -123,7 +123,6 @@ export const useHostedWorkflowStore = defineStore('hosted-workflows', {
         dataToReturn.push(data);
         this.workflows[hostId] = data;
       });
-      console.log('hoste', this.workflows);
 
       await this.saveToStorage('workflows');
 

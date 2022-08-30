@@ -36,13 +36,32 @@ function workflowListener(workflow, options) {
   });
 }
 
+function findWorkflow(workflows, workflowId) {
+  const workflow = Array.isArray(workflows)
+    ? workflows.find(({ id }) => id === workflowId)
+    : workflows[workflowId];
+
+  return workflow;
+}
+
 async function executeWorkflow({ id: blockId, data }) {
   if (data.workflowId === '') throw new Error('empty-workflow');
 
-  const { workflows } = await browser.storage.local.get('workflows');
-  let workflow = Array.isArray(workflows)
-    ? workflows.find(({ id }) => id === data.workflowId)
-    : workflows[data.workflowId];
+  const { workflows, teamWorkflows } = await browser.storage.local.get([
+    'workflows',
+    'teamWorkflows',
+  ]);
+  let workflow = null;
+
+  if (data.workflowId.startsWith('team')) {
+    const teamWorkflowsArr = Object.values(
+      Object.values(teamWorkflows || {})[0] ?? {}
+    );
+    workflow = findWorkflow(teamWorkflowsArr, data.workflowId);
+  } else {
+    workflow = findWorkflow(workflows, data.workflowId);
+  }
+
   if (!workflow) {
     const errorInstance = new Error('no-workflow');
     errorInstance.data = { workflowId: data.workflowId };

@@ -24,6 +24,7 @@
   </shared-logs-table>
 </template>
 <script setup>
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import dbLogs from '@/db/logs';
 import { useLiveQuery } from '@/composable/liveQuery';
@@ -42,13 +43,12 @@ const props = defineProps({
 
 const { t } = useI18n();
 
-const logs = useLiveQuery(() =>
-  dbLogs.items
-    .where('workflowId')
-    .equals(props.workflowId)
-    .reverse()
-    .limit(14)
-    .sortBy('endedAt')
+const logsArr = useLiveQuery(() =>
+  dbLogs.items.where('workflowId').equals(props.workflowId).toArray()
+);
+
+const logs = computed(() =>
+  (logsArr.value || []).sort((a, b) => b.endedAt - a.endedAt).slice(0, 14)
 );
 
 function deleteLog(logId) {

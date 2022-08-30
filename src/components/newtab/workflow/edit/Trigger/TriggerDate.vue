@@ -13,6 +13,7 @@
       :model-value="data.time"
       :placeholder="t('workflow.blocks.trigger.forms.time')"
       type="time"
+      step="1"
       class="w-full mt-2"
       @change="$emit('update', { time: $event || '00:00' })"
     />

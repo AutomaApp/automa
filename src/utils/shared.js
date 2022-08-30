@@ -1,7 +1,6 @@
 import customBlocks from '@business/blocks';
 
 export const tasks = {
-  ...customBlocks,
   trigger: {
     name: 'Trigger',
     description: 'Block where workflow will start executing',
@@ -1262,6 +1261,7 @@ export const tasks = {
       dataColumn: '',
     },
   },
+  ...customBlocks,
 };
 
 export const categories = {

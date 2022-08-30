@@ -248,6 +248,8 @@ function onKeydown(event) {
     return;
   }
 
+  if (state.shortcutKeys.length < 1) return;
+
   const automaShortcut = state.shortcutKeys.every((shortcutKey) => {
     if (shortcutKey === 'mod') return ctrlKey || metaKey;
     if (shortcutKey === 'shift') return shiftKey;
@@ -381,6 +383,8 @@ watch(
 
 onMounted(() => {
   browser.storage.local.get('automaShortcut').then(({ automaShortcut }) => {
+    if (Array.isArray(automaShortcut) && automaShortcut.length < 1) return;
+
     let keys = ['mod', 'shift', 'a'];
     if (automaShortcut) keys = automaShortcut.split('+');
 

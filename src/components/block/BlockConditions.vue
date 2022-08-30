@@ -1,8 +1,9 @@
 <template>
-  <ui-card
+  <block-base
     :id="componentId"
-    class="w-64 relative"
-    @dblclick.stop="$emit('edit')"
+    class="w-64"
+    @edit="$emit('edit')"
+    @delete="$emit('delete', id)"
   >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div class="flex items-center">
@@ -13,17 +14,6 @@
         <v-remixicon name="riAB" size="20" class="inline-block mr-1" />
         <span>{{ t('workflow.blocks.conditions.name') }}</span>
       </div>
-      <div class="flex-grow"></div>
-      <v-remixicon
-        name="riDeleteBin7Line"
-        class="cursor-pointer mr-2"
-        @click.stop="$emit('delete', id)"
-      />
-      <v-remixicon
-        name="riPencilLine"
-        class="inline-block cursor-pointer"
-        @click="$emit('edit')"
-      />
     </div>
     <p
       v-show="data.description"
@@ -80,13 +70,14 @@
       type="source"
       style="top: auto; bottom: 10px"
     />
-  </ui-card>
+  </block-base>
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { Handle, Position } from '@braks/vue-flow';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
+import BlockBase from './BlockBase.vue';
 
 const props = defineProps({
   id: {

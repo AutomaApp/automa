@@ -13,13 +13,24 @@
       class="w-full mb-2"
       @change="updateData({ workflowId: $event })"
     >
-      <option
-        v-for="workflow in workflows"
-        :key="workflow.id"
-        :value="workflow.id"
-      >
-        {{ workflow.name }}
-      </option>
+      <optgroup label="Local">
+        <option
+          v-for="workflow in workflows"
+          :key="workflow.id"
+          :value="workflow.id"
+        >
+          {{ workflow.name }}
+        </option>
+      </optgroup>
+      <optgroup v-if="route.params.teamId" label="Team">
+        <option
+          v-for="workflow in teamWorkflows"
+          :key="workflow.id"
+          :value="workflow.id"
+        >
+          {{ workflow.name }}
+        </option>
+      </optgroup>
     </ui-select>
     <ui-input
       :model-value="data.executeId"
@@ -83,6 +94,7 @@ import { computed, shallowReactive, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { useWorkflowStore } from '@/stores/workflow';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 
 const SharedCodemirror = defineAsyncComponent(() =>
   import('@/components/newtab/shared/SharedCodemirror.vue')
@@ -103,21 +115,29 @@ const emit = defineEmits(['update:data']);
 const { t } = useI18n();
 const route = useRoute();
 const workflowStore = useWorkflowStore();
+const teamWorkflowStore = useTeamWorkflowStore();
 
 const state = shallowReactive({
   showGlobalData: false,
 });
 
-const workflows = computed(() =>
-  workflowStore.getWorkflows
+const filterWorkflows = (workflows) =>
+  workflows
     .filter(({ id, drawflow }) => {
       const flow =
         typeof drawflow === 'string' ? drawflow : JSON.stringify(drawflow);
 
       return id !== route.params.id && !flow.includes(route.params.id);
     })
-    .sort((a, b) => (a.name > b.name ? 1 : -1))
-);
+    .sort((a, b) => (a.name > b.name ? 1 : -1));
+
+const workflows = computed(() => filterWorkflows(workflowStore.getWorkflows));
+const teamWorkflows = computed(() => {
+  const { teamId } = route.params;
+  if (!teamId) return [];
+
+  return filterWorkflows(teamWorkflowStore.getByTeam(teamId));
+});
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
