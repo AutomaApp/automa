@@ -186,6 +186,7 @@
       :model-value="previewDataState.data"
       :line-numbers="false"
       readonly
+      hide-lang
       class="mt-4 max-h-96 scroll"
     />
     <ui-modal

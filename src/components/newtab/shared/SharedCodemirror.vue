@@ -5,7 +5,8 @@
     class="codemirror relative overflow-auto rounded-lg"
   >
     <div
-      class="absolute text-xs text-gray-600 dark:text-gray-200 px-2 items-center bottom-0 left-0 w-full h-6 flex z-10"
+      v-if="!hideLang"
+      class="absolute text-xs text-gray-300 px-2 items-center bottom-0 left-0 w-full h-6 flex z-10"
     >
       <div class="flex-grow" />
       <span>
@@ -48,6 +49,7 @@ const props = defineProps({
     type: [Object, Array],
     default: () => [],
   },
+  hideLang: Boolean,
 });
 const emit = defineEmits(['change', 'update:modelValue']);
 
