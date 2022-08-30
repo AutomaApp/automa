@@ -119,6 +119,16 @@ export const functions = {
 
     return value.replace(search, replace);
   },
+  toLowerCase(value) {
+    if (!value) return value;
+
+    return value.toLowerCase();
+  },
+  toUpperCase(value) {
+    if (!value) return value;
+
+    return value.toUpperCase();
+  },
 };
 
 export function extractStrFunction(str) {
