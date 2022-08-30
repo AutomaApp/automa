@@ -114,6 +114,11 @@ export const functions = {
 
     return jsonpath.query(data, exps);
   },
+  replace(value, search, replace) {
+    if (!value) return value;
+
+    return value.replace(search, replace);
+  },
 };
 
 export function extractStrFunction(str) {
