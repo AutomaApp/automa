@@ -27,6 +27,13 @@
         </template>
         <template v-else>
           <button
+            v-tooltip="'Remove shortcut'"
+            class="group-hover:visible invisible mr-4"
+            @click="removeShortcut('automa:shortcut')"
+          >
+            <v-remixicon name="riDeleteBin7Line" />
+          </button>
+          <button
             v-tooltip="t('workflow.blocks.trigger.shortcut.tooltip')"
             class="group-hover:visible invisible"
             @click="startRecording({ id: 'automa:shortcut' })"
@@ -153,6 +160,12 @@ function startRecording({ id }) {
 
   recording.keys = [];
   recording.id = id;
+}
+function removeShortcut(shortcutId) {
+  if (shortcutId !== 'automa:shortcut') return;
+
+  browser.storage.local.set({ automaShortcut: [] });
+  automaShortcut.value = '';
 }
 function stopRecording() {
   if (recording.keys.length === 0) return;

@@ -248,6 +248,8 @@ function onKeydown(event) {
     return;
   }
 
+  if (state.shortcutKeys.length < 1) return;
+
   const automaShortcut = state.shortcutKeys.every((shortcutKey) => {
     if (shortcutKey === 'mod') return ctrlKey || metaKey;
     if (shortcutKey === 'shift') return shiftKey;
