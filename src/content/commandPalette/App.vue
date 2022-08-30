@@ -383,6 +383,8 @@ watch(
 
 onMounted(() => {
   browser.storage.local.get('automaShortcut').then(({ automaShortcut }) => {
+    if (Array.isArray(automaShortcut) && automaShortcut.length < 1) return;
+
     let keys = ['mod', 'shift', 'a'];
     if (automaShortcut) keys = automaShortcut.split('+');
 
