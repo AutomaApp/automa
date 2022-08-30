@@ -10,16 +10,26 @@
       class="absolute bottom-1 transition-transform duration-300 pt-4 ml-1 menu"
     >
       <div
-        class="bg-accent dark:bg-gray-100 dark:text-black px-3 py-2 text-white rounded-lg flex items-center"
+        class="bg-accent dark:bg-gray-100 dark:text-black text-white rounded-lg flex items-center"
       >
-        <button v-if="!hideEdit" @click="$emit('edit')">
+        <button
+          v-if="!hideEdit"
+          class="px-3 focus:ring-0 py-2"
+          title="Edit block"
+          @click="$emit('edit')"
+        >
           <v-remixicon size="20" name="riPencilLine" />
         </button>
         <hr
           v-if="!hideDelete && !hideEdit"
-          class="border-r border-gray-600 h-5 mx-3"
+          class="border-r border-gray-600 h-5"
         />
-        <button v-if="!hideDelete" @click.stop="$emit('delete')">
+        <button
+          v-if="!hideDelete"
+          class="px-3 focus:ring-0 py-2"
+          title="Delete block"
+          @click.stop="$emit('delete')"
+        >
           <v-remixicon size="20" name="riDeleteBin7Line" />
         </button>
         <slot name="action" />
