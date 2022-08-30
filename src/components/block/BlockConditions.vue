@@ -1,7 +1,6 @@
 <template>
   <block-base
     :id="componentId"
-    :data-position="JSON.stringify(position)"
     class="w-64"
     @edit="$emit('edit')"
     @delete="$emit('delete', id)"
