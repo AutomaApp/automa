@@ -37,6 +37,7 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  isPackage: Boolean,
 });
 const emit = defineEmits([
   'copy',
@@ -75,7 +76,7 @@ const menuItems = {
   },
   saveToFolder: {
     id: 'saveToFolder',
-    name: t('workflow.blocksFolder.save'),
+    name: t('packages.set'),
     event: () => {
       emit('saveBlock', ctxData);
     },
@@ -113,8 +114,11 @@ function showCtxMenu(items = [], event) {
   event.preventDefault();
   const { clientX, clientY } = event;
 
-  state.items = items.map((key) => markRaw(menuItems[key]));
+  if (props.isPackage && items.includes('saveToFolder')) {
+    items.splice(items.indexOf('saveToFolder'), 1);
+  }
 
+  state.items = items.map((key) => markRaw(menuItems[key]));
   state.items.unshift(markRaw(menuItems.paste));
 
   state.position = {

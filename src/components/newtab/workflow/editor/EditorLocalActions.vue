@@ -6,7 +6,10 @@
   >
     {{ workflow.tag }}
   </span>
-  <ui-card v-if="!isTeam || !canEdit" padding="p-1 pointer-events-auto">
+  <ui-card
+    v-if="!isPackage && (!isTeam || !canEdit)"
+    padding="p-1 pointer-events-auto"
+  >
     <button
       v-tooltip.group="'Workflow note'"
       class="hoverable p-2 rounded-lg"
@@ -16,7 +19,7 @@
     </button>
   </ui-card>
   <ui-card
-    v-if="!isTeam"
+    v-if="!isTeam && !isPackage"
     padding="p-1"
     class="flex items-center pointer-events-auto ml-4"
   >
@@ -98,7 +101,7 @@
       </ui-list>
     </ui-popover>
   </ui-card>
-  <ui-card v-if="canEdit" padding="p-1 ml-4 pointer-events-auto">
+  <ui-card v-if="canEdit && !isPackage" padding="p-1 ml-4 pointer-events-auto">
     <button
       v-for="item in modalActions"
       :key="item.id"
@@ -109,7 +112,10 @@
       <v-remixicon :name="item.icon" />
     </button>
   </ui-card>
-  <ui-card padding="p-1 ml-4 flex items-center pointer-events-auto">
+  <ui-card
+    v-if="!isPackage"
+    padding="p-1 ml-4 flex items-center pointer-events-auto"
+  >
     <button
       v-if="!workflow.isDisabled"
       v-tooltip.group="
@@ -156,6 +162,7 @@
           <span>{{ t('workflow.host.sync.title') }}</span>
         </ui-list-item>
         <ui-list-item
+          v-if="!isPackage"
           class="cursor-pointer"
           @click="updateWorkflow({ isDisabled: !workflow.isDisabled })"
         >
@@ -259,7 +266,7 @@
       @close="state.showEditDescription = false"
     />
   </ui-modal>
-  <ui-modal v-model="renameState.showModal" title="Workflow">
+  <ui-modal v-model="renameState.showModal" title="Rename">
     <ui-input
       v-model="renameState.name"
       :placeholder="t('common.name')"
@@ -315,6 +322,7 @@ import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
+import { usePackageStore } from '@/stores/package';
 import { useDialog } from '@/composable/dialog';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
@@ -349,6 +357,7 @@ const props = defineProps({
     default: true,
   },
   isTeam: Boolean,
+  isPackage: Boolean,
 });
 const emit = defineEmits(['modal', 'change', 'update', 'permission']);
 
@@ -359,6 +368,7 @@ const toast = useToast();
 const router = useRouter();
 const dialog = useDialog();
 const userStore = useUserStore();
+const packageStore = usePackageStore();
 const workflowStore = useWorkflowStore();
 const teamWorkflowStore = useTeamWorkflowStore();
 const sharedWorkflowStore = useSharedWorkflowStore();
@@ -407,6 +417,11 @@ function updateWorkflow(data = {}, changedIndicator = false) {
     store = teamWorkflowStore.update({
       data,
       teamId,
+      id: props.workflow.id,
+    });
+  } else if (props.isPackage) {
+    store = packageStore.update({
+      data,
       id: props.workflow.id,
     });
   } else {
@@ -650,6 +665,11 @@ async function saveWorkflow() {
 
       return edge;
     });
+
+    if (props.isPackage) {
+      updateWorkflow({ data: flow }, false);
+      return;
+    }
 
     const triggerBlock = flow.nodes.find((node) => node.label === 'trigger');
     if (!triggerBlock) {

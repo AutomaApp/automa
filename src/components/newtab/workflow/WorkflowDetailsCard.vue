@@ -27,7 +27,7 @@
           </span>
         </div>
         <ui-input
-          :model-value="workflow.icon.startsWith('ri') ? '' : workflow.icon"
+          :model-value="workflow.icon.startsWith('http') ? workflow.icon : ''"
           type="url"
           placeholder="http://example.com/img.png"
           label="Icon URL"
@@ -111,6 +111,7 @@ const pinnedCategory = {
   color: 'bg-accent',
 };
 const icons = [
+  'mdiPackageVariantClosed',
   'riGlobalLine',
   'riFileTextLine',
   'riEqualizerLine',

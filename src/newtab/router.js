@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import Welcome from './pages/Welcome.vue';
+import Packages from './pages/Packages.vue';
 import Workflows from './pages/Workflows.vue';
 import WorkflowHost from './pages/workflows/Host.vue';
 import WorkflowDetails from './pages/workflows/[id].vue';
@@ -28,6 +29,16 @@ const routes = [
     name: 'welcome',
     path: '/welcome',
     component: Welcome,
+  },
+  {
+    name: 'packages',
+    path: '/packages',
+    component: Packages,
+  },
+  {
+    name: 'packages-details',
+    path: '/packages/:id',
+    component: WorkflowDetails,
   },
   {
     name: 'workflows',

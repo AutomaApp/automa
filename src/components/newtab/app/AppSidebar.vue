@@ -26,7 +26,9 @@
       >
         <a
           v-tooltip:right.group="
-            `${t(`common.${tab.id}`, 2)} (${tab.shortcut.readable})`
+            `${t(`common.${tab.id}`, 2)} ${
+              tab.shortcut && `(${tab.shortcut.readable})`
+            }`
           "
           :class="{ 'is-active': isActive }"
           :href="href"
@@ -134,6 +136,12 @@ const tabs = [
     shortcut: getShortcut('page:workflows', '/workflows'),
   },
   {
+    id: 'packages',
+    icon: 'mdiPackageVariantClosed',
+    path: '/packages',
+    shortcut: '',
+  },
+  {
     id: 'schedule',
     icon: 'riTimeLine',
     path: '/schedule',
@@ -163,7 +171,13 @@ const showHoverIndicator = ref(false);
 const runningWorkflowsLen = computed(() => workflowStore.states.length);
 
 useShortcut(
-  tabs.map(({ shortcut }) => shortcut),
+  tabs.reduce((acc, { shortcut }) => {
+    if (shortcut) {
+      acc.push(shortcut);
+    }
+
+    return acc;
+  }, []),
   ({ data }) => {
     if (!data) return;
 

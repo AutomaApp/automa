@@ -70,7 +70,7 @@
             />
           </button>
           <ui-tab value="editor">{{ t('common.editor') }}</ui-tab>
-          <ui-tab value="logs" class="flex items-center">
+          <ui-tab v-if="!isPackage" value="logs" class="flex items-center">
             {{ t('common.log', 2) }}
             <span
               v-if="workflowStates.length > 0"
@@ -97,6 +97,7 @@
           :workflow="workflow"
           :is-data-changed="state.dataChanged"
           :is-team="isTeamWorkflow"
+          :is-package="isPackage"
           :can-edit="haveEditAccess"
           @update="onActionUpdated"
           @permission="checkWorkflowPermission"
@@ -114,7 +115,7 @@
           <workflow-editor
             v-if="state.workflowConverted"
             :id="route.params.id"
-            :data="workflow.drawflow"
+            :data="editorData"
             :disabled="isTeamWorkflow && !haveEditAccess"
             :class="{ 'animate-blocks': state.animateBlocks }"
             class="h-screen focus:outline-none workflow-editor"
@@ -153,11 +154,12 @@
                 </button>
               </ui-card>
               <button
-                v-tooltip="t('workflow.blocksFolder.title')"
+                v-if="!isPackage && haveEditAccess"
+                v-tooltip="t('packages.open')"
                 class="control-button hoverable ml-2"
                 @click="blockFolderModal.showList = !blockFolderModal.showList"
               >
-                <v-remixicon name="riFolderOpenLine" />
+                <v-remixicon name="mdiPackageVariantClosed" />
               </button>
               <button
                 v-tooltip="t('workflow.autoAlign.title')"
@@ -175,6 +177,7 @@
           <editor-local-ctx-menu
             v-if="editor"
             :editor="editor"
+            :is-package="isPackage"
             @group="groupBlocks"
             @ungroup="ungroupBlocks"
             @copy="copySelectedElements"
@@ -222,31 +225,17 @@
     :permissions="permissionState.items"
     @granted="registerTrigger"
   />
-  <ui-modal
-    v-model="blockFolderModal.showModal"
-    :title="t('workflow.blocksFolder.add')"
-  >
-    <ui-input
-      v-model="blockFolderModal.name"
-      :placeholder="t('common.name')"
-      autofocus
-      class="w-full"
-      @keyup.enter="saveBlockToFolder"
+  <ui-modal v-model="blockFolderModal.showModal" :title="t('packages.set')">
+    <editor-add-package
+      :data="{
+        name: blockFolderModal.name,
+        description: blockFolderModal.description,
+        icon: blockFolderModal.icon,
+      }"
+      @update="Object.assign(blockFolderModal, $event)"
+      @cancel="clearBlockFolderModal"
+      @add="saveBlockToFolder"
     />
-    <ui-textarea
-      v-model="blockFolderModal.description"
-      :label="t('common.description')"
-      placeholder="Description..."
-      class="w-full mt-4"
-    />
-    <div class="flex items-center justify-end space-x-4 mt-6">
-      <ui-button @click="clearBlockFolderModal">
-        {{ t('common.cancel') }}
-      </ui-button>
-      <ui-button variant="accent" class="w-20" @click="saveBlockToFolder">
-        {{ t('common.add') }}
-      </ui-button>
-    </div>
   </ui-modal>
 </template>
 <script setup>
@@ -268,6 +257,7 @@ import { useToast } from 'vue-toastification';
 import defu from 'defu';
 import dagre from 'dagre';
 import { useUserStore } from '@/stores/user';
+import { usePackageStore } from '@/stores/package';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import {
@@ -299,6 +289,7 @@ import WorkflowGlobalData from '@/components/newtab/workflow/WorkflowGlobalData.
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
 import EditorLogs from '@/components/newtab/workflow/editor/EditorLogs.vue';
 import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
+import EditorAddPackage from '@/components/newtab/workflow/editor/EditorAddPackage.vue';
 import EditorLocalCtxMenu from '@/components/newtab/workflow/editor/EditorLocalCtxMenu.vue';
 import EditorLocalActions from '@/components/newtab/workflow/editor/EditorLocalActions.vue';
 import EditorUsedCredentials from '@/components/newtab/workflow/editor/EditorUsedCredentials.vue';
@@ -317,12 +308,14 @@ const toast = useToast();
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
+const packageStore = usePackageStore();
 const workflowStore = useWorkflowStore();
 const commandManager = useCommandManager();
 const teamWorkflowStore = useTeamWorkflowStore();
 
 const { teamId, id: workflowId } = route.params;
 const isTeamWorkflow = route.name === 'team-workflows';
+const isPackage = route.name === 'packages-details';
 
 const editor = shallowRef(null);
 const connectedTable = shallowRef(null);
@@ -337,6 +330,7 @@ const state = reactive({
 });
 const blockFolderModal = reactive({
   name: '',
+  icon: '',
   nodes: [],
   description: '',
   showList: false,
@@ -473,6 +467,9 @@ const workflow = computed(() => {
   if (isTeamWorkflow) {
     return teamWorkflowStore.getById(teamId, workflowId);
   }
+  if (isPackage) {
+    return packageStore.getById(workflowId);
+  }
 
   return workflowStore.getById(workflowId);
 });
@@ -488,6 +485,11 @@ const workflowColumns = computed(() => {
   }
 
   return workflow.value.table;
+});
+const editorData = computed(() => {
+  if (isPackage) return workflow.value.data;
+
+  return workflow.value.drawflow;
 });
 
 provide('workflow', {
@@ -630,15 +632,14 @@ function clearBlockFolderModal() {
   Object.assign(blockFolderModal, {
     name: '',
     nodes: [],
-    showModal: false,
+    asBlock: false,
     description: '',
+    showModal: false,
+    icon: 'mdiPackageVariantClosed',
   });
 }
 async function saveBlockToFolder() {
   try {
-    let { savedBlocks } = await browser.storage.local.get('savedBlocks');
-    if (!savedBlocks) savedBlocks = [];
-
     const seen = new Set();
     const nodeList = [
       ...editor.value.getSelectedNodes.value,
@@ -646,8 +647,8 @@ async function saveBlockToFolder() {
     ].reduce((acc, node) => {
       if (seen.has(node.id)) return acc;
 
-      const { label, data, position, id } = node;
-      acc.push(cloneDeep({ label, data, position, id }));
+      const { label, data, position, id, type } = node;
+      acc.push(cloneDeep({ label, data, position, id, type }));
       seen.add(node.id);
 
       return acc;
@@ -657,14 +658,13 @@ async function saveBlockToFolder() {
         cloneDeep({ id, source, target, targetHandle, sourceHandle })
     );
 
-    savedBlocks.push({
-      id: nanoid(5),
+    packageStore.insert({
       data: { nodes: nodeList, edges },
       name: blockFolderModal.name || 'unnamed',
       description: blockFolderModal.description,
+      asBlock: blockFolderModal?.asBlock ?? false,
+      icon: blockFolderModal.icon || 'mdiPackageVariantClosed',
     });
-
-    await browser.storage.local.set({ savedBlocks });
 
     clearBlockFolderModal();
   } catch (error) {
@@ -776,7 +776,7 @@ async function initAutocomplete() {
     autocompleteState.blocks = objData;
   } else {
     const autocompleteData = {};
-    workflow.value.drawflow.nodes.forEach(({ label, id, data }) => {
+    editorData.value.nodes.forEach(({ label, id, data }) => {
       Object.assign(
         autocompleteData,
         extractAutocopmleteData(label, { data, id })
@@ -802,7 +802,7 @@ async function initAutocomplete() {
   }
 }
 function registerTrigger() {
-  const triggerBlock = workflow.value.drawflow.nodes.find(
+  const triggerBlock = editorData.value.nodes.find(
     (node) => node.label === 'trigger'
   );
   registerWorkflowTrigger(workflowId, triggerBlock);
@@ -953,6 +953,16 @@ function initEditBlock(data) {
 }
 async function updateWorkflow(data) {
   try {
+    if (isPackage) {
+      delete data.drawflow;
+
+      await packageStore.update({
+        id: workflowId,
+        data,
+      });
+      return;
+    }
+
     if (isTeamWorkflow) {
       if (!haveEditAccess.value && !data.globalData) return;
       await teamWorkflowStore.update({
@@ -1090,18 +1100,20 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
   const block = parseJSON(dataTransfer.getData('block'), null);
   if (!block) return;
 
+  if (block.id === 'trigger' && isPackage) return;
+
   clearHighlightedElements();
+
+  const isTriggerExists =
+    block.id === 'trigger' &&
+    editor.value.getNodes.value.some((node) => node.label === 'trigger');
+  if (isTriggerExists) return;
 
   const nodeEl = DroppedNode.isNode(target);
   if (nodeEl) {
     DroppedNode.replaceNode(editor.value, { block, target: nodeEl });
     return;
   }
-
-  const isTriggerExists =
-    block.id === 'trigger' &&
-    editor.value.getNodes.value.some((node) => node.label === 'trigger');
-  if (isTriggerExists) return;
 
   const position = editor.value.project({ x: clientX - 360, y: clientY - 18 });
   const nodeId = nanoid();
@@ -1231,6 +1243,8 @@ function duplicateElements({ nodes, edges }) {
 
   editor.value.addNodes(newNodes);
   editor.value.addEdges(newEdges);
+
+  state.dataChanged = true;
 }
 function copySelectedElements(data = {}) {
   const nodes = data.nodes || editor.value.getSelectedNodes.value;
@@ -1268,6 +1282,8 @@ async function pasteCopiedElements(position) {
       );
       editor.value.addNodes(nodes);
       editor.value.addEdges(edges);
+
+      state.dataChanged = true;
 
       return;
     }
@@ -1309,7 +1325,7 @@ async function fetchConnectedTable() {
   connectedTable.value = table;
 }
 function checkWorkflowPermission() {
-  getWorkflowPermissions(workflow.value.drawflow).then((permissions) => {
+  getWorkflowPermissions(editorData.value).then((permissions) => {
     if (permissions.length === 0) return;
 
     permissionState.items = permissions;
@@ -1369,7 +1385,7 @@ onBeforeRouteLeave(() => {
 });
 onMounted(() => {
   if (!workflow.value) {
-    router.replace('/');
+    router.replace(isPackage ? '/packages' : '/');
     return null;
   }
 
