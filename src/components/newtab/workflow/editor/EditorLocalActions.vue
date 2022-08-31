@@ -299,7 +299,7 @@
       class="bg-box-transparent p-4 rounded-lg overflow-auto scroll"
       placeholder="Write note here..."
       style="max-height: calc(100vh - 12rem); min-height: 400px"
-      @change="updateWorkflow({ content: $event }, true)"
+      @change="updateWorkflowNote({ content: $event })"
     />
   </ui-modal>
 </template>
@@ -319,7 +319,7 @@ import { useDialog } from '@/composable/dialog';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { tagColors } from '@/utils/shared';
-import { parseJSON, findTriggerBlock } from '@/utils/helper';
+import { parseJSON, findTriggerBlock, debounce } from '@/utils/helper';
 import { exportWorkflow, convertWorkflow } from '@/utils/workflowData';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
 import getTriggerText from '@/utils/triggerText';
@@ -394,6 +394,11 @@ const userDontHaveTeamsAccess = computed(() => {
     team.access.some((item) => ['owner', 'create'].includes(item))
   );
 });
+
+const updateWorkflowNote = debounce((data) => {
+  /* eslint-disable-next-line */
+  updateWorkflow(data, true);
+}, 200);
 
 function updateWorkflow(data = {}, changedIndicator = false) {
   let store = null;
