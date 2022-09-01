@@ -70,7 +70,10 @@
             />
           </button>
           <ui-tab value="editor">{{ t('common.editor') }}</ui-tab>
-          <ui-tab v-if="!isPackage" value="logs" class="flex items-center">
+          <ui-tab v-if="isPackage" value="package-settings">
+            {{ t('common.settings') }}
+          </ui-tab>
+          <ui-tab v-else value="logs" class="flex items-center">
             {{ t('common.log', 2) }}
             <span
               v-if="workflowStates.length > 0"
@@ -106,11 +109,24 @@
       </div>
       <ui-tab-panels
         v-model="state.activeTab"
-        class="overflow-hidden h-full w-full"
+        :class="{ 'overflow-hidden': state.activeTab !== 'package-settings' }"
+        class="h-full w-full"
         @drop="onDropInEditor"
         @dragend="clearHighlightedElements"
         @dragover.prevent="onDragoverEditor"
       >
+        <ui-tab-panel
+          v-if="isPackage"
+          value="package-settings"
+          class="mt-24 container"
+        >
+          <package-settings
+            :data="workflow"
+            :editor="editor"
+            @update="updateWorkflow"
+            @goBlock="goToPkgBlock"
+          />
+        </ui-tab-panel>
         <ui-tab-panel cache value="editor" class="w-full">
           <workflow-editor
             v-if="state.workflowConverted"
@@ -178,12 +194,14 @@
             v-if="editor"
             :editor="editor"
             :is-package="isPackage"
+            :package-io="workflow.asBlock"
             @group="groupBlocks"
             @ungroup="ungroupBlocks"
             @copy="copySelectedElements"
             @paste="pasteCopiedElements"
             @saveBlock="initBlockFolder"
             @duplicate="duplicateElements"
+            @packageIo="addPackageIO"
           />
         </ui-tab-panel>
         <ui-tab-panel value="logs" class="mt-24 container">
@@ -287,13 +305,14 @@ import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vu
 import WorkflowDataTable from '@/components/newtab/workflow/WorkflowDataTable.vue';
 import WorkflowGlobalData from '@/components/newtab/workflow/WorkflowGlobalData.vue';
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
-import EditorLogs from '@/components/newtab/workflow/editor/EditorLogs.vue';
 import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
+import EditorLogs from '@/components/newtab/workflow/editor/EditorLogs.vue';
 import EditorAddPackage from '@/components/newtab/workflow/editor/EditorAddPackage.vue';
 import EditorLocalCtxMenu from '@/components/newtab/workflow/editor/EditorLocalCtxMenu.vue';
 import EditorLocalActions from '@/components/newtab/workflow/editor/EditorLocalActions.vue';
 import EditorUsedCredentials from '@/components/newtab/workflow/editor/EditorUsedCredentials.vue';
 import EditorLocalSavedBlocks from '@/components/newtab/workflow/editor/EditorLocalSavedBlocks.vue';
+import PackageSettings from '@/components/newtab/package/PackageSettings.vue';
 
 const blocks = { ...tasks, ...customBlocks };
 
@@ -622,6 +641,49 @@ const onEdgesChange = debounce((changes) => {
   // if (command) commandManager.add(command);
 }, 250);
 
+function goToBlock(blockId) {
+  if (!editor.value) return;
+
+  const block = editor.value.getNode.value(blockId);
+  if (!block) return;
+
+  editor.value.addSelectedNodes([block]);
+  setTimeout(() => {
+    const editorContainer = document.querySelector('.vue-flow');
+    const { height, width } = editorContainer.getBoundingClientRect();
+    const { x, y } = block.position;
+
+    editor.value.setTransform({
+      y: -(y - height / 2),
+      x: -(x - width / 2) - 200,
+      zoom: 1,
+    });
+  }, 200);
+}
+function goToPkgBlock(blockId) {
+  state.activeTab = 'editor';
+  goToBlock(blockId);
+}
+function addPackageIO({ type, handleId, nodeId }) {
+  const copyPkgIO = [...workflow.value[type]];
+  const itemExist = copyPkgIO.some(
+    (io) => io.blockId === nodeId && handleId === io.handleId
+  );
+  if (itemExist) {
+    toast.error(`You already add this as an ${type.slice(0, -1)}`);
+    return;
+  }
+
+  copyPkgIO.push({
+    handleId,
+    name: '',
+    id: nanoid(),
+    blockId: nodeId,
+  });
+
+  /* eslint-disable-next-line */
+  updateWorkflow({ [type]: copyPkgIO });
+}
 function initBlockFolder({ nodes }) {
   Object.assign(blockFolderModal, {
     nodes,
@@ -955,7 +1017,7 @@ async function updateWorkflow(data) {
   try {
     if (isPackage) {
       delete data.drawflow;
-
+      console.log('update.....', data);
       await packageStore.update({
         id: workflowId,
         data,
@@ -1029,23 +1091,7 @@ function onEditorInit(instance) {
   }, 1000);
 
   const { blockId } = route.query;
-  if (blockId) {
-    const block = instance.getNode.value(blockId);
-    if (!block) return;
-
-    instance.addSelectedNodes([block]);
-    setTimeout(() => {
-      const editorContainer = document.querySelector('.vue-flow');
-      const { height, width } = editorContainer.getBoundingClientRect();
-      const { x, y } = block.position;
-
-      instance.setTransform({
-        y: -(y - height / 2),
-        x: -(x - width / 2) - 200,
-        zoom: 1,
-      });
-    }, 200);
-  }
+  if (blockId) goToBlock(blockId);
 }
 function clearHighlightedElements() {
   const elements = document.querySelectorAll(
@@ -1085,13 +1131,29 @@ function onDragoverEditor({ target }) {
 }
 function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
   const savedBlocks = parseJSON(dataTransfer.getData('savedBlocks'), null);
-  if (savedBlocks) {
-    const { nodes, edges } = savedBlocks.data;
-    /* eslint-disable-next-line */
-    const newElements = copyElements(nodes, edges, { clientX, clientY });
+  if (savedBlocks && !isPackage) {
+    if (savedBlocks.asBlock) {
+      const position = editor.value.project({
+        x: clientX - 360,
+        y: clientY - 18,
+      });
+      editor.value.addNodes([
+        {
+          position,
+          id: nanoid(),
+          data: savedBlocks,
+          type: 'BlockPackage',
+          label: 'block-package',
+        },
+      ]);
+    } else {
+      const { nodes, edges } = savedBlocks.data;
+      /* eslint-disable-next-line */
+      const newElements = copyElements(nodes, edges, { clientX, clientY });
 
-    editor.value.addNodes(newElements.nodes);
-    editor.value.addEdges(newElements.edges);
+      editor.value.addNodes(newElements.nodes);
+      editor.value.addEdges(newElements.edges);
+    }
 
     state.dataChanged = true;
     return;

@@ -642,17 +642,21 @@ function renameWorkflow() {
 }
 function deleteWorkflow() {
   dialog.confirm({
-    title: t('workflow.delete'),
+    title: props.isPackage ? t('common.delete') : t('workflow.delete'),
     okVariant: 'danger',
-    body: t('message.delete', { name: props.workflow.name }),
+    body: props.isPackage
+      ? `Are you sure want to delete "${props.workflow.name}" package?`
+      : t('message.delete', { name: props.workflow.name }),
     onConfirm: async () => {
-      if (props.isTeam) {
+      if (props.isPackage) {
+        await packageStore.delete(props.workflow.id);
+      } else if (props.isTeam) {
         await teamWorkflowStore.delete(teamId, props.workflow.id);
       } else {
         await workflowStore.delete(props.workflow.id);
       }
 
-      router.replace('/');
+      router.replace(props.isPackage ? '/packages' : '/');
     },
   });
 }

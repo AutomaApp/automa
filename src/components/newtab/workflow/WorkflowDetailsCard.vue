@@ -126,7 +126,10 @@ const icons = [
   'riCommandLine',
 ];
 
-const blocksArr = Object.entries({ ...tasks, ...customBlocks }).map(
+const copyTasks = { ...tasks };
+delete copyTasks['block-package'];
+
+const blocksArr = Object.entries({ ...copyTasks, ...customBlocks }).map(
   ([key, block]) => {
     const localeKey = `workflow.blocks.${key}.name`;
 

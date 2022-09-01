@@ -37,15 +37,17 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  packageIo: Boolean,
   isPackage: Boolean,
 });
 const emit = defineEmits([
   'copy',
   'paste',
-  'duplicate',
   'group',
   'ungroup',
   'saveBlock',
+  'duplicate',
+  'packageIo',
 ]);
 
 const { t } = useI18n();
@@ -107,6 +109,16 @@ const menuItems = {
     event: () => emit('duplicate', ctxData),
     shortcut: getShortcut('editor:duplicate-block').readable,
   },
+  setAsInput: {
+    id: 'setAsInput',
+    name: 'Set as block input',
+    event: () => emit('packageIo', { type: 'inputs', ...ctxData }),
+  },
+  setAsOutput: {
+    id: 'setAsOutput',
+    name: 'Set as block output',
+    event: () => emit('packageIo', { type: 'outputs', ...ctxData }),
+  },
 };
 
 /* eslint-disable-next-line */
@@ -148,12 +160,29 @@ onMounted(() => {
       items.splice(3, 0, 'group');
     }
 
-    showCtxMenu(items, event);
-    ctxData = {
+    const currCtxData = {
       edges: [],
       nodes: [node],
       position: { clientX: event.clientX, clientY: event.clientY },
     };
+
+    if (
+      props.isPackage &&
+      props.packageIo &&
+      event.target.closest('[data-handleid]')
+    ) {
+      const { handleid, nodeid } = event.target.dataset;
+
+      currCtxData.nodeId = nodeid;
+      currCtxData.handleId = handleid;
+
+      items.unshift(
+        event.target.classList.contains('source') ? 'setAsOutput' : 'setAsInput'
+      );
+    }
+
+    showCtxMenu(items, event);
+    ctxData = currCtxData;
   });
   props.editor.onEdgeContextMenu(({ event, edge }) => {
     showCtxMenu(['delete'], event);

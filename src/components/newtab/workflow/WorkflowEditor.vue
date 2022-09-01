@@ -47,7 +47,10 @@
     <template v-for="(node, name) in nodeTypes" :key="name" #[name]="nodeProps">
       <component
         :is="node"
-        v-bind="nodeProps"
+        v-bind="{
+          ...nodeProps,
+          editor: name === 'node-BlockPackage' ? editor : null,
+        }"
         @delete="deleteBlock"
         @edit="editBlock(nodeProps, $event)"
         @update="updateBlockData(nodeProps.id, $event)"

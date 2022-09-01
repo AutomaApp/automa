@@ -40,7 +40,7 @@ function blocksGroup({ data, id }, { prevBlockData }) {
 
     resolve({
       data: prevBlockData,
-      nextBlockId: [data.blocks[0].itemId],
+      nextBlockId: [{ id: data.blocks[0].itemId }],
     });
   });
 }

@@ -15,6 +15,9 @@
     "open": "Open packages",
     "new": "New package",
     "set": "Set as a package",
+    "settings": {
+      "asBlock": "Set package as block"
+    },
     "categories": {
       "my": "My Packages",
       "installed": "Installed Packages",

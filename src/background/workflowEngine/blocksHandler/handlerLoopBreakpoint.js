@@ -18,7 +18,7 @@ function loopBreakpoint(block, { prevBlockData }) {
     ) {
       resolve({
         data: '',
-        nextBlockId: [currentLoop.blockId],
+        nextBlockId: [{ id: currentLoop.blockId }],
       });
     } else {
       if (currentLoop.type === 'elements') {
