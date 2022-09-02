@@ -1,11 +1,11 @@
 <template>
   <label class="inline-flex items-center">
-    <ui-switch v-model="packageState.asBlock" />
+    <ui-switch v-model="packageState.settings.asBlock" />
     <span class="ml-4">
       {{ $t('packages.settings.asBlock') }}
     </span>
   </label>
-  <div v-if="packageState.asBlock" class="mt-6 pb-8 flex space-x-6">
+  <div v-if="packageState.settings.asBlock" class="mt-6 pb-8 flex space-x-6">
     <div class="flex-1">
       <p class="font-semibold">Block inputs</p>
       <div class="mt-4">
@@ -68,7 +68,10 @@
     <div class="flex-1">
       <p class="font-semibold">Block outputs</p>
       <div class="mt-4">
-        <div class="grid grid-cols-12 gap-x-4">
+        <div
+          v-if="packageState.outputs.length > 0"
+          class="grid grid-cols-12 gap-x-4"
+        >
           <div class="col-span-5 pl-1 text-sm">Output name</div>
           <div class="col-span-6 pl-1 text-sm">Block</div>
         </div>
@@ -147,7 +150,7 @@ const state = reactive({
 const packageState = reactive({
   inputs: [],
   outputs: [],
-  asBlock: false,
+  settings: { asBlock: false },
 });
 
 function deleteBlockIo(type, index) {
@@ -207,8 +210,8 @@ onMounted(() => {
     packageState,
     cloneDeep({
       inputs: props.data.inputs,
-      asBlock: props.data.asBlock,
       outputs: props.data.outputs,
+      settings: props.data.settings || {},
     })
   );
 

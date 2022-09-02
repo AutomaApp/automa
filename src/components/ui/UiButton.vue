@@ -4,7 +4,7 @@
     role="button"
     class="ui-button h-10 relative transition"
     :class="[
-      color ? color : variants[variant],
+      color ? color : variants[type][variant],
       icon ? 'p-2' : 'py-2 px-4',
       circle ? 'rounded-full' : 'rounded-lg',
       {
@@ -49,6 +49,10 @@ export default {
       type: String,
       default: 'button',
     },
+    type: {
+      type: String,
+      default: 'fill',
+    },
     variant: {
       type: String,
       default: 'default',
@@ -56,13 +60,18 @@ export default {
   },
   setup() {
     const variants = {
-      default: 'bg-input',
-      accent:
-        'bg-accent hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-gray-200 dark:text-black text-white',
-      primary:
-        'bg-primary text-white dark:bg-secondary dark:hover:bg-primary hover:bg-secondary',
-      danger:
-        'bg-red-400 text-white dark:bg-red-500 dark:hover:bg-red-500 hover:bg-red-400',
+      transparent: {
+        default: 'hoverable',
+      },
+      fill: {
+        default: 'bg-input',
+        accent:
+          'bg-accent hover:bg-gray-700 dark:bg-gray-100 dark:hover:bg-gray-200 dark:text-black text-white',
+        primary:
+          'bg-primary text-white dark:bg-secondary dark:hover:bg-primary hover:bg-secondary',
+        danger:
+          'bg-red-400 text-white dark:bg-red-500 dark:hover:bg-red-500 hover:bg-red-400',
+      },
     };
 
     return {

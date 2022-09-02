@@ -8,6 +8,7 @@ export const useUserStore = defineStore('user', {
     backupIds: [],
     retrieved: false,
     hostedWorkflows: {},
+    sharedPackages: [],
   }),
   getters: {
     getHostedWorkflows: (state) => Object.values(state.hostedWorkflows),

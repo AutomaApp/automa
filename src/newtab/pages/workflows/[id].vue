@@ -70,9 +70,12 @@
             />
           </button>
           <ui-tab value="editor">{{ t('common.editor') }}</ui-tab>
-          <ui-tab v-if="isPackage" value="package-settings">
-            {{ t('common.settings') }}
-          </ui-tab>
+          <template v-if="isPackage">
+            <ui-tab value="package-details"> Details </ui-tab>
+            <ui-tab value="package-settings">
+              {{ t('common.settings') }}
+            </ui-tab>
+          </template>
           <ui-tab v-else value="logs" class="flex items-center">
             {{ t('common.log', 2) }}
             <span
@@ -95,7 +98,15 @@
         </ui-card>
         <div class="flex-grow pointer-events-none" />
         <editor-used-credentials v-if="editor" :editor="editor" />
+        <editor-pkg-actions
+          v-if="isPackage"
+          :editor="editor"
+          :data="workflow"
+          :is-data-changed="state.dataChanged"
+          @update="onActionUpdated"
+        />
         <editor-local-actions
+          v-else
           :editor="editor"
           :workflow="workflow"
           :is-data-changed="state.dataChanged"
@@ -109,24 +120,25 @@
       </div>
       <ui-tab-panels
         v-model="state.activeTab"
-        :class="{ 'overflow-hidden': state.activeTab !== 'package-settings' }"
+        :class="{ 'overflow-hidden': !state.activeTab.startsWith('package') }"
         class="h-full w-full"
         @drop="onDropInEditor"
         @dragend="clearHighlightedElements"
         @dragover.prevent="onDragoverEditor"
       >
-        <ui-tab-panel
-          v-if="isPackage"
-          value="package-settings"
-          class="mt-24 container"
-        >
-          <package-settings
-            :data="workflow"
-            :editor="editor"
-            @update="updateWorkflow"
-            @goBlock="goToPkgBlock"
-          />
-        </ui-tab-panel>
+        <template v-if="isPackage">
+          <ui-tab-panel value="package-details" class="pt-24 container">
+            <package-details :data="workflow" @update="updateWorkflow" />
+          </ui-tab-panel>
+          <ui-tab-panel value="package-settings" class="pt-24 container">
+            <package-settings
+              :data="workflow"
+              :editor="editor"
+              @update="updateWorkflow"
+              @goBlock="goToPkgBlock"
+            />
+          </ui-tab-panel>
+        </template>
         <ui-tab-panel cache value="editor" class="w-full">
           <workflow-editor
             v-if="state.workflowConverted"
@@ -308,10 +320,12 @@ import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCar
 import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
 import EditorLogs from '@/components/newtab/workflow/editor/EditorLogs.vue';
 import EditorAddPackage from '@/components/newtab/workflow/editor/EditorAddPackage.vue';
+import EditorPkgActions from '@/components/newtab/workflow/editor/EditorPkgActions.vue';
 import EditorLocalCtxMenu from '@/components/newtab/workflow/editor/EditorLocalCtxMenu.vue';
 import EditorLocalActions from '@/components/newtab/workflow/editor/EditorLocalActions.vue';
 import EditorUsedCredentials from '@/components/newtab/workflow/editor/EditorUsedCredentials.vue';
 import EditorLocalSavedBlocks from '@/components/newtab/workflow/editor/EditorLocalSavedBlocks.vue';
+import PackageDetails from '@/components/newtab/package/PackageDetails.vue';
 import PackageSettings from '@/components/newtab/package/PackageSettings.vue';
 
 const blocks = { ...tasks, ...customBlocks };
@@ -1056,8 +1070,9 @@ async function updateWorkflow(data) {
 }
 function onActionUpdated({ data, changedIndicator }) {
   state.dataChanged = changedIndicator;
+
   workflowPayload.data = { ...workflowPayload.data, ...data };
-  updateHostedWorkflow();
+  if (!isPackage) updateHostedWorkflow();
 }
 function onEditorInit(instance) {
   editor.value = instance;

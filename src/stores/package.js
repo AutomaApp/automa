@@ -1,16 +1,20 @@
 import { defineStore } from 'pinia';
 import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
+import { fetchApi } from '@/utils/api';
 
 const defaultPackage = {
   id: '',
   name: '',
-  icon: '',
+  icon: 'mdiPackageVariantClosed',
   isExtenal: false,
-  asBlock: false,
+  content: null,
   inputs: [],
   outputs: [],
   variable: [],
+  settings: {
+    asBlock: false,
+  },
   data: {
     edges: [],
     nodes: [],
@@ -23,11 +27,16 @@ export const usePackageStore = defineStore('packages', {
   },
   state: () => ({
     packages: [],
+    sharedPkgs: [],
     retrieved: false,
+    sharedRetrieved: false,
   }),
   getters: {
     getById: (state) => (pkgId) => {
       return state.packages.find((pkg) => pkg.id === pkgId);
+    },
+    isShared: (state) => (pkgId) => {
+      return state.sharedPkgs.some((pkg) => pkg.id === pkgId);
     },
   },
   actions: {
@@ -60,6 +69,13 @@ export const usePackageStore = defineStore('packages', {
 
       return data;
     },
+    deleteShared(id) {
+      const index = this.sharedPkgs.findIndex((item) => item.id === id);
+      if (index !== -1) this.sharedPkgs.splice(index, 1);
+    },
+    insertShared(id) {
+      this.sharedPkgs.push({ id });
+    },
     async loadData() {
       if (this.retrieved) return this.packages;
 
@@ -69,6 +85,23 @@ export const usePackageStore = defineStore('packages', {
       this.retrieved = true;
 
       return this.packages;
+    },
+    async loadShared() {
+      try {
+        if (this.sharedRetrieved) return;
+
+        const response = await fetchApi('/me/packages');
+        const result = await response.json();
+
+        if (!response.ok) throw new Error(result.message);
+
+        this.sharedPkgs = result;
+        this.sharedRetrieved = true;
+      } catch (error) {
+        console.error(error.message);
+
+        throw error;
+      }
     },
   },
 });

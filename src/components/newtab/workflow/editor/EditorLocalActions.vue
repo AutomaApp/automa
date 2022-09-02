@@ -6,10 +6,7 @@
   >
     {{ workflow.tag }}
   </span>
-  <ui-card
-    v-if="!isPackage && (!isTeam || !canEdit)"
-    padding="p-1 pointer-events-auto"
-  >
+  <ui-card v-if="!isTeam || !canEdit" padding="p-1 pointer-events-auto">
     <button
       v-tooltip.group="'Workflow note'"
       class="hoverable p-2 rounded-lg"
@@ -19,7 +16,7 @@
     </button>
   </ui-card>
   <ui-card
-    v-if="!isTeam && !isPackage"
+    v-if="!isTeam"
     padding="p-1"
     class="flex items-center pointer-events-auto ml-4"
   >
@@ -101,7 +98,7 @@
       </ui-list>
     </ui-popover>
   </ui-card>
-  <ui-card v-if="canEdit && !isPackage" padding="p-1 ml-4 pointer-events-auto">
+  <ui-card v-if="canEdit" padding="p-1 ml-4 pointer-events-auto">
     <button
       v-for="item in modalActions"
       :key="item.id"
@@ -112,10 +109,7 @@
       <v-remixicon :name="item.icon" />
     </button>
   </ui-card>
-  <ui-card
-    v-if="!isPackage"
-    padding="p-1 ml-4 flex items-center pointer-events-auto"
-  >
+  <ui-card padding="p-1 ml-4 flex items-center pointer-events-auto">
     <button
       v-if="!workflow.isDisabled"
       v-tooltip.group="
@@ -162,7 +156,6 @@
           <span>{{ t('workflow.host.sync.title') }}</span>
         </ui-list-item>
         <ui-list-item
-          v-if="!isPackage"
           class="cursor-pointer"
           @click="updateWorkflow({ isDisabled: !workflow.isDisabled })"
         >
@@ -419,11 +412,6 @@ function updateWorkflow(data = {}, changedIndicator = false) {
       teamId,
       id: props.workflow.id,
     });
-  } else if (props.isPackage) {
-    store = packageStore.update({
-      data,
-      id: props.workflow.id,
-    });
   } else {
     store = workflowStore.update({
       data,
@@ -669,11 +657,6 @@ async function saveWorkflow() {
 
       return edge;
     });
-
-    if (props.isPackage) {
-      updateWorkflow({ data: flow }, false);
-      return;
-    }
 
     const triggerBlock = flow.nodes.find((node) => node.label === 'trigger');
     if (!triggerBlock) {
