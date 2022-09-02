@@ -127,6 +127,7 @@ const nodeTypes = blockComponents.keys().reduce((acc, key) => {
   return acc;
 }, {});
 const getPosition = (position) => (Array.isArray(position) ? position : [0, 0]);
+const setMinValue = (num, min) => (num < min ? min : num);
 
 const { t } = useI18n();
 const store = useStore();
@@ -136,8 +137,11 @@ const editor = useVueFlow({
   deleteKeyCode: 'Delete',
   elevateEdgesOnSelect: true,
   defaultZoom: props.data?.zoom ?? 1,
-  minZoom: Math.abs(+store.settings.editor.minZoom || 0.5),
-  maxZoom: Math.abs(+store.settings.editor.maxZoom || 1.2),
+  minZoom: setMinValue(+store.settings.editor.minZoom || 0.5, 0.1),
+  maxZoom: setMinValue(
+    +store.settings.editor.maxZoom || 1.2,
+    +store.settings.editor.minZoom + 0.1
+  ),
   multiSelectionKeyCode: isMac ? 'Meta' : 'Control',
   defaultPosition: getPosition(props.data?.position),
   ...props.options,
