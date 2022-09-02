@@ -895,6 +895,15 @@ function onNodesChange(changes) {
       state.dataChanged = true;
       nodeChanges.removed.push(id);
     } else if (type === 'add') {
+      if (isPackage) {
+        const excludeBlocks = ['block-package', 'trigger'];
+        if (excludeBlocks.includes(item.label)) {
+          editor.value.removeNodes([item]);
+        }
+
+        return;
+      }
+
       nodeChanges.added.push(item);
     }
   });
