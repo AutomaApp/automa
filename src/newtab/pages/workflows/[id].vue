@@ -1026,7 +1026,6 @@ async function updateWorkflow(data) {
   try {
     if (isPackage) {
       delete data.drawflow;
-      console.log('update.....', data);
       await packageStore.update({
         id: workflowId,
         data,

@@ -511,9 +511,10 @@ export const tasks = {
     outputs: 2,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['repeatFor'],
     data: {
       disableBlock: false,
-      repeatFor: 1,
+      repeatFor: '1',
     },
   },
   'javascript-code': {

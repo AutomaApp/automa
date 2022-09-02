@@ -101,7 +101,6 @@ const items = computed(() => {
 });
 
 function updateData(data) {
-  console.log('saveToComputer', data);
   emit('update', data);
 }
 function selectItem(item) {
@@ -117,8 +116,6 @@ function selectItem(item) {
   } else {
     updateData({ handleId: item.id });
   }
-
-  console.log(item, props.data);
 }
 function getBlockName(item, type) {
   const { label, data } = item;
