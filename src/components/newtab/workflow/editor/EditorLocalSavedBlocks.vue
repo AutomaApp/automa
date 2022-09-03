@@ -60,10 +60,22 @@
             </div>
           </div>
           <div
-            class="space-x-3 pb-4 px-4 text-gray-600 dark:text-gray-200 flex justify-end"
+            class="space-x-3 pb-4 px-4 text-gray-600 dark:text-gray-200 flex items-center"
           >
+            <span v-if="item.author" class="text-overflow">
+              By {{ item.author }}
+            </span>
+            <div class="flex-grow" />
+            <a
+              v-if="item.isExternal"
+              :href="`https://automa.site/packages/${item.id}`"
+              target="_blank"
+              title="Open package page"
+            >
+              <v-remixicon name="riExternalLinkLine" size="18" />
+            </a>
             <v-remixicon
-              v-if="!item.isExternal"
+              v-else
               name="riPencilLine"
               size="18"
               class="cursor-pointer"

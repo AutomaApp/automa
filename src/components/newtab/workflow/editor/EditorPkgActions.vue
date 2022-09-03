@@ -100,6 +100,7 @@ import { onMounted, computed, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
+import browser from 'webextension-polyfill';
 import { useUserStore } from '@/stores/user';
 import { usePackageStore } from '@/stores/package';
 import { getShortcut, useShortcut } from '@/composable/shortcut';
@@ -186,12 +187,13 @@ async function toggleSharePackage() {
         'description',
         'icon',
         'id',
+        'content',
         'inputs',
         'outputs',
         'name',
         'settings',
       ];
-      const payload = {};
+      const payload = { extVersion: browser.runtime.getManifest().version };
 
       keys.forEach((key) => {
         payload[key] = props.data[key];
@@ -233,12 +235,13 @@ async function updateSharedPackage() {
       'data',
       'description',
       'icon',
+      'content',
       'inputs',
       'outputs',
       'name',
       'settings',
     ];
-    const payload = {};
+    const payload = { extVersion: browser.runtime.getManifest().version };
 
     keys.forEach((key) => {
       payload[key] = props.data[key];

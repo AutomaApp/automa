@@ -76,8 +76,8 @@ export const usePackageStore = defineStore('packages', {
     insertShared(id) {
       this.sharedPkgs.push({ id });
     },
-    async loadData() {
-      if (this.retrieved) return this.packages;
+    async loadData(force = false) {
+      if (this.retrieved && !force) return this.packages;
 
       const { savedBlocks } = await browser.storage.local.get('savedBlocks');
 

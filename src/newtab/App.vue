@@ -189,6 +189,11 @@ window.addEventListener('storage', ({ key, newValue }) => {
   );
 });
 browser.runtime.onMessage.addListener(({ type, data }) => {
+  if (type === 'refresh-packages') {
+    packageStore.loadData(true);
+    return;
+  }
+
   if (type === 'workflow:added') {
     if (data.source === 'team') {
       teamWorkflowStore.loadData().then(() => {

@@ -22,6 +22,13 @@ function initWebListener() {
 
   return { on };
 }
+function sendMessageBack(type, payload = {}) {
+  const event = new CustomEvent(`__automa-ext__${type}`, {
+    detail: payload,
+  });
+
+  window.dispatchEvent(event);
+}
 
 window.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -145,6 +152,42 @@ window.addEventListener('DOMContentLoaded', async () => {
           detail: { exists: workflowExist },
         })
       );
+    });
+    webListener.on('add-package', async (data) => {
+      try {
+        const { savedBlocks } = await browser.storage.local.get('savedBlocks');
+        const packages = savedBlocks || [];
+
+        packages.push({ ...data.package, createdAt: Date.now() });
+
+        await browser.storage.local.set({ savedBlocks: packages });
+
+        sendMessage('dashboard:refresh-packages', '', 'background');
+      } catch (error) {
+        console.error(error);
+      }
+    });
+    webListener.on('update-package', async (data) => {
+      const { savedBlocks } = await browser.storage.local.get('savedBlocks');
+      const packages = savedBlocks || [];
+
+      const index = packages.findIndex((pkg) => pkg.id === data.id);
+      if (index === -1) return;
+
+      Object.assign(packages[index], data.package);
+
+      await browser.storage.local.set({ savedBlocks: packages });
+
+      sendMessage('dashboard:refresh-packages', '', 'background');
+    });
+    webListener.on('send-message', async ({ type, data }) => {
+      if (type === 'package-installed') {
+        const { savedBlocks } = await browser.storage.local.get('savedBlocks');
+        const packages = savedBlocks || [];
+        const isInstalled = packages.some((pkg) => pkg.id === data);
+
+        sendMessageBack(type, isInstalled);
+      }
     });
   } catch (error) {
     console.error(error);

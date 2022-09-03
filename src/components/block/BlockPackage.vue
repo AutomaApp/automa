@@ -22,7 +22,6 @@
       </div>
       <div class="flex-grow" />
       <v-remixicon
-        v-if="!data.isExternal"
         title="Update package"
         name="riRefreshLine"
         class="cursor-pointer"
@@ -60,6 +59,20 @@
           <p class="text-overflow">{{ output.name }}</p>
         </li>
       </ul>
+    </div>
+    <div
+      v-if="data.author"
+      class="mt-1 text-sm text-gray-600 flex items-center dark:text-gray-200"
+    >
+      <p>By {{ data.author }}</p>
+      <a
+        :href="`https://automa.site/packages/${data.id}`"
+        target="_blank"
+        title="Open package page"
+        class="ml-2"
+      >
+        <v-remixicon size="18" name="riExternalLinkLine" />
+      </a>
     </div>
   </ui-card>
 </template>

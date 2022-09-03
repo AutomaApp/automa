@@ -206,7 +206,7 @@
             v-if="editor"
             :editor="editor"
             :is-package="isPackage"
-            :package-io="workflow.asBlock"
+            :package-io="workflow.settings?.asBlock"
             @group="groupBlocks"
             @ungroup="ungroupBlocks"
             @copy="copySelectedElements"
@@ -1155,7 +1155,7 @@ function onDragoverEditor({ target }) {
 function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
   const savedBlocks = parseJSON(dataTransfer.getData('savedBlocks'), null);
   if (savedBlocks && !isPackage) {
-    if (savedBlocks.asBlock) {
+    if (savedBlocks.settings.asBlock) {
       const position = editor.value.project({
         x: clientX - 360,
         y: clientY - 18,
@@ -1474,13 +1474,22 @@ onMounted(() => {
     return null;
   }
 
+  if (isPackage && workflow.value.isExternal) {
+    router.replace('/packages');
+    return;
+  }
+
   state.showSidebar =
     JSON.parse(localStorage.getItem('workflow:sidebar')) ?? true;
 
-  const convertedData = convertWorkflowData(workflow.value);
-  updateWorkflow({ drawflow: convertedData.drawflow }).then(() => {
+  if (!isPackage) {
+    const convertedData = convertWorkflowData(workflow.value);
+    updateWorkflow({ drawflow: convertedData.drawflow }).then(() => {
+      state.workflowConverted = true;
+    });
+  } else {
     state.workflowConverted = true;
-  });
+  }
 
   if (route.query.permission || (isTeamWorkflow && !haveEditAccess.value))
     checkWorkflowPermission();

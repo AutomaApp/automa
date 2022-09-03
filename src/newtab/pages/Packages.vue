@@ -77,20 +77,32 @@
                     class="text-gray-600 dark:text-gray-200 cursor-pointer"
                   />
                 </template>
-                <ui-list class="w-44">
+                <ui-list class="space-y-1" style="min-width: 180px">
+                  <ui-list-item
+                    v-if="pkg.isExternal"
+                    v-close-popover
+                    :href="`https://automa.site/packages/${pkg.id}`"
+                    tag="a"
+                    target="_blank"
+                    class="cursor-pointer"
+                    @click="deletePackage(pkg)"
+                  >
+                    <v-remixicon name="riExternalLinkLine" class="mr-2 -ml-1" />
+                    <span>Open package page</span>
+                  </ui-list-item>
                   <ui-list-item
                     v-close-popover
                     class="cursor-pointer text-red-500 dark:text-red-400"
                     @click="deletePackage(pkg)"
                   >
-                    <v-remixicon name="riPencilLine" class="mr-2 -ml-1" />
+                    <v-remixicon name="riDeleteBin7Line" class="mr-2 -ml-1" />
                     <span>{{ t('common.delete') }}</span>
                   </ui-list-item>
                 </ui-list>
               </ui-popover>
             </div>
             <router-link
-              :to="`/packages/${pkg.id}`"
+              :to="`/packages/${pkg.isExternal ? '' : pkg.id}`"
               class="mt-4 flex-1 cursor-pointer"
             >
               <p class="font-semibold text-overflow">
@@ -105,8 +117,10 @@
             <div
               class="flex items-center text-gray-600 dark:text-gray-200 mt-2"
             >
-              <p class="flex-1">{{ dayjs(pkg.createdAt).fromNow() }}</p>
-              <p v-if="pkg.author">By {{ pkg.author }}</p>
+              <p>{{ dayjs(pkg.createdAt).fromNow() }}</p>
+              <p v-if="pkg.author" class="text-overflow flex-1 ml-4 text-right">
+                By {{ pkg.author }}
+              </p>
             </div>
           </ui-card>
         </div>
