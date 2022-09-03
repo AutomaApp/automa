@@ -1275,6 +1275,27 @@ export const tasks = {
     maxConnection: 1,
     data: {},
   },
+  note: {
+    name: 'Note',
+    description: '',
+    icon: 'riFileEditLine',
+    component: 'BlockNote',
+    category: 'general',
+    disableEdit: true,
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      disableBlock: false,
+      note: '',
+      drawing: false,
+      width: 280,
+      height: 168,
+      color: 'white',
+      fontSize: 'regular',
+    },
+  },
   ...customBlocks,
 };
 
@@ -1360,11 +1381,13 @@ export const workflowCategories = {
 };
 
 export const excludeOnError = [
+  'note',
   'delay',
   'webhook',
   'trigger',
   'while-loop',
   'conditions',
+  'block-package',
   'element-exists',
 ];
 
