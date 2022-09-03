@@ -71,7 +71,10 @@ async function captureElement({ selector, tabId, options }) {
     throw error;
   }
 
-  element.scrollIntoView();
+  element.scrollIntoView({
+    block: 'center',
+    inline: 'center',
+  });
 
   await sleep(500);
 
