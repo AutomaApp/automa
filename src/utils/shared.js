@@ -736,6 +736,7 @@ export const tasks = {
     data: {
       disableBlock: false,
       loopId: '',
+      clearLoop: false,
     },
   },
   'blocks-group': {

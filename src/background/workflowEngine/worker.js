@@ -94,7 +94,11 @@ class Worker {
   }
 
   executeNextBlocks(connections, prevBlockData) {
-    connections.forEach(({ id, targetHandle, sourceHandle }, index) => {
+    connections.forEach((connection, index) => {
+      const { id, targetHandle, sourceHandle } =
+        typeof connection === 'string'
+          ? { id: connection, targetHandle: '', sourceHandle: '' }
+          : connection;
       const execParam = { prevBlockData, targetHandle, sourceHandle };
 
       if (index === 0) {
