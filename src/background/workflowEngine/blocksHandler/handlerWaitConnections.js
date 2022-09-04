@@ -10,10 +10,13 @@ async function waitConnections({ data, id }, { prevBlock }) {
     const registerConnections = () => {
       const connections = this.engine.connectionsMap;
       Object.keys(connections).forEach((key) => {
-        const isConnected = connections[key].includes(id);
+        const isConnected = connections[key].some(
+          (connection) => connection.id === id
+        );
         if (!isConnected) return;
 
-        const prevBlockId = key.slice(0, key.indexOf('-output'));
+        const index = key.indexOf('-output');
+        const prevBlockId = key.slice(0, index === -1 ? key.length : index);
         this.engine.waitConnections[id][prevBlockId] = {
           isHere: false,
           isContinue: false,
