@@ -220,6 +220,9 @@ function messageListener({ data, source }) {
 
               contextElement = null;
             }
+            if (!$ctxTextSelection) {
+              $ctxTextSelection = window.getSelection().toString();
+            }
 
             resolve({
               $ctxElSelector,
