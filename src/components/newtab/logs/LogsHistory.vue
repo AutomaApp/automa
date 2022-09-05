@@ -34,14 +34,21 @@
               class="transition-transform text-gray-400 -ml-1 mr-2"
             />
           </span>
-          <span
-            :title="`${t('log.duration')}: ${Math.round(
-              item.duration / 1000
-            )}s`"
-            class="w-14 flex-shrink-0 text-overflow text-gray-400"
+          <div
+            style="min-width: 54px"
+            class="flex-shrink-0 mr-4 text-overflow text-gray-400"
           >
-            {{ countDuration(0, item.duration || 0) }}
-          </span>
+            <span
+              v-if="item.timestamp"
+              :title="dayjs(item.timestamp).format('YYYY-MM-DDTHH:mm:ss.SSS')"
+            >
+              {{ dayjs(item.timestamp).format('HH:mm:ss') }}
+              {{ `(${countDuration(0, item.duration || 0).trim()})` }}
+            </span>
+            <span v-else :title="`${Math.round(item.duration / 1000)}s`">
+              {{ countDuration(0, item.duration || 0) }}
+            </span>
+          </div>
           <span
             :class="logsType[item.type]?.color"
             :title="item.type"
@@ -134,6 +141,7 @@
 import { computed, shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { countDuration } from '@/utils/helper';
+import dayjs from '@/lib/dayjs';
 
 const props = defineProps({
   currentLog: {

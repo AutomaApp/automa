@@ -181,6 +181,7 @@ class Worker {
         name: block.label,
         blockId: block.id,
         workerId: this.id,
+        timestamp: startExecuteTime,
         description: block.data.description,
         replacedValue: replacedBlock.replacedValue,
         duration: Math.round(Date.now() - startExecuteTime),
