@@ -85,7 +85,6 @@
                     tag="a"
                     target="_blank"
                     class="cursor-pointer"
-                    @click="deletePackage(pkg)"
                   >
                     <v-remixicon name="riExternalLinkLine" class="mr-2 -ml-1" />
                     <span>Open package page</span>
