@@ -27,7 +27,7 @@
           </span>
         </div>
         <ui-input
-          :model-value="workflow.icon.startsWith('ri') ? '' : workflow.icon"
+          :model-value="workflow.icon.startsWith('http') ? workflow.icon : ''"
           type="url"
           placeholder="http://example.com/img.png"
           label="Icon URL"
@@ -111,6 +111,7 @@ const pinnedCategory = {
   color: 'bg-accent',
 };
 const icons = [
+  'mdiPackageVariantClosed',
   'riGlobalLine',
   'riFileTextLine',
   'riEqualizerLine',
@@ -125,7 +126,10 @@ const icons = [
   'riCommandLine',
 ];
 
-const blocksArr = Object.entries({ ...tasks, ...customBlocks }).map(
+const copyTasks = { ...tasks };
+delete copyTasks['block-package'];
+
+const blocksArr = Object.entries({ ...copyTasks, ...customBlocks }).map(
   ([key, block]) => {
     const localeKey = `workflow.blocks.${key}.name`;
 

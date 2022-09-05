@@ -129,6 +129,9 @@ export const functions = {
 
     return value.toUpperCase();
   },
+  modulo(value, divisor) {
+    return +value % +divisor;
+  },
 };
 
 export function extractStrFunction(str) {

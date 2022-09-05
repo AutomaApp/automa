@@ -9,14 +9,6 @@
           autocomplete="off"
           prepend-icon="riSearch2Line"
         />
-        <ui-button
-          v-tooltip="'Refresh data'"
-          icon
-          class="ml-4"
-          @click="loadData"
-        >
-          <v-remixicon name="riRefreshLine" />
-        </ui-button>
         <div class="flex-grow" />
         <ui-button icon @click="$emit('close')">
           <v-remixicon name="riCloseLine" />
@@ -27,7 +19,7 @@
         style="min-height: 95px"
       >
         <p
-          v-if="state.savedBlocks.length === 0"
+          v-if="packageStore.packages.length === 0"
           class="py-8 w-full text-center"
         >
           {{ t('message.noData') }}
@@ -36,28 +28,58 @@
           v-for="item in items"
           :key="item.id"
           draggable="true"
-          class="p-4 rounded-lg flex-shrink-0 border-2 cursor-move hoverable flex flex-col relative transition"
-          style="width: 220px"
+          class="rounded-lg flex-shrink-0 border-2 cursor-move hoverable flex flex-col relative transition"
+          style="width: 288px; height: 125px"
           @dragstart="
             $event.dataTransfer.setData('savedBlocks', JSON.stringify(item))
           "
         >
-          <p class="font-semibold text-overflow leading-tight">
-            {{ item.name }}
-          </p>
-          <p
-            class="text-gray-600 dark:text-gray-200 line-clamp leading-tight flex-1"
-          >
-            {{ item.description }}
-          </p>
+          <div class="flex items-start p-4 flex-1">
+            <div class="w-8 flex-shrink-0">
+              <img
+                v-if="item.icon.startsWith('http')"
+                :src="item.icon"
+                width="38px"
+                height="38px"
+                class="rounded-lg"
+              />
+              <v-remixicon
+                v-else
+                :name="item.icon || 'mdiPackageVariantClosed'"
+              />
+            </div>
+            <div class="flex-1 overflow-hidden">
+              <p class="font-semibold text-overflow leading-tight">
+                {{ item.name }}
+              </p>
+              <p
+                class="text-gray-600 dark:text-gray-200 line-clamp leading-tight"
+              >
+                {{ item.description }}
+              </p>
+            </div>
+          </div>
           <div
-            class="space-x-3 mt-2 text-gray-600 dark:text-gray-200 flex justify-end"
+            class="space-x-3 pb-4 px-4 text-gray-600 dark:text-gray-200 flex items-center"
           >
+            <span v-if="item.author" class="text-overflow">
+              By {{ item.author }}
+            </span>
+            <div class="flex-grow" />
+            <a
+              v-if="item.isExternal"
+              :href="`https://automa.site/packages/${item.id}`"
+              target="_blank"
+              title="Open package page"
+            >
+              <v-remixicon name="riExternalLinkLine" size="18" />
+            </a>
             <v-remixicon
+              v-else
               name="riPencilLine"
               size="18"
               class="cursor-pointer"
-              @click="initEditState(item)"
+              @click="$router.push(`/packages/${item.id}`)"
             />
             <v-remixicon
               name="riDeleteBin7Line"
@@ -69,108 +91,44 @@
         </div>
       </div>
     </ui-card>
-    <ui-modal v-model="editState.show" :title="t('common.message')">
-      <ui-input
-        v-model="editState.name"
-        :placeholder="t('common.name')"
-        autofocus
-        class="w-full"
-        @keyup.enter="saveEdit"
-      />
-      <ui-textarea
-        v-model="editState.description"
-        :label="t('common.description')"
-        placeholder="Description..."
-        class="w-full mt-4"
-      />
-      <div class="flex items-center justify-end space-x-4 mt-6">
-        <ui-button @click="clearEditState">
-          {{ t('common.cancel') }}
-        </ui-button>
-        <ui-button variant="accent" class="w-20" @click="saveEdit">
-          {{ t('common.save') }}
-        </ui-button>
-      </div>
-    </ui-modal>
   </div>
 </template>
 <script setup>
-import { onMounted, reactive, computed, toRaw } from 'vue';
+import { computed, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import browser from 'webextension-polyfill';
+import { useDialog } from '@/composable/dialog';
+import { usePackageStore } from '@/stores/package';
 
 defineEmits(['close']);
 
 const { t } = useI18n();
+const dialog = useDialog();
+const packageStore = usePackageStore();
 
 const state = reactive({
   query: '',
-  savedBlocks: [],
-});
-const editState = reactive({
-  id: '',
-  name: '',
-  show: false,
-  description: '',
 });
 
+const sortedItems = computed(() =>
+  packageStore.packages.slice().sort((a, b) => b.createdAt - a.createdAt)
+);
 const items = computed(() => {
   const query = state.query.toLocaleLowerCase();
 
-  return state.savedBlocks.filter((item) =>
+  return sortedItems.value.filter((item) =>
     item.name.toLocaleLowerCase().includes(query)
   );
 });
 
-function initEditState(item) {
-  Object.assign(editState, {
-    show: true,
-    id: item.id,
-    name: item.name,
-    description: item.description,
+function deleteItem({ id, name }) {
+  dialog.confirm({
+    title: 'Delete package',
+    body: `Are you sure want to delete "${name}" package?`,
+    okText: 'Delete',
+    okVariant: 'danger',
+    onConfirm: () => {
+      packageStore.delete(id);
+    },
   });
 }
-function clearEditState() {
-  Object.assign(editState, {
-    id: '',
-    name: '',
-    show: false,
-    description: '',
-  });
-}
-async function saveEdit() {
-  try {
-    const index = state.savedBlocks.findIndex(
-      (item) => item.id === editState.id
-    );
-    Object.assign(state.savedBlocks[index], {
-      name: editState.name,
-      description: editState.description,
-    });
-
-    browser.storage.local.set({
-      savedBlocks: toRaw(state.savedBlocks),
-    });
-
-    clearEditState();
-  } catch (error) {
-    console.error(error);
-  }
-}
-function loadData() {
-  browser.storage.local.get('savedBlocks').then((storage) => {
-    state.savedBlocks = storage.savedBlocks || [];
-  });
-}
-function deleteItem({ id }) {
-  const index = state.savedBlocks.findIndex((item) => item.id === id);
-  if (index === -1) return;
-
-  state.savedBlocks.splice(index, 1);
-  browser.storage.local.set({
-    savedBlocks: toRaw(state.savedBlocks),
-  });
-}
-
-onMounted(loadData);
 </script>

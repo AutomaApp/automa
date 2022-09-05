@@ -38,7 +38,7 @@ class Worker {
     };
   }
 
-  init({ blockId, prevBlockData, state }) {
+  init({ blockId, execParam, state }) {
     if (state) {
       Object.keys(state).forEach((key) => {
         this[key] = state[key];
@@ -46,7 +46,7 @@ class Worker {
     }
 
     const block = this.engine.blocks[blockId];
-    this.executeBlock(block, prevBlockData);
+    this.executeBlock(block, execParam);
   }
 
   addDataToColumn(key, value) {
@@ -94,9 +94,18 @@ class Worker {
   }
 
   executeNextBlocks(connections, prevBlockData) {
-    connections.forEach((nodeId, index) => {
+    connections.forEach((connection, index) => {
+      const { id, targetHandle, sourceHandle } =
+        typeof connection === 'string'
+          ? { id: connection, targetHandle: '', sourceHandle: '' }
+          : connection;
+      const execParam = { prevBlockData, targetHandle, sourceHandle };
+
       if (index === 0) {
-        this.executeBlock(this.engine.blocks[nodeId], prevBlockData);
+        this.executeBlock(this.engine.blocks[id], {
+          prevBlockData,
+          ...execParam,
+        });
       } else {
         const state = structuredClone({
           windowId: this.windowId,
@@ -109,14 +118,14 @@ class Worker {
 
         this.engine.addWorker({
           state,
-          prevBlockData,
-          blockId: nodeId,
+          execParam,
+          blockId: id,
         });
       }
     });
   }
 
-  async executeBlock(block, prevBlockData, isRetry) {
+  async executeBlock(block, execParam = {}, isRetry = false) {
     const currentState = await this.engine.states.get(this.engine.id);
 
     if (!currentState || currentState.isDestroyed) {
@@ -149,6 +158,7 @@ class Worker {
       return;
     }
 
+    const { prevBlockData } = execParam;
     const refData = {
       prevBlockData,
       ...this.engine.referenceData,
@@ -190,7 +200,7 @@ class Worker {
         result = await handler.call(this, replacedBlock, {
           refData,
           prevBlock,
-          prevBlockData,
+          ...(execParam || {}),
         });
 
         if (result.replacedValue) {
@@ -216,7 +226,7 @@ class Worker {
         if (blockOnError.retry && blockOnError.retryTimes) {
           await sleep(blockOnError.retryInterval * 1000);
           blockOnError.retryTimes -= 1;
-          await this.executeBlock(replacedBlock, prevBlockData, true);
+          await this.executeBlock(replacedBlock, execParam, true);
 
           return;
         }
@@ -276,7 +286,7 @@ class Worker {
         this.reset();
 
         const triggerBlock = this.engine.blocks[this.engine.triggerBlockId];
-        this.executeBlock(triggerBlock);
+        this.executeBlock(triggerBlock, execParam);
 
         localStorage.setItem(restartKey, restartCount + 1);
       } else {

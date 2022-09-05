@@ -1,17 +1,19 @@
 function repeatTask({ data, id }) {
   return new Promise((resolve) => {
-    if (this.repeatedTasks[id] >= data.repeatFor) {
+    const repeat = Number.isNaN(+data.repeatFor) ? 0 : +data.repeatFor;
+
+    if (this.repeatedTasks[id] > repeat) {
       delete this.repeatedTasks[id];
 
       resolve({
-        data: data.repeatFor,
+        data: repeat,
         nextBlockId: this.getBlockConnections(id),
       });
     } else {
       this.repeatedTasks[id] = (this.repeatedTasks[id] || 1) + 1;
 
       resolve({
-        data: data.repeatFor,
+        data: repeat,
         nextBlockId: this.getBlockConnections(id, 2),
       });
     }

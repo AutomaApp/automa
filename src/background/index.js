@@ -591,6 +591,16 @@ message.on('get:tab-screenshot', (options) =>
   browser.tabs.captureVisibleTab(options)
 );
 
+message.on('dashboard:refresh-packages', async () => {
+  const tabs = await browser.tabs.query({ url: chrome.runtime.getURL('/*') });
+
+  tabs.forEach((tab) => {
+    browser.tabs.sendMessage(tab.id, {
+      type: 'refresh-packages',
+    });
+  });
+});
+
 message.on('workflow:execute', (workflowData, sender) => {
   if (workflowData.includeTabId) {
     if (!workflowData.options) workflowData.options = {};

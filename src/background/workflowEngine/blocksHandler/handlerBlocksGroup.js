@@ -27,7 +27,7 @@ function blocksGroup({ data, id }, { prevBlockData }) {
           if (!acc.connections[outputId]) {
             acc.connections[outputId] = [];
           }
-          acc.connections[outputId].push(nextBlock);
+          acc.connections[outputId].push({ id: nextBlock });
         }
 
         return acc;
@@ -40,7 +40,7 @@ function blocksGroup({ data, id }, { prevBlockData }) {
 
     resolve({
       data: prevBlockData,
-      nextBlockId: [data.blocks[0].itemId],
+      nextBlockId: [{ id: data.blocks[0].itemId }],
     });
   });
 }

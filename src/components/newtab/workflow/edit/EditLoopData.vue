@@ -17,12 +17,7 @@
       :model-value="data.loopThrough"
       :label="t('workflow.blocks.loop-data.loopThrough.placeholder')"
       class="w-full"
-      @change="
-        updateData({
-          loopThrough: $event,
-          loopData: $event === 'custom-data' ? data.loopData : '[]',
-        })
-      "
+      @change="updateData({ loopThrough: $event })"
     >
       <option v-for="type in loopTypes" :key="type" :value="type">
         {{ t(`workflow.blocks.loop-data.loopThrough.options.${type}`) }}

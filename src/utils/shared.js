@@ -511,9 +511,10 @@ export const tasks = {
     outputs: 2,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['repeatFor'],
     data: {
       disableBlock: false,
-      repeatFor: 1,
+      repeatFor: '1',
     },
   },
   'javascript-code': {
@@ -735,6 +736,7 @@ export const tasks = {
     data: {
       disableBlock: false,
       loopId: '',
+      clearLoop: false,
     },
   },
   'blocks-group': {
@@ -1261,6 +1263,40 @@ export const tasks = {
       dataColumn: '',
     },
   },
+  'block-package': {
+    name: 'Block package',
+    description: 'Block package',
+    icon: 'riHtml5Line',
+    editComponent: 'EditPackage',
+    component: 'BlockPackage',
+    category: 'package',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {},
+  },
+  note: {
+    name: 'Note',
+    description: '',
+    icon: 'riFileEditLine',
+    component: 'BlockNote',
+    category: 'general',
+    disableEdit: true,
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      disableBlock: false,
+      note: '',
+      drawing: false,
+      width: 280,
+      height: 168,
+      color: 'white',
+      fontSize: 'regular',
+    },
+  },
   ...customBlocks,
 };
 
@@ -1296,6 +1332,11 @@ export const categories = {
     name: 'Conditions',
     border: 'border-blue-200 dark:border-blue-300',
     color: 'bg-blue-200 dark:bg-blue-300 fill-blue-200 dark:fill-blue-300',
+  },
+  package: {
+    name: 'Packages',
+    border: 'border-cyan-200 dark:border-cyan-300',
+    color: 'bg-cyan-200 dark:bg-cyan-300 fill-cyan-200 dark:fill-cyan-300',
   },
 };
 
@@ -1341,11 +1382,13 @@ export const workflowCategories = {
 };
 
 export const excludeOnError = [
+  'note',
   'delay',
   'webhook',
   'trigger',
   'while-loop',
   'conditions',
+  'block-package',
   'element-exists',
 ];
 

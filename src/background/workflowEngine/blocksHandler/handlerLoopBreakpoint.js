@@ -11,14 +11,15 @@ function loopBreakpoint(block, { prevBlockData }) {
           : currentLoop.index <= currentLoop.data.length - 1;
     }
 
-    if (
+    const continueLoop =
       currentLoop &&
       currentLoop.index < currentLoop.maxLoop - 1 &&
-      validLoopData
-    ) {
+      validLoopData;
+
+    if (!block.data.clearLoop && continueLoop) {
       resolve({
         data: '',
-        nextBlockId: [currentLoop.blockId],
+        nextBlockId: [{ id: currentLoop.blockId }],
       });
     } else {
       if (currentLoop.type === 'elements') {

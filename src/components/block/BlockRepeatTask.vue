@@ -1,5 +1,5 @@
 <template>
-  <ui-card :id="componentId" class="p-4 repeat-task">
+  <ui-card :id="componentId" class="p-4 repeat-task w-64">
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div class="flex items-center mb-2">
       <div
@@ -16,21 +16,19 @@
         @click="$emit('delete', id)"
       />
     </div>
-    <label
-      class="mb-2 block bg-input focus-within:bg-input pr-4 transition rounded-lg"
-    >
+    <div class="flex bg-input rounded-lg items-center relative">
       <input
-        :value="data.repeatFor || 0"
-        min="0"
-        class="pl-4 py-2 bg-transparent rounded-l-lg w-24 mr-2"
-        type="number"
+        :value="data.repeatFor"
+        placeholder="0"
+        class="bg-transparent py-2 px-4 focus:ring-0"
         required
+        style="padding-right: 57px; width: 95%"
         @input="handleInput"
       />
-      <span class="text-gray-600 dark:text-gray-200">
+      <span class="text-gray-600 dark:text-gray-200 absolute right-4">
         {{ t('workflow.blocks.repeat-task.times') }}
       </span>
-    </label>
+    </div>
     <p class="text-right text-gray-600 dark:text-gray-200">
       {{ t('workflow.blocks.repeat-task.repeatFrom') }}
     </p>
@@ -70,13 +68,7 @@ const block = useEditorBlock(props.label);
 const componentId = useComponentId('block-delay');
 
 function handleInput({ target }) {
-  target.reportValidity();
-
-  const repeatFor = +target.value || 0;
-
-  if (repeatFor < 0) return;
-
-  emit('update', { repeatFor });
+  emit('update', { repeatFor: target.value });
 }
 </script>
 <style>

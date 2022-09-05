@@ -62,6 +62,7 @@ import browser from 'webextension-polyfill';
 import { useStore } from '@/stores/main';
 import { useUserStore } from '@/stores/user';
 import { useFolderStore } from '@/stores/folder';
+import { usePackageStore } from '@/stores/package';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useTheme } from '@/composable/theme';
@@ -94,6 +95,7 @@ const theme = useTheme();
 const router = useRouter();
 const userStore = useUserStore();
 const folderStore = useFolderStore();
+const packageStore = usePackageStore();
 const workflowStore = useWorkflowStore();
 const teamWorkflowStore = useTeamWorkflowStore();
 const sharedWorkflowStore = useSharedWorkflowStore();
@@ -187,6 +189,11 @@ window.addEventListener('storage', ({ key, newValue }) => {
   );
 });
 browser.runtime.onMessage.addListener(({ type, data }) => {
+  if (type === 'refresh-packages') {
+    packageStore.loadData(true);
+    return;
+  }
+
   if (type === 'workflow:added') {
     if (data.source === 'team') {
       teamWorkflowStore.loadData().then(() => {
@@ -213,6 +220,7 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
       workflowStore.loadData(),
       teamWorkflowStore.loadData(),
       hostedWorkflowStore.loadData(),
+      packageStore.loadData(),
     ]);
 
     await loadLocaleMessages(store.settings.locale, 'newtab');

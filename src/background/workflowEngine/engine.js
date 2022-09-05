@@ -18,6 +18,7 @@ class WorkflowEngine {
     this.workerId = 0;
     this.workers = new Map();
 
+    this.packagesCache = {};
     this.extractedGroup = {};
     this.connectionsMap = {};
     this.waitConnections = {};
@@ -146,13 +147,15 @@ class WorkflowEngine {
 
         return acc;
       }, {});
-      this.connectionsMap = edges.reduce((acc, { sourceHandle, target }) => {
-        if (!acc[sourceHandle]) acc[sourceHandle] = [];
+      this.connectionsMap = edges.reduce(
+        (acc, { sourceHandle, target, targetHandle }) => {
+          if (!acc[sourceHandle]) acc[sourceHandle] = [];
+          acc[sourceHandle].push({ id: target, targetHandle, sourceHandle });
 
-        acc[sourceHandle].push(target);
-
-        return acc;
-      }, {});
+          return acc;
+        },
+        {}
+      );
 
       const workflowTable = this.workflow.table || this.workflow.dataColumns;
       let columns = Array.isArray(workflowTable)

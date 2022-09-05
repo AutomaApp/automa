@@ -259,7 +259,7 @@
       @close="state.showEditDescription = false"
     />
   </ui-modal>
-  <ui-modal v-model="renameState.showModal" title="Workflow">
+  <ui-modal v-model="renameState.showModal" title="Rename">
     <ui-input
       v-model="renameState.name"
       :placeholder="t('common.name')"
@@ -299,7 +299,7 @@
       class="bg-box-transparent p-4 rounded-lg overflow-auto scroll"
       placeholder="Write note here..."
       style="max-height: calc(100vh - 12rem); min-height: 400px"
-      @change="updateWorkflow({ content: $event }, true)"
+      @change="updateWorkflowNote({ content: $event })"
     />
   </ui-modal>
 </template>
@@ -315,11 +315,12 @@ import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
+import { usePackageStore } from '@/stores/package';
 import { useDialog } from '@/composable/dialog';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { tagColors } from '@/utils/shared';
-import { parseJSON, findTriggerBlock } from '@/utils/helper';
+import { parseJSON, findTriggerBlock, debounce } from '@/utils/helper';
 import { exportWorkflow, convertWorkflow } from '@/utils/workflowData';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
 import getTriggerText from '@/utils/triggerText';
@@ -349,6 +350,7 @@ const props = defineProps({
     default: true,
   },
   isTeam: Boolean,
+  isPackage: Boolean,
 });
 const emit = defineEmits(['modal', 'change', 'update', 'permission']);
 
@@ -359,6 +361,7 @@ const toast = useToast();
 const router = useRouter();
 const dialog = useDialog();
 const userStore = useUserStore();
+const packageStore = usePackageStore();
 const workflowStore = useWorkflowStore();
 const teamWorkflowStore = useTeamWorkflowStore();
 const sharedWorkflowStore = useSharedWorkflowStore();
@@ -394,6 +397,11 @@ const userDontHaveTeamsAccess = computed(() => {
     team.access.some((item) => ['owner', 'create'].includes(item))
   );
 });
+
+const updateWorkflowNote = debounce((data) => {
+  /* eslint-disable-next-line */
+  updateWorkflow(data, true);
+}, 200);
 
 function updateWorkflow(data = {}, changedIndicator = false) {
   let store = null;
@@ -622,17 +630,21 @@ function renameWorkflow() {
 }
 function deleteWorkflow() {
   dialog.confirm({
-    title: t('workflow.delete'),
+    title: props.isPackage ? t('common.delete') : t('workflow.delete'),
     okVariant: 'danger',
-    body: t('message.delete', { name: props.workflow.name }),
+    body: props.isPackage
+      ? `Are you sure want to delete "${props.workflow.name}" package?`
+      : t('message.delete', { name: props.workflow.name }),
     onConfirm: async () => {
-      if (props.isTeam) {
+      if (props.isPackage) {
+        await packageStore.delete(props.workflow.id);
+      } else if (props.isTeam) {
         await teamWorkflowStore.delete(teamId, props.workflow.id);
       } else {
         await workflowStore.delete(props.workflow.id);
       }
 
-      router.replace('/');
+      router.replace(props.isPackage ? '/packages' : '/');
     },
   });
 }

@@ -1,3 +1,4 @@
+import browser from 'webextension-polyfill';
 import initApp from './main';
 import injectAppStyles from '../injectAppStyles';
 
@@ -20,6 +21,14 @@ export default async function () {
   try {
     const isMainFrame = window.self === window.top;
     if (!isMainFrame) return;
+
+    const isInvalidURL = /.(json|xml)$/.test(window.location.pathname);
+    if (isInvalidURL) return;
+
+    const { automaShortcut } = await browser.storage.local.get(
+      'automaShortcut'
+    );
+    if (Array.isArray(automaShortcut) && automaShortcut.length === 0) return;
 
     await pageLoaded();
 

@@ -8,6 +8,21 @@
     "text": "Get started by reading the documentation or browsing workflows in the Automa Marketplace.",
     "marketplace": "Marketplace"
   },
+  "packages": {
+    "name": "Package | Packages",
+    "add": "Add package",
+    "icon": "Package icon",
+    "open": "Open packages",
+    "new": "New package",
+    "set": "Set as a package",
+    "settings": {
+      "asBlock": "Set package as block"
+    },
+    "categories": {
+      "my": "My Packages",
+      "installed": "Installed Packages",
+    }
+  },
   "scheduledWorkflow": {
     "title": "Scheduled workflows",
     "nextRun": "Next run",

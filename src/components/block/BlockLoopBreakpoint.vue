@@ -24,6 +24,13 @@
       required
       @input="handleInput"
     />
+    <ui-checkbox
+      :value="data.clearLoop"
+      class="mt-2"
+      @change="$emit('update', { clearLoop: $event })"
+    >
+      Stop loop
+    </ui-checkbox>
     <Handle :id="`${id}-output-1`" type="source" :position="Position.Right" />
   </ui-card>
 </template>

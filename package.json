@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "1.17.1",
+  "version": "1.18.1",
   "description": "An extension for automating your browser by connecting blocks",
   "repository": {
     "type": "git",
@@ -57,6 +57,7 @@
     "html2canvas": "^1.4.1",
     "idb": "^7.0.2",
     "jsonpath": "^1.1.1",
+    "jspdf": "^2.5.1",
     "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.2",
     "mitt": "^3.0.0",
