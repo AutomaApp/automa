@@ -109,6 +109,9 @@
           "getAll": "Get all cookies"
         }
       },
+      "note": {
+        "name": "Note"
+      },
       "slice-variable": {
         "name": "Slice variable",
         "description": "Extracts a section of a variable value",
