@@ -1,3 +1,4 @@
+import objectPath from 'object-path';
 import { parseJSON, isXPath } from '@/utils/helper';
 
 async function loopData({ data, id }, { refData }) {
@@ -28,7 +29,10 @@ async function loopData({ data, id }, { refData }) {
         'data-columns': () => refData.table,
         'google-sheets': () => refData.googleSheets[data.referenceKey],
         variable: () => {
-          const variableVal = refData.variables[data.variableName];
+          const variableVal = objectPath.get(
+            refData.variables,
+            data.variableName
+          );
 
           if (Array.isArray(variableVal)) return variableVal;
 
