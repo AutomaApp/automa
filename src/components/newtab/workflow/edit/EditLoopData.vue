@@ -125,6 +125,13 @@
       >
         {{ t('workflow.blocks.loop-data.resumeLastWorkflow') }}
       </ui-checkbox>
+      <ui-checkbox
+        :model-value="data.reverseLoop"
+        class="mt-1"
+        @change="updateData({ reverseLoop: $event })"
+      >
+        {{ t('workflow.blocks.loop-data.reverse') }}
+      </ui-checkbox>
     </template>
     <ui-modal
       v-model="state.showDataModal"

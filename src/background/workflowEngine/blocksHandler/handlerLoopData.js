@@ -80,6 +80,10 @@ async function loopData({ data, id }, { refData }) {
         } else if (data.startIndex > 0) {
           index = data.startIndex;
         }
+
+        if (data.reverseLoop) {
+          currLoopData.reverse();
+        }
       }
 
       const maxToLoop =

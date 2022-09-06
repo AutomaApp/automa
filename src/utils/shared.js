@@ -715,6 +715,7 @@ export const tasks = {
       description: '',
       variableName: '',
       referenceKey: '',
+      reverseLoop: false,
       elementSelector: '',
       waitForSelector: false,
       waitSelectorTimeout: 5000,
