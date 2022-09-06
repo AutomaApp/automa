@@ -4,8 +4,8 @@
       <img
         v-if="data.icon.startsWith('http')"
         :src="data.icon"
-        width="38"
-        height="38"
+        width="36"
+        height="36"
         class="mr-2 rounded-lg"
       />
       <div

@@ -35,12 +35,15 @@
           "
         >
           <div class="flex items-start p-4 flex-1">
-            <div class="w-8 flex-shrink-0">
+            <div
+              :class="{ 'mr-2': item.icon.startsWith('http') }"
+              class="w-8 flex-shrink-0"
+            >
               <img
                 v-if="item.icon.startsWith('http')"
                 :src="item.icon"
-                width="38px"
-                height="38px"
+                width="38"
+                height="38"
                 class="rounded-lg"
               />
               <v-remixicon
