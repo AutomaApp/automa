@@ -151,7 +151,7 @@
       <div class="p-4 relative">
         <v-remixicon
           name="riCloseLine"
-          class="absolute top-2 right-2 cursor-pointer text-gray-300"
+          class="absolute top-2 right-2 cursor-pointer text-gray-500"
           @click="clearActiveItem"
         />
         <table class="w-full ctx-data-table">
@@ -233,6 +233,7 @@ import {
 } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { countDuration } from '@/utils/helper';
+import { tasks } from '@/utils/shared';
 import dayjs from '@/lib/dayjs';
 import objectPath from 'object-path';
 
@@ -348,7 +349,7 @@ function translateLog(log) {
   } else {
     copyLog.name = getTranslatation(
       `workflow.blocks.${log.name}.name`,
-      log.name
+      tasks[log.name].name
     );
   }
 

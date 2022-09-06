@@ -910,7 +910,7 @@ function onNodesChange(changes) {
       nodeChanges.removed.push(id);
     } else if (type === 'add') {
       if (isPackage) {
-        const excludeBlocks = ['block-package', 'trigger'];
+        const excludeBlocks = ['block-package', 'trigger', 'execute-workflow'];
         if (excludeBlocks.includes(item.label)) {
           editor.value.removeNodes([item]);
         }
