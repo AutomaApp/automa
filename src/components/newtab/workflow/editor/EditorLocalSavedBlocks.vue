@@ -78,13 +78,6 @@
               <v-remixicon name="riExternalLinkLine" size="18" />
             </a>
             <v-remixicon
-              v-else
-              name="riPencilLine"
-              size="18"
-              class="cursor-pointer"
-              @click="$router.push(`/packages/${item.id}`)"
-            />
-            <v-remixicon
               name="riDeleteBin7Line"
               size="18"
               class="cursor-pointer"
