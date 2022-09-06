@@ -310,6 +310,7 @@ function updateActiveTab(data = {}) {
 function addWorkflow() {
   workflowStore.insert({
     name: addWorkflowModal.name,
+    folderId: state.activeFolder,
     description: addWorkflowModal.description,
   });
   clearAddWorkflowModal();
