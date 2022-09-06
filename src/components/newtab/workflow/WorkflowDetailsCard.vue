@@ -159,7 +159,15 @@ const blocks = computed(() =>
 );
 const pinnedBlocksList = computed(() =>
   pinnedBlocks.value
-    .map((id) => ({ ...tasks[id], id, name: t(`workflow.blocks.${id}.name`) }))
+    .map((id) => {
+      const namePath = `workflow.blocks.${id}.name`;
+
+      return {
+        ...tasks[id],
+        id,
+        name: te(namePath) ? t(namePath) : tasks[id].name,
+      };
+    })
     .filter(({ name }) =>
       name.toLocaleLowerCase().includes(query.value.toLocaleLowerCase())
     )

@@ -58,6 +58,7 @@
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
+import { tasks } from '@/utils/shared';
 
 defineProps({
   category: {
@@ -79,6 +80,8 @@ const { t, te } = useI18n();
 
 function getBlockTitle({ description, id, name }) {
   const blockPath = `workflow.blocks.${id}`;
+  if (!te(blockPath)) return tasks[id].name;
+
   const descPath = `${blockPath}.${description ? 'description' : 'name'}`;
   let blockDescription = te(descPath) ? t(descPath) : name;
 
