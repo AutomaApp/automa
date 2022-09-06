@@ -1452,6 +1452,7 @@ export const excludeGroupBlocks = [
   'webhook',
   'element-exists',
   'while-loop',
+  'block-package',
 ];
 
 export const conditionBuilder = {
