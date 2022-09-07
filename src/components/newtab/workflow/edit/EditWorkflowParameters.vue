@@ -86,6 +86,7 @@
                   <component
                     :is="paramTypes[param.type].options"
                     v-model="param.data"
+                    :default-value="paramTypes[param.type].data"
                   />
                 </div>
               </ui-expand>
@@ -131,7 +132,6 @@ const state = reactive({
 
 function addParameter() {
   state.parameters.push({
-    data: {},
     name: 'param',
     type: 'string',
     defaultValue: '',

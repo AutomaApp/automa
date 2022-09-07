@@ -1,3 +1,4 @@
+import { maska } from 'maska';
 import VTooltip from '../directives/VTooltip';
 import VAutofocus from '../directives/VAutofocus';
 import VClosePopover from '../directives/VClosePopover';
@@ -19,6 +20,7 @@ function componentsExtractor(app, components) {
 }
 
 export default function (app) {
+  app.directive('maska', maska);
   app.directive('tooltip', VTooltip);
   app.directive('autofocus', VAutofocus);
   app.directive('close-popover', VClosePopover);

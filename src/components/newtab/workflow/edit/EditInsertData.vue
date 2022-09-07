@@ -164,7 +164,7 @@ const { t } = useI18n();
 const toast = useToast();
 
 const workflow = inject('workflow', {});
-const showModal = ref(true);
+const showModal = ref(false);
 const hasFileAccess = ref(false);
 const dataList = ref(JSON.parse(JSON.stringify(props.data.dataList)));
 
