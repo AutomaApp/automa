@@ -26,7 +26,8 @@ const comparisons = {
   enw: (a, b) => a?.endsWith(b) ?? false,
   rgx: (a, b) => {
     const match = b.match(/^\/(.*?)\/([gimy]*)$/);
-    const regex = new RegExp(match[1], match[2]);
+    const regex = match ? new RegExp(match[1], match[2]) : new RegExp(b);
+
     return regex.test(a);
   },
   itr: (a) => Boolean(isBoolStr(a)),
