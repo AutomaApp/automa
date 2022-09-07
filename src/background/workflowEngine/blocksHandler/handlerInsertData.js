@@ -1,28 +1,57 @@
+import Papa from 'papaparse';
 import { parseJSON } from '@/utils/helper';
+import getFile from '@/utils/getFile';
 import mustacheReplacer from '@/utils/referenceData/mustacheReplacer';
 
-function insertData({ id, data }, { refData }) {
-  return new Promise((resolve) => {
-    const replacedValueList = {};
-    data.dataList.forEach(({ name, value, type }) => {
-      const replacedValue = mustacheReplacer(value, refData);
-      const realValue = parseJSON(replacedValue.value, replacedValue.value);
+async function insertData({ id, data }, { refData }) {
+  const replacedValueList = {};
 
-      Object.assign(replacedValueList, replacedValue.list);
+  for (const item of data.dataList) {
+    let value = '';
 
-      if (type === 'table') {
-        this.addDataToColumn(name, realValue);
-      } else {
-        this.setVariable(name, realValue);
+    if (item.isFile) {
+      const replacedPath = mustacheReplacer(item.filePath || '', refData);
+      const path = replacedPath.value;
+      const isJSON = path.endsWith('.json');
+      const isCSV = path.endsWith('.csv');
+
+      let result = await getFile(path, {
+        returnValue: true,
+        responseType: isJSON ? 'json' : 'text',
+      });
+
+      if (
+        result &&
+        isCSV &&
+        item.csvAction &&
+        item.csvAction.includes('json')
+      ) {
+        const parsedCSV = Papa.parse(result, {
+          header: item.csvAction.includes('header'),
+        });
+        result = parsedCSV.data || [];
       }
-    });
 
-    resolve({
-      data: '',
-      replacedValue: replacedValueList,
-      nextBlockId: this.getBlockConnections(id),
-    });
-  });
+      value = result;
+      Object.assign(replacedValueList, replacedPath.list);
+    } else {
+      const replacedValue = mustacheReplacer(item.value, refData);
+      value = parseJSON(replacedValue.value, replacedValue.value);
+      Object.assign(replacedValueList, replacedValue.list);
+    }
+
+    if (item.type === 'table') {
+      this.addDataToColumn(item.name, value);
+    } else {
+      this.setVariable(item.name, value);
+    }
+  }
+
+  return {
+    data: '',
+    replacedValue: replacedValueList,
+    nextBlockId: this.getBlockConnections(id),
+  };
 }
 
 export default insertData;
