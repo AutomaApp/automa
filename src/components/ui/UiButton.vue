@@ -4,7 +4,7 @@
     role="button"
     class="ui-button h-10 relative transition"
     :class="[
-      color ? color : variants[type][variant],
+      color ? color : variants[btnType][variant],
       icon ? 'p-2' : 'py-2 px-4',
       circle ? 'rounded-full' : 'rounded-lg',
       {
@@ -49,7 +49,7 @@ export default {
       type: String,
       default: 'button',
     },
-    type: {
+    btnType: {
       type: String,
       default: 'fill',
     },

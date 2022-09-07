@@ -9,7 +9,7 @@
         <ui-button
           :class="{ 'text-primary': isPkgShared }"
           icon
-          type="transparent"
+          btn-type="transparent"
         >
           <v-remixicon name="riShareLine" />
         </ui-button>
@@ -47,7 +47,7 @@
   <ui-card class="pointer-events-auto flex items-center" padding="p-1">
     <ui-popover>
       <template #trigger>
-        <ui-button icon type="transparent">
+        <ui-button icon btn-type="transparent">
           <v-remixicon name="riMore2Line" />
         </ui-button>
       </template>
