@@ -10,16 +10,27 @@
       class="ml-1 text-gray-600 dark:text-gray-200"
       size="20"
     />
+    <label v-if="false" class="flex items-center ml-4">
+      <ui-switch v-model="options.unmaskValue" />
+      <span class="ml-2">Return unmask value</span>
+    </label>
   </div>
   <div v-if="options.useMask" class="mt-4">
     <p>Masks</p>
-    <div class="grid grid-cols-3 gap-4">
+    <div class="space-y-2">
       <div
         v-for="(mask, index) in options.masks"
         :key="index"
         class="flex items-center"
       >
-        <ui-input v-model="options.masks[index]" placeholder="###-###-###" />
+        <ui-input
+          v-model="options.masks[index].mask"
+          placeholder="aaa-aaa-aaa"
+        />
+        <ui-checkbox v-model="mask.isRegex" class="ml-4">
+          Is RegEx
+        </ui-checkbox>
+        <div class="flex-grow" />
         <v-remixicon
           name="riDeleteBin7Line"
           class="cursor-pointer flex-shrink-0 ml-1"
@@ -27,9 +38,6 @@
         />
       </div>
     </div>
-    <ui-button class="mt-4" @click="options.masks.push('')">
-      Add mask
-    </ui-button>
     <template v-if="false">
       <p>Custom tokens</p>
       <div class="grid grid-cols-2 gap-4">
@@ -60,7 +68,7 @@
   </div>
 </template>
 <script setup>
-import { reactive, watch } from 'vue';
+import { reactive, watch, onMounted } from 'vue';
 import cloneDeep from 'lodash.clonedeep';
 
 const props = defineProps({
@@ -77,37 +85,37 @@ const emit = defineEmits(['update:modelValue']);
 
 const maskInfo = `
 Add mask to the input field
-<p class="mt-2">Supported tokens</p>
+<p class="mt-2">Supported patterns</p>
 <table class="tokens">
 	<tbody>
 		<tr>
-			<td>#</td>
-			<td>Number (0-9)</td>
-		</tr>
-		<tr>
-			<td>X</td>
-			<td>Number (0-9) or Letter (A-Z|a-z)</td>
-		</tr>
-		<tr>
-			<td>S</td>
-			<td>Letter (A-Z|a-z)</td>
-		</tr>
-		<tr>
-			<td>A</td>
-			<td>Letter (A-Z)</td>
+			<td>0</td>
+			<td>Any digit</td>
 		</tr>
 		<tr>
 			<td>a</td>
-			<td>Letter (a-z)</td>
-		</tr>
-		<tr>
-			<td>!</td>
-			<td>Escape character</td>
+			<td>Any letter</td>
 		</tr>
 		<tr>
 			<td>*</td>
-			<td>Repeat character</td>
+			<td>Any char</td>
 		</tr>
+		<tr>
+			<td>[]</td>
+			<td>Make input optional</td>
+		</tr>
+		<tr>
+			<td>{}</td>
+			<td>Include fixed part in unmasked value</td>
+		</tr>
+		<tr>
+			<td>\`</td>
+			<td>Prevent symbols shift back</td>
+		</tr>
+    <tr>
+      <td>!</td>
+      <td>Escape char</td>
+    </tr>
 	<tbody>
 </table>
 `;
@@ -118,6 +126,13 @@ const options = reactive({
   ...cloneData,
 });
 
+function addMask() {
+  options.masks.push({
+    isRegex: false,
+    mask: '',
+    lazy: false,
+  });
+}
 function addToken() {
   options.customTokens.push({
     symbol: '',
@@ -132,4 +147,10 @@ watch(
   },
   { deep: true }
 );
+
+onMounted(() => {
+  if (options.masks.length === 0) {
+    addMask();
+  }
+});
 </script>

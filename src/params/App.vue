@@ -44,8 +44,8 @@
           <ul class="space-y-2">
             <li v-for="(param, paramIdx) in workflow.params" :key="paramIdx">
               <component
-                :is="workflowParameters[param.type].valueComp"
-                v-if="workflowParameters[param.type]"
+                :is="paramsList[param.type].valueComp"
+                v-if="paramsList[param.type]"
                 v-model="param.value"
                 :label="param.name"
                 :param-data="param"
@@ -82,8 +82,18 @@
 import { onMounted, ref, computed } from 'vue';
 import browser from 'webextension-polyfill';
 import * as workflowParameters from '@business/parameters';
-import dayjs from '@/lib/dayjs';
 import { useTheme } from '@/composable/theme';
+import dayjs from '@/lib/dayjs';
+import ParameterInputValue from '@/components/newtab/workflow/edit/Parameter/ParameterInputValue.vue';
+
+const paramsList = {
+  ...workflowParameters,
+  string: {
+    id: 'string',
+    name: 'Input (string)',
+    valueComp: ParameterInputValue,
+  },
+};
 
 const theme = useTheme();
 theme.init();

@@ -104,6 +104,8 @@
 import { reactive, watch } from 'vue';
 import cloneDeep from 'lodash.clonedeep';
 import * as workflowParameters from '@business/parameters';
+import ParameterInputValue from './Parameter/ParameterInputValue.vue';
+import ParameterInputOptions from './Parameter/ParameterInputOptions.vue';
 
 const props = defineProps({
   data: {
@@ -117,6 +119,13 @@ const paramTypes = {
   string: {
     id: 'string',
     name: 'Input (string)',
+    options: ParameterInputOptions,
+    valueComp: ParameterInputValue,
+    data: {
+      masks: [],
+      useMask: false,
+      unmaskValue: false,
+    },
   },
   number: {
     id: 'number',
@@ -136,6 +145,7 @@ function addParameter() {
     type: 'string',
     defaultValue: '',
     placeholder: 'Text',
+    data: paramTypes.string.data,
   });
 }
 function updateParam(index, value) {
