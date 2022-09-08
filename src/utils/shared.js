@@ -1,5 +1,3 @@
-import customBlocks from '@business/blocks';
-
 export const tasks = {
   trigger: {
     name: 'Trigger',
@@ -1298,7 +1296,6 @@ export const tasks = {
       fontSize: 'regular',
     },
   },
-  ...customBlocks,
 };
 
 export const categories = {

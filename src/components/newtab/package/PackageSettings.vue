@@ -129,7 +129,7 @@
 import { reactive, watch, onMounted } from 'vue';
 import cloneDeep from 'lodash.clonedeep';
 import Draggable from 'vuedraggable';
-import { tasks } from '@/utils/shared';
+import { getBlocks } from '@/utils/getSharedData';
 import { debounce } from '@/utils/helper';
 
 const props = defineProps({
@@ -143,6 +143,8 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update', 'goBlock']);
+
+const blocks = getBlocks();
 
 const state = reactive({
   retrieved: false,
@@ -160,7 +162,7 @@ function deleteBlockIo(type, index) {
 const cacheIOName = new Map();
 
 function getNodeName({ label, data }) {
-  let name = tasks[label]?.name || '';
+  let name = blocks[label]?.name || '';
 
   if (data.name) name += ` (${data.name})`;
   else if (data.description) name += ` (${data.description})`;

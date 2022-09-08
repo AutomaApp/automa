@@ -1,5 +1,6 @@
 import { customAlphabet } from 'nanoid';
-import { tasks, excludeOnError } from '../shared';
+import { excludeOnError } from '../shared';
+import { getBlocks } from '../getSharedData';
 
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 7);
 
@@ -25,7 +26,8 @@ class DroppedNode {
 
     let blockData = block;
     if (block.fromBlockBasic) {
-      blockData = { ...tasks[block.id], id: block.id };
+      const blocks = getBlocks();
+      blockData = { ...blocks[block.id], id: block.id };
     }
 
     const onErrorEnabled =

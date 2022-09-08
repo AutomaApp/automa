@@ -83,8 +83,8 @@ import { computed, ref, onMounted, watch, toRaw } from 'vue';
 import { useI18n } from 'vue-i18n';
 import browser from 'webextension-polyfill';
 import { useShortcut } from '@/composable/shortcut';
-import { tasks, categories } from '@/utils/shared';
-import customBlocks from '@business/blocks';
+import { categories } from '@/utils/shared';
+import { getBlocks } from '@/utils/getSharedData';
 import WorkflowBlockList from './WorkflowBlockList.vue';
 
 defineProps({
@@ -126,20 +126,18 @@ const icons = [
   'riCommandLine',
 ];
 
-const copyTasks = { ...tasks };
-delete copyTasks['block-package'];
+const copyBlocks = getBlocks();
+delete copyBlocks['block-package'];
 
-const blocksArr = Object.entries({ ...copyTasks, ...customBlocks }).map(
-  ([key, block]) => {
-    const localeKey = `workflow.blocks.${key}.name`;
+const blocksArr = Object.entries(copyBlocks).map(([key, block]) => {
+  const localeKey = `workflow.blocks.${key}.name`;
 
-    return {
-      ...block,
-      id: key,
-      name: te(localeKey) ? t(localeKey) : block.name,
-    };
-  }
-);
+  return {
+    ...block,
+    id: key,
+    name: te(localeKey) ? t(localeKey) : block.name,
+  };
+});
 
 const descriptionCollapsed = ref(true);
 
@@ -163,9 +161,9 @@ const pinnedBlocksList = computed(() =>
       const namePath = `workflow.blocks.${id}.name`;
 
       return {
-        ...tasks[id],
+        ...copyBlocks[id],
         id,
-        name: te(namePath) ? t(namePath) : tasks[id].name,
+        name: te(namePath) ? t(namePath) : copyBlocks[id].name,
       };
     })
     .filter(({ name }) =>

@@ -1,9 +1,11 @@
 import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
-import { tasks } from '@/utils/shared';
+import { getBlocks } from '@/utils/getSharedData';
 import { clearCache, sleep, parseJSON, isObject } from '@/utils/helper';
 import dbStorage from '@/db/storage';
 import Worker from './worker';
+
+let blocks = getBlocks();
 
 class WorkflowEngine {
   constructor(workflow, { states, logger, blocksHandler, options }) {
@@ -110,6 +112,8 @@ class WorkflowEngine {
         console.error(`${this.workflow.name} doesn't have a trigger block`);
         return;
       }
+
+      blocks = getBlocks();
 
       const checkParams = this.options?.checkParams ?? true;
       const hasParams = triggerBlock.data.parameters?.length > 0;
@@ -242,7 +246,7 @@ class WorkflowEngine {
     this.workerId += 1;
 
     const workerId = `worker-${this.workerId}`;
-    const worker = new Worker(workerId, this);
+    const worker = new Worker(workerId, this, { blocksDetail: blocks });
     worker.init(detail);
 
     this.workers.set(worker.id, worker);
@@ -263,7 +267,7 @@ class WorkflowEngine {
       detail.name !== 'delay' ||
       detail.replacedValue ||
       detail.name === 'javascript-code' ||
-      (tasks[detail.name]?.refDataKeys && this.saveLog)
+      (blocks[detail.name]?.refDataKeys && this.saveLog)
     ) {
       const { activeTabUrl, variables, loopData } = JSON.parse(
         JSON.stringify(this.referenceData)
@@ -450,8 +454,17 @@ class WorkflowEngine {
       );
 
       this.isDestroyed = true;
-      this.referenceData = {};
-      this.eventListeners = {};
+      this.referenceData = null;
+      this.eventListeners = null;
+      this.packagesCache = null;
+      this.extractedGroup = null;
+      this.connectionsMap = null;
+      this.waitConnections = null;
+      this.blocks = null;
+      this.history = null;
+      this.columnsId = null;
+      this.historyCtxData = null;
+      this.preloadScripts = null;
     } catch (error) {
       console.error(error);
     }

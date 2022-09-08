@@ -58,7 +58,7 @@
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
-import { tasks } from '@/utils/shared';
+import { getBlocks } from '@/utils/getSharedData';
 
 defineProps({
   category: {
@@ -77,10 +77,11 @@ defineProps({
 defineEmits(['pin']);
 
 const { t, te } = useI18n();
+const blocksDetail = getBlocks();
 
 function getBlockTitle({ description, id, name }) {
   const blockPath = `workflow.blocks.${id}`;
-  if (!te(blockPath)) return tasks[id].name;
+  if (!te(blockPath)) return blocksDetail[id].name;
 
   const descPath = `${blockPath}.${description ? 'description' : 'name'}`;
   let blockDescription = te(descPath) ? t(descPath) : name;

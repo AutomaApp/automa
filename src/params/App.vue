@@ -1,5 +1,8 @@
 <template>
-  <div class="w-full flex flex-col h-full max-w-lg mx-auto dark:text-gray-100">
+  <div
+    v-if="retrieved"
+    class="w-full flex flex-col h-full max-w-lg mx-auto dark:text-gray-100"
+  >
     <nav class="flex items-center w-full p-4 border-b mb-4">
       <span class="p-1 rounded-full bg-box-transparent dark:bg-none">
         <img src="@/assets/svg/logo.svg" class="w-10" />
@@ -41,7 +44,7 @@
           </div>
         </template>
         <div class="px-4 pb-4">
-          <ul class="space-y-2 divide-y">
+          <ul class="space-y-4 divide-y">
             <li v-for="(param, paramIdx) in workflow.params" :key="paramIdx">
               <component
                 :is="paramsList[param.type].valueComp"
@@ -88,13 +91,13 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue';
 import browser from 'webextension-polyfill';
-import * as workflowParameters from '@business/parameters';
+import workflowParameters from '@business/parameters';
+import * as automa from '@business';
 import { useTheme } from '@/composable/theme';
 import dayjs from '@/lib/dayjs';
 import ParameterInputValue from '@/components/newtab/workflow/edit/Parameter/ParameterInputValue.vue';
 
 const paramsList = {
-  ...workflowParameters,
   string: {
     id: 'string',
     name: 'Input (string)',
@@ -105,6 +108,7 @@ const paramsList = {
 const theme = useTheme();
 theme.init();
 
+const retrieved = ref(false);
 const workflows = ref([]);
 
 const sortedWorkflows = computed(() =>
@@ -183,7 +187,7 @@ function runWorkflow(index, { data, params }) {
   const variables = params.reduce((acc, param) => {
     const valueFunc =
       getParamVal[param.type] ||
-      workflowParameters[param.type]?.getValue ||
+      paramsList[param.type]?.getValue ||
       getParamVal.default;
     const value = valueFunc(param.value || param.defaultValue);
     acc[param.name] = value;
@@ -215,10 +219,19 @@ browser.runtime.onMessage.addListener(({ name, data }) => {
   addWorkflow(data);
 });
 
-onMounted(() => {
-  const query = new URLSearchParams(window.location.search);
-  const workflowId = query.get('workflowId');
+onMounted(async () => {
+  try {
+    const query = new URLSearchParams(window.location.search);
+    const workflowId = query.get('workflowId');
 
-  if (workflowId) addWorkflow(workflowId);
+    if (workflowId) addWorkflow(workflowId);
+    if (automa?.validateWithinContent) await automa.validateWithinContent();
+
+    Object.assign(paramsList, workflowParameters());
+  } catch (error) {
+    // Do nothing
+  } finally {
+    retrieved.value = true;
+  }
 });
 </script>

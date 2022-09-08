@@ -11,12 +11,17 @@
     </p>
     <table v-else class="w-full">
       <div class="text-sm grid grid-cols-12 space-x-2">
-        <div class="col-span-3" style="padding-left: 30px">Name</div>
+        <div class="col-span-3" style="padding-left: 28px">Name</div>
         <div class="col-span-2">Type</div>
         <div class="col-span-3">Placeholder</div>
         <div class="col-span-4">Default Value</div>
       </div>
-      <draggable v-model="state.parameters" tag="div" handle=".handle">
+      <draggable
+        v-model="state.parameters"
+        tag="div"
+        item-key="id"
+        handle=".handle"
+      >
         <template #item="{ element: param, index }">
           <div class="mb-4">
             <div class="grid grid-cols-12 space-x-2">
@@ -55,7 +60,8 @@
                   v-model="param.defaultValue"
                   :param-data="param"
                   :editor="true"
-                  max-width="250px"
+                  class="flex-1"
+                  style="max-width: 232px"
                 />
                 <ui-input
                   v-else
@@ -90,7 +96,7 @@
                     v-model="param.description"
                     placeholder="Description"
                     title="Description"
-                    class="mb-4"
+                    class="mb-2"
                     style="max-width: 400px"
                   />
                   <component
@@ -115,7 +121,7 @@
 import { reactive, watch } from 'vue';
 import { nanoid } from 'nanoid/non-secure';
 import cloneDeep from 'lodash.clonedeep';
-import * as workflowParameters from '@business/parameters';
+import workflowParameters from '@business/parameters';
 import Draggable from 'vuedraggable';
 import ParameterInputValue from './Parameter/ParameterInputValue.vue';
 import ParameterInputOptions from './Parameter/ParameterInputOptions.vue';
@@ -127,6 +133,8 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update']);
+
+const customParameters = workflowParameters();
 
 const paramTypes = {
   string: {
@@ -144,7 +152,7 @@ const paramTypes = {
     id: 'number',
     name: 'Input (number)',
   },
-  ...workflowParameters,
+  ...customParameters,
 };
 const paramTypesArr = Object.values(paramTypes).filter((item) => item.id);
 

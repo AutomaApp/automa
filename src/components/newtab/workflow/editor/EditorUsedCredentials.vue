@@ -53,7 +53,7 @@
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import objectPath from 'object-path';
-import { tasks } from '@/utils/shared';
+import { getBlocks } from '@/utils/getSharedData';
 
 const props = defineProps({
   editor: {
@@ -61,6 +61,8 @@ const props = defineProps({
     default: () => ({}),
   },
 });
+
+const blocks = getBlocks();
 
 const { t } = useI18n();
 
@@ -71,7 +73,7 @@ function checkCredentials() {
   const tempCreds = [];
 
   props.editor.getNodes.value.forEach(({ label, id, data }) => {
-    const keys = tasks[label]?.refDataKeys;
+    const keys = blocks[label]?.refDataKeys;
     if (!keys || !data) return;
 
     const usedCredentials = new Set();

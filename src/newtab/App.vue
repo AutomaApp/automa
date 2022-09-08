@@ -52,8 +52,6 @@
   <app-survey />
 </template>
 <script setup>
-import iconFirefox from '@/assets/svg/logoFirefox.svg';
-import iconChrome from '@/assets/svg/logo.svg';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
@@ -71,11 +69,14 @@ import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
 import { getUserWorkflows } from '@/utils/api';
+import * as automa from '@business';
 import dbLogs from '@/db/logs';
 import dayjs from '@/lib/dayjs';
 import AppSurvey from '@/components/newtab/app/AppSurvey.vue';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 import dataMigration from '@/utils/dataMigration';
+import iconFirefox from '@/assets/svg/logoFirefox.svg';
+import iconChrome from '@/assets/svg/logo.svg';
 
 let icon;
 if (window.location.protocol === 'moz-extension:') {
@@ -228,6 +229,8 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
 
     await dataMigration();
     await userStore.loadUser({ useCache: false, ttl: 2 });
+
+    if (automa?.validateWithinApp) await automa.validateWithinApp();
 
     retrieved.value = true;
 

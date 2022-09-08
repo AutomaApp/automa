@@ -10,7 +10,9 @@ const handlers = blocksHandler.keys().reduce((acc, key) => {
   return acc;
 }, {});
 
-export default {
-  ...handlers,
-  ...customHandlers,
-};
+export default function () {
+  return {
+    ...handlers,
+    ...customHandlers(),
+  };
+}

@@ -1,13 +1,9 @@
 import { reactive, onMounted } from 'vue';
-import customBlocks from '@business/blocks';
-import { tasks, categories } from '@/utils/shared';
-
-const blocks = {
-  ...tasks,
-  ...customBlocks,
-};
+import { getBlocks } from '@/utils/getSharedData';
+import { categories } from '@/utils/shared';
 
 export function useEditorBlock(label) {
+  const blocks = getBlocks();
   const block = reactive({
     details: {},
     category: {},

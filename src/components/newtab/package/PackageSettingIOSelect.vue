@@ -52,7 +52,7 @@
 <script setup>
 /* eslint-disable */
 import { reactive, computed, onMounted } from 'vue';
-import { tasks } from '@/utils/shared';
+import { getBlocks } from '@/utils/getSharedData';
 
 const props = defineProps({
   nodes: {
@@ -70,6 +70,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['update']);
 
+const blocks = getBlocks();
 const handleType = props.type === 'inputs' ? 'target' : 'source';
 
 const state = reactive({
@@ -93,7 +94,7 @@ const items = computed(() => {
       if (data.name) additionalKey = includeQuery(data.name);
       else if (data.description) additionalKey = includeQuery(data.description);
 
-      return includeQuery(tasks[label]?.name || '') || additionalKey;
+      return includeQuery(blocks[label]?.name || '') || additionalKey;
     });
   }
 
@@ -119,7 +120,7 @@ function selectItem(item) {
 }
 function getBlockName(item, type) {
   const { label, data } = item;
-  let name = tasks[label]?.name || '';
+  let name = blocks[label]?.name || '';
 
   if (data.name) name += ` (${data.name})`;
   else if (data.description) name += ` (${data.description})`;

@@ -2,7 +2,7 @@
   <div class="flex items-center">
     <label class="flex items-center">
       <ui-switch v-model="options.useMask" />
-      <span class="ml-2"> Use mask </span>
+      <span class="ml-2"> Use input masking </span>
     </label>
     <v-remixicon
       v-tooltip="{ content: maskInfo, allowHTML: true }"
@@ -15,7 +15,7 @@
       <span class="ml-2">Return unmask value</span>
     </label>
   </div>
-  <div v-if="options.useMask" class="mt-4">
+  <div v-if="options.useMask" class="mt-2">
     <p>Masks</p>
     <div class="space-y-2">
       <div

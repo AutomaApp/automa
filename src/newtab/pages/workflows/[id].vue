@@ -297,13 +297,13 @@ import {
 } from '@/composable/shortcut';
 import { getWorkflowPermissions } from '@/utils/workflowData';
 import { fetchApi } from '@/utils/api';
-import { tasks, excludeGroupBlocks } from '@/utils/shared';
+import { getBlocks } from '@/utils/getSharedData';
+import { excludeGroupBlocks } from '@/utils/shared';
 import { functions } from '@/utils/referenceData/mustacheReplacer';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useCommandManager } from '@/composable/commandManager';
 import { debounce, parseJSON, throttle } from '@/utils/helper';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
-import customBlocks from '@business/blocks';
 import browser from 'webextension-polyfill';
 import dbStorage from '@/db/storage';
 import DroppedNode from '@/utils/editor/DroppedNode';
@@ -328,7 +328,7 @@ import EditorLocalSavedBlocks from '@/components/newtab/workflow/editor/EditorLo
 import PackageDetails from '@/components/newtab/package/PackageDetails.vue';
 import PackageSettings from '@/components/newtab/package/PackageSettings.vue';
 
-const blocks = { ...tasks, ...customBlocks };
+const blocks = getBlocks();
 
 let editorCommands = null;
 const executeCommandTimeout = null;
@@ -1015,7 +1015,7 @@ function initEditBlock(data) {
         const blockNameKey = `workflow.blocks.${sourceNode.label}.name`;
         let blockName = te(blockNameKey)
           ? t(blockNameKey)
-          : tasks[sourceNode.label].name;
+          : blocks[sourceNode.label].name;
 
         const { description, name: groupName } = sourceNode.data;
         if (description || groupName)

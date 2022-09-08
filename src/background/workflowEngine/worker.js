@@ -6,17 +6,17 @@ import {
   parseJSON,
   isObject,
 } from '@/utils/helper';
-import { tasks } from '@/utils/shared';
 import referenceData from '@/utils/referenceData';
 import mustacheReplacer from '@/utils/referenceData/mustacheReplacer';
-import injectContentScript from './injectContentScript';
 import { convertData, waitTabLoaded } from './helper';
+import injectContentScript from './injectContentScript';
 
 class Worker {
-  constructor(id, engine) {
+  constructor(id, engine, options = {}) {
     this.id = id;
     this.engine = engine;
     this.settings = engine.workflow.settings;
+    this.blocksDetail = options.blocksDetail || {};
 
     this.loopEls = [];
     this.loopList = {};
@@ -148,7 +148,7 @@ class Worker {
 
     const blockHandler = this.engine.blocksHandler[toCamelCase(block.label)];
     const handler =
-      !blockHandler && tasks[block.label].category === 'interaction'
+      !blockHandler && this.blocksDetail[block.label].category === 'interaction'
         ? this.engine.blocksHandler.interactionBlock
         : blockHandler;
 
@@ -165,13 +165,14 @@ class Worker {
       activeTabUrl: this.activeTab.url,
     };
 
+    console.log(this.blocksDetail, this.blocksDetail[block.label]);
     const replacedBlock = referenceData({
       block,
       data: refData,
       refKeys:
         isRetry || block.data.disableBlock
           ? null
-          : tasks[block.label].refDataKeys,
+          : this.blocksDetail[block.label].refDataKeys,
     });
     const blockDelay = this.settings?.blockDelay || 0;
     const addBlockLog = (status, obj = {}) => {

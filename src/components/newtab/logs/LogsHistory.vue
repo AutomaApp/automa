@@ -233,13 +233,14 @@ import {
 } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { countDuration } from '@/utils/helper';
-import { tasks } from '@/utils/shared';
+import { getBlocks } from '@/utils/getSharedData';
 import dayjs from '@/lib/dayjs';
 import objectPath from 'object-path';
 
 const SharedCodemirror = defineAsyncComponent(() =>
   import('@/components/newtab/shared/SharedCodemirror.vue')
 );
+const blocks = getBlocks();
 
 const props = defineProps({
   currentLog: {
@@ -349,7 +350,7 @@ function translateLog(log) {
   } else {
     copyLog.name = getTranslatation(
       `workflow.blocks.${log.name}.name`,
-      tasks[log.name].name
+      blocks[log.name].name
     );
   }
 

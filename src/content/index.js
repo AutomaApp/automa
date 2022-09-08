@@ -2,6 +2,7 @@ import browser from 'webextension-polyfill';
 import findSelector from '@/lib/findSelector';
 import { toCamelCase } from '@/utils/helper';
 import { nanoid } from 'nanoid';
+import * as automa from '@business';
 import handleSelector from './handleSelector';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
@@ -67,7 +68,8 @@ async function executeBlock(data) {
       return result;
     }
   }
-  const handler = blocksHandler[toCamelCase(data.name || data.label)];
+  const handlers = blocksHandler();
+  const handler = handlers[toCamelCase(data.name || data.label)];
   if (handler) {
     const result = await handler(data, { handleSelector });
     removeExecutedBlock();
@@ -149,6 +151,10 @@ function messageListener({ data, source }) {
     // window.addEventListener('load', elementObserver);
   }
 
+  if (automa?.validateWithinContent) {
+    automa.validateWithinContent();
+  }
+
   browser.runtime.onMessage.addListener((data) => {
     return new Promise((resolve, reject) => {
       if (data.isBlock) {
@@ -169,7 +175,7 @@ function messageListener({ data, source }) {
                 data: blockData,
               };
 
-              blocksHandler
+              blocksHandler()
                 .loopData(loopBlock)
                 .then(() => {
                   executeBlock(data).then(resolve).catch(reject);
