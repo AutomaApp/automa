@@ -41,7 +41,7 @@
           </div>
         </template>
         <div class="px-4 pb-4">
-          <ul class="space-y-2">
+          <ul class="space-y-2 divide-y">
             <li v-for="(param, paramIdx) in workflow.params" :key="paramIdx">
               <component
                 :is="paramsList[param.type].valueComp"
@@ -60,6 +60,13 @@
                 class="w-full"
                 @keyup.enter="runWorkflow(index, workflow)"
               />
+              <p
+                v-if="param.description"
+                title="Description"
+                class="ml-1 text-sm"
+              >
+                {{ param.description }}
+              </p>
             </li>
           </ul>
           <div class="flex items-center mt-6">

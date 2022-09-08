@@ -68,7 +68,7 @@
               </ui-button>
             </td>
           </tr>
-          <tr v-if="paramTypes[param.type].options">
+          <tr>
             <td colspan="999" style="padding-top: 0">
               <ui-expand
                 hide-header-icon
@@ -83,8 +83,16 @@
                   <span>Options</span>
                 </template>
                 <div class="pl-[28px] mt-2 mb-4">
+                  <ui-textarea
+                    v-model="param.description"
+                    placeholder="Description"
+                    title="Description"
+                    class="mb-4"
+                    style="max-width: 400px"
+                  />
                   <component
                     :is="paramTypes[param.type].options"
+                    v-if="paramTypes[param.type].options"
                     v-model="param.data"
                     :default-value="paramTypes[param.type].data"
                   />
@@ -143,6 +151,7 @@ function addParameter() {
   state.parameters.push({
     name: 'param',
     type: 'string',
+    description: '',
     defaultValue: '',
     placeholder: 'Text',
     data: paramTypes.string.data,
