@@ -52,6 +52,9 @@
             "continue": "继续流程",
             "fallback": "执行回退",
             "restart": "重启流程"
+          },
+          "insertData": {
+            "name": "插入数据"
           }
         },
         "table": {
@@ -95,6 +98,16 @@
         "description": "在继续下一个模块之前等待所有连接",
         "specificFlow": "只继续一个特定的流程",
         "selectFlow": "选择流程"
+      },
+      "cookie": {
+        "name": "Cookie",
+        "description": "获取, 设置, 或移除 cookies",
+        "types": {
+          "get": "获取 cookies",
+          "set": "设置 cookie",
+          "remove": "移除 cookies",
+          "getAll": "获取所有 cookies"
+        }
       },
       "slice-variable": {
         "name": "切片变量",
@@ -213,6 +226,22 @@
         "name": "悬停元素",
         "description": "悬停在一个元素上"
       },
+      "create-element": {
+        "name": "创建元素",
+        "description": "创建一个元素并插入到页面",
+        "edit": "编辑元素",
+        "wrap": "将元素包裹在里面",
+        "insertEl": {
+          "title": "插入元素",
+          "items": {
+            "before": "为首个子元素",
+            "after": "为最末子元素",
+            "next-sibling": "为下一个同级元素",
+            "prev-sibling": "为上一个同级元素",
+            "replace": "替换目标元素"
+          }
+        }
+      },
       "upload-file": {
         "name": "上传文件",
         "description": "上传文件到 <input type=\"file\"> 元素",
@@ -328,6 +357,9 @@
         "select": "选择工作流",
         "executeId": "执行 Id",
         "description": ""
+        "insertAllVars": "插入所有当前工作流变量",
+        "insertVars": "插入当前工作流变量",
+        "useCommas": "使用逗号分隔变量名"
       },
       "google-sheets": {
         "name": "Google sheets",
