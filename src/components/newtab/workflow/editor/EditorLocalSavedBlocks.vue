@@ -36,6 +36,7 @@
         >
           <div class="flex items-start p-4 flex-1">
             <div
+              v-if="item.icon"
               :class="{ 'mr-2': item.icon.startsWith('http') }"
               class="w-8 flex-shrink-0"
             >
