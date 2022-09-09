@@ -2,7 +2,7 @@ import browser from 'webextension-polyfill';
 import findSelector from '@/lib/findSelector';
 import { toCamelCase } from '@/utils/helper';
 import { nanoid } from 'nanoid';
-import * as automa from '@business';
+import automa from '@business';
 import handleSelector from './handleSelector';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
@@ -151,9 +151,7 @@ function messageListener({ data, source }) {
     // window.addEventListener('load', elementObserver);
   }
 
-  if (automa?.validateWithinContent) {
-    automa.validateWithinContent();
-  }
+  automa('content');
 
   browser.runtime.onMessage.addListener((data) => {
     return new Promise((resolve, reject) => {

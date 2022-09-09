@@ -69,7 +69,7 @@ import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
 import { getUserWorkflows } from '@/utils/api';
-import * as automa from '@business';
+import automa from '@business';
 import dbLogs from '@/db/logs';
 import dayjs from '@/lib/dayjs';
 import AppSurvey from '@/components/newtab/app/AppSurvey.vue';
@@ -230,7 +230,7 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
     await dataMigration();
     await userStore.loadUser({ useCache: false, ttl: 2 });
 
-    if (automa?.validateWithinApp) await automa.validateWithinApp();
+    await automa('app');
 
     retrieved.value = true;
 

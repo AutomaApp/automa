@@ -92,7 +92,7 @@
 import { onMounted, ref, computed } from 'vue';
 import browser from 'webextension-polyfill';
 import workflowParameters from '@business/parameters';
-import * as automa from '@business';
+import automa from '@business';
 import { useTheme } from '@/composable/theme';
 import dayjs from '@/lib/dayjs';
 import ParameterInputValue from '@/components/newtab/workflow/edit/Parameter/ParameterInputValue.vue';
@@ -225,7 +225,7 @@ onMounted(async () => {
     const workflowId = query.get('workflowId');
 
     if (workflowId) addWorkflow(workflowId);
-    if (automa?.validateWithinContent) await automa.validateWithinContent();
+    await automa('content');
 
     Object.assign(paramsList, workflowParameters());
   } catch (error) {

@@ -7,7 +7,7 @@ import getFile from '@/utils/getFile';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
 import convertWorkflowData from '@/utils/convertWorkflowData';
 import getBlockMessage from '@/utils/getBlockMessage';
-import * as automa from '@business';
+import automa from '@business';
 import {
   registerSpecificDay,
   registerContextMenu,
@@ -645,6 +645,6 @@ message.on('workflow:register', ({ triggerBlock, workflowId }) => {
   registerWorkflowTrigger(workflowId, triggerBlock);
 });
 
-if (automa?.validate) automa.validate(message);
+automa('background', message);
 
 browser.runtime.onMessage.addListener(message.listener());

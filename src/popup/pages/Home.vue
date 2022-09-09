@@ -127,7 +127,7 @@ import { useWorkflowStore } from '@/stores/workflow';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
-import * as automa from '@business';
+import automa from '@business';
 import HomeWorkflowCard from '@/components/popup/home/HomeWorkflowCard.vue';
 import HomeTeamWorkflows from '@/components/popup/home/HomeTeamWorkflows.vue';
 import HomeStartRecording from '@/components/popup/home/HomeStartRecording.vue';
@@ -302,7 +302,7 @@ onMounted(async () => {
 
   let activeTab = localStorage.getItem('popup-tab') || 'local';
 
-  if (automa?.validateWithinApp) await automa.validateWithinApp();
+  await automa('app');
 
   if (activeTab === 'team' && !userStore.user?.teams) activeTab = 'local';
   else if (activeTab === 'host' && hostedWorkflowStore.toArray.length < 0)
