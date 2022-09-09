@@ -89,6 +89,8 @@ class Worker {
   }
 
   getBlockConnections(blockId, outputIndex = 1) {
+    if (this.engine.isDestroyed) return null;
+
     const outputId = `${blockId}-output-${outputIndex}`;
     return this.engine.connectionsMap[outputId] || null;
   }
@@ -165,7 +167,6 @@ class Worker {
       activeTabUrl: this.activeTab.url,
     };
 
-    console.log(this.blocksDetail, this.blocksDetail[block.label]);
     const replacedBlock = referenceData({
       block,
       data: refData,
@@ -204,6 +205,8 @@ class Worker {
           prevBlock,
           ...(execParam || {}),
         });
+
+        if (this.engine.isDestroyed) return;
 
         if (result.replacedValue) {
           replacedBlock.replacedValue = result.replacedValue;

@@ -118,6 +118,13 @@
         "start": "Start index",
         "end": "End index"
       },
+      "workflow-state": {
+        "name": "Workflow state",
+        "description": "Manage workflows states",
+        "actions": {
+          "stop": "Stop workflows"
+        }
+      },
       "regex-variable": {
         "name": "RegEx variable",
         "description": "Matching a variable value against a regular expression"

@@ -1296,6 +1296,25 @@ export const tasks = {
       fontSize: 'regular',
     },
   },
+  'workflow-state': {
+    name: 'Workflow State',
+    description: 'Manage workflows states',
+    icon: 'riFileEditLine',
+    component: 'BlockBasic',
+    editComponent: 'EditWorkflowState',
+    category: 'general',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      disableBlock: false,
+      description: '',
+      type: 'stop-current',
+      exceptCurrent: false,
+      workflowsToStop: [],
+    },
+  },
 };
 
 export const categories = {
