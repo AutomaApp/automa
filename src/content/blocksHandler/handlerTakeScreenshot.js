@@ -124,7 +124,7 @@ export default async function ({ tabId, options, data: { type, selector } }) {
 
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
-  const maxCanvasSize = 32767;
+  const maxCanvasSize = BROWSER_TYPE === 'firefox' ? 32767 : 65035;
 
   const scrollElement = document.querySelector('.automa-scrollable-el');
   let scrollableElement = scrollElement || findScrollableElement();
@@ -139,7 +139,7 @@ export default async function ({ tabId, options, data: { type, selector } }) {
 
   const style = injectStyle();
   const originalYPosition = window.scrollY;
-  const originalScrollHeight = scrollableElement.scrollHeight;
+  let originalScrollHeight = scrollableElement.scrollHeight;
 
   canvas.height =
     scrollableElement.scrollHeight > maxCanvasSize
@@ -156,7 +156,9 @@ export default async function ({ tabId, options, data: { type, selector } }) {
       else if (position === 'fixed') el.setAttribute('is-fixed', '');
     });
 
+  let scaleDiff = 1;
   let scrollPosition = 0;
+  let canvasAdjusted = false;
 
   if (scrollableElement.tagName === 'HTML') scrollableElement = window;
 
@@ -170,21 +172,38 @@ export default async function ({ tabId, options, data: { type, selector } }) {
     const image = await loadAsyncImg(imageUrl);
     const newScrollPos = scrollPosition + window.innerHeight;
 
-    if (newScrollPos - originalScrollHeight > 0) {
-      context.drawImage(
-        image,
-        0,
-        newScrollPos - originalScrollHeight,
-        image.width,
-        image.height,
-        0,
-        scrollPosition,
-        image.width,
-        image.height
-      );
-    } else {
-      context.drawImage(image, 0, scrollPosition);
+    if (!canvasAdjusted) {
+      if (canvas.width !== image.width) {
+        scaleDiff = image.width / window.innerWidth;
+
+        canvas.width *= scaleDiff;
+        canvas.height *= scaleDiff;
+
+        originalScrollHeight *= scaleDiff;
+
+        if (canvas.height > maxCanvasSize) canvas.height = maxCanvasSize;
+      }
+
+      canvasAdjusted = true;
     }
+
+    const newWidth = image.width * scaleDiff;
+    const newHeight = image.height * scaleDiff;
+
+    const sourceYPos =
+      (scrollPosition + window.innerHeight) * scaleDiff - originalScrollHeight;
+
+    context.drawImage(
+      image,
+      0,
+      sourceYPos > 0 ? sourceYPos : 0,
+      newWidth,
+      newHeight,
+      0,
+      scrollPosition * scaleDiff,
+      newWidth,
+      newHeight
+    );
 
     scrollPosition = newScrollPos;
     scrollableElement.scrollTo(0, newScrollPos);
