@@ -655,6 +655,53 @@ const onEdgesChange = debounce((changes) => {
   // if (command) commandManager.add(command);
 }, 250);
 
+let nodeTargetHandle = null;
+
+function onClickEditor({ target }) {
+  const targetClass = target.classList;
+  const isHandle = targetClass.contains('vue-flow__handle');
+  const clearActiveTarget = () => {
+    if (nodeTargetHandle) {
+      const targetEl = document.querySelector(
+        `.vue-flow__handle[data-handleid="${nodeTargetHandle.handleId}"]`
+      );
+      if (targetEl) targetEl.classList.remove('ring-2');
+    }
+  };
+
+  if (!isHandle) {
+    clearActiveTarget();
+    nodeTargetHandle = null;
+    return;
+  }
+
+  if (nodeTargetHandle && targetClass.contains('target')) {
+    const { handleid, nodeid } = target.dataset;
+
+    const connectionExist = document.querySelector(
+      `.vue-flow__edge.target-${handleid}.source-${nodeTargetHandle.handleId}`
+    );
+    if (!connectionExist) {
+      editor.value.addEdges([
+        {
+          source: nodeid,
+          sourceHandle: handleid,
+          target: nodeTargetHandle.nodeId,
+          targetHandle: nodeTargetHandle.handleId,
+        },
+      ]);
+    }
+
+    clearActiveTarget();
+    nodeTargetHandle = null;
+  } else {
+    clearActiveTarget();
+    target.classList.add('ring-2');
+
+    const { handleid, nodeid } = target.dataset;
+    nodeTargetHandle = { nodeId: nodeid, handleId: handleid };
+  }
+}
 function goToBlock(blockId) {
   if (!editor.value) return;
 
@@ -1128,6 +1175,11 @@ function onEditorInit(instance) {
     instance.getSelectedEdges.value.map(({ id }) => id)
   );
 
+  const editorContainer = document.querySelector(
+    '.vue-flow__viewport.vue-flow__container'
+  );
+  editorContainer.addEventListener('click', onClickEditor);
+
   const convertToObj = (array) =>
     array.reduce((acc, item) => {
       acc[item.id] = item;
@@ -1543,6 +1595,11 @@ onMounted(() => {
   window.addEventListener('keydown', onKeydown);
 });
 onBeforeUnmount(() => {
+  const editorContainer = document.querySelector(
+    '.vue-flow__viewport.vue-flow__container'
+  );
+  editorContainer.removeEventListener('click', onClickEditor);
+
   window.onbeforeunload = null;
   window.removeEventListener('keydown', onKeydown);
 });
