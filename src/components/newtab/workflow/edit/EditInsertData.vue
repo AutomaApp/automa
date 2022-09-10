@@ -20,7 +20,6 @@
       content-class="max-w-2xl insert-data-modal"
     >
       <ul
-        v-show="dataList.length > 0"
         class="mt-4 data-list px-4 pb-4 overflow-auto scroll"
         style="max-height: calc(100vh - 13rem)"
       >

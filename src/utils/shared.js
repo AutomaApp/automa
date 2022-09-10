@@ -1299,7 +1299,7 @@ export const tasks = {
   'workflow-state': {
     name: 'Workflow State',
     description: 'Manage workflows states',
-    icon: 'riFileEditLine',
+    icon: 'riSettings3Line',
     component: 'BlockBasic',
     editComponent: 'EditWorkflowState',
     category: 'general',
