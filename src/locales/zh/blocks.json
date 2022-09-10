@@ -356,7 +356,7 @@
         "overwriteNote": "这将覆盖所选工作流的全局数据",
         "select": "选择工作流",
         "executeId": "执行 Id",
-        "description": ""
+        "description": "",
         "insertAllVars": "插入所有当前工作流变量",
         "insertVars": "插入当前工作流变量",
         "useCommas": "使用逗号分隔变量名"
