@@ -1077,10 +1077,39 @@ function onActionUpdated({ data, changedIndicator }) {
 function onEditorInit(instance) {
   editor.value = instance;
 
+  let nodeToConnect = null;
+
   instance.onEdgesChange(onEdgesChange);
   instance.onNodesChange(onNodesChange);
   instance.onEdgeDoubleClick(({ edge }) => {
     instance.removeEdges([edge]);
+  });
+  instance.onConnectStart(({ nodeId, handleId, handleType }) => {
+    if (handleType !== 'source') return;
+
+    nodeToConnect = { nodeId, handleId };
+  });
+  instance.onConnectEnd(({ target }) => {
+    if (!nodeToConnect) return;
+
+    const isNotTargetHandle = !target.closest('.vue-flow__handle.target');
+    const targetNode = isNotTargetHandle && target.closest('.vue-flow__node');
+    if (targetNode && targetNode.dataset.id !== nodeToConnect.nodeId) {
+      const nodeId = targetNode.dataset.id;
+      const nodeData = editor.value.getNode.value(nodeId);
+      if (nodeData && nodeData.handleBounds.target.length >= 1) {
+        editor.value.addEdges([
+          {
+            target: nodeId,
+            source: nodeToConnect.nodeId,
+            sourceHandle: nodeToConnect.handleId,
+            targetHandle: nodeData.handleBounds.target[0].id,
+          },
+        ]);
+      }
+    }
+
+    nodeToConnect = null;
   });
   // instance.onEdgeUpdateEnd(({ edge }) => {
   //   editorCommands.state.edges[edge.id] = edge;
