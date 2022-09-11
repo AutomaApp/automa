@@ -38,6 +38,10 @@ class WorkflowState {
     if (index !== -1) listeners.splice(index, 1);
   }
 
+  get getAll() {
+    return this.states;
+  }
+
   async get(stateId) {
     let { states } = this;
 

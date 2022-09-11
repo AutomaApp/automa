@@ -70,8 +70,8 @@ import {
 } from '@braks/vue-flow';
 import cloneDeep from 'lodash.clonedeep';
 import { useStore } from '@/stores/main';
-import { tasks, categories } from '@/utils/shared';
-import customBlocks from '@business/blocks';
+import { categories } from '@/utils/shared';
+import { getBlocks } from '@/utils/getSharedData';
 import EditorSearchBlocks from './editor/EditorSearchBlocks.vue';
 
 const props = defineProps({
@@ -160,7 +160,7 @@ editor.onEdgeUpdate(({ edge, connection }) => {
   Object.assign(edge, connection);
 });
 
-const blocks = { ...tasks, ...customBlocks };
+const blocks = getBlocks();
 const settings = store.settings.editor;
 const isDisabled = computed(() => props.options.disabled ?? props.disabled);
 

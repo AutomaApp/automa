@@ -1,5 +1,3 @@
-import customBlocks from '@business/blocks';
-
 export const tasks = {
   trigger: {
     name: 'Trigger',
@@ -715,6 +713,7 @@ export const tasks = {
       description: '',
       variableName: '',
       referenceKey: '',
+      reverseLoop: false,
       elementSelector: '',
       waitForSelector: false,
       waitSelectorTimeout: 5000,
@@ -1297,7 +1296,25 @@ export const tasks = {
       fontSize: 'regular',
     },
   },
-  ...customBlocks,
+  'workflow-state': {
+    name: 'Workflow State',
+    description: 'Manage workflows states',
+    icon: 'riSettings3Line',
+    component: 'BlockBasic',
+    editComponent: 'EditWorkflowState',
+    category: 'general',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      disableBlock: false,
+      description: '',
+      type: 'stop-current',
+      exceptCurrent: false,
+      workflowsToStop: [],
+    },
+  },
 };
 
 export const categories = {
@@ -1452,6 +1469,7 @@ export const excludeGroupBlocks = [
   'webhook',
   'element-exists',
   'while-loop',
+  'block-package',
 ];
 
 export const conditionBuilder = {

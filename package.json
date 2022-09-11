@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "1.18.1",
+  "version": "1.19.0",
   "description": "An extension for automating your browser by connecting blocks",
   "repository": {
     "type": "git",
@@ -71,6 +71,8 @@
     "v-remixicon": "^0.1.1",
     "vue": "^3.2.37",
     "vue-i18n": "^9.2.0-beta.40",
+    "vue-imask": "^6.4.2",
+    "vue-multiselect": "^3.0.0-alpha.2",
     "vue-router": "^4.1.5",
     "vue-toastification": "^2.0.0-rc.5",
     "vuedraggable": "^4.1.0",
@@ -92,14 +94,14 @@
     "core-js": "^3.25.0",
     "cross-env": "^7.0.3",
     "css-loader": "^6.7.1",
-    "eslint": "^8.22.0",
+    "eslint": "^8.23.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-friendly-formatter": "^4.0.1",
     "eslint-import-resolver-webpack": "^0.13.2",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-vue": "^9.3.0",
+    "eslint-plugin-vue": "^9.4.0",
     "file-loader": "^6.2.0",
     "fs-extra": "^10.1.0",
     "html-loader": "^4.1.0",
@@ -112,11 +114,11 @@
     "simple-git-hooks": "^2.6.1",
     "source-map-loader": "^4.0.0",
     "tailwindcss": "^3.1.6",
-    "terser-webpack-plugin": "^5.3.5",
+    "terser-webpack-plugin": "^5.3.6",
     "vue-loader": "^17.0.0",
     "web-worker": "^1.2.0",
     "webpack": "^5.73.0",
     "webpack-cli": "^4.10.0",
-    "webpack-dev-server": "^4.10.0"
+    "webpack-dev-server": "^4.11.0"
   }
 }

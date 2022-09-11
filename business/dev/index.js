@@ -1,3 +1,1 @@
-export default {
-  workflowParameters: {},
-};
+export default function () {}

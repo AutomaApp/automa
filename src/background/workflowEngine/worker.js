@@ -6,17 +6,17 @@ import {
   parseJSON,
   isObject,
 } from '@/utils/helper';
-import { tasks } from '@/utils/shared';
 import referenceData from '@/utils/referenceData';
 import mustacheReplacer from '@/utils/referenceData/mustacheReplacer';
-import injectContentScript from './injectContentScript';
 import { convertData, waitTabLoaded } from './helper';
+import injectContentScript from './injectContentScript';
 
 class Worker {
-  constructor(id, engine) {
+  constructor(id, engine, options = {}) {
     this.id = id;
     this.engine = engine;
     this.settings = engine.workflow.settings;
+    this.blocksDetail = options.blocksDetail || {};
 
     this.loopEls = [];
     this.loopList = {};
@@ -89,6 +89,8 @@ class Worker {
   }
 
   getBlockConnections(blockId, outputIndex = 1) {
+    if (this.engine.isDestroyed) return null;
+
     const outputId = `${blockId}-output-${outputIndex}`;
     return this.engine.connectionsMap[outputId] || null;
   }
@@ -148,7 +150,7 @@ class Worker {
 
     const blockHandler = this.engine.blocksHandler[toCamelCase(block.label)];
     const handler =
-      !blockHandler && tasks[block.label].category === 'interaction'
+      !blockHandler && this.blocksDetail[block.label].category === 'interaction'
         ? this.engine.blocksHandler.interactionBlock
         : blockHandler;
 
@@ -171,7 +173,7 @@ class Worker {
       refKeys:
         isRetry || block.data.disableBlock
           ? null
-          : tasks[block.label].refDataKeys,
+          : this.blocksDetail[block.label].refDataKeys,
     });
     const blockDelay = this.settings?.blockDelay || 0;
     const addBlockLog = (status, obj = {}) => {
@@ -181,6 +183,7 @@ class Worker {
         name: block.label,
         blockId: block.id,
         workerId: this.id,
+        timestamp: startExecuteTime,
         description: block.data.description,
         replacedValue: replacedBlock.replacedValue,
         duration: Math.round(Date.now() - startExecuteTime),
@@ -202,6 +205,8 @@ class Worker {
           prevBlock,
           ...(execParam || {}),
         });
+
+        if (this.engine.isDestroyed) return;
 
         if (result.replacedValue) {
           replacedBlock.replacedValue = result.replacedValue;

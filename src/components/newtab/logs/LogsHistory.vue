@@ -8,132 +8,239 @@
     <v-remixicon name="riArrowLeftLine" class="mr-2" />
     {{ t('log.goBack', { name: parentLog.name }) }}
   </router-link>
-  <div
-    class="p-4 rounded-lg bg-gray-900 dark:bg-gray-800 text-gray-100 dark scroll overflow-auto"
-    style="max-height: 600px"
-  >
-    <slot name="prepend" />
-    <div class="text-sm font-mono space-y-1 w-full overflow-auto">
-      <ui-expand
-        v-for="(item, index) in history"
-        :key="item.id || index"
-        :disabled="!ctxData[item.id]"
-        hide-header-icon
-        class="hoverable rounded-md"
-        active-class="bg-box-transparent"
-        header-class="px-2 w-full text-left focus:ring-0 py-1 rounded-md group cursor-default flex items-start"
-        @click="state.itemId = item.id"
-      >
-        <template #header="{ show }">
-          <span class="w-6">
-            <v-remixicon
-              v-show="ctxData[item.id]"
-              :rotate="show ? 270 : 180"
-              size="20"
-              name="riArrowLeftSLine"
-              class="transition-transform text-gray-400 -ml-1 mr-2"
-            />
-          </span>
-          <span
-            :title="`${t('log.duration')}: ${Math.round(
-              item.duration / 1000
-            )}s`"
-            class="w-14 flex-shrink-0 text-overflow text-gray-400"
-          >
-            {{ countDuration(0, item.duration || 0) }}
-          </span>
-          <span
-            :class="logsType[item.type]?.color"
-            :title="item.type"
-            class="w-2/12 flex-shrink-0 text-overflow"
-          >
-            <v-remixicon
-              :name="logsType[item.type]?.icon"
-              size="18"
-              class="inline-block -mr-1 align-text-top"
-            />
-            {{ item.name }}
-          </span>
-          <span
-            :title="`${t('common.description')} (${item.description})`"
-            class="ml-2 w-2/12 text-overflow flex-shrink-0"
-          >
-            {{ item.description }}
-          </span>
-          <p
-            :title="item.message"
-            class="text-sm line-clamp ml-2 flex-1 leading-tight text-gray-600 dark:text-gray-200"
-          >
-            {{ item.message }}
+  <div class="flex items-start">
+    <div class="flex-1">
+      <div class="rounded-lg bg-gray-900 dark:bg-gray-800 text-gray-100 dark">
+        <div
+          v-if="currentLog.status === 'error' && errorBlock"
+          class="border-b px-4 pt-4 text-gray-200 pb-4 mb-4"
+        >
+          <p class="leading-tight line-clamp">
+            {{ errorBlock.message }}
           </p>
-          <router-link
-            v-if="item.logId"
-            v-slot="{ navigate }"
-            :to="{ name: 'logs-details', params: { id: item.logId } }"
-            custom
-          >
+          <p class="cursor-pointer" title="Jump to item" @click="jumpToError">
+            On the {{ errorBlock.name }} block
             <v-remixicon
-              title="Open log detail"
-              class="ml-2 text-gray-300 cursor-pointer"
-              size="20"
-              name="riFileTextLine"
-              @click.stop="navigate"
+              name="riArrowLeftLine"
+              class="inline-block -ml-1"
+              size="18"
+              rotate="135"
             />
-          </router-link>
-          <router-link
-            v-if="getBlockPath(item.blockId)"
-            v-show="currentLog.workflowId && item.blockId"
-            :to="getBlockPath(item.blockId)"
-          >
-            <v-remixicon
-              name="riExternalLinkLine"
-              size="20"
-              title="Go to block"
-              class="text-gray-300 cursor-pointer ml-2 invisible group-hover:visible"
-            />
-          </router-link>
-        </template>
-        <pre
-          class="px-2 pb-2 text-gray-300 overflow-auto text-sm ml-6 scroll max-h-96"
-          >{{ ctxData[state.itemId] || 'EMPTY' }}</pre
+          </p>
+        </div>
+        <div
+          id="log-history"
+          style="max-height: 600px"
+          class="scroll p-4 overflow-auto"
         >
-      </ui-expand>
-      <slot name="append-items" />
+          <slot name="prepend" />
+          <div class="text-sm font-mono space-y-1 w-full overflow-auto">
+            <div
+              v-for="(item, index) in history"
+              :key="item.id || index"
+              :disabled="!ctxData[item.id]"
+              :class="{ 'bg-box-transparent': item.id === state.itemId }"
+              hide-header-icon
+              class="hoverable rounded-md px-2 w-full text-left focus:ring-0 py-1 rounded-md group cursor-default flex items-start"
+              @click="setActiveLog(item)"
+            >
+              <div
+                style="min-width: 54px"
+                class="flex-shrink-0 mr-4 text-overflow text-gray-400"
+              >
+                <span
+                  v-if="item.timestamp"
+                  :title="
+                    dayjs(item.timestamp).format('YYYY-MM-DDTHH:mm:ss.SSS')
+                  "
+                >
+                  {{ dayjs(item.timestamp).format('HH:mm:ss') }}
+                  {{ `(${countDuration(0, item.duration || 0).trim()})` }}
+                </span>
+                <span v-else :title="`${Math.round(item.duration / 1000)}s`">
+                  {{ countDuration(0, item.duration || 0) }}
+                </span>
+              </div>
+              <span
+                :class="logsType[item.type]?.color"
+                :title="item.type"
+                class="w-2/12 flex-shrink-0 text-overflow"
+              >
+                <v-remixicon
+                  :name="logsType[item.type]?.icon"
+                  size="18"
+                  class="inline-block -mr-1 align-text-top"
+                />
+                {{ item.name }}
+              </span>
+              <span
+                :title="`${t('common.description')} (${item.description})`"
+                class="ml-2 w-2/12 text-overflow flex-shrink-0"
+              >
+                {{ item.description }}
+              </span>
+              <p
+                :title="item.message"
+                class="text-sm line-clamp ml-2 flex-1 leading-tight text-gray-600 dark:text-gray-200"
+              >
+                {{ item.message }}
+              </p>
+              <router-link
+                v-if="item.logId"
+                v-slot="{ navigate }"
+                :to="{ name: 'logs-details', params: { id: item.logId } }"
+                custom
+              >
+                <v-remixicon
+                  title="Open log detail"
+                  class="ml-2 text-gray-300 cursor-pointer"
+                  size="20"
+                  name="riFileTextLine"
+                  @click.stop="navigate"
+                />
+              </router-link>
+              <router-link
+                v-if="getBlockPath(item.blockId)"
+                v-show="currentLog.workflowId && item.blockId"
+                :to="getBlockPath(item.blockId)"
+              >
+                <v-remixicon
+                  name="riExternalLinkLine"
+                  size="20"
+                  title="Go to block"
+                  class="text-gray-300 cursor-pointer ml-2 invisible group-hover:visible"
+                />
+              </router-link>
+            </div>
+            <slot name="append-items" />
+          </div>
+        </div>
+      </div>
+      <div
+        v-if="currentLog.history.length >= 25"
+        class="flex items-center justify-between mt-4"
+      >
+        <div>
+          {{ t('components.pagination.text1') }}
+          <select v-model="pagination.perPage" class="p-1 rounded-md bg-input">
+            <option
+              v-for="num in [25, 50, 75, 100, 150, 200]"
+              :key="num"
+              :value="num"
+            >
+              {{ num }}
+            </option>
+          </select>
+          {{
+            t('components.pagination.text2', {
+              count: currentLog.history.length,
+            })
+          }}
+        </div>
+        <ui-pagination
+          v-model="pagination.currentPage"
+          :per-page="pagination.perPage"
+          :records="currentLog.history.length"
+        />
+      </div>
     </div>
-  </div>
-  <div
-    v-if="currentLog.history.length >= 25"
-    class="flex items-center justify-between mt-4"
-  >
-    <div>
-      {{ t('components.pagination.text1') }}
-      <select v-model="pagination.perPage" class="p-1 rounded-md bg-input">
-        <option
-          v-for="num in [25, 50, 75, 100, 150, 200]"
-          :key="num"
-          :value="num"
-        >
-          {{ num }}
-        </option>
-      </select>
-      {{
-        t('components.pagination.text2', {
-          count: currentLog.history.length,
-        })
-      }}
+    <div
+      v-if="state.itemId && activeLog"
+      class="w-4/12 ml-8 rounded-lg bg-gray-900 dark:bg-gray-800 text-gray-100 dark"
+    >
+      <div class="p-4 relative">
+        <v-remixicon
+          name="riCloseLine"
+          class="absolute top-2 right-2 cursor-pointer text-gray-500"
+          @click="clearActiveItem"
+        />
+        <table class="w-full ctx-data-table">
+          <thead>
+            <tr>
+              <td class="w-5/12"></td>
+              <td></td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-gray-300">Name</td>
+              <td>{{ activeLog.name }}</td>
+            </tr>
+            <tr>
+              <td class="text-gray-300">Description</td>
+              <td>
+                <p class="line-clamp leading-tight">
+                  {{ activeLog.description }}
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td class="text-gray-300">Status</td>
+              <td class="capitalize">{{ activeLog.type }}</td>
+            </tr>
+            <tr>
+              <td class="text-gray-300">Timestamp/Duration</td>
+              <td>
+                <span v-if="activeLog.timestamp">
+                  {{ dayjs(activeLog.timestamp).format('DD MMM, HH:mm:ss') }}
+                  /
+                </span>
+                {{ countDuration(0, activeLog.duration || 0).trim() }}
+              </td>
+            </tr>
+            <tr v-if="activeLog.message">
+              <td class="text-gray-300">Message</td>
+              <td>
+                <p class="line-clamp leading-tight">
+                  {{ activeLog.message }}
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <template v-if="ctxData[state.itemId]">
+        <div class="px-4 pb-4 flex items-center">
+          <p>Log data</p>
+          <div class="flex-grow" />
+          <ui-select v-model="state.activeTab">
+            <option v-for="option in tabs" :key="option.id" :value="option.id">
+              {{ option.name }}
+            </option>
+          </ui-select>
+        </div>
+        <div class="pb-4 px-2 log-data-prev">
+          <shared-codemirror
+            :model-value="logCtxData"
+            readonly
+            hide-lang
+            lang="json"
+            style="max-height: 460px"
+            class="scroll"
+          />
+        </div>
+      </template>
     </div>
-    <ui-pagination
-      v-model="pagination.currentPage"
-      :per-page="pagination.perPage"
-      :records="currentLog.history.length"
-    />
   </div>
 </template>
 <script setup>
 /* eslint-disable no-use-before-define */
-import { computed, shallowReactive } from 'vue';
+import {
+  computed,
+  shallowReactive,
+  defineAsyncComponent,
+  shallowRef,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 import { countDuration } from '@/utils/helper';
+import { getBlocks } from '@/utils/getSharedData';
+import dayjs from '@/lib/dayjs';
+import objectPath from 'object-path';
+
+const SharedCodemirror = defineAsyncComponent(() =>
+  import('@/components/newtab/shared/SharedCodemirror.vue')
+);
+const blocks = getBlocks();
 
 const props = defineProps({
   currentLog: {
@@ -172,16 +279,25 @@ const logsType = {
     icon: 'riFlagLine',
   },
 };
+const tabs = [
+  { id: 'all', name: 'All' },
+  { id: 'referenceData.loopData', name: 'Loop data' },
+  { id: 'referenceData.variables', name: 'Variables' },
+  { id: 'referenceData.prevBlockData', name: 'Previous block data' },
+  { id: 'replacedValue', name: 'Replaced value' },
+];
 
 const { t, te } = useI18n();
 
 const state = shallowReactive({
   itemId: '',
+  activeTab: 'all',
 });
 const pagination = shallowReactive({
   perPage: 25,
   currentPage: 1,
 });
+const activeLog = shallowRef(null);
 
 const history = computed(() =>
   props.currentLog.history
@@ -191,7 +307,36 @@ const history = computed(() =>
     )
     .map(translateLog)
 );
+const errorBlock = computed(() => {
+  if (props.currentLog.status !== 'error') return null;
 
+  let block = props.currentLog.history.at(-1);
+  if (!block || block.type !== 'error' || block.id < 25) return null;
+
+  block = translateLog(block);
+  let { name } = block;
+  if (block.description) name += ` (${block.description})`;
+
+  return {
+    name,
+    id: block.id,
+    message: block.message,
+  };
+});
+const logCtxData = computed(() => {
+  if (!state.itemId || !props.ctxData[state.itemId]) return '';
+
+  const data = props.ctxData[state.itemId];
+  const logData =
+    state.activeTab === 'all' ? data : objectPath.get(data, state.activeTab);
+
+  return JSON.stringify(logData, null, 2);
+});
+
+function clearActiveItem() {
+  state.itemId = '';
+  activeLog.value = null;
+}
 function translateLog(log) {
   const copyLog = { ...log };
   const getTranslatation = (path, def) => {
@@ -205,7 +350,7 @@ function translateLog(log) {
   } else {
     copyLog.name = getTranslatation(
       `workflow.blocks.${log.name}.name`,
-      log.name
+      blocks[log.name].name
     );
   }
 
@@ -215,6 +360,10 @@ function translateLog(log) {
   );
 
   return copyLog;
+}
+function setActiveLog(item) {
+  state.itemId = item.id;
+  activeLog.value = item;
 }
 function getBlockPath(blockId) {
   const { workflowId, teamId } = props.currentLog;
@@ -226,4 +375,36 @@ function getBlockPath(blockId) {
 
   return `${path}?blockId=${blockId}`;
 }
+function jumpToError() {
+  pagination.currentPage = Math.ceil(errorBlock.value.id / pagination.perPage);
+
+  const element = document.querySelector('#log-history');
+  if (!element) return;
+
+  element.scrollTo(0, element.scrollHeight);
+}
 </script>
+<style>
+.ctx-data-table {
+  thead td {
+    padding: 0;
+  }
+  td {
+    @apply p-1;
+  }
+  tr {
+    vertical-align: baseline;
+  }
+}
+.log-data-prev .cm-editor {
+  background-color: transparent;
+  .cm-activeLine.cm-line {
+    background-color: rgb(255 255 255 / 0.05) !important;
+  }
+  .cm-gutters,
+  .cm-activeLineGutter,
+  .cm-gutterElement {
+    background-color: transparent !important;
+  }
+}
+</style>

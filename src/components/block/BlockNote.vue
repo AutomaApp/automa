@@ -50,7 +50,7 @@
       />
     </div>
     <textarea
-      :model-value="data.note"
+      :value="data.note"
       :style="initialSize"
       :class="[fontSize[data.fontSize || 'regular'].class]"
       placeholder="Write a note here..."

@@ -8,6 +8,21 @@
     "text": "从阅读文档或浏览 Automa 市场中的工作流开始.",
     "marketplace": "市场"
   },
+  "packages": {
+    "name": "包 | 包",
+    "add": "添加包",
+    "icon": "包图标",
+    "open": "打开包",
+    "new": "新建包",
+    "set": "设置为包",
+    "settings": {
+      "asBlock": "把包设为模块"
+    },
+    "categories": {
+      "my": "我的包",
+      "installed": "已安装的包",
+    }
+  },
   "scheduledWorkflow": {
     "title": "计划的工作流",
     "nextRun": "下次运行",
@@ -32,6 +47,14 @@
       "delete": "删除表格"
     }
   },
+  "credential": {
+    "title": "凭据 | 凭据",
+    "add": "添加凭据",
+    "use": {
+      "title": "已用凭据",
+      "description": "此工作流使用了这些凭据"
+    }
+  },
   "workflowPermissions": {
     "title": "工作流权限",
     "description": "此工作流需要这些权限才能正常运行",
@@ -49,7 +72,11 @@
     },
     "downloads": {
       "title": "下载",
-      "description": "保存并重命名下载的文件"
+      "description": "保存页面资产并重命名下载的文件"
+    },
+    "cookies": {
+      "title": "Cookies",
+      "description": "读取,设置,或移除 cookies"
     }
   },
   "updateMessage": {
@@ -154,6 +181,7 @@
     }
   },
   "workflow": {
+    "my": "我的工作流",
     "import": "导入工作流",
     "new": "新建工作流",
     "delete": "删除工作流",
@@ -169,6 +197,11 @@
     "redo": "重做",
     "autoAlign": {
       "title": "自动对齐"
+    },
+    "blocksFolder": {
+      "title": "模块文件夹",
+      "add": "添加模块到文件夹",
+      "save": "保存到文件夹"
     },
     "searchBlocks": {
       "title": "在编辑器中搜索模块"
@@ -255,7 +288,9 @@
       "resetZoom": "重置缩放",
       "duplicate": "副本",
       "copy": "复制",
-      "paste": "粘贴"
+      "paste": "粘贴",
+      "group": "分组模块",
+      "ungroup": "未分组模块"
     },
     "settings": {
       "saveLog": "保存工作流日志",

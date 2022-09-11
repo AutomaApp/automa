@@ -10,66 +10,75 @@
       No parameters
     </p>
     <table v-else class="w-full">
-      <thead>
-        <tr class="text-sm text-left">
-          <th>Name</th>
-          <th>Type</th>
-          <th>Placeholder</th>
-          <th>Default Value</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <template v-for="(param, index) in state.parameters" :key="index">
-          <tr class="align-top">
-            <td>
-              <ui-input
-                :model-value="param.name"
-                placeholder="Parameter name"
-                @change="updateParam(index, $event)"
-              />
-            </td>
-            <td>
-              <ui-select
-                :model-value="param.type"
-                @change="updateParamType(index, $event)"
-              >
-                <option
-                  v-for="type in paramTypesArr"
-                  :key="type.id"
-                  :value="type.id"
+      <div class="text-sm grid grid-cols-12 space-x-2">
+        <div class="col-span-3" style="padding-left: 28px">Name</div>
+        <div class="col-span-2">Type</div>
+        <div class="col-span-3">Placeholder</div>
+        <div class="col-span-4">Default Value</div>
+      </div>
+      <draggable
+        v-model="state.parameters"
+        tag="div"
+        item-key="id"
+        handle=".handle"
+      >
+        <template #item="{ element: param, index }">
+          <div class="mb-4">
+            <div class="grid grid-cols-12 space-x-2">
+              <div class="col-span-3 flex items-center">
+                <v-remixicon name="mdiDrag" class="handle mr-2 cursor-move" />
+                <ui-input
+                  :model-value="param.name"
+                  placeholder="Parameter name"
+                  @change="updateParam(index, $event)"
+                />
+              </div>
+              <div class="col-span-2">
+                <ui-select
+                  :model-value="param.type"
+                  @change="updateParamType(index, $event)"
                 >
-                  {{ type.name }}
-                </option>
-              </ui-select>
-            </td>
-            <td>
-              <ui-input v-model="param.placeholder" placeholder="A parameter" />
-            </td>
-            <td>
-              <component
-                :is="paramTypes[param.type].valueComp"
-                v-if="paramTypes[param.type].valueComp"
-                v-model="param.defaultValue"
-                :param-data="param"
-                :editor="true"
-                max-width="250px"
-              />
-              <ui-input
-                v-else
-                v-model="param.defaultValue"
-                :type="param.type === 'number' ? 'number' : 'text'"
-                placeholder="NULL"
-              />
-            </td>
-            <td>
-              <ui-button icon @click="state.parameters.splice(index, 1)">
-                <v-remixicon name="riDeleteBin7Line" />
-              </ui-button>
-            </td>
-          </tr>
-          <tr v-if="paramTypes[param.type].options">
-            <td colspan="999" style="padding-top: 0">
+                  <option
+                    v-for="type in paramTypesArr"
+                    :key="type.id"
+                    :value="type.id"
+                  >
+                    {{ type.name }}
+                  </option>
+                </ui-select>
+              </div>
+              <div class="col-span-3">
+                <ui-input
+                  v-model="param.placeholder"
+                  placeholder="A parameter"
+                />
+              </div>
+              <div class="col-span-4 flex items-center">
+                <component
+                  :is="paramTypes[param.type].valueComp"
+                  v-if="paramTypes[param.type].valueComp"
+                  v-model="param.defaultValue"
+                  :param-data="param"
+                  :editor="true"
+                  class="flex-1"
+                  style="max-width: 232px"
+                />
+                <ui-input
+                  v-else
+                  v-model="param.defaultValue"
+                  :type="param.type === 'number' ? 'number' : 'text'"
+                  placeholder="NULL"
+                />
+                <ui-button
+                  icon
+                  class="ml-2"
+                  @click="state.parameters.splice(index, 1)"
+                >
+                  <v-remixicon name="riDeleteBin7Line" />
+                </ui-button>
+              </div>
+            </div>
+            <div class="w-full">
               <ui-expand
                 hide-header-icon
                 header-class="flex items-center focus:ring-0 w-full"
@@ -83,16 +92,25 @@
                   <span>Options</span>
                 </template>
                 <div class="pl-[28px] mt-2 mb-4">
+                  <ui-textarea
+                    v-model="param.description"
+                    placeholder="Description"
+                    title="Description"
+                    class="mb-2"
+                    style="max-width: 400px"
+                  />
                   <component
                     :is="paramTypes[param.type].options"
+                    v-if="paramTypes[param.type].options"
                     v-model="param.data"
+                    :default-value="paramTypes[param.type].data"
                   />
                 </div>
               </ui-expand>
-            </td>
-          </tr>
+            </div>
+          </div>
         </template>
-      </tbody>
+      </draggable>
     </table>
   </div>
   <ui-button variant="accent" class="mt-4" @click="addParameter">
@@ -101,8 +119,12 @@
 </template>
 <script setup>
 import { reactive, watch } from 'vue';
+import { nanoid } from 'nanoid/non-secure';
 import cloneDeep from 'lodash.clonedeep';
-import * as workflowParameters from '@business/parameters';
+import workflowParameters from '@business/parameters';
+import Draggable from 'vuedraggable';
+import ParameterInputValue from './Parameter/ParameterInputValue.vue';
+import ParameterInputOptions from './Parameter/ParameterInputOptions.vue';
 
 const props = defineProps({
   data: {
@@ -112,30 +134,44 @@ const props = defineProps({
 });
 const emit = defineEmits(['update']);
 
+const customParameters = workflowParameters();
+
 const paramTypes = {
   string: {
     id: 'string',
     name: 'Input (string)',
+    options: ParameterInputOptions,
+    valueComp: ParameterInputValue,
+    data: {
+      masks: [],
+      useMask: false,
+      unmaskValue: false,
+    },
   },
   number: {
     id: 'number',
     name: 'Input (number)',
   },
-  ...workflowParameters,
+  ...customParameters,
 };
 const paramTypesArr = Object.values(paramTypes).filter((item) => item.id);
 
 const state = reactive({
-  parameters: cloneDeep(props.data || []),
+  parameters: cloneDeep(props.data || []).map((item) => {
+    item.id = nanoid(4);
+
+    return item;
+  }),
 });
 
 function addParameter() {
   state.parameters.push({
-    data: {},
     name: 'param',
     type: 'string',
+    description: '',
     defaultValue: '',
     placeholder: 'Text',
+    data: paramTypes.string.data,
   });
 }
 function updateParam(index, value) {

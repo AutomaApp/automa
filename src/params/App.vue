@@ -1,5 +1,8 @@
 <template>
-  <div class="w-full flex flex-col h-full max-w-lg mx-auto dark:text-gray-100">
+  <div
+    v-if="retrieved"
+    class="w-full flex flex-col h-full max-w-lg mx-auto dark:text-gray-100"
+  >
     <nav class="flex items-center w-full p-4 border-b mb-4">
       <span class="p-1 rounded-full bg-box-transparent dark:bg-none">
         <img src="@/assets/svg/logo.svg" class="w-10" />
@@ -41,11 +44,11 @@
           </div>
         </template>
         <div class="px-4 pb-4">
-          <ul class="space-y-2">
+          <ul class="space-y-4 divide-y">
             <li v-for="(param, paramIdx) in workflow.params" :key="paramIdx">
               <component
-                :is="workflowParameters[param.type].valueComp"
-                v-if="workflowParameters[param.type]"
+                :is="paramsList[param.type].valueComp"
+                v-if="paramsList[param.type]"
                 v-model="param.value"
                 :label="param.name"
                 :param-data="param"
@@ -60,6 +63,13 @@
                 class="w-full"
                 @keyup.enter="runWorkflow(index, workflow)"
               />
+              <p
+                v-if="param.description"
+                title="Description"
+                class="ml-1 text-sm"
+              >
+                {{ param.description }}
+              </p>
             </li>
           </ul>
           <div class="flex items-center mt-6">
@@ -81,13 +91,24 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue';
 import browser from 'webextension-polyfill';
-import * as workflowParameters from '@business/parameters';
-import dayjs from '@/lib/dayjs';
+import workflowParameters from '@business/parameters';
+import automa from '@business';
 import { useTheme } from '@/composable/theme';
+import dayjs from '@/lib/dayjs';
+import ParameterInputValue from '@/components/newtab/workflow/edit/Parameter/ParameterInputValue.vue';
+
+const paramsList = {
+  string: {
+    id: 'string',
+    name: 'Input (string)',
+    valueComp: ParameterInputValue,
+  },
+};
 
 const theme = useTheme();
 theme.init();
 
+const retrieved = ref(false);
 const workflows = ref([]);
 
 const sortedWorkflows = computed(() =>
@@ -166,7 +187,7 @@ function runWorkflow(index, { data, params }) {
   const variables = params.reduce((acc, param) => {
     const valueFunc =
       getParamVal[param.type] ||
-      workflowParameters[param.type]?.getValue ||
+      paramsList[param.type]?.getValue ||
       getParamVal.default;
     const value = valueFunc(param.value || param.defaultValue);
     acc[param.name] = value;
@@ -198,10 +219,19 @@ browser.runtime.onMessage.addListener(({ name, data }) => {
   addWorkflow(data);
 });
 
-onMounted(() => {
-  const query = new URLSearchParams(window.location.search);
-  const workflowId = query.get('workflowId');
+onMounted(async () => {
+  try {
+    const query = new URLSearchParams(window.location.search);
+    const workflowId = query.get('workflowId');
 
-  if (workflowId) addWorkflow(workflowId);
+    if (workflowId) addWorkflow(workflowId);
+    await automa('content');
+
+    Object.assign(paramsList, workflowParameters());
+  } catch (error) {
+    // Do nothing
+  } finally {
+    retrieved.value = true;
+  }
 });
 </script>

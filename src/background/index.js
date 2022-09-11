@@ -7,6 +7,7 @@ import getFile from '@/utils/getFile';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
 import convertWorkflowData from '@/utils/convertWorkflowData';
 import getBlockMessage from '@/utils/getBlockMessage';
+import automa from '@business';
 import {
   registerSpecificDay,
   registerContextMenu,
@@ -102,9 +103,9 @@ const workflow = {
     const convertedWorkflow = convertWorkflowData(workflowData);
     const engine = new WorkflowEngine(convertedWorkflow, {
       options,
-      blocksHandler,
       logger: this.logger,
       states: this.states,
+      blocksHandler: blocksHandler(),
     });
 
     engine.init();
@@ -643,5 +644,7 @@ message.on('workflow:added', ({ workflowId, teamId, source = 'community' }) => {
 message.on('workflow:register', ({ triggerBlock, workflowId }) => {
   registerWorkflowTrigger(workflowId, triggerBlock);
 });
+
+automa('background', message);
 
 browser.runtime.onMessage.addListener(message.listener());

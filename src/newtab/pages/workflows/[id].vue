@@ -297,13 +297,13 @@ import {
 } from '@/composable/shortcut';
 import { getWorkflowPermissions } from '@/utils/workflowData';
 import { fetchApi } from '@/utils/api';
-import { tasks, excludeGroupBlocks } from '@/utils/shared';
+import { getBlocks } from '@/utils/getSharedData';
+import { excludeGroupBlocks } from '@/utils/shared';
 import { functions } from '@/utils/referenceData/mustacheReplacer';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useCommandManager } from '@/composable/commandManager';
 import { debounce, parseJSON, throttle } from '@/utils/helper';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
-import customBlocks from '@business/blocks';
 import browser from 'webextension-polyfill';
 import dbStorage from '@/db/storage';
 import DroppedNode from '@/utils/editor/DroppedNode';
@@ -328,7 +328,7 @@ import EditorLocalSavedBlocks from '@/components/newtab/workflow/editor/EditorLo
 import PackageDetails from '@/components/newtab/package/PackageDetails.vue';
 import PackageSettings from '@/components/newtab/package/PackageSettings.vue';
 
-const blocks = { ...tasks, ...customBlocks };
+const blocks = getBlocks();
 
 let editorCommands = null;
 const executeCommandTimeout = null;
@@ -655,6 +655,53 @@ const onEdgesChange = debounce((changes) => {
   // if (command) commandManager.add(command);
 }, 250);
 
+let nodeTargetHandle = null;
+
+function onClickEditor({ target }) {
+  const targetClass = target.classList;
+  const isHandle = targetClass.contains('vue-flow__handle');
+  const clearActiveTarget = () => {
+    if (nodeTargetHandle) {
+      const targetEl = document.querySelector(
+        `.vue-flow__handle[data-handleid="${nodeTargetHandle.handleId}"]`
+      );
+      if (targetEl) targetEl.classList.remove('ring-2');
+    }
+  };
+
+  if (!isHandle) {
+    clearActiveTarget();
+    nodeTargetHandle = null;
+    return;
+  }
+
+  if (nodeTargetHandle && targetClass.contains('target')) {
+    const { handleid, nodeid } = target.dataset;
+
+    const connectionExist = document.querySelector(
+      `.vue-flow__edge.target-${handleid}.source-${nodeTargetHandle.handleId}`
+    );
+    if (!connectionExist) {
+      editor.value.addEdges([
+        {
+          source: nodeid,
+          sourceHandle: handleid,
+          target: nodeTargetHandle.nodeId,
+          targetHandle: nodeTargetHandle.handleId,
+        },
+      ]);
+    }
+
+    clearActiveTarget();
+    nodeTargetHandle = null;
+  } else {
+    clearActiveTarget();
+    target.classList.add('ring-2');
+
+    const { handleid, nodeid } = target.dataset;
+    nodeTargetHandle = { nodeId: nodeid, handleId: handleid };
+  }
+}
 function goToBlock(blockId) {
   if (!editor.value) return;
 
@@ -910,7 +957,7 @@ function onNodesChange(changes) {
       nodeChanges.removed.push(id);
     } else if (type === 'add') {
       if (isPackage) {
-        const excludeBlocks = ['block-package', 'trigger'];
+        const excludeBlocks = ['block-package', 'trigger', 'execute-workflow'];
         if (excludeBlocks.includes(item.label)) {
           editor.value.removeNodes([item]);
         }
@@ -1015,7 +1062,7 @@ function initEditBlock(data) {
         const blockNameKey = `workflow.blocks.${sourceNode.label}.name`;
         let blockName = te(blockNameKey)
           ? t(blockNameKey)
-          : tasks[sourceNode.label].name;
+          : blocks[sourceNode.label].name;
 
         const { description, name: groupName } = sourceNode.data;
         if (description || groupName)
@@ -1077,10 +1124,39 @@ function onActionUpdated({ data, changedIndicator }) {
 function onEditorInit(instance) {
   editor.value = instance;
 
+  let nodeToConnect = null;
+
   instance.onEdgesChange(onEdgesChange);
   instance.onNodesChange(onNodesChange);
   instance.onEdgeDoubleClick(({ edge }) => {
     instance.removeEdges([edge]);
+  });
+  instance.onConnectStart(({ nodeId, handleId, handleType }) => {
+    if (handleType !== 'source') return;
+
+    nodeToConnect = { nodeId, handleId };
+  });
+  instance.onConnectEnd(({ target }) => {
+    if (!nodeToConnect) return;
+
+    const isNotTargetHandle = !target.closest('.vue-flow__handle.target');
+    const targetNode = isNotTargetHandle && target.closest('.vue-flow__node');
+    if (targetNode && targetNode.dataset.id !== nodeToConnect.nodeId) {
+      const nodeId = targetNode.dataset.id;
+      const nodeData = editor.value.getNode.value(nodeId);
+      if (nodeData && nodeData.handleBounds.target.length >= 1) {
+        editor.value.addEdges([
+          {
+            target: nodeId,
+            source: nodeToConnect.nodeId,
+            sourceHandle: nodeToConnect.handleId,
+            targetHandle: nodeData.handleBounds.target[0].id,
+          },
+        ]);
+      }
+    }
+
+    nodeToConnect = null;
   });
   // instance.onEdgeUpdateEnd(({ edge }) => {
   //   editorCommands.state.edges[edge.id] = edge;
@@ -1098,6 +1174,11 @@ function onEditorInit(instance) {
   instance.removeSelectedEdges(
     instance.getSelectedEdges.value.map(({ id }) => id)
   );
+
+  const editorContainer = document.querySelector(
+    '.vue-flow__viewport.vue-flow__container'
+  );
+  editorContainer.addEventListener('click', onClickEditor);
 
   const convertToObj = (array) =>
     array.reduce((acc, item) => {
@@ -1514,6 +1595,11 @@ onMounted(() => {
   window.addEventListener('keydown', onKeydown);
 });
 onBeforeUnmount(() => {
+  const editorContainer = document.querySelector(
+    '.vue-flow__viewport.vue-flow__container'
+  );
+  editorContainer.removeEventListener('click', onClickEditor);
+
   window.onbeforeunload = null;
   window.removeEventListener('keydown', onKeydown);
 });

@@ -1,11 +1,19 @@
-async function downloadFile(url) {
+async function downloadFile(url, options) {
   const response = await fetch(url);
-  const blob = await response.blob();
-  const objUrl = URL.createObjectURL(blob);
+  if (!response.ok) throw new Error(response.statusText);
 
-  return { objUrl, path: url, type: blob.type };
+  const type = options.responseType || 'blob';
+  const result = await response[type]();
+
+  if (options.returnValue) {
+    return result;
+  }
+
+  const objUrl = URL.createObjectURL(result);
+
+  return { objUrl, path: url, type: result.type };
 }
-function getLocalFile(path) {
+function getLocalFile(path, options) {
   return new Promise((resolve, reject) => {
     const isFile = /\.(.*)/.test(path);
 
@@ -17,12 +25,16 @@ function getLocalFile(path) {
     const fileUrl = path?.startsWith('file://') ? path : `file://${path}`;
 
     const xhr = new XMLHttpRequest();
-    xhr.responseType = 'blob';
+    xhr.responseType = options.responseType || 'blob';
     xhr.onreadystatechange = () => {
       if (xhr.readyState === XMLHttpRequest.DONE) {
         if (xhr.status === 0 || xhr.status === 200) {
-          const objUrl = URL.createObjectURL(xhr.response);
+          if (options.returnValue) {
+            resolve(xhr.response);
+            return;
+          }
 
+          const objUrl = URL.createObjectURL(xhr.response);
           resolve({ path, objUrl, type: xhr.response.type });
         } else {
           reject(new Error(xhr.statusText));
@@ -39,8 +51,8 @@ function getLocalFile(path) {
   });
 }
 
-export default function (path) {
-  if (path.startsWith('http')) return downloadFile(path);
+export default function (path, options = {}) {
+  if (path.startsWith('http')) return downloadFile(path, options);
 
-  return getLocalFile(path);
+  return getLocalFile(path, options);
 }

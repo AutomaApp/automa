@@ -43,7 +43,7 @@
 import browser from 'webextension-polyfill';
 import { useI18n } from 'vue-i18n';
 import { sendMessage } from '@/utils/message';
-import { tasks } from '@/utils/shared';
+import { getBlocks } from '@/utils/getSharedData';
 import dayjs from '@/lib/dayjs';
 
 defineProps({
@@ -54,11 +54,12 @@ defineProps({
 });
 
 const { t } = useI18n();
+const blocks = getBlocks();
 
 function getBlock(item) {
   if (!item.state.currentBlock) return {};
 
-  return tasks[item.state.currentBlock.name];
+  return blocks[item.state.currentBlock.name];
 }
 function formatDate(date, format) {
   if (format === 'relative') return dayjs(date).fromNow();

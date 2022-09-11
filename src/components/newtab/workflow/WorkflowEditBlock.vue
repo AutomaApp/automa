@@ -74,7 +74,7 @@ const components = editComponents.keys().reduce((acc, key) => {
   return acc;
 }, {});
 
-Object.assign(components, customEditComponents);
+Object.assign(components, customEditComponents());
 
 const props = defineProps({
   data: {

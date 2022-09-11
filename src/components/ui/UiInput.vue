@@ -29,6 +29,7 @@
         }"
         :id="componentId"
         v-autofocus="autofocus"
+        v-imask="mask"
         :class="[
           inputClass,
           {
@@ -49,94 +50,105 @@
     </div>
   </div>
 </template>
-<script>
-import { useComponentId } from '@/composable/componentId';
+<script setup>
 /* eslint-disable vue/require-prop-types */
-export default {
-  props: {
-    modelModifiers: {
-      default: () => ({}),
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    readonly: {
-      type: Boolean,
-      default: false,
-    },
-    autofocus: {
-      type: Boolean,
-      default: false,
-    },
-    modelValue: {
-      type: [String, Number],
-      default: '',
-    },
-    inputClass: {
-      type: String,
-      default: '',
-    },
-    prependIcon: {
-      type: String,
-      default: '',
-    },
-    label: {
-      type: String,
-      default: '',
-    },
-    list: {
-      type: String,
-      default: null,
-    },
-    type: {
-      type: String,
-      default: 'text',
-    },
-    placeholder: {
-      type: String,
-      default: '',
-    },
-    max: {
-      type: [String, Number],
-      default: null,
-    },
-    min: {
-      type: [String, Number],
-      default: null,
-    },
-    autocomplete: {
-      type: String,
-      default: null,
-    },
-    step: {
-      type: String,
-      default: null,
-    },
+import { IMaskDirective as vImask } from 'vue-imask';
+import { useComponentId } from '@/composable/componentId';
+
+const props = defineProps({
+  modelModifiers: {
+    default: () => ({}),
   },
-  emits: ['update:modelValue', 'change', 'keydown', 'blur', 'keyup', 'focus'],
-  setup(props, { emit }) {
-    const componentId = useComponentId('ui-input');
-
-    function emitValue(event) {
-      let { value } = event.target;
-
-      if (props.modelModifiers.lowercase) {
-        value = value.toLocaleLowerCase();
-      } else if (props.modelModifiers.number) {
-        value = +value;
-      }
-
-      emit('update:modelValue', value);
-      emit('change', value);
-    }
-
-    return {
-      emitValue,
-      componentId,
-    };
+  disabled: {
+    type: Boolean,
+    default: false,
   },
-};
+  readonly: {
+    type: Boolean,
+    default: false,
+  },
+  autofocus: {
+    type: Boolean,
+    default: false,
+  },
+  modelValue: {
+    type: [String, Number, Object],
+    default: '',
+  },
+  inputClass: {
+    type: String,
+    default: '',
+  },
+  prependIcon: {
+    type: String,
+    default: '',
+  },
+  label: {
+    type: String,
+    default: '',
+  },
+  list: {
+    type: String,
+    default: null,
+  },
+  type: {
+    type: String,
+    default: 'text',
+  },
+  placeholder: {
+    type: String,
+    default: '',
+  },
+  max: {
+    type: [String, Number],
+    default: null,
+  },
+  min: {
+    type: [String, Number],
+    default: null,
+  },
+  autocomplete: {
+    type: String,
+    default: null,
+  },
+  step: {
+    type: String,
+    default: null,
+  },
+  mask: {
+    type: [Array, Object],
+    default: null,
+  },
+  unmaskValue: Boolean,
+});
+const emit = defineEmits([
+  'update:modelValue',
+  'change',
+  'keydown',
+  'blur',
+  'keyup',
+  'focus',
+]);
+
+const componentId = useComponentId('ui-input');
+
+function emitValue(event) {
+  let { value } = event.target;
+
+  if (props.mask && props.unmaskValue) {
+    const { maskRef } = event.target;
+    if (maskRef && maskRef.unmaskedValue) value = maskRef.unmaskedValue;
+  }
+
+  if (props.modelModifiers.lowercase) {
+    value = value.toLocaleLowerCase();
+  } else if (props.modelModifiers.number) {
+    value = +value;
+  }
+
+  emit('update:modelValue', value);
+  emit('change', value);
+}
 </script>
 <style>
 .input-ui input[type='color'] {

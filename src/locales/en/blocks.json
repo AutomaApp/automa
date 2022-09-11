@@ -109,11 +109,21 @@
           "getAll": "Get all cookies"
         }
       },
+      "note": {
+        "name": "Note"
+      },
       "slice-variable": {
         "name": "Slice variable",
         "description": "Extracts a section of a variable value",
         "start": "Start index",
         "end": "End index"
+      },
+      "workflow-state": {
+        "name": "Workflow state",
+        "description": "Manage workflows states",
+        "actions": {
+          "stop": "Stop workflows"
+        }
       },
       "regex-variable": {
         "name": "RegEx variable",
@@ -655,6 +665,7 @@
         "refKey": "Reference key",
         "startIndex": "Start from index",
         "resumeLastWorkflow": "Resume last workflow",
+        "reverse": "Reverse loop order",
         "modal": {
           "fileTooLarge": "File too large to edit",
           "maxFile": "Max file size is 1MB",

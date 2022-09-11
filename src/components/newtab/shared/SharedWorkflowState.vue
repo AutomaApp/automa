@@ -33,9 +33,9 @@
         :key="block.id || block.name"
         class="flex items-center py-2"
       >
-        <v-remixicon :name="tasks[block.name].icon" />
+        <v-remixicon :name="blocks[block.name].icon" />
         <p class="flex-1 ml-2 mr-4 text-overflow">
-          {{ tasks[block.name].name }}
+          {{ blocks[block.name].name }}
         </p>
         <ui-spinner color="text-accent" size="20" />
       </div>
@@ -59,7 +59,7 @@
 import browser from 'webextension-polyfill';
 import { useI18n } from 'vue-i18n';
 import { sendMessage } from '@/utils/message';
-import { tasks } from '@/utils/shared';
+import { getBlocks } from '@/utils/getSharedData';
 import dayjs from '@/lib/dayjs';
 
 const props = defineProps({
@@ -69,6 +69,7 @@ const props = defineProps({
   },
 });
 
+const blocks = getBlocks();
 const { t } = useI18n();
 
 function formatDate(date, format) {
