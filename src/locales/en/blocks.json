@@ -404,7 +404,8 @@
           "get": "Get spreadsheet cell values",
           "getRange": "Get spreadsheet range",
           "update": "Update spreadsheet cell values",
-          "append": "Append spreadsheet cell values"
+          "append": "Append spreadsheet cell values",
+          "clear": "Clear spreadsheet cell values"
         }
       },
       "active-tab": {

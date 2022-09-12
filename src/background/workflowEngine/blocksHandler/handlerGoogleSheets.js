@@ -35,6 +35,16 @@ async function getSpreadsheetRange({ spreadsheetId, range }) {
 
   return data;
 }
+async function clearSpreadsheetValues({ spreadsheetId, range }) {
+  const response = await googleSheets.clearValues({ spreadsheetId, range });
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message);
+  }
+
+  return result;
+}
 async function updateSpreadsheetValues(
   {
     range,
@@ -123,6 +133,8 @@ export default async function ({ data, id }, { refData }) {
       },
       refData.table
     );
+  } else if (data.type === 'clear') {
+    result = await clearSpreadsheetValues(data);
   }
 
   return {

@@ -49,6 +49,11 @@ export const googleSheets = {
       },
     });
   },
+  clearValues({ spreadsheetId, range }) {
+    return fetchApi(this.getUrl(spreadsheetId, range), {
+      method: 'DELETE',
+    });
+  },
   updateValues({ spreadsheetId, range, options = {}, append }) {
     const url = `${this.getUrl(spreadsheetId, range)}&${queryBuilder(
       options?.queries || {}
