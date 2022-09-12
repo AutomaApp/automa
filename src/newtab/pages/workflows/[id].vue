@@ -1459,6 +1459,8 @@ function onKeydown({ ctrlKey, metaKey, shiftKey, key, target }) {
   )
     return;
 
+  if (isPackage && workflow.value.isExternal) return;
+
   const command = (keyName) => (ctrlKey || metaKey) && keyName === key;
   if (command('c')) {
     copySelectedElements();
