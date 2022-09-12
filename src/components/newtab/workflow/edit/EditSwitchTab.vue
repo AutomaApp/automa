@@ -16,8 +16,8 @@
         {{ type.name }}
       </option>
     </ui-select>
-    <template v-if="data.findTabBy === 'match-patterns'">
-      <edit-autocomplete>
+    <template v-if="['match-patterns', 'tab-title'].includes(data.findTabBy)">
+      <edit-autocomplete v-if="data.findTabBy === 'match-patterns'">
         <ui-input
           :model-value="data.matchPattern"
           placeholder="https://example.com/*"
@@ -41,6 +41,14 @@
             </a>
           </template>
         </ui-input>
+      </edit-autocomplete>
+      <edit-autocomplete v-else-if="data.findTabBy === 'tab-title'">
+        <ui-input
+          :model-value="data.tabTitle"
+          label="Tab title"
+          class="w-full"
+          @change="updateData({ tabTitle: $event })"
+        />
       </edit-autocomplete>
       <ui-checkbox
         :model-value="data.createIfNoMatch"
@@ -92,6 +100,7 @@ const emit = defineEmits(['update:data']);
 const { t } = useI18n();
 const types = [
   { id: 'match-patterns', name: 'Match patterns' },
+  { id: 'tab-title', name: 'Tab title' },
   { id: 'next-tab', name: 'Next tab' },
   { id: 'prev-tab', name: 'Previous tab' },
   { id: 'tab-index', name: 'Tab index' },

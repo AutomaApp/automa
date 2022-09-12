@@ -22,11 +22,17 @@ export default async function ({ data, id }) {
     throw new Error('no-tab');
   }
 
+  const isTabsQuery = ['match-patterns', 'tab-title'];
   const tabs =
     findTabBy !== 'match-patterns' ? await browser.tabs.query({}) : [];
 
-  if (findTabBy === 'match-patterns') {
-    [tab] = await browser.tabs.query({ url: data.matchPattern });
+  if (isTabsQuery.includes(findTabBy)) {
+    const query = {};
+
+    if (data.findTabBy === 'match-patterns') query.url = data.matchPattern;
+    else if (data.findTabBy === 'tab-title') query.title = data.tabTitle;
+
+    [tab] = await browser.tabs.query(query);
 
     if (!tab) {
       if (data.createIfNoMatch) {
