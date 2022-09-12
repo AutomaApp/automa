@@ -69,20 +69,26 @@
             />
           </div>
           <div class="p-2">
-            <div v-if="hasFileAccess && item.isFile" class="flex items-start">
+            <edit-autocomplete
+              v-if="hasFileAccess && item.isFile"
+              class="w-full"
+            >
               <ui-input
                 v-model="item.filePath"
-                placeholder="File absolute path"
-                class="flex-1"
+                class="w-full"
+                :placeholder="
+                  isFirefox ? 'File URL' : 'File absolute path/File URL'
+                "
               />
-            </div>
-            <ui-textarea
-              v-else
-              v-model="item.value"
-              placeholder="value"
-              title="value"
-              class="w-full"
-            />
+            </edit-autocomplete>
+            <edit-autocomplete v-else class="w-full">
+              <ui-textarea
+                v-model="item.value"
+                placeholder="value"
+                title="value"
+                class="w-full"
+              />
+            </edit-autocomplete>
             <div class="flex mt-2 items-center">
               <ui-button
                 v-tooltip="
@@ -146,6 +152,7 @@ import { useToast } from 'vue-toastification';
 import Papa from 'papaparse';
 import browser from 'webextension-polyfill';
 import getFile from '@/utils/getFile';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const SharedCodemirror = defineAsyncComponent(() =>
   import('@/components/newtab/shared/SharedCodemirror.vue')
@@ -159,10 +166,13 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:data']);
 
+const isFirefox = BROWSER_TYPE === 'firefox';
+
 const { t } = useI18n();
 const toast = useToast();
 
 const workflow = inject('workflow', {});
+
 const showModal = ref(false);
 const hasFileAccess = ref(false);
 const dataList = ref(JSON.parse(JSON.stringify(props.data.dataList)));
@@ -202,9 +212,7 @@ function changeItemType(index, type) {
 }
 function setAsFile(item) {
   if (!hasFileAccess.value) {
-    window.open(
-      'https://docs.automa.site/blocks/upload-file.html#requirements'
-    );
+    window.open('https://docs.automa.site/blocks/insert-data.html#import-file');
     return;
   }
 
@@ -239,7 +247,7 @@ async function previewData(index, item) {
 }
 
 browser.extension.isAllowedFileSchemeAccess().then((value) => {
-  hasFileAccess.value = value;
+  hasFileAccess.value = isFirefox ? true : value;
 });
 
 watch(
