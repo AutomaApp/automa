@@ -181,6 +181,10 @@
     }
   },
   "workflow": {
+    "previewMode": {
+      "title": "Preview mode",
+      "description": "You're in preview mode, changes you made won't be saved"
+    },
     "my": "My workflows",
     "import": "Import workflow",
     "new": "New workflow",

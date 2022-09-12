@@ -98,13 +98,23 @@
         </ui-card>
         <div class="flex-grow pointer-events-none" />
         <editor-used-credentials v-if="editor" :editor="editor" />
-        <editor-pkg-actions
-          v-if="isPackage"
-          :editor="editor"
-          :data="workflow"
-          :is-data-changed="state.dataChanged"
-          @update="onActionUpdated"
-        />
+        <template v-if="isPackage">
+          <ui-button
+            v-if="workflow.isExternal"
+            v-tooltip="t('workflow.previewMode.description')"
+            class="pointer-events-auto cursor-default"
+          >
+            <v-remixicon name="riEyeLine" class="mr-2 -ml-1" />
+            <span>{{ t('workflow.previewMode.title') }}</span>
+          </ui-button>
+          <editor-pkg-actions
+            v-else
+            :editor="editor"
+            :data="workflow"
+            :is-data-changed="state.dataChanged"
+            @update="onActionUpdated"
+          />
+        </template>
         <editor-local-actions
           v-else
           :editor="editor"
@@ -1061,6 +1071,8 @@ function initEditBlock(data) {
 async function updateWorkflow(data) {
   try {
     if (isPackage) {
+      if (workflow.value.isExternal) return;
+
       delete data.drawflow;
       await packageStore.update({
         id: workflowId,
@@ -1518,7 +1530,9 @@ watch(
 onBeforeRouteLeave(() => {
   updateHostedWorkflow();
 
-  if (!state.dataChanged || !haveEditAccess.value) return;
+  const dataNotChanged = !state.dataChanged || !haveEditAccess.value;
+  const isExternalPkg = isPackage && workflow.value.isExternal;
+  if (dataNotChanged || isExternalPkg) return;
 
   const confirm = window.confirm(t('message.notSaved'));
 
@@ -1528,11 +1542,6 @@ onMounted(() => {
   if (!workflow.value) {
     router.replace(isPackage ? '/packages' : '/');
     return null;
-  }
-
-  if (isPackage && workflow.value.isExternal) {
-    router.replace('/packages');
-    return;
   }
 
   state.showSidebar =
@@ -1561,6 +1570,8 @@ onMounted(() => {
   initAutocomplete();
 
   window.onbeforeunload = () => {
+    if (isPackage && workflow.value.isExternal) return;
+
     updateHostedWorkflow();
 
     if (state.dataChanged && haveEditAccess.value) {

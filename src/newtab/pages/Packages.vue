@@ -101,7 +101,7 @@
               </ui-popover>
             </div>
             <router-link
-              :to="`/packages/${pkg.isExternal ? '' : pkg.id}`"
+              :to="`/packages/${pkg.id}`"
               class="mt-4 flex-1 cursor-pointer"
             >
               <p class="font-semibold text-overflow">
