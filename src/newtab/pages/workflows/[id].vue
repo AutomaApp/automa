@@ -309,6 +309,7 @@ import dbStorage from '@/db/storage';
 import DroppedNode from '@/utils/editor/DroppedNode';
 import EditorCommands from '@/utils/editor/EditorCommands';
 import convertWorkflowData from '@/utils/convertWorkflowData';
+import extractAutocopmleteData from '@/utils/editor/editorAutocomplete';
 import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
 import WorkflowEditor from '@/components/newtab/workflow/WorkflowEditor.vue';
 import WorkflowSettings from '@/components/newtab/workflow/WorkflowSettings.vue';
@@ -349,6 +350,11 @@ const teamWorkflowStore = useTeamWorkflowStore();
 const { teamId, id: workflowId } = route.params;
 const isTeamWorkflow = route.name === 'team-workflows';
 const isPackage = route.name === 'packages-details';
+const funcsAutocomplete = Object.keys(functions).reduce((acc, name) => {
+  acc[`$${name}`] = '';
+
+  return acc;
+}, {});
 
 const editor = shallowRef(null);
 const connectedTable = shallowRef(null);
@@ -466,27 +472,23 @@ const workflowModals = {
     },
   },
 };
-const autocompleteKeys = {
-  loopId: 'loopData',
-  refKey: 'googleSheets',
-  variableName: 'variables',
-};
 
 const autocompleteList = computed(() => {
   const autocompleteData = {
     loopData: {},
     googleSheets: {},
     table: {},
-    ...Object.keys(functions),
+    ...funcsAutocomplete,
     globalData: autocompleteState.common.globalData,
     variables: { ...autocompleteState.common.variables },
   };
 
   Object.values(autocompleteState.blocks).forEach((item) => {
-    Object.keys(item).forEach((key) => {
-      const autocompleteKey = autocompleteKeys[key] || [];
-      autocompleteData[autocompleteKey][item[key]] = '';
-    });
+    if (item.loopData) Object.assign(autocompleteData.loopData, item.loopData);
+    if (item.variables)
+      Object.assign(autocompleteData.variables, item.variables);
+    if (item.googleSheets)
+      Object.assign(autocompleteData.googleSheets, item.googleSheets);
   });
 
   return autocompleteData;
@@ -862,33 +864,6 @@ function ungroupBlocks({ nodes }) {
   editor.value.addNodes(groupBlocksList);
   editor.value.addSelectedNodes(groupBlocksList);
   editor.value.addEdges(edges);
-}
-function extractAutocopmleteData(label, { data, id }) {
-  const autocompleteData = { [id]: {} };
-  const getData = (blockName, blockData) => {
-    const keys = blocks[blockName]?.autocomplete;
-    const dataList = {};
-    if (!keys) return dataList;
-
-    keys.forEach((key) => {
-      const value = blockData[key];
-      if (!value) return;
-
-      dataList[key] = value;
-    });
-
-    return dataList;
-  };
-
-  if (label === 'blocks-group') {
-    data.blocks.forEach((block) => {
-      autocompleteData[block.itemId] = getData(block.id, block.data);
-    });
-  } else {
-    autocompleteData[id] = getData(label, data);
-  }
-
-  return autocompleteData;
 }
 async function initAutocomplete() {
   const autocompleteCache = sessionStorage.getItem(
@@ -1598,7 +1573,8 @@ onBeforeUnmount(() => {
   const editorContainer = document.querySelector(
     '.vue-flow__viewport.vue-flow__container'
   );
-  editorContainer.removeEventListener('click', onClickEditor);
+  if (editorContainer)
+    editorContainer.removeEventListener('click', onClickEditor);
 
   window.onbeforeunload = null;
   window.removeEventListener('keydown', onKeydown);
