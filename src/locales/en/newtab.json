@@ -185,6 +185,11 @@
       "title": "Preview mode",
       "description": "You're in preview mode, changes you made won't be saved"
     },
+    "pinWorkflow": {
+      "pin": "Pin workflow",
+      "unpin": "Unpin workflow",
+      "pinned": "Pinned workflows"
+    },
     "my": "My workflows",
     "import": "Import workflow",
     "new": "New workflow",
