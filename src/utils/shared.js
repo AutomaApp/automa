@@ -920,12 +920,14 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['selector', 'keys'],
+    refDataKeys: ['selector', 'keys', 'keysToPress'],
     data: {
       disableBlock: false,
       keys: '',
       selector: '',
       description: '',
+      keysToPress: '',
+      action: 'press-key',
     },
   },
   'handle-dialog': {

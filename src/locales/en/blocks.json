@@ -17,6 +17,7 @@
         "timeout": "Timeout (milliseconds)",
         "noPermission": "Automa don't have enough permission to do this action",
         "grantPermission": "Grant permission",
+        "action": "Action",
         "settings": {
           "title": "Block settings",
           "line": {
@@ -187,7 +188,11 @@
         "description": "Press a key or a combination",
         "target": "Target element (optional)",
         "key": "Key",
-        "detect": "Detect key"
+        "detect": "Detect key",
+        "actions": {
+          "press-key": "Press a key",
+          "multiple-keys": "Press multiple keys"
+        }
       },
       "save-assets": {
         "name": "Save assets",
