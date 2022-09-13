@@ -56,6 +56,7 @@ const defaultWorkflow = (data = null, options = {}) => {
       insertDefaultColumn: false,
       defaultColumnName: 'column',
     },
+    runCounts: 0,
     version: browser.runtime.getManifest().version,
     globalData: '{\n\t"key": "value"\n}',
   };
