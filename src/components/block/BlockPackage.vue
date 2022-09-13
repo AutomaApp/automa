@@ -22,10 +22,18 @@
       </div>
       <div class="flex-grow" />
       <v-remixicon
+        v-if="state.isInstalled"
         title="Update package"
         name="riRefreshLine"
         class="cursor-pointer"
         @click="updatePackage"
+      />
+      <v-remixicon
+        v-else
+        title="Install package"
+        name="riDownloadLine"
+        class="cursor-pointer"
+        @click="installPackage"
       />
     </div>
     <div class="grid grid-cols-2 mt-4 gap-x-2">
@@ -77,6 +85,7 @@
   </ui-card>
 </template>
 <script setup>
+import { onMounted, shallowReactive } from 'vue';
 import cloneDeep from 'lodash.clonedeep';
 import { Handle, Position } from '@braks/vue-flow';
 import { usePackageStore } from '@/stores/package';
@@ -107,6 +116,15 @@ const packageStore = usePackageStore();
 const block = useEditorBlock(props.label);
 const componentId = useComponentId('block-package');
 
+const state = shallowReactive({
+  isInstalled: false,
+});
+
+function installPackage() {
+  packageStore.insert({ ...props.data }).then(() => {
+    state.isInstalled = true;
+  });
+}
 function removeConnections(type, old, newEdges) {
   const removedEdges = [];
   old.forEach((edge) => {
@@ -142,6 +160,10 @@ function updatePackage() {
 
   emit('update', cloneDeep(pkg));
 }
+
+onMounted(() => {
+  state.isInstalled = packageStore.getById(props.data.id);
+});
 </script>
 <style>
 .pkg-handle-container li {

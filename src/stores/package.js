@@ -40,13 +40,15 @@ export const usePackageStore = defineStore('packages', {
     },
   },
   actions: {
-    async insert(data) {
-      this.packages.push({
+    async insert(data, newId = true) {
+      const packageData = {
         ...defaultPackage,
         ...data,
         createdAt: Date.now(),
-        id: nanoid(),
-      });
+      };
+      if (newId) packageData.id = nanoid();
+
+      this.packages.push(packageData);
       await this.saveToStorage('packages');
     },
     async update({ id, data }) {
