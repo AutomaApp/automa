@@ -1131,13 +1131,19 @@ function onEditorInit(instance) {
     if (targetNode && targetNode.dataset.id !== nodeToConnect.nodeId) {
       const nodeId = targetNode.dataset.id;
       const nodeData = editor.value.getNode.value(nodeId);
+
       if (nodeData && nodeData.handleBounds.target.length >= 1) {
+        const targetHandle = nodeData.handleBounds.target.find(
+          (item) => item.id
+        );
+        if (!targetHandle) return;
+
         editor.value.addEdges([
           {
             target: nodeId,
             source: nodeToConnect.nodeId,
+            targetHandle: targetHandle.id,
             sourceHandle: nodeToConnect.handleId,
-            targetHandle: nodeData.handleBounds.target[0].id,
           },
         ]);
       }
