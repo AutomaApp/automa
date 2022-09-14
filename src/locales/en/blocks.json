@@ -664,6 +664,17 @@
         "editCondition": "Edit condition",
         "fallback": "Execute when the condition is false"
       },
+      "loop-elements": {
+        "name": "Loop elements",
+        "description": "Iterate through elements",
+        "loadMore": "Load more elements",
+        "actions": {
+          "none": "None",
+          "click-element": "Click an element to load more",
+          "scroll": "Scroll down to load more",
+          "click-link": "Click a link to load more"
+        }
+      },
       "loop-data": {
         "name": "Loop data",
         "description": "Iterate through table or your custom data",

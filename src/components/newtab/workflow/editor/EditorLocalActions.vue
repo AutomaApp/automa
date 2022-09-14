@@ -6,15 +6,6 @@
   >
     {{ workflow.tag }}
   </span>
-  <ui-card v-if="!isTeam || !canEdit" padding="p-1 pointer-events-auto">
-    <button
-      v-tooltip.group="'Workflow note'"
-      class="hoverable p-2 rounded-lg"
-      @click="state.showNoteModal = true"
-    >
-      <v-remixicon name="riFileEditLine" />
-    </button>
-  </ui-card>
   <ui-card
     v-if="!isTeam"
     padding="p-1"
@@ -287,21 +278,6 @@
       </ui-button>
     </div>
   </ui-modal>
-  <ui-modal
-    v-model="state.showNoteModal"
-    title="Workflow note"
-    content-class="max-w-2xl"
-  >
-    <shared-wysiwyg
-      :model-value="workflow.content || ''"
-      :limit="1000"
-      :readonly="!canEdit"
-      class="bg-box-transparent p-4 rounded-lg overflow-auto scroll"
-      placeholder="Write note here..."
-      style="max-height: calc(100vh - 12rem); min-height: 400px"
-      @change="updateWorkflowNote({ content: $event })"
-    />
-  </ui-modal>
 </template>
 <script setup>
 import { reactive, computed } from 'vue';
@@ -320,12 +296,11 @@ import { useDialog } from '@/composable/dialog';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { tagColors } from '@/utils/shared';
-import { parseJSON, findTriggerBlock, debounce } from '@/utils/helper';
+import { parseJSON, findTriggerBlock } from '@/utils/helper';
 import { exportWorkflow, convertWorkflow } from '@/utils/workflowData';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
 import getTriggerText from '@/utils/triggerText';
 import convertWorkflowData from '@/utils/convertWorkflowData';
-import SharedWysiwyg from '@/components/newtab/shared/SharedWysiwyg.vue';
 import WorkflowShareTeam from '@/components/newtab/workflow/WorkflowShareTeam.vue';
 
 const props = defineProps({
@@ -378,7 +353,6 @@ const state = reactive({
   triggerText: '',
   loadingSync: false,
   isPublishing: false,
-  showNoteModal: false,
   isUploadingHost: false,
   showEditDescription: false,
 });
@@ -397,11 +371,6 @@ const userDontHaveTeamsAccess = computed(() => {
     team.access.some((item) => ['owner', 'create'].includes(item))
   );
 });
-
-const updateWorkflowNote = debounce((data) => {
-  /* eslint-disable-next-line */
-  updateWorkflow(data, true);
-}, 200);
 
 function updateWorkflow(data = {}, changedIndicator = false) {
   let store = null;
