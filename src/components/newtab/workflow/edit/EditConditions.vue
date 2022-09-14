@@ -140,6 +140,10 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  fullData: {
+    type: Object,
+    default: () => ({}),
+  },
   blockId: {
     type: String,
     default: '',
@@ -205,6 +209,13 @@ watch(
 );
 
 onMounted(() => {
+  if (props.fullData?.editCondition) {
+    const index = props.data.conditions.findIndex(
+      (item) => item.id === props.fullData.editCondition
+    );
+    if (index !== -1) editCondition(index);
+  }
+
   const condition = props.data.conditions[0];
   if (condition && condition.conditions) return;
 
