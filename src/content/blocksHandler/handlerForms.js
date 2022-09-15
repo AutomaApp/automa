@@ -28,9 +28,14 @@ async function forms(block) {
         text: char,
         type: 'keyDown',
       }));
+      const typeDelay = +block.data.delay;
       await sendMessage(
         'debugger:type',
-        { commands, tabId: block.activeTabId, delay: block.data.delay },
+        {
+          commands,
+          tabId: block.activeTabId,
+          delay: Number.isNaN(typeDelay) ? 0 : typeDelay,
+        },
         'background'
       );
 

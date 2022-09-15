@@ -475,7 +475,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['selector', 'value', 'optionPosition'],
+    refDataKeys: ['selector', 'value', 'optionPosition', 'delay'],
     autocomplete: ['variableName'],
     data: {
       disableBlock: false,
