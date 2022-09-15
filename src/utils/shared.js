@@ -1351,6 +1351,24 @@ export const tasks = {
       workflowsToStop: [],
     },
   },
+  'parameter-prompt': {
+    name: 'Parameter prompt',
+    description: '',
+    icon: 'riCommandLine',
+    component: 'BlockBasic',
+    category: 'general',
+    editComponent: 'EditParameterPrompt',
+    inputs: 1,
+    outputs: 1,
+    maxConnection: 1,
+    allowedInputs: true,
+    data: {
+      disableBlock: false,
+      description: '',
+      timeout: 20000,
+      parameters: [],
+    },
+  },
 };
 
 export const categories = {
