@@ -70,9 +70,13 @@ export default async function ({ data, id }) {
       if (!scrollableParent) return { continue: true };
 
       let scrollHeight = 0;
-      loopItems.forEach((item) => {
-        scrollHeight += item.getBoundingClientRect().height;
-      });
+      if (data.scrollToBottom) {
+        scrollHeight = scrollableParent.scrollHeight;
+      } else {
+        loopItems.forEach((item) => {
+          scrollHeight += item.getBoundingClientRect().height;
+        });
+      }
 
       scrollableParent.scrollTo(0, scrollHeight + 30);
 

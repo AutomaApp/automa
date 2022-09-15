@@ -750,6 +750,7 @@ export const tasks = {
       actionElMaxWaitTime: 5,
       actionPageMaxWaitTime: 10,
       loadMoreAction: 'none',
+      scrollToBottom: true,
       waitForSelector: false,
       waitSelectorTimeout: 5000,
     },

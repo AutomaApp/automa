@@ -48,6 +48,7 @@ async function loopElements({ data, id }, { refData }) {
           findBy: data.findBy,
           type: data.loadMoreAction,
           selector: data.selector.trim(),
+          scrollToBottom: data.scrollToBottom,
           actionElMaxWaitTime: data.actionElMaxWaitTime,
           actionElSelector: data.actionElSelector.trim(),
           actionPageMaxWaitTime: data.actionPageMaxWaitTime,

@@ -52,6 +52,13 @@
         type="number"
         @change="updateData({ actionElMaxWaitTime: +$event })"
       />
+      <ui-checkbox
+        :model-value="data.scrollToBottom"
+        class="mt-4"
+        @change="updateData({ scrollToBottom: $event })"
+      >
+        {{ t('workflow.blocks.loop-elements.scrollToBottom') }}
+      </ui-checkbox>
       <ui-input
         v-if="data.loadMoreAction === 'click-link'"
         :model-value="data.actionPageMaxWaitTime"

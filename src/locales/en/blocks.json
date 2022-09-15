@@ -668,6 +668,7 @@
         "name": "Loop elements",
         "description": "Iterate through elements",
         "loadMore": "Load more elements",
+        "scrollToBottom": "Scroll to bottom",
         "actions": {
           "none": "None",
           "click-element": "Click an element to load more",
