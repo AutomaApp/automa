@@ -177,14 +177,19 @@ class Worker {
     });
     const blockDelay = this.settings?.blockDelay || 0;
     const addBlockLog = (status, obj = {}) => {
+      let { description } = block.data;
+
+      if (block.label === 'loop-breakpoint') description = block.data.loopId;
+      else if (block.label === 'block-package') description = block.data.name;
+
       this.engine.addLogHistory({
+        description,
         prevBlockData,
         type: status,
         name: block.label,
         blockId: block.id,
         workerId: this.id,
         timestamp: startExecuteTime,
-        description: block.data.description,
         replacedValue: replacedBlock.replacedValue,
         duration: Math.round(Date.now() - startExecuteTime),
         ...obj,

@@ -382,6 +382,7 @@ function jumpToError() {
   if (!element) return;
 
   element.scrollTo(0, element.scrollHeight);
+  document.documentElement.scrollTo(0, document.documentElement.scrollHeight);
 }
 </script>
 <style>

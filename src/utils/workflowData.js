@@ -106,6 +106,9 @@ export function importWorkflow(attrs = {}) {
           workflow.table = workflow.table || workflow.dataColumns;
           delete workflow.dataColumns;
 
+          if (typeof workflow.drawflow === 'string')
+            workflow.drawflow = parseJSON(workflow.drawflow, {});
+
           workflowStore
             .insert({
               ...workflow,
