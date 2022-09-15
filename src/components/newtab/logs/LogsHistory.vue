@@ -12,21 +12,28 @@
     <div class="flex-1">
       <div class="rounded-lg bg-gray-900 dark:bg-gray-800 text-gray-100 dark">
         <div
-          v-if="currentLog.status === 'error' && errorBlock"
-          class="border-b px-4 pt-4 text-gray-200 pb-4 mb-4"
+          class="border-b px-4 pt-4 flex items-center text-gray-200 pb-4 mb-4"
         >
-          <p class="leading-tight line-clamp">
-            {{ errorBlock.message }}
-          </p>
-          <p class="cursor-pointer" title="Jump to item" @click="jumpToError">
-            On the {{ errorBlock.name }} block
-            <v-remixicon
-              name="riArrowLeftLine"
-              class="inline-block -ml-1"
-              size="18"
-              rotate="135"
-            />
-          </p>
+          <div v-if="currentLog.status === 'error' && errorBlock">
+            <p class="leading-tight line-clamp">
+              {{ errorBlock.message }}
+            </p>
+            <p class="cursor-pointer" title="Jump to item" @click="jumpToError">
+              On the {{ errorBlock.name }} block
+              <v-remixicon
+                name="riArrowLeftLine"
+                class="inline-block -ml-1"
+                size="18"
+                rotate="135"
+              />
+            </p>
+          </div>
+          <div class="flex-grow" />
+          <ui-input
+            v-model="state.search"
+            :placeholder="t('common.search')"
+            prepend-icon="riSearch2Line"
+          />
         </div>
         <div
           id="log-history"
@@ -291,6 +298,7 @@ const { t, te } = useI18n();
 
 const state = shallowReactive({
   itemId: '',
+  search: '',
   activeTab: 'all',
 });
 const pagination = shallowReactive({
@@ -299,13 +307,24 @@ const pagination = shallowReactive({
 });
 const activeLog = shallowRef(null);
 
+const translatedLog = computed(() =>
+  props.currentLog.history.map(translateLog)
+);
+const filteredLog = computed(() =>
+  translatedLog.value.filter((log) => {
+    const query = state.search.toLocaleLowerCase();
+
+    return (
+      log.name.toLocaleLowerCase().includes(query) ||
+      log.description?.toLocaleLowerCase().includes(query)
+    );
+  })
+);
 const history = computed(() =>
-  props.currentLog.history
-    .slice(
-      (pagination.currentPage - 1) * pagination.perPage,
-      pagination.currentPage * pagination.perPage
-    )
-    .map(translateLog)
+  filteredLog.value.slice(
+    (pagination.currentPage - 1) * pagination.perPage,
+    pagination.currentPage * pagination.perPage
+  )
 );
 const errorBlock = computed(() => {
   if (props.currentLog.status !== 'error') return null;

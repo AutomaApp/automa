@@ -121,7 +121,7 @@ const state = shallowReactive({
 });
 
 function installPackage() {
-  packageStore.insert({ ...props.data }).then(() => {
+  packageStore.insert({ ...props.data }, false).then(() => {
     state.isInstalled = true;
   });
 }
