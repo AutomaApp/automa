@@ -356,6 +356,9 @@ onMounted(async () => {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   state.haveAccess = /^(https?)/.test(tab.url);
 
+  const storage = await browser.storage.local.get('pinnedWorkflows');
+  state.pinnedWorkflows = storage.pinnedWorkflows || [];
+
   await userStore.loadUser({ storage: localStorage, ttl: 1000 * 60 * 5 });
   await teamWorkflowStore.loadData();
 
@@ -366,9 +369,6 @@ onMounted(async () => {
   if (activeTab === 'team' && !userStore.user?.teams) activeTab = 'local';
   else if (activeTab === 'host' && hostedWorkflowStore.toArray.length < 0)
     activeTab = 'local';
-
-  const storage = await browser.storage.local.get('pinnedWorkflows');
-  state.pinnedWorkflows = storage.pinnedWorkflows || [];
 
   state.retrieved = true;
   state.activeTab = activeTab;
