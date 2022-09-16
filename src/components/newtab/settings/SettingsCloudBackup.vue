@@ -115,6 +115,7 @@
           :workflows="workflows"
           :limit="workflowLimit"
           :query="state.query"
+          :is-local="true"
           @select="selectAllLocal"
         >
           <ui-spinner
@@ -254,8 +255,12 @@ function selectAllLocal() {
     return;
   }
 
-  workflows.value.forEach(({ id }) => {
-    if (limit >= workflowLimit.value || state.selectedWorkflows.includes(id))
+  workflows.value.forEach(({ id, isInCloud }) => {
+    if (
+      limit >= workflowLimit.value ||
+      isInCloud ||
+      state.selectedWorkflows.includes(id)
+    )
       return;
 
     state.selectedWorkflows.push(id);
