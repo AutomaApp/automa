@@ -1543,6 +1543,14 @@ export const conditionBuilder = {
       data: { code: '\nreturn true;' },
     },
     {
+      id: 'data#exists',
+      category: 'value',
+      name: 'Data exists',
+      compareable: false,
+      valueKey: 'dataPath',
+      data: { dataPath: '' },
+    },
+    {
       id: 'element#text',
       category: 'element',
       name: 'Element text',
@@ -1647,6 +1655,10 @@ export const conditionBuilder = {
     attrName: {
       label: 'Attribute name',
       placeholder: 'name',
+    },
+    dataPath: {
+      label: 'variables.variableName',
+      placeholder: '',
     },
   },
 };

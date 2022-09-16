@@ -1,4 +1,5 @@
 import cloneDeep from 'lodash.clonedeep';
+import objectPath from 'object-path';
 import mustacheReplacer from './referenceData/mustacheReplacer';
 import { conditionBuilder } from './shared';
 
@@ -41,6 +42,10 @@ export default async function (conditionsArr, workflowData) {
   };
 
   async function getConditionItemValue({ type, data }) {
+    if (type.startsWith('data')) {
+      return objectPath.has(workflowData.refData, data.dataPath);
+    }
+
     const copyData = cloneDeep(data);
 
     Object.keys(data).forEach((key) => {

@@ -126,7 +126,7 @@ const extensionVersion = browser.runtime.getManifest().version;
 const subColors = {
   free: 'bg-box-transparent',
   pro: 'bg-accent text-white',
-  business: 'bg-accent text-white',
+  business: 'bg-accent text-white dark:text-black',
 };
 const tabs = [
   {
