@@ -1365,7 +1365,7 @@ export const tasks = {
     data: {
       disableBlock: false,
       description: '',
-      timeout: 20000,
+      timeout: 60000,
       parameters: [],
     },
   },
