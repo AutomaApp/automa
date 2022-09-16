@@ -53,6 +53,7 @@
         @change="updateData({ actionElMaxWaitTime: +$event })"
       />
       <ui-checkbox
+        v-if="data.loadMoreAction === 'scroll'"
         :model-value="data.scrollToBottom"
         class="mt-4"
         @change="updateData({ scrollToBottom: $event })"

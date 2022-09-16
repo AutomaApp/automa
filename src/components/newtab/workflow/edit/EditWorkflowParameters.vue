@@ -25,7 +25,7 @@
         <template #item="{ element: param, index }">
           <div class="mb-4">
             <div class="grid grid-cols-12 space-x-2">
-              <div class="col-span-3 flex items-center">
+              <div class="col-span-3 flex">
                 <v-remixicon name="mdiDrag" class="handle mr-2 cursor-move" />
                 <ui-input
                   :model-value="param.name"
