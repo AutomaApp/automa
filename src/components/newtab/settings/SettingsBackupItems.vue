@@ -12,11 +12,13 @@
         class="overflow-hidden group"
       >
         <ui-checkbox
+          v-if="!isLocal || !workflow.isInCloud"
           :disabled="exceedLimit && !isActive(workflow.id)"
           :model-value="isActive(workflow.id)"
           class="mr-4"
           @change="toggleDeleteWorkflow($event, workflow.id)"
         />
+        <div v-else class="w-5 h-5 mr-4" />
         <ui-img
           v-if="workflow.icon?.startsWith('http')"
           :src="workflow.icon"
@@ -78,6 +80,7 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  isLocal: Boolean,
 });
 const emit = defineEmits(['update:modelValue', 'select']);
 

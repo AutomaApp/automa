@@ -11,98 +11,41 @@
     </div>
   </div>
   <template v-else>
+    <div v-if="pinnedWorkflows.length > 0" class="mb-8 pb-8 border-b">
+      <div class="flex items-center">
+        <v-remixicon name="riPushpin2Line" class="mr-2" size="20" />
+        <span>{{ t('workflow.pinWorkflow.pinned') }}</span>
+      </div>
+      <div class="workflows-container mt-4">
+        <workflows-local-card
+          v-for="workflow in pinnedWorkflows"
+          :key="workflow.id"
+          :workflow="workflow"
+          :is-hosted="userStore.hostedWorkflows[workflow.id]"
+          :is-shared="sharedWorkflowStore.getById(workflow.id)"
+          :is-pinned="true"
+          :menu="menu"
+          @dragstart="onDragStart"
+          @execute="executeWorkflow"
+          @toggle-pin="togglePinWorkflow(workflow)"
+          @toggle-disable="toggleDisableWorkflow(workflow)"
+        />
+      </div>
+    </div>
     <div class="workflows-container">
-      <shared-card
+      <workflows-local-card
         v-for="workflow in workflows"
         :key="workflow.id"
-        :data="workflow"
-        :data-workflow="workflow.id"
-        draggable="true"
-        class="cursor-default select-none ring-accent local-workflow"
+        :workflow="workflow"
+        :is-hosted="userStore.hostedWorkflows[workflow.id]"
+        :is-shared="sharedWorkflowStore.getById(workflow.id)"
+        :is-pinned="state.pinnedWorkflows.includes(workflow.id)"
+        :menu="menu"
         @dragstart="onDragStart"
-        @click="$router.push(`/workflows/${$event.id}`)"
-      >
-        <template #header>
-          <div class="flex items-center mb-4">
-            <template v-if="workflow && !workflow.isDisabled">
-              <ui-img
-                v-if="workflow.icon.startsWith('http')"
-                :src="workflow.icon"
-                class="rounded-lg overflow-hidden"
-                style="height: 40px; width: 40px"
-                alt="Can not display"
-              />
-              <span
-                v-else
-                class="p-2 rounded-lg bg-box-transparent inline-block"
-              >
-                <v-remixicon :name="workflow.icon" />
-              </span>
-            </template>
-            <p v-else class="py-2">{{ t('common.disabled') }}</p>
-            <div class="flex-grow"></div>
-            <button
-              v-if="!workflow.isDisabled"
-              class="invisible group-hover:visible"
-              @click="executeWorkflow(workflow)"
-            >
-              <v-remixicon name="riPlayLine" />
-            </button>
-            <ui-popover class="h-6 ml-2">
-              <template #trigger>
-                <button>
-                  <v-remixicon name="riMoreLine" />
-                </button>
-              </template>
-              <ui-list class="space-y-1" style="min-width: 150px">
-                <ui-list-item
-                  class="cursor-pointer"
-                  @click="toggleDisableWorkflow(workflow)"
-                >
-                  <v-remixicon name="riToggleLine" class="mr-2 -ml-1" />
-                  <span class="capitalize">
-                    {{
-                      t(`common.${workflow.isDisabled ? 'enable' : 'disable'}`)
-                    }}
-                  </span>
-                </ui-list-item>
-                <ui-list-item
-                  v-for="item in menu"
-                  :key="item.id"
-                  v-close-popover
-                  class="cursor-pointer"
-                  @click="item.action(workflow)"
-                >
-                  <v-remixicon :name="item.icon" class="mr-2 -ml-1" />
-                  <span class="capitalize">{{ item.name }}</span>
-                </ui-list-item>
-              </ui-list>
-            </ui-popover>
-          </div>
-        </template>
-        <template #footer-content>
-          <v-remixicon
-            v-if="sharedWorkflowStore.getById(workflow.id)"
-            v-tooltip:bottom.group="
-              t('workflow.share.sharedAs', {
-                name: sharedWorkflowStore
-                  .getById(workflow.id)
-                  ?.name.slice(0, 64),
-              })
-            "
-            name="riShareLine"
-            size="20"
-            class="ml-2"
-          />
-          <v-remixicon
-            v-if="userStore.hostedWorkflows[workflow.id]"
-            v-tooltip:bottom.group="t('workflow.host.title')"
-            name="riBaseStationLine"
-            size="20"
-            class="ml-2"
-          />
-        </template>
-      </shared-card>
+        @execute="executeWorkflow"
+        @toggle-pin="togglePinWorkflow(workflow)"
+        @toggle-disable="toggleDisableWorkflow(workflow)"
+      />
     </div>
     <div
       v-if="filteredWorkflows.length > 18"
@@ -161,6 +104,7 @@
 import { shallowReactive, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import SelectionArea from '@viselect/vanilla';
+import browser from 'webextension-polyfill';
 import { arraySorter } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
 import { useUserStore } from '@/stores/user';
@@ -168,7 +112,7 @@ import { useDialog } from '@/composable/dialog';
 import { useWorkflowStore } from '@/stores/workflow';
 import { exportWorkflow } from '@/utils/workflowData';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
-import SharedCard from '@/components/newtab/shared/SharedCard.vue';
+import WorkflowsLocalCard from './WorkflowsLocalCard.vue';
 
 const props = defineProps({
   search: {
@@ -199,6 +143,7 @@ const workflowStore = useWorkflowStore();
 const sharedWorkflowStore = useSharedWorkflowStore();
 
 const state = shallowReactive({
+  pinnedWorkflows: [],
   selectedWorkflows: [],
 });
 const renameState = shallowReactive({
@@ -262,6 +207,27 @@ const workflows = computed(() =>
     pagination.currentPage * pagination.perPage
   )
 );
+const pinnedWorkflows = computed(() => {
+  const list = [];
+  state.pinnedWorkflows.forEach((workflowId) => {
+    const workflow = workflowStore.getById(workflowId);
+    if (
+      !workflow ||
+      !workflow.name
+        .toLocaleLowerCase()
+        .includes(props.search.toLocaleLowerCase())
+    )
+      return;
+
+    list.push(workflow);
+  });
+
+  return arraySorter({
+    data: list,
+    key: props.sort.by,
+    order: props.sort.order,
+  });
+});
 
 function executeWorkflow(workflow) {
   sendMessage('workflow:execute', workflow, 'background');
@@ -344,6 +310,8 @@ function duplicateWorkflow(workflow) {
     delete copyWorkflow[key];
   });
 
+  copyWorkflow.name += ' - copy';
+
   workflowStore.insert(copyWorkflow);
 }
 function onDragStart({ dataTransfer, target }) {
@@ -361,6 +329,21 @@ function clearSelectedWorkflows() {
     el.classList.remove('ring-2');
   });
   selection.clearSelection();
+}
+function togglePinWorkflow(workflow) {
+  const index = state.pinnedWorkflows.indexOf(workflow.id);
+  const copyData = [...state.pinnedWorkflows];
+
+  if (index === -1) {
+    copyData.push(workflow.id);
+  } else {
+    copyData.splice(index, 1);
+  }
+
+  state.pinnedWorkflows = copyData;
+  browser.storage.local.set({
+    pinnedWorkflows: copyData,
+  });
 }
 
 const menu = [
@@ -392,6 +375,10 @@ const menu = [
 
 onMounted(() => {
   window.addEventListener('keydown', deleteSelectedWorkflows);
+
+  browser.storage.local.get('pinnedWorkflows').then((storage) => {
+    state.pinnedWorkflows = storage.pinnedWorkflows || [];
+  });
 });
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', deleteSelectedWorkflows);

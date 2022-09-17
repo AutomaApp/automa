@@ -1,17 +1,9 @@
 import { sendMessage } from '@/utils/message';
-import { getElementPosition } from '../utils';
+import { getElementPosition, simulateClickElement } from '../utils';
 import handleSelector from '../handleSelector';
 
 function eventClick(block) {
   return new Promise((resolve, reject) => {
-    const dispatchClickEvents = (element, eventFn) => {
-      const eventOpts = { bubbles: true, view: window };
-
-      element.dispatchEvent(new MouseEvent('mousedown', eventOpts));
-      element.dispatchEvent(new MouseEvent('mouseup', eventOpts));
-      eventFn();
-    };
-
     handleSelector(block, {
       async onSelected(element) {
         if (block.debugMode) {
@@ -41,14 +33,7 @@ function eventClick(block) {
           return;
         }
 
-        if (element.click) {
-          dispatchClickEvents(element, () => element.click());
-        } else {
-          dispatchClickEvents(
-            () => element,
-            element.dispatchEvent(new PointerEvent('click', { bubbles: true }))
-          );
-        }
+        simulateClickElement(element, () => element.click());
       },
       onError(error) {
         reject(error);

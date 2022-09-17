@@ -378,8 +378,8 @@ class WorkflowEngine {
           data: {
             logId: this.id,
             data: {
-              table: this.referenceData.table,
-              variables: this.referenceData.variables,
+              table: [...this.referenceData.table],
+              variables: { ...this.referenceData.variables },
             },
           },
         });

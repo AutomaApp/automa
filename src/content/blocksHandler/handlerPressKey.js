@@ -1,4 +1,4 @@
-import { isXPath } from '@/utils/helper';
+import { isXPath, objectHasKey } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
 import { keyDefinitions } from '@/utils/USKeyboardLayout';
 import { queryElements } from '../handleSelector';
@@ -87,8 +87,12 @@ function pressKeyWithJs(element, keys) {
     });
   });
 }
-async function pressKeyWithCommand(_, keys, activeTabId) {
-  for (const event of ['keyDown', 'keyUp']) {
+async function pressKeyWithCommand(_, keys, activeTabId, actionType) {
+  const commands = [];
+  const events =
+    actionType === 'multiple-keys' ? ['keyDown'] : ['keyDown', 'keyUp'];
+
+  for (const event of events) {
     let modifierKey = 0;
 
     for (const key of keys) {
@@ -116,8 +120,25 @@ async function pressKeyWithCommand(_, keys, activeTabId) {
         else command.params.modifiers = modifierKey;
       }
 
-      await sendMessage('debugger:send-command', command, 'background');
+      if (!actionType || actionType === 'press-key') {
+        await sendMessage('debugger:send-command', command, 'background');
+      } else {
+        const secondEvent = { ...command.params };
+        if (!objectHasKey(command, 'text')) {
+          secondEvent.text = key;
+        }
+
+        commands.push(command.params, secondEvent);
+      }
     }
+  }
+
+  if (actionType === 'multiple-keys') {
+    await sendMessage(
+      'debugger:type',
+      { commands, tabId: activeTabId },
+      'background'
+    );
   }
 }
 
@@ -133,10 +154,13 @@ async function pressKey({ data, debugMode, activeTabId }) {
     element = customElement || element;
   }
 
-  const keys = data.keys.split('+');
+  const keys =
+    !data.action || data.action === 'press-key'
+      ? data.keys.split('+')
+      : data.keysToPress.split('');
   const pressKeyFunction = debugMode ? pressKeyWithCommand : pressKeyWithJs;
 
-  await pressKeyFunction(element, keys, activeTabId);
+  await pressKeyFunction(element, keys, activeTabId, data.action);
 
   return '';
 }

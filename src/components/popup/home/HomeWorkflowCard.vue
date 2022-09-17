@@ -26,17 +26,25 @@
           <v-remixicon name="riMoreLine" />
         </button>
       </template>
-      <ui-list class="w-40 space-y-1">
-        <ui-list-item
-          v-if="tab === 'local'"
-          class="capitalize cursor-pointer"
-          @click="$emit('update', { isDisabled: !workflow.isDisabled })"
-        >
-          <v-remixicon name="riToggleLine" class="mr-2 -ml-1" />
-          <span>{{
-            t(`common.${workflow.isDisabled ? 'enable' : 'disable'}`)
-          }}</span>
-        </ui-list-item>
+      <ui-list class="space-y-1" style="min-width: 160px">
+        <template v-if="tab === 'local'">
+          <ui-list-item
+            class="capitalize cursor-pointer"
+            @click="$emit('update', { isDisabled: !workflow.isDisabled })"
+          >
+            <v-remixicon name="riToggleLine" class="mr-2 -ml-1" />
+            <span>{{
+              t(`common.${workflow.isDisabled ? 'enable' : 'disable'}`)
+            }}</span>
+          </ui-list-item>
+          <ui-list-item
+            class="capitalize cursor-pointer"
+            @click="$emit('togglePin')"
+          >
+            <v-remixicon name="riPushpin2Line" class="mr-2 -ml-1" />
+            <span>{{ pinned ? 'Unpin workflow' : 'Pin workflow' }}</span>
+          </ui-list-item>
+        </template>
         <ui-list-item
           v-for="item in filteredMenu"
           :key="item.name"
@@ -64,8 +72,9 @@ const props = defineProps({
     type: String,
     default: 'local',
   },
+  pinned: Boolean,
 });
-defineEmits(['execute', 'rename', 'details', 'delete', 'update']);
+defineEmits(['execute', 'togglePin', 'rename', 'details', 'delete', 'update']);
 
 const { t } = useI18n();
 

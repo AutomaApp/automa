@@ -17,6 +17,7 @@
         "timeout": "Timeout (milliseconds)",
         "noPermission": "Automa don't have enough permission to do this action",
         "grantPermission": "Grant permission",
+        "action": "Action",
         "settings": {
           "title": "Block settings",
           "line": {
@@ -187,7 +188,11 @@
         "description": "Press a key or a combination",
         "target": "Target element (optional)",
         "key": "Key",
-        "detect": "Detect key"
+        "detect": "Detect key",
+        "actions": {
+          "press-key": "Press a key",
+          "multiple-keys": "Press multiple keys"
+        }
       },
       "save-assets": {
         "name": "Save assets",
@@ -404,7 +409,8 @@
           "get": "Get spreadsheet cell values",
           "getRange": "Get spreadsheet range",
           "update": "Update spreadsheet cell values",
-          "append": "Append spreadsheet cell values"
+          "append": "Append spreadsheet cell values",
+          "clear": "Clear spreadsheet cell values"
         }
       },
       "active-tab": {
@@ -657,6 +663,18 @@
         "description": "Execute blocks while the condition is met",
         "editCondition": "Edit condition",
         "fallback": "Execute when the condition is false"
+      },
+      "loop-elements": {
+        "name": "Loop elements",
+        "description": "Iterate through elements",
+        "loadMore": "Load more elements",
+        "scrollToBottom": "Scroll to bottom",
+        "actions": {
+          "none": "None",
+          "click-element": "Click an element to load more",
+          "scroll": "Scroll down to load more",
+          "click-link": "Click a link to load more"
+        }
       },
       "loop-data": {
         "name": "Loop data",

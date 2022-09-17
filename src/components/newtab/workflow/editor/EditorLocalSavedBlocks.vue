@@ -78,12 +78,39 @@
             >
               <v-remixicon name="riExternalLinkLine" size="18" />
             </a>
-            <v-remixicon
-              name="riDeleteBin7Line"
-              size="18"
-              class="cursor-pointer"
-              @click="deleteItem(item)"
-            />
+            <ui-popover style="height: 18px">
+              <template #trigger>
+                <v-remixicon
+                  size="18"
+                  class="cursor-pointer"
+                  name="riMore2Line"
+                />
+              </template>
+              <ui-list>
+                <ui-list-item
+                  v-close-popover
+                  class="cursor-pointer"
+                  @click="updatePackages(item)"
+                >
+                  Update packages
+                  <v-remixicon
+                    v-tooltip="
+                      'Update the current package inside the workflow.'
+                    "
+                    class="ml-2 -mr-1"
+                    name="riInformationLine"
+                    size="20"
+                  />
+                </ui-list-item>
+                <ui-list-item
+                  v-close-popover
+                  class="text-red-400 dark:text-red-500 cursor-pointer"
+                  @click="deleteItem(item)"
+                >
+                  {{ t('common.delete') }}
+                </ui-list-item>
+              </ui-list>
+            </ui-popover>
           </div>
         </div>
       </div>
@@ -91,7 +118,7 @@
   </div>
 </template>
 <script setup>
-import { computed, reactive } from 'vue';
+import { computed, reactive, inject } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDialog } from '@/composable/dialog';
 import { usePackageStore } from '@/stores/package';
@@ -105,6 +132,8 @@ const packageStore = usePackageStore();
 const state = reactive({
   query: '',
 });
+
+const editor = inject('workflow-editor');
 
 const sortedItems = computed(() =>
   packageStore.packages.slice().sort((a, b) => b.createdAt - a.createdAt)
@@ -126,6 +155,52 @@ function deleteItem({ id, name }) {
     onConfirm: () => {
       packageStore.delete(id);
     },
+  });
+}
+function removeConnections({ id, type, oldEdges, newEdges }) {
+  const removedEdges = [];
+  oldEdges.forEach((edge) => {
+    const isNotDeleted = newEdges.find((item) => item.id === edge.id);
+    if (isNotDeleted) return;
+
+    const handleType = type.slice(0, -1);
+
+    removedEdges.push(`${id}-${handleType}-${edge.id}`);
+  });
+
+  const edgesToRemove = editor.value.getEdges.value.filter(
+    ({ sourceHandle, targetHandle }) => {
+      if (type === 'outputs') {
+        return removedEdges.includes(sourceHandle);
+      }
+
+      return removedEdges.includes(targetHandle);
+    }
+  );
+
+  editor.value.removeEdges(edgesToRemove);
+}
+function updatePackages(item) {
+  const packageNodes = editor.value.getNodes.value.filter(
+    (node) => node.data.id === item.id
+  );
+  if (packageNodes.length === 0) return;
+
+  packageNodes.forEach((node) => {
+    removeConnections({
+      id: node.id,
+      type: 'inputs',
+      newEdges: item.inputs,
+      oldEdges: node.data.inputs,
+    });
+    removeConnections({
+      id: node.id,
+      type: 'outputs',
+      newEdges: item.outputs,
+      oldEdges: node.data.outputs,
+    });
+
+    node.data = { ...item };
   });
 }
 </script>

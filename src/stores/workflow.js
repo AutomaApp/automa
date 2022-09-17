@@ -257,6 +257,16 @@ export const useWorkflowStore = defineStore('workflow', {
       ]);
       await this.saveToStorage('workflows');
 
+      const { pinnedWorkflows } = await browser.storage.local.get(
+        'pinnedWorkflows'
+      );
+      const pinnedWorkflowIndex =
+        pinnedWorkflows && pinnedWorkflows.indexOf(id);
+      if (pinnedWorkflowIndex !== -1) {
+        pinnedWorkflows.splice(pinnedWorkflowIndex, 1);
+        await browser.storage.local.set({ pinnedWorkflows });
+      }
+
       return id;
     },
   },

@@ -225,7 +225,7 @@ const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
 
-const actions = ['get', 'getRange', 'update', 'append'];
+const actions = ['get', 'getRange', 'update', 'append', 'clear'];
 const dataFrom = ['data-columns', 'custom'];
 const valueInputOptions = ['RAW', 'USER_ENTERED'];
 const insertDataOptions = ['OVERWRITE', 'INSERT_ROWS'];

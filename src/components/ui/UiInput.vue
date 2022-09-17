@@ -31,6 +31,7 @@
         v-autofocus="autofocus"
         v-imask="mask"
         :class="[
+          statusColors[status],
           inputClass,
           {
             'opacity-75 pointer-events-none': disabled,
@@ -119,6 +120,10 @@ const props = defineProps({
     type: [Array, Object],
     default: null,
   },
+  status: {
+    type: String,
+    default: '',
+  },
   unmaskValue: Boolean,
 });
 const emit = defineEmits([
@@ -131,6 +136,10 @@ const emit = defineEmits([
 ]);
 
 const componentId = useComponentId('ui-input');
+
+const statusColors = {
+  error: 'ring-red-400 ring-2 focus:ring-red-400 focus:ring-2',
+};
 
 function emitValue(event) {
   let { value } = event.target;

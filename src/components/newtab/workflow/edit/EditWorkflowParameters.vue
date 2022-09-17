@@ -25,7 +25,7 @@
         <template #item="{ element: param, index }">
           <div class="mb-4">
             <div class="grid grid-cols-12 space-x-2">
-              <div class="col-span-3 flex items-center">
+              <div class="col-span-3 flex">
                 <v-remixicon name="mdiDrag" class="handle mr-2 cursor-move" />
                 <ui-input
                   :model-value="param.name"
@@ -96,7 +96,7 @@
                     v-model="param.description"
                     placeholder="Description"
                     title="Description"
-                    class="mb-2"
+                    class="mb-2 block"
                     style="max-width: 400px"
                   />
                   <component
@@ -154,7 +154,9 @@ const paramTypes = {
   },
   ...customParameters,
 };
-const paramTypesArr = Object.values(paramTypes).filter((item) => item.id);
+const paramTypesArr = Object.values(paramTypes)
+  .filter((item) => item.id)
+  .sort((a, b) => (a.name > b.name ? 1 : -1));
 
 const state = reactive({
   parameters: cloneDeep(props.data || []).map((item) => {

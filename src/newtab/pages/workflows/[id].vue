@@ -98,13 +98,23 @@
         </ui-card>
         <div class="flex-grow pointer-events-none" />
         <editor-used-credentials v-if="editor" :editor="editor" />
-        <editor-pkg-actions
-          v-if="isPackage"
-          :editor="editor"
-          :data="workflow"
-          :is-data-changed="state.dataChanged"
-          @update="onActionUpdated"
-        />
+        <template v-if="isPackage">
+          <ui-button
+            v-if="workflow.isExternal"
+            v-tooltip="t('workflow.previewMode.description')"
+            class="pointer-events-auto cursor-default"
+          >
+            <v-remixicon name="riEyeLine" class="mr-2 -ml-1" />
+            <span>{{ t('workflow.previewMode.title') }}</span>
+          </ui-button>
+          <editor-pkg-actions
+            v-else
+            :editor="editor"
+            :data="workflow"
+            :is-data-changed="state.dataChanged"
+            @update="onActionUpdated"
+          />
+        </template>
         <editor-local-actions
           v-else
           :editor="editor"
@@ -309,6 +319,7 @@ import dbStorage from '@/db/storage';
 import DroppedNode from '@/utils/editor/DroppedNode';
 import EditorCommands from '@/utils/editor/EditorCommands';
 import convertWorkflowData from '@/utils/convertWorkflowData';
+import extractAutocopmleteData from '@/utils/editor/editorAutocomplete';
 import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
 import WorkflowEditor from '@/components/newtab/workflow/WorkflowEditor.vue';
 import WorkflowSettings from '@/components/newtab/workflow/WorkflowSettings.vue';
@@ -349,6 +360,11 @@ const teamWorkflowStore = useTeamWorkflowStore();
 const { teamId, id: workflowId } = route.params;
 const isTeamWorkflow = route.name === 'team-workflows';
 const isPackage = route.name === 'packages-details';
+const funcsAutocomplete = Object.keys(functions).reduce((acc, name) => {
+  acc[`$${name}`] = '';
+
+  return acc;
+}, {});
 
 const editor = shallowRef(null);
 const connectedTable = shallowRef(null);
@@ -466,27 +482,23 @@ const workflowModals = {
     },
   },
 };
-const autocompleteKeys = {
-  loopId: 'loopData',
-  refKey: 'googleSheets',
-  variableName: 'variables',
-};
 
 const autocompleteList = computed(() => {
   const autocompleteData = {
     loopData: {},
     googleSheets: {},
     table: {},
-    ...Object.keys(functions),
+    ...funcsAutocomplete,
     globalData: autocompleteState.common.globalData,
     variables: { ...autocompleteState.common.variables },
   };
 
   Object.values(autocompleteState.blocks).forEach((item) => {
-    Object.keys(item).forEach((key) => {
-      const autocompleteKey = autocompleteKeys[key] || [];
-      autocompleteData[autocompleteKey][item[key]] = '';
-    });
+    if (item.loopData) Object.assign(autocompleteData.loopData, item.loopData);
+    if (item.variables)
+      Object.assign(autocompleteData.variables, item.variables);
+    if (item.googleSheets)
+      Object.assign(autocompleteData.googleSheets, item.googleSheets);
   });
 
   return autocompleteData;
@@ -863,33 +875,6 @@ function ungroupBlocks({ nodes }) {
   editor.value.addSelectedNodes(groupBlocksList);
   editor.value.addEdges(edges);
 }
-function extractAutocopmleteData(label, { data, id }) {
-  const autocompleteData = { [id]: {} };
-  const getData = (blockName, blockData) => {
-    const keys = blocks[blockName]?.autocomplete;
-    const dataList = {};
-    if (!keys) return dataList;
-
-    keys.forEach((key) => {
-      const value = blockData[key];
-      if (!value) return;
-
-      dataList[key] = value;
-    });
-
-    return dataList;
-  };
-
-  if (label === 'blocks-group') {
-    data.blocks.forEach((block) => {
-      autocompleteData[block.itemId] = getData(block.id, block.data);
-    });
-  } else {
-    autocompleteData[id] = getData(label, data);
-  }
-
-  return autocompleteData;
-}
 async function initAutocomplete() {
   const autocompleteCache = sessionStorage.getItem(
     `autocomplete:${workflowId}`
@@ -1086,6 +1071,8 @@ function initEditBlock(data) {
 async function updateWorkflow(data) {
   try {
     if (isPackage) {
+      if (workflow.value.isExternal) return;
+
       delete data.drawflow;
       await packageStore.update({
         id: workflowId,
@@ -1144,13 +1131,19 @@ function onEditorInit(instance) {
     if (targetNode && targetNode.dataset.id !== nodeToConnect.nodeId) {
       const nodeId = targetNode.dataset.id;
       const nodeData = editor.value.getNode.value(nodeId);
+
       if (nodeData && nodeData.handleBounds.target.length >= 1) {
+        const targetHandle = nodeData.handleBounds.target.find(
+          (item) => item.id
+        );
+        if (!targetHandle) return;
+
         editor.value.addEdges([
           {
             target: nodeId,
             source: nodeToConnect.nodeId,
+            targetHandle: targetHandle.id,
             sourceHandle: nodeToConnect.handleId,
-            targetHandle: nodeData.handleBounds.target[0].id,
           },
         ]);
       }
@@ -1472,6 +1465,8 @@ function onKeydown({ ctrlKey, metaKey, shiftKey, key, target }) {
   )
     return;
 
+  if (isPackage && workflow.value.isExternal) return;
+
   const command = (keyName) => (ctrlKey || metaKey) && keyName === key;
   if (command('c')) {
     copySelectedElements();
@@ -1543,7 +1538,9 @@ watch(
 onBeforeRouteLeave(() => {
   updateHostedWorkflow();
 
-  if (!state.dataChanged || !haveEditAccess.value) return;
+  const dataNotChanged = !state.dataChanged || !haveEditAccess.value;
+  const isExternalPkg = isPackage && workflow.value.isExternal;
+  if (dataNotChanged || isExternalPkg) return;
 
   const confirm = window.confirm(t('message.notSaved'));
 
@@ -1553,11 +1550,6 @@ onMounted(() => {
   if (!workflow.value) {
     router.replace(isPackage ? '/packages' : '/');
     return null;
-  }
-
-  if (isPackage && workflow.value.isExternal) {
-    router.replace('/packages');
-    return;
   }
 
   state.showSidebar =
@@ -1586,6 +1578,8 @@ onMounted(() => {
   initAutocomplete();
 
   window.onbeforeunload = () => {
+    if (isPackage && workflow.value.isExternal) return;
+
     updateHostedWorkflow();
 
     if (state.dataChanged && haveEditAccess.value) {
@@ -1598,7 +1592,8 @@ onBeforeUnmount(() => {
   const editorContainer = document.querySelector(
     '.vue-flow__viewport.vue-flow__container'
   );
-  editorContainer.removeEventListener('click', onClickEditor);
+  if (editorContainer)
+    editorContainer.removeEventListener('click', onClickEditor);
 
   window.onbeforeunload = null;
   window.removeEventListener('keydown', onKeydown);

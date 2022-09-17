@@ -43,6 +43,9 @@
             </p>
           </div>
         </template>
+        <p v-if="workflow.type === 'block'" class="px-4 pb-2">
+          By Parameter Prompt block
+        </p>
         <div class="px-4 pb-4">
           <ul class="space-y-4 divide-y">
             <li v-for="(param, paramIdx) in workflow.params" :key="paramIdx">
@@ -78,7 +81,18 @@
             <ui-button class="mr-4" @click="deleteWorkflow(index)">
               Cancel
             </ui-button>
-            <ui-button variant="accent" @click="runWorkflow(index, workflow)">
+            <ui-button
+              v-if="workflow.type === 'block'"
+              variant="accent"
+              @click="continueWorkflow(index, workflow)"
+            >
+              Continue
+            </ui-button>
+            <ui-button
+              v-else
+              variant="accent"
+              @click="runWorkflow(index, workflow)"
+            >
               <v-remixicon name="riPlayLine" class="mr-2 -ml-1" />
               Run
             </ui-button>
@@ -177,14 +191,14 @@ async function addWorkflow(workflowId) {
     console.error(error);
   }
 }
-function runWorkflow(index, { data, params }) {
+function getParamsValues(params) {
   const getParamVal = {
     string: (str) => str,
     number: (num) => (Number.isNaN(+num) ? 0 : +num),
     default: (value) => value,
   };
 
-  const variables = params.reduce((acc, param) => {
+  return params.reduce((acc, param) => {
     const valueFunc =
       getParamVal[param.type] ||
       paramsList[param.type]?.getValue ||
@@ -194,6 +208,9 @@ function runWorkflow(index, { data, params }) {
 
     return acc;
   }, {});
+}
+function runWorkflow(index, { data, params }) {
+  const variables = getParamsValues(params);
   const payload = {
     name: 'background--workflow:execute',
     data: {
@@ -212,11 +229,36 @@ function runWorkflow(index, { data, params }) {
       deleteWorkflow(index);
     });
 }
+function continueWorkflow(index, { data, params }) {
+  if (Date.now() > data.timeout) {
+    deleteWorkflow(index);
+    return;
+  }
+
+  const key = `params-prompt:${data.execId}__${data.blockId}`;
+  browser.storage.local
+    .set({
+      [key]: getParamsValues(params),
+    })
+    .then(() => {
+      deleteWorkflow(index);
+    });
+}
 
 browser.runtime.onMessage.addListener(({ name, data }) => {
-  if (name !== 'workflow:params') return;
+  if (name === 'workflow:params') {
+    addWorkflow(data);
+  } else if (name === 'workflow:params-block') {
+    const params = [...data.params];
+    delete data.params;
 
-  addWorkflow(data);
+    workflows.value.push({
+      data,
+      params,
+      type: 'block',
+      addedDate: Date.now(),
+    });
+  }
 });
 
 onMounted(async () => {

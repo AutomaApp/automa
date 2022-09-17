@@ -25,7 +25,7 @@
       @input="handleInput"
     />
     <ui-checkbox
-      :value="data.clearLoop"
+      :model-value="data.clearLoop"
       class="mt-2"
       @change="$emit('update', { clearLoop: $event })"
     >

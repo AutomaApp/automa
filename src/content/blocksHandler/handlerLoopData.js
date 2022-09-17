@@ -1,21 +1,6 @@
 import { nanoid } from 'nanoid';
 import handleSelector from '../handleSelector';
-
-function generateLoopSelectors(elements, { max, attrId, frameSelector }) {
-  const selectors = [];
-
-  elements.forEach((el, index) => {
-    if (max > 0 && selectors.length - 1 > max) return;
-
-    const attrName = 'automa-loop';
-    const attrValue = `${attrId}--${index}`;
-
-    el.setAttribute(attrName, attrValue);
-    selectors.push(`${frameSelector}[${attrName}="${attrValue}"]`);
-  });
-
-  return selectors;
-}
+import { generateLoopSelectors } from '../utils';
 
 export default async function loopElements(block) {
   const elements = await handleSelector(block);
@@ -36,7 +21,7 @@ export default async function loopElements(block) {
     return {};
   }
 
-  const attrId = nanoid(5);
+  const attrId = `${block.id}-${nanoid(5)}`;
   const selectors = generateLoopSelectors(elements, {
     ...block.data,
     frameSelector,

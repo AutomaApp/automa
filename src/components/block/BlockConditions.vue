@@ -29,6 +29,7 @@
         v-for="item in data.conditions"
         :key="item.id"
         class="flex items-center flex-1 p-2 bg-box-transparent rounded-lg w-full relative"
+        @dblclick.stop="$emit('edit', { editCondition: item.id })"
       >
         <p
           v-if="item.name"

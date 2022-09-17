@@ -93,8 +93,7 @@
         :placeholder="t('workflow.blocks.forms.text-field.delay.placeholder')"
         class="w-full mt-1"
         min="0"
-        type="number"
-        @change="updateData({ delay: +$event })"
+        @change="updateData({ delay: $event })"
       />
     </template>
   </edit-interaction-base>

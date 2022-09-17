@@ -1,3 +1,35 @@
+export function simulateClickElement(element) {
+  const eventOpts = { bubbles: true, view: window };
+
+  element.dispatchEvent(new MouseEvent('mousedown', eventOpts));
+  element.dispatchEvent(new MouseEvent('mouseup', eventOpts));
+
+  if (element.click) {
+    element.click();
+  } else {
+    element.dispatchEvent(new PointerEvent('click', { bubbles: true }));
+  }
+}
+
+export function generateLoopSelectors(
+  elements,
+  { max, attrId, frameSelector, startIndex = 0 }
+) {
+  const selectors = [];
+
+  elements.forEach((el, index) => {
+    if (max > 0 && selectors.length - 1 > max) return;
+
+    const attrName = 'automa-loop';
+    const attrValue = `${attrId}--${(startIndex || 0) + index}`;
+
+    el.setAttribute(attrName, attrValue);
+    selectors.push(`${frameSelector}[${attrName}="${attrValue}"]`);
+  });
+
+  return selectors;
+}
+
 export function elementSelectorInstance() {
   const rootElementExist = document.querySelector(
     '#app-container.automa-element-selector'

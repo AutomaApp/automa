@@ -16,7 +16,24 @@
         @change="updateData({ selector: $event })"
       />
     </edit-autocomplete>
-    <div class="flex items-end">
+    <ui-select
+      :model-value="data.action || 'press-key'"
+      :label="t('workflow.blocks.base.action')"
+      class="w-full mt-2"
+      @change="updateData({ action: $event })"
+    >
+      <option
+        v-for="action in ['press-key', 'multiple-keys']"
+        :key="action"
+        :value="action"
+      >
+        {{ t(`workflow.blocks.press-key.actions.${action}`) }}
+      </option>
+    </ui-select>
+    <div
+      v-if="!data.action || data.action === 'press-key'"
+      class="flex items-end"
+    >
       <ui-autocomplete
         :items="keysList"
         :model-value="dataKeys"
@@ -47,6 +64,13 @@
         <v-remixicon :name="isRecordingKey ? 'riCloseLine' : 'riFocus3Line'" />
       </ui-button>
     </div>
+    <ui-textarea
+      v-else
+      :model-value="data.keysToPress"
+      class="w-full mt-2"
+      placeholder="keys"
+      @change="updateData({ keysToPress: $event })"
+    />
   </div>
 </template>
 <script setup>

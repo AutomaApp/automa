@@ -67,7 +67,10 @@
     v-show="state.activeTab === 'team'"
     :search="state.query"
   />
-  <div v-if="state.activeTab !== 'team'" class="px-5 pb-5 space-y-2">
+  <div
+    v-if="state.activeTab !== 'team'"
+    class="px-5 z-20 relative pb-5 space-y-2"
+  >
     <ui-card v-if="workflowStore.getWorkflows.length === 0" class="text-center">
       <img src="@/assets/svg/alien.svg" />
       <p class="font-semibold">{{ t('message.empty') }}</p>
@@ -79,16 +82,37 @@
         {{ t('home.workflow.new') }}
       </ui-button>
     </ui-card>
+    <div v-if="pinnedWorkflows.length > 0" class="mt-1 mb-4 border-b pb-4">
+      <div class="flex items-center text-gray-300 mb-1">
+        <v-remixicon name="riPushpin2Line" size="20" class="mr-2" />
+        <span>Pinned workflows</span>
+      </div>
+      <home-workflow-card
+        v-for="workflow in pinnedWorkflows"
+        :key="workflow.id"
+        :workflow="workflow"
+        :tab="state.activeTab"
+        :pinned="true"
+        @details="openWorkflowPage"
+        @update="updateWorkflow(workflow.id, $event)"
+        @execute="executeWorkflow"
+        @rename="renameWorkflow"
+        @delete="deleteWorkflow"
+        @toggle-pin="togglePinWorkflow(workflow)"
+      />
+    </div>
     <home-workflow-card
       v-for="workflow in workflows"
       :key="workflow.id"
       :workflow="workflow"
       :tab="state.activeTab"
+      :pinned="state.pinnedWorkflows.includes(workflow.id)"
       @details="openWorkflowPage"
       @update="updateWorkflow(workflow.id, $event)"
       @execute="executeWorkflow"
       @rename="renameWorkflow"
       @delete="deleteWorkflow"
+      @toggle-pin="togglePinWorkflow(workflow)"
     />
   </div>
   <ui-modal v-model="state.newRecordingModal" custom-content>
@@ -153,9 +177,29 @@ const state = shallowReactive({
   retrieved: false,
   haveAccess: true,
   activeTab: 'local',
+  pinnedWorkflows: [],
   newRecordingModal: false,
 });
 
+const pinnedWorkflows = computed(() => {
+  if (state.activeTab !== 'local') return [];
+
+  const list = [];
+  state.pinnedWorkflows.forEach((workflowId) => {
+    const workflow = workflowStore.getById(workflowId);
+    if (
+      !workflow ||
+      !workflow.name
+        .toLocaleLowerCase()
+        .includes(state.query.toLocaleLowerCase())
+    )
+      return;
+
+    list.push(workflow);
+  });
+
+  return list;
+});
 const hostedWorkflows = computed(() => {
   if (state.activeTab !== 'host') return [];
 
@@ -179,6 +223,21 @@ const showTab = computed(
   () => hostedWorkflowStore.toArray.length > 0 || userStore.user?.teams
 );
 
+function togglePinWorkflow(workflow) {
+  const index = state.pinnedWorkflows.indexOf(workflow.id);
+  const copyData = [...state.pinnedWorkflows];
+
+  if (index === -1) {
+    copyData.push(workflow.id);
+  } else {
+    copyData.splice(index, 1);
+  }
+
+  state.pinnedWorkflows = copyData;
+  browser.storage.local.set({
+    pinnedWorkflows: copyData,
+  });
+}
 function executeWorkflow(workflow) {
   sendMessage('workflow:execute', workflow, 'background');
 }
@@ -296,6 +355,9 @@ function onTabChange(value) {
 onMounted(async () => {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   state.haveAccess = /^(https?)/.test(tab.url);
+
+  const storage = await browser.storage.local.get('pinnedWorkflows');
+  state.pinnedWorkflows = storage.pinnedWorkflows || [];
 
   await userStore.loadUser({ storage: localStorage, ttl: 1000 * 60 * 5 });
   await teamWorkflowStore.loadData();

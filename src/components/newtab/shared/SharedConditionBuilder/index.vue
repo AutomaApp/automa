@@ -163,6 +163,8 @@ function getConditionText({ category, type, data }) {
     const textDetail = data.attrName || data.selector;
 
     if (textDetail) text += `(${textDetail})`;
+  } else if (type.startsWith('data')) {
+    text = `Data exists (${data.dataPath})`;
   }
 
   return text;
