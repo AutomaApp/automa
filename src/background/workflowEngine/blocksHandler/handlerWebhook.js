@@ -9,7 +9,12 @@ export async function webhook({ data, id }, { refData }) {
 
   try {
     if (isWhitespace(data.url)) throw new Error('url-empty');
-    if (!data.url.startsWith('http')) throw new Error('invalid-url');
+    if (!data.url.startsWith('http')) {
+      const error = new Error('invalid-active-tab');
+      error.data = { url: data.url };
+
+      throw error;
+    }
 
     const newHeaders = [];
     data.headers.forEach(({ value, name }) => {

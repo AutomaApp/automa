@@ -26,7 +26,7 @@
           :is-pinned="true"
           :menu="menu"
           @dragstart="onDragStart"
-          @execute="executeWorkflow"
+          @execute="executeWorkflow(workflow)"
           @toggle-pin="togglePinWorkflow(workflow)"
           @toggle-disable="toggleDisableWorkflow(workflow)"
         />
@@ -42,7 +42,7 @@
         :is-pinned="state.pinnedWorkflows.includes(workflow.id)"
         :menu="menu"
         @dragstart="onDragStart"
-        @execute="executeWorkflow"
+        @execute="executeWorkflow(workflow)"
         @toggle-pin="togglePinWorkflow(workflow)"
         @toggle-disable="toggleDisableWorkflow(workflow)"
       />
@@ -230,6 +230,7 @@ const pinnedWorkflows = computed(() => {
 });
 
 function executeWorkflow(workflow) {
+  console.log(workflow);
   sendMessage('workflow:execute', workflow, 'background');
 }
 function toggleDisableWorkflow({ id, isDisabled }) {
