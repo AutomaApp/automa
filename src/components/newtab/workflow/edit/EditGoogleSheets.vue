@@ -128,6 +128,7 @@
         </option>
       </ui-select>
       <ui-select
+        v-if="data.type === 'append'"
         :model-value="data.insertDataOption || 'INSERT_ROWS'"
         class="w-full mt-2"
         @change="updateData({ insertDataOption: $event })"
