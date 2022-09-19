@@ -1066,6 +1066,7 @@ function initEditBlock(data) {
     editState.blockData.connections = connections;
   }
 
+  state.showSidebar = true;
   editState.editing = true;
 }
 async function updateWorkflow(data) {
