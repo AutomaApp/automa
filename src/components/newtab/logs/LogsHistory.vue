@@ -17,6 +17,20 @@
           <div v-if="currentLog.status === 'error' && errorBlock">
             <p class="leading-tight line-clamp">
               {{ errorBlock.message }}
+              <a
+                v-if="errorBlock.messageId"
+                :href="`https://docs.automa.site/guide/workflow-errors.html#${errorBlock.messageId}`"
+                target="_blank"
+                title="About the error"
+                @click.stop
+              >
+                <v-remixicon
+                  name="riArrowLeftLine"
+                  size="20"
+                  class="text-gray-300 inline-block"
+                  rotate="135"
+                />
+              </a>
             </p>
             <p class="cursor-pointer" title="Jump to item" @click="jumpToError">
               On the {{ errorBlock.name }} block
@@ -28,6 +42,7 @@
               />
             </p>
           </div>
+          <slot name="header-prepend" />
           <div class="flex-grow" />
           <ui-input
             v-model="state.search"
@@ -91,6 +106,20 @@
                 class="text-sm line-clamp ml-2 flex-1 leading-tight text-gray-600 dark:text-gray-200"
               >
                 {{ item.message }}
+                <a
+                  v-if="item.messageId"
+                  :href="`https://docs.automa.site/guide/workflow-errors.html#${item.messageId}`"
+                  target="_blank"
+                  title="About the error"
+                  @click.stop
+                >
+                  <v-remixicon
+                    name="riArrowLeftLine"
+                    size="20"
+                    class="text-gray-300 inline-block"
+                    rotate="135"
+                  />
+                </a>
               </p>
               <router-link
                 v-if="item.logId"
@@ -140,14 +169,14 @@
           </select>
           {{
             t('components.pagination.text2', {
-              count: currentLog.history.length,
+              count: filteredLog.length,
             })
           }}
         </div>
         <ui-pagination
           v-model="pagination.currentPage"
           :per-page="pagination.perPage"
-          :records="currentLog.history.length"
+          :records="filteredLog.length"
         />
       </div>
     </div>
@@ -293,6 +322,13 @@ const tabs = [
   { id: 'referenceData.prevBlockData', name: 'Previous block data' },
   { id: 'replacedValue', name: 'Replaced value' },
 ];
+const messageHasReferences = [
+  'no-tab',
+  'invalid-active-tab',
+  'no-match-tab',
+  'invalid-body',
+  'element-not-found',
+];
 
 const { t, te } = useI18n();
 
@@ -310,16 +346,15 @@ const activeLog = shallowRef(null);
 const translatedLog = computed(() =>
   props.currentLog.history.map(translateLog)
 );
-const filteredLog = computed(() =>
-  translatedLog.value.filter((log) => {
-    const query = state.search.toLocaleLowerCase();
+const filteredLog = computed(() => {
+  const query = state.search.toLocaleLowerCase();
 
-    return (
+  return translatedLog.value.filter(
+    (log) =>
       log.name.toLocaleLowerCase().includes(query) ||
       log.description?.toLocaleLowerCase().includes(query)
-    );
-  })
-);
+  );
+});
 const history = computed(() =>
   filteredLog.value.slice(
     (pagination.currentPage - 1) * pagination.perPage,
@@ -333,6 +368,7 @@ const errorBlock = computed(() => {
   if (!block || block.type !== 'error' || block.id < 25) return null;
 
   block = translateLog(block);
+
   let { name } = block;
   if (block.description) name += ` (${block.description})`;
 
@@ -340,6 +376,7 @@ const errorBlock = computed(() => {
     name,
     id: block.id,
     message: block.message,
+    messageId: block.messageId,
   };
 });
 const logCtxData = computed(() => {
@@ -371,6 +408,10 @@ function translateLog(log) {
       `workflow.blocks.${log.name}.name`,
       blocks[log.name].name
     );
+  }
+
+  if (copyLog.message && messageHasReferences.includes(copyLog.message)) {
+    copyLog.messageId = `${copyLog.message}`;
   }
 
   copyLog.message = getTranslatation(

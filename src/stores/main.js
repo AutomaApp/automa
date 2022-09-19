@@ -18,7 +18,7 @@ export const useStore = defineStore('main', {
       editor: {
         minZoom: 0.6,
         maxZoom: 1.3,
-        arrow: false,
+        arrow: true,
         snapToGrid: false,
         lineType: 'default',
         snapGrid: { 0: 15, 1: 15 },

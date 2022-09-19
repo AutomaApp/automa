@@ -230,7 +230,6 @@ const pinnedWorkflows = computed(() => {
 });
 
 function executeWorkflow(workflow) {
-  console.log(workflow);
   sendMessage('workflow:execute', workflow, 'background');
 }
 function toggleDisableWorkflow({ id, isDisabled }) {
