@@ -15,6 +15,7 @@ export const useStore = defineStore('main', {
     settings: {
       locale: 'en',
       deleteLogAfter: 30,
+      logsLimit: 1000,
       editor: {
         minZoom: 0.6,
         maxZoom: 1.3,

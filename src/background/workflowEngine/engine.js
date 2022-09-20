@@ -46,11 +46,11 @@ class WorkflowEngine {
     };
     this.rowData = {};
 
+    this.logsLimit = 1001;
     this.logHistoryId = 0;
 
     let variables = {};
     let { globalData } = workflow;
-
     if (options && options?.data) {
       globalData = options.data.globalData || globalData;
       variables = isObject(options.data.variables)
@@ -196,8 +196,7 @@ class WorkflowEngine {
 
       if (BROWSER_TYPE !== 'chrome') {
         this.workflow.settings.debugMode = false;
-      }
-      if (this.workflow.settings.debugMode) {
+      } else if (this.workflow.settings.debugMode) {
         chrome.debugger.onEvent.addListener(this.onDebugEvent);
       }
       if (
@@ -213,6 +212,11 @@ class WorkflowEngine {
           Object.assign(this.referenceData, lastState.referenceData);
         }
       }
+
+      const { settings: userSettings } = await browser.storage.local.get(
+        'settings'
+      );
+      this.logsLimit = userSettings.logsLimit || 1001;
 
       this.workflow.table = columns;
       this.startedTimestamp = Date.now();
@@ -255,7 +259,7 @@ class WorkflowEngine {
   addLogHistory(detail) {
     if (detail.name === 'blocks-group') return;
 
-    const isLimit = this.history.length >= 1001;
+    const isLimit = this.history.length >= this.logsLimit;
     const notErrorLog = detail.type !== 'error';
 
     if ((isLimit || !this.saveLog) && notErrorLog) return;
