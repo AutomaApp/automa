@@ -31,7 +31,13 @@ function workflowShortcutsListener(findWorkflow, shortcutsObj) {
   if (shortcuts.length === 0) return;
 
   const keyboardShortcuts = shortcuts.reduce((acc, [id, value]) => {
-    const workflow = findWorkflow(id);
+    let workflowId = id;
+    if (id.startsWith('trigger')) {
+      const { 1: triggerWorkflowId } = id.split(':');
+      workflowId = triggerWorkflowId;
+    }
+
+    const workflow = findWorkflow(workflowId);
     if (!workflow) return acc;
 
     (acc[value] = acc[value] || []).push({

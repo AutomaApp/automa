@@ -233,21 +233,28 @@ async function openDashboard(url) {
   }
 }
 async function checkVisitWebTriggers(tabId, tabUrl) {
+  const visitWebTriggers = await browserStorage.get('visitWebTriggers');
+  if (!visitWebTriggers || visitWebTriggers.length === 0) return;
+
   const workflowState = await workflow.states.get(({ state }) =>
     state.tabIds.includes(tabId)
   );
-  const visitWebTriggers = await browserStorage.get('visitWebTriggers');
   const triggeredWorkflow = visitWebTriggers?.find(({ url, isRegex, id }) => {
     if (url.trim() === '') return false;
 
     const matchUrl = tabUrl.match(isRegex ? new RegExp(url, 'g') : url);
 
-    return matchUrl && id !== workflowState?.workflowId;
+    return matchUrl && !id.includes(workflowState?.workflowId);
   });
 
   if (triggeredWorkflow) {
-    const workflowData = await workflow.get(triggeredWorkflow.id);
+    let workflowId = triggeredWorkflow.id;
+    if (triggeredWorkflow.id.startsWith('trigger')) {
+      const { 1: triggerWorkflowId } = triggeredWorkflow.id.split(':');
+      workflowId = triggerWorkflowId;
+    }
 
+    const workflowData = await workflow.get(workflowId);
     if (workflowData) workflow.execute(workflowData, { tabId });
   }
 }
@@ -359,7 +366,16 @@ browser.tabs.onCreated.addListener(async (tab) => {
   await browser.storage.local.set({ recording });
 });
 browser.alarms.onAlarm.addListener(async ({ name }) => {
-  const currentWorkflow = await workflow.get(name);
+  let workflowId = name;
+  let triggerId = null;
+
+  if (name.startsWith('trigger')) {
+    const { 1: triggerWorkflowId, 2: triggerItemId } = name.split(':');
+    triggerId = triggerItemId;
+    workflowId = triggerWorkflowId;
+  }
+
+  const currentWorkflow = await workflow.get(workflowId);
   if (!currentWorkflow) return;
 
   const drawflow =
@@ -369,15 +385,15 @@ browser.alarms.onAlarm.addListener(async ({ name }) => {
   const { data } = findTriggerBlock(drawflow) || {};
   if (data && data.type === 'interval' && data.fixedDelay) {
     const workflowState = await workflow.states.get(
-      ({ workflowId }) => name === workflowId
+      (item) => item.workflowId === workflowId
     );
 
     if (workflowState) {
       let { workflowQueue } = await browser.storage.local.get('workflowQueue');
       workflowQueue = workflowQueue || [];
 
-      if (!workflowQueue.includes(name)) {
-        (workflowQueue = workflowQueue || []).push(name);
+      if (!workflowQueue.includes(workflowId)) {
+        (workflowQueue = workflowQueue || []).push(workflowId);
         await browser.storage.local.set({ workflowQueue });
       }
 
@@ -397,7 +413,14 @@ browser.alarms.onAlarm.addListener(async ({ name }) => {
   workflow.execute(currentWorkflow);
 
   if (data && data.type === 'specific-day') {
-    registerSpecificDay(currentWorkflow.id, data);
+    let triggerData = data;
+    if (triggerId && data.triggers) {
+      triggerData = data.triggers.find(
+        (trigger) => trigger.id === triggerId
+      )?.data;
+    }
+
+    if (triggerData) registerSpecificDay(workflowId, triggerData);
   }
 });
 
@@ -413,7 +436,13 @@ if (contextMenu && contextMenu.onClicked) {
           frameId: 0,
           type: 'context-element',
         });
-        const workflowData = await workflow.get(menuItemId);
+        let workflowId = menuItemId;
+        if (menuItemId.startsWith('trigger')) {
+          const { 1: triggerWorkflowId } = menuItemId.split(':');
+          workflowId = triggerWorkflowId;
+        }
+
+        const workflowData = await workflow.get(workflowId);
 
         workflow.execute(workflowData, {
           data: {

@@ -1,10 +1,12 @@
 import { parseJSON, findTriggerBlock } from './helper';
 
+const getFlowData = (workflow) =>
+  typeof workflow.drawflow === 'string'
+    ? parseJSON(workflow.drawflow, {})
+    : workflow.drawflow;
+
 export default function (workflow) {
-  const data =
-    typeof workflow.drawflow === 'string'
-      ? parseJSON(workflow.drawflow, {})
-      : workflow.drawflow;
+  const data = getFlowData(workflow);
   if (!data?.drawflow) return workflow;
 
   const triggerBlock = findTriggerBlock(data);

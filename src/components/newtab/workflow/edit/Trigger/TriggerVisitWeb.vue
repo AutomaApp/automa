@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-2">
+  <div>
     <ui-input
       :model-value="data.url"
       :placeholder="t('workflow.blocks.trigger.forms.url')"

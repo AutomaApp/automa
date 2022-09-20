@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-2">
+  <div>
     <div class="flex items-center mb-2">
       <ui-input
         :model-value="getReadableShortcut(recordKeys.keys)"

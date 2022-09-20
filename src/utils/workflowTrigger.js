@@ -59,7 +59,9 @@ export function registerContextMenu(workflowId, data) {
 
 async function removeFromWorkflowQueue(workflowId) {
   const { workflowQueue } = await browser.storage.local.get('workflowQueue');
-  const queueIndex = (workflowQueue || []).indexOf(workflowId);
+  const queueIndex = (workflowQueue || []).findIndex((id) =>
+    id.includes(workflowId)
+  );
 
   if (!workflowQueue || queueIndex === -1) return;
 
@@ -70,7 +72,12 @@ async function removeFromWorkflowQueue(workflowId) {
 
 export async function cleanWorkflowTriggers(workflowId) {
   try {
-    await browser.alarms.clear(workflowId);
+    const alarms = await browser.alarms.getAll();
+    for (const alarm of alarms) {
+      if (alarm.name.includes(workflowId)) {
+        await browser.alarms.clear(alarm.name);
+      }
+    }
 
     const { visitWebTriggers, onStartupTriggers, shortcuts } =
       await browser.storage.local.get([
@@ -80,27 +87,25 @@ export async function cleanWorkflowTriggers(workflowId) {
       ]);
 
     const keyboardShortcuts = Array.isArray(shortcuts) ? {} : shortcuts || {};
-    delete keyboardShortcuts[workflowId];
+    Object.keys(keyboardShortcuts).forEach((shortcutId) => {
+      if (!shortcutId.includes(workflowId)) return;
 
-    const startupTriggers = onStartupTriggers || [];
-    const startupTriggerIndex = startupTriggers.indexOf(workflowId);
-    if (startupTriggerIndex !== -1) {
-      startupTriggers.splice(startupTriggerIndex, 1);
-    }
+      delete keyboardShortcuts[shortcutId];
+    });
 
-    const visitWebTriggerIndex = visitWebTriggers.findIndex(
-      (item) => item.id === workflowId
+    const startupTriggers = (onStartupTriggers || []).filter(
+      (id) => !id.includes(workflowId)
     );
-    if (visitWebTriggerIndex !== -1) {
-      visitWebTriggers.splice(visitWebTriggerIndex, 1);
-    }
+    const filteredVisitWebTriggers = visitWebTriggers.filter(
+      (item) => !item.id.includes(workflowId)
+    );
 
-    await removeFromWorkflowQueue();
+    await removeFromWorkflowQueue(workflowId);
 
     await browser.storage.local.set({
-      visitWebTriggers,
       shortcuts: keyboardShortcuts,
       onStartupTriggers: startupTriggers,
+      visitWebTriggers: filteredVisitWebTriggers,
     });
 
     const removeFromContextMenu = async () => {
@@ -241,7 +246,13 @@ export async function registerWorkflowTrigger(workflowId, { data }) {
       'keyboard-shortcut': registerKeyboardShortcut,
     };
 
-    if (triggersHandler[data.type]) {
+    if (data.triggers) {
+      for (const trigger of data.triggers) {
+        const handler = triggersHandler[trigger.type];
+        if (handler)
+          await handler(`trigger:${workflowId}:${trigger.id}`, trigger.data);
+      }
+    } else if (triggersHandler[data.type]) {
       await triggersHandler[data.type](workflowId, data);
     }
   } catch (error) {

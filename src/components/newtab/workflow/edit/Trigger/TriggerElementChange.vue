@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-4">
+  <div>
     <ui-input
       v-model="observeDetail.matchPattern"
       :label="t('workflow.blocks.trigger.element-change.target')"

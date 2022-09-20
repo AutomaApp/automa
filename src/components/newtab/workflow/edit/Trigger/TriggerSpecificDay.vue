@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-4">
+  <div>
     <ui-popover
       :options="{ animation: null }"
       trigger-width
@@ -44,11 +44,11 @@
         {{ t('workflow.blocks.trigger.addTime') }}
       </ui-button>
     </div>
-    <div class="my-2">
+    <div class="grid grid-cols-2 gap-x-4 gap-y-2 mt-4">
       <ui-expand
         v-for="(day, index) in sortedDaysArr"
         :key="day.id"
-        header-class="focus:ring-0 flex items-center py-2 w-full group text-left"
+        header-class="focus:ring-0 flex items-center w-full group text-left"
         type="time"
         class="w-full"
       >

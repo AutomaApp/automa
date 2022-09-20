@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-4">
+  <div>
     <template v-if="!permission.has[permissionName]">
       <p>
         {{ t('workflow.blocks.trigger.contextMenus.noPermission') }}
