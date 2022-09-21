@@ -105,6 +105,7 @@ import { shallowReactive, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import SelectionArea from '@viselect/vanilla';
 import browser from 'webextension-polyfill';
+import cloneDeep from 'lodash.clonedeep';
 import { arraySorter } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
 import { useUserStore } from '@/stores/user';
@@ -303,16 +304,17 @@ function deleteSelectedWorkflows({ target, key }) {
   }
 }
 function duplicateWorkflow(workflow) {
-  const copyWorkflow = { ...workflow, createdAt: Date.now() };
+  const clonedWorkflow = cloneDeep(workflow);
   const delKeys = ['$id', 'data', 'id', 'isDisabled'];
 
   delKeys.forEach((key) => {
-    delete copyWorkflow[key];
+    delete clonedWorkflow[key];
   });
 
-  copyWorkflow.name += ' - copy';
+  clonedWorkflow.createdAt = Date.now();
+  clonedWorkflow.name += ' - copy';
 
-  workflowStore.insert(copyWorkflow);
+  workflowStore.insert(clonedWorkflow);
 }
 function onDragStart({ dataTransfer, target }) {
   const payload = [...state.selectedWorkflows];
