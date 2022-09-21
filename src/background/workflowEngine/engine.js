@@ -216,7 +216,7 @@ class WorkflowEngine {
       const { settings: userSettings } = await browser.storage.local.get(
         'settings'
       );
-      this.logsLimit = userSettings.logsLimit || 1001;
+      this.logsLimit = userSettings?.logsLimit || 1001;
 
       this.workflow.table = columns;
       this.startedTimestamp = Date.now();

@@ -7,25 +7,6 @@
       class="w-full mb-2"
       @change="updateData({ description: $event })"
     />
-    <!-- <ui-select
-      :model-value="data.type || 'manual'"
-      :placeholder="t('workflow.blocks.trigger.forms.triggerWorkflow')"
-      class="w-full"
-      @change="updateData({ type: $event })"
-    >
-      <option v-for="(_, trigger) in triggers" :key="trigger" :value="trigger">
-        {{ t(`workflow.blocks.trigger.items.${trigger}`) }}
-      </option>
-    </ui-select>
-    <transition-expand mode="out-in">
-      <keep-alive>
-        <component
-          :is="triggers[data.type]?.component"
-          :data="data"
-          @update="updateData"
-        />
-      </keep-alive>
-    </transition-expand> -->
     <ui-button
       variant="accent"
       class="w-full mt-4"
