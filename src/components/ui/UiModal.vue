@@ -23,6 +23,7 @@
                 <span class="content-header">
                   <slot name="header">{{ title }}</slot>
                 </span>
+                <slot name="header-append" />
                 <v-remixicon
                   v-show="!persist"
                   class="text-gray-600 dark:text-gray-300 cursor-pointer"

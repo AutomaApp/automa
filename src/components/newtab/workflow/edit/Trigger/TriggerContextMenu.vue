@@ -8,7 +8,7 @@
         {{ t('workflow.blocks.trigger.contextMenus.grantPermission') }}
       </ui-button>
     </template>
-    <template v-else>
+    <template v-else-if="workflow.data">
       <ui-input
         :label="t('workflow.blocks.trigger.contextMenus.contextName')"
         :placeholder="workflow.data.value.name"
@@ -79,7 +79,7 @@ const permissionName = BROWSER_TYPE === 'firefox' ? 'menus' : 'contextMenus';
 const { t } = useI18n();
 const permission = useHasPermissions([permissionName]);
 
-const workflow = inject('workflow');
+const workflow = inject('workflow', {});
 
 function onSelectContextType(selected, type) {
   const contextTypes = [...props.data.contextTypes];
@@ -95,7 +95,7 @@ function onSelectContextType(selected, type) {
 }
 
 onMounted(() => {
-  if (props.data.contextMenuName.trim()) return;
+  if (props.data.contextMenuName.trim() || !workflow?.data) return;
 
   emit('update', { contextMenuName: workflow.data.value.name });
 });

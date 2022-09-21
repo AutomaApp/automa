@@ -232,28 +232,28 @@ export async function registerOnStartup() {
   // Do nothing
 }
 
+export const workflowTriggersMap = {
+  interval: registerInterval,
+  date: registerSpecificDate,
+  'visit-web': registerVisitWeb,
+  'on-startup': registerOnStartup,
+  'specific-day': registerSpecificDay,
+  'context-menu': registerContextMenu,
+  'keyboard-shortcut': registerKeyboardShortcut,
+};
+
 export async function registerWorkflowTrigger(workflowId, { data }) {
   try {
     await cleanWorkflowTriggers(workflowId);
 
-    const triggersHandler = {
-      interval: registerInterval,
-      date: registerSpecificDate,
-      'visit-web': registerVisitWeb,
-      'on-startup': registerOnStartup,
-      'specific-day': registerSpecificDay,
-      'context-menu': registerContextMenu,
-      'keyboard-shortcut': registerKeyboardShortcut,
-    };
-
     if (data.triggers) {
       for (const trigger of data.triggers) {
-        const handler = triggersHandler[trigger.type];
+        const handler = workflowTriggersMap[trigger.type];
         if (handler)
           await handler(`trigger:${workflowId}:${trigger.id}`, trigger.data);
       }
-    } else if (triggersHandler[data.type]) {
-      await triggersHandler[data.type](workflowId, data);
+    } else if (workflowTriggersMap[data.type]) {
+      await workflowTriggersMap[data.type](workflowId, data);
     }
   } catch (error) {
     console.error(error);

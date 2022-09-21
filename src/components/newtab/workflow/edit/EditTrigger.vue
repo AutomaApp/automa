@@ -33,76 +33,18 @@
       title="Workflow Triggers"
       content-class="max-w-2xl"
     >
-      <div
-        class="overflow-auto scroll"
-        style="min-height: 350px; max-height: calc(100vh - 14rem)"
-      >
-        <ui-expand
-          v-for="(trigger, index) in state.triggers"
-          :key="index"
-          class="border rounded-lg mb-2 trigger-item"
-        >
-          <template #header>
-            <p class="flex-1">
-              {{ t(`workflow.blocks.trigger.items.${trigger.type}`) }}
-            </p>
-            <v-remixicon
-              name="riDeleteBin7Line"
-              size="20"
-              class="delete-btn cursor-pointer"
-              @click.stop="state.triggers.splice(index, 1)"
-            />
-          </template>
-          <div class="px-4 py-2">
-            <component
-              :is="triggers[trigger.type]?.component"
-              :data="trigger.data"
-              @update="updateTriggerData(index, $event)"
-            />
-          </div>
-        </ui-expand>
-        <ui-popover class="mt-4">
-          <template #trigger>
-            <ui-button>
-              Add trigger
-              <hr class="h-4 border-r" />
-              <v-remixicon
-                name="riArrowLeftSLine"
-                class="ml-2 -mr-1"
-                rotate="-90"
-              />
-            </ui-button>
-          </template>
-          <ui-list class="space-y-1">
-            <ui-list-item
-              v-for="(_, trigger) in triggers"
-              :key="trigger"
-              v-close-popover
-              :value="trigger"
-              class="cursor-pointer"
-              small
-              @click="addTrigger(trigger)"
-            >
-              {{ t(`workflow.blocks.trigger.items.${trigger}`) }}
-            </ui-list-item>
-          </ui-list>
-        </ui-popover>
-      </div>
+      <shared-workflow-triggers
+        :triggers="state.triggers"
+        @update="updateWorkflow"
+      />
     </ui-modal>
   </div>
 </template>
 <script setup>
-import { onMounted, reactive, watch } from 'vue';
+import { onMounted, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid/non-secure';
-import cloneDeep from 'lodash.clonedeep';
-import TriggerDate from './Trigger/TriggerDate.vue';
-import TriggerInterval from './Trigger/TriggerInterval.vue';
-import TriggerVisitWeb from './Trigger/TriggerVisitWeb.vue';
-import TriggerContextMenu from './Trigger/TriggerContextMenu.vue';
-import TriggerSpecificDay from './Trigger/TriggerSpecificDay.vue';
-// import TriggerElementChange from './Trigger/TriggerElementChange.vue';
-import TriggerKeyboardShortcut from './Trigger/TriggerKeyboardShortcut.vue';
+import SharedWorkflowTriggers from '@/components/newtab/shared/SharedWorkflowTriggers.vue';
 import EditWorkflowParameters from './EditWorkflowParameters.vue';
 
 const props = defineProps({
@@ -112,57 +54,6 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update:data']);
-
-const triggers = {
-  // 'element-change': TriggerElementChange,
-  interval: {
-    component: TriggerInterval,
-    data: {
-      interval: 60,
-      delay: 5,
-      fixedDelay: false,
-    },
-  },
-  'context-menu': {
-    onlyOne: true,
-    component: TriggerContextMenu,
-    data: {
-      contextMenuName: '',
-      contextTypes: [],
-    },
-  },
-  date: {
-    component: TriggerDate,
-    data: {
-      date: '',
-    },
-  },
-  'specific-day': {
-    component: TriggerSpecificDay,
-    data: {
-      days: [],
-      time: '00:00',
-    },
-  },
-  'on-startup': {
-    onlyOne: true,
-    component: null,
-    data: null,
-  },
-  'visit-web': {
-    component: TriggerVisitWeb,
-    data: {
-      url: '',
-      isUrlRegex: false,
-    },
-  },
-  'keyboard-shortcut': {
-    component: TriggerKeyboardShortcut,
-    data: {
-      shortcut: '',
-    },
-  },
-};
 
 const { t } = useI18n();
 
@@ -175,31 +66,10 @@ const state = reactive({
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }
-function addTrigger(type) {
-  if (triggers[type].onlyOne) {
-    const trigerExists = state.triggers.some(
-      (trigger) => trigger.type === type
-    );
-    if (trigerExists) return;
-  }
-
-  state.triggers.push({
-    id: nanoid(5),
-    type,
-    data: cloneDeep(triggers[type].data),
-  });
+function updateWorkflow(triggers) {
+  state.triggers = triggers;
+  updateData({ triggers });
 }
-function updateTriggerData(index, data) {
-  Object.assign(state.triggers[index].data, data);
-}
-
-watch(
-  () => state.triggers,
-  (newData) => {
-    updateData({ triggers: newData });
-  },
-  { deep: true }
-);
 
 onMounted(() => {
   if (props.data.triggers) return;
