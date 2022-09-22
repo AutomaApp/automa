@@ -5,11 +5,11 @@
       :label="t('workflow.blocks.trigger.forms.interval')"
       type="number"
       class="w-full"
-      placeholder="1-120"
+      placeholder="1-360"
       min="1"
-      max="120"
+      max="360"
       @change="
-        updateIntervalInput($event, { key: 'interval', min: 1, max: 120 })
+        updateIntervalInput($event, { key: 'interval', min: 1, max: 360 })
       "
     />
     <ui-input
