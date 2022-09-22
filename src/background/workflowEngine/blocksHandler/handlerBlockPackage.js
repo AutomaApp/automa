@@ -9,6 +9,7 @@ export default async function (
   const pkgCache = this.engine.packagesCache[id];
 
   const { 1: targetId } = prevTarget.split('input-');
+  const addBlockPrefix = (itemId) => `${id}__${itemId}`;
   const hasCache = pkgCache.nodes[targetId];
   if (hasCache)
     return {
@@ -21,7 +22,7 @@ export default async function (
     throw new Error('Input not found');
   }
   const block = data.data.nodes.find((node) => node.id === input.blockId);
-  pkgCache.nodes[targetId] = block.id;
+  pkgCache.nodes[targetId] = addBlockPrefix(block.id);
 
   const connections = {};
 
@@ -29,8 +30,11 @@ export default async function (
     const outputsMap = new Set();
 
     data.inputs.forEach((item) => {
-      connections[item.id] = [
-        { id: item.blockId, targetId: `${block.id}-input-1` },
+      connections[addBlockPrefix(item.id)] = [
+        {
+          id: addBlockPrefix(item.blockId),
+          targetId: `${addBlockPrefix(block.id)}-input-1`,
+        },
       ];
     });
     data.outputs.forEach((output) => {
@@ -40,11 +44,12 @@ export default async function (
         this.engine.connectionsMap[`${id}-output-${output.id}`];
       if (!connection) return;
 
-      connections[output.handleId] = [...connection];
+      connections[addBlockPrefix(output.handleId)] = [...connection];
     });
 
     data.data.nodes.forEach((node) => {
-      this.engine.blocks[node.id] = { ...node };
+      const newNodeId = addBlockPrefix(node.id);
+      this.engine.blocks[newNodeId] = { ...node, id: newNodeId };
     });
 
     if (!block) {
@@ -54,11 +59,12 @@ export default async function (
     data.data.edges.forEach(({ sourceHandle, target, targetHandle }) => {
       if (outputsMap.has(sourceHandle)) return;
 
-      if (!connections[sourceHandle]) connections[sourceHandle] = [];
-      connections[sourceHandle].push({
-        id: target,
-        targetHandle,
-        sourceHandle,
+      const nodeSourceHandle = addBlockPrefix(sourceHandle);
+      if (!connections[nodeSourceHandle]) connections[nodeSourceHandle] = [];
+      connections[nodeSourceHandle].push({
+        id: addBlockPrefix(target),
+        sourceHandle: nodeSourceHandle,
+        targetHandle: addBlockPrefix(targetHandle),
       });
     });
 
@@ -69,6 +75,6 @@ export default async function (
 
   return {
     data: prevBlockData,
-    nextBlockId: [{ id: block.id }],
+    nextBlockId: [{ id: addBlockPrefix(block.id) }],
   };
 }
