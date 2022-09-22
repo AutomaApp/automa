@@ -6,10 +6,26 @@
     :d="edgePath"
     :marker-end="markerEnd"
   />
+  <edge-text
+    v-if="label"
+    :x="center[0]"
+    :y="center[1]"
+    :label="label"
+    :label-style="{ fill: 'white' }"
+    :label-show-bg="true"
+    :label-bg-style="{ fill: '#3b82f6' }"
+    :label-bg-padding="[2, 4]"
+    :label-bg-border-radius="2"
+  />
 </template>
 <script setup>
 import { computed } from 'vue';
-import { getBezierPath, getSmoothStepPath } from '@braks/vue-flow';
+import {
+  getBezierPath,
+  getSmoothStepPath,
+  getEdgeCenter,
+  EdgeText,
+} from '@braks/vue-flow';
 
 const props = defineProps({
   id: {
@@ -50,6 +66,11 @@ const props = defineProps({
     required: false,
     default: '',
   },
+  label: {
+    type: String,
+    required: false,
+    default: '',
+  },
   style: {
     type: Object,
     required: false,
@@ -57,6 +78,16 @@ const props = defineProps({
   },
 });
 
+const center = computed(() => {
+  if (!props.label) return null;
+
+  return getEdgeCenter({
+    sourceX: props.sourceX,
+    sourceY: props.sourceY,
+    targetX: props.targetX,
+    targetY: props.targetY,
+  });
+});
 const edgePath = computed(() => {
   const options = {
     sourceX: props.sourceX,
