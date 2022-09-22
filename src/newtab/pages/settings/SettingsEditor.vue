@@ -1,34 +1,6 @@
 <template>
   <div class="max-w-2xl">
-    <p class="font-semibold">
-      {{ t('settings.editor.curvature.title') }}
-    </p>
-    <div class="flex items-center space-x-4 mt-2">
-      <div
-        v-for="item in lineTypes"
-        :key="item.id"
-        class="cursor-pointer"
-        role="button"
-        @click="settings.lineType = item.id"
-      >
-        <div
-          :class="{
-            'ring ring-accent': item.id === settings.lineType,
-          }"
-          class="p-0.5 rounded-lg"
-        >
-          <img
-            :src="require(`@/assets/images/${item.img}.png`)"
-            width="140"
-            class="rounded-lg"
-          />
-        </div>
-        <span class="text-sm text-gray-600 dark:text-gray-200 ml-1">
-          {{ item.name }}
-        </span>
-      </div>
-    </div>
-    <p class="font-semibold mt-8">Zoom</p>
+    <p class="font-semibold">Zoom</p>
     <div class="flex items-center mt-1 space-x-4">
       <ui-input
         v-model.number="settings.minZoom"
@@ -90,14 +62,6 @@ import { reactive, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import cloneDeep from 'lodash.clonedeep';
 import { useStore } from '@/stores/main';
-
-const lineTypes = [
-  { id: 'default', name: 'Default', img: 'default' },
-  { id: 'step', name: 'Step', img: 'step' },
-  { id: 'straight', name: 'Straight', img: 'straight' },
-  { id: 'smoothstep', name: 'Smooth step', img: 'smooth-step' },
-  { id: 'simplebezier', name: 'Simple bezier', img: 'default' },
-];
 
 const { t } = useI18n();
 const store = useStore();
