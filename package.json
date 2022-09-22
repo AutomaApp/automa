@@ -49,6 +49,7 @@
     "codemirror": "^6.0.1",
     "compare-versions": "^4.1.2",
     "cron-parser": "^4.6.0",
+    "cronstrue": "^2.11.0",
     "crypto-js": "^4.1.1",
     "css-selector-generator": "^3.6.4",
     "dagre": "^0.8.5",

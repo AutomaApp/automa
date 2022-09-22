@@ -124,6 +124,7 @@ import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
+import { readableCron } from '@/lib/cronstrue';
 import { findTriggerBlock, objectHasKey } from '@/utils/helper';
 import {
   registerWorkflowTrigger,
@@ -154,7 +155,7 @@ const scheduleState = reactive({
 });
 
 let rowId = 0;
-const scheduledTypes = ['interval', 'date', 'specific-day'];
+const scheduledTypes = ['interval', 'date', 'specific-day', 'cron-job'];
 const tableHeaders = [
   {
     value: 'name',
@@ -234,6 +235,9 @@ function scheduleText(data) {
         'DD MMM YYYY, hh:mm:ss A'
       );
       break;
+    case 'cron-job':
+      text.schedule = readableCron(data.expression);
+      break;
     default:
   }
 
@@ -282,7 +286,7 @@ async function getTriggersData(triggerData, { id, name }) {
       }
     };
 
-    if (triggerData.triggers) {
+    if (triggerData?.triggers) {
       const result = await Promise.all(
         triggerData.triggers.map((trigger) => {
           const triggerItemData = { ...trigger };

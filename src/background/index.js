@@ -9,6 +9,7 @@ import convertWorkflowData from '@/utils/convertWorkflowData';
 import getBlockMessage from '@/utils/getBlockMessage';
 import automa from '@business';
 import {
+  registerCronJob,
   registerSpecificDay,
   registerContextMenu,
   registerWorkflowTrigger,
@@ -378,11 +379,21 @@ browser.alarms.onAlarm.addListener(async ({ name }) => {
   const currentWorkflow = await workflow.get(workflowId);
   if (!currentWorkflow) return;
 
-  const drawflow =
-    typeof currentWorkflow.drawflow === 'string'
-      ? parseJSON(currentWorkflow.drawflow, {})
-      : currentWorkflow.drawflow;
-  const { data } = findTriggerBlock(drawflow) || {};
+  let data = currentWorkflow.trigger;
+  if (!data) {
+    const drawflow =
+      typeof currentWorkflow.drawflow === 'string'
+        ? parseJSON(currentWorkflow.drawflow, {})
+        : currentWorkflow.drawflow;
+    const { data: triggerBlockData } = findTriggerBlock(drawflow) || {};
+    data = triggerBlockData;
+  }
+
+  if (triggerId) {
+    data = data.triggers.find((trigger) => trigger.id === triggerId);
+    if (data) data = { ...data, ...data.data };
+  }
+
   if (data && data.type === 'interval' && data.fixedDelay) {
     const workflowState = await workflow.states.get(
       (item) => item.workflowId === workflowId
@@ -411,16 +422,15 @@ browser.alarms.onAlarm.addListener(async ({ name }) => {
   }
 
   workflow.execute(currentWorkflow);
+  console.log(data);
+  if (!data) return;
 
-  if (data && data.type === 'specific-day') {
-    let triggerData = data;
-    if (triggerId && data.triggers) {
-      triggerData = data.triggers.find(
-        (trigger) => trigger.id === triggerId
-      )?.data;
+  if (['specific-day', 'cron-job'].includes(data.type)) {
+    if (data.type === 'specific-day') {
+      registerSpecificDay(name, data);
+    } else {
+      registerCronJob(name, data);
     }
-
-    if (triggerData) registerSpecificDay(workflowId, triggerData);
   }
 });
 
@@ -545,26 +555,10 @@ browser.runtime.onStartup.addListener(async () => {
     }
 
     if (triggerBlock) {
-      if (triggerBlock.type === 'specific-day') {
-        const alarm = await browser.alarms.get(currWorkflow.id);
-
-        if (!alarm) await registerSpecificDay(currWorkflow.id, triggerBlock);
-      } else if (triggerBlock.type === 'date' && triggerBlock.date) {
-        const [hour, minute] = triggerBlock.time.split(':');
-        const date = dayjs(triggerBlock.date)
-          .hour(hour)
-          .minute(minute)
-          .second(0);
-
-        const isBefore = dayjs().isBefore(date);
-
-        if (isBefore) {
-          await browser.alarms.create(currWorkflow.id, {
-            when: date.valueOf(),
-          });
-        }
-      } else if (triggerBlock.type === 'on-startup') {
+      if (triggerBlock.type === 'on-startup') {
         workflow.execute(currWorkflow);
+      } else {
+        await registerWorkflowTrigger(currWorkflow.id, triggerBlock);
       }
     }
   }

@@ -1,5 +1,6 @@
 import browser from 'webextension-polyfill';
 import dayjs from 'dayjs';
+import cronParser from 'cron-parser';
 import { isObject } from './helper';
 
 export function registerContextMenu(workflowId, data) {
@@ -14,7 +15,7 @@ export function registerContextMenu(workflowId, data) {
     const browserContext = isFirefox ? browser.menus : browser.contextMenus;
 
     if (!browserContext) {
-      reject(new Error("Don't have context menu permission"));
+      resolve();
       return;
     }
 
@@ -171,7 +172,7 @@ export function registerInterval(workflowId, data) {
   return browser.alarms.create(workflowId, alarmInfo);
 }
 
-export function registerSpecificDate(workflowId, data) {
+export async function registerSpecificDate(workflowId, data) {
   let date = Date.now() + 60000;
 
   if (data.date) {
@@ -183,7 +184,9 @@ export function registerSpecificDate(workflowId, data) {
       .valueOf();
   }
 
-  return browser.alarms.create(workflowId, {
+  if (Date.now() > date) return;
+
+  await browser.alarms.create(workflowId, {
     when: date,
   });
 }
@@ -232,9 +235,21 @@ export async function registerOnStartup() {
   // Do nothing
 }
 
+export async function registerCronJob(workflowId, data) {
+  try {
+    const cronExpression = cronParser.parseExpression(data.expression);
+    const nextSchedule = cronExpression.next();
+
+    await browser.alarms.create(workflowId, { when: nextSchedule.getTime() });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export const workflowTriggersMap = {
   interval: registerInterval,
   date: registerSpecificDate,
+  'cron-job': registerCronJob,
   'visit-web': registerVisitWeb,
   'on-startup': registerOnStartup,
   'specific-day': registerSpecificDay,

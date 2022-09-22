@@ -60,6 +60,7 @@ import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid/non-secure';
 import cloneDeep from 'lodash.clonedeep';
 import TriggerDate from '../workflow/edit/Trigger/TriggerDate.vue';
+import TriggerCronJob from '../workflow/edit/Trigger/TriggerCronJob.vue';
 import TriggerInterval from '../workflow/edit/Trigger/TriggerInterval.vue';
 import TriggerVisitWeb from '../workflow/edit/Trigger/TriggerVisitWeb.vue';
 import TriggerContextMenu from '../workflow/edit/Trigger/TriggerContextMenu.vue';
@@ -87,6 +88,12 @@ const triggersData = {
       interval: 60,
       delay: 5,
       fixedDelay: false,
+    },
+  },
+  'cron-job': {
+    component: TriggerCronJob,
+    data: {
+      expression: '',
     },
   },
   'context-menu': {
