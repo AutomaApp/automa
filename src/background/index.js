@@ -422,7 +422,7 @@ browser.alarms.onAlarm.addListener(async ({ name }) => {
   }
 
   workflow.execute(currentWorkflow);
-  console.log(data);
+
   if (!data) return;
 
   if (['specific-day', 'cron-job'].includes(data.type)) {
@@ -558,7 +558,7 @@ browser.runtime.onStartup.addListener(async () => {
       if (triggerBlock.type === 'on-startup') {
         workflow.execute(currWorkflow);
       } else {
-        await registerWorkflowTrigger(currWorkflow.id, triggerBlock);
+        await registerWorkflowTrigger(currWorkflow.id, { data: triggerBlock });
       }
     }
   }
