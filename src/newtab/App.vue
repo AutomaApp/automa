@@ -213,7 +213,7 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
 (async () => {
   try {
     const tabs = await browser.tabs.query({
-      url: browser.runtime.getURL('/newtab.html/*'),
+      url: browser.runtime.getURL('/newtab.html'),
     });
     if (tabs.length > 1) {
       const firstTab = tabs.shift();
