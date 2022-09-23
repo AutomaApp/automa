@@ -44,6 +44,25 @@
           </div>
           <slot name="header-prepend" />
           <div class="flex-grow" />
+          <ui-popover trigger-width class="mr-4">
+            <template #trigger>
+              <ui-button>
+                <span>Export logs</span>
+                <v-remixicon name="riArrowDropDownLine" class="ml-2 -mr-1" />
+              </ui-button>
+            </template>
+            <ui-list class="space-y-1">
+              <ui-list-item
+                v-for="type in dataExportTypes"
+                :key="type.id"
+                v-close-popover
+                class="cursor-pointer"
+                @click="exportLogs(type.id)"
+              >
+                {{ t(`log.exportData.types.${type.id}`) }}
+              </ui-list-item>
+            </ui-list>
+          </ui-popover>
           <ui-input
             v-model="state.search"
             :placeholder="t('common.search')"
@@ -268,10 +287,12 @@ import {
   shallowRef,
 } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { countDuration } from '@/utils/helper';
-import { getBlocks } from '@/utils/getSharedData';
-import dayjs from '@/lib/dayjs';
+import Papa from 'papaparse';
 import objectPath from 'object-path';
+import { countDuration, fileSaver } from '@/utils/helper';
+import { getBlocks } from '@/utils/getSharedData';
+import { dataExportTypes } from '@/utils/shared';
+import dayjs from '@/lib/dayjs';
 
 const SharedCodemirror = defineAsyncComponent(() =>
   import('@/components/newtab/shared/SharedCodemirror.vue')
@@ -293,6 +314,20 @@ const props = defineProps({
   },
 });
 
+const files = {
+  'plain-text': {
+    mime: 'text/plain',
+    ext: '.txt',
+  },
+  json: {
+    mime: 'application/json',
+    ext: '.json',
+  },
+  csv: {
+    mime: 'text/csv',
+    ext: '.csv',
+  },
+};
 const logsType = {
   success: {
     color: 'text-green-400',
@@ -389,6 +424,84 @@ const logCtxData = computed(() => {
   return JSON.stringify(logData, null, 2);
 });
 
+function exportLogs(type) {
+  let data = type === 'plain-text' ? '' : [];
+  const getItemData = {
+    'plain-text': ([
+      timestamp,
+      status,
+      name,
+      description,
+      message,
+      ctxData,
+    ]) => {
+      data += `${timestamp} - ${status} - ${name} - ${description} - ${message} - ${JSON.stringify(
+        ctxData
+      )} \n`;
+    },
+    json: ([timestamp, status, name, description, message, ctxData]) => {
+      data.push({
+        timestamp,
+        status,
+        name,
+        description,
+        message,
+        data: ctxData,
+      });
+    },
+    csv: (item, index) => {
+      if (index === 0) {
+        data.unshift([
+          'timestamp',
+          'status',
+          'name',
+          'description',
+          'message',
+          'data',
+        ]);
+      }
+
+      item[item.length - 1] = JSON.stringify(item[item.length - 1]);
+
+      data.push(item);
+    },
+  };
+  translatedLog.value.forEach((item, index) => {
+    getItemData[type](
+      [
+        dayjs(item.timestamp || Date.now()).format('DD-MM-YYYY, hh:mm:ss'),
+        item.type.toUpperCase(),
+        item.name,
+        item.description || 'NULL',
+        item.message || 'NULL',
+        props.ctxData[item.id] || null,
+      ],
+      index
+    );
+  });
+
+  switch (type) {
+    case 'plain-text':
+      data = [data];
+      break;
+    case 'csv':
+      data = [Papa.unparse(data)];
+      data.unshift(new Uint8Array([0xef, 0xbb, 0xbf]));
+      break;
+    case 'json':
+      data = [JSON.stringify(data, null, 2)];
+      break;
+    default:
+  }
+
+  const { mime, ext } = files[type];
+  const blobUrl = URL.createObjectURL(new Blob(data, { type: mime }));
+  const filename = `[${dayjs().format('DD-MM-YYYY, HH:mm:ss')}] ${
+    props.currentLog.name
+  } - logs`;
+
+  fileSaver(`${filename}${ext}`, blobUrl);
+}
 function clearActiveItem() {
   state.itemId = '';
   activeLog.value = null;
