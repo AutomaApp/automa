@@ -13,12 +13,12 @@
     <MiniMap v-if="minimap" :node-class-name="minimapNodeClassName" />
     <div
       v-if="editorControls"
-      class="flex items-end absolute w-full p-4 left-0 bottom-0 z-10 pr-60"
+      class="flex items-center absolute w-full p-4 left-0 bottom-0 z-10 pr-60"
     >
       <slot name="controls-prepend" />
       <editor-search-blocks :editor="editor" />
-      <slot name="controls-append" />
       <div class="flex-grow pointer-events-none" />
+      <slot name="controls-append" />
       <button
         v-tooltip.group="t('workflow.editor.resetZoom')"
         class="control-button mr-2"

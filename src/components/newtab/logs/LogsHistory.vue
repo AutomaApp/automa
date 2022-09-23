@@ -501,6 +501,8 @@ function exportLogs(type) {
   } - logs`;
 
   fileSaver(`${filename}${ext}`, blobUrl);
+
+  URL.revokeObjectURL(blobUrl);
 }
 function clearActiveItem() {
   state.itemId = '';
