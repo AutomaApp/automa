@@ -93,6 +93,7 @@
         :workflow="workflow"
         :tab="state.activeTab"
         :pinned="true"
+        class="mb-2"
         @details="openWorkflowPage"
         @update="updateWorkflow(workflow.id, $event)"
         @execute="executeWorkflow"

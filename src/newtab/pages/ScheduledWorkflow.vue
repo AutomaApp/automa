@@ -1,18 +1,25 @@
 <template>
   <div class="container pt-8 pb-4">
-    <h1 class="text-2xl font-semibold mb-8 capitalize">
+    <h1 class="text-2xl font-semibold mb-12 capitalize">
       {{ t('scheduledWorkflow.title', 2) }}
     </h1>
-    <ui-input
-      v-model="state.query"
-      prepend-icon="riSearch2Line"
-      :placeholder="t('common.search')"
-    />
+    <div class="flex items-center">
+      <ui-input
+        v-model="state.query"
+        prepend-icon="riSearch2Line"
+        :placeholder="t('common.search')"
+      />
+      <div class="flex-grow" />
+      <ui-button @click="scheduleState.showModal = true">
+        <v-remixicon name="riAddLine" class="-ml mr-2" />
+        Schedule workflow
+      </ui-button>
+    </div>
     <ui-table
       :headers="tableHeaders"
       :items="triggers"
       item-key="id"
-      class="w-full mt-4"
+      class="w-full mt-8"
     >
       <template #item-name="{ item }">
         <router-link
@@ -50,19 +57,80 @@
         </button>
       </template>
     </ui-table>
+    <ui-modal
+      v-model="scheduleState.showModal"
+      title="Workflow Triggers"
+      persist
+      content-class="max-w-2xl"
+    >
+      <template #header-append>
+        <div>
+          <ui-button @click="clearAddWorkflowSchedule">
+            {{ t('common.cancel') }}
+          </ui-button>
+          <ui-button
+            class="ml-4"
+            variant="accent"
+            @click="updateWorkflowTrigger"
+          >
+            {{ t('common.save') }}
+          </ui-button>
+        </div>
+      </template>
+      <ui-autocomplete
+        v-if="!scheduleState.selectedWorkflow.id"
+        :model-value="scheduleState.selectedWorkflow.query"
+        :items="workflowStore.getWorkflows"
+        block
+        class="mt-2"
+        item-key="id"
+        item-label="name"
+        @selected="onSelectedWorkflow"
+      >
+        <ui-input
+          v-model="scheduleState.selectedWorkflow.query"
+          class="w-full"
+          autocomplete="off"
+          placeholder="Search workflow"
+        />
+      </ui-autocomplete>
+      <template v-else>
+        <p class="font-semibold">
+          {{ scheduleState.selectedWorkflow.name }}
+        </p>
+        <shared-workflow-triggers
+          :key="scheduleState.selectedWorkflow.id"
+          v-model:triggers="scheduleState.selectedWorkflow.triggers"
+          :exclude="[
+            'context-menu',
+            'on-startup',
+            'visit-web',
+            'keyboard-shortcut',
+          ]"
+          class="mt-4"
+        />
+      </template>
+    </ui-modal>
   </div>
 </template>
 <script setup>
 import { onMounted, reactive, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { nanoid } from 'nanoid';
 import dayjs from 'dayjs';
+import cloneDeep from 'lodash.clonedeep';
 import browser from 'webextension-polyfill';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
+import { readableCron } from '@/lib/cronstrue';
 import { findTriggerBlock, objectHasKey } from '@/utils/helper';
-import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
+import {
+  registerWorkflowTrigger,
+  workflowTriggersMap,
+} from '@/utils/workflowTrigger';
+import SharedWorkflowTriggers from '@/components/newtab/shared/SharedWorkflowTriggers.vue';
 
 const { t } = useI18n();
 const userStore = useUserStore();
@@ -76,9 +144,18 @@ const state = reactive({
   triggers: [],
   activeTrigger: 'scheduled',
 });
+const scheduleState = reactive({
+  query: '',
+  showModal: false,
+  selectedWorkflow: {
+    id: '',
+    name: '',
+    triggers: [],
+  },
+});
 
 let rowId = 0;
-const scheduledTypes = ['interval', 'date', 'specific-day'];
+const scheduledTypes = ['interval', 'date', 'specific-day', 'cron-job'];
 const tableHeaders = [
   {
     value: 'name',
@@ -158,56 +235,106 @@ function scheduleText(data) {
         'DD MMM YYYY, hh:mm:ss A'
       );
       break;
+    case 'cron-job':
+      text.schedule = readableCron(data.expression);
+      break;
     default:
   }
 
   return text;
 }
-async function getTriggerObj(trigger, { id, name }) {
-  if (!trigger || !scheduledTypes.includes(trigger.type)) return null;
-
-  rowId += 1;
-  const triggerObj = {
-    name,
-    id: rowId,
-    nextRun: '-',
-    schedule: '',
-    active: false,
-    type: trigger.type,
-    workflowId: id,
-  };
-
+async function getTriggersData(triggerData, { id, name }) {
   try {
-    const alarm = await browser.alarms.get(id);
-    if (alarm) {
-      triggerObj.active = true;
-      triggerObj.nextRun = dayjs(alarm.scheduledTime).format(
-        'DD MMM YYYY, hh:mm:ss A'
-      );
-    }
+    const alarms = await browser.alarms.getAll();
+    const getTrigger = async (trigger) => {
+      try {
+        if (!trigger || !scheduledTypes.includes(trigger.type)) return null;
 
-    triggersData[rowId] = {
-      ...trigger,
-      workflow: { id, name },
+        rowId += 1;
+        const triggerObj = {
+          name,
+          id: rowId,
+          nextRun: '-',
+          schedule: '',
+          active: false,
+          type: trigger.type,
+          workflowId: id,
+          triggerId: trigger.id || null,
+        };
+
+        const alarm = alarms.find((alarmItem) => {
+          if (trigger.id) return alarmItem.name.includes(trigger.id);
+
+          return alarmItem.name.includes(id);
+        });
+        if (alarm) {
+          triggerObj.active = true;
+          triggerObj.nextRun = dayjs(alarm.scheduledTime).format(
+            'DD MMM YYYY, hh:mm:ss A'
+          );
+        }
+
+        triggersData[rowId] = {
+          ...trigger,
+          workflow: { id, name },
+        };
+        Object.assign(triggerObj, scheduleText(trigger));
+
+        return triggerObj;
+      } catch (error) {
+        return null;
+      }
     };
-    Object.assign(triggerObj, scheduleText(trigger));
 
-    return triggerObj;
+    if (triggerData?.triggers) {
+      const result = await Promise.all(
+        triggerData.triggers.map((trigger) => {
+          const triggerItemData = { ...trigger };
+          Object.assign(triggerItemData, triggerItemData.data);
+
+          delete triggerItemData.data;
+
+          return getTrigger(triggerItemData);
+        })
+      );
+
+      return result.reduce((acc, item) => {
+        if (item) {
+          acc.push(item);
+        }
+
+        return acc;
+      }, []);
+    }
+    const result = await getTrigger(triggerData);
+    if (!result) return [];
+
+    return [result];
   } catch (error) {
     console.error(error);
-    return null;
+    return [];
   }
 }
 async function refreshSchedule(id) {
   try {
-    const triggerData = triggersData[id];
+    const triggerData = triggersData[id] ? cloneDeep(triggersData[id]) : null;
     if (!triggerData) return;
+
+    const handler = workflowTriggersMap[triggerData.type];
+    if (!handler) return;
+
+    if (triggerData.id) {
+      triggerData.workflow.id = `trigger:${triggerData.workflow.id}:${triggerData.id}`;
+    }
 
     await registerWorkflowTrigger(triggerData.workflow.id, {
       data: triggerData,
     });
 
-    const triggerObj = await getTriggerObj(triggerData, triggerData.workflow);
+    const [triggerObj] = await getTriggersData(
+      triggerData,
+      triggerData.workflow
+    );
     if (!triggerObj) return;
 
     const triggerIndex = state.triggers.findIndex(
@@ -233,12 +360,13 @@ async function getWorkflowTrigger(workflow, { location, path }) {
     trigger = findTriggerBlock(drawflow)?.data;
   }
 
-  const obj = await getTriggerObj(trigger, workflow);
-
-  if (obj) {
-    obj.path = path;
-    obj.location = location;
-    state.triggers.push(obj);
+  const triggersList = await getTriggersData(trigger, workflow);
+  if (triggersList.length !== 0) {
+    triggersList.forEach((triggerData) => {
+      triggerData.path = path;
+      triggerData.location = location;
+      state.triggers.push(triggerData);
+    });
   }
 }
 function iterateWorkflows({ workflows, path, location }) {
@@ -249,6 +377,97 @@ function iterateWorkflows({ workflows, path, location }) {
   });
 
   return Promise.allSettled(promises);
+}
+function onSelectedWorkflow({ item }) {
+  if (!item.drawflow?.nodes) return;
+
+  const triggerBlock = findTriggerBlock(item.drawflow);
+  if (!triggerBlock) return;
+
+  let { triggersList } = triggerBlock.data;
+  if (!triggersList) {
+    triggersList = [
+      {
+        data: { ...triggerBlock.data },
+        type: triggerBlock.data.type,
+        id: nanoid(5),
+      },
+    ];
+  }
+
+  scheduleState.selectedWorkflow.id = item.id;
+  scheduleState.selectedWorkflow.name = item.name;
+  scheduleState.selectedWorkflow.triggers = [...triggersList];
+}
+function clearAddWorkflowSchedule() {
+  Object.assign(scheduleState, {
+    query: '',
+    showModal: false,
+    selectedWorkflow: {
+      id: '',
+      name: '',
+      triggers: [],
+    },
+  });
+}
+async function updateWorkflowTrigger() {
+  try {
+    const {
+      triggers: workflowTriggers,
+      id,
+      name,
+    } = scheduleState.selectedWorkflow;
+    const workflowData = workflowStore.getById(id);
+    if (!workflowData || !workflowData?.drawflow?.nodes) return;
+
+    const triggerBlockIndex = workflowData.drawflow.nodes.findIndex(
+      (node) => node.label === 'trigger'
+    );
+    if (triggerBlockIndex === -1) return;
+
+    const copyNodes = [...workflowData.drawflow.nodes];
+    copyNodes[triggerBlockIndex].data.triggers = cloneDeep(workflowTriggers);
+    await workflowStore.update({
+      id,
+      data: {
+        trigger: { triggers: workflowTriggers },
+        drawflow: {
+          ...workflowData.drawflow,
+          nodes: copyNodes,
+        },
+      },
+    });
+
+    state.triggers = state.triggers.filter((trigger) => {
+      const isNotMatch =
+        scheduleState.selectedWorkflow.id !== trigger.workflowId;
+      if (!isNotMatch) {
+        delete triggersData[trigger.id];
+      }
+
+      return isNotMatch;
+    });
+
+    await registerWorkflowTrigger(id, {
+      data: { triggers: workflowTriggers },
+    });
+
+    const triggersList = await getTriggersData(
+      { triggers: workflowTriggers },
+      { id, name }
+    );
+    if (triggersList.length !== 0) {
+      triggersList.forEach((triggerData) => {
+        triggerData.location = 'Local';
+        triggerData.path = `/workflows/${id}`;
+        state.triggers.push(triggerData);
+      });
+    }
+
+    clearAddWorkflowSchedule();
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 onMounted(async () => {

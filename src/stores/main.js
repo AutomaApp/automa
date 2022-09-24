@@ -15,10 +15,11 @@ export const useStore = defineStore('main', {
     settings: {
       locale: 'en',
       deleteLogAfter: 30,
+      logsLimit: 1000,
       editor: {
         minZoom: 0.6,
         maxZoom: 1.3,
-        arrow: false,
+        arrow: true,
         snapToGrid: false,
         lineType: 'default',
         snapGrid: { 0: 15, 1: 15 },

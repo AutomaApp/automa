@@ -7,47 +7,44 @@
       class="w-full mb-2"
       @change="updateData({ description: $event })"
     />
-    <ui-select
-      :model-value="data.type || 'manual'"
-      :placeholder="t('workflow.blocks.trigger.forms.triggerWorkflow')"
-      class="w-full"
-      @change="updateData({ type: $event })"
+    <ui-button
+      variant="accent"
+      class="w-full mt-4"
+      @click="state.showTriggersModal = true"
     >
-      <option v-for="(_, trigger) in triggers" :key="trigger" :value="trigger">
-        {{ t(`workflow.blocks.trigger.items.${trigger}`) }}
-      </option>
-    </ui-select>
-    <transition-expand mode="out-in">
-      <keep-alive>
-        <component
-          :is="triggers[data.type]"
-          :data="data"
-          @update="updateData"
-        />
-      </keep-alive>
-    </transition-expand>
-    <ui-button class="mt-4" @click="showModal = true">
+      Edit Triggers
+    </ui-button>
+    <ui-button class="mt-4" @click="state.showParamModal = true">
       <v-remixicon name="riCommandLine" class="mr-2 -ml-1" />
       <span>Parameters</span>
     </ui-button>
-    <ui-modal v-model="showModal" title="Parameters" content-class="max-w-4xl">
+    <ui-modal
+      v-model="state.showParamModal"
+      title="Parameters"
+      content-class="max-w-4xl"
+    >
       <edit-workflow-parameters
         :data="data.parameters"
         @update="updateData({ parameters: $event })"
       />
     </ui-modal>
+    <ui-modal
+      v-model="state.showTriggersModal"
+      title="Workflow Triggers"
+      content-class="max-w-2xl"
+    >
+      <shared-workflow-triggers
+        :triggers="state.triggers"
+        @update="updateWorkflow"
+      />
+    </ui-modal>
   </div>
 </template>
 <script setup>
-import { shallowRef } from 'vue';
+import { onMounted, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import TriggerDate from './Trigger/TriggerDate.vue';
-import TriggerInterval from './Trigger/TriggerInterval.vue';
-import TriggerVisitWeb from './Trigger/TriggerVisitWeb.vue';
-import TriggerContextMenu from './Trigger/TriggerContextMenu.vue';
-import TriggerSpecificDay from './Trigger/TriggerSpecificDay.vue';
-// import TriggerElementChange from './Trigger/TriggerElementChange.vue';
-import TriggerKeyboardShortcut from './Trigger/TriggerKeyboardShortcut.vue';
+import { nanoid } from 'nanoid/non-secure';
+import SharedWorkflowTriggers from '@/components/newtab/shared/SharedWorkflowTriggers.vue';
 import EditWorkflowParameters from './EditWorkflowParameters.vue';
 
 const props = defineProps({
@@ -58,23 +55,39 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:data']);
 
-const triggers = {
-  manual: null,
-  interval: TriggerInterval,
-  'context-menu': TriggerContextMenu,
-  // 'element-change': TriggerElementChange,
-  date: TriggerDate,
-  'specific-day': TriggerSpecificDay,
-  'on-startup': null,
-  'visit-web': TriggerVisitWeb,
-  'keyboard-shortcut': TriggerKeyboardShortcut,
-};
-
 const { t } = useI18n();
 
-const showModal = shallowRef(false);
+const state = reactive({
+  showParamModal: false,
+  showTriggersModal: false,
+  triggers: [...(props.data?.triggers || [])],
+});
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }
+function updateWorkflow(triggers) {
+  state.triggers = triggers;
+  updateData({ triggers });
+}
+
+onMounted(() => {
+  if (props.data.triggers) return;
+
+  state.triggers = [
+    { type: props.data.type, data: { ...props.data }, id: nanoid(5) },
+  ];
+});
 </script>
+<style>
+.trigger-item > button {
+  @apply focus:ring-0;
+  text-align: left;
+  .delete-btn {
+    visibility: hidden;
+  }
+  &:hover .delete-btn {
+    visibility: visible;
+  }
+}
+</style>

@@ -212,6 +212,18 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
 
 (async () => {
   try {
+    const tabs = await browser.tabs.query({
+      url: browser.runtime.getURL('/newtab.html'),
+    });
+    if (tabs.length > 1) {
+      const firstTab = tabs.shift();
+      await browser.windows.update(firstTab.windowId, { focused: true });
+      await browser.tabs.update(firstTab.id, { active: true });
+
+      await browser.tabs.remove(tabs.map((tab) => tab.id));
+      return;
+    }
+
     const { isFirstTime } = await browser.storage.local.get('isFirstTime');
     isUpdated.value = !isFirstTime && compare(currentVersion, prevVersion, '>');
 

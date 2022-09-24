@@ -17,6 +17,20 @@
           <div v-if="currentLog.status === 'error' && errorBlock">
             <p class="leading-tight line-clamp">
               {{ errorBlock.message }}
+              <a
+                v-if="errorBlock.messageId"
+                :href="`https://docs.automa.site/guide/workflow-errors.html#${errorBlock.messageId}`"
+                target="_blank"
+                title="About the error"
+                @click.stop
+              >
+                <v-remixicon
+                  name="riArrowLeftLine"
+                  size="20"
+                  class="text-gray-300 inline-block"
+                  rotate="135"
+                />
+              </a>
             </p>
             <p class="cursor-pointer" title="Jump to item" @click="jumpToError">
               On the {{ errorBlock.name }} block
@@ -28,7 +42,27 @@
               />
             </p>
           </div>
+          <slot name="header-prepend" />
           <div class="flex-grow" />
+          <ui-popover trigger-width class="mr-4">
+            <template #trigger>
+              <ui-button>
+                <span>Export logs</span>
+                <v-remixicon name="riArrowDropDownLine" class="ml-2 -mr-1" />
+              </ui-button>
+            </template>
+            <ui-list class="space-y-1">
+              <ui-list-item
+                v-for="type in dataExportTypes"
+                :key="type.id"
+                v-close-popover
+                class="cursor-pointer"
+                @click="exportLogs(type.id)"
+              >
+                {{ t(`log.exportData.types.${type.id}`) }}
+              </ui-list-item>
+            </ui-list>
+          </ui-popover>
           <ui-input
             v-model="state.search"
             :placeholder="t('common.search')"
@@ -91,6 +125,20 @@
                 class="text-sm line-clamp ml-2 flex-1 leading-tight text-gray-600 dark:text-gray-200"
               >
                 {{ item.message }}
+                <a
+                  v-if="item.messageId"
+                  :href="`https://docs.automa.site/guide/workflow-errors.html#${item.messageId}`"
+                  target="_blank"
+                  title="About the error"
+                  @click.stop
+                >
+                  <v-remixicon
+                    name="riArrowLeftLine"
+                    size="20"
+                    class="text-gray-300 inline-block"
+                    rotate="135"
+                  />
+                </a>
               </p>
               <router-link
                 v-if="item.logId"
@@ -140,14 +188,14 @@
           </select>
           {{
             t('components.pagination.text2', {
-              count: currentLog.history.length,
+              count: filteredLog.length,
             })
           }}
         </div>
         <ui-pagination
           v-model="pagination.currentPage"
           :per-page="pagination.perPage"
-          :records="currentLog.history.length"
+          :records="filteredLog.length"
         />
       </div>
     </div>
@@ -239,10 +287,12 @@ import {
   shallowRef,
 } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { countDuration } from '@/utils/helper';
-import { getBlocks } from '@/utils/getSharedData';
-import dayjs from '@/lib/dayjs';
+import Papa from 'papaparse';
 import objectPath from 'object-path';
+import { countDuration, fileSaver } from '@/utils/helper';
+import { getBlocks } from '@/utils/getSharedData';
+import { dataExportTypes } from '@/utils/shared';
+import dayjs from '@/lib/dayjs';
 
 const SharedCodemirror = defineAsyncComponent(() =>
   import('@/components/newtab/shared/SharedCodemirror.vue')
@@ -264,6 +314,20 @@ const props = defineProps({
   },
 });
 
+const files = {
+  'plain-text': {
+    mime: 'text/plain',
+    ext: '.txt',
+  },
+  json: {
+    mime: 'application/json',
+    ext: '.json',
+  },
+  csv: {
+    mime: 'text/csv',
+    ext: '.csv',
+  },
+};
 const logsType = {
   success: {
     color: 'text-green-400',
@@ -293,6 +357,13 @@ const tabs = [
   { id: 'referenceData.prevBlockData', name: 'Previous block data' },
   { id: 'replacedValue', name: 'Replaced value' },
 ];
+const messageHasReferences = [
+  'no-tab',
+  'invalid-active-tab',
+  'no-match-tab',
+  'invalid-body',
+  'element-not-found',
+];
 
 const { t, te } = useI18n();
 
@@ -310,16 +381,15 @@ const activeLog = shallowRef(null);
 const translatedLog = computed(() =>
   props.currentLog.history.map(translateLog)
 );
-const filteredLog = computed(() =>
-  translatedLog.value.filter((log) => {
-    const query = state.search.toLocaleLowerCase();
+const filteredLog = computed(() => {
+  const query = state.search.toLocaleLowerCase();
 
-    return (
+  return translatedLog.value.filter(
+    (log) =>
       log.name.toLocaleLowerCase().includes(query) ||
       log.description?.toLocaleLowerCase().includes(query)
-    );
-  })
-);
+  );
+});
 const history = computed(() =>
   filteredLog.value.slice(
     (pagination.currentPage - 1) * pagination.perPage,
@@ -333,6 +403,7 @@ const errorBlock = computed(() => {
   if (!block || block.type !== 'error' || block.id < 25) return null;
 
   block = translateLog(block);
+
   let { name } = block;
   if (block.description) name += ` (${block.description})`;
 
@@ -340,6 +411,7 @@ const errorBlock = computed(() => {
     name,
     id: block.id,
     message: block.message,
+    messageId: block.messageId,
   };
 });
 const logCtxData = computed(() => {
@@ -352,6 +424,86 @@ const logCtxData = computed(() => {
   return JSON.stringify(logData, null, 2);
 });
 
+function exportLogs(type) {
+  let data = type === 'plain-text' ? '' : [];
+  const getItemData = {
+    'plain-text': ([
+      timestamp,
+      status,
+      name,
+      description,
+      message,
+      ctxData,
+    ]) => {
+      data += `${timestamp} - ${status} - ${name} - ${description} - ${message} - ${JSON.stringify(
+        ctxData
+      )} \n`;
+    },
+    json: ([timestamp, status, name, description, message, ctxData]) => {
+      data.push({
+        timestamp,
+        status,
+        name,
+        description,
+        message,
+        data: ctxData,
+      });
+    },
+    csv: (item, index) => {
+      if (index === 0) {
+        data.unshift([
+          'timestamp',
+          'status',
+          'name',
+          'description',
+          'message',
+          'data',
+        ]);
+      }
+
+      item[item.length - 1] = JSON.stringify(item[item.length - 1]);
+
+      data.push(item);
+    },
+  };
+  translatedLog.value.forEach((item, index) => {
+    getItemData[type](
+      [
+        dayjs(item.timestamp || Date.now()).format('DD-MM-YYYY, hh:mm:ss'),
+        item.type.toUpperCase(),
+        item.name,
+        item.description || 'NULL',
+        item.message || 'NULL',
+        props.ctxData[item.id] || null,
+      ],
+      index
+    );
+  });
+
+  switch (type) {
+    case 'plain-text':
+      data = [data];
+      break;
+    case 'csv':
+      data = [Papa.unparse(data)];
+      data.unshift(new Uint8Array([0xef, 0xbb, 0xbf]));
+      break;
+    case 'json':
+      data = [JSON.stringify(data, null, 2)];
+      break;
+    default:
+  }
+
+  const { mime, ext } = files[type];
+  const blobUrl = URL.createObjectURL(new Blob(data, { type: mime }));
+  const filename = `[${dayjs().format('DD-MM-YYYY, HH:mm:ss')}] ${
+    props.currentLog.name
+  } - logs`;
+
+  fileSaver(`${filename}${ext}`, blobUrl);
+
+  URL.revokeObjectURL(blobUrl);
+}
 function clearActiveItem() {
   state.itemId = '';
   activeLog.value = null;
@@ -371,6 +523,10 @@ function translateLog(log) {
       `workflow.blocks.${log.name}.name`,
       blocks[log.name].name
     );
+  }
+
+  if (copyLog.message && messageHasReferences.includes(copyLog.message)) {
+    copyLog.messageId = `${copyLog.message}`;
   }
 
   copyLog.message = getTranslatation(

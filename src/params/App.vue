@@ -179,9 +179,10 @@ async function addWorkflow(workflowId) {
 
     const params = triggerBlock.data.parameters.map((param) => ({
       ...param,
-      value: '',
+      value: param.defaultValue,
       inputType: param.type === 'string' ? 'text' : 'number',
     }));
+
     workflows.value.push({
       params,
       data: workflow,

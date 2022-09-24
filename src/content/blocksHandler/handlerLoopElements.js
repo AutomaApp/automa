@@ -69,16 +69,13 @@ export default async function ({ data, id }) {
       const scrollableParent = getScrollParent(loopItems[0]);
       if (!scrollableParent) return { continue: true };
 
-      let scrollHeight = 0;
       if (data.scrollToBottom) {
-        scrollHeight = scrollableParent.scrollHeight;
+        const { scrollHeight } = scrollableParent;
+        scrollableParent.scrollTo(0, scrollHeight + 30);
       } else {
-        loopItems.forEach((item) => {
-          scrollHeight += item.getBoundingClientRect().height;
-        });
+        const lastElement = loopItems[loopItems.length - 1];
+        lastElement.scrollIntoView();
       }
-
-      scrollableParent.scrollTo(0, scrollHeight + 30);
 
       await sleep(500);
 

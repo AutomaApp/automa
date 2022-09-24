@@ -26,8 +26,8 @@
           workflowId: running.workflowId,
         }"
       >
-        <template #prepend>
-          <div class="mb-4 text-sm">
+        <template #header-prepend>
+          <div>
             <h3 class="leading-tight">
               {{ t('common.log', 2) }}
             </h3>

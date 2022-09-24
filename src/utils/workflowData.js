@@ -93,11 +93,14 @@ export function importWorkflow(attrs = {}) {
                 currentWorkflow.table || currentWorkflow.dataColumns;
               delete currentWorkflow.dataColumns;
 
-              workflowStore.insert({
-                ...currentWorkflow,
-                id: workflowId,
-                createdAt: Date.now(),
-              });
+              workflowStore.insert(
+                {
+                  ...currentWorkflow,
+                  id: workflowId,
+                  createdAt: Date.now(),
+                },
+                { duplicateId: true }
+              );
             });
 
             delete workflow.includedWorkflows;

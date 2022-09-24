@@ -322,7 +322,8 @@
           "date": "Date",
           "time": "Time",
           "url": "URL or Regex",
-          "shortcut": "Shortcut"
+          "shortcut": "Shortcut",
+          "cron-expression": "Cron expression"
         },
         "element-change": {
           "target": "Target element to observe",
@@ -357,6 +358,7 @@
         "items": {
           "manual": "Manually",
           "interval": "Interval",
+          "cron-job": "Cron job",
           "date": "On a specific date",
           "context-menu": "Context menu",
           "element-change": "When element change",

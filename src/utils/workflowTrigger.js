@@ -1,5 +1,6 @@
 import browser from 'webextension-polyfill';
 import dayjs from 'dayjs';
+import cronParser from 'cron-parser';
 import { isObject } from './helper';
 
 export function registerContextMenu(workflowId, data) {
@@ -14,7 +15,7 @@ export function registerContextMenu(workflowId, data) {
     const browserContext = isFirefox ? browser.menus : browser.contextMenus;
 
     if (!browserContext) {
-      reject(new Error("Don't have context menu permission"));
+      resolve();
       return;
     }
 
@@ -59,7 +60,9 @@ export function registerContextMenu(workflowId, data) {
 
 async function removeFromWorkflowQueue(workflowId) {
   const { workflowQueue } = await browser.storage.local.get('workflowQueue');
-  const queueIndex = (workflowQueue || []).indexOf(workflowId);
+  const queueIndex = (workflowQueue || []).findIndex((id) =>
+    id.includes(workflowId)
+  );
 
   if (!workflowQueue || queueIndex === -1) return;
 
@@ -70,7 +73,12 @@ async function removeFromWorkflowQueue(workflowId) {
 
 export async function cleanWorkflowTriggers(workflowId) {
   try {
-    await browser.alarms.clear(workflowId);
+    const alarms = await browser.alarms.getAll();
+    for (const alarm of alarms) {
+      if (alarm.name.includes(workflowId)) {
+        await browser.alarms.clear(alarm.name);
+      }
+    }
 
     const { visitWebTriggers, onStartupTriggers, shortcuts } =
       await browser.storage.local.get([
@@ -80,27 +88,25 @@ export async function cleanWorkflowTriggers(workflowId) {
       ]);
 
     const keyboardShortcuts = Array.isArray(shortcuts) ? {} : shortcuts || {};
-    delete keyboardShortcuts[workflowId];
+    Object.keys(keyboardShortcuts).forEach((shortcutId) => {
+      if (!shortcutId.includes(workflowId)) return;
 
-    const startupTriggers = onStartupTriggers || [];
-    const startupTriggerIndex = startupTriggers.indexOf(workflowId);
-    if (startupTriggerIndex !== -1) {
-      startupTriggers.splice(startupTriggerIndex, 1);
-    }
+      delete keyboardShortcuts[shortcutId];
+    });
 
-    const visitWebTriggerIndex = visitWebTriggers.findIndex(
-      (item) => item.id === workflowId
+    const startupTriggers = (onStartupTriggers || []).filter(
+      (id) => !id.includes(workflowId)
     );
-    if (visitWebTriggerIndex !== -1) {
-      visitWebTriggers.splice(visitWebTriggerIndex, 1);
-    }
+    const filteredVisitWebTriggers = visitWebTriggers.filter(
+      (item) => !item.id.includes(workflowId)
+    );
 
-    await removeFromWorkflowQueue();
+    await removeFromWorkflowQueue(workflowId);
 
     await browser.storage.local.set({
-      visitWebTriggers,
       shortcuts: keyboardShortcuts,
       onStartupTriggers: startupTriggers,
+      visitWebTriggers: filteredVisitWebTriggers,
     });
 
     const removeFromContextMenu = async () => {
@@ -166,7 +172,7 @@ export function registerInterval(workflowId, data) {
   return browser.alarms.create(workflowId, alarmInfo);
 }
 
-export function registerSpecificDate(workflowId, data) {
+export async function registerSpecificDate(workflowId, data) {
   let date = Date.now() + 60000;
 
   if (data.date) {
@@ -178,7 +184,9 @@ export function registerSpecificDate(workflowId, data) {
       .valueOf();
   }
 
-  return browser.alarms.create(workflowId, {
+  if (Date.now() > date) return;
+
+  await browser.alarms.create(workflowId, {
     when: date,
   });
 }
@@ -227,22 +235,40 @@ export async function registerOnStartup() {
   // Do nothing
 }
 
+export async function registerCronJob(workflowId, data) {
+  try {
+    const cronExpression = cronParser.parseExpression(data.expression);
+    const nextSchedule = cronExpression.next();
+
+    await browser.alarms.create(workflowId, { when: nextSchedule.getTime() });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const workflowTriggersMap = {
+  interval: registerInterval,
+  date: registerSpecificDate,
+  'cron-job': registerCronJob,
+  'visit-web': registerVisitWeb,
+  'on-startup': registerOnStartup,
+  'specific-day': registerSpecificDay,
+  'context-menu': registerContextMenu,
+  'keyboard-shortcut': registerKeyboardShortcut,
+};
+
 export async function registerWorkflowTrigger(workflowId, { data }) {
   try {
     await cleanWorkflowTriggers(workflowId);
 
-    const triggersHandler = {
-      interval: registerInterval,
-      date: registerSpecificDate,
-      'visit-web': registerVisitWeb,
-      'on-startup': registerOnStartup,
-      'specific-day': registerSpecificDay,
-      'context-menu': registerContextMenu,
-      'keyboard-shortcut': registerKeyboardShortcut,
-    };
-
-    if (triggersHandler[data.type]) {
-      await triggersHandler[data.type](workflowId, data);
+    if (data.triggers) {
+      for (const trigger of data.triggers) {
+        const handler = workflowTriggersMap[trigger.type];
+        if (handler)
+          await handler(`trigger:${workflowId}:${trigger.id}`, trigger.data);
+      }
+    } else if (workflowTriggersMap[data.type]) {
+      await workflowTriggersMap[data.type](workflowId, data);
     }
   } catch (error) {
     console.error(error);

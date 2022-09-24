@@ -36,12 +36,14 @@
         <div class="flex-grow"></div>
         <button
           class="mr-2 hoverable p-1 rounded-md transition"
+          @mousedown.stop.prevent
           @click.stop.prevent="state.hide = !state.hide"
         >
           <v-remixicon :name="state.hide ? 'riEyeOffLine' : 'riEyeLine'" />
         </button>
         <button
           class="hoverable p-1 rounded-md transition"
+          @mousedown.stop.prevent
           @click.stop.prevent="destroy"
         >
           <v-remixicon name="riCloseLine" />
@@ -120,6 +122,11 @@
             </li>
           </ul>
         </div>
+        <p class="mt-1 text-sm text-gray-600">
+          Click or press
+          <kbd class="p-1 rounded-md bg-box-transparent">Space</kbd> to select
+          an element
+        </p>
       </div>
     </div>
   </div>

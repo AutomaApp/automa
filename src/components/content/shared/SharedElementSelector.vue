@@ -28,6 +28,7 @@
   <teleport to="body">
     <div
       v-if="!disabled"
+      id="automa-selector-overlay"
       style="
         z-index: 9999999;
         position: fixed;
@@ -75,6 +76,10 @@ let frameElement = null;
 let frameElementRect = null;
 let lastScrollPosY = window.scrollY;
 let lastScrollPosX = window.scrollX;
+const mousePosition = {
+  x: 0,
+  y: 0,
+};
 
 let hoveredElements = [];
 const elementsState = reactive({
@@ -256,7 +261,30 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
 function onMousemove(event) {
   if (props.pause) return;
 
+  mousePosition.x = event.clientX;
+  mousePosition.y = event.clientY;
   retrieveElementsRect(event, 'hovered');
+}
+function onKeydown(event) {
+  if (props.pause || event.repeat || event.code !== 'Space') return;
+
+  const { 1: selectedElement } = document.elementsFromPoint(
+    mousePosition.x,
+    mousePosition.y
+  );
+  if (selectedElement.id === 'automa-selector-overlay') return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  retrieveElementsRect(
+    {
+      target: selectedElement,
+      clientX: mousePosition.x,
+      clientY: mousePosition.y,
+    },
+    'selected'
+  );
 }
 function onClick(event) {
   retrieveElementsRect(event, 'selected');
@@ -282,12 +310,14 @@ function attachListeners() {
   window.addEventListener('scroll', onScroll);
   document.addEventListener('click', onClick);
   window.addEventListener('message', onMessage);
+  document.addEventListener('keydown', onKeydown);
   window.addEventListener('mousemove', onMousemove);
 }
 function detachListeners() {
   window.removeEventListener('scroll', onScroll);
   document.removeEventListener('click', onClick);
   window.removeEventListener('message', onMessage);
+  document.removeEventListener('keydown', onKeydown);
   window.removeEventListener('mousemove', onMousemove);
 }
 

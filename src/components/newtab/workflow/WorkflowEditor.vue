@@ -3,9 +3,9 @@
     :id="props.id"
     :class="{ disabled: isDisabled }"
     :default-edge-options="{
+      type: 'custom',
       updatable: true,
       selectable: true,
-      type: settings.lineType,
       markerEnd: settings.arrow ? MarkerType.ArrowClosed : '',
     }"
   >
@@ -13,12 +13,12 @@
     <MiniMap v-if="minimap" :node-class-name="minimapNodeClassName" />
     <div
       v-if="editorControls"
-      class="flex items-end absolute w-full p-4 left-0 bottom-0 z-10 pr-60"
+      class="flex items-center absolute w-full p-4 left-0 bottom-0 z-10 pr-60"
     >
       <slot name="controls-prepend" />
       <editor-search-blocks :editor="editor" />
-      <slot name="controls-append" />
       <div class="flex-grow pointer-events-none" />
+      <slot name="controls-append" />
       <button
         v-tooltip.group="t('workflow.editor.resetZoom')"
         class="control-button mr-2"
@@ -56,6 +56,9 @@
         @update="updateBlockData(nodeProps.id, $event)"
       />
     </template>
+    <template #edge-custom="edgeProps">
+      <editor-custom-edge v-bind="edgeProps" />
+    </template>
   </vue-flow>
 </template>
 <script setup>
@@ -72,6 +75,7 @@ import cloneDeep from 'lodash.clonedeep';
 import { useStore } from '@/stores/main';
 import { categories } from '@/utils/shared';
 import { getBlocks } from '@/utils/getSharedData';
+import EditorCustomEdge from './editor/EditorCustomEdge.vue';
 import EditorSearchBlocks from './editor/EditorSearchBlocks.vue';
 
 const props = defineProps({
