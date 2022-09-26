@@ -32,9 +32,14 @@
 	}
 }
 
-.vue-flow.disabled {
-	.vue-flow__handle {
-		pointer-events: none;
+.vue-flow {
+	&.disabled {
+		.vue-flow__handle {
+			pointer-events: none;
+		}
+	}
+	svg g.connected-edges path {
+		stroke:  theme('colors.primary');
 	}
 }
 
