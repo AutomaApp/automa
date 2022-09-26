@@ -70,6 +70,7 @@ const options = {
   },
   chromeExtensionBoilerplate: {
     notHotReload: [
+      'background',
       'webService',
       'contentScript',
       'recordWorkflow',

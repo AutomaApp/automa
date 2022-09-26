@@ -4,7 +4,7 @@
       {{ t('common.workflow', 2) }}
     </h1>
     <div class="flex items-start mt-8">
-      <div class="w-60 sticky top-8">
+      <div class="w-60 sticky top-8 hidden lg:block">
         <div class="flex w-full">
           <ui-button
             :title="shortcut['action:new'].readable"
@@ -132,42 +132,90 @@
         />
       </div>
       <div
-        class="flex-1 workflows-list ml-8"
+        class="flex-1 workflows-list lg:ml-8"
         style="min-height: calc(100vh - 8rem)"
         @dblclick="clearSelectedWorkflows"
       >
-        <div class="flex items-center">
-          <ui-input
-            id="search-input"
-            v-model="state.query"
-            :placeholder="`${t(`common.search`)}... (${
-              shortcut['action:search'].readable
-            })`"
-            prepend-icon="riSearch2Line"
-          />
+        <div class="flex items-center flex-wrap">
+          <div class="flex items-center w-full md:w-auto">
+            <ui-input
+              id="search-input"
+              v-model="state.query"
+              class="flex-1 md:w-auto"
+              :placeholder="`${t(`common.search`)}... (${
+                shortcut['action:search'].readable
+              })`"
+              prepend-icon="riSearch2Line"
+            />
+            <ui-popover>
+              <template #trigger>
+                <ui-button variant="accent" class="md:hidden ml-4">
+                  <v-remixicon name="riAddLine" class="mr-2 -ml-1" />
+                  <span>{{ t('common.workflow') }}</span>
+                </ui-button>
+              </template>
+              <ui-list class="space-y-1">
+                <ui-list-item
+                  v-close-popover
+                  class="cursor-pointer"
+                  @click="addWorkflowModal.show = true"
+                >
+                  {{ t('workflow.new') }}
+                </ui-list-item>
+                <ui-list-item
+                  v-close-popover
+                  class="cursor-pointer"
+                  @click="openImportDialog"
+                >
+                  {{ t('workflow.import') }}
+                </ui-list-item>
+                <ui-list-item
+                  v-close-popover
+                  class="cursor-pointer"
+                  @click="addHostedWorkflow"
+                >
+                  {{ t('workflow.host.add') }}
+                </ui-list-item>
+              </ui-list>
+            </ui-popover>
+          </div>
           <div class="flex-grow"></div>
-          <span v-tooltip:bottom.group="t('workflow.backupCloud')" class="mr-4">
-            <ui-button tag="router-link" to="/backup" class="inline-block" icon>
-              <v-remixicon name="riUploadCloud2Line" />
-            </ui-button>
-          </span>
-          <div class="flex items-center workflow-sort">
-            <ui-button
-              icon
-              class="rounded-r-none border-gray-300 dark:border-gray-700 border-r"
-              @click="
-                state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc'
-              "
+          <div class="w-full md:w-auto flex items-center mt-4 md:mt-0">
+            <span
+              v-tooltip:bottom.group="t('workflow.backupCloud')"
+              class="mr-4"
             >
-              <v-remixicon
-                :name="state.sortOrder === 'asc' ? 'riSortAsc' : 'riSortDesc'"
-              />
-            </ui-button>
-            <ui-select v-model="state.sortBy" :placeholder="t('sort.sortBy')">
-              <option v-for="sort in sorts" :key="sort" :value="sort">
-                {{ t(`sort.${sort}`) }}
-              </option>
-            </ui-select>
+              <ui-button
+                tag="router-link"
+                to="/backup"
+                class="inline-block"
+                icon
+              >
+                <v-remixicon name="riUploadCloud2Line" />
+              </ui-button>
+            </span>
+            <div class="flex items-center workflow-sort flex-1">
+              <ui-button
+                icon
+                class="rounded-r-none border-gray-300 dark:border-gray-700 border-r"
+                @click="
+                  state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc'
+                "
+              >
+                <v-remixicon
+                  :name="state.sortOrder === 'asc' ? 'riSortAsc' : 'riSortDesc'"
+                />
+              </ui-button>
+              <ui-select
+                v-model="state.sortBy"
+                :placeholder="t('sort.sortBy')"
+                class="flex-1"
+              >
+                <option v-for="sort in sorts" :key="sort" :value="sort">
+                  {{ t(`sort.${sort}`) }}
+                </option>
+              </ui-select>
+            </div>
           </div>
         </div>
         <ui-tab-panels v-model="state.activeTab" class="flex-1 mt-6">
@@ -422,6 +470,6 @@ onMounted(() => {
   @apply rounded-l-none !important;
 }
 .workflows-container {
-  @apply grid gap-4 grid-cols-3 2xl:grid-cols-4;
+  @apply grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4;
 }
 </style>

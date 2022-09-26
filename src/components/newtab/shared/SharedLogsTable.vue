@@ -1,5 +1,5 @@
 <template>
-  <div class="logs-table">
+  <div class="logs-table overflow-x-auto scroll">
     <transition-expand>
       <div v-if="state.selected.length > 0" class="border-x border-t px-4 py-2">
         <ui-button @click="stopSelectedWorkflow"> Stop selected </ui-button>
@@ -26,8 +26,8 @@
               </router-link>
             </td>
             <td
-              class="log-time w-2/12 dark:text-gray-200"
               :title="t('log.duration')"
+              class="log-time w-2/12 dark:text-gray-200"
             >
               <v-remixicon name="riTimerLine"></v-remixicon>
               <span>{{
@@ -73,7 +73,10 @@
               {{ log.name }}
             </router-link>
           </td>
-          <td class="log-time w-3/12 dark:text-gray-200">
+          <td
+            class="log-time w-3/12 dark:text-gray-200"
+            style="min-width: 200px"
+          >
             <v-remixicon
               :title="t('log.startedDate')"
               name="riCalendarLine"
@@ -84,8 +87,9 @@
             </span>
           </td>
           <td
-            class="log-time w-2/12 dark:text-gray-200"
             :title="t('log.duration')"
+            class="log-time w-2/12 dark:text-gray-200"
+            style="min-width: 85px"
           >
             <v-remixicon name="riTimerLine"></v-remixicon>
             <span>{{ countDuration(log.startedAt, log.endedAt) }}</span>

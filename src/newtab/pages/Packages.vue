@@ -4,7 +4,7 @@
       {{ $t('common.packages') }}
     </h1>
     <div class="mt-8 flex items-start">
-      <div class="w-60">
+      <div class="w-60 mr-8 hidden lg:block">
         <ui-button
           class="w-full"
           variant="accent"
@@ -25,15 +25,26 @@
           </ui-list-item>
         </ui-list>
       </div>
-      <div class="flex-1 ml-8">
-        <div class="flex items-center">
-          <ui-input
-            v-model="state.query"
-            prepend-icon="riSearch2Line"
-            :placeholder="t('common.search')"
-          />
+      <div class="flex-1">
+        <div class="flex items-center flex-wrap">
+          <div class="w-full flex items-center md:w-auto">
+            <ui-input
+              v-model="state.query"
+              :placeholder="t('common.search')"
+              class="flex-1"
+              prepend-icon="riSearch2Line"
+            />
+            <ui-button
+              variant="accent"
+              class="ml-4 lg:hidden"
+              @click="addState.show = true"
+            >
+              <v-remixicon name="riAddLine" class="mr-2 -ml-1" />
+              <span>{{ t('common.packages') }}</span>
+            </ui-button>
+          </div>
           <div class="flex-grow" />
-          <div class="flex items-center workflow-sort">
+          <div class="flex items-center workflow-sort mt-4 lg:mt-0">
             <ui-button
               icon
               class="rounded-r-none border-gray-300 dark:border-gray-700 border-r"
@@ -52,7 +63,9 @@
             </ui-select>
           </div>
         </div>
-        <div class="mt-8 grid gap-4 grid-cols-3 2xl:grid-cols-4">
+        <div
+          class="mt-8 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
+        >
           <ui-card
             v-for="pkg in packages"
             :key="pkg.id"

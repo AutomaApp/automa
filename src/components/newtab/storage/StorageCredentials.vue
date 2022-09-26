@@ -6,7 +6,12 @@
       prepend-icon="riSearch2Line"
     />
     <div class="flex-grow"></div>
-    <ui-button variant="accent" @click="addState.show = true">
+    <ui-button
+      variant="accent"
+      style="min-width: 120px"
+      class="ml-4"
+      @click="addState.show = true"
+    >
       {{ t('credential.add') }}
     </ui-button>
   </div>

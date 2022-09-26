@@ -22,15 +22,15 @@
         <v-remixicon name="riDeleteBin7Line" />
       </ui-button>
     </div>
-    <div class="flex items-center mb-4">
+    <div class="flex items-center flex-wrap mb-4">
       <ui-input
         v-model="state.query"
         :placeholder="t('common.search')"
         prepend-icon="riSearch2Line"
+        class="w-full md:w-auto mb-4 md:mb-0"
       />
       <div class="flex-grow" />
-      <div class="flex-1"></div>
-      <ui-button class="ml-4" @click="editTable">
+      <ui-button class="md:ml-4" @click="editTable">
         <v-remixicon name="riPencilLine" class="mr-2 -ml-1" />
         <span>Edit table</span>
       </ui-button>
@@ -54,27 +54,29 @@
         </ui-list>
       </ui-popover>
     </div>
-    <ui-table
-      :headers="table.header"
-      :items="rows"
-      :search="state.query"
-      item-key="id"
-      class="w-full"
-    >
-      <template #item-action="{ item }">
-        <v-remixicon
-          title="Delete row"
-          class="cursor-pointer"
-          name="riDeleteBin7Line"
-          @click="deleteRow(item)"
-        />
-      </template>
-    </ui-table>
+    <div class="overflow-x-auto w-full scroll">
+      <ui-table
+        :headers="table.header"
+        :items="rows"
+        :search="state.query"
+        item-key="id"
+        class="w-full"
+      >
+        <template #item-action="{ item }">
+          <v-remixicon
+            title="Delete row"
+            class="cursor-pointer"
+            name="riDeleteBin7Line"
+            @click="deleteRow(item)"
+          />
+        </template>
+      </ui-table>
+    </div>
     <div
       v-if="table.body && table.body.length >= 10"
-      class="flex items-center justify-between mt-4"
+      class="flex flex-col md:flex-row md:items-center md:justify-between mt-4"
     >
-      <div>
+      <div class="mb-4 md:mb-0">
         {{ t('components.pagination.text1') }}
         <select v-model="pagination.perPage" class="p-1 rounded-md bg-input">
           <option

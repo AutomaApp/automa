@@ -34,7 +34,7 @@
         </template>
       </shared-logs-table>
     </div>
-    <div class="flex items-center justify-between mt-4">
+    <div class="md:flex md:items-center md:justify-between mt-4">
       <div>
         {{ t('components.pagination.text1') }}
         <select v-model="pagination.perPage" class="p-1 rounded-md bg-input">
@@ -48,6 +48,7 @@
         v-model="pagination.currentPage"
         :per-page="pagination.perPage"
         :records="filteredLogs.length"
+        class="mt-4 md:mt-0"
       />
     </div>
     <ui-card

@@ -18,6 +18,8 @@ import WorkflowState from './WorkflowState';
 import WorkflowEngine from './workflowEngine/engine';
 import blocksHandler from './workflowEngine/blocksHandler';
 import WorkflowLogger from './WorkflowLogger';
+import BackgroundUtils from './BackgroundUtils';
+import BackgroundEventsListeners from './BackgroundEventsListeners';
 
 const validateUrl = (str) => str?.startsWith('http');
 const flattenTeamWorkflows = (workflows) =>
@@ -207,32 +209,6 @@ async function updateRecording(callback) {
 
   await browser.storage.local.set({ recording });
 }
-async function openDashboard(url) {
-  const tabOptions = {
-    active: true,
-    url: browser.runtime.getURL(
-      `/newtab.html#${typeof url === 'string' ? url : ''}`
-    ),
-  };
-
-  try {
-    const [tab] = await browser.tabs.query({
-      url: browser.runtime.getURL('/newtab.html'),
-    });
-
-    if (tab) {
-      await browser.tabs.update(tab.id, tabOptions);
-
-      if (tabOptions.url.includes('workflows/')) {
-        await browser.tabs.reload(tab.id);
-      }
-    } else {
-      browser.tabs.create(tabOptions);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-}
 async function checkVisitWebTriggers(tabId, tabUrl) {
   const visitWebTriggers = await browserStorage.get('visitWebTriggers');
   if (!visitWebTriggers || visitWebTriggers.length === 0) return;
@@ -279,7 +255,7 @@ browser.webNavigation.onCompleted.addListener(
   }
 );
 browser.commands.onCommand.addListener((name) => {
-  if (name === 'open-dashboard') openDashboard();
+  if (name === 'open-dashboard') BackgroundUtils.openDashboard();
 });
 browser.webNavigation.onCommitted.addListener(
   ({ frameId, tabId, url, transitionType }) => {
@@ -433,6 +409,7 @@ browser.alarms.onAlarm.addListener(async ({ name }) => {
     }
   }
 });
+browser.action.onClicked.addListener(BackgroundEventsListeners.onActionClicked);
 
 const contextMenu =
   BROWSER_TYPE === 'firefox' ? browser.menus : browser.contextMenus;
@@ -470,7 +447,7 @@ if (browser.notifications && browser.notifications.onClicked) {
   browser.notifications.onClicked.addListener((notificationId) => {
     if (notificationId.startsWith('logs')) {
       const { 1: logId } = notificationId.split(':');
-      openDashboard(`/logs/${logId}`);
+      BackgroundUtils.openDashboard(`/logs/${logId}`);
     }
   });
 }
@@ -570,7 +547,7 @@ message.on('fetch:text', (url) => {
   return fetch(url).then((response) => response.text());
 });
 message.on('open:dashboard', async (url) => {
-  await openDashboard(url);
+  await BackgroundUtils.openDashboard(url);
 
   return Promise.resolve(true);
 });
@@ -660,7 +637,7 @@ message.on('workflow:added', ({ workflowId, teamId, source = 'community' }) => {
           active: true,
         });
       } else {
-        openDashboard(`${path}?permission=true`);
+        BackgroundUtils.openDashboard(`${path}?permission=true`);
       }
     });
 });

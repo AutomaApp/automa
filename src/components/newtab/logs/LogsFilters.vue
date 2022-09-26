@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center mb-6 space-x-4">
+  <div class="flex items-center mb-6 md:space-x-4 flex-wrap">
     <ui-input
       id="search-input"
       :model-value="filters.query"
@@ -7,10 +7,10 @@
         shortcut['action:search'].readable
       })`"
       prepend-icon="riSearch2Line"
-      class="flex-1"
+      class="w-6/12 md:w-auto md:flex-1"
       @change="updateFilters('query', $event)"
     />
-    <div class="flex items-center workflow-sort">
+    <div class="flex items-center workflow-sort w-5/12 ml-4 md:ml-0 md:w-auto">
       <ui-button
         icon
         class="rounded-r-none border-gray-300 border-r"
@@ -30,7 +30,7 @@
         </option>
       </ui-select>
     </div>
-    <ui-popover>
+    <ui-popover class="mt-4 md:mt-0">
       <template #trigger>
         <ui-button>
           <v-remixicon name="riFilter2Line" class="mr-2 -ml-1" />
@@ -68,7 +68,7 @@
         </ui-select>
       </div>
     </ui-popover>
-    <ui-button @click="$emit('clear')">
+    <ui-button class="ml-4 md:ml-0 mt-4 md:mt-0" @click="$emit('clear')">
       <v-remixicon name="riDeleteBin7Line" class="mr-2 -ml-1" />
       <span>
         {{ t('log.clearLogs.title') }}
