@@ -240,7 +240,7 @@ export const tasks = {
     outputs: 1,
     maxConnection: 1,
     allowedInputs: true,
-    refDataKeys: ['fileName'],
+    refDataKeys: ['fileName', 'selector'],
     autocomplete: ['variableName'],
     data: {
       description: '',

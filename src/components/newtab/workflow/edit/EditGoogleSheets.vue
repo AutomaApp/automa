@@ -285,9 +285,10 @@ async function previewData() {
     let result = await response.json();
 
     if (isGetValues) {
+      const values = result?.values ?? [];
       result = props.data.firstRowAsKey
-        ? convert2DArrayToArrayObj(result.values)
-        : result.values;
+        ? convert2DArrayToArrayObj(values)
+        : values;
     } else {
       result = {
         tableRange: result.tableRange || null,
