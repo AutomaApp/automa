@@ -1464,6 +1464,7 @@ export const excludeOnError = [
 ];
 
 export const contentTypes = [
+  { name: 'text/plain', value: 'text' },
   { name: 'application/json', value: 'json' },
   { name: 'multipart/form-data', value: 'form-data' },
   { name: 'application/x-www-form-urlencoded', value: 'form' },

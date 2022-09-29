@@ -1,6 +1,8 @@
 import { parseJSON, isWhitespace } from './helper';
 
 const renderContent = (content, contentType) => {
+  if (contentType === 'text/plain') return content;
+
   const renderedJson = parseJSON(content, new Error('invalid-body'));
 
   if (renderedJson instanceof Error) throw renderedJson;
@@ -38,6 +40,7 @@ const filterHeaders = (headers) => {
 };
 
 const contentTypes = {
+  text: 'text/plain',
   json: 'application/json',
   'form-data': 'multipart/form-data',
   form: 'application/x-www-form-urlencoded',
