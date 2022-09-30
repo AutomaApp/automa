@@ -244,38 +244,37 @@ function messageListener({ data, source }) {
   });
 })();
 
-// Auto install only works on Chrome
-async function autoInstall() {
-  const link = window.location.href;
-  if (/.+\.automa\.json$/.test(link)) {
-    const accept = window.confirm(
-      'Do you want to add this workflow into Automa?'
-    );
-    if (!accept) return;
-    const workflow = JSON.parse(document.body.innerText);
+window.addEventListener('DOMContentLoaded', async () => {
+  const link = window.location.pathname;
+  const isAutomaWorkflow = /.+\.automa\.json$/.test(link);
+  if (!isAutomaWorkflow) return;
 
-    const { workflows: workflowsStorage } = await browser.storage.local.get(
-      'workflows'
-    );
+  const accept = window.confirm(
+    'Do you want to add this workflow into Automa?'
+  );
+  if (!accept) return;
+  const workflow = JSON.parse(document.documentElement.innerText);
 
-    const workflowId = nanoid();
-    const workflowData = {
-      ...workflow,
-      id: workflowId,
-      dataColumns: [],
-      createdAt: Date.now(),
-      table: workflow.table || workflow.dataColumns,
-    };
+  const { workflows: workflowsStorage } = await browser.storage.local.get(
+    'workflows'
+  );
 
-    if (Array.isArray(workflowsStorage)) {
-      workflowsStorage.push(workflowData);
-    } else {
-      workflowsStorage[workflowId] = workflowData;
-    }
+  const workflowId = nanoid();
+  const workflowData = {
+    ...workflow,
+    id: workflowId,
+    dataColumns: [],
+    createdAt: Date.now(),
+    table: workflow.table || workflow.dataColumns,
+  };
 
-    await browser.storage.local.set({ workflows: workflowsStorage });
-
-    alert('Workflow installed');
+  if (Array.isArray(workflowsStorage)) {
+    workflowsStorage.push(workflowData);
+  } else {
+    workflowsStorage[workflowId] = workflowData;
   }
-}
-autoInstall();
+
+  await browser.storage.local.set({ workflows: workflowsStorage });
+
+  alert('Workflow installed');
+});
