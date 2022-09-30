@@ -47,7 +47,9 @@
           <ui-popover trigger-width class="mr-4">
             <template #trigger>
               <ui-button>
-                <span> Export <span class="hidden lg:block">logs</span> </span>
+                <span>
+                  Export <span class="hidden lg:inline-block">logs</span>
+                </span>
                 <v-remixicon name="riArrowDropDownLine" class="ml-2 -mr-1" />
               </ui-button>
             </template>

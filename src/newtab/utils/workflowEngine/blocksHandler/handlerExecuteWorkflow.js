@@ -1,9 +1,8 @@
-/* eslint-disable */
 import browser from 'webextension-polyfill';
 import { isWhitespace, parseJSON } from '@/utils/helper';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
 import convertWorkflowData from '@/utils/convertWorkflowData';
-import WorkflowEngine from '../engine';
+import WorkflowEngine from '../WorkflowEngine';
 
 function workflowListener(workflow, options) {
   return new Promise((resolve, reject) => {

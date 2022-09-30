@@ -109,7 +109,7 @@
         })`
       "
       class="hoverable p-2 rounded-lg"
-      @click="executeWorkflow"
+      @click="executeCurrWorkflow"
     >
       <v-remixicon name="riPlayLine" />
     </button>
@@ -285,7 +285,6 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import browser from 'webextension-polyfill';
-import { sendMessage } from '@/utils/message';
 import { fetchApi } from '@/utils/api';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
@@ -299,6 +298,7 @@ import { tagColors } from '@/utils/shared';
 import { parseJSON, findTriggerBlock } from '@/utils/helper';
 import { exportWorkflow, convertWorkflow } from '@/utils/workflowData';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
+import { executeWorkflow } from '@/newtab/utils/workflowEngine';
 import getTriggerText from '@/utils/triggerText';
 import convertWorkflowData from '@/utils/convertWorkflowData';
 import WorkflowShareTeam from '@/components/newtab/workflow/WorkflowShareTeam.vue';
@@ -344,7 +344,7 @@ const shortcuts = useShortcut([
   /* eslint-disable-next-line */
   getShortcut('editor:save', saveWorkflow),
   /* eslint-disable-next-line */
-  getShortcut('editor:execute-workflow', executeWorkflow),
+  getShortcut('editor:execute-workflow', executeCurrWorkflow),
 ]);
 
 const { teamId } = router.currentRoute.value.params;
@@ -405,15 +405,11 @@ function updateWorkflowDescription(value) {
   updateWorkflow(payload);
   state.showEditDescription = false;
 }
-function executeWorkflow() {
-  sendMessage(
-    'workflow:execute',
-    {
-      ...props.workflow,
-      isTesting: props.isDataChanged,
-    },
-    'background'
-  );
+function executeCurrWorkflow() {
+  executeWorkflow({
+    ...props.workflow,
+    isTesting: props.isDataChanged,
+  });
 }
 async function setAsHostWorkflow(isHost) {
   if (!userStore.user) {

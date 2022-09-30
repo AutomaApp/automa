@@ -64,7 +64,6 @@ import { usePackageStore } from '@/stores/package';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useTheme } from '@/composable/theme';
-import { parseJSON } from '@/utils/helper';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
@@ -181,14 +180,6 @@ async function syncHostedWorkflows() {
   await hostedWorkflowStore.fetchWorkflows(hostIds);
 }
 
-window.addEventListener('storage', ({ key, newValue }) => {
-  if (key !== 'workflowState') return;
-
-  const states = parseJSON(newValue, {});
-  workflowStore.states = Object.values(states).filter(
-    ({ isDestroyed }) => !isDestroyed
-  );
-});
 browser.runtime.onMessage.addListener(({ type, data }) => {
   if (type === 'refresh-packages') {
     packageStore.loadData(true);

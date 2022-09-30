@@ -107,12 +107,12 @@ import SelectionArea from '@viselect/vanilla';
 import browser from 'webextension-polyfill';
 import cloneDeep from 'lodash.clonedeep';
 import { arraySorter } from '@/utils/helper';
-import { sendMessage } from '@/utils/message';
 import { useUserStore } from '@/stores/user';
 import { useDialog } from '@/composable/dialog';
 import { useWorkflowStore } from '@/stores/workflow';
 import { exportWorkflow } from '@/utils/workflowData';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
+import { executeWorkflow } from '@/newtab/utils/workflowEngine';
 import WorkflowsLocalCard from './WorkflowsLocalCard.vue';
 
 const props = defineProps({
@@ -230,9 +230,6 @@ const pinnedWorkflows = computed(() => {
   });
 });
 
-function executeWorkflow(workflow) {
-  sendMessage('workflow:execute', workflow, 'background');
-}
 function toggleDisableWorkflow({ id, isDisabled }) {
   workflowStore.update({
     id,

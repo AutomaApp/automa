@@ -131,6 +131,9 @@ export const useWorkflowStore = defineStore('workflow', {
 
       this.retrieved = true;
     },
+    updateStates(newStates) {
+      this.states = newStates;
+    },
     async insert(data = {}, options = {}) {
       const insertedWorkflows = {};
 

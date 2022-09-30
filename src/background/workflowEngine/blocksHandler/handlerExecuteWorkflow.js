@@ -1,4 +1,3 @@
-/* eslint-disable */
 import browser from 'webextension-polyfill';
 import { isWhitespace, parseJSON } from '@/utils/helper';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
