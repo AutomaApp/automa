@@ -240,7 +240,7 @@ export const tasks = {
     outputs: 1,
     maxConnection: 1,
     allowedInputs: true,
-    refDataKeys: ['fileName'],
+    refDataKeys: ['fileName', 'selector'],
     autocomplete: ['variableName'],
     data: {
       description: '',
@@ -1464,6 +1464,7 @@ export const excludeOnError = [
 ];
 
 export const contentTypes = [
+  { name: 'text/plain', value: 'text' },
   { name: 'application/json', value: 'json' },
   { name: 'multipart/form-data', value: 'form-data' },
   { name: 'application/x-www-form-urlencoded', value: 'form' },
