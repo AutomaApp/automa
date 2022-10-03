@@ -92,8 +92,8 @@ message.on('debugger:type', ({ tabId, commands, delay }) => {
 
 message.on('get:sender', (_, sender) => sender);
 message.on('get:file', (path) => getFile(path));
-message.on('get:tab-screenshot', (options) =>
-  browser.tabs.captureVisibleTab(options)
+message.on('get:tab-screenshot', (options, sender) =>
+  browser.tabs.captureVisibleTab(sender.tab.windowId, options)
 );
 
 message.on('dashboard:refresh-packages', async () => {

@@ -61,16 +61,23 @@ async function takeScreenshot({ data, id, label }) {
 
       let tab = null;
       const isChrome = BROWSER_TYPE === 'chrome';
-      const captureTab = () => {
-        if (isChrome) return browser.tabs.captureVisibleTab(options);
+      const captureTab = async () => {
+        let result = null;
 
-        return browser.tabs.captureTab(this.activeTab.id, options);
+        if (isChrome) {
+          console.log(tab);
+          result = await browser.tabs.captureVisibleTab(tab.windowId, options);
+        } else {
+          result = await browser.tabs.captureTab(this.activeTab.id, options);
+        }
+
+        return result;
       };
 
       if (isChrome) {
         [tab] = await browser.tabs.query({
           active: true,
-          currentWindow: true,
+          url: '*://*/*',
         });
 
         if (this.windowId) {

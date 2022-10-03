@@ -1,4 +1,5 @@
 import browser from 'webextension-polyfill';
+import { sleep } from '@/utils/helper';
 import { attachDebugger } from '../helper';
 
 async function activeTab(block) {
@@ -45,6 +46,11 @@ async function activeTab(block) {
       );
       await Promise.allSettled(preloadScripts);
     }
+
+    await browser.tabs.update(tab.id, { active: true });
+    await browser.windows.update(tab.windowId, { focused: true });
+
+    await sleep(200);
 
     return data;
   } catch (error) {
