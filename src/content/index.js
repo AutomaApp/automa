@@ -136,18 +136,18 @@ function messageListener({ data, source }) {
 
   initCommandPalette();
 
-  window.isAutomaInjected = true;
-  window.addEventListener('message', messageListener);
-
   let contextElement = null;
   let $ctxTextSelection = '';
 
+  window.isAutomaInjected = true;
+  window.addEventListener('message', messageListener);
+  window.addEventListener('contextmenu', ({ target }) => {
+    contextElement = target;
+    $ctxTextSelection = window.getSelection().toString();
+  });
+
   if (isMainFrame) {
     shortcutListener();
-    window.addEventListener('contextmenu', ({ target }) => {
-      contextElement = target;
-      $ctxTextSelection = window.getSelection().toString();
-    });
     // window.addEventListener('load', elementObserver);
   }
 

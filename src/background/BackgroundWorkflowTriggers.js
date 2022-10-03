@@ -114,10 +114,14 @@ class BackgroundWorkflowTriggers {
   static async contextMenu({ parentMenuItemId, menuItemId, frameId }, tab) {
     try {
       if (parentMenuItemId !== 'automaContextMenu') return;
-      const message = await browser.tabs.sendMessage(tab.id, {
-        frameId,
-        type: 'context-element',
-      });
+      const message = await browser.tabs.sendMessage(
+        tab.id,
+        {
+          type: 'context-element',
+        },
+        { frameId }
+      );
+
       let workflowId = menuItemId;
       if (menuItemId.startsWith('trigger')) {
         const { 1: triggerWorkflowId } = menuItemId.split(':');
