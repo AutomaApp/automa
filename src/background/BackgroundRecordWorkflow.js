@@ -15,6 +15,19 @@ class BackgroundRecordWorkflow {
       files: ['recordWorkflow.bundle.js'],
     });
   }
+
+  static async updateRecording(callback) {
+    const { isRecording, recording } = await browser.storage.local.get([
+      'isRecording',
+      'recording',
+    ]);
+
+    if (!isRecording || !recording) return;
+
+    callback(recording);
+
+    await browser.storage.local.set({ recording });
+  }
 }
 
 export default BackgroundRecordWorkflow;

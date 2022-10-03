@@ -58,8 +58,8 @@
 <script setup>
 import browser from 'webextension-polyfill';
 import { useI18n } from 'vue-i18n';
-import { sendMessage } from '@/utils/message';
 import { getBlocks } from '@/utils/getSharedData';
+import { workflowState } from '@/newtab/utils/workflowEngine';
 import dayjs from '@/lib/dayjs';
 
 const props = defineProps({
@@ -81,10 +81,6 @@ function openTab() {
   browser.tabs.update(props.data.state.tabId, { active: true });
 }
 function stopWorkflow() {
-  sendMessage(
-    props.data.isCollection ? 'collection:stop' : 'workflow:stop',
-    props.data.id,
-    'background'
-  );
+  workflowState.stop(props.data.id);
 }
 </script>

@@ -113,8 +113,8 @@
 <script setup>
 import { reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { sendMessage } from '@/utils/message';
 import { countDuration } from '@/utils/helper';
+import { workflowState } from '@/newtab/utils/workflowEngine';
 import dayjs from '@/lib/dayjs';
 
 defineProps({
@@ -144,7 +144,7 @@ function getTranslation(key, defText = '') {
   return te(key) ? t(key) : defText;
 }
 function stopWorkflow(stateId) {
-  sendMessage('workflow:stop', stateId, 'background');
+  workflowState.stop(stateId);
 }
 function toggleSelectedLog(selected, id) {
   if (selected) {

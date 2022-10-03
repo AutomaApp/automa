@@ -1,10 +1,11 @@
 import browser from 'webextension-polyfill';
 import BackgroundUtils from './BackgroundUtils';
 
-const flattenTeamWorkflows = (workflows) =>
-  Object.values(Object.values(workflows)[0]);
-
 class BackgroundWorkflowUtils {
+  static flattenTeamWorkflows(workflows) {
+    return Object.values(Object.values(workflows || {})[0] || {});
+  }
+
   static async getWorkflow(workflowId) {
     if (!workflowId) return null;
 
@@ -14,7 +15,7 @@ class BackgroundWorkflowUtils {
       );
       if (!teamWorkflows) return null;
 
-      const workflows = flattenTeamWorkflows(teamWorkflows);
+      const workflows = this.flattenTeamWorkflows(teamWorkflows);
 
       return workflows.find((item) => item.id === workflowId);
     }

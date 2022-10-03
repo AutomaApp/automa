@@ -1,7 +1,11 @@
 import browser from 'webextension-polyfill';
 import dayjs from 'dayjs';
 import { findTriggerBlock, parseJSON } from '@/utils/helper';
-import { registerCronJob, registerSpecificDay } from '@/utils/workflowTrigger';
+import {
+  registerCronJob,
+  registerSpecificDay,
+  registerWorkflowTrigger,
+} from '@/utils/workflowTrigger';
 import BackgroundWorkflowUtils from './BackgroundWorkflowUtils';
 
 class BackgroundWorkflowTriggers {
@@ -138,6 +142,51 @@ class BackgroundWorkflowTriggers {
       });
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  static async reRegisterTriggers(isStartup = false) {
+    const { workflows, workflowHosts, teamWorkflows } =
+      await browser.storage.local.get([
+        'workflows',
+        'workflowHosts',
+        'teamWorkflows',
+      ]);
+    const convertToArr = (value) =>
+      Array.isArray(value) ? value : Object.values(value);
+
+    const workflowsArr = convertToArr(workflows);
+
+    if (workflowHosts) {
+      workflowsArr.push(...convertToArr(workflowHosts));
+    }
+    if (teamWorkflows) {
+      workflowsArr.push(
+        ...BackgroundWorkflowUtils.flattenTeamWorkflows(teamWorkflows)
+      );
+    }
+
+    for (const currWorkflow of workflowsArr) {
+      let triggerBlock = currWorkflow.trigger;
+
+      if (!triggerBlock) {
+        const flow =
+          typeof currWorkflow.drawflow === 'string'
+            ? parseJSON(currWorkflow.drawflow, {})
+            : currWorkflow.drawflow;
+
+        triggerBlock = findTriggerBlock(flow)?.data;
+      }
+
+      if (triggerBlock) {
+        if (isStartup && triggerBlock.type === 'on-startup') {
+          BackgroundWorkflowUtils.executeWorkflow(currWorkflow);
+        } else {
+          await registerWorkflowTrigger(currWorkflow.id, {
+            data: triggerBlock,
+          });
+        }
+      }
     }
   }
 }

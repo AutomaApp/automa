@@ -79,8 +79,8 @@ import { computed, watch, shallowRef, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { countDuration } from '@/utils/helper';
-import { sendMessage } from '@/utils/message';
 import { useWorkflowStore } from '@/stores/workflow';
+import { workflowState } from '@/newtab/utils/workflowEngine';
 import dbLogs from '@/db/logs';
 import dayjs from '@/lib/dayjs';
 import LogsHistory from '@/components/newtab/logs/LogsHistory.vue';
@@ -100,7 +100,7 @@ const running = computed(() =>
 );
 
 function stopWorkflow() {
-  sendMessage('workflow:stop', running.value.id, 'background');
+  workflowState.stop(running.value.id);
 }
 function getBlockPath(blockId) {
   const { workflowId, teamId } = running.value;
