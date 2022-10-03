@@ -76,6 +76,7 @@ import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 import dataMigration from '@/utils/dataMigration';
 import iconFirefox from '@/assets/svg/logoFirefox.svg';
 import iconChrome from '@/assets/svg/logo.svg';
+import { executeWorkflow } from './utils/workflowEngine';
 
 let icon;
 if (window.location.protocol === 'moz-extension:') {
@@ -180,13 +181,11 @@ async function syncHostedWorkflows() {
   await hostedWorkflowStore.fetchWorkflows(hostIds);
 }
 
-browser.runtime.onMessage.addListener(({ type, data }) => {
-  if (type === 'refresh-packages') {
+const messageEvents = {
+  'refresh-packages': function () {
     packageStore.loadData(true);
-    return;
-  }
-
-  if (type === 'workflow:added') {
+  },
+  'workflow:added': function (data) {
     if (data.source === 'team') {
       teamWorkflowStore.loadData().then(() => {
         router.push(
@@ -198,7 +197,16 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
         router.push(`/workflows/${data.workflowId}?permission=true`);
       });
     }
-  }
+  },
+  'workflow:execute': function ({ data, options = {} }) {
+    executeWorkflow(data, options);
+  },
+};
+
+browser.runtime.onMessage.addListener(({ type, data }) => {
+  if (!type || !messageEvents[type]) return;
+
+  messageEvents[type](data);
 });
 
 (async () => {

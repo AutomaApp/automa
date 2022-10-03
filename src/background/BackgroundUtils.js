@@ -1,7 +1,8 @@
 import browser from 'webextension-polyfill';
+import { waitTabLoaded } from '@/newtab/utils/workflowEngine/helper';
 
 class BackgroundUtils {
-  static async openDashboard(url) {
+  static async openDashboard(url, updateTab = true) {
     const tabUrl = browser.runtime.getURL(
       `/newtab.html#${typeof url === 'string' ? url : ''}`
     );
@@ -12,26 +13,42 @@ class BackgroundUtils {
       });
 
       if (tab) {
-        await browser.tabs.update(tab.id, { url: tabUrl, active: true });
-        await browser.windows.update(tab.windowId, {
-          focused: true,
-          state: 'maximized',
-        });
+        const tabOptions = { active: true };
+        if (updateTab) tabOptions.url = tabUrl;
 
-        if (tabUrl.includes('workflows/')) {
+        await browser.tabs.update(tab.id, tabOptions);
+
+        if (updateTab) {
+          await browser.windows.update(tab.windowId, {
+            focused: true,
+            state: 'maximized',
+          });
+        }
+        if (updateTab && tabUrl.includes('workflows/')) {
           await browser.tabs.reload(tab.id);
         }
       } else {
-        browser.windows.create({
+        await browser.windows.create({
           url: tabUrl,
-          focused: true,
           type: 'popup',
-          state: 'maximized',
+          focused: updateTab,
         });
       }
     } catch (error) {
       console.error(error);
+      throw error;
     }
+  }
+
+  static async sendMessageToDashboard(type, data) {
+    const [tab] = await browser.tabs.query({
+      url: browser.runtime.getURL('/newtab.html'),
+    });
+
+    await waitTabLoaded({ tabId: tab.id });
+    const result = await browser.tabs.sendMessage(tab.id, { type, data });
+
+    return result;
   }
 }
 

@@ -9,8 +9,6 @@ import convertWorkflowData from '@/utils/convertWorkflowData';
 import getBlockMessage from '@/utils/getBlockMessage';
 import automa from '@business';
 import {
-  registerCronJob,
-  registerSpecificDay,
   registerContextMenu,
   registerWorkflowTrigger,
 } from '../utils/workflowTrigger';
@@ -342,73 +340,7 @@ browser.tabs.onCreated.addListener(async (tab) => {
 
   await browser.storage.local.set({ recording });
 });
-browser.alarms.onAlarm.addListener(async ({ name }) => {
-  let workflowId = name;
-  let triggerId = null;
-
-  if (name.startsWith('trigger')) {
-    const { 1: triggerWorkflowId, 2: triggerItemId } = name.split(':');
-    triggerId = triggerItemId;
-    workflowId = triggerWorkflowId;
-  }
-
-  const currentWorkflow = await workflow.get(workflowId);
-  if (!currentWorkflow) return;
-
-  let data = currentWorkflow.trigger;
-  if (!data) {
-    const drawflow =
-      typeof currentWorkflow.drawflow === 'string'
-        ? parseJSON(currentWorkflow.drawflow, {})
-        : currentWorkflow.drawflow;
-    const { data: triggerBlockData } = findTriggerBlock(drawflow) || {};
-    data = triggerBlockData;
-  }
-
-  if (triggerId) {
-    data = data.triggers.find((trigger) => trigger.id === triggerId);
-    if (data) data = { ...data, ...data.data };
-  }
-
-  if (data && data.type === 'interval' && data.fixedDelay) {
-    const workflowState = await workflow.states.get(
-      (item) => item.workflowId === workflowId
-    );
-
-    if (workflowState) {
-      let { workflowQueue } = await browser.storage.local.get('workflowQueue');
-      workflowQueue = workflowQueue || [];
-
-      if (!workflowQueue.includes(workflowId)) {
-        (workflowQueue = workflowQueue || []).push(workflowId);
-        await browser.storage.local.set({ workflowQueue });
-      }
-
-      return;
-    }
-  } else if (data && data.type === 'date') {
-    const [hour, minute, second] = data.time.split(':');
-    const date = dayjs(data.date)
-      .hour(hour)
-      .minute(minute)
-      .second(second || 0);
-
-    const isAfter = dayjs(Date.now() - 60 * 1000).isAfter(date);
-    if (isAfter) return;
-  }
-
-  workflow.execute(currentWorkflow);
-
-  if (!data) return;
-
-  if (['specific-day', 'cron-job'].includes(data.type)) {
-    if (data.type === 'specific-day') {
-      registerSpecificDay(name, data);
-    } else {
-      registerCronJob(name, data);
-    }
-  }
-});
+browser.alarms.onAlarm.addListener(BackgroundEventsListeners.onAlarms);
 browser.action.onClicked.addListener(BackgroundEventsListeners.onActionClicked);
 
 const contextMenu =

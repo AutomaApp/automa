@@ -18,7 +18,10 @@ const workflowStateStorage = {
   },
   set(key, value) {
     const workflowStore = useWorkflowStore();
-    workflowStore.updateStates(Object.values(value));
+    const states = Object.values(value);
+
+    browser.storage.local.set({ workflowStates: states });
+    workflowStore.updateStates(states);
   },
 };
 const browserStorage = {

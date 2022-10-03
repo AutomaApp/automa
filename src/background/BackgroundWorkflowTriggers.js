@@ -1,9 +1,11 @@
-/* eslint-disable class-methods-use-this */
 import browser from 'webextension-polyfill';
-import BackgroundUtils from './BackgroundUtils';
+import dayjs from 'dayjs';
+import { findTriggerBlock, parseJSON } from '@/utils/helper';
+import { registerCronJob, registerSpecificDay } from '@/utils/workflowTrigger';
+import BackgroundWorkflowUtils from './BackgroundWorkflowUtils';
 
 class BackgroundWorkflowTriggers {
-  async visitWebTriggers(tabId, tabUrl) {
+  static async visitWebTriggers(tabId, tabUrl) {
     const { visitWebTriggers } = await browser.storage.local.get(
       'visitWebTriggers'
     );
@@ -22,9 +24,90 @@ class BackgroundWorkflowTriggers {
         workflowId = triggerWorkflowId;
       }
 
-      const workflowData = await BackgroundUtils.getWorkflow(workflowId);
+      const workflowData = await BackgroundWorkflowUtils.getWorkflow(
+        workflowId
+      );
       if (workflowData)
-        BackgroundUtils.executeWorkflow(workflowData, { tabId });
+        BackgroundWorkflowUtils.executeWorkflow(workflowData, { tabId });
+    }
+  }
+
+  static async scheduleWorkflow({ name }) {
+    try {
+      let workflowId = name;
+      let triggerId = null;
+
+      if (name.startsWith('trigger')) {
+        const { 1: triggerWorkflowId, 2: triggerItemId } = name.split(':');
+        triggerId = triggerItemId;
+        workflowId = triggerWorkflowId;
+      }
+
+      const currentWorkflow = await BackgroundWorkflowUtils.getWorkflow(
+        workflowId
+      );
+      if (!currentWorkflow) return;
+
+      let data = currentWorkflow.trigger;
+      if (!data) {
+        const drawflow =
+          typeof currentWorkflow.drawflow === 'string'
+            ? parseJSON(currentWorkflow.drawflow, {})
+            : currentWorkflow.drawflow;
+        const { data: triggerBlockData } = findTriggerBlock(drawflow) || {};
+        data = triggerBlockData;
+      }
+
+      if (triggerId) {
+        data = data.triggers.find((trigger) => trigger.id === triggerId);
+        if (data) data = { ...data, ...data.data };
+      }
+
+      if (data && data.type === 'interval' && data.fixedDelay) {
+        const { workflowStates } = await browser.storage.local.get(
+          'workflowStates'
+        );
+        const workflowState = (workflowStates || []).find(
+          (item) => item.workflowId === workflowId
+        );
+
+        if (workflowState) {
+          let { workflowQueue } = await browser.storage.local.get(
+            'workflowQueue'
+          );
+          workflowQueue = workflowQueue || [];
+
+          if (!workflowQueue.includes(workflowId)) {
+            (workflowQueue = workflowQueue || []).push(workflowId);
+            await browser.storage.local.set({ workflowQueue });
+          }
+
+          return;
+        }
+      } else if (data && data.type === 'date') {
+        const [hour, minute, second] = data.time.split(':');
+        const date = dayjs(data.date)
+          .hour(hour)
+          .minute(minute)
+          .second(second || 0);
+
+        const isAfter = dayjs(Date.now() - 60 * 1000).isAfter(date);
+        if (isAfter) return;
+      }
+
+      BackgroundWorkflowUtils.executeWorkflow(currentWorkflow);
+
+      if (!data) return;
+
+      if (['specific-day', 'cron-job'].includes(data.type)) {
+        if (data.type === 'specific-day') {
+          registerSpecificDay(name, data);
+        } else {
+          registerCronJob(name, data);
+        }
+      }
+    } catch (error) {
+      console.error(error);
     }
   }
 }
