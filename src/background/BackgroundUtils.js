@@ -28,11 +28,13 @@ class BackgroundUtils {
           await browser.tabs.reload(tab.id);
         }
       } else {
-        await browser.windows.create({
+        const windowOptions = {
           url: tabUrl,
           type: 'popup',
-          focused: updateTab,
-        });
+          state: updateTab ? 'maximized' : 'minimized',
+        };
+
+        await browser.windows.create(windowOptions);
       }
     } catch (error) {
       console.error(error);

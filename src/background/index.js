@@ -207,51 +207,6 @@ async function updateRecording(callback) {
 
   await browser.storage.local.set({ recording });
 }
-async function checkVisitWebTriggers(tabId, tabUrl) {
-  const visitWebTriggers = await browserStorage.get('visitWebTriggers');
-  if (!visitWebTriggers || visitWebTriggers.length === 0) return;
-
-  const workflowState = await workflow.states.get(({ state }) =>
-    state.tabIds.includes(tabId)
-  );
-  const triggeredWorkflow = visitWebTriggers?.find(({ url, isRegex, id }) => {
-    if (url.trim() === '') return false;
-
-    const matchUrl = tabUrl.match(isRegex ? new RegExp(url, 'g') : url);
-
-    return matchUrl && !id.includes(workflowState?.workflowId);
-  });
-
-  if (triggeredWorkflow) {
-    let workflowId = triggeredWorkflow.id;
-    if (triggeredWorkflow.id.startsWith('trigger')) {
-      const { 1: triggerWorkflowId } = triggeredWorkflow.id.split(':');
-      workflowId = triggerWorkflowId;
-    }
-
-    const workflowData = await workflow.get(workflowId);
-    if (workflowData) workflow.execute(workflowData, { tabId });
-  }
-}
-async function checkRecordingWorkflow(tabId, tabUrl) {
-  if (!validateUrl(tabUrl)) return;
-
-  const isRecording = await browserStorage.get('isRecording');
-  if (!isRecording) return;
-
-  await browser.tabs.executeScript(tabId, {
-    allFrames: true,
-    file: 'recordWorkflow.bundle.js',
-  });
-}
-browser.webNavigation.onCompleted.addListener(
-  async ({ tabId, url, frameId }) => {
-    if (frameId > 0) return;
-
-    checkRecordingWorkflow(tabId, url);
-    checkVisitWebTriggers(tabId, url);
-  }
-);
 browser.commands.onCommand.addListener((name) => {
   if (name === 'open-dashboard') BackgroundUtils.openDashboard();
 });
@@ -340,8 +295,12 @@ browser.tabs.onCreated.addListener(async (tab) => {
 
   await browser.storage.local.set({ recording });
 });
+
 browser.alarms.onAlarm.addListener(BackgroundEventsListeners.onAlarms);
 browser.action.onClicked.addListener(BackgroundEventsListeners.onActionClicked);
+browser.webNavigation.onCompleted.addListener(
+  BackgroundEventsListeners.onWebNavigationCompleted
+);
 
 const contextMenu =
   BROWSER_TYPE === 'firefox' ? browser.menus : browser.contextMenus;
