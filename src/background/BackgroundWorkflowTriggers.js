@@ -110,6 +110,32 @@ class BackgroundWorkflowTriggers {
       console.error(error);
     }
   }
+
+  static async contextMenu({ parentMenuItemId, menuItemId, frameId }, tab) {
+    try {
+      if (parentMenuItemId !== 'automaContextMenu') return;
+      const message = await browser.tabs.sendMessage(tab.id, {
+        frameId,
+        type: 'context-element',
+      });
+      let workflowId = menuItemId;
+      if (menuItemId.startsWith('trigger')) {
+        const { 1: triggerWorkflowId } = menuItemId.split(':');
+        workflowId = triggerWorkflowId;
+      }
+
+      const workflowData = await BackgroundWorkflowUtils.getWorkflow(
+        workflowId
+      );
+      BackgroundWorkflowUtils.executeWorkflow(workflowData, {
+        data: {
+          variables: message,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 
 export default BackgroundWorkflowTriggers;

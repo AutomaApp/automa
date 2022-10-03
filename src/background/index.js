@@ -306,31 +306,7 @@ const contextMenu =
   BROWSER_TYPE === 'firefox' ? browser.menus : browser.contextMenus;
 if (contextMenu && contextMenu.onClicked) {
   contextMenu.onClicked.addListener(
-    async ({ parentMenuItemId, menuItemId }, tab) => {
-      try {
-        if (parentMenuItemId !== 'automaContextMenu') return;
-
-        const message = await browser.tabs.sendMessage(tab.id, {
-          frameId: 0,
-          type: 'context-element',
-        });
-        let workflowId = menuItemId;
-        if (menuItemId.startsWith('trigger')) {
-          const { 1: triggerWorkflowId } = menuItemId.split(':');
-          workflowId = triggerWorkflowId;
-        }
-
-        const workflowData = await workflow.get(workflowId);
-
-        workflow.execute(workflowData, {
-          data: {
-            variables: message,
-          },
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    }
+    BackgroundEventsListeners.onContextMenuClicked
   );
 }
 

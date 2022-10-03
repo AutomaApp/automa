@@ -17,6 +17,10 @@ class BackgroundEventsListeners {
     BackgroundRecordWorkflow.checkRecording(tabId, url);
     BackgroundWorkflowTriggers.visitWebTriggers(tabId, url);
   }
+
+  static onContextMenuClicked(event, tab) {
+    BackgroundWorkflowTriggers.contextMenu(event, tab);
+  }
 }
 
 export default BackgroundEventsListeners;

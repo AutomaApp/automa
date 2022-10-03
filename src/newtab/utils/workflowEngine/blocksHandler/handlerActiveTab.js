@@ -16,7 +16,7 @@ async function activeTab(block) {
 
     const [tab] = await browser.tabs.query({
       active: true,
-      currentWindow: true,
+      url: '*://*/*',
     });
 
     if (!tab?.url.startsWith('http')) {
