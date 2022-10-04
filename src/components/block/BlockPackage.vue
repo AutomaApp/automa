@@ -121,9 +121,11 @@ const state = shallowReactive({
 });
 
 function installPackage() {
-  packageStore.insert({ ...props.data }, false).then(() => {
-    state.isInstalled = true;
-  });
+  packageStore
+    .insert({ ...props.data, isExternal: Boolean(props.data.author) }, false)
+    .then(() => {
+      state.isInstalled = true;
+    });
 }
 function removeConnections(type, old, newEdges) {
   const removedEdges = [];

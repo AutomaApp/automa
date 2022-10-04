@@ -28,6 +28,9 @@
               >
                 {{ t('workflow.import') }}
               </ui-list-item>
+              <ui-list-item class="cursor-pointer">
+                {{ t('home.record.title') }}
+              </ui-list-item>
               <ui-list-item
                 v-close-popover
                 class="cursor-pointer"
