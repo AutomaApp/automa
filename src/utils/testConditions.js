@@ -60,13 +60,21 @@ export default async function (conditionsArr, workflowData) {
 
     if (type === 'value') return copyData.value;
 
-    if (type.startsWith('element') || type.startsWith('code')) {
+    if (type.startsWith('code')) {
+      const conditionValue = await workflowData.checkCodeCondition({
+        data: copyData,
+        refData: workflowData.refData,
+      });
+
+      return conditionValue;
+    }
+
+    if (type.startsWith('element')) {
       const conditionValue = await workflowData.sendMessage({
         type: 'condition-builder',
         data: {
           type,
           data: copyData,
-          refData: workflowData.refData,
         },
       });
 

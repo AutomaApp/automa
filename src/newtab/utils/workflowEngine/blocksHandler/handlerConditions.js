@@ -1,6 +1,11 @@
+import { customAlphabet } from 'nanoid/non-secure';
+import browser from 'webextension-polyfill';
 import compareBlockValue from '@/utils/compareBlockValue';
 import mustacheReplacer from '@/utils/referenceData/mustacheReplacer';
 import testConditions from '@/utils/testConditions';
+import { automaRefDataStr } from '../helper';
+
+const nanoid = customAlphabet('1234567890abcdef', 5);
 
 function checkConditions(data, conditionOptions) {
   return new Promise((resolve, reject) => {
@@ -40,6 +45,66 @@ function checkConditions(data, conditionOptions) {
     testAllConditions();
   });
 }
+function checkCodeCondition(activeTab, payload) {
+  const variableId = nanoid();
+
+  return browser.scripting
+    .executeScript({
+      world: 'MAIN',
+      args: [payload, variableId, automaRefDataStr(variableId)],
+      target: {
+        tabId: activeTab.id,
+        frameIds: [activeTab.frameId || 0],
+      },
+      func: ({ data, refData }, varId, refDataScript) => {
+        return new Promise((resolve, reject) => {
+          const varName = `automa${varId}`;
+
+          const scriptEl = document.createElement('script');
+          scriptEl.textContent = `
+          (async () => {
+            const ${varName} = ${JSON.stringify(refData)};
+            ${refDataScript}
+            try {
+              ${data.code}
+            } catch (error) {
+              return {
+                $isError: true,
+                message: error.message,
+              }
+            }
+          })()
+            .then((detail) => {
+              window.dispatchEvent(new CustomEvent('__automa-condition-code__', { detail }));
+            });
+        `;
+
+          document.documentElement.appendChild(scriptEl);
+
+          const handleAutomaEvent = ({ detail }) => {
+            scriptEl.remove();
+            window.removeEventListener(
+              '__automa-condition-code__',
+              handleAutomaEvent
+            );
+
+            if (detail.$isError) {
+              reject(new Error(detail.message));
+              return;
+            }
+
+            resolve(detail);
+          };
+
+          window.addEventListener(
+            '__automa-condition-code__',
+            handleAutomaEvent
+          );
+        });
+      },
+    })
+    .then(([result]) => result.result);
+}
 
 async function conditions({ data, id }, { prevBlockData, refData }) {
   if (data.conditions.length === 0) {
@@ -59,7 +124,8 @@ async function conditions({ data, id }, { prevBlockData, refData }) {
   if (condition && condition.conditions) {
     const conditionPayload = {
       refData,
-      activeTab: this.activeTab.id,
+      checkCodeCondition: (payload) =>
+        checkCodeCondition(this.activeTab, payload),
       sendMessage: (payload) =>
         this._sendMessageToTab({ ...payload.data, label: 'conditions', id }),
     };

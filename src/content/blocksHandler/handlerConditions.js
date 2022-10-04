@@ -1,9 +1,5 @@
-import { customAlphabet } from 'nanoid/non-secure';
 import { visibleInViewport, isXPath } from '@/utils/helper';
 import handleSelector from '../handleSelector';
-import { automaRefDataStr } from '../utils';
-
-const nanoid = customAlphabet('1234567890abcdef', 5);
 
 async function handleConditionElement({ data, type, id, frameSelector }) {
   const selectorType = isXPath(data.selector) ? 'xpath' : 'cssSelector';
@@ -52,58 +48,12 @@ async function handleConditionElement({ data, type, id, frameSelector }) {
 
   return elementActions[actionType](data);
 }
-function injectJsCode({ data, refData }) {
-  return new Promise((resolve, reject) => {
-    const varName = `automa${nanoid()}`;
-
-    const scriptEl = document.createElement('script');
-    scriptEl.textContent = `
-      (async () => {
-        const ${varName} = ${JSON.stringify(refData)};
-        ${automaRefDataStr(varName)}
-        try {
-          ${data.code}
-        } catch (error) {
-          return {
-            $isError: true,
-            message: error.message,
-          }
-        }
-      })()
-        .then((detail) => {
-          window.dispatchEvent(new CustomEvent('__automa-condition-code__', { detail }));
-        });
-    `;
-
-    document.body.appendChild(scriptEl);
-
-    const handleAutomaEvent = ({ detail }) => {
-      scriptEl.remove();
-      window.removeEventListener(
-        '__automa-condition-code__',
-        handleAutomaEvent
-      );
-
-      if (detail.$isError) {
-        reject(new Error(detail.message));
-        return;
-      }
-
-      resolve(detail);
-    };
-
-    window.addEventListener('__automa-condition-code__', handleAutomaEvent);
-  });
-}
 
 export default async function (data) {
   let result = null;
 
   if (data.type.startsWith('element')) {
     result = await handleConditionElement(data);
-  }
-  if (data.type.startsWith('code')) {
-    result = await injectJsCode(data);
   }
 
   return result;

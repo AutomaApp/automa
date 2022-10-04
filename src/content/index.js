@@ -245,7 +245,7 @@ function messageListener({ data, source }) {
 })();
 
 // Auto install only works on Chrome
-async function autoInstall() {
+(async function autoInstall() {
   const link = window.location.href;
   if (/.+\.automa\.json$/.test(link)) {
     const accept = window.confirm(
@@ -277,5 +277,4 @@ async function autoInstall() {
 
     alert('Workflow installed');
   }
-}
-autoInstall();
+})();
