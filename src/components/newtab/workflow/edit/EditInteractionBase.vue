@@ -10,17 +10,25 @@
         @change="updateData({ description: $event })"
       />
       <slot name="prepend:selector" />
-      <ui-select
-        v-if="!hideSelector"
-        :model-value="data.findBy || 'cssSelector'"
-        :placeholder="t('workflow.blocks.base.findElement.placeholder')"
-        class="w-full mb-2"
-        @change="updateData({ findBy: $event })"
-      >
-        <option v-for="type in selectorTypes" :key="type" :value="type">
-          {{ t(`workflow.blocks.base.findElement.options.${type}`) }}
-        </option>
-      </ui-select>
+      <div v-if="!hideSelector" class="flex items-center mb-2">
+        <ui-select
+          :model-value="data.findBy || 'cssSelector'"
+          :placeholder="t('workflow.blocks.base.findElement.placeholder')"
+          class="flex-1 mr-2"
+          @change="updateData({ findBy: $event })"
+        >
+          <option v-for="type in selectorTypes" :key="type" :value="type">
+            {{ t(`workflow.blocks.base.findElement.options.${type}`) }}
+          </option>
+        </ui-select>
+        <ui-button
+          v-tooltip.group="t('workflow.blocks.base.element.select')"
+          icon
+          @click="selectElement"
+        >
+          <v-remixicon name="riFocus3Line" />
+        </ui-button>
+      </div>
       <edit-autocomplete v-if="!hideSelector" class="mb-1">
         <ui-input
           v-if="!hideSelector"
@@ -88,6 +96,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import elementSelector from '@/newtab/utils/elementSelector';
 import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({
@@ -124,6 +133,12 @@ function updateData(value) {
 
   emit('update:data', payload);
   emit('change', payload);
+}
+function selectElement() {
+  /* eslint-disable-next-line */
+  elementSelector.selectElement().then((selector) => {
+    updateData({ selector });
+  });
 }
 
 onMounted(() => {

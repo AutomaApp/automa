@@ -1,5 +1,6 @@
 <template>
   <ui-tabs
+    v-if="!hideBlocks || selectElements.length > 0"
     :model-value="activeTab"
     class="mt-2"
     fill
@@ -7,7 +8,7 @@
   >
     <ui-tab value="attributes"> Attributes </ui-tab>
     <ui-tab v-if="selectElements.length > 0" value="options"> Options </ui-tab>
-    <ui-tab value="blocks"> Blocks </ui-tab>
+    <ui-tab v-if="!hideBlocks" value="blocks"> Blocks </ui-tab>
   </ui-tabs>
   <ui-tab-panels
     :model-value="activeTab"
@@ -118,6 +119,7 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  hideBlocks: Boolean,
 });
 defineEmits(['update:activeTab', 'execute', 'highlight', 'update']);
 

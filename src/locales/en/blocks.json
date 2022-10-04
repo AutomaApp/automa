@@ -18,6 +18,10 @@
         "noPermission": "Automa don't have enough permission to do this action",
         "grantPermission": "Grant permission",
         "action": "Action",
+        "element": {
+          "select": "Select an element",
+          "verify": "Verify element"
+        },
         "settings": {
           "title": "Block settings",
           "line": {
