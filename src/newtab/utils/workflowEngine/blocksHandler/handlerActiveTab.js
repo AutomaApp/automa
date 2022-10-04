@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 import { sleep } from '@/utils/helper';
-import { attachDebugger } from '../helper';
+import { attachDebugger, injectPreloadScript } from '../helper';
 
 async function activeTab(block) {
   try {
@@ -42,7 +42,14 @@ async function activeTab(block) {
 
     if (this.preloadScripts.length > 0) {
       const preloadScripts = this.preloadScripts.map((script) =>
-        this._sendMessageToTab(script)
+        injectPreloadScript({
+          script,
+          frameSelector: this.frameSelector,
+          target: {
+            tabId: this.activeTab.id,
+            frameIds: [this.activeTab.frameId || 0],
+          },
+        })
       );
       await Promise.allSettled(preloadScripts);
     }

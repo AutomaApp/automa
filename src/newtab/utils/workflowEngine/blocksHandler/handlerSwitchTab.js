@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { attachDebugger } from '../helper';
+import { attachDebugger, injectPreloadScript } from '../helper';
 
 export default async function ({ data, id }) {
   const nextBlockId = this.getBlockConnections(id);
@@ -80,7 +80,14 @@ export default async function ({ data, id }) {
 
   if (this.preloadScripts.length > 0) {
     const preloadScripts = this.preloadScripts.map((script) =>
-      this._sendMessageToTab(script, {}, true)
+      injectPreloadScript({
+        script,
+        frameSelector: this.frameSelector,
+        target: {
+          tabId: this.activeTab.id,
+          frameIds: [this.activeTab.frameId || 0],
+        },
+      })
     );
     await Promise.allSettled(preloadScripts);
   }

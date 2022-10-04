@@ -1,6 +1,11 @@
 import browser from 'webextension-polyfill';
 import { isWhitespace, sleep } from '@/utils/helper';
-import { waitTabLoaded, attachDebugger, sendDebugCommand } from '../helper';
+import {
+  waitTabLoaded,
+  attachDebugger,
+  sendDebugCommand,
+  injectPreloadScript,
+} from '../helper';
 
 async function newTab({ id, data }) {
   if (this.windowId) {
@@ -84,7 +89,14 @@ async function newTab({ id, data }) {
 
   if (this.preloadScripts.length > 0) {
     const preloadScripts = this.preloadScripts.map((script) =>
-      this._sendMessageToTab(script, {}, true)
+      injectPreloadScript({
+        script,
+        frameSelector: this.frameSelector,
+        target: {
+          tabId: this.activeTab.id,
+          frameIds: [this.activeTab.frameId || 0],
+        },
+      })
     );
     await Promise.allSettled(preloadScripts);
   }

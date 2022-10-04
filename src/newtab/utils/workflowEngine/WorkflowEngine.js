@@ -356,39 +356,6 @@ class WorkflowEngine {
       this.workers.clear();
       this.executeQueue();
 
-      if (!this.workflow.isTesting) {
-        const { name, id, teamId } = this.workflow;
-
-        await this.logger.add({
-          detail: {
-            name,
-            status,
-            teamId,
-            message,
-            id: this.id,
-            workflowId: id,
-            endedAt: endedTimestamp,
-            parentLog: this.parentWorkflow,
-            startedAt: this.startedTimestamp,
-          },
-          history: {
-            logId: this.id,
-            data: this.saveLog ? this.history : [],
-          },
-          ctxData: {
-            logId: this.id,
-            data: this.historyCtxData,
-          },
-          data: {
-            logId: this.id,
-            data: {
-              table: [...this.referenceData.table],
-              variables: { ...this.referenceData.variables },
-            },
-          },
-        });
-      }
-
       this.states.off('stop', this.onWorkflowStopped);
       await this.states.delete(this.id);
 
@@ -457,6 +424,42 @@ class WorkflowEngine {
         }
       );
 
+      if (!this.workflow.isTesting) {
+        const { name, id, teamId } = this.workflow;
+
+        await this.logger.add({
+          detail: {
+            name,
+            status,
+            teamId,
+            message,
+            id: this.id,
+            workflowId: id,
+            endedAt: endedTimestamp,
+            parentLog: this.parentWorkflow,
+            startedAt: this.startedTimestamp,
+          },
+          history: {
+            logId: this.id,
+            data: this.saveLog ? this.history : [],
+          },
+          ctxData: {
+            logId: this.id,
+            data: this.historyCtxData,
+          },
+          data: {
+            logId: this.id,
+            data: {
+              table: [...this.referenceData.table],
+              variables: { ...this.referenceData.variables },
+            },
+          },
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.workflow = null;
       this.isDestroyed = true;
       this.referenceData = null;
       this.eventListeners = null;
@@ -469,8 +472,6 @@ class WorkflowEngine {
       this.columnsId = null;
       this.historyCtxData = null;
       this.preloadScripts = null;
-    } catch (error) {
-      console.error(error);
     }
   }
 

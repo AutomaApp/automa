@@ -120,3 +120,71 @@ export function convertData(data, type) {
 
   return result;
 }
+
+export function automaRefDataStr(varName) {
+  return `
+function findData(obj, path) {
+  const paths = path.split('.');
+  const isWhitespace = paths.length === 1 && !/\\S/.test(paths[0]);
+
+  if (path.startsWith('$last') && Array.isArray(obj)) {
+    paths[0] = obj.length - 1;
+  }
+
+  if (paths.length === 0 || isWhitespace) return obj;
+  else if (paths.length === 1) return obj[paths[0]];
+
+  let result = obj;
+
+  for (let i = 0; i < paths.length; i++) {
+    if (result[paths[i]] == undefined) {
+      return undefined;
+    } else {
+      result = result[paths[i]];
+    }
+  }
+
+  return result;
+}
+function automaRefData(keyword, path = '') {
+  const data = ${varName}[keyword];
+
+  if (!data) return;
+
+  return findData(data, path);
+}
+  `;
+}
+
+export function injectPreloadScript({ target, script, frameSelector }) {
+  return browser.scripting.executeScript({
+    target,
+    world: 'MAIN',
+    args: [script.id, script.data.code, frameSelector || null],
+    func: (scriptId, code, frame) => {
+      let $documentCtx = document;
+
+      if (frame) {
+        const iframeCtx = document.querySelector(frame)?.contentDocument;
+        if (!iframeCtx) return;
+
+        $documentCtx = iframeCtx;
+      }
+
+      const scriptAttr = `block--${scriptId}`;
+
+      const isScriptExists = $documentCtx.querySelector(
+        `.automa-custom-js[${scriptAttr}]`
+      );
+
+      if (isScriptExists) return;
+
+      const scriptEl = $documentCtx.createElement('script');
+      scriptEl.textContent = code;
+      scriptEl.setAttribute(scriptAttr, '');
+      scriptEl.classList.add('automa-custom-js');
+
+      $documentCtx.documentElement.appendChild(scriptEl);
+    },
+  });
+}

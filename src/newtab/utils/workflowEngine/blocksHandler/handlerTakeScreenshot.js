@@ -65,7 +65,6 @@ async function takeScreenshot({ data, id, label }) {
         let result = null;
 
         if (isChrome) {
-          console.log(tab);
           result = await browser.tabs.captureVisibleTab(tab.windowId, options);
         } else {
           result = await browser.tabs.captureTab(this.activeTab.id, options);

@@ -156,6 +156,8 @@ export default async function ({ tabId, options, data: { type, selector } }) {
       else if (position === 'fixed') el.setAttribute('is-fixed', '');
     });
 
+  scrollableElement.scrollTo(0, 0);
+
   let scaleDiff = 1;
   let scrollPosition = 0;
   let canvasAdjusted = false;
