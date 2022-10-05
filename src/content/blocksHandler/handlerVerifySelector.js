@@ -18,6 +18,8 @@ async function verifySelector(block) {
     behavior: 'smooth',
   });
 
+  await sleep(200);
+
   const divEl = document.createElement('div');
   divEl.style =
     'height: 100%; width: 100%; top: 0; left: 0; background-color: rgb(0 0 0 / 0.3); pointer-events: none; position: fixed; z-index: 99999';

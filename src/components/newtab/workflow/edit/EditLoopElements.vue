@@ -35,14 +35,25 @@
           {{ t(`workflow.blocks.loop-elements.actions.${action}`) }}
         </option>
       </ui-select>
-      <ui-input
+      <edit-autocomplete
         v-if="['click-element', 'click-link'].includes(data.loadMoreAction)"
-        :model-value="data.actionElSelector"
-        :label="t('workflow.blocks.base.selector')"
-        placeholder="CSS Selector or XPath"
-        class="mt-2 w-full"
-        @change="updateData({ actionElSelector: $event })"
-      />
+        block
+        class="mt-2"
+        trigger-class="!flex items-end"
+      >
+        <ui-input
+          :model-value="data.actionElSelector"
+          :label="t('workflow.blocks.base.selector')"
+          placeholder="CSS Selector or XPath"
+          class="mr-2 flex-1"
+          autocomplete="off"
+          @change="updateData({ actionElSelector: $event })"
+        />
+        <shared-el-selector-actions
+          :selector="data.actionElSelector"
+          @update:selector="updateData({ actionElSelector: $event })"
+        />
+      </edit-autocomplete>
       <ui-input
         v-if="['click-element', 'scroll'].includes(data.loadMoreAction)"
         :model-value="data.actionElMaxWaitTime"
@@ -76,6 +87,8 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid/non-secure';
+import SharedElSelectorActions from '@/components/newtab/shared/SharedElSelectorActions.vue';
+import EditAutocomplete from './EditAutocomplete.vue';
 import EditInteractionBase from './EditInteractionBase.vue';
 
 const props = defineProps({

@@ -50,6 +50,10 @@
             class="w-full"
           />
         </edit-autocomplete>
+        <SharedElSelectorActions
+          v-if="name === 'selector'"
+          v-model:selector="inputsData[index].data[name]"
+        />
       </template>
     </div>
     <ui-select
@@ -81,6 +85,7 @@ import {
   completeFromGlobalScope,
 } from '@/utils/codeEditorAutocomplete';
 import { conditionBuilder } from '@/utils/shared';
+import SharedElSelectorActions from '@/components/newtab/shared/SharedElSelectorActions.vue';
 import EditAutocomplete from '../../workflow/edit/EditAutocomplete.vue';
 
 const SharedCodemirror = defineAsyncComponent(() =>

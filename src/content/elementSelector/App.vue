@@ -56,7 +56,8 @@
           @child="selectElementPath('down')"
         />
         <ui-button
-          v-if="state.isSelectBlockElement && state.elSelector"
+          v-if="state.isSelectBlockElement"
+          :disabled="!state.elSelector"
           variant="accent"
           class="w-full mt-4"
           @click="saveSelector"

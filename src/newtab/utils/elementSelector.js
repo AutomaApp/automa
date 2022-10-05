@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { isXPath } from '@/utils/helper';
+import { isXPath, sleep } from '@/utils/helper';
 
 async function getActiveTab() {
   const [tab] = await browser.tabs.query({
@@ -73,6 +73,8 @@ async function verifySelector(data) {
     return result;
   } catch (error) {
     console.error(error);
+    await sleep(1000);
+
     return { notFound: true };
   } finally {
     await makeDashboardFocus();
