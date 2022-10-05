@@ -42,8 +42,7 @@ function messageToFrame(frameElement, blockData) {
 }
 async function executeBlock(data) {
   const removeExecutedBlock = showExecutedBlock(data, data.executedBlockOnWeb);
-
-  if (data.data?.selector?.includes('|>') && isMainFrame) {
+  if (data.data?.selector?.includes('|>')) {
     const [frameSelector, selector] = data.data.selector.split(/\|>(.+)/);
     const frameElement = document.querySelector(frameSelector);
     const frameError = (message) => {

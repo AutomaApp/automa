@@ -10,14 +10,13 @@ async function verifySelector(block) {
     return { notFound: true };
   }
 
-  if (!block.data.multiple) {
-    elements.scrollIntoView({
-      block: 'center',
-      inline: 'center',
-      behavior: 'smooth',
-    });
-    elements = [elements];
-  }
+  if (!block.data.multiple) elements = [elements];
+
+  elements[0].scrollIntoView({
+    block: 'center',
+    inline: 'center',
+    behavior: 'smooth',
+  });
 
   const divEl = document.createElement('div');
   divEl.style =

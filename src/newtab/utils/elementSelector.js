@@ -50,24 +50,33 @@ async function initElementSelector(tab = null) {
 }
 
 async function verifySelector(data) {
-  const activeTab = await getActiveTab();
+  try {
+    const activeTab = await getActiveTab();
 
-  if (!data.findBy) {
-    data.findBy = isXPath(data.selector) ? 'xpath' : 'cssSelector';
+    if (!data.findBy) {
+      data.findBy = isXPath(data.selector) ? 'xpath' : 'cssSelector';
+    }
+
+    await browser.tabs.update(activeTab.id, { active: true });
+    await browser.windows.update(activeTab.windowId, { focused: true });
+
+    const result = await browser.tabs.sendMessage(
+      activeTab.id,
+      {
+        data,
+        isBlock: true,
+        label: 'verify-selector',
+      },
+      { frameId: 0 }
+    );
+
+    return result;
+  } catch (error) {
+    console.error(error);
+    return { notFound: true };
+  } finally {
+    await makeDashboardFocus();
   }
-
-  await browser.tabs.update(activeTab.id, { active: true });
-  await browser.windows.update(activeTab.windowId, { focused: true });
-
-  const result = await browser.tabs.sendMessage(activeTab.id, {
-    data,
-    isBlock: true,
-    label: 'verify-selector',
-  });
-
-  await makeDashboardFocus();
-
-  return result;
 }
 
 async function selectElement(name) {
