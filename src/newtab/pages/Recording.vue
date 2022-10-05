@@ -202,6 +202,7 @@ async function stopRecording() {
         await workflowStore.insert({
           drawflow,
           name: state.name,
+          description: state.description ?? '',
         });
       }
     }
@@ -220,7 +221,13 @@ async function stopRecording() {
 
     state.isGenerating = false;
 
-    router.push('/');
+    if (state.workflowId) {
+      router.replace(
+        `/workflows/${state.workflowId}?blockId=${state.connectFrom.id}`
+      );
+    } else {
+      router.replace('/');
+    }
   } catch (error) {
     state.isGenerating = false;
     console.error(error);

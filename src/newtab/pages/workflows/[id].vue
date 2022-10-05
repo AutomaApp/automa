@@ -216,14 +216,16 @@
             v-if="editor"
             :editor="editor"
             :is-package="isPackage"
+            :is-team="isTeamWorkflow"
             :package-io="workflow.settings?.asBlock"
             @group="groupBlocks"
             @ungroup="ungroupBlocks"
+            @packageIo="addPackageIO"
+            @recording="startRecording"
             @copy="copySelectedElements"
             @paste="pasteCopiedElements"
             @saveBlock="initBlockFolder"
             @duplicate="duplicateElements"
-            @packageIo="addPackageIO"
           />
         </ui-tab-panel>
         <ui-tab-panel value="logs" class="mt-24 container">
@@ -319,6 +321,7 @@ import dbStorage from '@/db/storage';
 import DroppedNode from '@/utils/editor/DroppedNode';
 import EditorCommands from '@/utils/editor/EditorCommands';
 import convertWorkflowData from '@/utils/convertWorkflowData';
+import startRecordWorkflow from '@/newtab/utils/startRecordWorkflow';
 import extractAutocopmleteData from '@/utils/editor/editorAutocomplete';
 import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
 import WorkflowEditor from '@/components/newtab/workflow/WorkflowEditor.vue';
@@ -669,6 +672,25 @@ const onEdgesChange = debounce((changes) => {
 
 let nodeTargetHandle = null;
 
+function startRecording({ nodeId, handleId }) {
+  if (state.dataChanged) {
+    alert('Make sure to save the workflow before starting recording');
+    return;
+  }
+
+  const options = {
+    workflowId,
+    name: workflow.value.name,
+    connectFrom: {
+      id: nodeId,
+      output: handleId,
+    },
+  };
+  startRecordWorkflow(options).then(() => {
+    state.dataChanged = false;
+    router.replace('/recording');
+  });
+}
 function onClickEditor({ target }) {
   const targetClass = target.classList;
   const isHandle = targetClass.contains('vue-flow__handle');

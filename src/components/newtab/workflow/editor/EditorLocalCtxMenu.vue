@@ -37,6 +37,7 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  isteam: Boolean,
   packageIo: Boolean,
   isPackage: Boolean,
 });
@@ -45,6 +46,7 @@ const emit = defineEmits([
   'paste',
   'group',
   'ungroup',
+  'recording',
   'saveBlock',
   'duplicate',
   'packageIo',
@@ -109,6 +111,11 @@ const menuItems = {
     event: () => emit('duplicate', ctxData),
     shortcut: getShortcut('editor:duplicate-block').readable,
   },
+  startRecording: {
+    id: 'startRecording',
+    name: 'Record from here',
+    event: () => emit('recording', ctxData),
+  },
   setAsInput: {
     id: 'setAsInput',
     name: 'Set as block input',
@@ -166,19 +173,19 @@ onMounted(() => {
       position: { clientX: event.clientX, clientY: event.clientY },
     };
 
-    if (
-      props.isPackage &&
-      props.packageIo &&
-      event.target.closest('[data-handleid]')
-    ) {
+    if (!props.isTeam && event.target.closest('[data-handleid]')) {
       const { handleid, nodeid } = event.target.dataset;
 
       currCtxData.nodeId = nodeid;
       currCtxData.handleId = handleid;
 
-      items.unshift(
-        event.target.classList.contains('source') ? 'setAsOutput' : 'setAsInput'
-      );
+      const isOutput = event.target.classList.contains('source');
+
+      if (props.isPackage && props.packageIo) {
+        items.unshift(isOutput ? 'setAsOutput' : 'setAsInput');
+      } else if (isOutput) {
+        items.splice(2, 0, 'startRecording');
+      }
     }
 
     showCtxMenu(items, event);
