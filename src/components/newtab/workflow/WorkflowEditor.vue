@@ -70,6 +70,7 @@ import {
   Background,
   useVueFlow,
   MarkerType,
+  getConnectedEdges,
 } from '@braks/vue-flow';
 import cloneDeep from 'lodash.clonedeep';
 import { useStore } from '@/stores/main';
@@ -235,6 +236,19 @@ watch(
   },
   { immediate: true }
 );
+watch(editor.getSelectedNodes, (nodes, _, cleanup) => {
+  const connectedEdges = getConnectedEdges(nodes, editor.getEdges.value);
+
+  connectedEdges.forEach((edge) => {
+    edge.class = 'connected-edges';
+  });
+
+  cleanup(() => {
+    connectedEdges.forEach((edge) => {
+      edge.class = undefined;
+    });
+  });
+});
 
 onMounted(() => {
   applyFlowData();
