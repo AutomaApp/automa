@@ -24,9 +24,18 @@
         <ui-button
           v-tooltip.group="t('workflow.blocks.base.element.select')"
           icon
+          class="mr-2"
           @click="selectElement"
         >
           <v-remixicon name="riFocus3Line" />
+        </ui-button>
+        <ui-button
+          v-tooltip.group="t('workflow.blocks.base.element.verify')"
+          :disabled="!data.selector"
+          icon
+          @click="verifySelector"
+        >
+          <v-remixicon name="riCheckDoubleLine" />
         </ui-button>
       </div>
       <edit-autocomplete v-if="!hideSelector" class="mb-1">
@@ -96,6 +105,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useToast } from 'vue-toastification';
 import elementSelector from '@/newtab/utils/elementSelector';
 import EditAutocomplete from './EditAutocomplete.vue';
 
@@ -125,6 +135,7 @@ const props = defineProps({
 const emit = defineEmits(['update:data', 'change']);
 
 const { t } = useI18n();
+const toast = useToast();
 
 const selectorTypes = ['cssSelector', 'xpath'];
 
@@ -135,10 +146,19 @@ function updateData(value) {
   emit('change', payload);
 }
 function selectElement() {
-  /* eslint-disable-next-line */
   elementSelector.selectElement().then((selector) => {
     updateData({ selector });
   });
+}
+function verifySelector() {
+  const { selector, multiple, findBy } = props.data;
+  elementSelector
+    .verifySelector({ selector, multiple, findBy })
+    .then((result) => {
+      if (!result.notFound) return;
+
+      toast.error('Element not found');
+    });
 }
 
 onMounted(() => {

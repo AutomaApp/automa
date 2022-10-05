@@ -1,4 +1,24 @@
 import browser from 'webextension-polyfill';
+import { isXPath } from '@/utils/helper';
+
+async function getActiveTab() {
+  const [tab] = await browser.tabs.query({
+    active: true,
+    url: '*://*/*',
+  });
+  if (!tab) throw new Error('No active tab');
+
+  return tab;
+}
+async function makeDashboardFocus() {
+  const [currentTab] = await browser.tabs.query({
+    active: true,
+    currentWindow: true,
+  });
+  await browser.windows.update(currentTab.windowId, {
+    focused: true,
+  });
+}
 
 async function initElementSelector(tab = null) {
   let activeTab = tab;
@@ -29,14 +49,29 @@ async function initElementSelector(tab = null) {
   await browser.windows.update(activeTab.windowId, { focused: true });
 }
 
-export function verifySelector() {}
+async function verifySelector(data) {
+  const activeTab = await getActiveTab();
 
-export async function selectElement(name) {
-  const [tab] = await browser.tabs.query({
-    active: true,
-    url: '*://*/*',
+  if (!data.findBy) {
+    data.findBy = isXPath(data.selector) ? 'xpath' : 'cssSelector';
+  }
+
+  await browser.tabs.update(activeTab.id, { active: true });
+  await browser.windows.update(activeTab.windowId, { focused: true });
+
+  const result = await browser.tabs.sendMessage(activeTab.id, {
+    data,
+    isBlock: true,
+    label: 'verify-selector',
   });
-  if (!tab) throw new Error('No active tab');
+
+  await makeDashboardFocus();
+
+  return result;
+}
+
+async function selectElement(name) {
+  const tab = await getActiveTab();
 
   await initElementSelector(tab);
 
@@ -48,13 +83,7 @@ export async function selectElement(name) {
       });
       port.onMessage.addListener(async (message) => {
         try {
-          const [currentTab] = await browser.tabs.query({
-            active: true,
-            currentWindow: true,
-          });
-          await browser.windows.update(currentTab.windowId, {
-            focused: true,
-          });
+          makeDashboardFocus();
         } catch (error) {
           console.error(error);
         } finally {
