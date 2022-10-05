@@ -99,7 +99,11 @@ function onChange({ target }) {
 
   addBlock((recording) => {
     const lastFlow = recording.flows.at(-1);
-    if (block.id === 'upload-file' && lastFlow.id === 'event-click') {
+    if (
+      block.id === 'upload-file' &&
+      lastFlow &&
+      lastFlow.id === 'event-click'
+    ) {
       recording.flows.pop();
     }
 
@@ -160,7 +164,7 @@ async function onKeydown(event) {
       };
 
       const lastFlow = recording.flows.at(-1);
-      if (lastFlow.id === 'press-key') {
+      if (lastFlow && lastFlow.id === 'press-key') {
         if (!lastFlow.groupId) lastFlow.groupId = nanoid();
         block.groupId = lastFlow.groupId;
       }
@@ -247,7 +251,11 @@ const onMessage = debounce(({ data, source }) => {
     });
   }
 
+  if (!frameSelector) return;
+
   const lastFlow = data.recording.flows.at(-1);
+  if (!lastFlow) return;
+
   const lastIndex = data.recording.flows.length - 1;
   data.recording.flows[
     lastIndex
@@ -267,7 +275,7 @@ const onScroll = debounce(({ target }) => {
     const verticalScroll = element.scrollTop || element.scrollY || 0;
     const horizontalScroll = element.scrollLeft || element.scrollX || 0;
 
-    if (lastFlow.id === 'element-scroll') {
+    if (lastFlow && lastFlow.id === 'element-scroll') {
       lastFlow.data.scrollY = verticalScroll;
       lastFlow.data.scrollX = horizontalScroll;
 

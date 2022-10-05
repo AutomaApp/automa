@@ -28,7 +28,11 @@
               >
                 {{ t('workflow.import') }}
               </ui-list-item>
-              <ui-list-item class="cursor-pointer">
+              <ui-list-item
+                v-close-popover
+                class="cursor-pointer"
+                @click="initRecordWorkflow"
+              >
                 {{ t('home.record.title') }}
               </ui-list-item>
               <ui-list-item
@@ -175,6 +179,13 @@
                 <ui-list-item
                   v-close-popover
                   class="cursor-pointer"
+                  @click="initRecordWorkflow"
+                >
+                  {{ t('home.record.title') }}
+                </ui-list-item>
+                <ui-list-item
+                  v-close-popover
+                  class="cursor-pointer"
                   @click="addHostedWorkflow"
                 >
                   {{ t('workflow.host.add') }}
@@ -259,7 +270,11 @@
         :placeholder="t('common.name')"
         autofocus
         class="w-full mb-4"
-        @keyup.enter="addWorkflow"
+        @keyup.enter="
+          addWorkflowModal.type === 'manual'
+            ? addWorkflow()
+            : startRecordWorkflow()
+        "
       />
       <ui-textarea
         v-model="addWorkflowModal.description"
@@ -275,8 +290,20 @@
         <ui-button class="w-full" @click="clearAddWorkflowModal">
           {{ t('common.cancel') }}
         </ui-button>
-        <ui-button variant="accent" class="w-full" @click="addWorkflow">
-          {{ t('common.add') }}
+        <ui-button
+          variant="accent"
+          class="w-full"
+          @click="
+            addWorkflowModal.type === 'manual'
+              ? addWorkflow()
+              : startRecordWorkflow()
+          "
+        >
+          {{
+            addWorkflowModal.type === 'manual'
+              ? t('common.add')
+              : t('home.record.button')
+          }}
         </ui-button>
       </div>
     </ui-modal>
@@ -300,6 +327,7 @@ import { useWorkflowStore } from '@/stores/workflow';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import { importWorkflow, getWorkflowPermissions } from '@/utils/workflowData';
+import recordWorkflow from '@/newtab/utils/startRecordWorkflow';
 import WorkflowsLocal from '@/components/newtab/workflows/WorkflowsLocal.vue';
 import WorkflowsShared from '@/components/newtab/workflows/WorkflowsShared.vue';
 import WorkflowsHosted from '@/components/newtab/workflows/WorkflowsHosted.vue';
@@ -337,6 +365,7 @@ const state = shallowReactive({
 const addWorkflowModal = shallowReactive({
   name: '',
   show: false,
+  type: 'manual',
   description: '',
 });
 const permissionState = shallowReactive({
@@ -350,7 +379,20 @@ function clearAddWorkflowModal() {
   Object.assign(addWorkflowModal, {
     name: '',
     show: false,
+    type: 'manual',
     description: '',
+  });
+}
+function initRecordWorkflow() {
+  addWorkflowModal.show = true;
+  addWorkflowModal.type = 'recording';
+}
+function startRecordWorkflow() {
+  recordWorkflow({
+    name: addWorkflowModal.name,
+    description: addWorkflowModal.description,
+  }).then(() => {
+    router.push('/recording');
   });
 }
 function updateActiveTab(data = {}) {

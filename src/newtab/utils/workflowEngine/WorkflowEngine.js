@@ -459,7 +459,14 @@ class WorkflowEngine {
     } catch (error) {
       console.error(error);
     } finally {
+      this.id = null;
+      this.states = null;
+      this.logger = null;
+      this.saveLog = null;
       this.workflow = null;
+      this.blocksHandler = null;
+      this.parentWorkflow = null;
+
       this.isDestroyed = true;
       this.referenceData = null;
       this.eventListeners = null;

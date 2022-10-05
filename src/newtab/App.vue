@@ -1,7 +1,7 @@
 <template>
   <template v-if="retrieved">
-    <app-sidebar />
-    <main class="pl-16">
+    <app-sidebar v-if="$route.name !== 'recording'" />
+    <main :class="{ 'pl-16': $route.name !== 'recording' }">
       <router-view />
     </main>
     <ui-dialog>
@@ -250,6 +250,11 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
       fetchUserData(),
       syncHostedWorkflows(),
     ]);
+
+    const { isRecording } = await browser.storage.local.get('isRecording');
+    if (isRecording) {
+      router.push('/recording');
+    }
 
     autoDeleteLogs();
   } catch (error) {

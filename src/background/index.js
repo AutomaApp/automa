@@ -10,9 +10,6 @@ import BackgroundEventsListeners from './BackgroundEventsListeners';
 
 browser.alarms.onAlarm.addListener(BackgroundEventsListeners.onAlarms);
 
-browser.tabs.onCreated.addListener(BackgroundEventsListeners.onTabCreated);
-browser.tabs.onActivated.addListener(BackgroundEventsListeners.onTabsActivated);
-
 browser.commands.onCommand.addListener(BackgroundEventsListeners.onCommand);
 
 browser.action.onClicked.addListener(BackgroundEventsListeners.onActionClicked);
@@ -24,9 +21,6 @@ browser.runtime.onInstalled.addListener(
   BackgroundEventsListeners.onRuntimeInstalled
 );
 
-browser.webNavigation.onCommitted.addListener(
-  BackgroundEventsListeners.onWebNavigationCommited
-);
 browser.webNavigation.onCompleted.addListener(
   BackgroundEventsListeners.onWebNavigationCompleted
 );
