@@ -16,6 +16,20 @@
       class="mb-2 w-full"
       @change="updateData({ timeout: +$event })"
     />
+    <ui-select
+      :model-value="data.context"
+      :label="t('workflow.blocks.javascript-code.context.name')"
+      class="mb-2 w-full"
+      @change="updateData({ context: $event })"
+    >
+      <option
+        v-for="item in ['website', 'background']"
+        :key="item"
+        :value="item"
+      >
+        {{ t(`workflow.blocks.javascript-code.context.items.${item}`) }}
+      </option>
+    </ui-select>
     <p class="text-sm ml-1 text-gray-600 dark:text-gray-200">
       {{ t('workflow.blocks.javascript-code.name') }}
     </p>
@@ -25,20 +39,22 @@
       @click="state.showCodeModal = true"
       v-text="data.code"
     />
-    <ui-checkbox
-      :model-value="data.everyNewTab"
-      class="mt-2"
-      @change="updateData({ everyNewTab: $event })"
-    >
-      {{ t('workflow.blocks.javascript-code.everyNewTab') }}
-    </ui-checkbox>
-    <ui-checkbox
-      :model-value="data.runBeforeLoad"
-      class="mt-2"
-      @change="updateData({ runBeforeLoad: $event })"
-    >
-      Run before page loaded
-    </ui-checkbox>
+    <template v-if="data.context !== 'background'">
+      <ui-checkbox
+        :model-value="data.everyNewTab"
+        class="mt-2"
+        @change="updateData({ everyNewTab: $event })"
+      >
+        {{ t('workflow.blocks.javascript-code.everyNewTab') }}
+      </ui-checkbox>
+      <ui-checkbox
+        :model-value="data.runBeforeLoad"
+        class="mt-2"
+        @change="updateData({ runBeforeLoad: $event })"
+      >
+        Run before page loaded
+      </ui-checkbox>
+    </template>
     <ui-modal v-model="state.showCodeModal" content-class="max-w-3xl">
       <template #header>
         <ui-tabs v-model="state.activeTab" class="border-none">
@@ -110,7 +126,7 @@
               class="flex-1 mr-4"
             />
             <ui-checkbox
-              v-if="!data.everyNewTab"
+              v-if="!data.everyNewTab || data.context !== 'website'"
               v-model="state.preloadScripts[index].removeAfterExec"
             >
               {{ t('workflow.blocks.javascript-code.removeAfterExec') }}

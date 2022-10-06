@@ -597,6 +597,13 @@
         "availabeFuncs": "Available functions:",
         "removeAfterExec": "Remove after block executed",
         "everyNewTab": "Execute every new tab",
+        "context": {
+          "name": "Execution context",
+          "items": {
+            "website": "Active tab",
+            "background": "Background"
+          }
+        },
         "modal": {
           "tabs": {
             "code": "JavaScript code",

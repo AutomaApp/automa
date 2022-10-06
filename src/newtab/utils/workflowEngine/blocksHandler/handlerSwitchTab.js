@@ -92,6 +92,10 @@ export default async function ({ data, id }) {
     await Promise.allSettled(preloadScripts);
   }
 
+  if (activeTab) {
+    await browser.windows.update(tab.windowId, { focused: true });
+  }
+
   return {
     nextBlockId,
     data: tab.url,

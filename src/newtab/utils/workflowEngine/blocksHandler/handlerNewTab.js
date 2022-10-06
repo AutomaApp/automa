@@ -109,6 +109,8 @@ async function newTab({ id, data }) {
     });
   }
 
+  await browser.windows.update(tab.windowId, { focused: true });
+
   return {
     data: data.url,
     nextBlockId: this.getBlockConnections(id),
