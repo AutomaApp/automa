@@ -12,8 +12,8 @@
   "commands": {
     "open-dashboard": {
       "suggested_key": {
-        "default": "Ctrl+Shift+A",
-        "mac": "MacCtrl+Shift+A"
+        "default": "Alt+A",
+        "mac": "Alt+A"
       },
       "description": "Open the Automa dashboard"
     }
