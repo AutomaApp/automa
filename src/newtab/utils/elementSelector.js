@@ -20,7 +20,7 @@ async function makeDashboardFocus() {
   });
 }
 
-async function initElementSelector(tab = null) {
+export async function initElementSelector(tab = null) {
   let activeTab = tab;
 
   if (!tab) {
