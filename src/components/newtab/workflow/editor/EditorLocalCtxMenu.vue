@@ -50,6 +50,7 @@ const emit = defineEmits([
   'saveBlock',
   'duplicate',
   'packageIo',
+  'execute:block',
 ]);
 
 const { t } = useI18n();
@@ -126,6 +127,11 @@ const menuItems = {
     name: 'Set as block output',
     event: () => emit('packageIo', { type: 'outputs', ...ctxData }),
   },
+  executeBlock: {
+    id: 'executeBlock',
+    name: 'Execute from here',
+    event: () => emit('execute:block', ctxData),
+  },
 };
 
 /* eslint-disable-next-line */
@@ -160,11 +166,17 @@ function clearContextMenu() {
 
 onMounted(() => {
   props.editor.onNodeContextMenu(({ event, node }) => {
-    const items = ['copy', 'duplicate', 'saveToFolder', 'delete'];
+    const items = [
+      'copy',
+      'duplicate',
+      'executeBlock',
+      'saveToFolder',
+      'delete',
+    ];
     if (node.label === 'blocks-group') {
-      items.splice(3, 0, 'ungroup');
+      items.splice(items.indexOf('saveToFolder'), 0, 'ungroup');
     } else if (!excludeGroupBlocks.includes(node.label)) {
-      items.splice(3, 0, 'group');
+      items.splice(items.indexOf('saveToFolder'), 0, 'group');
     }
 
     const currCtxData = {
@@ -184,7 +196,7 @@ onMounted(() => {
       if (props.isPackage && props.packageIo) {
         items.unshift(isOutput ? 'setAsOutput' : 'setAsInput');
       } else if (isOutput) {
-        items.splice(2, 0, 'startRecording');
+        items.splice(3, 0, 'startRecording');
       }
     }
 

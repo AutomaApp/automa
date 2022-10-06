@@ -107,7 +107,11 @@ class WorkflowEngine {
         return;
       }
 
-      const triggerBlock = nodes.find((node) => node.label === 'trigger');
+      const triggerBlock = nodes.find((node) => {
+        if (this.options?.blockId) return node.id === this.options.blockId;
+
+        return node.label === 'trigger';
+      });
       if (!triggerBlock) {
         console.error(`${this.workflow.name} doesn't have a trigger block`);
         return;
@@ -116,8 +120,9 @@ class WorkflowEngine {
       blocks = getBlocks();
 
       const checkParams = this.options?.checkParams ?? true;
-      const hasParams = triggerBlock.data.parameters?.length > 0;
-      if (checkParams && hasParams) {
+      const hasParams =
+        checkParams && triggerBlock.data?.parameters?.length > 0;
+      if (hasParams) {
         this.eventListeners = {};
 
         const paramUrl = browser.runtime.getURL('params.html');

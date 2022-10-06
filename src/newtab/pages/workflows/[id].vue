@@ -231,6 +231,7 @@
             @paste="pasteCopiedElements"
             @saveBlock="initBlockFolder"
             @duplicate="duplicateElements"
+            @execute:block="executeFromBlock"
           />
         </ui-tab-panel>
         <ui-tab-panel value="logs" class="mt-24 container">
@@ -320,6 +321,7 @@ import { functions } from '@/utils/referenceData/mustacheReplacer';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useCommandManager } from '@/composable/commandManager';
 import { debounce, parseJSON, throttle } from '@/utils/helper';
+import { executeWorkflow } from '@/newtab/utils/workflowEngine';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
 import browser from 'webextension-polyfill';
 import dbStorage from '@/db/storage';
@@ -677,6 +679,25 @@ const onEdgesChange = debounce((changes) => {
 
 let nodeTargetHandle = null;
 
+async function executeFromBlock({ nodes }) {
+  try {
+    if (nodes.length === 0) return;
+
+    const [node] = nodes;
+    const workflowOptions = {
+      blockId: node.id,
+    };
+
+    const [tab] = await browser.tabs.query({ active: true, url: '*://*/*' });
+    if (tab) {
+      workflowOptions.tabId = tab.id;
+    }
+
+    executeWorkflow(workflow.value, workflowOptions);
+  } catch (error) {
+    console.error(error);
+  }
+}
 function startRecording({ nodeId, handleId }) {
   if (state.dataChanged) {
     alert('Make sure to save the workflow before starting recording');

@@ -296,7 +296,7 @@ class WorkflowWorker {
         this.reset();
 
         const triggerBlock = this.engine.blocks[this.engine.triggerBlockId];
-        this.executeBlock(triggerBlock, execParam);
+        if (triggerBlock) this.executeBlock(triggerBlock, execParam);
 
         localStorage.setItem(restartKey, restartCount + 1);
       } else {
