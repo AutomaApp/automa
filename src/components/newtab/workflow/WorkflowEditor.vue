@@ -10,10 +10,14 @@
     }"
   >
     <Background />
-    <MiniMap v-if="minimap" :node-class-name="minimapNodeClassName" />
+    <MiniMap
+      v-if="minimap"
+      :node-class-name="minimapNodeClassName"
+      class="hidden md:block"
+    />
     <div
       v-if="editorControls"
-      class="flex items-center absolute w-full p-4 left-0 bottom-0 z-10 pr-60"
+      class="flex items-center absolute w-full p-4 left-0 bottom-0 z-10 md:pr-60"
     >
       <slot name="controls-prepend" />
       <editor-search-blocks :editor="editor" />

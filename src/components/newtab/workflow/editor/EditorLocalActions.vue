@@ -89,7 +89,10 @@
       </ui-list>
     </ui-popover>
   </ui-card>
-  <ui-card v-if="canEdit" padding="p-1 ml-4 pointer-events-auto">
+  <ui-card
+    v-if="canEdit"
+    padding="p-1 ml-4 hidden md:block pointer-events-auto"
+  >
     <button
       v-for="item in modalActions"
       :key="item.id"
@@ -101,6 +104,24 @@
     </button>
   </ui-card>
   <ui-card padding="p-1 ml-4 flex items-center pointer-events-auto">
+    <ui-popover v-if="canEdit" class="md:hidden">
+      <template #trigger>
+        <button class="rounded-lg p-2 hoverable">
+          <v-remixicon name="riMore2Line" />
+        </button>
+      </template>
+      <ui-list class="space-y-1 cursor-pointer">
+        <ui-list-item
+          v-for="item in modalActions"
+          :key="item.id"
+          v-close-popover
+          @click="$emit('modal', item.id)"
+        >
+          <v-remixicon :name="item.icon" class="mr-2 -ml-1" />
+          {{ item.name }}
+        </ui-list-item>
+      </ui-list>
+    </ui-popover>
     <button
       v-if="!workflow.isDisabled"
       v-tooltip.group="
@@ -183,7 +204,7 @@
       v-if="!isTeam"
       :title="shortcuts['editor:save'].readable"
       variant="accent"
-      class="relative"
+      class="relative px-2 md:px-4"
       @click="saveWorkflow"
     >
       <span
@@ -197,8 +218,8 @@
           class="relative inline-flex rounded-full h-3 w-3 bg-blue-600"
         ></span>
       </span>
-      <v-remixicon name="riSaveLine" class="mr-2 -ml-1 my-1" />
-      {{ t('common.save') }}
+      <v-remixicon name="riSaveLine" class="md:-ml-1 my-1" />
+      <span class="hidden md:block ml-2">{{ t('common.save') }}</span>
     </ui-button>
     <ui-button
       v-else-if="!canEdit"
