@@ -248,9 +248,10 @@ function onKeydown(event) {
     return;
   }
 
-  if (state.shortcutKeys.length < 1) return;
+  const shortcuts = window._automaShortcuts;
+  if (shortcuts.length < 1) return;
 
-  const automaShortcut = state.shortcutKeys.every((shortcutKey) => {
+  const automaShortcut = shortcuts.every((shortcutKey) => {
     if (shortcutKey === 'mod') return ctrlKey || metaKey;
     if (shortcutKey === 'shift') return shiftKey;
     if (shortcutKey === 'option') return altKey;
@@ -260,6 +261,7 @@ function onKeydown(event) {
   if (automaShortcut) {
     event.preventDefault();
     state.active = true;
+    state.shortcutKeys = shortcuts;
   }
 }
 function onInputKeydown(event) {
@@ -385,10 +387,11 @@ onMounted(() => {
   browser.storage.local.get('automaShortcut').then(({ automaShortcut }) => {
     if (Array.isArray(automaShortcut) && automaShortcut.length < 1) return;
 
-    let keys = ['mod', 'shift', 'a'];
+    let keys = ['mod', 'shift', 'e'];
     if (automaShortcut) keys = automaShortcut.split('+');
 
     state.shortcutKeys = keys;
+    window._automaShortcuts = keys;
   });
 
   window.addEventListener('keydown', onKeydown);

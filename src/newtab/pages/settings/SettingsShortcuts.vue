@@ -108,7 +108,7 @@ const { t } = useI18n();
 const toast = useToast();
 
 const shortcuts = ref(mapShortcuts);
-const automaShortcut = ref(getReadableShortcut('mod+shift+a'));
+const automaShortcut = ref(getReadableShortcut('mod+shift+e'));
 const recording = reactive({
   id: '',
   keys: [],
