@@ -1,4 +1,25 @@
 import browser from 'webextension-polyfill';
+import { customAlphabet } from 'nanoid/non-secure';
+
+export function messageSandbox(type, data = {}) {
+  const nanoid = customAlphabet('1234567890abcdef', 5);
+
+  return new Promise((resolve) => {
+    const messageId = nanoid();
+
+    const iframeEl = document.querySelector('#sandbox');
+    iframeEl.contentWindow.postMessage({ id: messageId, type, ...data }, '*');
+
+    const messageListener = ({ data: messageData }) => {
+      if (messageData?.type !== 'sandbox' || messageData?.id !== messageId)
+        return;
+
+      resolve(messageData.result);
+    };
+
+    window.addEventListener('message', messageListener, { once: true });
+  });
+}
 
 export async function getFrames(tabId) {
   try {

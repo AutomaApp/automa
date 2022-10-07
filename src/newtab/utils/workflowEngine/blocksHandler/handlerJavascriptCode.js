@@ -1,7 +1,7 @@
 import { customAlphabet } from 'nanoid/non-secure';
 import browser from 'webextension-polyfill';
 import cloneDeep from 'lodash.clonedeep';
-import { automaRefDataStr, waitTabLoaded } from '../helper';
+import { messageSandbox, automaRefDataStr, waitTabLoaded } from '../helper';
 
 const nanoid = customAlphabet('1234567890abcdef', 5);
 
@@ -25,23 +25,6 @@ function automaResetTimeout() {
   if (everyNewTab) str = automaRefDataStr(varName);
 
   return str;
-}
-function executeInSandbox(data) {
-  return new Promise((resolve) => {
-    const messageId = nanoid();
-
-    const iframeEl = document.querySelector('#sandbox');
-    iframeEl.contentWindow.postMessage({ id: messageId, ...data }, '*');
-
-    const messageListener = ({ data: messageData }) => {
-      if (messageData?.type !== 'sandbox' || messageData?.id !== messageId)
-        return;
-
-      resolve(messageData.result);
-    };
-
-    window.addEventListener('message', messageListener, { once: true });
-  });
 }
 async function executeInWebpage(args, target) {
   const [{ result }] = await browser.scripting.executeScript({
@@ -232,7 +215,7 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
   }
 
   const result = await (data.context === 'background'
-    ? executeInSandbox({
+    ? messageSandbox('javascriptBlock', {
         preloadScripts,
         refData: payload.refData,
         blockData: cloneDeep(payload.data),

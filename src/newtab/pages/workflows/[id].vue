@@ -5,9 +5,9 @@
       :class="
         editState.editing
           ? 'absolute h-full w-full md:relative z-50'
-          : 'hidden md:block'
+          : 'hidden md:flex'
       "
-      class="w-80 bg-white dark:bg-gray-800 py-6 border-l border-gray-100 dark:border-gray-700 dark:border-opacity-50 flex flex-col"
+      class="w-80 bg-white dark:bg-gray-800 py-6 border-l border-gray-100 dark:border-gray-700 dark:border-opacity-50 flex-col"
     >
       <workflow-edit-block
         v-if="editState.editing"

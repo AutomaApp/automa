@@ -1542,7 +1542,7 @@ export const conditionBuilder = {
       category: 'value',
       name: 'Code',
       compareable: false,
-      data: { code: '\nreturn true;' },
+      data: { code: '\nreturn true;', context: 'background' },
     },
     {
       id: 'data#exists',

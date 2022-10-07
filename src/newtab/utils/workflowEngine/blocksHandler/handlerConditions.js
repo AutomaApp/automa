@@ -3,7 +3,7 @@ import browser from 'webextension-polyfill';
 import compareBlockValue from '@/utils/compareBlockValue';
 import mustacheReplacer from '@/utils/referenceData/mustacheReplacer';
 import testConditions from '@/utils/testConditions';
-import { automaRefDataStr } from '../helper';
+import { automaRefDataStr, messageSandbox } from '../helper';
 
 const nanoid = customAlphabet('1234567890abcdef', 5);
 
@@ -45,11 +45,13 @@ function checkConditions(data, conditionOptions) {
     testAllConditions();
   });
 }
-function checkCodeCondition(activeTab, payload) {
+async function checkCodeCondition(activeTab, payload) {
   const variableId = nanoid();
 
-  return browser.scripting
-    .executeScript({
+  if (!payload.data.context || payload.data.context === 'website') {
+    if (!activeTab.id) throw new Error('no-tab');
+
+    const [{ result }] = await browser.scripting.executeScript({
       world: 'MAIN',
       args: [payload, variableId, automaRefDataStr(variableId)],
       target: {
@@ -62,22 +64,22 @@ function checkCodeCondition(activeTab, payload) {
 
           const scriptEl = document.createElement('script');
           scriptEl.textContent = `
-          (async () => {
-            const ${varName} = ${JSON.stringify(refData)};
-            ${refDataScript}
-            try {
-              ${data.code}
-            } catch (error) {
-              return {
-                $isError: true,
-                message: error.message,
+            (async () => {
+              const ${varName} = ${JSON.stringify(refData)};
+              ${refDataScript}
+              try {
+                ${data.code}
+              } catch (error) {
+                return {
+                  $isError: true,
+                  message: error.message,
+                }
               }
-            }
-          })()
-            .then((detail) => {
-              window.dispatchEvent(new CustomEvent('__automa-condition-code__', { detail }));
-            });
-        `;
+            })()
+              .then((detail) => {
+                window.dispatchEvent(new CustomEvent('__automa-condition-code__', { detail }));
+              });
+          `;
 
           document.documentElement.appendChild(scriptEl);
 
@@ -102,8 +104,13 @@ function checkCodeCondition(activeTab, payload) {
           );
         });
       },
-    })
-    .then(([result]) => result.result);
+    });
+    return result;
+  }
+  const result = await messageSandbox('conditionCode', payload);
+  if (result && result.$isError) throw new Error(result.message);
+
+  return result;
 }
 
 async function conditions({ data, id }, { prevBlockData, refData }) {

@@ -2,9 +2,7 @@ import objectPath from 'object-path';
 
 window.$getNestedProperties = objectPath.get;
 
-function onMessage({ data }) {
-  if (!data.id) return;
-
+function handleJavascriptBlock(data) {
   let timeout;
   const scriptId = `script${data.id}`;
   const propertyName = `automa${data.id}`;
@@ -42,27 +40,27 @@ function onMessage({ data }) {
   const script = document.createElement('script');
   script.id = scriptId;
   script.textContent = `
-  	(() => {
-  		function automaRefData(keyword, path = '') {
-			  return window.$getNestedProperties(${propertyName}.refData, keyword + '.' + path);
-			}
-  		function automaSetVariable(name, value) {
-			  ${propertyName}.refData.variables[name] = value;
-			}
-  		function automaNextBlock(data = {}, insert = true) {
-  			${propertyName}.nextBlock({ data, insert });
-  		}
-  		function automaResetTimeout() {
-  			${propertyName}.resetTimeout();
-  		}
+    (() => {
+      function automaRefData(keyword, path = '') {
+        return window.$getNestedProperties(${propertyName}.refData, keyword + '.' + path);
+      }
+      function automaSetVariable(name, value) {
+        ${propertyName}.refData.variables[name] = value;
+      }
+      function automaNextBlock(data = {}, insert = true) {
+        ${propertyName}.nextBlock({ data, insert });
+      }
+      function automaResetTimeout() {
+        ${propertyName}.resetTimeout();
+      }
 
-  		try {
-  			${data.blockData.code}
-  		} catch (error) {
-  			console.error(error);
-  			automaNextBlock({ $error: true, message: error.message });
-  		}
-  	})();
+      try {
+        ${data.blockData.code}
+      } catch (error) {
+        console.error(error);
+        automaNextBlock({ $error: true, message: error.message });
+      }
+    })();
   `;
 
   function cleanUp() {
@@ -101,6 +99,60 @@ function onMessage({ data }) {
 
   timeout = setTimeout(cleanUp, data.blockData.timeout);
   document.body.appendChild(script);
+}
+function handleConditionCode(data) {
+  const propertyName = `automa${data.id}`;
+
+  const script = document.createElement('script');
+  script.textContent = `
+    (async () => {
+      function automaRefData(keyword, path = '') {
+        return window.$getNestedProperties(${propertyName}.refData, keyword + '.' + path);
+      }
+
+      try {
+        ${data.data.code}
+      } catch (error) {
+        return {
+          $isError: true,
+          message: error.message,
+        }
+      }
+    })()
+      .then((result) => {
+        ${propertyName}.done(result);
+      });
+  `;
+
+  window[propertyName] = {
+    refData: data.refData,
+    done: (result) => {
+      script.remove();
+      delete window[propertyName];
+
+      window.top.postMessage(
+        {
+          result,
+          id: data.id,
+          type: 'sandbox',
+        },
+        '*'
+      );
+    },
+  };
+
+  document.body.appendChild(script);
+}
+
+const eventHandlers = {
+  conditionCode: handleConditionCode,
+  javascriptBlock: handleJavascriptBlock,
+};
+
+function onMessage({ data }) {
+  if (!data.id || !data.type || !eventHandlers[data.type]) return;
+
+  eventHandlers[data.type](data);
 }
 
 window.addEventListener('message', onMessage);

@@ -23,12 +23,31 @@
           </option>
         </optgroup>
       </ui-select>
-      <template v-for="(_, name) in item.data" :key="item.id + name">
-        <v-remixicon
-          v-if="name === 'code'"
-          :title="t('workflow.conditionBuilder.topAwait')"
-          name="riInformationLine"
-        />
+      <template
+        v-for="name in getConditionDataList(item)"
+        :key="item.id + name"
+      >
+        <template v-if="name === 'code'">
+          <ui-select
+            v-model="inputsData[index].data.context"
+            :placeholder="t('workflow.blocks.javascript-code.context.name')"
+            class="mr-2"
+          >
+            <option
+              v-for="context in ['website', 'background']"
+              :key="context"
+              :value="context"
+            >
+              {{
+                t(`workflow.blocks.javascript-code.context.items.${context}`)
+              }}
+            </option>
+          </ui-select>
+          <v-remixicon
+            :title="t('workflow.conditionBuilder.topAwait')"
+            name="riInformationLine"
+          />
+        </template>
         <edit-autocomplete
           :disabled="name === 'code'"
           :class="[name === 'code' ? 'w-full' : 'flex-1']"
@@ -121,9 +140,17 @@ const conditionOperators = conditionBuilder.compareTypes.reduce((acc, type) => {
   return acc;
 }, {});
 
+const excludeData = ['context'];
+
 const { t } = useI18n();
 const inputsData = ref(cloneDeep(props.data));
 
+function getConditionDataList(inputData) {
+  const keys = Object.keys(inputData.data);
+  const filteredKeys = keys.filter((item) => !excludeData.includes(item));
+
+  return filteredKeys;
+}
 function getDefaultValues(items) {
   const defaultValues = {
     value: {
