@@ -31,16 +31,13 @@ async function loopElements({ data, id }, { refData }) {
         selector: data.selector,
       });
 
-      let elementsList = elements;
-      if (data.reverseLoop) elementsList = elements.reverse();
-
       const loopPayload = {
         maxLoop,
         index: 0,
         blockId: id,
+        data: elements,
         id: data.loopId,
         type: 'elements',
-        data: elementsList,
       };
 
       if (data.loadMoreAction !== 'none') {
@@ -62,7 +59,7 @@ async function loopElements({ data, id }, { refData }) {
       /* eslint-disable-next-line */
       refData.loopData[data.loopId] = {
         $index: 0,
-        data: elementsList[0],
+        data: elements[0],
       };
     }
 
