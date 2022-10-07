@@ -21,6 +21,13 @@
       class="w-full mt-3"
       @change="updateData({ maxLoop: $event })"
     />
+    <ui-checkbox
+      :model-value="data.reverseLoop"
+      class="mt-2"
+      @change="updateData({ reverseLoop: $event })"
+    >
+      {{ t('workflow.blocks.loop-data.reverse') }}
+    </ui-checkbox>
     <div class="mt-4 border-t pt-4 mb-8">
       <p class="text-sm text-gray-600 dark:text-gray-200">
         {{ t('workflow.blocks.loop-elements.loadMore') }}
