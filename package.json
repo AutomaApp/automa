@@ -31,7 +31,7 @@
     "@braks/vue-flow": "^0.4.40",
     "@codemirror/autocomplete": "^6.1.0",
     "@codemirror/lang-css": "^6.0.0",
-    "@codemirror/lang-html": "^6.1.0",
+    "@codemirror/lang-html": "^6.1.2",
     "@codemirror/lang-javascript": "^6.0.2",
     "@codemirror/lang-json": "^6.0.0",
     "@codemirror/language": "^6.2.1",
@@ -43,11 +43,11 @@
     "@tiptap/extension-placeholder": "^2.0.0-beta.53",
     "@tiptap/starter-kit": "^2.0.0-beta.197",
     "@tiptap/vue-3": "^2.0.0-beta.96",
-    "@viselect/vanilla": "^3.1.0",
+    "@viselect/vanilla": "^3.1.1",
     "@vueuse/rxjs": "^9.1.1",
     "@vuex-orm/core": "^0.36.4",
     "codemirror": "^6.0.1",
-    "compare-versions": "^4.1.2",
+    "compare-versions": "^5.0.1",
     "cron-parser": "^4.6.0",
     "cronstrue": "^2.11.0",
     "crypto-js": "^4.1.1",
@@ -106,7 +106,7 @@
     "eslint-plugin-vue": "^9.4.0",
     "file-loader": "^6.2.0",
     "fs-extra": "^10.1.0",
-    "html-loader": "^4.1.0",
+    "html-loader": "^4.2.0",
     "html-webpack-plugin": "^5.5.0",
     "lint-staged": "^13.0.2",
     "mini-css-extract-plugin": "^2.3.0",
@@ -121,6 +121,6 @@
     "web-worker": "^1.2.0",
     "webpack": "^5.73.0",
     "webpack-cli": "^4.10.0",
-    "webpack-dev-server": "^4.11.0"
+    "webpack-dev-server": "^4.11.1"
   }
 }
