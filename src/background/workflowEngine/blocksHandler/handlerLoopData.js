@@ -49,6 +49,7 @@ async function loopData({ data, id }, { refData }) {
               findBy,
               max: maxLoop,
               multiple: true,
+              reverseLoop: data.reverseLoop,
               selector: data.elementSelector,
               waitForSelector: data.waitForSelector ?? false,
               waitSelectorTimeout: data.waitSelectorTimeout ?? 5000,
@@ -81,7 +82,7 @@ async function loopData({ data, id }, { refData }) {
           index = data.startIndex;
         }
 
-        if (data.reverseLoop) {
+        if (data.reverseLoop && data.loopThrough !== 'elements') {
           currLoopData.reverse();
         }
       }

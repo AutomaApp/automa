@@ -63,20 +63,28 @@ function workflowShortcutsListener(findWorkflow, shortcutsObj) {
     return true;
   });
 }
+async function getWorkflows() {
+  const { workflows, workflowHosts } = await browser.storage.local.get([
+    'workflows',
+    'workflowHosts',
+  ]);
+  const localWorkflows = Array.isArray(workflows)
+    ? workflows
+    : Object.values(workflows);
+
+  return {
+    local: localWorkflows,
+    hosted: Object.values(workflowHosts || {}),
+  };
+}
 
 export default async function () {
   try {
-    const { shortcuts, workflows, workflowHosts } =
-      await browser.storage.local.get([
-        'shortcuts',
-        'workflows',
-        'workflowHosts',
-      ]);
-    const workflowsArr = Array.isArray(workflows)
-      ? workflows
-      : Object.values(workflows);
+    const storage = await browser.storage.local.get('shortcuts');
+    let workflows = await getWorkflows();
+
     const findWorkflow = (id, publicId = false) => {
-      let workflow = workflowsArr.find((item) => {
+      let workflow = workflows.local.find((item) => {
         if (publicId) {
           return item.settings.publicId === id;
         }
@@ -85,9 +93,7 @@ export default async function () {
       });
 
       if (!workflow) {
-        workflow = Object.values(workflowHosts || {}).find(
-          ({ hostId }) => hostId === id
-        );
+        workflow = workflows.hosted.find(({ hostId }) => hostId === id);
 
         if (workflow) workflow.id = workflow.hostId;
       }
@@ -95,8 +101,30 @@ export default async function () {
       return workflow;
     };
 
+    browser.storage.onChanged.addListener(({ automaShortcut, shortcuts }) => {
+      if (automaShortcut) {
+        if (
+          Array.isArray(automaShortcut.newValue) &&
+          automaShortcut.newValue.length < 1
+        ) {
+          window._automaShortcuts = [];
+        } else {
+          const automaShortcutArr = automaShortcut.newValue.split('+');
+
+          window._automaShortcuts = automaShortcutArr;
+        }
+      }
+      if (shortcuts) {
+        Mousetrap.reset();
+        getWorkflows().then((updatedWorkflows) => {
+          workflows = updatedWorkflows;
+          workflowShortcutsListener(findWorkflow, shortcuts.newValue || {});
+        });
+      }
+    });
+
     automaCustomEventListener(findWorkflow);
-    workflowShortcutsListener(findWorkflow, shortcuts || {});
+    workflowShortcutsListener(findWorkflow, storage.shortcuts || {});
   } catch (error) {
     console.error(error);
   }

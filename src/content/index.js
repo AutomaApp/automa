@@ -42,8 +42,7 @@ function messageToFrame(frameElement, blockData) {
 }
 async function executeBlock(data) {
   const removeExecutedBlock = showExecutedBlock(data, data.executedBlockOnWeb);
-
-  if (data.data?.selector?.includes('|>') && isMainFrame) {
+  if (data.data?.selector?.includes('|>')) {
     const [frameSelector, selector] = data.data.selector.split(/\|>(.+)/);
     const frameElement = document.querySelector(frameSelector);
     const frameError = (message) => {
@@ -136,18 +135,41 @@ function messageListener({ data, source }) {
 
   initCommandPalette();
 
+  let contextElement = null;
+  let $ctxLink = '';
+  let $ctxMediaUrl = '';
+  let $ctxTextSelection = '';
+
   window.isAutomaInjected = true;
   window.addEventListener('message', messageListener);
+  window.addEventListener(
+    'contextmenu',
+    ({ target }) => {
+      contextElement = target;
+      $ctxTextSelection = window.getSelection().toString();
 
-  let contextElement = null;
-  let $ctxTextSelection = '';
+      const tag = target.tagName;
+      if (tag === 'A') {
+        $ctxLink = target.href;
+      }
+
+      const mediaTags = ['AUDIO', 'VIDEO', 'IMG'];
+      if (mediaTags.includes(tag)) {
+        let mediaSrc = target.src || '';
+
+        if (!mediaSrc.src) {
+          const sourceEl = target.querySelector('source');
+          if (sourceEl) mediaSrc = sourceEl.src;
+        }
+
+        $ctxMediaUrl = mediaSrc;
+      }
+    },
+    true
+  );
 
   if (isMainFrame) {
     shortcutListener();
-    window.addEventListener('contextmenu', ({ target }) => {
-      contextElement = target;
-      $ctxTextSelection = window.getSelection().toString();
-    });
     // window.addEventListener('load', elementObserver);
   }
 
@@ -198,30 +220,10 @@ function messageListener({ data, source }) {
             break;
           }
           case 'context-element': {
-            let $ctxLink = '';
-            let $ctxMediaUrl = '';
             let $ctxElSelector = '';
 
             if (contextElement) {
               $ctxElSelector = findSelector(contextElement);
-
-              const tag = contextElement.tagName;
-              if (tag === 'A') {
-                $ctxLink = contextElement.href;
-              }
-
-              const mediaTags = ['AUDIO', 'VIDEO', 'IMG'];
-              if (mediaTags.includes(tag)) {
-                let mediaSrc = contextElement.src || '';
-
-                if (!mediaSrc.src) {
-                  const sourceEl = contextElement.querySelector('source');
-                  if (sourceEl) mediaSrc = sourceEl.src;
-                }
-
-                $ctxMediaUrl = mediaSrc;
-              }
-
               contextElement = null;
             }
             if (!$ctxTextSelection) {
@@ -229,10 +231,10 @@ function messageListener({ data, source }) {
             }
 
             resolve({
-              $ctxElSelector,
-              $ctxTextSelection,
               $ctxLink,
               $ctxMediaUrl,
+              $ctxElSelector,
+              $ctxTextSelection,
             });
             break;
           }

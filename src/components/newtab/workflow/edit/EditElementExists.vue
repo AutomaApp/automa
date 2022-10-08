@@ -20,8 +20,8 @@
       <ui-input
         :model-value="data.selector"
         :label="t('workflow.blocks.element-exists.selector')"
+        :placeholder="data.findBy === 'xpath' ? '//element' : '.element'"
         autocomplete="off"
-        placeholder=".element"
         class="w-full"
         @change="updateData({ selector: $event })"
       />

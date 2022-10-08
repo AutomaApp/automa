@@ -13,11 +13,16 @@ export function simulateClickElement(element) {
 
 export function generateLoopSelectors(
   elements,
-  { max, attrId, frameSelector, startIndex = 0 }
+  { max, attrId, frameSelector, reverseLoop, startIndex = 0 }
 ) {
   const selectors = [];
+  let elementsList = elements;
 
-  elements.forEach((el, index) => {
+  if (reverseLoop) {
+    elementsList = Array.from(elements).reverse();
+  }
+
+  elementsList.forEach((el, index) => {
     if (max > 0 && selectors.length - 1 > max) return;
 
     const attrName = 'automa-loop';
