@@ -1242,7 +1242,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['html', 'css'],
+    refDataKeys: ['html', 'css', 'selector'],
     data: {
       disableBlock: false,
       description: '',
