@@ -2,7 +2,7 @@ function repeatTask({ data, id }) {
   return new Promise((resolve) => {
     const repeat = Number.isNaN(+data.repeatFor) ? 0 : +data.repeatFor;
 
-    if (this.repeatedTasks[id] > repeat) {
+    if (this.repeatedTasks[id] > repeat || !this.getBlockConnections(id, 2)) {
       delete this.repeatedTasks[id];
 
       resolve({

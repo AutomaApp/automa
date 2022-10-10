@@ -429,7 +429,7 @@ class WorkflowEngine {
         }
       );
 
-      if (!this.workflow.isTesting) {
+      if (!this.workflow?.isTesting) {
         const { name, id, teamId } = this.workflow;
 
         await this.logger.add({
