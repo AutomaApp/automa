@@ -9,7 +9,7 @@
       id="workflows-container"
       class="absolute w-full max-w-2xl"
       padding="p-0"
-      style="left: 50%; top: 70px; transform: translateX(-50%)"
+      style="left: 50%; top: 50px; transform: translateX(-50%)"
     >
       <div class="p-4">
         <label
@@ -135,6 +135,19 @@
             </ui-list>
           </template>
         </template>
+      </div>
+      <div class="px-4 py-2">
+        <p
+          class="inline-flex items-center cursor-pointer text-gray-600"
+          @click="openDashboard"
+        >
+          Open dashboard
+          <v-remixicon
+            name="riExternalLinkLine"
+            class="inline-block ml-1"
+            size="20"
+          />
+        </p>
       </div>
     </ui-card>
   </div>
@@ -330,6 +343,9 @@ function onInput(event) {
   } else {
     state.query = value;
   }
+}
+function openDashboard() {
+  sendMessage('open:dashboard', '', 'background');
 }
 
 watch(inputRef, () => {
