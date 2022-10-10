@@ -7,29 +7,30 @@
       class="w-full mb-1"
       @change="updateData({ description: $event })"
     />
-    <ui-input
-      v-if="!data.everyNewTab"
-      :model-value="data.timeout"
-      :label="t('workflow.blocks.javascript-code.timeout.placeholder')"
-      :title="t('workflow.blocks.javascript-code.timeout.title')"
-      type="number"
-      class="mb-2 w-full"
-      @change="updateData({ timeout: +$event })"
-    />
-    <ui-select
-      :model-value="data.context"
-      :label="t('workflow.blocks.javascript-code.context.name')"
-      class="mb-2 w-full"
-      @change="updateData({ context: $event })"
-    >
-      <option
-        v-for="item in ['website', 'background']"
-        :key="item"
-        :value="item"
+    <template v-if="!data.everyNewTab">
+      <ui-input
+        :model-value="data.timeout"
+        :label="t('workflow.blocks.javascript-code.timeout.placeholder')"
+        :title="t('workflow.blocks.javascript-code.timeout.title')"
+        type="number"
+        class="mb-2 w-full"
+        @change="updateData({ timeout: +$event })"
+      />
+      <ui-select
+        :model-value="data.context"
+        :label="t('workflow.blocks.javascript-code.context.name')"
+        class="mb-2 w-full"
+        @change="updateData({ context: $event })"
       >
-        {{ t(`workflow.blocks.javascript-code.context.items.${item}`) }}
-      </option>
-    </ui-select>
+        <option
+          v-for="item in ['website', 'background']"
+          :key="item"
+          :value="item"
+        >
+          {{ t(`workflow.blocks.javascript-code.context.items.${item}`) }}
+        </option>
+      </ui-select>
+    </template>
     <p class="text-sm ml-1 text-gray-600 dark:text-gray-200">
       {{ t('workflow.blocks.javascript-code.name') }}
     </p>
