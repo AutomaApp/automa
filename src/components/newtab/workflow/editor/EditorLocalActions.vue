@@ -159,6 +159,14 @@
       </template>
       <ui-list style="min-width: 9rem">
         <ui-list-item
+          v-close-popover
+          class="cursor-pointer"
+          @click="copyWorkflowId"
+        >
+          <v-remixicon name="riFileCopyLine" class="mr-2 -ml-1" />
+          Copy workflow Id
+        </ui-list-item>
+        <ui-list-item
           v-if="isTeam && canEdit"
           v-close-popover
           class="cursor-pointer"
@@ -393,6 +401,17 @@ const userDontHaveTeamsAccess = computed(() => {
   );
 });
 
+function copyWorkflowId() {
+  navigator.clipboard.writeText(props.workflow.id).catch((error) => {
+    console.error(error);
+
+    const textarea = document.createElement('textarea');
+    textarea.value = props.workflow.id;
+    textarea.select();
+    document.execCommand('copy');
+    textarea.blur();
+  });
+}
 function updateWorkflow(data = {}, changedIndicator = false) {
   let store = null;
 

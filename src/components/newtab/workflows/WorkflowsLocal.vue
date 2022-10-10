@@ -347,6 +347,22 @@ function togglePinWorkflow(workflow) {
 
 const menu = [
   {
+    id: 'copy-id',
+    name: 'Copy workflow id',
+    icon: 'riFileCopyLine',
+    action: (workflow) => {
+      navigator.clipboard.writeText(workflow.id).catch((error) => {
+        console.error(error);
+
+        const textarea = document.createElement('textarea');
+        textarea.value = workflow.id;
+        textarea.select();
+        document.execCommand('copy');
+        textarea.blur();
+      });
+    },
+  },
+  {
     id: 'duplicate',
     name: t('common.duplicate'),
     icon: 'riFileCopyLine',

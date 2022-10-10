@@ -232,6 +232,13 @@ window.onbeforeunload = () => {
     const tabs = await browser.tabs.query({
       url: browser.runtime.getURL('/newtab.html'),
     });
+
+    const currentWindow = await browser.windows.getCurrent();
+    if (currentWindow.type !== 'popup') {
+      await browser.tabs.remove([tabs[0].id]);
+      return;
+    }
+
     if (tabs.length > 1) {
       const firstTab = tabs.shift();
       await browser.windows.update(firstTab.windowId, { focused: true });
