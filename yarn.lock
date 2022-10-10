@@ -1679,6 +1679,21 @@
   resolved "https://registry.yarnpkg.com/@viselect/vanilla/-/vanilla-3.1.0.tgz#66ef6eaa383a053c24bd2f6d8db1691f5b32e6bb"
   integrity sha512-B0cvgsHandCXXsqp3O09HKR6buJa6kGpzu/Y9gQOiKcE26mbfRlZIGKBcYEdOELmRa+QrzG6ydegjNET/htsGg==
 
+"@vue-flow/additional-components@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@vue-flow/additional-components/-/additional-components-1.0.0.tgz#527edb54ed6ce527cd0370a46ea4ca74a6a7d8c2"
+  integrity sha512-xHDe5r60unpn2YuNEPdNAOgaS2KghdpVMOo5dVFdYJeRDaW8e0tVyXIUzGaP2iDT9t1WL1rlM/8BXizfFIdBaw==
+
+"@vue-flow/core@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@vue-flow/core/-/core-1.0.0.tgz#b342863b4b96635d6e914c6c57141e37ba4ebbde"
+  integrity sha512-CU0Q8o31vXFC8BdOoPdRU7rN0EkgAFNwlG/gLR18Kk6ZnIflAc8BcaT3fShoVXNZLysXg10UF5C/L4wWPk2Gjw==
+  dependencies:
+    "@vueuse/core" "^9.3.0"
+    d3-drag "^3.0.0"
+    d3-selection "^3.0.0"
+    d3-zoom "^3.0.0"
+
 "@vue/compiler-core@3.2.39":
   version "3.2.39"
   resolved "https://registry.yarnpkg.com/@vue/compiler-core/-/compiler-core-3.2.39.tgz#0d77e635f4bdb918326669155a2dc977c053943e"
@@ -1784,10 +1799,25 @@
     "@vueuse/shared" "9.2.0"
     vue-demi "*"
 
+"@vueuse/core@^9.3.0":
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-9.3.0.tgz#74d855bd19cb5eadd2edb30c871918fac881e8b8"
+  integrity sha512-64Rna8IQDWpdrJxgitDg7yv1yTp41ZmvV8zlLEylK4QQLWAhz1OFGZDPZ8bU4lwcGgbEJ2sGi2jrdNh4LttUSQ==
+  dependencies:
+    "@types/web-bluetooth" "^0.0.15"
+    "@vueuse/metadata" "9.3.0"
+    "@vueuse/shared" "9.3.0"
+    vue-demi "*"
+
 "@vueuse/metadata@9.2.0":
   version "9.2.0"
   resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-9.2.0.tgz#6bf7c9c44b9f5ece405837226a0e04a997994458"
   integrity sha512-exN4KE6iquxDCdt72BgEhb3tlOpECtD61AUdXnUqBTIUCl70x1Ar/QXo3bYcvxmdMS2/peQyfeTzBjRTpvL5xw==
+
+"@vueuse/metadata@9.3.0":
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-9.3.0.tgz#c107fe77a577e1f221536cd1b291039c0c7c4bce"
+  integrity sha512-GnnfjbzIPJIh9ngL9s9oGU1+Hx/h5/KFqTfJykzh/1xjaHkedV9g0MASpdmPZIP+ynNhKAcEfA6g5i8KXwtoMA==
 
 "@vueuse/rxjs@^9.1.1":
   version "9.2.0"
@@ -1801,6 +1831,13 @@
   version "9.2.0"
   resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-9.2.0.tgz#7831051b2c1d01c3413c749468ee53a86024510e"
   integrity sha512-NnRp/noSWuXW0dKhZK5D0YLrDi0nmZ18UeEgwXQq7Ul5TTP93lcNnKjrHtd68j2xFB/l59yPGFlCryL692bnrA==
+  dependencies:
+    vue-demi "*"
+
+"@vueuse/shared@9.3.0":
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-9.3.0.tgz#40fc138ba4e379c894075830aa2e15404aaa8a5b"
+  integrity sha512-caGUWLY0DpPC6l31KxeUy6vPVNA0yKxx81jFYLoMpyP6cF84FG5Dkf69DfSUqL57wX8JcUkJDMnQaQIZPWFEQQ==
   dependencies:
     vue-demi "*"
 

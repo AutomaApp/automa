@@ -98,7 +98,7 @@ import { inject, computed, shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
-import { Handle, Position } from '@braks/vue-flow';
+import { Handle, Position } from '@vue-flow/core';
 import draggable from 'vuedraggable';
 import { tasks, excludeGroupBlocks } from '@/utils/shared';
 import { useComponentId } from '@/composable/componentId';

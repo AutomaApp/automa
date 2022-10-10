@@ -70,12 +70,11 @@ import { onMounted, onBeforeUnmount, watch, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {
   VueFlow,
-  MiniMap,
-  Background,
   useVueFlow,
   MarkerType,
   getConnectedEdges,
-} from '@braks/vue-flow';
+} from '@vue-flow/core';
+import { Background, MiniMap } from '@vue-flow/additional-components';
 import cloneDeep from 'lodash.clonedeep';
 import { useStore } from '@/stores/main';
 import { categories } from '@/utils/shared';
@@ -264,8 +263,8 @@ onBeforeUnmount(() => {
 });
 </script>
 <style>
-@import '@braks/vue-flow/dist/style.css';
-@import '@braks/vue-flow/dist/theme-default.css';
+@import '@vue-flow/core/dist/style.css';
+@import '@vue-flow/core/dist/theme-default.css';
 
 .control-button {
   @apply p-2 rounded-lg bg-white dark:bg-gray-800 transition-colors;

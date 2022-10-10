@@ -61,7 +61,7 @@
   </block-base>
 </template>
 <script setup>
-import { Handle, Position } from '@braks/vue-flow';
+import { Handle, Position } from '@vue-flow/core';
 import { useI18n } from 'vue-i18n';
 import { useEditorBlock } from '@/composable/editorBlock';
 import { useComponentId } from '@/composable/componentId';

@@ -87,7 +87,7 @@
 <script setup>
 import { onMounted, shallowReactive } from 'vue';
 import cloneDeep from 'lodash.clonedeep';
-import { Handle, Position } from '@braks/vue-flow';
+import { Handle, Position } from '@vue-flow/core';
 import { usePackageStore } from '@/stores/package';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';

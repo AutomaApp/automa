@@ -25,7 +25,7 @@ import {
   getSmoothStepPath,
   getEdgeCenter,
   EdgeText,
-} from '@braks/vue-flow';
+} from '@vue-flow/core';
 
 const props = defineProps({
   id: {
