@@ -56,6 +56,7 @@ import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { compare } from 'compare-versions';
+import { useHead } from '@vueuse/head';
 import browser from 'webextension-polyfill';
 import { useStore } from '@/stores/main';
 import { useUserStore } from '@/stores/user';
@@ -208,6 +209,23 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
 
   messageEvents[type](data);
 });
+
+useHead(() => {
+  const runningWorkflows = workflowStore.states.length;
+
+  return {
+    title:
+      runningWorkflows > 0 ? `${runningWorkflows} Workflows Running` : 'Automa',
+  };
+});
+
+/* eslint-disable-next-line */
+window.onbeforeunload = () => {
+  const runningWorkflows = workflowStore.states.length;
+  if (window.isDataChanged || runningWorkflows > 0) {
+    return t('message.notSaved');
+  }
+};
 
 (async () => {
   try {

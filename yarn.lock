@@ -912,16 +912,6 @@
     "@babel/helper-validator-identifier" "^7.18.6"
     to-fast-properties "^2.0.0"
 
-"@braks/vue-flow@^0.4.40":
-  version "0.4.40"
-  resolved "https://registry.yarnpkg.com/@braks/vue-flow/-/vue-flow-0.4.40.tgz#9cb8e908975b9ad7fb169a612ec53ff123133b56"
-  integrity sha512-jZHrYwcuB1oBAM/E3BcthYEqmfoHmO0MNUVgPNTSgeN79aPzrzs/qzztJtINZYMIwAMG7L/sZxdNWfc6V3ZdKA==
-  dependencies:
-    "@vueuse/core" "^9.1.0"
-    d3-drag "^3.0.0"
-    d3-selection "^3.0.0"
-    d3-zoom "^3.0.0"
-
 "@codemirror/autocomplete@^6.0.0", "@codemirror/autocomplete@^6.1.0":
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/@codemirror/autocomplete/-/autocomplete-6.2.0.tgz#f7205f8281613f77529f07b279ee25e1a5d20124"
@@ -1789,16 +1779,6 @@
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.2.39.tgz#302df167559a1a5156da162d8cc6760cef67f8e3"
   integrity sha512-D3dl2ZB9qE6mTuWPk9RlhDeP1dgNRUKC3NJxji74A4yL8M2MwlhLKUC/49WHjrNzSPug58fWx/yFbaTzGAQSBw==
 
-"@vueuse/core@^9.1.0":
-  version "9.2.0"
-  resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-9.2.0.tgz#58e3588b9bc5a69010aa9104b00056ee9ebff738"
-  integrity sha512-/MZ6qpz6uSyaXrtoeBWQzAKRG3N7CvfVWvQxiM3ei3Xe5ydOjjtVbo7lGl9p8dECV93j7W8s63A8H0kFLpLyxg==
-  dependencies:
-    "@types/web-bluetooth" "^0.0.15"
-    "@vueuse/metadata" "9.2.0"
-    "@vueuse/shared" "9.2.0"
-    vue-demi "*"
-
 "@vueuse/core@^9.3.0":
   version "9.3.0"
   resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-9.3.0.tgz#74d855bd19cb5eadd2edb30c871918fac881e8b8"
@@ -1809,10 +1789,14 @@
     "@vueuse/shared" "9.3.0"
     vue-demi "*"
 
-"@vueuse/metadata@9.2.0":
-  version "9.2.0"
-  resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-9.2.0.tgz#6bf7c9c44b9f5ece405837226a0e04a997994458"
-  integrity sha512-exN4KE6iquxDCdt72BgEhb3tlOpECtD61AUdXnUqBTIUCl70x1Ar/QXo3bYcvxmdMS2/peQyfeTzBjRTpvL5xw==
+"@vueuse/head@^0.9.7":
+  version "0.9.7"
+  resolved "https://registry.yarnpkg.com/@vueuse/head/-/head-0.9.7.tgz#beb70925d588692cf6afa319b9ce42fa207ed376"
+  integrity sha512-zuU4qpDEVoDg/XY5phQWZY7/W4M6IoenaJMu5ZGY4plzOzBkkTwmq7jA6z9nxMYo2n1z5RaU5WL9ypZrZkQOjQ==
+  dependencies:
+    "@vueuse/shared" "^9.3.0"
+    "@zhead/schema" "^0.8.5"
+    "@zhead/schema-vue" "^0.8.5"
 
 "@vueuse/metadata@9.3.0":
   version "9.3.0"
@@ -1834,7 +1818,7 @@
   dependencies:
     vue-demi "*"
 
-"@vueuse/shared@9.3.0":
+"@vueuse/shared@9.3.0", "@vueuse/shared@^9.2.0", "@vueuse/shared@^9.3.0":
   version "9.3.0"
   resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-9.3.0.tgz#40fc138ba4e379c894075830aa2e15404aaa8a5b"
   integrity sha512-caGUWLY0DpPC6l31KxeUy6vPVNA0yKxx81jFYLoMpyP6cF84FG5Dkf69DfSUqL57wX8JcUkJDMnQaQIZPWFEQQ==
@@ -1995,6 +1979,27 @@
   version "4.2.2"
   resolved "https://registry.yarnpkg.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
+
+"@zhead/schema-raw@0.8.5":
+  version "0.8.5"
+  resolved "https://registry.yarnpkg.com/@zhead/schema-raw/-/schema-raw-0.8.5.tgz#934d8680eac26576e526aefabc50eaf3b7f7bfb2"
+  integrity sha512-Aq+9mksf5zbtj7HYluT6PVyfpQ6z7mja9MzjFxg76Vt+Q9i0oL1XN6ZYaCXImWRafwbyAxjFQ5aUCVyFn79OpA==
+  dependencies:
+    "@zhead/schema" "0.8.5"
+
+"@zhead/schema-vue@^0.8.5":
+  version "0.8.5"
+  resolved "https://registry.yarnpkg.com/@zhead/schema-vue/-/schema-vue-0.8.5.tgz#5bc52b363b2eddcf489100602dfdb3f278b78dfe"
+  integrity sha512-6aXjYy3fZVeYBLrHcJQqzqwzC/2tafRO5UxZEgBHnryRnzeLNZV6nTptDvIPWiJObMoJTK21vbg3gkfLNQg84g==
+  dependencies:
+    "@vueuse/shared" "^9.2.0"
+    "@zhead/schema" "0.8.5"
+    "@zhead/schema-raw" "0.8.5"
+
+"@zhead/schema@0.8.5", "@zhead/schema@^0.8.5":
+  version "0.8.5"
+  resolved "https://registry.yarnpkg.com/@zhead/schema/-/schema-0.8.5.tgz#17f5c6be3b587a938f76d93637a210c0d05a9069"
+  integrity sha512-1S3Otr2zpl1zwP72dNseVXQNG9tnTQ6hHUEUYwINvBjRj6bHcUwdE+Itc9OLxnGAJT/7p8P7GHGo5sshXJNJsA==
 
 abab@^2.0.6:
   version "2.0.6"
@@ -6560,11 +6565,6 @@ vue-loader@^17.0.0:
     chalk "^4.1.0"
     hash-sum "^2.0.0"
     loader-utils "^2.0.0"
-
-vue-multiselect@^3.0.0-alpha.2:
-  version "3.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/vue-multiselect/-/vue-multiselect-3.0.0-alpha.2.tgz#58186f781136e71f1272b98690b569a0c00ed161"
-  integrity sha512-Xp9fGJECns45v+v8jXbCIsAkCybYkEg0lNwr7Z6HDUSMyx2TEIK2giipPE+qXiShEc1Ipn+ZtttH2iq9hwXP4Q==
 
 vue-router@^4.1.5:
   version "4.1.5"

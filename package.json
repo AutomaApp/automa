@@ -28,7 +28,6 @@
     "*.{js,ts,vue}": "eslint --fix"
   },
   "dependencies": {
-    "@braks/vue-flow": "^0.4.40",
     "@codemirror/autocomplete": "^6.1.0",
     "@codemirror/lang-css": "^6.0.0",
     "@codemirror/lang-html": "^6.1.0",
@@ -46,6 +45,7 @@
     "@viselect/vanilla": "^3.1.0",
     "@vue-flow/additional-components": "^1.0.0",
     "@vue-flow/core": "^1.0.0",
+    "@vueuse/head": "^0.9.7",
     "@vueuse/rxjs": "^9.1.1",
     "@vuex-orm/core": "^0.36.4",
     "codemirror": "^6.0.1",
@@ -76,7 +76,6 @@
     "vue": "^3.2.37",
     "vue-i18n": "^9.2.0-beta.40",
     "vue-imask": "^6.4.2",
-    "vue-multiselect": "^3.0.0-alpha.2",
     "vue-router": "^4.1.5",
     "vue-toastification": "^2.0.0-rc.5",
     "vuedraggable": "^4.1.0",

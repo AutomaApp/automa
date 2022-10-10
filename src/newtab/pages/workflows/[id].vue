@@ -1574,6 +1574,12 @@ watch(
   }
 );
 watch(
+  () => state.dataChanged,
+  (isDataChanged) => {
+    window.isDataChanged = isDataChanged && haveEditAccess.value;
+  }
+);
+watch(
   () => route.params.id,
   (value, oldValue) => {
     if (route.name !== 'workflows-details') return;
@@ -1626,15 +1632,6 @@ onMounted(() => {
 
   initAutocomplete();
 
-  window.onbeforeunload = () => {
-    if (isPackage && workflow.value.isExternal) return;
-
-    updateHostedWorkflow();
-
-    if (state.dataChanged && haveEditAccess.value) {
-      return t('message.notSaved');
-    }
-  };
   window.addEventListener('keydown', onKeydown);
 });
 onBeforeUnmount(() => {
@@ -1644,8 +1641,10 @@ onBeforeUnmount(() => {
   if (editorContainer)
     editorContainer.removeEventListener('click', onClickEditor);
 
-  window.onbeforeunload = null;
   window.removeEventListener('keydown', onKeydown);
+
+  if (isPackage && workflow.value.isExternal) return;
+  updateHostedWorkflow();
 });
 </script>
 <style>
