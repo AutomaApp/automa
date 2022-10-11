@@ -45,6 +45,10 @@
         <v-remixicon size="20" name="riCloseLine" />
       </button>
     </div>
+    <shared-permissions-modal
+      v-model="permissionState.showModal"
+      :permissions="permissionState.items"
+    />
   </template>
   <div v-else class="py-8 text-center">
     <ui-spinner color="text-accent" size="28" />
@@ -52,7 +56,7 @@
   <app-survey />
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { compare } from 'compare-versions';
@@ -69,6 +73,7 @@ import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
 import { getUserWorkflows } from '@/utils/api';
+import { getWorkflowPermissions } from '@/utils/workflowData';
 import automa from '@business';
 import dbLogs from '@/db/logs';
 import dayjs from '@/lib/dayjs';
@@ -77,6 +82,7 @@ import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 import dataMigration from '@/utils/dataMigration';
 import iconFirefox from '@/assets/svg/logoFirefox.svg';
 import iconChrome from '@/assets/svg/logo.svg';
+import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
 import { executeWorkflow } from './workflowEngine';
 
 let icon;
@@ -107,6 +113,10 @@ theme.init();
 
 const retrieved = ref(false);
 const isUpdated = ref(false);
+const permissionState = reactive({
+  permissions: [],
+  showModal: false,
+});
 
 const currentVersion = browser.runtime.getManifest().version;
 const prevVersion = localStorage.getItem('ext-version') || '0.0.0';
@@ -193,10 +203,23 @@ const messageEvents = {
           `/teams/${data.teamId}/workflows/${data.workflowId}?permission=true`
         );
       });
-    } else {
-      workflowStore.loadData().then(() => {
-        router.push(`/workflows/${data.workflowId}?permission=true`);
-      });
+    } else if (data.workflowData) {
+      workflowStore
+        .insert(data.workflowData, { duplicateId: true })
+        .then(async () => {
+          try {
+            const permissions = await getWorkflowPermissions(data.workflowData);
+            if (permissions.length === 0) return;
+
+            permissionState.items = permissions;
+            permissionState.showModal = true;
+          } catch (error) {
+            console.error(error);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
   },
   'workflow:execute': function ({ data, options = {} }) {

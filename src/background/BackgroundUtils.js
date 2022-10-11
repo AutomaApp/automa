@@ -24,9 +24,6 @@ class BackgroundUtils {
             state: 'maximized',
           });
         }
-        if (updateTab && tabUrl.includes('workflows/')) {
-          await browser.tabs.reload(tab.id);
-        }
       } else {
         const windowOptions = {
           url: tabUrl,

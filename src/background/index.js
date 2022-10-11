@@ -114,35 +114,39 @@ message.on('workflow:execute', (workflowData, sender) => {
     workflowData?.options || {}
   );
 });
-message.on('workflow:added', ({ workflowId, teamId, source = 'community' }) => {
-  let path = `/workflows/${workflowId}`;
+message.on(
+  'workflow:added',
+  ({ workflowId, teamId, workflowData, source = 'community' }) => {
+    let path = `/workflows/${workflowId}`;
 
-  if (source === 'team') {
-    if (!teamId) return;
-    path = `/teams/${teamId}/workflows/${workflowId}`;
-  }
+    if (source === 'team') {
+      if (!teamId) return;
+      path = `/teams/${teamId}/workflows/${workflowId}`;
+    }
 
-  browser.tabs
-    .query({ url: browser.runtime.getURL('/newtab.html') })
-    .then((tabs) => {
-      if (tabs.length >= 1) {
-        const lastTab = tabs.at(-1);
+    browser.tabs
+      .query({ url: browser.runtime.getURL('/newtab.html') })
+      .then((tabs) => {
+        if (tabs.length >= 1) {
+          const lastTab = tabs.at(-1);
 
-        tabs.forEach((tab) => {
-          browser.tabs.sendMessage(tab.id, {
-            data: { workflowId, teamId, source },
-            type: 'workflow:added',
+          tabs.forEach((tab) => {
+            browser.tabs.sendMessage(tab.id, {
+              data: { workflowId, teamId, source, workflowData },
+              type: 'workflow:added',
+            });
           });
-        });
 
-        browser.tabs.update(lastTab.id, {
-          active: true,
-        });
-      } else {
-        BackgroundUtils.openDashboard(`${path}?permission=true`);
-      }
-    });
-});
+          browser.tabs.update(lastTab.id, {
+            active: true,
+          });
+          browser.windows.update(lastTab.windowId, { focused: true });
+        } else {
+          BackgroundUtils.openDashboard(`${path}?permission=true`);
+        }
+      });
+  }
+);
 message.on('workflow:register', ({ triggerBlock, workflowId }) => {
   registerWorkflowTrigger(workflowId, triggerBlock);
 });
