@@ -86,11 +86,7 @@
             <v-remixicon name="riCloseCircleLine" size="20" />
           </button>
         </template>
-        <ui-button
-          class="col-span-4 mt-4 block w-full"
-          variant="accent"
-          @click="addHeader"
-        >
+        <ui-button class="col-span-4 mt-4 block w-full" @click="addHeader">
           <span> {{ t('workflow.blocks.webhook.buttons.header') }} </span>
         </ui-button>
       </ui-tab-panel>
@@ -111,6 +107,7 @@
         >
           <option value="json">JSON</option>
           <option value="text">Text</option>
+          <option value="base64">Base64</option>
         </ui-select>
         <ui-input
           v-if="data.responseType === 'json'"
