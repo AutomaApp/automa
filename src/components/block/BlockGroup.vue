@@ -4,7 +4,9 @@
     <div class="p-4">
       <div class="flex items-center mb-2">
         <div
-          :class="block.category.color"
+          :class="
+            data.disableBlock ? 'bg-box-transparent' : block.category.color
+          "
           class="inline-flex items-center text-sm mr-4 p-2 rounded-lg dark:text-black"
         >
           <v-remixicon
@@ -15,11 +17,25 @@
           <span>{{ t('workflow.blocks.blocks-group.name') }}</span>
         </div>
         <div class="flex-grow"></div>
-        <v-remixicon
-          name="riDeleteBin7Line"
-          class="cursor-pointer"
-          @click.stop="emit('delete', id)"
-        />
+        <ui-popover>
+          <template #trigger>
+            <v-remixicon name="riMoreLine" class="cursor-pointer" />
+          </template>
+          <ui-list class="w-36 space-y-1">
+            <ui-list-item
+              class="cursor-pointer"
+              @click.stop="emit('update', { disableBlock: !data.disableBlock })"
+            >
+              {{ t(`common.${data.disableBlock ? 'enable' : 'disable'}`) }}
+            </ui-list-item>
+            <ui-list-item
+              class="text-red-400 dark:text-red-500 cursor-pointer"
+              @click.stop="emit('delete', id)"
+            >
+              {{ t('common.delete') }}
+            </ui-list-item>
+          </ui-list>
+        </ui-popover>
       </div>
       <input
         :value="data.name"
