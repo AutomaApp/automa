@@ -15,7 +15,7 @@
         :workflow="workflow"
         :editor="editor"
         @update="updateBlockData"
-        @close="(editState.editing = false), (editState.blockData = {})"
+        @close="closeEditingCard"
       />
       <workflow-details-card
         v-else
@@ -381,6 +381,7 @@ const connectedTable = shallowRef(null);
 
 const state = reactive({
   showSidebar: true,
+  sidebarState: true,
   dataChanged: false,
   animateBlocks: false,
   isExecuteCommand: false,
@@ -677,8 +678,12 @@ const onEdgesChange = debounce((changes) => {
   // if (command) commandManager.add(command);
 }, 250);
 
-let nodeTargetHandle = null;
+function closeEditingCard() {
+  editState.editing = false;
+  editState.blockData = {};
 
+  state.showSidebar = state.sidebarState;
+}
 async function executeFromBlock({ nodes }) {
   try {
     if (nodes.length === 0) return;
@@ -717,6 +722,7 @@ function startRecording({ nodeId, handleId }) {
     router.replace('/recording');
   });
 }
+let nodeTargetHandle = null;
 function onClickEditor({ target }) {
   const targetClass = target.classList;
   const isHandle = targetClass.contains('vue-flow__handle');
@@ -1607,8 +1613,10 @@ onMounted(() => {
     return null;
   }
 
-  state.showSidebar =
+  const sidebarState =
     JSON.parse(localStorage.getItem('workflow:sidebar')) ?? true;
+  state.showSidebar = sidebarState;
+  state.sidebarState = sidebarState;
 
   if (!isPackage) {
     const convertedData = convertWorkflowData(workflow.value);
