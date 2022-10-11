@@ -12,7 +12,7 @@
 import { computed } from 'vue';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
 import { arraySorter } from '@/utils/helper';
-import { executeWorkflow } from '@/newtab/utils/workflowEngine';
+import { executeWorkflow } from '@/newtab/workflowEngine';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 
 const props = defineProps({

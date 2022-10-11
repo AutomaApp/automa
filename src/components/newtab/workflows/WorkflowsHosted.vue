@@ -15,7 +15,7 @@ import { useI18n } from 'vue-i18n';
 import { useDialog } from '@/composable/dialog';
 import { arraySorter } from '@/utils/helper';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
-import { executeWorkflow } from '@/newtab/utils/workflowEngine';
+import { executeWorkflow } from '@/newtab/workflowEngine';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 
 const props = defineProps({

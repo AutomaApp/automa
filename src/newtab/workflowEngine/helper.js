@@ -7,7 +7,7 @@ export function messageSandbox(type, data = {}) {
   return new Promise((resolve) => {
     const messageId = nanoid();
 
-    const iframeEl = document.querySelector('#sandbox');
+    const iframeEl = document.getElementById('sandbox');
     iframeEl.contentWindow.postMessage({ id: messageId, type, ...data }, '*');
 
     const messageListener = ({ data: messageData }) => {

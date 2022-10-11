@@ -77,7 +77,7 @@ import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 import dataMigration from '@/utils/dataMigration';
 import iconFirefox from '@/assets/svg/logoFirefox.svg';
 import iconChrome from '@/assets/svg/logo.svg';
-import { executeWorkflow } from './utils/workflowEngine';
+import { executeWorkflow } from './workflowEngine';
 
 let icon;
 if (window.location.protocol === 'moz-extension:') {

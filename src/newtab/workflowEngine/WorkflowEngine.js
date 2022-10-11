@@ -312,7 +312,7 @@ class WorkflowEngine {
 
   async executeQueue() {
     const { workflowQueue } = await browser.storage.local.get('workflowQueue');
-    const queueIndex = (workflowQueue || []).indexOf(this.workflow.id);
+    const queueIndex = (workflowQueue || []).indexOf(this.workflow?.id);
 
     if (!workflowQueue || queueIndex === -1) return;
 
@@ -342,6 +342,29 @@ class WorkflowEngine {
   }
 
   async destroy(status, message, blockDetail) {
+    const cleanUp = () => {
+      this.id = null;
+      this.states = null;
+      this.logger = null;
+      this.saveLog = null;
+      this.workflow = null;
+      this.blocksHandler = null;
+      this.parentWorkflow = null;
+
+      this.isDestroyed = true;
+      this.referenceData = null;
+      this.eventListeners = null;
+      this.packagesCache = null;
+      this.extractedGroup = null;
+      this.connectionsMap = null;
+      this.waitConnections = null;
+      this.blocks = null;
+      this.history = null;
+      this.columnsId = null;
+      this.historyCtxData = null;
+      this.preloadScripts = null;
+    };
+
     try {
       if (this.isDestroyed) return;
       if (this.isUsingProxy) browser.proxy.settings.clear({});
@@ -461,29 +484,11 @@ class WorkflowEngine {
           },
         });
       }
+
+      cleanUp();
     } catch (error) {
       console.error(error);
-    } finally {
-      this.id = null;
-      this.states = null;
-      this.logger = null;
-      this.saveLog = null;
-      this.workflow = null;
-      this.blocksHandler = null;
-      this.parentWorkflow = null;
-
-      this.isDestroyed = true;
-      this.referenceData = null;
-      this.eventListeners = null;
-      this.packagesCache = null;
-      this.extractedGroup = null;
-      this.connectionsMap = null;
-      this.waitConnections = null;
-      this.blocks = null;
-      this.history = null;
-      this.columnsId = null;
-      this.historyCtxData = null;
-      this.preloadScripts = null;
+      cleanUp();
     }
   }
 

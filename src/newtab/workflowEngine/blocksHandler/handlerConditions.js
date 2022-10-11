@@ -1,8 +1,8 @@
 import { customAlphabet } from 'nanoid/non-secure';
 import browser from 'webextension-polyfill';
 import compareBlockValue from '@/utils/compareBlockValue';
-import mustacheReplacer from '@/utils/referenceData/mustacheReplacer';
 import testConditions from '@/utils/testConditions';
+import renderString from '../templating/renderString';
 import { automaRefDataStr, messageSandbox } from '../helper';
 
 const nanoid = customAlphabet('1234567890abcdef', 5);
@@ -147,14 +147,12 @@ async function conditions({ data, id }, { prevBlockData, refData }) {
       outputId = data.conditions[conditionsResult.index].id;
     }
   } else {
-    data.conditions.forEach(({ type, value, compareValue, id: itemId }) => {
-      if (isConditionMet) return;
+    for (const { type, value, compareValue, id: itemId } of data.conditions) {
+      if (isConditionMet) break;
 
-      const firstValue = mustacheReplacer(
-        compareValue ?? prevData,
-        refData
-      ).value;
-      const secondValue = mustacheReplacer(value, refData).value;
+      const firstValue = await renderString(compareValue ?? prevData, refData)
+        .value;
+      const secondValue = await renderString(value, refData).value;
 
       Object.assign(replacedValue, firstValue.list, secondValue.list);
 
@@ -169,7 +167,7 @@ async function conditions({ data, id }, { prevBlockData, refData }) {
         resultData = value;
         isConditionMet = true;
       }
-    });
+    }
   }
 
   return {

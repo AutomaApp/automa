@@ -112,7 +112,7 @@ import { useDialog } from '@/composable/dialog';
 import { useWorkflowStore } from '@/stores/workflow';
 import { exportWorkflow } from '@/utils/workflowData';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
-import { executeWorkflow } from '@/newtab/utils/workflowEngine';
+import { executeWorkflow } from '@/newtab/workflowEngine';
 import WorkflowsLocalCard from './WorkflowsLocalCard.vue';
 
 const props = defineProps({

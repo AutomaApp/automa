@@ -1,7 +1,7 @@
 import objectPath from 'object-path';
 import { isWhitespace } from '@/utils/helper';
 import { executeWebhook } from '@/utils/webhookUtil';
-import mustacheReplacer from '@/utils/referenceData/mustacheReplacer';
+import renderString from '../templating/renderString';
 
 export async function webhook({ data, id }, { refData }) {
   const nextBlockId = this.getBlockConnections(id);
@@ -17,11 +17,11 @@ export async function webhook({ data, id }, { refData }) {
     }
 
     const newHeaders = [];
-    data.headers.forEach(({ value, name }) => {
-      const newValue = mustacheReplacer(value, refData).value;
+    for (const { value, name } of data.headers) {
+      const newValue = await renderString(value, refData).value;
 
       newHeaders.push({ name, value: newValue });
-    });
+    }
 
     const response = await executeWebhook({ ...data, headers: newHeaders });
 

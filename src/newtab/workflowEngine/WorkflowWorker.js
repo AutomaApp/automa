@@ -6,8 +6,8 @@ import {
   parseJSON,
   isObject,
 } from '@/utils/helper';
-import referenceData from '@/utils/referenceData';
-import mustacheReplacer from '@/utils/referenceData/mustacheReplacer';
+import templating from './templating';
+import renderString from './templating/renderString';
 import { convertData, waitTabLoaded } from './helper';
 import injectContentScript from './injectContentScript';
 
@@ -167,7 +167,7 @@ class WorkflowWorker {
       activeTabUrl: this.activeTab.url,
     };
 
-    const replacedBlock = referenceData({
+    const replacedBlock = await templating({
       block,
       data: refData,
       refKeys:
@@ -242,8 +242,8 @@ class WorkflowWorker {
         }
 
         if (blockOnError.insertData) {
-          blockOnError.dataToInsert.forEach((item) => {
-            let value = mustacheReplacer(item.value, refData)?.value;
+          for (const item of blockOnError.dataToInsert) {
+            let value = await renderString(item.value, refData)?.value;
             value = parseJSON(value, value);
 
             if (item.type === 'variable') {
@@ -251,7 +251,7 @@ class WorkflowWorker {
             } else {
               this.addDataToColumn(item.name, value);
             }
-          });
+          }
         }
 
         const nextBlocks = this.getBlockConnections(

@@ -61,7 +61,7 @@ import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { arraySorter } from '@/utils/helper';
 import { useDialog } from '@/composable/dialog';
 import { tagColors } from '@/utils/shared';
-import { executeWorkflow } from '@/newtab/utils/workflowEngine';
+import { executeWorkflow } from '@/newtab/workflowEngine';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 
 const props = defineProps({

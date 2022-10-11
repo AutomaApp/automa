@@ -35,7 +35,7 @@ import { useUserStore } from '@/stores/user';
 import { sendMessage } from '@/utils/message';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { tagColors } from '@/utils/shared';
-import { executeWorkflow } from '@/newtab/utils/workflowEngine';
+import { executeWorkflow } from '@/newtab/workflowEngine';
 import dayjs from '@/lib/dayjs';
 
 const props = defineProps({

@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { waitTabLoaded } from '@/newtab/utils/workflowEngine/helper';
+import { waitTabLoaded } from '@/newtab/workflowEngine/helper';
 
 class BackgroundUtils {
   static async openDashboard(url, updateTab = true) {

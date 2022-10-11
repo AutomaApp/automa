@@ -1,7 +1,7 @@
 import Papa from 'papaparse';
 import { parseJSON } from '@/utils/helper';
 import getFile from '@/utils/getFile';
-import mustacheReplacer from '@/utils/referenceData/mustacheReplacer';
+import renderString from '../templating/renderString';
 
 async function insertData({ id, data }, { refData }) {
   const replacedValueList = {};
@@ -10,7 +10,7 @@ async function insertData({ id, data }, { refData }) {
     let value = '';
 
     if (item.isFile) {
-      const replacedPath = mustacheReplacer(item.filePath || '', refData);
+      const replacedPath = await renderString(item.filePath || '', refData);
       const path = replacedPath.value;
       const isJSON = path.endsWith('.json');
       const isCSV = path.endsWith('.csv');
@@ -35,7 +35,7 @@ async function insertData({ id, data }, { refData }) {
       value = result;
       Object.assign(replacedValueList, replacedPath.list);
     } else {
-      const replacedValue = mustacheReplacer(item.value, refData);
+      const replacedValue = await renderString(item.value, refData);
       value = parseJSON(replacedValue.value, replacedValue.value);
       Object.assign(replacedValueList, replacedValue.list);
     }

@@ -114,7 +114,7 @@
 import { reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { countDuration } from '@/utils/helper';
-import { workflowState } from '@/newtab/utils/workflowEngine';
+import { workflowState } from '@/newtab/workflowEngine';
 import dayjs from '@/lib/dayjs';
 
 defineProps({

@@ -120,7 +120,7 @@ import { useGroupTooltip } from '@/composable/groupTooltip';
 import { findTriggerBlock } from '@/utils/helper';
 import convertWorkflowData from '@/utils/convertWorkflowData';
 import { useWorkflowStore } from '@/stores/workflow';
-import { executeWorkflow } from '@/newtab/utils/workflowEngine';
+import { executeWorkflow } from '@/newtab/workflowEngine';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import getTriggerText from '@/utils/triggerText';
 import EditorLogs from '@/components/newtab/workflow/editor/EditorLogs.vue';
