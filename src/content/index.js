@@ -3,6 +3,7 @@ import findSelector from '@/lib/findSelector';
 import { toCamelCase } from '@/utils/helper';
 import { nanoid } from 'nanoid';
 import automa from '@business';
+import cloneDeep from 'lodash.clonedeep';
 import handleSelector from './handleSelector';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
@@ -151,18 +152,28 @@ function messageListener({ data, source }) {
       const tag = target.tagName;
       if (tag === 'A') {
         $ctxLink = target.href;
+      } else {
+        const closestUrl = target.closest('a');
+        if (closestUrl) $ctxLink = closestUrl.href;
       }
 
-      const mediaTags = ['AUDIO', 'VIDEO', 'IMG'];
-      if (mediaTags.includes(tag)) {
-        let mediaSrc = target.src || '';
+      const getMediaSrc = (element) => {
+        let mediaSrc = element.src || '';
 
         if (!mediaSrc.src) {
-          const sourceEl = target.querySelector('source');
+          const sourceEl = element.querySelector('source');
           if (sourceEl) mediaSrc = sourceEl.src;
         }
 
-        $ctxMediaUrl = mediaSrc;
+        return mediaSrc;
+      };
+
+      const mediaTags = ['AUDIO', 'VIDEO', 'IMG'];
+      if (mediaTags.includes(tag)) {
+        $ctxMediaUrl = getMediaSrc(target);
+      } else {
+        const closestMedia = target.closest('audio,video,img');
+        if (closestMedia) $ctxMediaUrl = getMediaSrc(closestMedia);
       }
     },
     true
@@ -230,12 +241,19 @@ function messageListener({ data, source }) {
               $ctxTextSelection = window.getSelection().toString();
             }
 
-            resolve({
+            const cloneContextData = cloneDeep({
               $ctxLink,
               $ctxMediaUrl,
               $ctxElSelector,
               $ctxTextSelection,
             });
+
+            $ctxLink = '';
+            $ctxMediaUrl = '';
+            $ctxElSelector = '';
+            $ctxTextSelection = '';
+
+            resolve(cloneContextData);
             break;
           }
           default:
