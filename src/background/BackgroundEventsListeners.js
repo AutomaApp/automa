@@ -15,7 +15,7 @@ class BackgroundEventsListeners {
     BackgroundWorkflowTriggers.scheduleWorkflow(event);
   }
 
-  static onWebNavigationCompleted({ tabId, url, frameId }) {
+  static onHistoryStateUpdated({ tabId, url, frameId }) {
     if (frameId > 0) return;
 
     BackgroundWorkflowTriggers.visitWebTriggers(tabId, url);
