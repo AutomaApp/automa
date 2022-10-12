@@ -1,9 +1,13 @@
 <template>
   <block-base
     :id="componentId"
+    :data="data"
+    :block-id="id"
+    :block-data="block"
     class="w-64"
     @edit="$emit('edit')"
     @delete="$emit('delete', id)"
+    @update="$emit('update', $event)"
   >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div class="flex items-center">
@@ -94,7 +98,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-defineEmits(['delete', 'edit']);
+defineEmits(['delete', 'edit', 'update']);
 
 const { t } = useI18n();
 const componentId = useComponentId('block-conditions');

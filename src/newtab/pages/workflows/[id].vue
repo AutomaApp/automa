@@ -231,7 +231,6 @@
             @paste="pasteCopiedElements"
             @saveBlock="initBlockFolder"
             @duplicate="duplicateElements"
-            @execute:block="executeFromBlock"
           />
         </ui-tab-panel>
         <ui-tab-panel value="logs" class="mt-24 container">
@@ -548,14 +547,6 @@ const editorData = computed(() => {
   return workflow.value.drawflow;
 });
 
-provide('workflow', {
-  editState,
-  data: workflow,
-  columns: workflowColumns,
-});
-provide('workflow-editor', editor);
-provide('autocompleteData', autocompleteList);
-
 const updateBlockData = debounce((data) => {
   if (!haveEditAccess.value) return;
   const node = editor.value.getNode.value(editState.blockData.blockId);
@@ -684,14 +675,11 @@ function closeEditingCard() {
 
   state.showSidebar = state.sidebarState;
 }
-async function executeFromBlock({ nodes }) {
+async function executeFromBlock(blockId) {
   try {
-    if (nodes.length === 0) return;
+    if (!blockId) return;
 
-    const [node] = nodes;
-    const workflowOptions = {
-      blockId: node.id,
-    };
+    const workflowOptions = { blockId };
 
     const [tab] = await browser.tabs.query({ active: true, url: '*://*/*' });
     if (tab) {
@@ -1572,6 +1560,17 @@ const shortcut = useShortcut([
   getShortcut('editor:toggle-sidebar', toggleSidebar),
   getShortcut('editor:duplicate-block', duplicateElements),
 ]);
+
+provide('workflow-editor', editor);
+provide('autocompleteData', autocompleteList);
+provide('workflow', {
+  editState,
+  data: workflow,
+  columns: workflowColumns,
+});
+provide('workflow-utils', {
+  executeFromBlock,
+});
 
 watch(
   () => state.activeTab,

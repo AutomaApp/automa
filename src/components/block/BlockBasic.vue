@@ -1,12 +1,14 @@
 <template>
   <block-base
     :id="componentId"
-    :hide-edit="block.details.disableEdit"
-    :hide-delete="block.details.disableDelete"
+    :data="data"
+    :block-id="id"
+    :block-data="block"
     :data-position="JSON.stringify(position)"
     class="block-basic group"
     @edit="$emit('edit')"
     @delete="$emit('delete', id)"
+    @update="$emit('update', $event)"
   >
     <Handle
       v-if="label !== 'trigger'"
@@ -49,18 +51,6 @@
       </div>
     </div>
     <slot :block="block"></slot>
-    <template #prepend>
-      <div
-        v-if="block.details.id !== 'trigger'"
-        :title="t('workflow.blocks.base.moveToGroup')"
-        draggable="true"
-        class="bg-white dark:bg-gray-700 invisible group-hover:visible z-50 absolute -top-2 -right-2 rounded-md p-1 shadow-md"
-        @dragstart="handleStartDrag"
-        @mousedown.stop
-      >
-        <v-remixicon name="riDragDropLine" size="20" />
-      </div>
-    </template>
     <div
       v-if="data.onError?.enable && data.onError?.toDo === 'fallback'"
       class="fallback flex items-center justify-end"
@@ -124,16 +114,6 @@ const { t, te } = useI18n();
 const block = useEditorBlock(props.label);
 const componentId = useComponentId('block-base');
 
-function handleStartDrag(event) {
-  const payload = {
-    data: props.data,
-    id: block.details.id,
-    blockId: props.id,
-    fromBlockBasic: true,
-  };
-
-  event.dataTransfer.setData('block', JSON.stringify(payload));
-}
 function copyLoopId() {
   navigator.clipboard.writeText(props.data.loopId);
 }

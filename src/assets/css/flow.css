@@ -6,13 +6,12 @@
 	& > div {
 		@apply rounded-lg transition;
 	}
-	&.selected > div {
+	&.selected .block-base__content {
 		@apply ring-2 ring-accent;
 	}
-	&:hover,
-	&.selected {
-		.menu {
-			@apply translate-y-11;
+	&:hover {
+		.block-menu-container {
+			display: block;
 		}
 	}
 

@@ -1,5 +1,13 @@
 <template>
-  <ui-card :id="componentId" class="p-4 w-64 block-package">
+  <block-base
+    :id="componentId"
+    :data="data"
+    :block-id="id"
+    :block-data="block"
+    class="w-64 block-package"
+    @delete="$emit('delete', id)"
+    @update="$emit('update', $event)"
+  >
     <div class="flex items-center">
       <img
         v-if="data.icon.startsWith('http')"
@@ -82,7 +90,7 @@
         <v-remixicon size="18" name="riExternalLinkLine" />
       </a>
     </div>
-  </ui-card>
+  </block-base>
 </template>
 <script setup>
 import { onMounted, shallowReactive } from 'vue';
@@ -91,6 +99,7 @@ import { Handle, Position } from '@vue-flow/core';
 import { usePackageStore } from '@/stores/package';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
+import BlockBase from './BlockBase.vue';
 
 const props = defineProps({
   id: {

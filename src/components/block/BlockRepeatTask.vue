@@ -1,20 +1,22 @@
 <template>
-  <ui-card :id="componentId" class="p-4 repeat-task w-64">
+  <block-base
+    :id="componentId"
+    :data="data"
+    :block-id="id"
+    :block-data="block"
+    class="repeat-task w-64"
+    @delete="$emit('delete', id)"
+    @update="$emit('update', $event)"
+  >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div class="flex items-center mb-2">
       <div
-        :class="block.category.color"
+        :class="data.disableBlock ? 'bg-box-transparent' : block.category.color"
         class="inline-block text-sm mr-4 p-2 rounded-lg dark:text-black"
       >
         <v-remixicon name="riRepeat2Line" size="20" class="inline-block mr-1" />
         <span>{{ t('workflow.blocks.repeat-task.name') }}</span>
       </div>
-      <div class="flex-grow"></div>
-      <v-remixicon
-        name="riDeleteBin7Line"
-        class="cursor-pointer"
-        @click="$emit('delete', id)"
-      />
     </div>
     <div class="flex bg-input rounded-lg items-center relative">
       <input
@@ -39,13 +41,14 @@
       :position="Position.Right"
       style="top: auto; bottom: 12px"
     />
-  </ui-card>
+  </block-base>
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { Handle, Position } from '@vue-flow/core';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
+import BlockBase from './BlockBase.vue';
 
 const { t } = useI18n();
 const props = defineProps({

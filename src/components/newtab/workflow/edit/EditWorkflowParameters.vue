@@ -55,8 +55,8 @@
               </div>
               <div class="col-span-4 flex items-center">
                 <component
-                  :is="paramTypes[param.type].valueComp"
-                  v-if="paramTypes[param.type].valueComp"
+                  :is="paramTypes[param.type]?.valueComp"
+                  v-if="paramTypes[param.type]?.valueComp"
                   v-model="param.defaultValue"
                   :param-data="param"
                   :editor="true"

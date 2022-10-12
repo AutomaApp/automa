@@ -62,7 +62,6 @@ export async function webhook({ data, id }, { refData }) {
       const blob = await response.blob();
       const base64 = await fileReader(blob);
 
-      console.log(base64);
       returnData = base64;
     } else {
       returnData = await response.text();

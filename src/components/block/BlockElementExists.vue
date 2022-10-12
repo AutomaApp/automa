@@ -1,10 +1,13 @@
 <template>
   <block-base
     :id="componentId"
-    class="element-exists"
+    :data="data"
+    :block-id="id"
+    :block-data="block"
     style="width: 195px"
     @edit="$emit('edit')"
     @delete="$emit('delete', id)"
+    @update="$emit('update', $event)"
   >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div
@@ -62,7 +65,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-defineEmits(['delete', 'edit']);
+defineEmits(['delete', 'edit', 'update']);
 
 const { t } = useI18n();
 const block = useEditorBlock(props.label);

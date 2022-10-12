@@ -1,10 +1,22 @@
 <template>
-  <ui-card :id="componentId" class="w-64" padding="p-0">
+  <block-base
+    :id="componentId"
+    :data="data"
+    :block-id="id"
+    :block-data="block"
+    class="w-64"
+    content-class="p-0"
+    @edit="$emit('edit')"
+    @delete="$emit('delete', id)"
+    @update="$emit('update', $event)"
+  >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div class="p-4">
       <div class="flex items-center mb-2">
         <div
-          :class="block.category.color"
+          :class="
+            data.disableBlock ? 'bg-box-transparent' : block.category.color
+          "
           class="inline-flex items-center text-sm mr-4 p-2 rounded-lg dark:text-black"
         >
           <v-remixicon
@@ -14,12 +26,6 @@
           />
           <span>{{ t('workflow.blocks.blocks-group.name') }}</span>
         </div>
-        <div class="flex-grow"></div>
-        <v-remixicon
-          name="riDeleteBin7Line"
-          class="cursor-pointer"
-          @click.stop="emit('delete', id)"
-        />
       </div>
       <input
         :value="data.name"
@@ -91,7 +97,7 @@
       </template>
     </draggable>
     <Handle :id="`${id}-output-1`" type="source" :position="Position.Right" />
-  </ui-card>
+  </block-base>
 </template>
 <script setup>
 import { inject, computed, shallowReactive } from 'vue';
@@ -103,6 +109,7 @@ import draggable from 'vuedraggable';
 import { tasks, excludeGroupBlocks } from '@/utils/shared';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
+import BlockBase from './BlockBase.vue';
 
 const props = defineProps({
   id: {

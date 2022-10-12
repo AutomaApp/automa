@@ -50,7 +50,6 @@ const emit = defineEmits([
   'saveBlock',
   'duplicate',
   'packageIo',
-  'execute:block',
 ]);
 
 const { t } = useI18n();
@@ -127,11 +126,6 @@ const menuItems = {
     name: 'Set as block output',
     event: () => emit('packageIo', { type: 'outputs', ...ctxData }),
   },
-  executeBlock: {
-    id: 'executeBlock',
-    name: 'Execute from here',
-    event: () => emit('execute:block', ctxData),
-  },
 };
 
 /* eslint-disable-next-line */
@@ -166,13 +160,7 @@ function clearContextMenu() {
 
 onMounted(() => {
   props.editor.onNodeContextMenu(({ event, node }) => {
-    const items = [
-      'copy',
-      'duplicate',
-      'executeBlock',
-      'saveToFolder',
-      'delete',
-    ];
+    const items = ['copy', 'duplicate', 'saveToFolder', 'delete'];
     if (node.label === 'blocks-group') {
       items.splice(items.indexOf('saveToFolder'), 0, 'ungroup');
     } else if (!excludeGroupBlocks.includes(node.label)) {

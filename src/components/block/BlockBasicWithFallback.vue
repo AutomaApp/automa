@@ -1,11 +1,13 @@
 <template>
   <block-base
     :id="componentId"
-    :hide-edit="block.details.disableEdit"
-    :hide-delete="block.details.disableDelete"
+    :data="data"
+    :block-id="id"
+    :block-data="block"
     class="block-basic group"
     @edit="$emit('edit')"
     @delete="$emit('delete', id)"
+    @update="$emit('update', $event)"
   >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div class="flex items-center">
@@ -46,18 +48,6 @@
       :position="Position.Right"
       style="top: auto; bottom: 10px"
     />
-    <template #prepend>
-      <div
-        v-if="block.details.id !== 'trigger'"
-        :title="t('workflow.blocks.base.moveToGroup')"
-        draggable="true"
-        class="bg-white dark:bg-gray-700 invisible group-hover:visible z-50 absolute -top-2 -right-2 rounded-md p-1 shadow-md"
-        @dragstart="handleStartDrag"
-        @mousedown.stop
-      >
-        <v-remixicon name="riDragDropLine" size="20" />
-      </div>
-    </template>
   </block-base>
 </template>
 <script setup>
@@ -86,15 +76,4 @@ defineEmits(['delete', 'edit', 'update']);
 const { t } = useI18n();
 const block = useEditorBlock(props.label);
 const componentId = useComponentId('block-base');
-
-function handleStartDrag(event) {
-  const payload = {
-    data: block.data,
-    id: block.details.id,
-    blockId: block.id,
-    fromBlockBasic: true,
-  };
-
-  event.dataTransfer.setData('block', JSON.stringify(payload));
-}
 </script>
