@@ -32,7 +32,7 @@ export default async function (block) {
       const name = file.path?.replace(/^.*[\\/]/, '') || '';
       const blob = await fetch(file.objUrl).then((response) => response.blob());
 
-      URL.revokeObjectURL(file.objUrl);
+      if (file.objUrl.startsWith('blob')) URL.revokeObjectURL(file.objUrl);
 
       fileObject = new File([blob], name, { type: file.type });
     }

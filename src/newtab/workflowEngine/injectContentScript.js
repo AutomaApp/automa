@@ -28,10 +28,13 @@ export default function (tabId, frameId = 0) {
 
         tryCount += 1;
 
-        await browser.tabs.executeScript(tabId, {
-          allFrames: true,
-          runAt: 'document_start',
-          file: './contentScript.bundle.js',
+        await browser.scripting.executeScript({
+          target: {
+            tabId,
+            allFrames: true,
+          },
+          injectImmediately: true,
+          files: ['./contentScript.bundle.js'],
         });
         const isScriptExists = await contentScriptExist(tabId, currentFrameId);
 
