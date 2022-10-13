@@ -131,6 +131,7 @@ async function conditions({ data, id }, { prevBlockData, refData }) {
   if (condition && condition.conditions) {
     const conditionPayload = {
       refData,
+      isMV2: this.engine.isMV2,
       checkCodeCondition: (payload) =>
         checkCodeCondition(this.activeTab, payload),
       sendMessage: (payload) =>

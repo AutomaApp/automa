@@ -36,6 +36,7 @@
             <option
               v-for="context in ['website', 'background']"
               :key="context"
+              :disabled="isFirefox && context === 'background'"
               :value="context"
             >
               {{
@@ -123,6 +124,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['update']);
 
+const isFirefox = BROWSER_TYPE === 'firefox';
 const autocompleteList = [automaFuncsSnippets.automaRefData];
 const codemirrorExts = [
   autocompletion({

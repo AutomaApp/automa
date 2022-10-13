@@ -1,5 +1,7 @@
 import browser from 'webextension-polyfill';
 
+const isMV2 = browser.runtime.getManifest().manifest_version === 2;
+
 async function contentScriptExist(tabId, frameId = 0) {
   try {
     await browser.tabs.sendMessage(
@@ -28,14 +30,23 @@ export default function (tabId, frameId = 0) {
 
         tryCount += 1;
 
-        await browser.scripting.executeScript({
-          target: {
-            tabId,
+        if (isMV2) {
+          await browser.tabs.executeScript(tabId, {
             allFrames: true,
-          },
-          injectImmediately: true,
-          files: ['./contentScript.bundle.js'],
-        });
+            runAt: 'document_start',
+            file: './contentScript.bundle.js',
+          });
+        } else {
+          await browser.scripting.executeScript({
+            target: {
+              tabId,
+              allFrames: true,
+            },
+            injectImmediately: true,
+            files: ['./contentScript.bundle.js'],
+          });
+        }
+
         const isScriptExists = await contentScriptExist(tabId, currentFrameId);
 
         if (isScriptExists) {

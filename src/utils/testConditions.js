@@ -61,10 +61,23 @@ export default async function (conditionsArr, workflowData) {
     if (type === 'value') return copyData.value;
 
     if (type.startsWith('code')) {
-      const conditionValue = await workflowData.checkCodeCondition({
-        data: copyData,
-        refData: workflowData.refData,
-      });
+      let conditionValue;
+
+      if (workflowData.isMV2) {
+        conditionValue = await workflowData.sendMessage({
+          type: 'condition-builder',
+          data: {
+            type,
+            data: copyData,
+            refData: workflowData.refData,
+          },
+        });
+      } else {
+        conditionValue = await workflowData.checkCodeCondition({
+          data: copyData,
+          refData: workflowData.refData,
+        });
+      }
 
       return conditionValue;
     }
