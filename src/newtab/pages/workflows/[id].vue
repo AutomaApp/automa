@@ -294,6 +294,7 @@ import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { customAlphabet } from 'nanoid';
 import { useToast } from 'vue-toastification';
+import { useHead } from '@vueuse/head';
 import defu from 'defu';
 import dagre from 'dagre';
 import { useUserStore } from '@/stores/user';
@@ -1157,6 +1158,8 @@ function onEditorInit(instance) {
   // });
 
   instance.onNodeDragStop(({ nodes }) => {
+    if (!editorCommands?.state?.nodes) return;
+
     nodes.forEach((node) => {
       editorCommands.state.nodes[node.id] = node;
     });
@@ -1514,6 +1517,9 @@ function checkWorkflowUpdate() {
     });
 }
 
+useHead({
+  title: () => `${workflow.value?.name} workflow - Automa` || 'Automa',
+});
 const shortcut = useShortcut([
   getShortcut('editor:toggle-sidebar', toggleSidebar),
   getShortcut('editor:duplicate-block', duplicateElements),
