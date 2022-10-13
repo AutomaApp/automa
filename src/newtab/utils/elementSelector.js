@@ -1,6 +1,8 @@
 import browser from 'webextension-polyfill';
 import { isXPath, sleep } from '@/utils/helper';
 
+const isMV2 = browser.runtime.getManifest().manifest_version === 2;
+
 async function getActiveTab() {
   const [tab] = await browser.tabs.query({
     active: true,
@@ -36,13 +38,21 @@ export async function initElementSelector(tab = null) {
   });
 
   if (!result) {
-    await browser.scripting.executeScript({
-      target: {
+    if (isMV2) {
+      await browser.tabs.executeScript(activeTab.id, {
         allFrames: true,
-        tabId: activeTab.id,
-      },
-      files: ['./elementSelector.bundle.js'],
-    });
+        runAt: 'document_start',
+        file: './elementSelector.bundle.js',
+      });
+    } else {
+      await browser.scripting.executeScript({
+        target: {
+          allFrames: true,
+          tabId: activeTab.id,
+        },
+        files: ['./elementSelector.bundle.js'],
+      });
+    }
   }
 
   await browser.tabs.update(activeTab.id, { active: true });

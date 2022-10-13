@@ -1,5 +1,7 @@
 import browser from 'webextension-polyfill';
 
+const isMV2 = browser.runtime.getManifest().manifest_version === 2;
+
 export default async function (options = {}) {
   try {
     const flows = [];
@@ -30,8 +32,10 @@ export default async function (options = {}) {
         ...options,
       },
     });
-    await browser.action.setBadgeBackgroundColor({ color: '#ef4444' });
-    await browser.action.setBadgeText({ text: 'rec' });
+
+    const action = browser.action || browser.browserAction;
+    await action.setBadgeBackgroundColor({ color: '#ef4444' });
+    await action.setBadgeText({ text: 'rec' });
 
     const tabs = await browser.tabs.query({});
     for (const tab of tabs) {
@@ -39,13 +43,21 @@ export default async function (options = {}) {
         tab.url.startsWith('http') &&
         !tab.url.includes('chrome.google.com')
       ) {
-        await browser.scripting.executeScript({
-          target: {
-            tabId: tab.id,
+        if (isMV2) {
+          await browser.tabs.executeScript(tab.id, {
             allFrames: true,
-          },
-          files: ['recordWorkflow.bundle.js'],
-        });
+            runAt: 'document_start',
+            file: './recordWorkflow.bundle.js',
+          });
+        } else {
+          await browser.scripting.executeScript({
+            target: {
+              tabId: tab.id,
+              allFrames: true,
+            },
+            files: ['recordWorkflow.bundle.js'],
+          });
+        }
       }
     }
   } catch (error) {

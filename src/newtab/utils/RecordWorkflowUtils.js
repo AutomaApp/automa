@@ -1,6 +1,7 @@
 import browser from 'webextension-polyfill';
 
 const validateUrl = (str) => str?.startsWith('http');
+const isMV2 = browser.runtime.getManifest().manifest_version === 2;
 
 class RecordWorkflowUtils {
   static async updateRecording(callback) {
@@ -106,13 +107,21 @@ class RecordWorkflowUtils {
       const { isRecording } = await browser.storage.local.get('isRecording');
       if (!isRecording) return;
 
-      await browser.scripting.executeScript({
-        target: {
-          tabId,
+      if (isMV2) {
+        await browser.tabs.executeScript(tabId, {
           allFrames: true,
-        },
-        files: ['recordWorkflow.bundle.js'],
-      });
+          runAt: 'document_start',
+          file: './recordWorkflow.bundle.js',
+        });
+      } else {
+        await browser.scripting.executeScript({
+          target: {
+            tabId,
+            allFrames: true,
+          },
+          files: ['recordWorkflow.bundle.js'],
+        });
+      }
     } catch (error) {
       console.error(error);
     }

@@ -35,7 +35,7 @@
           </p>
           <p
             :title="item.data.description || item.description"
-            class="text-overflow text-sm leading-tight text-gray-600"
+            class="text-overflow text-sm leading-tight text-gray-600 dark:text-gray-300"
           >
             {{ item.data.description || item.description }}
           </p>
@@ -208,7 +208,7 @@ async function stopRecording() {
     }
 
     await browser.storage.local.remove(['isRecording', 'recording']);
-    await browser.action.setBadgeText({ text: '' });
+    await (browser.action || browser.browserAction).setBadgeText({ text: '' });
 
     const tabs = (await browser.tabs.query({})).filter((tab) =>
       tab.url.startsWith('http')
