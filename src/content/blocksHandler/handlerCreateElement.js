@@ -37,6 +37,22 @@ async function createElement(block) {
     document.body.appendChild(style);
   }
 
+  if (data.injectJS) {
+    data.preloadScripts.forEach((item) => {
+      const script = document.createElement(item.type);
+      script.id = `${baseId}-script`;
+      script.textContent = item.script;
+
+      document.body.appendChild(script);
+    });
+
+    const script = document.createElement('script');
+    script.id = `${baseId}-javascript`;
+    script.textContent = `(() => { ${data.automaScript}\n${data.javascript} })()`;
+
+    document.body.appendChild(script);
+  }
+
   return true;
 }
 

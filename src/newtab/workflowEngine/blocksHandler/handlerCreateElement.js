@@ -46,14 +46,23 @@ async function handleCreateElement(block, { refData }) {
   data.preloadScripts = preloadScripts;
 
   const payload = { ...block, data };
+
+  if (data.javascript && this.engine.isMV2) {
+    payload.data.injectJS = true;
+    payload.data.automaScript = getAutomaScript({ ...refData, secrets: {} });
+  }
+
   await this._sendMessageToTab(payload, {}, data.runBeforeLoad ?? false);
 
-  if (data.javascript) {
-    const automaScript = getAutomaScript({ ...refData, secrets: {} });
-
+  if (data.javascript && !this.engine.isMV2) {
     await browser.scripting.executeScript({
       world: 'MAIN',
-      args: [data.javascript, block.id, automaScript, preloadScripts],
+      args: [
+        data.javascript,
+        block.id,
+        payload.script.automaScript,
+        preloadScripts,
+      ],
       target: {
         tabId: this.activeTab.id,
         frameIds: [this.activeTab.frameId || 0],
