@@ -16,6 +16,7 @@ class WorkflowEngine {
     this.blocksHandler = blocksHandler;
     this.parentWorkflow = options?.parentWorkflow;
     this.saveLog = workflow.settings?.saveLog ?? true;
+    this.isMV2 = browser.runtime.getManifest().manifest_version === 2;
 
     this.workerId = 0;
     this.workers = new Map();

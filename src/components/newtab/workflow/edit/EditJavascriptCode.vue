@@ -17,6 +17,7 @@
         @change="updateData({ timeout: +$event })"
       />
       <ui-select
+        v-if="!isFirefox"
         :model-value="data.context"
         :label="t('workflow.blocks.javascript-code.context.name')"
         class="mb-2 w-full"
@@ -40,7 +41,7 @@
       @click="state.showCodeModal = true"
       v-text="data.code"
     />
-    <template v-if="data.context !== 'background'">
+    <template v-if="isFirefox || data.context !== 'background'">
       <ui-checkbox
         :model-value="data.everyNewTab"
         class="mt-2"
@@ -127,7 +128,9 @@
               class="flex-1 mr-4"
             />
             <ui-checkbox
-              v-if="!data.everyNewTab || data.context !== 'website'"
+              v-if="
+                (!data.everyNewTab || data.context !== 'website') && !isFirefox
+              "
               v-model="state.preloadScripts[index].removeAfterExec"
             >
               {{ t('workflow.blocks.javascript-code.removeAfterExec') }}
@@ -174,6 +177,7 @@ const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
 
+const isFirefox = BROWSER_TYPE === 'firefox';
 const availableFuncs = [
   { name: 'automaNextBlock(data, insert?)', id: 'automanextblock-data' },
   { name: 'automaRefData(keyword, path?)', id: 'automarefdata-keyword-path' },

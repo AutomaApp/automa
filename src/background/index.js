@@ -12,7 +12,9 @@ browser.alarms.onAlarm.addListener(BackgroundEventsListeners.onAlarms);
 
 browser.commands.onCommand.addListener(BackgroundEventsListeners.onCommand);
 
-browser.action.onClicked.addListener(BackgroundEventsListeners.onActionClicked);
+(browser.action || browser.browserAction).onClicked.addListener(
+  BackgroundEventsListeners.onActionClicked
+);
 
 browser.runtime.onStartup.addListener(
   BackgroundEventsListeners.onRuntimeStartup

@@ -1,6 +1,7 @@
 import { customAlphabet } from 'nanoid/non-secure';
 import browser from 'webextension-polyfill';
 import cloneDeep from 'lodash.clonedeep';
+import { jsContentHandler } from '@/newtab/utils/javascriptBlockUtil';
 import { messageSandbox, automaRefDataStr, waitTabLoaded } from '../helper';
 
 const nanoid = customAlphabet('1234567890abcdef', 5);
@@ -26,132 +27,23 @@ function automaResetTimeout() {
 
   return str;
 }
-async function executeInWebpage(args, target) {
+async function executeInWebpage(args, target, worker) {
+  if (worker.engine.isMV2 || BROWSER_TYPE === 'firefox') {
+    args[0] = cloneDeep(args[0]);
+
+    const result = await worker._sendMessageToTab({
+      label: 'javascript-code',
+      data: args,
+    });
+
+    return result;
+  }
+
   const [{ result }] = await browser.scripting.executeScript({
     args,
     target,
     world: 'MAIN',
-    func: ($blockData, $preloadScripts, $automaScript) => {
-      return new Promise((resolve, reject) => {
-        try {
-          let $documentCtx = document;
-
-          if ($blockData.frameSelector) {
-            const iframeCtx = document.querySelector(
-              $blockData.frameSelector
-            )?.contentDocument;
-
-            if (!iframeCtx) {
-              reject(new Error('iframe-not-found'));
-              return;
-            }
-
-            $documentCtx = iframeCtx;
-          }
-
-          const scriptAttr = `block--${$blockData.id}`;
-
-          const isScriptExists = $documentCtx.querySelector(
-            `.automa-custom-js[${scriptAttr}]`
-          );
-          if (isScriptExists) {
-            resolve('');
-            return;
-          }
-
-          const script = document.createElement('script');
-          script.setAttribute(scriptAttr, '');
-          script.classList.add('automa-custom-js');
-          script.textContent = `(() => {
-            ${$automaScript}
-
-            try {
-              ${$blockData.data.code}
-              ${
-                $blockData.data.everyNewTab ||
-                $blockData.data.code.includes('automaNextBlock')
-                  ? ''
-                  : 'automaNextBlock()'
-              }
-            } catch (error) {
-              console.error(error);
-              ${
-                $blockData.data.everyNewTab
-                  ? ''
-                  : 'automaNextBlock({ $error: true, message: error.message })'
-              }
-            }
-          })()`;
-
-          const preloadScriptsEl = $preloadScripts.map((item) => {
-            const scriptEl = document.createElement('script');
-            scriptEl.id = item.id;
-            scriptEl.textContent = item.script;
-
-            $documentCtx.head.appendChild(scriptEl);
-
-            return { element: scriptEl, removeAfterExec: item.removeAfterExec };
-          });
-
-          if (!$blockData.data.everyNewTab) {
-            let timeout;
-            let onNextBlock;
-            let onResetTimeout;
-
-            /* eslint-disable-next-line */
-            function cleanUp() {
-              script.remove();
-              preloadScriptsEl.forEach((item) => {
-                if (item.removeAfterExec) item.script.remove();
-              });
-
-              clearTimeout(timeout);
-
-              $documentCtx.body.removeEventListener(
-                '__automa-reset-timeout__',
-                onResetTimeout
-              );
-              $documentCtx.body.removeEventListener(
-                '__automa-next-block__',
-                onNextBlock
-              );
-            }
-
-            onNextBlock = ({ detail }) => {
-              cleanUp(detail || {});
-              resolve({
-                columns: {
-                  data: detail?.data,
-                  insert: detail?.insert,
-                },
-                variables: detail?.refData?.variables,
-              });
-            };
-            onResetTimeout = () => {
-              clearTimeout(timeout);
-              timeout = setTimeout(cleanUp, $blockData.data.timeout);
-            };
-
-            $documentCtx.body.addEventListener(
-              '__automa-next-block__',
-              onNextBlock
-            );
-            $documentCtx.body.addEventListener(
-              '__automa-reset-timeout__',
-              onResetTimeout
-            );
-
-            timeout = setTimeout(cleanUp, $blockData.data.timeout);
-          } else {
-            resolve();
-          }
-
-          $documentCtx.head.appendChild(script);
-        } catch (error) {
-          console.error(error);
-        }
-      });
-    },
+    func: jsContentHandler,
   });
 
   return result;
@@ -220,10 +112,14 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
         refData: payload.refData,
         blockData: cloneDeep(payload.data),
       })
-    : executeInWebpage([payload, preloadScripts, automaScript], {
-        tabId: this.activeTab.id,
-        frameIds: [this.activeTab.frameId || 0],
-      }));
+    : executeInWebpage(
+        [payload, preloadScripts, automaScript],
+        {
+          tabId: this.activeTab.id,
+          frameIds: [this.activeTab.frameId || 0],
+        },
+        this
+      ));
 
   if (result) {
     if (result.columns.data?.$error) {
