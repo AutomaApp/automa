@@ -177,12 +177,12 @@ function automaRefData(keyword, path = '') {
   `;
 }
 
-export function injectPreloadScript({ target, script, frameSelector }) {
+export function injectPreloadScript({ target, scripts, frameSelector }) {
   return browser.scripting.executeScript({
     target,
     world: 'MAIN',
-    args: [script.id, script.data.code, frameSelector || null],
-    func: (scriptId, code, frame) => {
+    args: [scripts, frameSelector || null],
+    func: (preloadScripts, frame) => {
       let $documentCtx = document;
 
       if (frame) {
@@ -192,20 +192,22 @@ export function injectPreloadScript({ target, script, frameSelector }) {
         $documentCtx = iframeCtx;
       }
 
-      const scriptAttr = `block--${scriptId}`;
+      preloadScripts.forEach((script) => {
+        const scriptAttr = `block--${script.id}`;
 
-      const isScriptExists = $documentCtx.querySelector(
-        `.automa-custom-js[${scriptAttr}]`
-      );
+        const isScriptExists = $documentCtx.querySelector(
+          `.automa-custom-js[${scriptAttr}]`
+        );
 
-      if (isScriptExists) return;
+        if (isScriptExists) return;
 
-      const scriptEl = $documentCtx.createElement('script');
-      scriptEl.textContent = code;
-      scriptEl.setAttribute(scriptAttr, '');
-      scriptEl.classList.add('automa-custom-js');
+        const scriptEl = $documentCtx.createElement('script');
+        scriptEl.textContent = script.data.code;
+        scriptEl.setAttribute(scriptAttr, '');
+        scriptEl.classList.add('automa-custom-js');
 
-      $documentCtx.documentElement.appendChild(scriptEl);
+        $documentCtx.documentElement.appendChild(scriptEl);
+      });
     },
   });
 }

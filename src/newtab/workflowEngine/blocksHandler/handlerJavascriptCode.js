@@ -54,7 +54,9 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
 
   if (data.everyNewTab) {
     const isScriptExist = this.preloadScripts.some(({ id }) => id === block.id);
-    if (!isScriptExist) this.preloadScripts.push({ ...block, data });
+
+    if (!isScriptExist)
+      this.preloadScripts.push({ id: block.id, data: cloneDeep(data) });
     if (!this.activeTab.id) return { data: '', nextBlockId };
   } else if (!this.activeTab.id && data.context !== 'background') {
     throw new Error('no-tab');

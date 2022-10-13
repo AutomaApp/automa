@@ -88,17 +88,22 @@ async function newTab({ id, data }) {
   }
 
   if (this.preloadScripts.length > 0) {
-    const preloadScripts = this.preloadScripts.map((script) =>
-      injectPreloadScript({
-        script,
+    if (this.engine.isMV2) {
+      await this._sendMessageToTab({
+        isPreloadScripts: true,
+        label: 'javascript-code',
+        data: { scripts: this.preloadScripts },
+      });
+    } else {
+      await injectPreloadScript({
+        scripts: this.preloadScripts,
         frameSelector: this.frameSelector,
         target: {
           tabId: this.activeTab.id,
           frameIds: [this.activeTab.frameId || 0],
         },
-      })
-    );
-    await Promise.allSettled(preloadScripts);
+      });
+    }
   }
 
   if (data.waitTabLoaded) {

@@ -41,17 +41,22 @@ async function activeTab(block) {
     }
 
     if (this.preloadScripts.length > 0) {
-      const preloadScripts = this.preloadScripts.map((script) =>
-        injectPreloadScript({
-          script,
+      if (this.engine.isMV2) {
+        await this._sendMessageToTab({
+          isPreloadScripts: true,
+          label: 'javascript-code',
+          data: { scripts: this.preloadScripts },
+        });
+      } else {
+        await injectPreloadScript({
+          scripts: this.preloadScripts,
           frameSelector: this.frameSelector,
           target: {
             tabId: this.activeTab.id,
             frameIds: [this.activeTab.frameId || 0],
           },
-        })
-      );
-      await Promise.allSettled(preloadScripts);
+        });
+      }
     }
 
     await browser.tabs.update(tab.id, { active: true });
