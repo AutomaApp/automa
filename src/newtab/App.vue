@@ -237,8 +237,11 @@ useHead(() => {
   const runningWorkflows = workflowStore.states.length;
 
   return {
-    title:
-      runningWorkflows > 0 ? `${runningWorkflows} Workflows Running` : 'Automa',
+    title: 'Dashboard',
+    titleTemplate:
+      runningWorkflows > 0
+        ? `%s (${runningWorkflows} Workflows Running) - Automa`
+        : '%s - Automa',
   };
 });
 

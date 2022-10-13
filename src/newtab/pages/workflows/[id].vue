@@ -300,6 +300,7 @@ import cloneDeep from 'lodash.clonedeep';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { customAlphabet } from 'nanoid';
+import { useHead } from '@vueuse/head';
 import { useToast } from 'vue-toastification';
 import defu from 'defu';
 import dagre from 'dagre';
@@ -1556,6 +1557,9 @@ function checkWorkflowUpdate() {
     });
 }
 
+useHead({
+  title: () => `${workflow.value?.name} workflow` || 'Edit workflow',
+});
 const shortcut = useShortcut([
   getShortcut('editor:toggle-sidebar', toggleSidebar),
   getShortcut('editor:duplicate-block', duplicateElements),
