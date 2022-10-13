@@ -53,7 +53,7 @@
                 :is="paramsList[param.type].valueComp"
                 v-if="paramsList[param.type]"
                 v-model="param.value"
-                :label="param.name"
+                :label="param.name + (param.data.required ? '*' : '')"
                 :param-data="param"
                 class="w-full"
               />
@@ -61,10 +61,9 @@
                 v-else
                 v-model="param.value"
                 :type="param.inputType"
-                :label="param.name"
+                :label="param.name + (param.data.required ? '*' : '')"
                 :placeholder="param.placeholder"
                 class="w-full"
-                @keyup.enter="runWorkflow(index, workflow)"
               />
               <p
                 v-if="param.description"
@@ -83,6 +82,7 @@
             </ui-button>
             <ui-button
               v-if="workflow.type === 'block'"
+              :disabled="!isValidParams(workflow.params)"
               variant="accent"
               @click="continueWorkflow(index, workflow)"
             >
@@ -90,6 +90,7 @@
             </ui-button>
             <ui-button
               v-else
+              :disabled="!isValidParams(workflow.params)"
               variant="accent"
               @click="runWorkflow(index, workflow)"
             >
@@ -244,6 +245,15 @@ function continueWorkflow(index, { data, params }) {
     .then(() => {
       deleteWorkflow(index);
     });
+}
+function isValidParams(params) {
+  const isValid = params.every((param) => {
+    if (!param.data?.required) return true;
+
+    return param.value;
+  });
+  console.log(isValid);
+  return isValid;
 }
 
 browser.runtime.onMessage.addListener(({ name, data }) => {
