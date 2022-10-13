@@ -1,9 +1,10 @@
 import browser from 'webextension-polyfill';
-import findSelector from '@/lib/findSelector';
-import { toCamelCase } from '@/utils/helper';
+import cloneDeep from 'lodash.clonedeep';
 import { nanoid } from 'nanoid';
 import automa from '@business';
-import cloneDeep from 'lodash.clonedeep';
+import FindElement from '@/utils/FindElement';
+import findSelector from '@/lib/findSelector';
+import { toCamelCase, isXPath } from '@/utils/helper';
 import handleSelector from './handleSelector';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
@@ -45,7 +46,13 @@ async function executeBlock(data) {
   const removeExecutedBlock = showExecutedBlock(data, data.executedBlockOnWeb);
   if (data.data?.selector?.includes('|>')) {
     const [frameSelector, selector] = data.data.selector.split(/\|>(.+)/);
-    const frameElement = document.querySelector(frameSelector);
+
+    let findBy = data?.data?.findBy;
+    if (!findBy) {
+      findBy = isXPath(frameSelector) ? 'xpath' : 'cssSelector';
+    }
+
+    const frameElement = FindElement[findBy]({ selector: frameSelector });
     const frameError = (message) => {
       const error = new Error(message);
       error.data = { selector: frameSelector };
