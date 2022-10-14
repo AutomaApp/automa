@@ -248,7 +248,9 @@ window.addEventListener('__automa-fetch__', (event) => {
   const { id, resource, type } = event.detail;
   const sendResponse = (payload) => {
     window.dispatchEvent(
-      new CustomEvent(`__autom-fetch-response-${id}__`, { detail: payload })
+      new CustomEvent(`__autom-fetch-response-${id}__`, {
+        detail: { id, ...payload },
+      })
     );
   };
 

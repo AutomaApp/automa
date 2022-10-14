@@ -1,5 +1,8 @@
+import { nanoid } from 'nanoid/non-secure';
+
 export default function (data) {
   let timeout;
+  const instanceId = nanoid();
   const scriptId = `script${data.id}`;
   const propertyName = `automa${data.id}`;
 
@@ -49,6 +52,9 @@ export default function (data) {
       function automaResetTimeout() {
         ${propertyName}.resetTimeout();
       }
+      function automaFetch(type, resource) {
+        return ${propertyName}.fetch(type, resource);
+      }
 
       try {
         ${data.blockData.code}
@@ -90,6 +96,37 @@ export default function (data) {
     resetTimeout: () => {
       clearTimeout(timeout);
       timeout = setTimeout(cleanUp, data.blockData.timeout);
+    },
+    fetch: (type, resource) => {
+      return new Promise((resolve, reject) => {
+        const types = ['json', 'text'];
+        if (!type || !types.includes(type)) {
+          reject(new Error('The "type" must be "text" or "json"'));
+          return;
+        }
+
+        window.top.postMessage(
+          {
+            type: 'automa-fetch',
+            data: { id: instanceId, type, resource },
+          },
+          '*'
+        );
+
+        const eventName = `automa-fetch-response-${instanceId}`;
+
+        const eventListener = ({ detail }) => {
+          window.removeEventListener(eventName, eventListener);
+
+          if (detail.isError) {
+            reject(new Error(detail.result));
+          } else {
+            resolve(detail.result);
+          }
+        };
+
+        window.addEventListener(eventName, eventListener);
+      });
     },
   };
 

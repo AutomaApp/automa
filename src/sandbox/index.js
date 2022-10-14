@@ -5,7 +5,16 @@ import handleBlockExpression from './utils/handleBlockExpression';
 
 window.$getNestedProperties = objectPath.get;
 
+function fetchResponse({ id, data }) {
+  window.dispatchEvent(
+    new CustomEvent(`automa-fetch-response-${id}`, {
+      detail: data,
+    })
+  );
+}
+
 const eventHandlers = {
+  fetchResponse,
   conditionCode: handleConditionCode,
   blockExpression: handleBlockExpression,
   javascriptBlock: handleJavascriptBlock,

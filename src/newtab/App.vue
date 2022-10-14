@@ -74,6 +74,7 @@ import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
 import { getUserWorkflows } from '@/utils/api';
 import { getWorkflowPermissions } from '@/utils/workflowData';
+import { sendMessage } from '@/utils/message';
 import automa from '@business';
 import dbLogs from '@/db/logs';
 import dayjs from '@/lib/dayjs';
@@ -252,6 +253,29 @@ window.onbeforeunload = () => {
     return t('message.notSaved');
   }
 };
+window.addEventListener('message', ({ data }) => {
+  if (data?.type !== 'automa-fetch') return;
+
+  const sendResponse = (result) => {
+    const sandbox = document.getElementById('sandbox');
+    sandbox.contentWindow.postMessage(
+      {
+        type: 'fetchResponse',
+        data: result,
+        id: data.data.id,
+      },
+      '*'
+    );
+  };
+
+  sendMessage('fetch', data.data, 'background')
+    .then((result) => {
+      sendResponse({ isError: false, result });
+    })
+    .catch((error) => {
+      sendResponse({ isError: true, result: error.message });
+    });
+});
 
 (async () => {
   try {

@@ -14,10 +14,12 @@ export function messageSandbox(type, data = {}) {
       if (messageData?.type !== 'sandbox' || messageData?.id !== messageId)
         return;
 
+      window.removeEventListener('message', messageListener);
+
       resolve(messageData.result);
     };
 
-    window.addEventListener('message', messageListener, { once: true });
+    window.addEventListener('message', messageListener);
   });
 }
 

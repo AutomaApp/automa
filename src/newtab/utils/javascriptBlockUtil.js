@@ -8,7 +8,9 @@ export function automaFetchClient(id, { type, resource }) {
 
     const eventName = `__autom-fetch-response-${id}__`;
     const eventListener = ({ detail }) => {
-      window.removeEventListener(eventName, eventListener, { once: true });
+      if (detail.id !== id) return;
+
+      window.removeEventListener(eventName, eventListener);
 
       if (detail.isError) {
         reject(new Error(detail.result));
@@ -17,7 +19,7 @@ export function automaFetchClient(id, { type, resource }) {
       }
     };
 
-    window.addEventListener(eventName, eventListener, { once: true });
+    window.addEventListener(eventName, eventListener);
     window.dispatchEvent(
       new CustomEvent(`__automa-fetch__`, {
         detail: {

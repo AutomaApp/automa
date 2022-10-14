@@ -113,7 +113,8 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
     });
   }
 
-  const result = await (data.context === 'background'
+  const inSandbox = BROWSER_TYPE !== 'firefox' && data.context === 'background';
+  const result = await (inSandbox
     ? messageSandbox('javascriptBlock', {
         instanceId,
         preloadScripts,
