@@ -57,7 +57,7 @@
         Run before page loaded
       </ui-checkbox>
     </template>
-    <ui-modal v-model="state.showCodeModal" content-class="max-w-3xl">
+    <ui-modal v-model="state.showCodeModal" content-class="max-w-4xl">
       <template #header>
         <ui-tabs v-model="state.activeTab" class="border-none">
           <ui-tab value="code">
@@ -184,6 +184,10 @@ const availableFuncs = [
   {
     name: 'automaSetVariable(name, value)',
     id: 'automasetvariable-name-value',
+  },
+  {
+    name: 'automaFetch(type, resource)',
+    id: 'automasetvariable-type-resource',
   },
   { name: 'automaResetTimeout()', id: 'automaresettimeout' },
 ];

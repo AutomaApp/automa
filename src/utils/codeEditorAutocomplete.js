@@ -112,6 +112,20 @@ export const automaFuncsSnippets = {
       return container;
     },
   },
+  automaFetch: {
+    label: 'automaFetch',
+    type: 'function',
+    apply: snippet("automaFetch('${json}', { url: '${}' })"),
+    info: () => {
+      const container = document.createElement('div');
+
+      container.innerHTML = `
+        <code>automaFetch(<i>type</i>, <i>resource</i>)</code>
+      `;
+
+      return container;
+    },
+  },
   automaRefData: {
     label: 'automaRefData',
     type: 'function',

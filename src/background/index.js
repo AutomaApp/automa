@@ -43,14 +43,18 @@ if (browser.notifications && browser.notifications.onClicked) {
 
 const message = new MessageListener('background');
 
+message.on('fetch', ({ type, resource }) => {
+  return fetch(resource.url, resource).then((response) => {
+    if (!response.ok) throw new Error(response.statusText);
+
+    return response[type]();
+  });
+});
 message.on('fetch:text', (url) => {
   return fetch(url).then((response) => response.text());
 });
-message.on('open:dashboard', async (url) => {
-  await BackgroundUtils.openDashboard(url);
 
-  return Promise.resolve(true);
-});
+message.on('open:dashboard', (url) => BackgroundUtils.openDashboard(url));
 message.on('set:active-tab', (tabId) => {
   return browser.tabs.update(tabId, { active: true });
 });

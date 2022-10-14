@@ -1,3 +1,35 @@
+export function automaFetchClient(id, { type, resource }) {
+  return new Promise((resolve, reject) => {
+    const validType = ['text', 'json', 'base64'];
+    if (!type || !validType.includes(type)) {
+      reject(new Error('The "type" must be "text" or "json"'));
+      return;
+    }
+
+    const eventName = `__autom-fetch-response-${id}__`;
+    const eventListener = ({ detail }) => {
+      window.removeEventListener(eventName, eventListener, { once: true });
+
+      if (detail.isError) {
+        reject(new Error(detail.result));
+      } else {
+        resolve(detail.result);
+      }
+    };
+
+    window.addEventListener(eventName, eventListener, { once: true });
+    window.dispatchEvent(
+      new CustomEvent(`__automa-fetch__`, {
+        detail: {
+          id,
+          type,
+          resource,
+        },
+      })
+    );
+  });
+}
+
 export function jsContentHandler($blockData, $preloadScripts, $automaScript) {
   return new Promise((resolve, reject) => {
     try {

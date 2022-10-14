@@ -1,14 +1,15 @@
 import { customAlphabet } from 'nanoid/non-secure';
 import browser from 'webextension-polyfill';
 import cloneDeep from 'lodash.clonedeep';
-import { jsContentHandler } from '@/newtab/utils/javascriptBlockUtil';
+import {
+  jsContentHandler,
+  automaFetchClient,
+} from '@/newtab/utils/javascriptBlockUtil';
 import { messageSandbox, automaRefDataStr, waitTabLoaded } from '../helper';
 
 const nanoid = customAlphabet('1234567890abcdef', 5);
 
-function getAutomaScript(refData, everyNewTab) {
-  const varName = `automa${nanoid()}`;
-
+function getAutomaScript(varName, refData, everyNewTab) {
   let str = `
 const ${varName} = ${JSON.stringify(refData)};
 ${automaRefDataStr(varName)}
@@ -20,6 +21,9 @@ function automaNextBlock(data, insert = true) {
 }
 function automaResetTimeout() {
  document.body.dispatchEvent(new CustomEvent('__automa-reset-timeout__'));
+}
+function automaFetch(type, resource) {
+  return (${automaFetchClient.toString()})('${varName}', { type, resource });
 }
   `;
 
@@ -96,10 +100,11 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
     return acc;
   }, []);
 
+  const instanceId = `automa${nanoid()}`;
   const automaScript =
     data.everyNewTab || data.context === 'background'
       ? ''
-      : getAutomaScript(payload.refData, data.everyNewTab);
+      : getAutomaScript(instanceId, payload.refData, data.everyNewTab);
 
   if (data.context !== 'background') {
     await waitTabLoaded({
@@ -110,12 +115,13 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
 
   const result = await (data.context === 'background'
     ? messageSandbox('javascriptBlock', {
+        instanceId,
         preloadScripts,
         refData: payload.refData,
         blockData: cloneDeep(payload.data),
       })
     : executeInWebpage(
-        [payload, preloadScripts, automaScript],
+        [payload, preloadScripts, automaScript, instanceId],
         {
           tabId: this.activeTab.id,
           frameIds: [this.activeTab.frameId || 0],
