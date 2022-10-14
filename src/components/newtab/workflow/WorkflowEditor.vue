@@ -56,6 +56,7 @@
           editor: name === 'node-BlockPackage' ? editor : null,
         }"
         @delete="deleteBlock"
+        @settings="initEditBlockSettings"
         @edit="editBlock(nodeProps, $event)"
         @update="updateBlockData(nodeProps.id, $event)"
       />
@@ -63,10 +64,21 @@
     <template #edge-custom="edgeProps">
       <editor-custom-edge v-bind="edgeProps" />
     </template>
+    <ui-modal
+      v-model="blockSettingsState.show"
+      :title="t('workflow.blocks.base.settings.title')"
+      content-class="max-w-xl modal-block-settings"
+      @close="clearBlockSettings"
+    >
+      <edit-block-settings
+        :data="blockSettingsState.data"
+        @change="updateBlockData(blockSettingsState.data.blockId, $event)"
+      />
+    </ui-modal>
   </vue-flow>
 </template>
 <script setup>
-import { onMounted, onBeforeUnmount, watch, computed } from 'vue';
+import { onMounted, onBeforeUnmount, watch, computed, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {
   VueFlow,
@@ -77,8 +89,9 @@ import {
 import { Background, MiniMap } from '@vue-flow/additional-components';
 import cloneDeep from 'lodash.clonedeep';
 import { useStore } from '@/stores/main';
-import { categories } from '@/utils/shared';
 import { getBlocks } from '@/utils/getSharedData';
+import { categories } from '@/utils/shared';
+import EditBlockSettings from './edit/EditBlockSettings.vue';
 import EditorCustomEdge from './editor/EditorCustomEdge.vue';
 import EditorSearchBlocks from './editor/EditorSearchBlocks.vue';
 
@@ -172,6 +185,25 @@ const blocks = getBlocks();
 const settings = store.settings.editor;
 const isDisabled = computed(() => props.options.disabled ?? props.disabled);
 
+const blockSettingsState = reactive({
+  show: false,
+  data: {},
+});
+
+function initEditBlockSettings({ blockId, details, data }) {
+  blockSettingsState.data = {
+    blockId,
+    id: details.id,
+    data: cloneDeep(data),
+  };
+  blockSettingsState.show = true;
+}
+function clearBlockSettings() {
+  Object.assign(blockSettingsState, {
+    data: null,
+    show: false,
+  });
+}
 function minimapNodeClassName({ label }) {
   const { category } = blocks[label];
   const { color } = categories[category];

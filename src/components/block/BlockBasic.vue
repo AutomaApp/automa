@@ -9,6 +9,7 @@
     @edit="$emit('edit')"
     @delete="$emit('delete', id)"
     @update="$emit('update', $event)"
+    @settings="$emit('settings', $event)"
   >
     <Handle
       v-if="label !== 'trigger'"
@@ -108,7 +109,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-defineEmits(['delete', 'edit', 'update']);
+defineEmits(['delete', 'edit', 'update', 'settings']);
 
 const { t, te } = useI18n();
 const block = useEditorBlock(props.label);

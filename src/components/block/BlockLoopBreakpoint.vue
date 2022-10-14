@@ -7,6 +7,7 @@
     class="w-48"
     @delete="$emit('delete', id)"
     @update="$emit('update', $event)"
+    @settings="$emit('settings', $event)"
   >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div class="flex items-center mb-2">
@@ -63,7 +64,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-const emit = defineEmits(['delete', 'update']);
+const emit = defineEmits(['delete', 'update', 'settings']);
 
 const { t } = useI18n();
 const block = useEditorBlock(props.label);

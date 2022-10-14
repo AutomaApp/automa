@@ -9,6 +9,7 @@
       <p class="font-semibold inline-block capitalize">
         {{ getBlockName() }}
       </p>
+      <div class="flex-grow"></div>
       <a
         :title="t('common.docs')"
         :href="`https://docs.automa.site/blocks/${data.id}.html`"
@@ -16,21 +17,8 @@
         target="_blank"
         class="text-gray-600 dark:text-gray-200"
       >
-        <v-remixicon name="riInformationLine" size="20" />
+        <v-remixicon name="riInformationLine" />
       </a>
-      <div class="flex-grow"></div>
-      <ui-switch
-        v-if="data.id !== 'trigger'"
-        v-tooltip="
-          t(
-            `workflow.blocks.base.toggle.${
-              blockData.disableBlock ? 'enable' : 'disable'
-            }`
-          )
-        "
-        :model-value="!blockData.disableBlock"
-        @change="$emit('update', { ...blockData, disableBlock: !$event })"
-      />
     </div>
     <component
       :is="getEditComponent()"
@@ -44,21 +32,12 @@
         connections: data.id === 'wait-connections' ? data.connections : null,
       }"
     />
-    <edit-block-settings
-      v-if="!excludeOnError.includes(data.id)"
-      :key="data.itemId || data.blockId"
-      :data="data"
-      class="mt-4"
-      @change="$emit('update', { ...blockData, ...$event })"
-    />
   </div>
 </template>
 <script setup>
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { excludeOnError } from '@/utils/shared';
 import customEditComponents from '@business/blocks/editComponents';
-import EditBlockSettings from './edit/EditBlockSettings.vue';
 
 const editComponents = require.context(
   './edit',

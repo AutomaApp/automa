@@ -13,6 +13,14 @@
           <v-remixicon size="20" name="riDeleteBin7Line" />
         </button>
         <button
+          :title="$t('workflow.blocks.base.settings.title')"
+          @click.stop="
+            $emit('settings', { details: blockData.details, data, blockId })
+          "
+        >
+          <v-remixicon size="20" name="riSettings3Line" />
+        </button>
+        <button
           v-if="!excludeGroupBlocks.includes(blockData.details?.id)"
           :title="$t('workflow.blocks.base.moveToGroup')"
           draggable="true"
@@ -74,7 +82,7 @@ const props = defineProps({
     default: '',
   },
 });
-defineEmits(['delete', 'edit', 'update']);
+defineEmits(['delete', 'edit', 'update', 'settings']);
 
 const workflowUtils = inject('workflow-utils', null);
 

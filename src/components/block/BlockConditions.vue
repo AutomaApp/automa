@@ -8,6 +8,7 @@
     @edit="$emit('edit')"
     @delete="$emit('delete', id)"
     @update="$emit('update', $event)"
+    @settings="$emit('settings', $event)"
   >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div class="flex items-center">
@@ -98,7 +99,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-defineEmits(['delete', 'edit', 'update']);
+defineEmits(['delete', 'settings', 'edit', 'update']);
 
 const { t } = useI18n();
 const componentId = useComponentId('block-conditions');

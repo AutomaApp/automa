@@ -9,6 +9,7 @@
     @edit="$emit('edit')"
     @delete="$emit('delete', id)"
     @update="$emit('update', $event)"
+    @settings="$emit('settings', $event)"
   >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div class="p-4">
@@ -133,7 +134,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-const emit = defineEmits(['update', 'delete', 'edit']);
+const emit = defineEmits(['update', 'delete', 'edit', 'settings']);
 
 const { t, te } = useI18n();
 const toast = useToast();

@@ -7,6 +7,7 @@
     class="w-64 block-package"
     @delete="$emit('delete', id)"
     @update="$emit('update', $event)"
+    @settings="$emit('settings', $event)"
   >
     <div class="flex items-center">
       <img
@@ -119,7 +120,7 @@ const props = defineProps({
     default: null,
   },
 });
-const emit = defineEmits(['update', 'delete']);
+const emit = defineEmits(['update', 'delete', 'settings']);
 
 const packageStore = usePackageStore();
 const block = useEditorBlock(props.label);
