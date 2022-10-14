@@ -53,7 +53,7 @@
                 :is="paramsList[param.type].valueComp"
                 v-if="paramsList[param.type]"
                 v-model="param.value"
-                :label="param.name + (param.data.required ? '*' : '')"
+                :label="param.name + (param.data?.required ? '*' : '')"
                 :param-data="param"
                 class="w-full"
               />
@@ -61,7 +61,7 @@
                 v-else
                 v-model="param.value"
                 :type="param.inputType"
-                :label="param.name + (param.data.required ? '*' : '')"
+                :label="param.name + (param.data?.required ? '*' : '')"
                 :placeholder="param.placeholder"
                 class="w-full"
               />
@@ -252,7 +252,7 @@ function isValidParams(params) {
 
     return param.value;
   });
-  console.log(isValid);
+
   return isValid;
 }
 

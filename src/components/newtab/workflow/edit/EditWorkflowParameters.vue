@@ -101,8 +101,9 @@
                     />
                     <ui-checkbox
                       v-if="['string', 'number'].includes(param.type)"
-                      v-model="param.data.required"
+                      :model-value="param.data?.required"
                       class="ml-6"
+                      @change="param.data.required = $event"
                     >
                       Parameter required
                     </ui-checkbox>
