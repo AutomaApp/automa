@@ -7,10 +7,13 @@
       <transition name="modal" mode="out-in">
         <div
           v-if="show"
-          class="bg-black overflow-y-auto bg-opacity-20 dark:bg-opacity-60 modal-ui__content-container z-50 flex justify-center items-end md:items-center"
+          class="overflow-y-auto modal-ui__content-container z-50 flex justify-center items-center"
           :style="{ 'backdrop-filter': blur && 'blur(2px)' }"
-          @click.self="closeModal"
         >
+          <div
+            class="absolute h-full w-full bg-black bg-opacity-20 dark:bg-opacity-60"
+            @click="closeModal"
+          />
           <slot v-if="customContent"></slot>
           <ui-card
             v-else
@@ -75,6 +78,9 @@ export default {
     const show = ref(false);
     const modalContent = ref(null);
 
+    function onClickOverlay(event) {
+      console.log(event);
+    }
     function toggleBodyOverflow(value) {
       document.body.classList.toggle('overflow-hidden', value);
     }
@@ -109,6 +115,7 @@ export default {
       show,
       closeModal,
       modalContent,
+      onClickOverlay,
     };
   },
 };
