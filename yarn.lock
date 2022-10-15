@@ -912,12 +912,12 @@
     "@babel/helper-validator-identifier" "^7.18.6"
     to-fast-properties "^2.0.0"
 
-"@braks/vue-flow@^0.4.40":
-  version "0.4.40"
-  resolved "https://registry.yarnpkg.com/@braks/vue-flow/-/vue-flow-0.4.40.tgz#9cb8e908975b9ad7fb169a612ec53ff123133b56"
-  integrity sha512-jZHrYwcuB1oBAM/E3BcthYEqmfoHmO0MNUVgPNTSgeN79aPzrzs/qzztJtINZYMIwAMG7L/sZxdNWfc6V3ZdKA==
+"@braks/vue-flow@^0.4.41":
+  version "0.4.41"
+  resolved "https://registry.yarnpkg.com/@braks/vue-flow/-/vue-flow-0.4.41.tgz#073ee2bd4ab68fa071c5aecb57a068e69afc33b7"
+  integrity sha512-U6LbQvlnMAqv2HPtONnPM53tTOnu7seq1ZJfW4/A/ABIofDEBkgwNthVGDzFQpEZJygs47q1U+3N3Rk0LFlfEQ==
   dependencies:
-    "@vueuse/core" "^9.1.0"
+    "@vueuse/core" "^9.3.0"
     d3-drag "^3.0.0"
     d3-selection "^3.0.0"
     d3-zoom "^3.0.0"
@@ -1827,14 +1827,14 @@
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.2.41.tgz#fbc95422df654ea64e8428eced96ba6ad555d2bb"
   integrity sha512-W9mfWLHmJhkfAmV+7gDjcHeAWALQtgGT3JErxULl0oz6R6+3ug91I7IErs93eCFhPCZPHBs4QJS7YWEV7A3sxw==
 
-"@vueuse/core@^9.1.0":
-  version "9.2.0"
-  resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-9.2.0.tgz#58e3588b9bc5a69010aa9104b00056ee9ebff738"
-  integrity sha512-/MZ6qpz6uSyaXrtoeBWQzAKRG3N7CvfVWvQxiM3ei3Xe5ydOjjtVbo7lGl9p8dECV93j7W8s63A8H0kFLpLyxg==
+"@vueuse/core@^9.3.0":
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-9.3.0.tgz#74d855bd19cb5eadd2edb30c871918fac881e8b8"
+  integrity sha512-64Rna8IQDWpdrJxgitDg7yv1yTp41ZmvV8zlLEylK4QQLWAhz1OFGZDPZ8bU4lwcGgbEJ2sGi2jrdNh4LttUSQ==
   dependencies:
     "@types/web-bluetooth" "^0.0.15"
-    "@vueuse/metadata" "9.2.0"
-    "@vueuse/shared" "9.2.0"
+    "@vueuse/metadata" "9.3.0"
+    "@vueuse/shared" "9.3.0"
     vue-demi "*"
 
 "@vueuse/head@^0.9.8":
@@ -1846,10 +1846,10 @@
     "@zhead/schema" "^0.8.5"
     "@zhead/schema-vue" "^0.8.5"
 
-"@vueuse/metadata@9.2.0":
-  version "9.2.0"
-  resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-9.2.0.tgz#6bf7c9c44b9f5ece405837226a0e04a997994458"
-  integrity sha512-exN4KE6iquxDCdt72BgEhb3tlOpECtD61AUdXnUqBTIUCl70x1Ar/QXo3bYcvxmdMS2/peQyfeTzBjRTpvL5xw==
+"@vueuse/metadata@9.3.0":
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-9.3.0.tgz#c107fe77a577e1f221536cd1b291039c0c7c4bce"
+  integrity sha512-GnnfjbzIPJIh9ngL9s9oGU1+Hx/h5/KFqTfJykzh/1xjaHkedV9g0MASpdmPZIP+ynNhKAcEfA6g5i8KXwtoMA==
 
 "@vueuse/rxjs@^9.1.1":
   version "9.2.0"
@@ -1866,7 +1866,7 @@
   dependencies:
     vue-demi "*"
 
-"@vueuse/shared@^9.2.0", "@vueuse/shared@^9.3.0":
+"@vueuse/shared@9.3.0", "@vueuse/shared@^9.2.0", "@vueuse/shared@^9.3.0":
   version "9.3.0"
   resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-9.3.0.tgz#40fc138ba4e379c894075830aa2e15404aaa8a5b"
   integrity sha512-caGUWLY0DpPC6l31KxeUy6vPVNA0yKxx81jFYLoMpyP6cF84FG5Dkf69DfSUqL57wX8JcUkJDMnQaQIZPWFEQQ==
