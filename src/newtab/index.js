@@ -1,4 +1,5 @@
 import { createApp } from 'vue';
+import { createHead } from '@vueuse/head';
 import App from './App.vue';
 import router from './router';
 import pinia from '../lib/pinia';
@@ -11,10 +12,13 @@ import '../assets/css/fonts.css';
 import '../assets/css/style.css';
 import '../assets/css/flow.css';
 
+const head = createHead();
+
 createApp(App)
   .use(router)
   .use(compsUi)
   .use(pinia)
+  .use(head)
   .use(vueI18n)
   .use(vueToastification)
   .use(vRemixicon, icons)

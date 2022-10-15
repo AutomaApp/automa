@@ -1,7 +1,7 @@
 import browser from 'webextension-polyfill';
 
 export function isXPath(str) {
-  const regex = /^[(/@]/;
+  const regex = /^([(/@]|id\()/;
 
   return regex.test(str);
 }

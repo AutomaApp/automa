@@ -1659,7 +1659,7 @@ export const conditionBuilder = {
       placeholder: 'name',
     },
     dataPath: {
-      label: 'variables.variableName',
+      label: 'variables@variableName',
       placeholder: '',
     },
   },

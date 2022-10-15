@@ -1,8 +1,10 @@
 import browser from 'webextension-polyfill';
-import findSelector from '@/lib/findSelector';
-import { toCamelCase } from '@/utils/helper';
+import cloneDeep from 'lodash.clonedeep';
 import { nanoid } from 'nanoid';
 import automa from '@business';
+import FindElement from '@/utils/FindElement';
+import findSelector from '@/lib/findSelector';
+import { toCamelCase, isXPath } from '@/utils/helper';
 import handleSelector from './handleSelector';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
@@ -44,7 +46,13 @@ async function executeBlock(data) {
   const removeExecutedBlock = showExecutedBlock(data, data.executedBlockOnWeb);
   if (data.data?.selector?.includes('|>')) {
     const [frameSelector, selector] = data.data.selector.split(/\|>(.+)/);
-    const frameElement = document.querySelector(frameSelector);
+
+    let findBy = data?.data?.findBy;
+    if (!findBy) {
+      findBy = isXPath(frameSelector) ? 'xpath' : 'cssSelector';
+    }
+
+    const frameElement = FindElement[findBy]({ selector: frameSelector });
     const frameError = (message) => {
       const error = new Error(message);
       error.data = { selector: frameSelector };
@@ -151,18 +159,28 @@ function messageListener({ data, source }) {
       const tag = target.tagName;
       if (tag === 'A') {
         $ctxLink = target.href;
+      } else {
+        const closestUrl = target.closest('a');
+        if (closestUrl) $ctxLink = closestUrl.href;
       }
 
-      const mediaTags = ['AUDIO', 'VIDEO', 'IMG'];
-      if (mediaTags.includes(tag)) {
-        let mediaSrc = target.src || '';
+      const getMediaSrc = (element) => {
+        let mediaSrc = element.src || '';
 
         if (!mediaSrc.src) {
-          const sourceEl = target.querySelector('source');
+          const sourceEl = element.querySelector('source');
           if (sourceEl) mediaSrc = sourceEl.src;
         }
 
-        $ctxMediaUrl = mediaSrc;
+        return mediaSrc;
+      };
+
+      const mediaTags = ['AUDIO', 'VIDEO', 'IMG'];
+      if (mediaTags.includes(tag)) {
+        $ctxMediaUrl = getMediaSrc(target);
+      } else {
+        const closestMedia = target.closest('audio,video,img');
+        if (closestMedia) $ctxMediaUrl = getMediaSrc(closestMedia);
       }
     },
     true
@@ -230,12 +248,19 @@ function messageListener({ data, source }) {
               $ctxTextSelection = window.getSelection().toString();
             }
 
-            resolve({
+            const cloneContextData = cloneDeep({
               $ctxLink,
               $ctxMediaUrl,
               $ctxElSelector,
               $ctxTextSelection,
             });
+
+            $ctxLink = '';
+            $ctxMediaUrl = '';
+            $ctxElSelector = '';
+            $ctxTextSelection = '';
+
+            resolve(cloneContextData);
             break;
           }
           default:

@@ -55,6 +55,7 @@
 import { reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import defu from 'defu';
+import { excludeOnError } from '@/utils/shared';
 import BlockSettingLines from './BlockSetting/BlockSettingLines.vue';
 import BlockSettingOnError from './BlockSetting/BlockSettingOnError.vue';
 import BlockSettingGeneral from './BlockSetting/BlockSettingGeneral.vue';
@@ -73,6 +74,7 @@ const emit = defineEmits(['change']);
 
 const { t } = useI18n();
 
+let currActiveTab = 'on-error';
 const browserType = BROWSER_TYPE;
 const supportedBlocks = ['forms', 'event-click', 'trigger-event', 'press-key'];
 const tabs = [
@@ -82,11 +84,16 @@ const tabs = [
   },
   { id: 'lines', name: t('workflow.blocks.base.settings.line.title') },
 ];
-const isSupported =
+const isOnErrorSupported = !excludeOnError.includes(props.data.id);
+const isDebugSupported =
   browserType !== 'firefox' && supportedBlocks.includes(props.data.id);
 
-if (isSupported) {
+if (isDebugSupported) {
+  currActiveTab = 'general';
   tabs.unshift({ id: 'general', name: t('settings.menu.general') });
+} else if (!isOnErrorSupported) {
+  currActiveTab = 'lines';
+  tabs.shift();
 }
 
 const defaultSettings = {
@@ -107,9 +114,9 @@ const defaultSettings = {
 const state = reactive({
   showModal: false,
   retrieved: false,
+  activeTab: currActiveTab,
   onError: defaultSettings.onError,
   settings: defaultSettings.general,
-  activeTab: !isSupported ? 'on-error' : 'general',
 });
 
 function onDataChange(key, data) {

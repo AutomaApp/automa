@@ -6,7 +6,7 @@
       :placeholder="t('common.description')"
       @change="updateData({ description: $event })"
     />
-    <template v-if="permission.has.clipboardRead">
+    <template v-if="hasAllPermissions">
       <ui-select
         :model-value="data.type"
         class="mt-4 w-full"
@@ -50,6 +50,7 @@
   </div>
 </template>
 <script setup>
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useHasPermissions } from '@/composable/hasPermissions';
 import InsertWorkflowData from './InsertWorkflowData.vue';
@@ -63,9 +64,22 @@ const props = defineProps({
 const emit = defineEmits(['update:data']);
 
 const types = ['get', 'insert'];
+const permissions = ['clipboardRead'];
+const isFirefox = BROWSER_TYPE === 'firefox';
+
+if (isFirefox) {
+  permissions.push('clipboardWrite');
+}
 
 const { t } = useI18n();
-const permission = useHasPermissions(['clipboardRead']);
+const permission = useHasPermissions(permissions);
+
+const hasAllPermissions = computed(() => {
+  if (isFirefox)
+    return permission.has.clipboardRead && permission.has.clipboardWrite;
+
+  return permission.has.clipboardRead;
+});
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });

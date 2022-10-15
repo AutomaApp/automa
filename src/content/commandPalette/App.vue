@@ -249,7 +249,7 @@ function onKeydown(event) {
   }
 
   const shortcuts = window._automaShortcuts;
-  if (shortcuts.length < 1) return;
+  if (!shortcuts || shortcuts.length < 1) return;
 
   const automaShortcut = shortcuts.every((shortcutKey) => {
     if (shortcutKey === 'mod') return ctrlKey || metaKey;

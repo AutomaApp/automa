@@ -45,7 +45,6 @@
       }"
     />
     <edit-block-settings
-      v-if="!excludeOnError.includes(data.id)"
       :key="data.itemId || data.blockId"
       :data="data"
       class="mt-4"
@@ -56,7 +55,6 @@
 <script setup>
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { excludeOnError } from '@/utils/shared';
 import customEditComponents from '@business/blocks/editComponents';
 import EditBlockSettings from './edit/EditBlockSettings.vue';
 
