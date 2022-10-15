@@ -1330,13 +1330,13 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-bullet-list/-/extension-bullet-list-2.0.0-beta.197.tgz#024ad45596b5ba37e529c4c6c0846d0949d1a68d"
   integrity sha512-T+/pWQNlCz6AsIlx/Aryy3+HUYxMAgS7bTa069GbRAxb0K7aS3+5j9CXfVxUhC+Q+pIqCNUx86MzcY6ea//MBQ==
 
-"@tiptap/extension-character-count@^2.0.0-beta.31":
-  version "2.0.0-beta.195"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-character-count/-/extension-character-count-2.0.0-beta.195.tgz#a19cfd91edb1870e338327d700cb66158cf963f7"
-  integrity sha512-KU6DoAXRQymHuuxqn3x1sjjv+yxdRsO2gpyQSFgP077VVkSrpOeIUZQ7jxAJb7yBeInBWHKMwb002IwUvNm0tw==
+"@tiptap/extension-character-count@^2.0.0-beta.199":
+  version "2.0.0-beta.199"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-character-count/-/extension-character-count-2.0.0-beta.199.tgz#cd6b008a8e242240c30dda7ee5fe515fc39a8d78"
+  integrity sha512-7QEyLZeTVHRi7XaI97n+yF/R9cs7Xo1pf/cpV+wn/QSkfr5YtYvy33LCN74Vlkw9FJ45KrROEXfawRE/UgM/Cw==
   dependencies:
-    prosemirror-model "1.18.1"
-    prosemirror-state "1.4.1"
+    prosemirror-model "^1.18.1"
+    prosemirror-state "^1.4.1"
 
 "@tiptap/extension-code-block@^2.0.0-beta.197":
   version "2.0.0-beta.197"
