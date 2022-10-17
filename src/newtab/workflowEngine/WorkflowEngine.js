@@ -1,5 +1,6 @@
-import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
+import browser from 'webextension-polyfill';
+import cloneDeep from 'lodash.clonedeep';
 import { getBlocks } from '@/utils/getSharedData';
 import { clearCache, sleep, parseJSON, isObject } from '@/utils/helper';
 import dbStorage from '@/db/storage';
@@ -290,7 +291,7 @@ class WorkflowEngine {
           activeTabUrl,
           prevBlockData: detail.prevBlockData || '',
         },
-        replacedValue: detail.replacedValue,
+        replacedValue: cloneDeep(detail.replacedValue),
       };
 
       delete detail.replacedValue;
@@ -455,7 +456,7 @@ class WorkflowEngine {
 
       if (!this.workflow?.isTesting) {
         const { name, id, teamId } = this.workflow;
-
+        console.log(this.historyCtxData);
         await this.logger.add({
           detail: {
             name,
