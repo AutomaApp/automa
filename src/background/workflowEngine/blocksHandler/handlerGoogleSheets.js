@@ -64,14 +64,21 @@ async function updateSpreadsheetValues(
     if (keysAsFirstRow) {
       values = convertArrObjTo2DArr(columns);
     } else {
-      values = columns.map((item) =>
-        Object.values(item).map((value) =>
-          typeof value === 'object' ? JSON.stringify(value) : value
-        )
-      );
+      values = columns.map((item) => Object.values(item));
     }
   } else if (dataFrom === 'custom') {
     values = parseJSON(customData, customData);
+  }
+
+  if (Array.isArray(values)) {
+    const validTypes = ['boolean', 'string', 'number'];
+    values.forEach((row, rowIndex) => {
+      row.forEach((column, colIndex) => {
+        if (column && validTypes.includes(typeof column)) return;
+
+        values[rowIndex][colIndex] = ' ';
+      });
+    });
   }
 
   const queries = {
