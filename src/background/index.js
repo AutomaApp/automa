@@ -270,7 +270,7 @@ async function checkRecordingWorkflow(tabId, tabUrl) {
     file: 'recordWorkflow.bundle.js',
   });
 }
-browser.webNavigation.onHistoryStateUpdated.addListener(
+browser.webNavigation.onCompleted.addListener(
   async ({ tabId, url, frameId }) => {
     if (frameId > 0) return;
 
