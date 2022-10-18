@@ -53,6 +53,16 @@
             <ui-list-item
               v-close-popover
               class="cursor-pointer"
+              @click="exportFolderWorkflows(folder.id)"
+            >
+              <v-remixicon name="riDownloadLine" class="mr-2 -ml-1" />
+              <span>
+                {{ t('common.export') }}
+              </span>
+            </ui-list-item>
+            <ui-list-item
+              v-close-popover
+              class="cursor-pointer"
               @click="renameFolder(folder)"
             >
               <v-remixicon name="riPencilLine" class="mr-2 -ml-1" />
@@ -83,6 +93,7 @@ import { useDialog } from '@/composable/dialog';
 import { parseJSON } from '@/utils/helper';
 import { useFolderStore } from '@/stores/folder';
 import { useWorkflowStore } from '@/stores/workflow';
+import { exportWorkflow } from '@/utils/workflowData';
 
 defineProps({
   modelValue: {
@@ -99,6 +110,14 @@ const workflowStore = useWorkflowStore();
 
 const folders = computed(() => folderStore.items);
 
+function exportFolderWorkflows(folderId) {
+  const workflows = workflowStore.getWorkflows.filter(
+    (item) => item.folderId === folderId
+  );
+  workflows.forEach((workflow) => {
+    exportWorkflow(workflow);
+  });
+}
 function onDragover(event, toggle) {
   const parent = event.target.closest('.ui-list-item');
   if (!parent) return;
