@@ -256,7 +256,8 @@ async function checkVisitWebTriggers(tabId, tabUrl) {
     }
 
     const workflowData = await workflow.get(workflowId);
-    if (workflowData) workflow.execute(workflowData, { tabId });
+    if (workflowData && !workflow.isDisabled)
+      workflow.execute(workflowData, { tabId });
   }
 }
 async function checkRecordingWorkflow(tabId, tabUrl) {
