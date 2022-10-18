@@ -3,6 +3,16 @@ import { isWhitespace } from '@/utils/helper';
 import { executeWebhook } from '@/utils/webhookUtil';
 import mustacheReplacer from '@/utils/referenceData/mustacheReplacer';
 
+function fileReader(blob) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      resolve(reader.result);
+    };
+    reader.readAsDataURL(blob);
+  });
+}
+
 export async function webhook({ data, id }, { refData }) {
   const nextBlockId = this.getBlockConnections(id);
   const fallbackOutput = this.getBlockConnections(id, 'fallback');
@@ -49,6 +59,11 @@ export async function webhook({ data, id }, { refData }) {
       const jsonRes = await response.json();
 
       returnData = objectPath.get(jsonRes, data.dataPath);
+    } else if (data.responseType === 'base64') {
+      const blob = await response.blob();
+      const base64 = await fileReader(blob);
+
+      returnData = base64;
     } else {
       returnData = await response.text();
     }
