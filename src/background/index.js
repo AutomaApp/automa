@@ -528,43 +528,57 @@ browser.runtime.onInstalled.addListener(async ({ reason }) => {
   }
 });
 browser.runtime.onStartup.addListener(async () => {
-  const { workflows, workflowHosts, teamWorkflows } =
-    await browser.storage.local.get([
-      'workflows',
-      'workflowHosts',
-      'teamWorkflows',
-    ]);
-  const convertToArr = (value) =>
-    Array.isArray(value) ? value : Object.values(value);
+  try {
+    const { workflows, workflowHosts, teamWorkflows } =
+      await browser.storage.local.get([
+        'workflows',
+        'workflowHosts',
+        'teamWorkflows',
+      ]);
+    const convertToArr = (value) =>
+      Array.isArray(value) ? value : Object.values(value);
 
-  const workflowsArr = convertToArr(workflows);
+    const workflowsArr = convertToArr(workflows);
 
-  if (workflowHosts) {
-    workflowsArr.push(...convertToArr(workflowHosts));
-  }
-  if (teamWorkflows) {
-    workflowsArr.push(...flattenTeamWorkflows(teamWorkflows));
-  }
-
-  for (const currWorkflow of workflowsArr) {
-    let triggerBlock = currWorkflow.trigger;
-
-    if (!triggerBlock) {
-      const flow =
-        typeof currWorkflow.drawflow === 'string'
-          ? parseJSON(currWorkflow.drawflow, {})
-          : currWorkflow.drawflow;
-
-      triggerBlock = findTriggerBlock(flow)?.data;
+    if (workflowHosts) {
+      workflowsArr.push(...convertToArr(workflowHosts));
+    }
+    if (teamWorkflows) {
+      workflowsArr.push(...flattenTeamWorkflows(teamWorkflows));
     }
 
-    if (triggerBlock) {
-      if (triggerBlock.type === 'on-startup') {
-        workflow.execute(currWorkflow);
-      } else {
-        await registerWorkflowTrigger(currWorkflow.id, { data: triggerBlock });
+    for (const currWorkflow of workflowsArr) {
+      let triggerBlock = currWorkflow.trigger;
+
+      if (!triggerBlock) {
+        const flow =
+          typeof currWorkflow.drawflow === 'string'
+            ? parseJSON(currWorkflow.drawflow, {})
+            : currWorkflow.drawflow;
+
+        triggerBlock = findTriggerBlock(flow)?.data;
+      }
+
+      const executeWorkflow = async (trigger, triggerData) => {
+        if (trigger.type === 'on-startup') {
+          workflow.execute(currWorkflow);
+        } else {
+          await registerWorkflowTrigger(currWorkflow.id, triggerData);
+        }
+      };
+
+      if (triggerBlock) {
+        if (triggerBlock.triggers) {
+          for (const trigger of triggerBlock.triggers) {
+            await executeWorkflow(trigger, trigger);
+          }
+        } else {
+          await executeWorkflow(triggerBlock, { data: triggerBlock });
+        }
       }
     }
+  } catch (error) {
+    console.error(error);
   }
 });
 
