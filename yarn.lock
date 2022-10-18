@@ -5982,10 +5982,10 @@ signal-exit@^3.0.2, signal-exit@^3.0.3, signal-exit@^3.0.7:
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.7.tgz#a9a1767f8af84155114eaabd73f99273c8f59ad9"
   integrity sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==
 
-simple-git-hooks@^2.6.1:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/simple-git-hooks/-/simple-git-hooks-2.8.0.tgz#291558785af6e17ca0c7a4f9d3d91e8635965a64"
-  integrity sha512-ocmZQORwa6x9mxg+gVIAp5o4wXiWOHGXyrDBA0+UxGKIEKOyFtL4LWNKkP/2ornQPdlnlDGDteVeYP5FjhIoWA==
+simple-git-hooks@^2.8.1:
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/simple-git-hooks/-/simple-git-hooks-2.8.1.tgz#05e8306f3211d7eee9f5fdb5cc42521280ee82a9"
+  integrity sha512-DYpcVR1AGtSfFUNzlBdHrQGPsOhuuEJ/FkmPOOlFysP60AHd3nsEpkGq/QEOdtUyT1Qhk7w9oLmFoMG+75BDog==
 
 slash@^3.0.0:
   version "3.0.0"
