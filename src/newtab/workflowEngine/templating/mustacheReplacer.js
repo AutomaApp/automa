@@ -27,7 +27,7 @@ export function extractStrFunction(str) {
 }
 
 export function keyParser(key, data) {
-  let [dataKey, path] = key.split(/@(.+)/);
+  let [dataKey, path] = key.split(/[@.](.+)/);
 
   dataKey = refKeys[dataKey] ?? dataKey;
 
