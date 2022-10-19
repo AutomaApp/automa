@@ -150,10 +150,10 @@ import {
   inject,
 } from 'vue';
 import browser from 'webextension-polyfill';
-import { getReadableShortcut } from '@/composable/shortcut';
 import { sendMessage } from '@/utils/message';
 import { debounce } from '@/utils/helper';
 
+const os = navigator.appVersion.indexOf('Mac') !== -1 ? 'mac' : 'win';
 const defaultPlaceholders = {
   string: 'Text',
   number: '123123',
@@ -185,6 +185,24 @@ const workflows = computed(() =>
   )
 );
 
+function getReadableShortcut(str) {
+  const list = {
+    option: {
+      win: 'alt',
+      mac: 'option',
+    },
+    mod: {
+      win: 'ctrl',
+      mac: '⌘',
+    },
+  };
+  const regex = /option|mod/g;
+  const replacedStr = str.replace(regex, (match) => {
+    return list[match][os];
+  });
+
+  return replacedStr;
+}
 function clearParamsState() {
   Object.assign(paramsState, {
     items: [],
