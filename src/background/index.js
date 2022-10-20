@@ -563,7 +563,7 @@ browser.runtime.onStartup.addListener(async () => {
       const executeWorkflow = async (trigger, triggerData) => {
         if (trigger.type === 'on-startup') {
           workflow.execute(currWorkflow);
-        } else {
+        } else if (trigger.type !== 'manual') {
           await registerWorkflowTrigger(currWorkflow.id, triggerData);
         }
       };
@@ -571,8 +571,14 @@ browser.runtime.onStartup.addListener(async () => {
       if (triggerBlock) {
         if (triggerBlock.triggers) {
           for (const trigger of triggerBlock.triggers) {
-            await executeWorkflow(trigger, trigger);
+            if (trigger.type === 'on-startup') {
+              workflow.execute(currWorkflow);
+            }
           }
+
+          await registerWorkflowTrigger(currWorkflow.id, {
+            data: triggerBlock,
+          });
         } else {
           await executeWorkflow(triggerBlock, { data: triggerBlock });
         }
