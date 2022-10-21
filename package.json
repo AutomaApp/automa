@@ -83,7 +83,7 @@
     "webextension-polyfill": "^0.10.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.5",
+    "@babel/core": "^7.19.6",
     "@babel/eslint-parser": "^7.18.2",
     "@babel/preset-env": "^7.18.2",
     "@intlify/vue-i18n-loader": "^4.2.0",
