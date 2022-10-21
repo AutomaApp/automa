@@ -24,27 +24,8 @@ const workflowStateStorage = {
     workflowStore.updateStates(states);
   },
 };
-const browserStorage = {
-  async get(key) {
-    try {
-      const result = await browser.storage.local.get(key);
 
-      return result[key];
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
-  },
-  async set(key, value) {
-    await browser.storage.local.set({ [key]: value });
-
-    if (key === 'workflowState') {
-      sessionStorage.setItem(key, JSON.stringify(value));
-    }
-  },
-};
-
-export const workflowLogger = new WorkflowLogger({ storage: browserStorage });
+export const workflowLogger = new WorkflowLogger();
 export const workflowState = new WorkflowState({
   storage: workflowStateStorage,
 });
