@@ -1,6 +1,12 @@
 import browser from 'webextension-polyfill';
 import { useWorkflowStore } from '@/stores/workflow';
-import { parseJSON, fileSaver, openFilePicker } from './helper';
+import { registerWorkflowTrigger } from './workflowTrigger';
+import {
+  parseJSON,
+  fileSaver,
+  openFilePicker,
+  findTriggerBlock,
+} from './helper';
 
 const contextMenuPermission =
   BROWSER_TYPE === 'firefox' ? 'menus' : 'contextMenus';
@@ -109,15 +115,21 @@ export function importWorkflow(attrs = {}) {
           workflow.table = workflow.table || workflow.dataColumns;
           delete workflow.dataColumns;
 
-          if (typeof workflow.drawflow === 'string')
+          if (typeof workflow.drawflow === 'string') {
             workflow.drawflow = parseJSON(workflow.drawflow, {});
+          }
 
           workflowStore
             .insert({
               ...workflow,
               createdAt: Date.now(),
             })
-            .then(resolve);
+            .then((result) => {
+              const triggerBlock = findTriggerBlock(result.drawflow);
+              registerWorkflowTrigger(result.id, triggerBlock);
+
+              resolve(result);
+            });
         };
 
         files.forEach((file) => {

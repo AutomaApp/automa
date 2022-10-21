@@ -78,9 +78,6 @@ export default {
     const show = ref(false);
     const modalContent = ref(null);
 
-    function onClickOverlay(event) {
-      console.log(event);
-    }
     function toggleBodyOverflow(value) {
       document.body.classList.toggle('overflow-hidden', value);
     }
@@ -115,7 +112,6 @@ export default {
       show,
       closeModal,
       modalContent,
-      onClickOverlay,
     };
   },
 };

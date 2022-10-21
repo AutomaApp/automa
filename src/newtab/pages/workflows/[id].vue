@@ -697,10 +697,10 @@ function onClickEditor({ target }) {
     if (!connectionExist) {
       editor.value.addEdges([
         {
-          source: nodeid,
-          sourceHandle: handleid,
-          target: nodeTargetHandle.nodeId,
-          targetHandle: nodeTargetHandle.handleId,
+          target: nodeid,
+          targetHandle: handleid,
+          source: nodeTargetHandle.nodeId,
+          sourceHandle: nodeTargetHandle.handleId,
         },
       ]);
     }
