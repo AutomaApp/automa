@@ -67,6 +67,21 @@ yarn build:firefox
 yarn lint
 ```
 
+### Install Locally
+#### Chrome
+1. Open chrome and navigate to extensions page using this URL: chrome://extensions.
+2. Enable the "Developer mode".
+3. Click "Load unpacked extension" button, browse the `automa/build` directory and select it.
+
+![Install in chrome](https://res.cloudinary.com/chat-story/image/upload/v1665128418/automa/chrome_QWxClxFcio_d9pqp8.png)
+
+### Firefox
+1. Open firefox and navigate to `about:debugging#/runtime/this-firefox`.
+2. Click the "Load Temporary Add-on" button.
+3. Browse the `automa/build` directory and select the `manifest.json` file.
+
+![Install in firefox](https://res.cloudinary.com/chat-story/image/upload/v1665128974/automa/firefox_30wkpfGM7N_lihajj.png)
+
 ## Contributors
 Thanks to everyone who has submitted issues, made suggestions, and generally helped make this a better project.
 

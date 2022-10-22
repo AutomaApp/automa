@@ -44,8 +44,8 @@
         "encrypt": "Chiffrer avec mot de passe"
       },
       "restore": {
-        "title": "Restorer les workflows",
-        "button": "Restorer",
+        "title": "Restaurer les workflows",
+        "button": "Restaurer",
         "update": "Mettre à jour si le workflow existe"
       },
       "cloud": {
@@ -54,7 +54,7 @@
           "cloud": "Cloud"
         },
         "delete": "Supprimer la sauvegarde",
-        "title": "Sauvegarde sur le cloud",
+        "title": "Enregistrer sur le cloud",
         "sync": "Synchroniser",
         "lastSync": "Dernière synchronisation",
         "lastBackup": "Dernière sauvegarde",
@@ -137,7 +137,7 @@
       "executeBy": "Exécuté par: \"{name}\""
     },
     "dataColumns": {
-      "title": "Table",
+      "title": "Tableau",
       "placeholder": "Rechercher ou ajouter une colonne",
       "select": "Sélectionner une colonne",
       "column": {
@@ -159,10 +159,10 @@
       "executedBlockOnWeb": "Afficher le bloc exécuté sur la page Web",
       "debugMode": {
         "title": "Mode debug",
-        "description": "Execute the workflow using the Chrome DevTools Protocol"
+        "description": "Exécutez le workflow à l'aide du protocole Chrome DevTools."
       },
       "restartWorkflow": {
-        "for": "Redémarrez pour",
+        "for": "Redémarrer pour",
         "times": "Fois"
       },
       "onError": {
@@ -232,7 +232,7 @@
       "stop-timeout": "Le workflow est arrêté en raison du délai d'attente",
       "no-file-access": "Automa n'a pas accès au fichier",
       "no-workflow": "Impossible de trouver le workflow avec l'ID \"{workflowId}\"",
-      "no-match-tab": "Impossible de trouver un onglet avec les patternes \"{pattern}\"",
+      "no-match-tab": "Impossible de trouver un onglet avec les motifs \"{pattern}\"",
       "no-clipboard-acces": "Vous n'êtes pas autorisé à accéder au presse-papiers",
       "element-not-found": "Impossible de trouver un élément avec le sélecteur \"{selector}\".",
       "not-iframe": "L'élément avec le sélecteur \"{selector}\" n'est pas un élément Iframe",
