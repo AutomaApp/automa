@@ -92,13 +92,22 @@
                   <span>Options</span>
                 </template>
                 <div class="pl-[28px] mt-2 mb-4">
-                  <ui-textarea
-                    v-model="param.description"
-                    placeholder="Description"
-                    title="Description"
-                    class="mb-2 block"
-                    style="max-width: 400px"
-                  />
+                  <div class="flex mb-2 items-start">
+                    <ui-textarea
+                      v-model="param.description"
+                      placeholder="Description"
+                      title="Description"
+                      style="max-width: 400px"
+                    />
+                    <ui-checkbox
+                      v-if="['string', 'number'].includes(param.type)"
+                      :model-value="param.data?.required"
+                      class="ml-6"
+                      @change="param.data.required = $event"
+                    >
+                      Parameter required
+                    </ui-checkbox>
+                  </div>
                   <component
                     :is="paramTypes[param.type].options"
                     v-if="paramTypes[param.type].options"
@@ -144,6 +153,7 @@ const paramTypes = {
     valueComp: ParameterInputValue,
     data: {
       masks: [],
+      required: false,
       useMask: false,
       unmaskValue: false,
     },
@@ -151,6 +161,9 @@ const paramTypes = {
   number: {
     id: 'number',
     name: 'Input (number)',
+    data: {
+      required: false,
+    },
   },
   ...customParameters,
 };

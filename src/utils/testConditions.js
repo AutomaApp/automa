@@ -43,7 +43,15 @@ export default async function (conditionsArr, workflowData) {
 
   async function getConditionItemValue({ type, data }) {
     if (type.startsWith('data')) {
-      return objectPath.has(workflowData.refData, data.dataPath);
+      let dataPath = data.dataPath.trim().replace('@', '.');
+      const isInsideBrackets =
+        dataPath.startsWith('{{') && dataPath.endsWith('}}');
+
+      if (isInsideBrackets) {
+        dataPath = dataPath.slice(2, -2).trim();
+      }
+
+      return objectPath.has(workflowData.refData, dataPath);
     }
 
     const copyData = cloneDeep(data);

@@ -185,7 +185,6 @@ import {
 } from 'vue';
 import browser from 'webextension-polyfill';
 import workflowParameters from '@business/parameters';
-import { getReadableShortcut } from '@/composable/shortcut';
 import { sendMessage } from '@/utils/message';
 import { debounce } from '@/utils/helper';
 import ParameterInputValue from '@/components/newtab/workflow/edit/Parameter/ParameterInputValue.vue';
@@ -198,6 +197,7 @@ const paramsList = {
   },
 };
 
+const os = navigator.appVersion.indexOf('Mac') !== -1 ? 'mac' : 'win';
 const logoUrl = browser.runtime.getURL('/icon-128.png');
 
 const inputRef = ref(null);
@@ -225,6 +225,24 @@ const workflows = computed(() =>
   )
 );
 
+function getReadableShortcut(str) {
+  const list = {
+    option: {
+      win: 'alt',
+      mac: 'option',
+    },
+    mod: {
+      win: 'ctrl',
+      mac: '⌘',
+    },
+  };
+  const regex = /option|mod/g;
+  const replacedStr = str.replace(regex, (match) => {
+    return list[match][os];
+  });
+
+  return replacedStr;
+}
 function clearParamsState() {
   Object.assign(paramsState, {
     items: [],
@@ -312,7 +330,7 @@ function onKeydown(event) {
   }
 
   const shortcuts = window._automaShortcuts;
-  if (shortcuts.length < 1) return;
+  if (!shortcuts || shortcuts.length < 1) return;
 
   const automaShortcut = shortcuts.every((shortcutKey) => {
     if (shortcutKey === 'mod') return ctrlKey || metaKey;

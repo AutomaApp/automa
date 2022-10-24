@@ -11,7 +11,7 @@
       variant="accent"
       @click="showModal = !showModal"
     >
-      Insert data
+      Insert data ({{ dataList.length }})
     </ui-button>
     <ui-modal
       v-model="showModal"

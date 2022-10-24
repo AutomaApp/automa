@@ -300,8 +300,8 @@ import cloneDeep from 'lodash.clonedeep';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { customAlphabet } from 'nanoid';
-import { useHead } from '@vueuse/head';
 import { useToast } from 'vue-toastification';
+import { useHead } from '@vueuse/head';
 import defu from 'defu';
 import dagre from 'dagre';
 import { useUserStore } from '@/stores/user';
@@ -739,10 +739,10 @@ function onClickEditor({ target }) {
     if (!connectionExist) {
       editor.value.addEdges([
         {
-          source: nodeid,
-          sourceHandle: handleid,
-          target: nodeTargetHandle.nodeId,
-          targetHandle: nodeTargetHandle.handleId,
+          target: nodeid,
+          targetHandle: handleid,
+          source: nodeTargetHandle.nodeId,
+          sourceHandle: nodeTargetHandle.handleId,
         },
       ]);
     }
@@ -1200,6 +1200,8 @@ function onEditorInit(instance) {
   // });
 
   instance.onNodeDragStop(({ nodes }) => {
+    if (!editorCommands?.state?.nodes) return;
+
     nodes.forEach((node) => {
       editorCommands.state.nodes[node.id] = node;
     });
@@ -1558,7 +1560,7 @@ function checkWorkflowUpdate() {
 }
 
 useHead({
-  title: () => `${workflow.value?.name} workflow` || 'Edit workflow',
+  title: () => `${workflow.value?.name} workflow - Automa` || 'Automa',
 });
 const shortcut = useShortcut([
   getShortcut('editor:toggle-sidebar', toggleSidebar),

@@ -1,9 +1,11 @@
 import browser from 'webextension-polyfill';
 import { nanoid } from 'nanoid';
+import cloneDeep from 'lodash.clonedeep';
 import findSelector from '@/lib/findSelector';
-import { toCamelCase } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
 import automa from '@business';
+import FindElement from '@/utils/FindElement';
+import { toCamelCase, isXPath } from '@/utils/helper';
 import handleSelector from './handleSelector';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
@@ -45,7 +47,13 @@ async function executeBlock(data) {
   const removeExecutedBlock = showExecutedBlock(data, data.executedBlockOnWeb);
   if (data.data?.selector?.includes('|>')) {
     const [frameSelector, selector] = data.data.selector.split(/\|>(.+)/);
-    const frameElement = document.querySelector(frameSelector);
+
+    let findBy = data?.data?.findBy;
+    if (!findBy) {
+      findBy = isXPath(frameSelector) ? 'xpath' : 'cssSelector';
+    }
+
+    const frameElement = FindElement[findBy]({ selector: frameSelector });
     const frameError = (message) => {
       const error = new Error(message);
       error.data = { selector: frameSelector };
@@ -137,7 +145,47 @@ function messageListener({ data, source }) {
   initCommandPalette();
 
   let contextElement = null;
+  let $ctxLink = '';
+  let $ctxMediaUrl = '';
   let $ctxTextSelection = '';
+
+  window.isAutomaInjected = true;
+  window.addEventListener('message', messageListener);
+  window.addEventListener(
+    'contextmenu',
+    ({ target }) => {
+      contextElement = target;
+      $ctxTextSelection = window.getSelection().toString();
+
+      const tag = target.tagName;
+      if (tag === 'A') {
+        $ctxLink = target.href;
+      } else {
+        const closestUrl = target.closest('a');
+        if (closestUrl) $ctxLink = closestUrl.href;
+      }
+
+      const getMediaSrc = (element) => {
+        let mediaSrc = element.src || '';
+
+        if (!mediaSrc.src) {
+          const sourceEl = element.querySelector('source');
+          if (sourceEl) mediaSrc = sourceEl.src;
+        }
+
+        return mediaSrc;
+      };
+
+      const mediaTags = ['AUDIO', 'VIDEO', 'IMG'];
+      if (mediaTags.includes(tag)) {
+        $ctxMediaUrl = getMediaSrc(target);
+      } else {
+        const closestMedia = target.closest('audio,video,img');
+        if (closestMedia) $ctxMediaUrl = getMediaSrc(closestMedia);
+      }
+    },
+    true
+  );
 
   window.isAutomaInjected = true;
   window.addEventListener('message', messageListener);
@@ -198,42 +246,29 @@ function messageListener({ data, source }) {
             break;
           }
           case 'context-element': {
-            let $ctxLink = '';
-            let $ctxMediaUrl = '';
             let $ctxElSelector = '';
 
             if (contextElement) {
               $ctxElSelector = findSelector(contextElement);
-
-              const tag = contextElement.tagName;
-              if (tag === 'A') {
-                $ctxLink = contextElement.href;
-              }
-
-              const mediaTags = ['AUDIO', 'VIDEO', 'IMG'];
-              if (mediaTags.includes(tag)) {
-                let mediaSrc = contextElement.src || '';
-
-                if (!mediaSrc.src) {
-                  const sourceEl = contextElement.querySelector('source');
-                  if (sourceEl) mediaSrc = sourceEl.src;
-                }
-
-                $ctxMediaUrl = mediaSrc;
-              }
-
               contextElement = null;
             }
             if (!$ctxTextSelection) {
               $ctxTextSelection = window.getSelection().toString();
             }
 
-            resolve({
-              $ctxElSelector,
-              $ctxTextSelection,
+            const cloneContextData = cloneDeep({
               $ctxLink,
               $ctxMediaUrl,
+              $ctxElSelector,
+              $ctxTextSelection,
             });
+
+            $ctxLink = '';
+            $ctxMediaUrl = '';
+            $ctxElSelector = '';
+            $ctxTextSelection = '';
+
+            resolve(cloneContextData);
             break;
           }
           default:

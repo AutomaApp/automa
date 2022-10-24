@@ -743,11 +743,12 @@ export const tasks = {
     data: {
       disableBlock: false,
       loopId: '',
+      selector: '',
       maxLoop: '0',
       description: '',
-      selector: '',
-      findBy: 'cssSelector',
+      reverseLoop: false,
       actionElSelector: '',
+      findBy: 'cssSelector',
       actionElMaxWaitTime: 5,
       actionPageMaxWaitTime: 10,
       loadMoreAction: 'none',
@@ -1242,7 +1243,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['html', 'css'],
+    refDataKeys: ['html', 'css', 'selector'],
     data: {
       disableBlock: false,
       description: '',
@@ -1659,7 +1660,7 @@ export const conditionBuilder = {
       placeholder: 'name',
     },
     dataPath: {
-      label: 'variables.variableName',
+      label: 'variables@variableName',
       placeholder: '',
     },
   },

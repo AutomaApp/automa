@@ -64,18 +64,21 @@ function workflowShortcutsListener(findWorkflow, shortcutsObj) {
   });
 }
 async function getWorkflows() {
-  const { workflows, workflowHosts } = await browser.storage.local.get([
+  const {
+    workflows: localWorkflows,
+    workflowHosts,
+    teamWorkflows,
+  } = await browser.storage.local.get([
     'workflows',
     'workflowHosts',
+    'teamWorkflows',
   ]);
-  const localWorkflows = Array.isArray(workflows)
-    ? workflows
-    : Object.values(workflows);
 
-  return {
-    local: localWorkflows,
-    hosted: Object.values(workflowHosts || {}),
-  };
+  return [
+    ...Object.values(workflowHosts || {}),
+    ...Object.values(localWorkflows || {}),
+    ...Object.values(Object.values(teamWorkflows || {})[0] || {}),
+  ];
 }
 
 export default async function () {
@@ -84,19 +87,13 @@ export default async function () {
     let workflows = await getWorkflows();
 
     const findWorkflow = (id, publicId = false) => {
-      let workflow = workflows.local.find((item) => {
+      const workflow = workflows.find((item) => {
         if (publicId) {
           return item.settings.publicId === id;
         }
 
         return item.id === id;
       });
-
-      if (!workflow) {
-        workflow = workflows.hosted.find(({ hostId }) => hostId === id);
-
-        if (workflow) workflow.id = workflow.hostId;
-      }
 
       return workflow;
     };

@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import cronParser from 'cron-parser';
 import { isObject } from './helper';
 
-export function registerContextMenu(workflowId, data) {
+export function registerContextMenu(triggerId, data) {
   return new Promise((resolve, reject) => {
     const documentUrlPatterns = ['https://*/*', 'http://*/*'];
     const contextTypes =
@@ -19,6 +19,10 @@ export function registerContextMenu(workflowId, data) {
       return;
     }
 
+    const workflowId = triggerId.includes(':')
+      ? triggerId.split(':')[1]
+      : triggerId;
+
     browserContext.create(
       {
         id: workflowId,
@@ -29,7 +33,6 @@ export function registerContextMenu(workflowId, data) {
       },
       () => {
         const error = browser.runtime.lastError;
-
         if (error) {
           if (error.message.includes('automaContextMenu')) {
             browserContext.create(
@@ -45,6 +48,13 @@ export function registerContextMenu(workflowId, data) {
                   .catch(reject);
               }
             );
+            resolve();
+            return;
+          }
+          if (error.message.includes('Duplicate id')) {
+            browserContext.remove(triggerId).then(() => {
+              registerContextMenu(workflowId, data).then(resolve).catch(reject);
+            });
             return;
           }
 
@@ -71,7 +81,7 @@ async function removeFromWorkflowQueue(workflowId) {
   await browser.storage.local.set({ workflowQueue });
 }
 
-export async function cleanWorkflowTriggers(workflowId) {
+export async function cleanWorkflowTriggers(workflowId, triggers) {
   try {
     const alarms = await browser.alarms.getAll();
     for (const alarm of alarms) {
@@ -109,17 +119,29 @@ export async function cleanWorkflowTriggers(workflowId) {
       visitWebTriggers: filteredVisitWebTriggers,
     });
 
+    const browserContextMenu =
+      BROWSER_TYPE === 'firefox' ? browser.menus : browser.contextMenus;
     const removeFromContextMenu = async () => {
       try {
-        await (BROWSER_TYPE === 'firefox'
-          ? browser.menus
-          : browser.contextMenus
-        )?.remove(workflowId);
+        let promises = [];
+
+        if (triggers) {
+          promises = triggers.map(async (trigger) => {
+            if (trigger.type !== 'context-menu') return;
+
+            const triggerId = `trigger:${workflowId}:${trigger.id}`;
+            await browserContextMenu.remove(triggerId);
+          });
+        }
+
+        promises.push(browserContextMenu.remove(workflowId));
+
+        await Promise.allSettled(promises);
       } catch (error) {
         // Do nothing
       }
     };
-    await removeFromContextMenu();
+    if (browserContextMenu) await removeFromContextMenu();
   } catch (error) {
     console.error(error);
   }
@@ -259,7 +281,7 @@ export const workflowTriggersMap = {
 
 export async function registerWorkflowTrigger(workflowId, { data }) {
   try {
-    await cleanWorkflowTriggers(workflowId);
+    await cleanWorkflowTriggers(workflowId, data && data?.triggers);
 
     if (data.triggers) {
       for (const trigger of data.triggers) {
