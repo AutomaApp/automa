@@ -186,14 +186,20 @@ import {
 import browser from 'webextension-polyfill';
 import workflowParameters from '@business/parameters';
 import { sendMessage } from '@/utils/message';
-import { debounce } from '@/utils/helper';
+import { debounce, parseJSON } from '@/utils/helper';
 import ParameterInputValue from '@/components/newtab/workflow/edit/Parameter/ParameterInputValue.vue';
+import ParameterJsonValue from '@/components/newtab/workflow/edit/Parameter/ParameterJsonValue.vue';
 
 const paramsList = {
   string: {
     id: 'string',
     name: 'Input (string)',
     valueComp: ParameterInputValue,
+  },
+  json: {
+    id: 'json',
+    name: 'Input (JSON)',
+    valueComp: ParameterJsonValue,
   },
 };
 
@@ -299,6 +305,7 @@ function getParamsValues(params) {
   const getParamVal = {
     string: (str) => str,
     number: (num) => (Number.isNaN(+num) ? 0 : +num),
+    json: (value) => parseJSON(value, null),
     default: (value) => value,
   };
 

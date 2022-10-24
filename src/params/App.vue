@@ -110,13 +110,20 @@ import workflowParameters from '@business/parameters';
 import automa from '@business';
 import { useTheme } from '@/composable/theme';
 import dayjs from '@/lib/dayjs';
+import { parseJSON } from '@/utils/helper';
 import ParameterInputValue from '@/components/newtab/workflow/edit/Parameter/ParameterInputValue.vue';
+import ParameterJsonValue from '@/components/newtab/workflow/edit/Parameter/ParameterJsonValue.vue';
 
 const paramsList = {
   string: {
     id: 'string',
     name: 'Input (string)',
     valueComp: ParameterInputValue,
+  },
+  json: {
+    id: 'json',
+    name: 'Input (JSON)',
+    valueComp: ParameterJsonValue,
   },
 };
 
@@ -197,6 +204,7 @@ function getParamsValues(params) {
   const getParamVal = {
     string: (str) => str,
     number: (num) => (Number.isNaN(+num) ? 0 : +num),
+    json: (value) => parseJSON(value, null),
     default: (value) => value,
   };
 

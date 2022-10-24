@@ -133,6 +133,7 @@ import cloneDeep from 'lodash.clonedeep';
 import workflowParameters from '@business/parameters';
 import Draggable from 'vuedraggable';
 import ParameterInputValue from './Parameter/ParameterInputValue.vue';
+import ParameterJsonValue from './Parameter/ParameterJsonValue.vue';
 import ParameterInputOptions from './Parameter/ParameterInputOptions.vue';
 
 const props = defineProps({
@@ -161,6 +162,14 @@ const paramTypes = {
   number: {
     id: 'number',
     name: 'Input (number)',
+    data: {
+      required: false,
+    },
+  },
+  json: {
+    id: 'json',
+    name: 'Input (JSON)',
+    valueComp: ParameterJsonValue,
     data: {
       required: false,
     },

@@ -1207,13 +1207,6 @@ function onEditorInit(instance) {
     });
   });
 
-  instance.removeSelectedNodes(
-    instance.getSelectedNodes.value.map(({ id }) => id)
-  );
-  instance.removeSelectedEdges(
-    instance.getSelectedEdges.value.map(({ id }) => id)
-  );
-
   const editorContainer = document.querySelector(
     '.vue-flow__viewport.vue-flow__container'
   );

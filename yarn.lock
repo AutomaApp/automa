@@ -1671,15 +1671,15 @@
   resolved "https://registry.yarnpkg.com/@viselect/vanilla/-/vanilla-3.1.1.tgz#e63ef3529f819cc83e8c1aea6b3ab9936d550f76"
   integrity sha512-aS1UF6WkV3TvO5vqg2uQk8WRI36b2SAtfozVrxtfVI1WTuaOG0uYxvdXTmIYwfki6fFF4qQpkiQcg8+NqpJA8Q==
 
-"@vue-flow/additional-components@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@vue-flow/additional-components/-/additional-components-1.1.0.tgz#744ff2ce35be1af9109462e9973118366b53dc66"
-  integrity sha512-uWz/xieBI80UwcIolnFkGojgKZwr46nspLMpz1oZuzCN09kqd7ZK2VgZSS04r7j8aWNNanioun2AvDXr+vg8vg==
+"@vue-flow/additional-components@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@vue-flow/additional-components/-/additional-components-1.0.0.tgz#527edb54ed6ce527cd0370a46ea4ca74a6a7d8c2"
+  integrity sha512-xHDe5r60unpn2YuNEPdNAOgaS2KghdpVMOo5dVFdYJeRDaW8e0tVyXIUzGaP2iDT9t1WL1rlM/8BXizfFIdBaw==
 
-"@vue-flow/core@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@vue-flow/core/-/core-1.2.0.tgz#741bb372d99b255dc5898e01daeed81b3704531b"
-  integrity sha512-1QXdAt4k/7zC4SLr314hvJUuId3/8+4VVJmmY2HukgkSkNl4veDly/2tvzl3cOj4DSdbMPUjSsGk0iMN2NG9IQ==
+"@vue-flow/core@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@vue-flow/core/-/core-1.0.0.tgz#b342863b4b96635d6e914c6c57141e37ba4ebbde"
+  integrity sha512-CU0Q8o31vXFC8BdOoPdRU7rN0EkgAFNwlG/gLR18Kk6ZnIflAc8BcaT3fShoVXNZLysXg10UF5C/L4wWPk2Gjw==
   dependencies:
     "@vueuse/core" "^9.3.0"
     d3-drag "^3.0.0"
