@@ -41,7 +41,7 @@
           {{ data.description }}
         </p>
         <span
-          v-if="data.loopId"
+          v-if="loopBlocks.includes(block.details.id) && data.loopId"
           class="bg-box-transparent rounded-br-lg text-gray-600 dark:text-gray-200 text-overflow rounded-sm py-px px-1 text-xs absolute bottom-0 right-0"
           title="Loop Id (click to copy)"
           style="max-width: 40%; cursor: pointer"
@@ -110,6 +110,8 @@ const props = defineProps({
   },
 });
 defineEmits(['delete', 'edit', 'update', 'settings']);
+
+const loopBlocks = ['loop-data', 'loop-elements'];
 
 const { t, te } = useI18n();
 const block = useEditorBlock(props.label);
