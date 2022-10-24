@@ -137,7 +137,7 @@ export const automaFuncsSnippets = {
         <code>automaRefData(<i>keyword</i>, <i>path</i>)</code>
         <p class="mt-2">
           Use this function to
-          <a href="https://docs.automa.site/api-reference/reference-data.html" target="_blank" class="underline">
+          <a href="https://docs.automa.site/workflow/expressions.html" target="_blank" class="underline">
             reference data
           </a>
         </p>

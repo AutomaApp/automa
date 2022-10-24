@@ -19,7 +19,7 @@
               {{ errorBlock.message }}
               <a
                 v-if="errorBlock.messageId"
-                :href="`https://docs.automa.site/guide/workflow-errors.html#${errorBlock.messageId}`"
+                :href="`https://docs.automa.site/reference/workflow-common-errors.html#${errorBlock.messageId}`"
                 target="_blank"
                 title="About the error"
                 @click.stop
@@ -135,7 +135,7 @@
                 {{ item.message }}
                 <a
                   v-if="item.messageId"
-                  :href="`https://docs.automa.site/guide/workflow-errors.html#${item.messageId}`"
+                  :href="`https://docs.automa.site/reference/workflow-common-errors.html#${item.messageId}`"
                   target="_blank"
                   title="About the error"
                   @click.stop

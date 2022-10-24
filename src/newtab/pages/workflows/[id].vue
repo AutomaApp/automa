@@ -423,7 +423,7 @@ const workflowModals = {
     width: 'max-w-2xl',
     component: WorkflowDataTable,
     title: t('workflow.table.title'),
-    docs: 'https://docs.automa.site/api-reference/table.html',
+    docs: 'https://docs.automa.site/workflow/table.html',
     events: {
       /* eslint-disable-next-line */
       connect: fetchConnectedTable,
@@ -475,7 +475,7 @@ const workflowModals = {
     icon: 'riDatabase2Line',
     component: WorkflowGlobalData,
     title: t('common.globalData'),
-    docs: 'https://docs.automa.site/api-reference/global-data.html',
+    docs: 'https://docs.automa.site/workflow/global-data.html',
   },
   settings: {
     width: 'max-w-2xl',
