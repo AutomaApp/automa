@@ -23,8 +23,8 @@ browser.runtime.onInstalled.addListener(
   BackgroundEventsListeners.onRuntimeInstalled
 );
 
-browser.webNavigation.onHistoryStateUpdated.addListener(
-  BackgroundEventsListeners.onHistoryStateUpdated
+browser.webNavigation.onCompleted.addListener(
+  BackgroundEventsListeners.onWebNavigationCompleted
 );
 
 const contextMenu =

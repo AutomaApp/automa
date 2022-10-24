@@ -182,6 +182,14 @@ class BackgroundWorkflowTriggers {
         if (isStartup && triggerBlock.type === 'on-startup') {
           BackgroundWorkflowUtils.executeWorkflow(currWorkflow);
         } else {
+          if (isStartup && triggerBlock.triggers) {
+            for (const trigger of triggerBlock.triggers) {
+              if (trigger.type === 'on-startup') {
+                await BackgroundWorkflowUtils.executeWorkflow(currWorkflow);
+              }
+            }
+          }
+
           await registerWorkflowTrigger(currWorkflow.id, {
             data: triggerBlock,
           });

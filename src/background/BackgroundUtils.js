@@ -27,8 +27,10 @@ class BackgroundUtils {
       } else {
         const windowOptions = {
           url: tabUrl,
+          height: 715,
+          width: 750,
           type: 'popup',
-          state: updateTab ? 'maximized' : 'minimized',
+          focused: updateTab,
         };
 
         await browser.windows.create(windowOptions);
