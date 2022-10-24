@@ -19,6 +19,7 @@ function workflowListener(workflow, options) {
     const engine = new WorkflowEngine(workflow, options);
     engine.init();
     engine.on('destroyed', ({ id, status, message }) => {
+      console.log(engine.referenceData.table, engine.referenceData.variables);
       options.events.onDestroyed(engine);
 
       if (status === 'error') {
@@ -105,14 +106,11 @@ async function executeWorkflow({ id: blockId, data }) {
       },
       onDestroyed: (engine) => {
         if (data.executeId) {
-          const { dataColumns, globalData, googleSheets, table } =
-            engine.referenceData;
+          const { variables, table } = engine.referenceData;
 
           this.engine.referenceData.workflow[data.executeId] = {
-            globalData,
-            dataColumns,
-            googleSheets,
-            table: table || dataColumns,
+            table,
+            variables,
           };
         }
       },
