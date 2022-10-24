@@ -1,4 +1,5 @@
 import browser from 'webextension-polyfill';
+import cloneDeep from 'lodash.clonedeep';
 import {
   toCamelCase,
   sleep,
@@ -109,7 +110,7 @@ class WorkflowWorker {
           ...execParam,
         });
       } else {
-        const state = structuredClone({
+        const state = cloneDeep({
           windowId: this.windowId,
           loopList: this.loopList,
           activeTab: this.activeTab,
