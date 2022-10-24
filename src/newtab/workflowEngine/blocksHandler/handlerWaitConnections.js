@@ -1,5 +1,5 @@
 async function waitConnections({ data, id }, { prevBlock }) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let timeout;
     let resolved = false;
 
@@ -38,6 +38,17 @@ async function waitConnections({ data, id }, { prevBlock }) {
         }
 
         clearTimeout(timeout);
+
+        if (data.specificFlow && data.flowBlockId) {
+          const connectionExist = Object.keys(
+            this.engine.waitConnections[id]
+          ).includes(data.flowBlockId);
+
+          if (!connectionExist) {
+            reject(new Error(`No specific flow selected`));
+            return;
+          }
+        }
 
         resolve({
           data: '',
