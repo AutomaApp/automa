@@ -456,7 +456,7 @@ class WorkflowEngine {
 
       if (!this.workflow?.isTesting) {
         const { name, id, teamId } = this.workflow;
-        console.log(this.historyCtxData);
+
         await this.logger.add({
           detail: {
             name,
@@ -465,6 +465,7 @@ class WorkflowEngine {
             message,
             id: this.id,
             workflowId: id,
+            saveLog: this.saveLog,
             endedAt: endedTimestamp,
             parentLog: this.parentWorkflow,
             startedAt: this.startedTimestamp,

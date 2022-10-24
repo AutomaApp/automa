@@ -19,7 +19,6 @@ function workflowListener(workflow, options) {
     const engine = new WorkflowEngine(workflow, options);
     engine.init();
     engine.on('destroyed', ({ id, status, message }) => {
-      console.log(engine.referenceData.table, engine.referenceData.variables);
       options.events.onDestroyed(engine);
 
       if (status === 'error') {

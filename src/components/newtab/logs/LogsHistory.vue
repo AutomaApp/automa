@@ -77,6 +77,12 @@
           class="scroll p-4 overflow-auto"
         >
           <slot name="prepend" />
+          <p
+            v-if="currentLog.history.length === 0"
+            class="text-gray-300 text-center"
+          >
+            The workflow log is not saved
+          </p>
           <div class="text-sm font-mono space-y-1 w-full overflow-auto">
             <div
               v-for="(item, index) in history"
