@@ -25,9 +25,9 @@ function blocksGroup({ data, id }, { prevBlockData }) {
           const outputId = `${block.itemId}-output-1`;
 
           if (!acc.connections[outputId]) {
-            acc.connections[outputId] = [];
+            acc.connections[outputId] = new Map();
           }
-          acc.connections[outputId].push({ id: nextBlock });
+          acc.connections[outputId].set(nextBlock, { id: nextBlock });
         }
 
         return acc;

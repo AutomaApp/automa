@@ -44,7 +44,7 @@ export default async function (
         this.engine.connectionsMap[`${id}-output-${output.id}`];
       if (!connection) return;
 
-      connections[addBlockPrefix(output.handleId)] = [...connection];
+      connections[addBlockPrefix(output.handleId)] = [...connection.values()];
     });
 
     data.data.nodes.forEach((node) => {
@@ -60,9 +60,12 @@ export default async function (
       if (outputsMap.has(sourceHandle)) return;
 
       const nodeSourceHandle = addBlockPrefix(sourceHandle);
-      if (!connections[nodeSourceHandle]) connections[nodeSourceHandle] = [];
-      connections[nodeSourceHandle].push({
-        id: addBlockPrefix(target),
+      if (!connections[nodeSourceHandle])
+        connections[nodeSourceHandle] = new Map();
+
+      const connectionId = addBlockPrefix(target);
+      connections[nodeSourceHandle].set(connectionId, {
+        id: connectionId,
         sourceHandle: nodeSourceHandle,
         targetHandle: addBlockPrefix(targetHandle),
       });

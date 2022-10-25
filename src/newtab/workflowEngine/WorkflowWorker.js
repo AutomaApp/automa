@@ -93,7 +93,11 @@ class WorkflowWorker {
     if (this.engine.isDestroyed) return null;
 
     const outputId = `${blockId}-output-${outputIndex}`;
-    return this.engine.connectionsMap[outputId] || null;
+    const connections = this.engine.connectionsMap[outputId];
+
+    if (!connections) return null;
+
+    return [...connections.values()];
   }
 
   executeNextBlocks(connections, prevBlockData) {

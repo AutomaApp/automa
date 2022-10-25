@@ -160,8 +160,12 @@ class WorkflowEngine {
       }, {});
       this.connectionsMap = edges.reduce(
         (acc, { sourceHandle, target, targetHandle }) => {
-          if (!acc[sourceHandle]) acc[sourceHandle] = [];
-          acc[sourceHandle].push({ id: target, targetHandle, sourceHandle });
+          if (!acc[sourceHandle]) acc[sourceHandle] = new Map();
+          acc[sourceHandle].set(target, {
+            id: target,
+            targetHandle,
+            sourceHandle,
+          });
 
           return acc;
         },
