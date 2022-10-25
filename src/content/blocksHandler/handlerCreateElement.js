@@ -1,8 +1,5 @@
-import { customAlphabet } from 'nanoid/non-secure';
 import handleSelector from '../handleSelector';
-import { automaRefDataStr } from '../utils';
 
-const nanoid = customAlphabet('1234567890abcdef', 5);
 const positions = {
   after: 'beforeend',
   before: 'afterbegin',
@@ -10,22 +7,6 @@ const positions = {
   'prev-sibling': 'beforebegin',
 };
 
-function getAutomaScript(refData) {
-  const varName = `automa${nanoid()}`;
-
-  const str = `
-const ${varName} = ${JSON.stringify(refData)};
-${automaRefDataStr(varName)}
-function automaSetVariable(name, value) {
-  ${varName}.variables[name] = value;
-}
-function automaExecWorkflow(options = {}) {
-  window.dispatchEvent(new CustomEvent('automa:execute-workflow', { detail: options }));
-}
-  `;
-
-  return str;
-}
 function createNode(tag, attrs = {}, content = '') {
   const element = document.createElement(tag);
 
@@ -44,13 +25,6 @@ async function createElement(block) {
   const { data, id } = block;
   const baseId = `automa-${id}`;
 
-  data.preloadScripts.forEach((item) => {
-    const scriptId = `${baseId}-script`;
-    const element = createNode(item.type, { id: scriptId }, item.script);
-
-    document.body.appendChild(element);
-  });
-
   if (data.insertAt === 'replace') {
     const fragments = createNode('template', {}, data.html);
     targetElement.replaceWith(fragments.content);
@@ -63,15 +37,18 @@ async function createElement(block) {
     document.body.appendChild(style);
   }
 
-  if (data.javascript) {
-    const automaScript = `
-      (() => { ${getAutomaScript(block.refData)}\n${data.javascript} })()
-    `;
-    const script = createNode(
-      'script',
-      { id: `${baseId}-javascript` },
-      automaScript
-    );
+  if (data.injectJS) {
+    data.preloadScripts.forEach((item) => {
+      const script = document.createElement(item.type);
+      script.id = `${baseId}-script`;
+      script.textContent = item.script;
+
+      document.body.appendChild(script);
+    });
+
+    const script = document.createElement('script');
+    script.id = `${baseId}-javascript`;
+    script.textContent = `(() => { ${data.automaScript}\n${data.javascript} })()`;
 
     document.body.appendChild(script);
   }

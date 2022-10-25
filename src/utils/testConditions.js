@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash.clonedeep';
 import objectPath from 'object-path';
-import mustacheReplacer from './referenceData/mustacheReplacer';
+import renderString from '@/newtab/workflowEngine/templating/renderString';
 import { conditionBuilder } from './shared';
 
 const isBoolStr = (str) => {
@@ -56,25 +56,46 @@ export default async function (conditionsArr, workflowData) {
 
     const copyData = cloneDeep(data);
 
-    Object.keys(data).forEach((key) => {
-      const { value, list } = mustacheReplacer(
+    for (const key of Object.keys(data)) {
+      const { value, list } = await renderString(
         copyData[key],
         workflowData.refData
       );
 
       copyData[key] = value ?? '';
       Object.assign(result.replacedValue, list);
-    });
+    }
 
     if (type === 'value') return copyData.value;
 
-    if (type.startsWith('element') || type.startsWith('code')) {
+    if (type.startsWith('code')) {
+      let conditionValue;
+
+      if (workflowData.isMV2) {
+        conditionValue = await workflowData.sendMessage({
+          type: 'condition-builder',
+          data: {
+            type,
+            data: copyData,
+            refData: workflowData.refData,
+          },
+        });
+      } else {
+        conditionValue = await workflowData.checkCodeCondition({
+          data: copyData,
+          refData: workflowData.refData,
+        });
+      }
+
+      return conditionValue;
+    }
+
+    if (type.startsWith('element')) {
       const conditionValue = await workflowData.sendMessage({
         type: 'condition-builder',
         data: {
           type,
           data: copyData,
-          refData: workflowData.refData,
         },
       });
 

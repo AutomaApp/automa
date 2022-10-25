@@ -1,9 +1,10 @@
 import browser from 'webextension-polyfill';
-import cloneDeep from 'lodash.clonedeep';
 import { nanoid } from 'nanoid';
+import cloneDeep from 'lodash.clonedeep';
+import findSelector from '@/lib/findSelector';
+import { sendMessage } from '@/utils/message';
 import automa from '@business';
 import FindElement from '@/utils/FindElement';
-import findSelector from '@/lib/findSelector';
 import { toCamelCase, isXPath } from '@/utils/helper';
 import handleSelector from './handleSelector';
 import blocksHandler from './blocksHandler';
@@ -186,6 +187,13 @@ function messageListener({ data, source }) {
     true
   );
 
+  window.isAutomaInjected = true;
+  window.addEventListener('message', messageListener);
+  window.addEventListener('contextmenu', ({ target }) => {
+    contextElement = target;
+    $ctxTextSelection = window.getSelection().toString();
+  });
+
   if (isMainFrame) {
     shortcutListener();
     // window.addEventListener('load', elementObserver);
@@ -270,6 +278,25 @@ function messageListener({ data, source }) {
     });
   });
 })();
+
+window.addEventListener('__automa-fetch__', (event) => {
+  const { id, resource, type } = event.detail;
+  const sendResponse = (payload) => {
+    window.dispatchEvent(
+      new CustomEvent(`__autom-fetch-response-${id}__`, {
+        detail: { id, ...payload },
+      })
+    );
+  };
+
+  sendMessage('fetch', { type, resource }, 'background')
+    .then((result) => {
+      sendResponse({ isError: false, result });
+    })
+    .catch((error) => {
+      sendResponse({ isError: true, result: error.message });
+    });
+});
 
 window.addEventListener('DOMContentLoaded', async () => {
   const link = window.location.pathname;

@@ -122,6 +122,7 @@ export default async function ({ tabId, options, data: { type, selector } }) {
 
   document.body.classList.add('is-screenshotting');
 
+  const style = injectStyle();
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
   const maxCanvasSize = BROWSER_TYPE === 'firefox' ? 32767 : 65035;
@@ -137,7 +138,6 @@ export default async function ({ tabId, options, data: { type, selector } }) {
 
   scrollableElement.classList?.add('automa-scrollable-el');
 
-  const style = injectStyle();
   const originalYPosition = window.scrollY;
   let originalScrollHeight = scrollableElement.scrollHeight;
 
@@ -155,6 +155,8 @@ export default async function ({ tabId, options, data: { type, selector } }) {
       if (position === 'sticky') el.setAttribute('is-sticky', '');
       else if (position === 'fixed') el.setAttribute('is-fixed', '');
     });
+
+  scrollableElement.scrollTo(0, 0);
 
   let scaleDiff = 1;
   let scrollPosition = 0;

@@ -20,52 +20,49 @@
         {{ t('workflow.blocks.conditions.add') }}
       </ui-button>
       <div class="flex-grow"></div>
-      <edit-block-settings
-        :data="{ data, blockId }"
-        on-error-label="Cn conditions not met"
-        @change="updateData($event)"
+      <ui-button
+        v-tooltip:bottom="t('common.settings')"
+        icon
+        @click="state.showSettings = !state.showSettings"
       >
-        <template #button="{ show }">
-          <ui-button v-tooltip:bottom="t('common.settings')" icon @click="show">
-            <v-remixicon
-              :name="state.showSettings ? 'riCloseLine' : 'riSettings3Line'"
-            />
-          </ui-button>
-        </template>
-        <template #on-error>
-          <label class="flex items-center mt-6">
-            <ui-switch
-              :model-value="data.retryConditions"
-              @change="updateData({ retryConditions: $event })"
-            />
-            <span class="ml-2 leading-tight">
-              {{ t('workflow.blocks.conditions.retryConditions') }}
-            </span>
-          </label>
-          <div v-if="data.retryConditions" class="mt-2">
-            <ui-input
-              :model-value="data.retryCount"
-              :title="t('workflow.blocks.element-exists.tryFor.title')"
-              :label="t('workflow.blocks.element-exists.tryFor.label')"
-              class="w-full mb-1"
-              type="number"
-              min="1"
-              @change="updateData({ retryCount: +$event })"
-            />
-            <ui-input
-              :model-value="data.retryTimeout"
-              :label="t('workflow.blocks.element-exists.timeout.label')"
-              :title="t('workflow.blocks.element-exists.timeout.title')"
-              class="w-full"
-              type="number"
-              min="200"
-              @change="updateData({ retryTimeout: +$event })"
-            />
-          </div>
-        </template>
-      </edit-block-settings>
+        <v-remixicon
+          :name="state.showSettings ? 'riCloseLine' : 'riSettings3Line'"
+        />
+      </ui-button>
     </div>
+    <template v-if="state.showSettings">
+      <label class="flex items-center mt-6">
+        <ui-switch
+          :model-value="data.retryConditions"
+          @change="updateData({ retryConditions: $event })"
+        />
+        <span class="ml-2 leading-tight">
+          {{ t('workflow.blocks.conditions.retryConditions') }}
+        </span>
+      </label>
+      <div v-if="data.retryConditions" class="mt-2">
+        <ui-input
+          :model-value="data.retryCount"
+          :title="t('workflow.blocks.element-exists.tryFor.title')"
+          :label="t('workflow.blocks.element-exists.tryFor.label')"
+          class="w-full mb-1"
+          type="number"
+          min="1"
+          @change="updateData({ retryCount: +$event })"
+        />
+        <ui-input
+          :model-value="data.retryTimeout"
+          :label="t('workflow.blocks.element-exists.timeout.label')"
+          :title="t('workflow.blocks.element-exists.timeout.title')"
+          class="w-full"
+          type="number"
+          min="200"
+          @change="updateData({ retryTimeout: +$event })"
+        />
+      </div>
+    </template>
     <draggable
+      v-else
       v-model="conditions"
       item-key="id"
       tag="ui-list"
@@ -129,7 +126,6 @@ import { nanoid } from 'nanoid';
 import Draggable from 'vuedraggable';
 import { sleep } from '@/utils/helper';
 import SharedConditionBuilder from '@/components/newtab/shared/SharedConditionBuilder/index.vue';
-import EditBlockSettings from './EditBlockSettings.vue';
 
 const props = defineProps({
   data: {

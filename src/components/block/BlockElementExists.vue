@@ -1,10 +1,14 @@
 <template>
   <block-base
     :id="componentId"
-    class="element-exists"
+    :data="data"
+    :block-id="id"
+    :block-data="block"
     style="width: 195px"
     @edit="$emit('edit')"
     @delete="$emit('delete', id)"
+    @update="$emit('update', $event)"
+    @settings="$emit('settings', $event)"
   >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div
@@ -43,7 +47,7 @@
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
-import { Handle, Position } from '@braks/vue-flow';
+import { Handle, Position } from '@vue-flow/core';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
 import BlockBase from './BlockBase.vue';
@@ -62,7 +66,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-defineEmits(['delete', 'edit']);
+defineEmits(['delete', 'edit', 'update', 'settings']);
 
 const { t } = useI18n();
 const block = useEditorBlock(props.label);

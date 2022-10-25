@@ -23,21 +23,15 @@
         />
       </div>
       <div class="flex px-4 pt-4 items-center">
-        <ui-tabs
-          v-if="false"
-          v-model="mainActiveTab"
-          type="fill"
-          class="main-tab"
-        >
-          <ui-tab value="selector"> Selector </ui-tab>
-          <ui-tab value="workflow"> Workflow </ui-tab>
-        </ui-tabs>
         <p class="text-lg font-semibold">Automa</p>
         <div class="flex-grow"></div>
         <button
           class="mr-2 hoverable p-1 rounded-md transition"
           @mousedown.stop.prevent
-          @click.stop.prevent="state.hide = !state.hide"
+          @click.stop.prevent="
+            state.hide = !state.hide;
+            clearConnectedPort();
+          "
         >
           <v-remixicon :name="state.hide ? 'riEyeOffLine' : 'riEyeLine'" />
         </button>
@@ -61,6 +55,15 @@
           @parent="selectElementPath('up')"
           @child="selectElementPath('down')"
         />
+        <ui-button
+          v-if="state.isSelectBlockElement"
+          :disabled="!state.elSelector"
+          variant="accent"
+          class="w-full mt-4"
+          @click="saveSelector"
+        >
+          Select Element
+        </ui-button>
         <selector-elements-detail
           v-if="
             !state.showSettings &&
@@ -71,6 +74,7 @@
           v-bind="{
             elSelector: state.elSelector,
             selectElements: state.selectElements,
+            hideBlocks: state.isSelectBlockElement,
             selectedElements: state.selectedElements,
           }"
           @highlight="toggleHighlightElement"
@@ -161,6 +165,7 @@ import SelectorElementsDetail from '@/components/content/selector/SelectorElemen
 import getSelectorOptions from './getSelectorOptions';
 import { getElementRect } from '../utils';
 
+let connectedPort = null;
 const originalFontSize = document.documentElement.style.fontSize;
 const selectedElement = {
   path: [],
@@ -171,7 +176,6 @@ const selectedElement = {
 const rootElement = inject('rootElement');
 
 const cardEl = ref('cardEl');
-const mainActiveTab = ref('selector');
 const state = reactive({
   hide: false,
   elSelector: '',
@@ -183,6 +187,7 @@ const state = reactive({
   selectorType: 'css',
   selectedElements: [],
   activeTab: 'attributes',
+  isSelectBlockElement: false,
 });
 const cardRect = reactive({
   x: 0,
@@ -335,12 +340,31 @@ function destroy() {
 
   document.documentElement.style.fontSize = originalFontSize;
 }
+function clearConnectedPort() {
+  if (!connectedPort) return;
+
+  connectedPort = null;
+  state.isSelectBlockElement = false;
+}
+function onVisivilityChange() {
+  if (!connectedPort || document.visibilityState !== 'hidden') return;
+
+  clearConnectedPort();
+}
+function saveSelector() {
+  if (!connectedPort) return;
+
+  connectedPort.postMessage(state.elSelector);
+  clearConnectedPort();
+  destroy();
+}
 function attachListeners() {
   cardElementObserver.observe(cardEl.value);
 
   window.addEventListener('message', onMessage);
   window.addEventListener('mouseup', onMouseup);
   window.addEventListener('mousemove', onMousemove);
+  document.addEventListener('visibilitychange', onVisivilityChange);
 }
 function detachListeners() {
   cardElementObserver.disconnect();
@@ -348,6 +372,7 @@ function detachListeners() {
   window.removeEventListener('message', onMessage);
   window.removeEventListener('mouseup', onMouseup);
   window.removeEventListener('mousemove', onMousemove);
+  document.removeEventListener('visibilitychange', onVisivilityChange);
 }
 
 watch(
@@ -365,6 +390,15 @@ watch(
   },
   { deep: true }
 );
+
+browser.runtime.onConnect.addListener((port) => {
+  clearConnectedPort();
+
+  connectedPort = port;
+  state.isSelectBlockElement = true;
+
+  port.onDisconnect.addListener(clearConnectedPort);
+});
 
 onMounted(() => {
   browser.storage.local.get('selectorSettings').then((storage) => {

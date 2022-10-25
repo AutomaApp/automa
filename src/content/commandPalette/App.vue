@@ -9,7 +9,7 @@
       id="workflows-container"
       class="absolute w-full max-w-2xl"
       padding="p-0"
-      style="left: 50%; top: 70px; transform: translateX(-50%)"
+      style="left: 50%; top: 50px; transform: translateX(-50%)"
     >
       <div class="p-4">
         <label
@@ -47,42 +47,37 @@
         </div>
         <template v-else>
           <div v-if="paramsState.active">
-            <div class="p-2 rounded-lg bg-box-transparent">
-              <p class="text-sm text-gray-500">Workflow parameters</p>
-              <div>
-                <span
-                  v-for="(item, index) in paramsState.items"
-                  :key="item.name"
-                  :class="{
-                    'font-semibold': paramsState.activeIndex === index,
-                  }"
+            <ul class="space-y-4 divide-y">
+              <li
+                v-for="(param, paramIdx) in paramsState.items"
+                :key="paramIdx"
+              >
+                <component
+                  :is="paramsList[param.type].valueComp"
+                  v-if="paramsList[param.type]"
+                  v-model="param.value"
+                  :label="param.name"
+                  :param-data="param"
+                  class="w-full"
+                />
+                <ui-input
+                  v-else
+                  v-model="param.value"
+                  :type="param.inputType || param.type"
+                  :label="param.name"
+                  :placeholder="param.placeholder"
+                  class="w-full"
+                  @keyup.enter="runWorkflow(index, workflow)"
+                />
+                <p
+                  v-if="param.description"
+                  title="Description"
+                  class="ml-1 text-sm"
                 >
-                  {{ item.name }};
-                </span>
-              </div>
-            </div>
-            <div class="pl-2 text-gray-500">
-              <p class="mt-2">
-                Example:
-                <span v-for="item in paramsState.items" :key="item.name">
-                  {{ item.placeholder || defaultPlaceholders[item.type] }};
-                </span>
-              </p>
-              <div class="flex items-center mt-4">
-                <p class="flex-1 mr-4">
-                  {{ paramsState.workflow.description }}
+                  {{ param.description }}
                 </p>
-                <p>
-                  Press
-                  <span
-                    class="rounded-md bg-box-transparent p-1 text-gray-600 ml-1 text-xs text-center inline-block border-2 border-gray-300 font-semibold"
-                  >
-                    Escape
-                  </span>
-                  to cancel
-                </p>
-              </div>
-            </div>
+              </li>
+            </ul>
           </div>
           <template v-else>
             <p
@@ -136,12 +131,51 @@
           </template>
         </template>
       </div>
+      <div class="px-4 py-2 flex items-center">
+        <div v-if="paramsState.active" class="pl-2 text-gray-500">
+          <div class="flex items-center">
+            <p class="mr-4">
+              {{ paramsState.workflow.description }}
+            </p>
+            <p>
+              Press
+              <span
+                class="rounded-md bg-box-transparent p-1 text-gray-600 ml-1 text-xs text-center inline-block border-2 border-gray-300 font-semibold"
+              >
+                Escape
+              </span>
+              to cancel
+            </p>
+          </div>
+        </div>
+        <p
+          v-else
+          class="inline-flex items-center cursor-pointer text-gray-600"
+          @click="openDashboard"
+        >
+          Open dashboard
+          <v-remixicon
+            name="riExternalLinkLine"
+            class="inline-block ml-1"
+            size="20"
+          />
+        </p>
+        <div class="flex-grow" />
+        <ui-button
+          v-if="paramsState.active"
+          variant="accent"
+          @click="executeWorkflowWithParams"
+        >
+          Execute
+        </ui-button>
+      </div>
     </ui-card>
   </div>
 </template>
 <script setup>
 import {
   onMounted,
+  reactive,
   onBeforeUnmount,
   shallowReactive,
   watch,
@@ -150,14 +184,26 @@ import {
   inject,
 } from 'vue';
 import browser from 'webextension-polyfill';
+import workflowParameters from '@business/parameters';
 import { sendMessage } from '@/utils/message';
-import { debounce } from '@/utils/helper';
+import { debounce, parseJSON } from '@/utils/helper';
+import ParameterInputValue from '@/components/newtab/workflow/edit/Parameter/ParameterInputValue.vue';
+import ParameterJsonValue from '@/components/newtab/workflow/edit/Parameter/ParameterJsonValue.vue';
+
+const paramsList = {
+  string: {
+    id: 'string',
+    name: 'Input (string)',
+    valueComp: ParameterInputValue,
+  },
+  json: {
+    id: 'json',
+    name: 'Input (JSON)',
+    valueComp: ParameterJsonValue,
+  },
+};
 
 const os = navigator.appVersion.indexOf('Mac') !== -1 ? 'mac' : 'win';
-const defaultPlaceholders = {
-  string: 'Text',
-  number: '123123',
-};
 const logoUrl = browser.runtime.getURL('/icon-128.png');
 
 const inputRef = ref(null);
@@ -168,7 +214,7 @@ const state = shallowReactive({
   shortcutKeys: [],
   selectedIndex: -1,
 });
-const paramsState = shallowReactive({
+const paramsState = reactive({
   items: [],
   workflow: {},
   active: false,
@@ -245,6 +291,7 @@ function executeWorkflow(workflow) {
 
     paramsState.workflow = workflow;
     paramsState.items = triggerData.parameters;
+
     paramsState.active = true;
   } else {
     sendExecuteCommand(workflow);
@@ -253,6 +300,29 @@ function executeWorkflow(workflow) {
   inputRef.value.value = '';
   state.query = '';
   paramsState.inputtedVal = '';
+}
+function getParamsValues(params) {
+  const getParamVal = {
+    string: (str) => str,
+    number: (num) => (Number.isNaN(+num) ? 0 : +num),
+    json: (value) => parseJSON(value, null),
+    default: (value) => value,
+  };
+
+  return params.reduce((acc, param) => {
+    const valueFunc =
+      getParamVal[param.type] ||
+      paramsList[param.type]?.getValue ||
+      getParamVal.default;
+    const value = valueFunc(param.value || param.defaultValue);
+    acc[param.name] = value;
+
+    return acc;
+  }, {});
+}
+function executeWorkflowWithParams() {
+  const variables = getParamsValues(paramsState.items);
+  sendExecuteCommand(paramsState.workflow, { data: { variables } });
 }
 function onKeydown(event) {
   const { ctrlKey, altKey, metaKey, key, shiftKey } = event;
@@ -306,22 +376,7 @@ function onInputKeydown(event) {
   }
 
   if (key === 'Enter') {
-    if (paramsState.active) {
-      const variables = {};
-      const values = paramsState.inputtedVal.split(';');
-
-      paramsState.items.forEach((item, index) => {
-        let value = values[index] ?? '';
-        if (item.type === 'number') value = +value ?? '';
-
-        variables[item.name] = value;
-      });
-
-      sendExecuteCommand(paramsState.workflow, { data: { variables } });
-
-      return;
-    }
-
+    if (paramsState.active) return;
     executeWorkflow(workflows.value[state.selectedIndex]);
   }
 }
@@ -348,6 +403,9 @@ function onInput(event) {
   } else {
     state.query = value;
   }
+}
+function openDashboard() {
+  sendMessage('open:dashboard', '', 'background');
 }
 
 watch(inputRef, () => {
@@ -413,6 +471,7 @@ onMounted(() => {
   });
 
   window.addEventListener('keydown', onKeydown);
+  Object.assign(paramsList, workflowParameters());
 });
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeydown);

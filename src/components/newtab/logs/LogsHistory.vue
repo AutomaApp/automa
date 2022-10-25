@@ -8,8 +8,8 @@
     <v-remixicon name="riArrowLeftLine" class="mr-2" />
     {{ t('log.goBack', { name: parentLog.name }) }}
   </router-link>
-  <div class="flex items-start">
-    <div class="flex-1">
+  <div class="flex items-start flex-col-reverse lg:flex-row">
+    <div class="lg:flex-1 w-full lg:w-auto">
       <div class="rounded-lg bg-gray-900 dark:bg-gray-800 text-gray-100 dark">
         <div
           class="border-b px-4 pt-4 flex items-center text-gray-200 pb-4 mb-4"
@@ -19,7 +19,7 @@
               {{ errorBlock.message }}
               <a
                 v-if="errorBlock.messageId"
-                :href="`https://docs.automa.site/guide/workflow-errors.html#${errorBlock.messageId}`"
+                :href="`https://docs.automa.site/reference/workflow-common-errors.html#${errorBlock.messageId}`"
                 target="_blank"
                 title="About the error"
                 @click.stop
@@ -47,7 +47,9 @@
           <ui-popover trigger-width class="mr-4">
             <template #trigger>
               <ui-button>
-                <span>Export logs</span>
+                <span>
+                  Export <span class="hidden lg:inline-block">logs</span>
+                </span>
                 <v-remixicon name="riArrowDropDownLine" class="ml-2 -mr-1" />
               </ui-button>
             </template>
@@ -75,6 +77,12 @@
           class="scroll p-4 overflow-auto"
         >
           <slot name="prepend" />
+          <p
+            v-if="currentLog.history.length === 0"
+            class="text-gray-300 text-center"
+          >
+            The workflow log is not saved
+          </p>
           <div class="text-sm font-mono space-y-1 w-full overflow-auto">
             <div
               v-for="(item, index) in history"
@@ -127,7 +135,7 @@
                 {{ item.message }}
                 <a
                   v-if="item.messageId"
-                  :href="`https://docs.automa.site/guide/workflow-errors.html#${item.messageId}`"
+                  :href="`https://docs.automa.site/reference/workflow-common-errors.html#${item.messageId}`"
                   target="_blank"
                   title="About the error"
                   @click.stop
@@ -173,9 +181,9 @@
       </div>
       <div
         v-if="currentLog.history.length >= 25"
-        class="flex items-center justify-between mt-4"
+        class="lg:flex lg:items-center lg:justify-between mt-4"
       >
-        <div>
+        <div class="mb-4 lg:mb-0">
           {{ t('components.pagination.text1') }}
           <select v-model="pagination.perPage" class="p-1 rounded-md bg-input">
             <option
@@ -201,7 +209,7 @@
     </div>
     <div
       v-if="state.itemId && activeLog"
-      class="w-4/12 ml-8 rounded-lg bg-gray-900 dark:bg-gray-800 text-gray-100 dark"
+      class="w-full lg:w-4/12 lg:ml-8 mb-4 lg:mb-0 rounded-lg bg-gray-900 dark:bg-gray-800 text-gray-100 dark"
     >
       <div class="p-4 relative">
         <v-remixicon

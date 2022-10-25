@@ -6,7 +6,12 @@
       prepend-icon="riSearch2Line"
     />
     <div class="flex-grow"></div>
-    <ui-button variant="accent" @click="editState.show = true">
+    <ui-button
+      variant="accent"
+      style="min-width: 125px"
+      class="ml-4"
+      @click="editState.show = true"
+    >
       Add variable
     </ui-button>
   </div>

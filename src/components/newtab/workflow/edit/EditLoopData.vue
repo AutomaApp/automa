@@ -40,14 +40,19 @@
       @change="updateData({ variableName: $event })"
     />
     <template v-else-if="data.loopThrough === 'elements'">
-      <edit-autocomplete class="mt-2">
+      <edit-autocomplete class="mt-2" trigger-class="!flex items-end">
         <ui-input
           :model-value="data.elementSelector"
           :label="t('workflow.blocks.base.selector')"
           autocomplete="off"
           placeholder="CSS Selector or XPath"
-          class="w-full"
+          class="flex-1 mr-2"
           @change="updateData({ elementSelector: $event })"
+        />
+        <shared-el-selector-actions
+          :multiple="true"
+          :selector="data.elementSelector"
+          @update:selector="updateData({ elementSelector: $event })"
         />
       </edit-autocomplete>
       <ui-checkbox
@@ -179,6 +184,7 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 import Papa from 'papaparse';
 import { openFilePicker } from '@/utils/helper';
+import SharedElSelectorActions from '@/components/newtab/shared/SharedElSelectorActions.vue';
 import EditAutocomplete from './EditAutocomplete.vue';
 
 const SharedCodemirror = defineAsyncComponent(() =>

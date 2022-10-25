@@ -10,10 +10,7 @@
     "scripts": ["background.bundle.js"],
     "persistent": false
   },
-  "browser_action": {
-    "default_popup": "popup.html",
-    "default_icon": "icon-128.png"
-  },
+  "browser_action": {},
   "icons": {
     "128": "icon-128.png"
   },
@@ -58,5 +55,5 @@
     "/locales/*",
     "elementSelector.bundle.js"
   ],
-  "content_security_policy": "script-src 'self' https:; object-src 'self'"
+  "content_security_policy": "script-src 'self' 'unsafe-inline' https:; object-src 'self'"
 }

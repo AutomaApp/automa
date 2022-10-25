@@ -58,10 +58,10 @@ import { useToast } from 'vue-toastification';
 import { fetchApi } from '@/utils/api';
 import { useUserStore } from '@/stores/user';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
-import { sendMessage } from '@/utils/message';
 import { arraySorter } from '@/utils/helper';
 import { useDialog } from '@/composable/dialog';
 import { tagColors } from '@/utils/shared';
+import { executeWorkflow } from '@/newtab/workflowEngine';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 
 const props = defineProps({
@@ -149,9 +149,6 @@ const workflows = computed(() => {
   });
 });
 
-function executeWorkflow(workflow) {
-  sendMessage('workflow:execute', workflow, 'background');
-}
 function onMenuSelected({ id, data }) {
   if (id === 'delete') {
     dialog.confirm({

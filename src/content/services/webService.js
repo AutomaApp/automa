@@ -89,7 +89,11 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
 
         await browser.storage.local.set({ workflows: workflowsStorage });
-        sendMessage('workflow:added', { workflowId }, 'background');
+        sendMessage(
+          'workflow:added',
+          { workflowId, workflowData },
+          'background'
+        );
       } catch (error) {
         console.error(error);
       }

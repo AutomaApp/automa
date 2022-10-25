@@ -48,6 +48,14 @@
         </a>
       </router-link>
     </div>
+    <hr class="w-8/12 my-4" />
+    <button
+      v-tooltip:right.group="$t('home.elementSelector.name')"
+      class="focus:ring-0"
+      @click="injectElementSelector"
+    >
+      <v-remixicon name="riFocus3Line" />
+    </button>
     <div class="flex-grow"></div>
     <ui-popover
       v-if="userStore.user"
@@ -108,16 +116,19 @@
 import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { useToast } from 'vue-toastification';
 import browser from 'webextension-polyfill';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { communities } from '@/utils/shared';
+import { initElementSelector } from '@/newtab/utils/elementSelector';
 
 useGroupTooltip();
 
 const { t } = useI18n();
+const toast = useToast();
 const router = useRouter();
 const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
@@ -188,6 +199,19 @@ useShortcut(
 function hoverHandler({ target }) {
   showHoverIndicator.value = true;
   hoverIndicator.value.style.transform = `translate(-50%, ${target.offsetTop}px)`;
+}
+async function injectElementSelector() {
+  try {
+    const [tab] = await browser.tabs.query({ active: true, url: '*://*/*' });
+    if (!tab) {
+      toast.error(t('home.elementSelector.noAccess'));
+      return;
+    }
+
+    await initElementSelector(tab);
+  } catch (error) {
+    console.error(error);
+  }
 }
 </script>
 <style scoped>

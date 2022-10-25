@@ -11,6 +11,7 @@ import StorageTables from './pages/storage/Tables.vue';
 import Logs from './pages/Logs.vue';
 import LogsDetails from './pages/logs/[id].vue';
 import LogsRunning from './pages/logs/Running.vue';
+import Recording from './pages/Recording.vue';
 import Settings from './pages/Settings.vue';
 import SettingsIndex from './pages/settings/SettingsIndex.vue';
 import SettingsAbout from './pages/settings/SettingsAbout.vue';
@@ -34,6 +35,11 @@ const routes = [
     name: 'packages',
     path: '/packages',
     component: Packages,
+  },
+  {
+    name: 'recording',
+    path: '/recording',
+    component: Recording,
   },
   {
     name: 'packages-details',

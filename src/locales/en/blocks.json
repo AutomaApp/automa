@@ -18,6 +18,10 @@
         "noPermission": "Automa don't have enough permission to do this action",
         "grantPermission": "Grant permission",
         "action": "Action",
+        "element": {
+          "select": "Select an element",
+          "verify": "Verify selector"
+        },
         "settings": {
           "title": "Block settings",
           "line": {
@@ -593,6 +597,13 @@
         "availabeFuncs": "Available functions:",
         "removeAfterExec": "Remove after block executed",
         "everyNewTab": "Execute every new tab",
+        "context": {
+          "name": "Execution context",
+          "items": {
+            "website": "Active tab",
+            "background": "Background"
+          }
+        },
         "modal": {
           "tabs": {
             "code": "JavaScript code",

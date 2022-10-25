@@ -10,10 +10,14 @@
     }"
   >
     <Background />
-    <MiniMap v-if="minimap" :node-class-name="minimapNodeClassName" />
+    <MiniMap
+      v-if="minimap"
+      :node-class-name="minimapNodeClassName"
+      class="hidden md:block"
+    />
     <div
       v-if="editorControls"
-      class="flex items-center absolute w-full p-4 left-0 bottom-0 z-10 pr-60"
+      class="flex items-center absolute w-full p-4 left-0 bottom-0 z-10 md:pr-60"
     >
       <slot name="controls-prepend" />
       <editor-search-blocks :editor="editor" />
@@ -52,6 +56,7 @@
           editor: name === 'node-BlockPackage' ? editor : null,
         }"
         @delete="deleteBlock"
+        @settings="initEditBlockSettings"
         @edit="editBlock(nodeProps, $event)"
         @update="updateBlockData(nodeProps.id, $event)"
       />
@@ -59,23 +64,34 @@
     <template #edge-custom="edgeProps">
       <editor-custom-edge v-bind="edgeProps" />
     </template>
+    <ui-modal
+      v-model="blockSettingsState.show"
+      :title="t('workflow.blocks.base.settings.title')"
+      content-class="max-w-xl modal-block-settings"
+      @close="clearBlockSettings"
+    >
+      <edit-block-settings
+        :data="blockSettingsState.data"
+        @change="updateBlockData(blockSettingsState.data.blockId, $event)"
+      />
+    </ui-modal>
   </vue-flow>
 </template>
 <script setup>
-import { onMounted, onBeforeUnmount, watch, computed } from 'vue';
+import { onMounted, onBeforeUnmount, watch, computed, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {
   VueFlow,
-  MiniMap,
-  Background,
   useVueFlow,
   MarkerType,
   getConnectedEdges,
-} from '@braks/vue-flow';
+} from '@vue-flow/core';
+import { Background, MiniMap } from '@vue-flow/additional-components';
 import cloneDeep from 'lodash.clonedeep';
 import { useStore } from '@/stores/main';
-import { categories } from '@/utils/shared';
 import { getBlocks } from '@/utils/getSharedData';
+import { categories } from '@/utils/shared';
+import EditBlockSettings from './edit/EditBlockSettings.vue';
 import EditorCustomEdge from './editor/EditorCustomEdge.vue';
 import EditorSearchBlocks from './editor/EditorSearchBlocks.vue';
 
@@ -169,6 +185,25 @@ const blocks = getBlocks();
 const settings = store.settings.editor;
 const isDisabled = computed(() => props.options.disabled ?? props.disabled);
 
+const blockSettingsState = reactive({
+  show: false,
+  data: {},
+});
+
+function initEditBlockSettings({ blockId, details, data }) {
+  blockSettingsState.data = {
+    blockId,
+    id: details.id,
+    data: cloneDeep(data),
+  };
+  blockSettingsState.show = true;
+}
+function clearBlockSettings() {
+  Object.assign(blockSettingsState, {
+    data: null,
+    show: false,
+  });
+}
 function minimapNodeClassName({ label }) {
   const { category } = blocks[label];
   const { color } = categories[category];
@@ -260,8 +295,8 @@ onBeforeUnmount(() => {
 });
 </script>
 <style>
-@import '@braks/vue-flow/dist/style.css';
-@import '@braks/vue-flow/dist/theme-default.css';
+@import '@vue-flow/core/dist/style.css';
+@import '@vue-flow/core/dist/theme-default.css';
 
 .control-button {
   @apply p-2 rounded-lg bg-white dark:bg-gray-800 transition-colors;

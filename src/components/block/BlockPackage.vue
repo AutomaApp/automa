@@ -1,5 +1,14 @@
 <template>
-  <ui-card :id="componentId" class="p-4 w-64 block-package">
+  <block-base
+    :id="componentId"
+    :data="data"
+    :block-id="id"
+    :block-data="block"
+    class="w-64 block-package"
+    @delete="$emit('delete', id)"
+    @update="$emit('update', $event)"
+    @settings="$emit('settings', $event)"
+  >
     <div class="flex items-center">
       <img
         v-if="data.icon.startsWith('http')"
@@ -82,15 +91,16 @@
         <v-remixicon size="18" name="riExternalLinkLine" />
       </a>
     </div>
-  </ui-card>
+  </block-base>
 </template>
 <script setup>
 import { onMounted, shallowReactive } from 'vue';
 import cloneDeep from 'lodash.clonedeep';
-import { Handle, Position } from '@braks/vue-flow';
+import { Handle, Position } from '@vue-flow/core';
 import { usePackageStore } from '@/stores/package';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
+import BlockBase from './BlockBase.vue';
 
 const props = defineProps({
   id: {
@@ -110,7 +120,7 @@ const props = defineProps({
     default: null,
   },
 });
-const emit = defineEmits(['update', 'delete']);
+const emit = defineEmits(['update', 'delete', 'settings']);
 
 const packageStore = usePackageStore();
 const block = useEditorBlock(props.label);
@@ -121,9 +131,11 @@ const state = shallowReactive({
 });
 
 function installPackage() {
-  packageStore.insert({ ...props.data }, false).then(() => {
-    state.isInstalled = true;
-  });
+  packageStore
+    .insert({ ...props.data, isExternal: Boolean(props.data.author) }, false)
+    .then(() => {
+      state.isInstalled = true;
+    });
 }
 function removeConnections(type, old, newEdges) {
   const removedEdges = [];

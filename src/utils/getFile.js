@@ -24,30 +24,60 @@ function getLocalFile(path, options) {
 
     const fileUrl = path?.startsWith('file://') ? path : `file://${path}`;
 
-    const xhr = new XMLHttpRequest();
-    xhr.responseType = options.responseType || 'blob';
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState === XMLHttpRequest.DONE) {
-        if (xhr.status === 0 || xhr.status === 200) {
+    /* eslint-disable-next-line */
+    if ('XMLHttpRequest' in self) {
+      const xhr = new XMLHttpRequest();
+      xhr.responseType = options.responseType || 'blob';
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 0 || xhr.status === 200) {
+            if (options.returnValue) {
+              resolve(xhr.response);
+              return;
+            }
+
+            const objUrl = URL.createObjectURL(xhr.response);
+            resolve({ path, objUrl, type: xhr.response.type });
+          } else {
+            reject(new Error(xhr.statusText));
+          }
+        }
+      };
+      xhr.onerror = function () {
+        reject(
+          new Error(xhr.statusText || `Can't find a file with "${path}" path`)
+        );
+      };
+      xhr.open('GET', fileUrl);
+      xhr.send();
+    } else {
+      fetch(fileUrl)
+        .then((response) => {
+          if (!response.ok) throw new Error(response.statusText);
+
           if (options.returnValue) {
-            resolve(xhr.response);
-            return;
+            resolve(response);
+            return Promise.resolve(null);
           }
 
-          const objUrl = URL.createObjectURL(xhr.response);
-          resolve({ path, objUrl, type: xhr.response.type });
-        } else {
-          reject(new Error(xhr.statusText));
-        }
-      }
-    };
-    xhr.onerror = function () {
-      reject(
-        new Error(xhr.statusText || `Can't find a file with "${path}" path`)
-      );
-    };
-    xhr.open('GET', fileUrl);
-    xhr.send();
+          return response.blob();
+        })
+        .then((blob) => {
+          if (!blob) return;
+
+          if (URL.createObjectURL) {
+            const objUrl = URL.createObjectURL(blob);
+            resolve({ path, objUrl, type: blob.type });
+          } else {
+            const reader = new FileReader();
+            reader.onload = () => {
+              resolve({ path, objUrl: reader.result, type: blob.type });
+            };
+            reader.readAsDataURL(blob);
+          }
+        })
+        .catch(reject);
+    }
   });
 }
 

@@ -125,8 +125,10 @@ export function importWorkflow(attrs = {}) {
               createdAt: Date.now(),
             })
             .then((result) => {
-              const triggerBlock = findTriggerBlock(result.drawflow);
-              registerWorkflowTrigger(result.id, triggerBlock);
+              Object.values(result).forEach((item) => {
+                const triggerBlock = findTriggerBlock(item.drawflow);
+                registerWorkflowTrigger(item.id, triggerBlock);
+              });
 
               resolve(result);
             });

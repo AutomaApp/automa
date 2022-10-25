@@ -1,7 +1,7 @@
 <template>
   <template v-if="retrieved">
-    <app-sidebar />
-    <main class="pl-16">
+    <app-sidebar v-if="$route.name !== 'recording'" />
+    <main :class="{ 'pl-16': $route.name !== 'recording' }">
       <router-view />
     </main>
     <ui-dialog>
@@ -45,6 +45,10 @@
         <v-remixicon size="20" name="riCloseLine" />
       </button>
     </div>
+    <shared-permissions-modal
+      v-model="permissionState.showModal"
+      :permissions="permissionState.items"
+    />
   </template>
   <div v-else class="py-8 text-center">
     <ui-spinner color="text-accent" size="28" />
@@ -52,10 +56,11 @@
   <app-survey />
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { compare } from 'compare-versions';
+import { useHead } from '@vueuse/head';
 import browser from 'webextension-polyfill';
 import { useStore } from '@/stores/main';
 import { useUserStore } from '@/stores/user';
@@ -64,11 +69,12 @@ import { usePackageStore } from '@/stores/package';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useTheme } from '@/composable/theme';
-import { parseJSON } from '@/utils/helper';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
 import { getUserWorkflows } from '@/utils/api';
+import { getWorkflowPermissions } from '@/utils/workflowData';
+import { sendMessage } from '@/utils/message';
 import automa from '@business';
 import dbLogs from '@/db/logs';
 import dayjs from '@/lib/dayjs';
@@ -77,6 +83,8 @@ import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 import dataMigration from '@/utils/dataMigration';
 import iconFirefox from '@/assets/svg/logoFirefox.svg';
 import iconChrome from '@/assets/svg/logo.svg';
+import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
+import { executeWorkflow } from './workflowEngine';
 
 let icon;
 if (window.location.protocol === 'moz-extension:') {
@@ -106,6 +114,10 @@ theme.init();
 
 const retrieved = ref(false);
 const isUpdated = ref(false);
+const permissionState = reactive({
+  permissions: [],
+  showModal: false,
+});
 
 const currentVersion = browser.runtime.getManifest().version;
 const prevVersion = localStorage.getItem('ext-version') || '0.0.0';
@@ -181,33 +193,88 @@ async function syncHostedWorkflows() {
   await hostedWorkflowStore.fetchWorkflows(hostIds);
 }
 
-window.addEventListener('storage', ({ key, newValue }) => {
-  if (key !== 'workflowState') return;
-
-  const states = parseJSON(newValue, {});
-  workflowStore.states = Object.values(states).filter(
-    ({ isDestroyed }) => !isDestroyed
-  );
-});
-browser.runtime.onMessage.addListener(({ type, data }) => {
-  if (type === 'refresh-packages') {
+const messageEvents = {
+  'refresh-packages': function () {
     packageStore.loadData(true);
-    return;
-  }
-
-  if (type === 'workflow:added') {
+  },
+  'workflow:added': function (data) {
     if (data.source === 'team') {
       teamWorkflowStore.loadData().then(() => {
         router.push(
           `/teams/${data.teamId}/workflows/${data.workflowId}?permission=true`
         );
       });
-    } else {
-      workflowStore.loadData().then(() => {
-        router.push(`/workflows/${data.workflowId}?permission=true`);
-      });
+    } else if (data.workflowData) {
+      workflowStore
+        .insert(data.workflowData, { duplicateId: true })
+        .then(async () => {
+          try {
+            const permissions = await getWorkflowPermissions(data.workflowData);
+            if (permissions.length === 0) return;
+
+            permissionState.items = permissions;
+            permissionState.showModal = true;
+          } catch (error) {
+            console.error(error);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
+  },
+  'workflow:execute': function ({ data, options = {} }) {
+    executeWorkflow(data, options);
+  },
+};
+
+browser.runtime.onMessage.addListener(({ type, data }) => {
+  if (!type || !messageEvents[type]) return;
+
+  messageEvents[type](data);
+});
+
+useHead(() => {
+  const runningWorkflows = workflowStore.states.length;
+
+  return {
+    title: 'Dashboard',
+    titleTemplate:
+      runningWorkflows > 0
+        ? `%s (${runningWorkflows} Workflows Running) - Automa`
+        : '%s - Automa',
+  };
+});
+
+/* eslint-disable-next-line */
+window.onbeforeunload = () => {
+  const runningWorkflows = workflowStore.states.length;
+  if (window.isDataChanged || runningWorkflows > 0) {
+    return t('message.notSaved');
   }
+};
+window.addEventListener('message', ({ data }) => {
+  if (data?.type !== 'automa-fetch') return;
+
+  const sendResponse = (result) => {
+    const sandbox = document.getElementById('sandbox');
+    sandbox.contentWindow.postMessage(
+      {
+        type: 'fetchResponse',
+        data: result,
+        id: data.data.id,
+      },
+      '*'
+    );
+  };
+
+  sendMessage('fetch', data.data, 'background')
+    .then((result) => {
+      sendResponse({ isError: false, result });
+    })
+    .catch((error) => {
+      sendResponse({ isError: true, result: error.message });
+    });
 });
 
 (async () => {
@@ -215,6 +282,13 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
     const tabs = await browser.tabs.query({
       url: browser.runtime.getURL('/newtab.html'),
     });
+
+    const currentWindow = await browser.windows.getCurrent();
+    if (currentWindow.type !== 'popup') {
+      await browser.tabs.remove([tabs[0].id]);
+      return;
+    }
+
     if (tabs.length > 1) {
       const firstTab = tabs.shift();
       await browser.windows.update(firstTab.windowId, { focused: true });
@@ -251,6 +325,11 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
       fetchUserData(),
       syncHostedWorkflows(),
     ]);
+
+    const { isRecording } = await browser.storage.local.get('isRecording');
+    if (isRecording) {
+      router.push('/recording');
+    }
 
     autoDeleteLogs();
   } catch (error) {

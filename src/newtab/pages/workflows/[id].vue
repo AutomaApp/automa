@@ -2,7 +2,12 @@
   <div v-if="workflow" class="flex h-screen">
     <div
       v-if="state.showSidebar && haveEditAccess"
-      class="w-80 bg-white dark:bg-gray-800 py-6 relative border-l border-gray-100 dark:border-gray-700 dark:border-opacity-50 flex flex-col"
+      :class="
+        editState.editing
+          ? 'absolute h-full w-full md:relative z-50'
+          : 'hidden md:flex'
+      "
+      class="w-80 bg-white dark:bg-gray-800 py-6 border-l border-gray-100 dark:border-gray-700 dark:border-opacity-50 flex-col"
     >
       <workflow-edit-block
         v-if="editState.editing"
@@ -10,7 +15,7 @@
         :workflow="workflow"
         :editor="editor"
         @update="updateBlockData"
-        @close="(editState.editing = false), (editState.blockData = {})"
+        @close="closeEditingCard"
       />
       <workflow-details-card
         v-else
@@ -216,14 +221,16 @@
             v-if="editor"
             :editor="editor"
             :is-package="isPackage"
+            :is-team="isTeamWorkflow"
             :package-io="workflow.settings?.asBlock"
             @group="groupBlocks"
             @ungroup="ungroupBlocks"
+            @packageIo="addPackageIO"
+            @recording="startRecording"
             @copy="copySelectedElements"
             @paste="pasteCopiedElements"
             @saveBlock="initBlockFolder"
             @duplicate="duplicateElements"
-            @packageIo="addPackageIO"
           />
         </ui-tab-panel>
         <ui-tab-panel value="logs" class="mt-24 container">
@@ -310,16 +317,18 @@ import { getWorkflowPermissions } from '@/utils/workflowData';
 import { fetchApi } from '@/utils/api';
 import { getBlocks } from '@/utils/getSharedData';
 import { excludeGroupBlocks } from '@/utils/shared';
-import { functions } from '@/utils/referenceData/mustacheReplacer';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useCommandManager } from '@/composable/commandManager';
 import { debounce, parseJSON, throttle } from '@/utils/helper';
+import { executeWorkflow } from '@/newtab/workflowEngine';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
+import functions from '@/newtab/workflowEngine/templating/templatingFunctions';
 import browser from 'webextension-polyfill';
 import dbStorage from '@/db/storage';
 import DroppedNode from '@/utils/editor/DroppedNode';
 import EditorCommands from '@/utils/editor/EditorCommands';
 import convertWorkflowData from '@/utils/convertWorkflowData';
+import startRecordWorkflow from '@/newtab/utils/startRecordWorkflow';
 import extractAutocopmleteData from '@/utils/editor/editorAutocomplete';
 import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
 import WorkflowEditor from '@/components/newtab/workflow/WorkflowEditor.vue';
@@ -372,6 +381,7 @@ const connectedTable = shallowRef(null);
 
 const state = reactive({
   showSidebar: true,
+  sidebarState: true,
   dataChanged: false,
   animateBlocks: false,
   isExecuteCommand: false,
@@ -413,7 +423,7 @@ const workflowModals = {
     width: 'max-w-2xl',
     component: WorkflowDataTable,
     title: t('workflow.table.title'),
-    docs: 'https://docs.automa.site/api-reference/table.html',
+    docs: 'https://docs.automa.site/workflow/table.html',
     events: {
       /* eslint-disable-next-line */
       connect: fetchConnectedTable,
@@ -465,7 +475,7 @@ const workflowModals = {
     icon: 'riDatabase2Line',
     component: WorkflowGlobalData,
     title: t('common.globalData'),
-    docs: 'https://docs.automa.site/api-reference/global-data.html',
+    docs: 'https://docs.automa.site/workflow/global-data.html',
   },
   settings: {
     width: 'max-w-2xl',
@@ -537,14 +547,6 @@ const editorData = computed(() => {
 
   return workflow.value.drawflow;
 });
-
-provide('workflow', {
-  editState,
-  data: workflow,
-  columns: workflowColumns,
-});
-provide('workflow-editor', editor);
-provide('autocompleteData', autocompleteList);
 
 const updateBlockData = debounce((data) => {
   if (!haveEditAccess.value) return;
@@ -668,8 +670,48 @@ const onEdgesChange = debounce((changes) => {
   // if (command) commandManager.add(command);
 }, 250);
 
-let nodeTargetHandle = null;
+function closeEditingCard() {
+  editState.editing = false;
+  editState.blockData = {};
 
+  state.showSidebar = state.sidebarState;
+}
+async function executeFromBlock(blockId) {
+  try {
+    if (!blockId) return;
+
+    const workflowOptions = { blockId };
+
+    const [tab] = await browser.tabs.query({ active: true, url: '*://*/*' });
+    if (tab) {
+      workflowOptions.tabId = tab.id;
+    }
+
+    executeWorkflow(workflow.value, workflowOptions);
+  } catch (error) {
+    console.error(error);
+  }
+}
+function startRecording({ nodeId, handleId }) {
+  if (state.dataChanged) {
+    alert('Make sure to save the workflow before starting recording');
+    return;
+  }
+
+  const options = {
+    workflowId,
+    name: workflow.value.name,
+    connectFrom: {
+      id: nodeId,
+      output: handleId,
+    },
+  };
+  startRecordWorkflow(options).then(() => {
+    state.dataChanged = false;
+    router.replace('/recording');
+  });
+}
+let nodeTargetHandle = null;
 function onClickEditor({ target }) {
   const targetClass = target.classList;
   const isHandle = targetClass.contains('vue-flow__handle');
@@ -1165,13 +1207,6 @@ function onEditorInit(instance) {
     });
   });
 
-  instance.removeSelectedNodes(
-    instance.getSelectedNodes.value.map(({ id }) => id)
-  );
-  instance.removeSelectedEdges(
-    instance.getSelectedEdges.value.map(({ id }) => id)
-  );
-
   const editorContainer = document.querySelector(
     '.vue-flow__viewport.vue-flow__container'
   );
@@ -1525,10 +1560,27 @@ const shortcut = useShortcut([
   getShortcut('editor:duplicate-block', duplicateElements),
 ]);
 
+provide('workflow-editor', editor);
+provide('autocompleteData', autocompleteList);
+provide('workflow', {
+  editState,
+  data: workflow,
+  columns: workflowColumns,
+});
+provide('workflow-utils', {
+  executeFromBlock,
+});
+
 watch(
   () => state.activeTab,
   (value) => {
     router.replace({ ...route, query: { tab: value } });
+  }
+);
+watch(
+  () => state.dataChanged,
+  (isDataChanged) => {
+    window.isDataChanged = isDataChanged && haveEditAccess.value;
   }
 );
 watch(
@@ -1559,8 +1611,10 @@ onMounted(() => {
     return null;
   }
 
-  state.showSidebar =
+  const sidebarState =
     JSON.parse(localStorage.getItem('workflow:sidebar')) ?? true;
+  state.showSidebar = sidebarState;
+  state.sidebarState = sidebarState;
 
   if (!isPackage) {
     const convertedData = convertWorkflowData(workflow.value);
@@ -1584,15 +1638,6 @@ onMounted(() => {
 
   initAutocomplete();
 
-  window.onbeforeunload = () => {
-    if (isPackage && workflow.value.isExternal) return;
-
-    updateHostedWorkflow();
-
-    if (state.dataChanged && haveEditAccess.value) {
-      return t('message.notSaved');
-    }
-  };
   window.addEventListener('keydown', onKeydown);
 });
 onBeforeUnmount(() => {
@@ -1602,8 +1647,10 @@ onBeforeUnmount(() => {
   if (editorContainer)
     editorContainer.removeEventListener('click', onClickEditor);
 
-  window.onbeforeunload = null;
   window.removeEventListener('keydown', onKeydown);
+
+  if (isPackage && workflow.value.isExternal) return;
+  updateHostedWorkflow();
 });
 </script>
 <style>
