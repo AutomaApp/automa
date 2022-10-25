@@ -33,12 +33,12 @@
             <v-remixicon :name="workflow.data.icon" />
           </span>
           <div class="ml-4 flex-1 ml-2 overflow-hidden">
-            <p
-              class="text-overflow leading-tight mr-4 text-gray-600 dark:text-gray-200"
-            >
+            <p class="text-overflow leading-tight mr-4">
               {{ workflow.data.name }}
             </p>
-            <p class="leading-tight text-overflow">
+            <p
+              class="leading-tight text-overflow text-gray-600 dark:text-gray-200"
+            >
               {{ workflow.data.description }}
             </p>
           </div>
@@ -77,26 +77,34 @@
           <div class="flex items-center mt-6">
             <p>{{ dayjs(workflow.addedDate).fromNow() }}</p>
             <div class="flex-grow" />
-            <ui-button class="mr-4" @click="deleteWorkflow(index)">
-              Cancel
-            </ui-button>
-            <ui-button
-              v-if="workflow.type === 'block'"
-              :disabled="!isValidParams(workflow.params)"
-              variant="accent"
-              @click="continueWorkflow(index, workflow)"
-            >
-              Continue
-            </ui-button>
-            <ui-button
-              v-else
-              :disabled="!isValidParams(workflow.params)"
-              variant="accent"
-              @click="runWorkflow(index, workflow)"
-            >
-              <v-remixicon name="riPlayLine" class="mr-2 -ml-1" />
-              Run
-            </ui-button>
+            <template v-if="workflow.type === 'block'">
+              <ui-button
+                class="mr-4"
+                @click="cancelParamBlock(index, workflow, 'Canceled')"
+              >
+                Cancel
+              </ui-button>
+              <ui-button
+                :disabled="!isValidParams(workflow.params)"
+                variant="accent"
+                @click="continueWorkflow(index, workflow)"
+              >
+                Continue
+              </ui-button>
+            </template>
+            <template v-else>
+              <ui-button class="mr-4" @click="deleteWorkflow(index)">
+                Cancel
+              </ui-button>
+              <ui-button
+                :disabled="!isValidParams(workflow.params)"
+                variant="accent"
+                @click="runWorkflow(index, workflow)"
+              >
+                <v-remixicon name="riPlayLine" class="mr-2 -ml-1" />
+                Run
+              </ui-button>
+            </template>
           </div>
         </div>
       </ui-expand>
@@ -239,6 +247,19 @@ function runWorkflow(index, { data, params }) {
       deleteWorkflow(index);
     });
 }
+function cancelParamBlock(index, { data }, message) {
+  const key = `params-prompt:${data.execId}__${data.blockId}`;
+  browser.storage.local
+    .set({
+      [key]: {
+        message,
+        $isError: true,
+      },
+    })
+    .then(() => {
+      deleteWorkflow(index);
+    });
+}
 function continueWorkflow(index, { data, params }) {
   if (Date.now() > data.timeout) {
     deleteWorkflow(index);
@@ -264,6 +285,8 @@ function isValidParams(params) {
   return isValid;
 }
 
+let checkTimeout = null;
+
 browser.runtime.onMessage.addListener(({ name, data }) => {
   if (name === 'workflow:params') {
     addWorkflow(data);
@@ -277,6 +300,17 @@ browser.runtime.onMessage.addListener(({ name, data }) => {
       type: 'block',
       addedDate: Date.now(),
     });
+
+    if (!checkTimeout) {
+      checkTimeout = setInterval(() => {
+        workflows.value.forEach((workflow, index) => {
+          if (workflow.type !== 'block' || Date.now() < workflow.data.timeout)
+            return;
+
+          cancelParamBlock(index, workflow, 'Timeout');
+        });
+      }, 1000);
+    }
   }
 });
 

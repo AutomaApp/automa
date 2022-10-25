@@ -13,7 +13,7 @@ async function waitConnections({ data, id }, { prevBlock }) {
         const isConnected = [...connections[key].values()].some(
           (connection) => connection.id === id
         );
-        console.log(isConnected, [...connections[key].values()]);
+
         if (!isConnected) return;
 
         const index = key.indexOf('-output');

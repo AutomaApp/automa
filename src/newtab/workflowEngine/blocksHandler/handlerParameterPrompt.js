@@ -2,7 +2,7 @@ import browser from 'webextension-polyfill';
 import { sleep } from '@/utils/helper';
 
 function getInputtedParams({ execId, blockId }, ms) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let timeout = null;
     const key = `params-prompt:${execId}__${blockId}`;
 
@@ -13,6 +13,11 @@ function getInputtedParams({ execId, blockId }, ms) {
       browser.storage.onChanged.removeListener(storageListener);
 
       const { newValue } = event[key];
+      if (newValue.$isError) {
+        reject(new Error(newValue.message));
+        return;
+      }
+
       resolve(newValue);
     };
 
@@ -69,6 +74,7 @@ export default async function ({ data, id }) {
     },
     timeout
   );
+  console.log(result);
   Object.entries(result).forEach(([varName, varValue]) => {
     this.setVariable(varName, varValue);
   });
