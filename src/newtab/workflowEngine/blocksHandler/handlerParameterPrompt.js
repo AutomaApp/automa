@@ -74,7 +74,7 @@ export default async function ({ data, id }) {
     },
     timeout
   );
-  console.log(result);
+
   Object.entries(result).forEach(([varName, varValue]) => {
     this.setVariable(varName, varValue);
   });

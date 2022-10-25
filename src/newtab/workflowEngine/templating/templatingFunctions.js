@@ -139,4 +139,7 @@ export default {
   modulo(value, divisor) {
     return +value % +divisor;
   },
+  stringify(value) {
+    return JSON.stringify(value);
+  },
 };

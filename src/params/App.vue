@@ -229,7 +229,7 @@ function getParamsValues(params) {
 }
 function runWorkflow(index, { data, params }) {
   const variables = getParamsValues(params);
-  const payload = {
+  let payload = {
     name: 'background--workflow:execute',
     data: {
       ...data,
@@ -240,11 +240,15 @@ function runWorkflow(index, { data, params }) {
     },
   };
   const isFirefox = BROWSER_TYPE === 'firefox';
+  payload = isFirefox ? JSON.stringify(payload) : payload;
 
   browser.runtime
-    .sendMessage(isFirefox ? JSON.stringify(payload) : payload)
+    .sendMessage(payload)
     .then(() => {
       deleteWorkflow(index);
+    })
+    .catch((error) => {
+      console.error(error);
     });
 }
 function cancelParamBlock(index, { data }, message) {
