@@ -184,6 +184,7 @@ import {
   inject,
 } from 'vue';
 import browser from 'webextension-polyfill';
+import cloneDeep from 'lodash.clonedeep';
 import workflowParameters from '@business/parameters';
 import { sendMessage } from '@/utils/message';
 import { debounce, parseJSON } from '@/utils/helper';
@@ -290,7 +291,7 @@ function executeWorkflow(workflow) {
     });
 
     paramsState.workflow = workflow;
-    paramsState.items = triggerData.parameters;
+    paramsState.items = cloneDeep(triggerData.parameters);
 
     paramsState.active = true;
   } else {
@@ -323,6 +324,8 @@ function getParamsValues(params) {
 function executeWorkflowWithParams() {
   const variables = getParamsValues(paramsState.items);
   sendExecuteCommand(paramsState.workflow, { data: { variables } });
+
+  clearParamsState();
 }
 function onKeydown(event) {
   const { ctrlKey, altKey, metaKey, key, shiftKey } = event;
