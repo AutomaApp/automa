@@ -10,53 +10,59 @@
         :placeholder="t('common.search')"
       />
       <div class="flex-grow" />
-      <ui-button @click="scheduleState.showModal = true">
-        <v-remixicon name="riAddLine" class="-ml mr-2" />
+      <ui-button
+        class="ml-4"
+        style="min-width: 210px"
+        @click="scheduleState.showModal = true"
+      >
+        <v-remixicon name="riAddLine" class="-ml-1 mr-2" />
         Schedule workflow
       </ui-button>
     </div>
-    <ui-table
-      :headers="tableHeaders"
-      :items="triggers"
-      item-key="id"
-      class="w-full mt-8"
-    >
-      <template #item-name="{ item }">
-        <router-link
-          v-if="item.path"
-          :to="item.path"
-          class="block h-full w-full"
-          style="min-height: 20px"
-        >
-          {{ item.name }}
-        </router-link>
-        <span v-else>
-          {{ item.name }}
-        </span>
-      </template>
-      <template #item-schedule="{ item }">
-        <p v-tooltip="{ content: item.scheduleDetail, allowHTML: true }">
-          {{ item.schedule }}
-        </p>
-      </template>
-      <template #item-active="{ item }">
-        <v-remixicon
-          v-if="item.active"
-          class="text-green-500 dark:text-green-400 inline-block"
-          name="riCheckLine"
-        />
-        <span v-else></span>
-      </template>
-      <template #item-action="{ item }">
-        <button
-          v-tooltip="t('scheduledWorkflow.refresh')"
-          class="rounded-md text-gray-600 dark:text-gray-300"
-          @click="refreshSchedule(item.id)"
-        >
-          <v-remixicon name="riRefreshLine" />
-        </button>
-      </template>
-    </ui-table>
+    <div class="overflow-x-auto w-full scroll">
+      <ui-table
+        :headers="tableHeaders"
+        :items="triggers"
+        item-key="id"
+        class="w-full mt-8"
+      >
+        <template #item-name="{ item }">
+          <router-link
+            v-if="item.path"
+            :to="item.path"
+            class="block h-full w-full"
+            style="min-height: 20px"
+          >
+            {{ item.name }}
+          </router-link>
+          <span v-else>
+            {{ item.name }}
+          </span>
+        </template>
+        <template #item-schedule="{ item }">
+          <p v-tooltip="{ content: item.scheduleDetail, allowHTML: true }">
+            {{ item.schedule }}
+          </p>
+        </template>
+        <template #item-active="{ item }">
+          <v-remixicon
+            v-if="item.active"
+            class="text-green-500 dark:text-green-400 inline-block"
+            name="riCheckLine"
+          />
+          <span v-else></span>
+        </template>
+        <template #item-action="{ item }">
+          <button
+            v-tooltip="t('scheduledWorkflow.refresh')"
+            class="rounded-md text-gray-600 dark:text-gray-300"
+            @click="refreshSchedule(item.id)"
+          >
+            <v-remixicon name="riRefreshLine" />
+          </button>
+        </template>
+      </ui-table>
+    </div>
     <ui-modal
       v-model="scheduleState.showModal"
       title="Workflow Triggers"
@@ -163,6 +169,7 @@ const tableHeaders = [
     text: t('common.name'),
     attrs: {
       class: 'w-3/12',
+      style: 'min-width: 200px',
     },
   },
   {
@@ -170,6 +177,7 @@ const tableHeaders = [
     text: t('scheduledWorkflow.schedule.title'),
     attrs: {
       class: 'w-4/12',
+      style: 'min-width: 200px',
     },
   },
   {

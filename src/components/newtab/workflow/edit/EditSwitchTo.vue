@@ -25,20 +25,26 @@
       block
       hide-empty
       class="mt-2"
+      trigger-class="!flex items-end"
     >
       <ui-input
         :model-value="data.selector"
         :label="t('workflow.blocks.switch-to.iframeSelector')"
         placeholder="CSS Selector or XPath"
         autocomplete="off"
-        class="mb-1 w-full"
+        class="w-full mr-2"
         @change="updateData({ selector: $event })"
+      />
+      <shared-el-selector-actions
+        :selector="data.selector"
+        @update:selector="updateData({ selector: $event })"
       />
     </edit-autocomplete>
   </div>
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
+import SharedElSelectorActions from '@/components/newtab/shared/SharedElSelectorActions.vue';
 import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({

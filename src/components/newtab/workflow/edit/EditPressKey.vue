@@ -6,14 +6,18 @@
       :placeholder="t('common.description')"
       @change="updateData({ description: $event })"
     />
-    <edit-autocomplete class="mt-2">
+    <edit-autocomplete class="mt-2" trigger-class="!flex items-end">
       <ui-input
         :model-value="data.selector"
-        class="w-full"
+        class="flex-1 mr-2"
         autocomplete="off"
         label="Target element (Optional)"
         placeholder="CSS Selector or XPath"
         @change="updateData({ selector: $event })"
+      />
+      <shared-el-selector-actions
+        :selector="data.selector"
+        @update:selector="updateData({ selector: $event })"
       />
     </edit-autocomplete>
     <ui-select
@@ -78,6 +82,7 @@ import { ref, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { keyDefinitions } from '@/utils/USKeyboardLayout';
 import { recordPressedKey } from '@/utils/recordKeys';
+import SharedElSelectorActions from '@/components/newtab/shared/SharedElSelectorActions.vue';
 import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({

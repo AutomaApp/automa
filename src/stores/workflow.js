@@ -8,7 +8,6 @@ import { fetchApi } from '@/utils/api';
 import { tasks } from '@/utils/shared';
 import firstWorkflows from '@/utils/firstWorkflows';
 import { cleanWorkflowTriggers } from '@/utils/workflowTrigger';
-import { parseJSON } from '@/utils/helper';
 import { useUserStore } from './user';
 
 const defaultWorkflow = (data = null, options = {}) => {
@@ -123,13 +122,10 @@ export const useWorkflowStore = defineStore('workflow', {
 
       this.workflows = convertWorkflowsToObject(localWorkflows);
 
-      const storedStates = localStorage.getItem('workflowState') || '{}';
-      const states = parseJSON(storedStates, {});
-      this.states = Object.values(states).filter(
-        ({ isDestroyed }) => !isDestroyed
-      );
-
       this.retrieved = true;
+    },
+    updateStates(newStates) {
+      this.states = newStates;
     },
     async insert(data = {}, options = {}) {
       const insertedWorkflows = {};

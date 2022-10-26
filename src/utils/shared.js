@@ -531,6 +531,7 @@ export const tasks = {
       disableBlock: false,
       description: '',
       timeout: 20000,
+      context: 'website',
       code: 'console.log("Hello world!");\nautomaNextBlock()',
       preloadScripts: [],
       everyNewTab: false,
@@ -1542,7 +1543,7 @@ export const conditionBuilder = {
       category: 'value',
       name: 'Code',
       compareable: false,
-      data: { code: '\nreturn true;' },
+      data: { code: '\nreturn true;', context: 'background' },
     },
     {
       id: 'data#exists',

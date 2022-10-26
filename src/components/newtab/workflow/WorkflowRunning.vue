@@ -42,8 +42,8 @@
 <script setup>
 import browser from 'webextension-polyfill';
 import { useI18n } from 'vue-i18n';
-import { sendMessage } from '@/utils/message';
 import { getBlocks } from '@/utils/getSharedData';
+import { workflowState } from '@/newtab/workflowEngine';
 import dayjs from '@/lib/dayjs';
 
 defineProps({
@@ -70,6 +70,6 @@ function openTab(tabId) {
   browser.tabs.update(tabId, { active: true });
 }
 function stopWorkflow(item) {
-  sendMessage('workflow:stop', item, 'background');
+  workflowState.stop(item);
 }
 </script>

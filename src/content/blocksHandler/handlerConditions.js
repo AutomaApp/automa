@@ -1,7 +1,7 @@
 import { customAlphabet } from 'nanoid/non-secure';
 import { visibleInViewport, isXPath } from '@/utils/helper';
+import { automaRefDataStr } from '@/newtab/workflowEngine/helper';
 import handleSelector from '../handleSelector';
-import { automaRefDataStr } from '../utils';
 
 const nanoid = customAlphabet('1234567890abcdef', 5);
 
@@ -52,7 +52,8 @@ async function handleConditionElement({ data, type, id, frameSelector }) {
 
   return elementActions[actionType](data);
 }
-function injectJsCode({ data, refData }) {
+
+async function handleConditionCode({ data, refData }) {
   return new Promise((resolve, reject) => {
     const varName = `automa${nanoid()}`;
 
@@ -101,9 +102,8 @@ export default async function (data) {
 
   if (data.type.startsWith('element')) {
     result = await handleConditionElement(data);
-  }
-  if (data.type.startsWith('code')) {
-    result = await injectJsCode(data);
+  } else if (data.type.startsWith('code')) {
+    result = await handleConditionCode(data);
   }
 
   return result;

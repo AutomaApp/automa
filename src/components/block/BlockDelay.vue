@@ -1,9 +1,18 @@
 <template>
-  <ui-card :id="componentId" class="p-4 w-48 block-basic">
+  <block-base
+    :id="componentId"
+    :data="data"
+    :block-id="id"
+    :block-data="block"
+    class="w-48"
+    @delete="$emit('delete', id)"
+    @update="$emit('update', $event)"
+    @settings="$emit('settings', $event)"
+  >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div class="flex items-center mb-2">
       <div
-        :class="block.category.color"
+        :class="data.disableBlock ? 'bg-box-transparent' : block.category.color"
         class="inline-block text-sm mr-4 p-2 rounded-lg dark:text-black"
       >
         <v-remixicon name="riTimerLine" size="20" class="inline-block mr-1" />
@@ -37,13 +46,14 @@
       <v-remixicon name="riDragDropLine" size="20" />
     </div>
     <Handle :id="`${id}-output-1`" type="source" :position="Position.Right" />
-  </ui-card>
+  </block-base>
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
-import { Handle, Position } from '@braks/vue-flow';
+import { Handle, Position } from '@vue-flow/core';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
+import BlockBase from './BlockBase.vue';
 
 const props = defineProps({
   id: {
@@ -59,7 +69,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-defineEmits(['update', 'delete']);
+defineEmits(['update', 'delete', 'settings']);
 
 const { t } = useI18n();
 const block = useEditorBlock(props.label);

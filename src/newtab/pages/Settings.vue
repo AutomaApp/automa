@@ -2,7 +2,7 @@
   <div class="container pt-8 pb-4">
     <h1 class="text-2xl font-semibold mb-10">{{ t('common.settings') }}</h1>
     <div class="flex items-start">
-      <ui-list class="w-64 mr-12 space-y-2 sticky top-8">
+      <ui-list class="w-64 mr-12 hidden md:block space-y-2 sticky top-8">
         <router-link
           v-for="menu in menus"
           :key="menu.id"
@@ -26,6 +26,15 @@
         </router-link>
       </ui-list>
       <div class="settings-content flex-1">
+        <ui-select
+          :model-value="$route.path"
+          class="w-full mb-4 md:hidden"
+          @change="onSelectChanged"
+        >
+          <option v-for="menu in menus" :key="menu.id" :value="menu.path">
+            {{ t(`settings.menu.${menu.id}`) }}
+          </option>
+        </ui-select>
         <router-view />
       </div>
     </div>
@@ -33,8 +42,10 @@
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 
 const { t } = useI18n();
+const router = useRouter();
 
 const menus = [
   { id: 'general', path: '/settings', icon: 'riSettings3Line' },
@@ -43,4 +54,8 @@ const menus = [
   { id: 'shortcuts', path: '/shortcuts', icon: 'riKeyboardLine' },
   { id: 'about', path: '/about', icon: 'riInformationLine' },
 ];
+
+function onSelectChanged(value) {
+  router.push(value);
+}
 </script>

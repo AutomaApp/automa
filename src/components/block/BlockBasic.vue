@@ -1,12 +1,15 @@
 <template>
   <block-base
     :id="componentId"
-    :hide-edit="block.details.disableEdit"
-    :hide-delete="block.details.disableDelete"
+    :data="data"
+    :block-id="id"
+    :block-data="block"
     :data-position="JSON.stringify(position)"
     class="block-basic group"
     @edit="$emit('edit')"
     @delete="$emit('delete', id)"
+    @update="$emit('update', $event)"
+    @settings="$emit('settings', $event)"
   >
     <Handle
       v-if="label !== 'trigger'"
@@ -38,7 +41,7 @@
           {{ data.description }}
         </p>
         <span
-          v-if="data.loopId"
+          v-if="loopBlocks.includes(block.details.id) && data.loopId"
           class="bg-box-transparent rounded-br-lg text-gray-600 dark:text-gray-200 text-overflow rounded-sm py-px px-1 text-xs absolute bottom-0 right-0"
           title="Loop Id (click to copy)"
           style="max-width: 40%; cursor: pointer"
@@ -49,18 +52,6 @@
       </div>
     </div>
     <slot :block="block"></slot>
-    <template #prepend>
-      <div
-        v-if="block.details.id !== 'trigger'"
-        :title="t('workflow.blocks.base.moveToGroup')"
-        draggable="true"
-        class="bg-white dark:bg-gray-700 invisible group-hover:visible z-50 absolute -top-2 -right-2 rounded-md p-1 shadow-md"
-        @dragstart="handleStartDrag"
-        @mousedown.stop
-      >
-        <v-remixicon name="riDragDropLine" size="20" />
-      </div>
-    </template>
     <div
       v-if="data.onError?.enable && data.onError?.toDo === 'fallback'"
       class="fallback flex items-center justify-end"
@@ -86,7 +77,7 @@
   </block-base>
 </template>
 <script setup>
-import { Handle, Position } from '@braks/vue-flow';
+import { Handle, Position } from '@vue-flow/core';
 import { useI18n } from 'vue-i18n';
 import { useEditorBlock } from '@/composable/editorBlock';
 import { useComponentId } from '@/composable/componentId';
@@ -118,22 +109,14 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-defineEmits(['delete', 'edit', 'update']);
+defineEmits(['delete', 'edit', 'update', 'settings']);
+
+const loopBlocks = ['loop-data', 'loop-elements'];
 
 const { t, te } = useI18n();
 const block = useEditorBlock(props.label);
 const componentId = useComponentId('block-base');
 
-function handleStartDrag(event) {
-  const payload = {
-    data: props.data,
-    id: block.details.id,
-    blockId: props.id,
-    fromBlockBasic: true,
-  };
-
-  event.dataTransfer.setData('block', JSON.stringify(payload));
-}
 function copyLoopId() {
   navigator.clipboard.writeText(props.data.loopId);
 }

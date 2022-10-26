@@ -1,9 +1,14 @@
 <template>
   <block-base
     :id="componentId"
+    :data="data"
+    :block-id="id"
+    :block-data="block"
     class="w-64"
     @edit="$emit('edit')"
     @delete="$emit('delete', id)"
+    @update="$emit('update', $event)"
+    @settings="$emit('settings', $event)"
   >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div class="flex items-center">
@@ -75,7 +80,7 @@
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
-import { Handle, Position } from '@braks/vue-flow';
+import { Handle, Position } from '@vue-flow/core';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
 import BlockBase from './BlockBase.vue';
@@ -94,7 +99,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-defineEmits(['delete', 'edit']);
+defineEmits(['delete', 'settings', 'edit', 'update']);
 
 const { t } = useI18n();
 const componentId = useComponentId('block-conditions');

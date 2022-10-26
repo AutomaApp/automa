@@ -4,11 +4,11 @@
     v-bind="{
       x: getNumber(item?.x),
       y: getNumber(item?.y),
+      fill: getFillColor(item),
+      stroke: getStrokeColor(item),
       width: getNumber(item?.width),
       height: getNumber(item?.height),
       'stroke-dasharray': item?.outline ? '5,5' : null,
-      fill: getFillColor(item),
-      stroke: getStrokeColor(item),
     }"
     :key="index"
     stroke-width="2"

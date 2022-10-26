@@ -12,6 +12,8 @@ import {
   riCursorLine,
   riDownloadLine,
   riCommandLine,
+  riExternalLinkLine,
+  riArrowDropDownLine,
 } from 'v-remixicon/icons';
 
 export default {
@@ -28,4 +30,6 @@ export default {
   riCursorLine,
   riDownloadLine,
   riCommandLine,
+  riExternalLinkLine,
+  riArrowDropDownLine,
 };

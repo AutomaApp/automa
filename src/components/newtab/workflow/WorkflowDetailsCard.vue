@@ -56,7 +56,7 @@
       shortcut['action:search'].readable
     })`"
     prepend-icon="riSearch2Line"
-    class="px-4 mt-4 mb-2"
+    class="px-4 mt-4 mb-2 w-full"
   />
   <div class="scroll bg-scroll px-4 flex-1 relative overflow-auto">
     <workflow-block-list

@@ -6,40 +6,47 @@
       prepend-icon="riSearch2Line"
     />
     <div class="flex-grow"></div>
-    <ui-button variant="accent" @click="state.showAddTable = true">
+    <ui-button
+      variant="accent"
+      class="ml-4"
+      style="min-width: 120px"
+      @click="state.showAddTable = true"
+    >
       {{ t('storage.table.add') }}
     </ui-button>
   </div>
-  <ui-table
-    item-key="id"
-    :headers="tableHeaders"
-    :items="items"
-    :search="state.query"
-    class="w-full mt-4"
-  >
-    <template #item-name="{ item }">
-      <router-link
-        :to="`/storage/tables/${item.id}`"
-        class="w-full block"
-        style="min-height: 29px"
-      >
-        {{ item.name }}
-      </router-link>
-    </template>
-    <template #item-createdAt="{ item }">
-      {{ formatDate(item.createdAt) }}
-    </template>
-    <template #item-modifiedAt="{ item }">
-      {{ formatDate(item.modifiedAt) }}
-    </template>
-    <template #item-actions="{ item }">
-      <v-remixicon
-        name="riDeleteBin7Line"
-        class="cursor-pointer"
-        @click="deleteTable(item)"
-      />
-    </template>
-  </ui-table>
+  <div class="overflow-x-auto w-full scroll">
+    <ui-table
+      item-key="id"
+      :headers="tableHeaders"
+      :items="items"
+      :search="state.query"
+      class="w-full mt-4"
+    >
+      <template #item-name="{ item }">
+        <router-link
+          :to="`/storage/tables/${item.id}`"
+          class="w-full block"
+          style="min-height: 29px"
+        >
+          {{ item.name }}
+        </router-link>
+      </template>
+      <template #item-createdAt="{ item }">
+        {{ formatDate(item.createdAt) }}
+      </template>
+      <template #item-modifiedAt="{ item }">
+        {{ formatDate(item.modifiedAt) }}
+      </template>
+      <template #item-actions="{ item }">
+        <v-remixicon
+          name="riDeleteBin7Line"
+          class="cursor-pointer"
+          @click="deleteTable(item)"
+        />
+      </template>
+    </ui-table>
+  </div>
   <storage-edit-table v-model="state.showAddTable" @save="saveTable" />
 </template>
 <script setup>
@@ -68,17 +75,24 @@ const tableHeaders = [
     text: t('common.name'),
     attrs: {
       class: 'w-4/12',
+      style: 'min-width: 120px',
     },
   },
   {
     align: 'center',
     value: 'createdAt',
     text: t('storage.table.createdAt'),
+    attrs: {
+      style: 'min-width: 200px',
+    },
   },
   {
     align: 'center',
     value: 'modifiedAt',
     text: t('storage.table.modifiedAt'),
+    attrs: {
+      style: 'min-width: 200px',
+    },
   },
   {
     value: 'rowsCount',

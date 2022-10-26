@@ -61,7 +61,7 @@
             })`
           "
           class="p-2 hoverable rounded-lg"
-          @click="executeWorkflow"
+          @click="executeCurrWorkflow"
         >
           <v-remixicon name="riPlayLine" />
         </button>
@@ -114,13 +114,13 @@
 import { computed, reactive, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
-import { sendMessage } from '@/utils/message';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { findTriggerBlock } from '@/utils/helper';
 import convertWorkflowData from '@/utils/convertWorkflowData';
 import { useWorkflowStore } from '@/stores/workflow';
+import { executeWorkflow } from '@/newtab/workflowEngine';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import getTriggerText from '@/utils/triggerText';
 import EditorLogs from '@/components/newtab/workflow/editor/EditorLogs.vue';
@@ -146,7 +146,7 @@ const editorOptions = {
 };
 
 /* eslint-disable-next-line */
-const shortcut = useShortcut('editor:execute-workflow', executeWorkflow);
+const shortcut = useShortcut('editor:execute-workflow', executeCurrWorkflow);
 
 const state = reactive({
   editorKey: 0,
@@ -199,13 +199,13 @@ async function deleteWorkflowHost() {
     },
   });
 }
-function executeWorkflow() {
+function executeCurrWorkflow() {
   const payload = {
     ...workflow.value,
     id: workflowId,
   };
 
-  sendMessage('workflow:execute', payload, 'background');
+  executeWorkflow(payload);
 }
 async function retrieveTriggerText() {
   const triggerBlock = findTriggerBlock(workflow.value.drawflow);

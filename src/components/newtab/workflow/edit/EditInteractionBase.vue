@@ -10,17 +10,24 @@
         @change="updateData({ description: $event })"
       />
       <slot name="prepend:selector" />
-      <ui-select
-        v-if="!hideSelector"
-        :model-value="data.findBy || 'cssSelector'"
-        :placeholder="t('workflow.blocks.base.findElement.placeholder')"
-        class="w-full mb-2"
-        @change="updateData({ findBy: $event })"
-      >
-        <option v-for="type in selectorTypes" :key="type" :value="type">
-          {{ t(`workflow.blocks.base.findElement.options.${type}`) }}
-        </option>
-      </ui-select>
+      <div v-if="!hideSelector" class="flex items-center mb-2">
+        <ui-select
+          :model-value="data.findBy || 'cssSelector'"
+          :placeholder="t('workflow.blocks.base.findElement.placeholder')"
+          class="flex-1 mr-2"
+          @change="updateData({ findBy: $event })"
+        >
+          <option v-for="type in selectorTypes" :key="type" :value="type">
+            {{ t(`workflow.blocks.base.findElement.options.${type}`) }}
+          </option>
+        </ui-select>
+        <SharedElSelectorActions
+          :find-by="data.findBy"
+          :selector="data.selector"
+          :multiple="data.multiple"
+          @update:selector="updateData({ selector: $event })"
+        />
+      </div>
       <edit-autocomplete v-if="!hideSelector" class="mb-1">
         <ui-input
           v-if="!hideSelector"
@@ -88,6 +95,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import SharedElSelectorActions from '@/components/newtab/shared/SharedElSelectorActions.vue';
 import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({

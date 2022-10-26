@@ -30,7 +30,7 @@
           </p>
           <a
             :title="t('common.docs')"
-            href="https://docs.automa.site/guide/host-workflow.html"
+            href="https://docs.automa.site/workflow/sharing-workflow.html#host-workflow"
             target="_blank"
             class="ml-1"
           >
@@ -89,7 +89,10 @@
       </ui-list>
     </ui-popover>
   </ui-card>
-  <ui-card v-if="canEdit" padding="p-1 ml-4 pointer-events-auto">
+  <ui-card
+    v-if="canEdit"
+    padding="p-1 ml-4 hidden md:block pointer-events-auto"
+  >
     <button
       v-for="item in modalActions"
       :key="item.id"
@@ -101,6 +104,24 @@
     </button>
   </ui-card>
   <ui-card padding="p-1 ml-4 flex items-center pointer-events-auto">
+    <ui-popover v-if="canEdit" class="md:hidden">
+      <template #trigger>
+        <button class="rounded-lg p-2 hoverable">
+          <v-remixicon name="riMore2Line" />
+        </button>
+      </template>
+      <ui-list class="space-y-1 cursor-pointer">
+        <ui-list-item
+          v-for="item in modalActions"
+          :key="item.id"
+          v-close-popover
+          @click="$emit('modal', item.id)"
+        >
+          <v-remixicon :name="item.icon" class="mr-2 -ml-1" />
+          {{ item.name }}
+        </ui-list-item>
+      </ui-list>
+    </ui-popover>
     <button
       v-if="!workflow.isDisabled"
       v-tooltip.group="
@@ -109,7 +130,7 @@
         })`
       "
       class="hoverable p-2 rounded-lg"
-      @click="executeWorkflow"
+      @click="executeCurrWorkflow"
     >
       <v-remixicon name="riPlayLine" />
     </button>
@@ -137,6 +158,14 @@
         </button>
       </template>
       <ui-list style="min-width: 9rem">
+        <ui-list-item
+          v-close-popover
+          class="cursor-pointer"
+          @click="copyWorkflowId"
+        >
+          <v-remixicon name="riFileCopyLine" class="mr-2 -ml-1" />
+          Copy workflow Id
+        </ui-list-item>
         <ui-list-item
           v-if="isTeam && canEdit"
           v-close-popover
@@ -183,7 +212,7 @@
       v-if="!isTeam"
       :title="shortcuts['editor:save'].readable"
       variant="accent"
-      class="relative"
+      class="relative px-2 md:px-4"
       @click="saveWorkflow"
     >
       <span
@@ -197,8 +226,8 @@
           class="relative inline-flex rounded-full h-3 w-3 bg-blue-600"
         ></span>
       </span>
-      <v-remixicon name="riSaveLine" class="mr-2 -ml-1 my-1" />
-      {{ t('common.save') }}
+      <v-remixicon name="riSaveLine" class="md:-ml-1 my-1" />
+      <span class="hidden md:block ml-2">{{ t('common.save') }}</span>
     </ui-button>
     <ui-button
       v-else-if="!canEdit"
@@ -285,7 +314,6 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import browser from 'webextension-polyfill';
-import { sendMessage } from '@/utils/message';
 import { fetchApi } from '@/utils/api';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
@@ -299,6 +327,7 @@ import { tagColors } from '@/utils/shared';
 import { parseJSON, findTriggerBlock } from '@/utils/helper';
 import { exportWorkflow, convertWorkflow } from '@/utils/workflowData';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
+import { executeWorkflow } from '@/newtab/workflowEngine';
 import getTriggerText from '@/utils/triggerText';
 import convertWorkflowData from '@/utils/convertWorkflowData';
 import WorkflowShareTeam from '@/components/newtab/workflow/WorkflowShareTeam.vue';
@@ -344,7 +373,7 @@ const shortcuts = useShortcut([
   /* eslint-disable-next-line */
   getShortcut('editor:save', saveWorkflow),
   /* eslint-disable-next-line */
-  getShortcut('editor:execute-workflow', executeWorkflow),
+  getShortcut('editor:execute-workflow', executeCurrWorkflow),
 ]);
 
 const { teamId } = router.currentRoute.value.params;
@@ -372,6 +401,17 @@ const userDontHaveTeamsAccess = computed(() => {
   );
 });
 
+function copyWorkflowId() {
+  navigator.clipboard.writeText(props.workflow.id).catch((error) => {
+    console.error(error);
+
+    const textarea = document.createElement('textarea');
+    textarea.value = props.workflow.id;
+    textarea.select();
+    document.execCommand('copy');
+    textarea.blur();
+  });
+}
 function updateWorkflow(data = {}, changedIndicator = false) {
   let store = null;
 
@@ -405,15 +445,11 @@ function updateWorkflowDescription(value) {
   updateWorkflow(payload);
   state.showEditDescription = false;
 }
-function executeWorkflow() {
-  sendMessage(
-    'workflow:execute',
-    {
-      ...props.workflow,
-      isTesting: props.isDataChanged,
-    },
-    'background'
-  );
+function executeCurrWorkflow() {
+  executeWorkflow({
+    ...props.workflow,
+    isTesting: props.isDataChanged,
+  });
 }
 async function setAsHostWorkflow(isHost) {
   if (!userStore.user) {

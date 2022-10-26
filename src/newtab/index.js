@@ -15,6 +15,7 @@ import '../assets/css/flow.css';
 const head = createHead();
 
 createApp(App)
+  .use(head)
   .use(router)
   .use(compsUi)
   .use(pinia)

@@ -46,6 +46,7 @@ export async function loadLocaleMessages(locale, location) {
   dayjs.locale(locale);
 
   await importLocale('common.json');
+  await importLocale('popup.json', true);
   await importLocale(`${location}.json`, true);
   await importLocale('blocks.json', true);
 

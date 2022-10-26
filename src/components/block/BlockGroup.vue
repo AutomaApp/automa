@@ -1,5 +1,16 @@
 <template>
-  <ui-card :id="componentId" class="w-64" padding="p-0">
+  <block-base
+    :id="componentId"
+    :data="data"
+    :block-id="id"
+    :block-data="block"
+    class="w-64"
+    content-class="p-0"
+    @edit="$emit('edit')"
+    @delete="$emit('delete', id)"
+    @update="$emit('update', $event)"
+    @settings="$emit('settings', $event)"
+  >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div class="p-4">
       <div class="flex items-center mb-2">
@@ -16,26 +27,6 @@
           />
           <span>{{ t('workflow.blocks.blocks-group.name') }}</span>
         </div>
-        <div class="flex-grow"></div>
-        <ui-popover>
-          <template #trigger>
-            <v-remixicon name="riMoreLine" class="cursor-pointer" />
-          </template>
-          <ui-list class="w-36 space-y-1">
-            <ui-list-item
-              class="cursor-pointer"
-              @click.stop="emit('update', { disableBlock: !data.disableBlock })"
-            >
-              {{ t(`common.${data.disableBlock ? 'enable' : 'disable'}`) }}
-            </ui-list-item>
-            <ui-list-item
-              class="text-red-400 dark:text-red-500 cursor-pointer"
-              @click.stop="emit('delete', id)"
-            >
-              {{ t('common.delete') }}
-            </ui-list-item>
-          </ui-list>
-        </ui-popover>
       </div>
       <input
         :value="data.name"
@@ -107,18 +98,19 @@
       </template>
     </draggable>
     <Handle :id="`${id}-output-1`" type="source" :position="Position.Right" />
-  </ui-card>
+  </block-base>
 </template>
 <script setup>
 import { inject, computed, shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid';
 import { useToast } from 'vue-toastification';
-import { Handle, Position } from '@braks/vue-flow';
+import { Handle, Position } from '@vue-flow/core';
 import draggable from 'vuedraggable';
 import { tasks, excludeGroupBlocks } from '@/utils/shared';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
+import BlockBase from './BlockBase.vue';
 
 const props = defineProps({
   id: {
@@ -142,7 +134,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-const emit = defineEmits(['update', 'delete', 'edit']);
+const emit = defineEmits(['update', 'delete', 'edit', 'settings']);
 
 const { t, te } = useI18n();
 const toast = useToast();
