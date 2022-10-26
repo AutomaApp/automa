@@ -1564,6 +1564,7 @@ provide('workflow-editor', editor);
 provide('autocompleteData', autocompleteList);
 provide('workflow', {
   editState,
+  isPackage,
   data: workflow,
   columns: workflowColumns,
 });
