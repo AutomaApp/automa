@@ -321,11 +321,13 @@ import { useToast } from 'vue-toastification';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
 import { useGroupTooltip } from '@/composable/groupTooltip';
-import { isWhitespace } from '@/utils/helper';
+import { fetchApi } from '@/utils/api';
 import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
+import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
+import { isWhitespace, findTriggerBlock } from '@/utils/helper';
 import { importWorkflow, getWorkflowPermissions } from '@/utils/workflowData';
 import recordWorkflow from '@/newtab/utils/startRecordWorkflow';
 import WorkflowsLocal from '@/components/newtab/workflows/WorkflowsLocal.vue';
@@ -408,6 +410,22 @@ function addWorkflow() {
   });
   clearAddWorkflowModal();
 }
+async function checkWorkflowPermissions(workflows) {
+  let requiredPermissions = [];
+
+  for (const workflow of workflows) {
+    if (workflow.drawflow) {
+      const permissions = await getWorkflowPermissions(workflow.drawflow);
+      requiredPermissions.push(...permissions);
+    }
+  }
+
+  requiredPermissions = Array.from(new Set(requiredPermissions));
+  if (requiredPermissions.length === 0) return;
+
+  permissionState.items = requiredPermissions;
+  permissionState.showModal = true;
+}
 function addHostedWorkflow() {
   dialog.prompt({
     async: true,
@@ -421,10 +439,41 @@ function addHostedWorkflow() {
       const hostId = value.replace(/\s/g, '');
 
       try {
-        await hostedWorkflowStore.addHostedWorkflow(hostId);
+        if (!userStore.user && hostedWorkflowStore.toArray.length >= 3)
+          throw new Error('rate-exceeded');
+
+        const isTheUserHost = userStore.getHostedWorkflows.some(
+          (host) => hostId === host.hostId
+        );
+        if (isTheUserHost) throw new Error('exist');
+
+        const response = await fetchApi('/workflows/hosted', {
+          method: 'POST',
+          body: JSON.stringify({ hostId }),
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+          const error = new Error(result.message);
+          error.data = result.data;
+
+          throw error;
+        }
+
+        if (result === null) throw new Error('not-found');
+
+        result.hostId = `${hostId}`;
+        result.createdAt = Date.now();
+
+        await checkWorkflowPermissions([result]);
+        await hostedWorkflowStore.insert(result, hostId);
+
+        const triggerBlock = findTriggerBlock(result.drawflow);
+        await registerWorkflowTrigger(hostId, triggerBlock);
 
         return true;
       } catch (error) {
+        console.error(error);
         const messages = {
           exists: t('workflow.host.messages.hostExist'),
           'rate-exceeded': t('message.rateExceeded'),
@@ -442,21 +491,7 @@ function addHostedWorkflow() {
 async function openImportDialog() {
   try {
     const workflows = await importWorkflow({ multiple: true });
-    const insertedWorkflows = Object.values(workflows);
-    let requiredPermissions = [];
-
-    for (const workflow of insertedWorkflows) {
-      if (workflow.drawflow) {
-        const permissions = await getWorkflowPermissions(workflow.drawflow);
-        requiredPermissions.push(...permissions);
-      }
-    }
-
-    requiredPermissions = Array.from(new Set(requiredPermissions));
-    if (requiredPermissions.length === 0) return;
-
-    permissionState.items = requiredPermissions;
-    permissionState.showModal = true;
+    await checkWorkflowPermissions(Object.values(workflows));
   } catch (error) {
     console.error(error);
   }

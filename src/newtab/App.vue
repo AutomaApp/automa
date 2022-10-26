@@ -190,6 +190,8 @@ async function syncHostedWorkflows() {
     hostIds.push({ hostId, updatedAt: hostedWorkflows[hostId].updatedAt });
   });
 
+  if (hostIds.length === 0) return;
+
   await hostedWorkflowStore.fetchWorkflows(hostIds);
 }
 

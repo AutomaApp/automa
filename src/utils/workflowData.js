@@ -16,15 +16,29 @@ const requiredPermissions = {
   trigger: {
     name: contextMenuPermission,
     hasPermission({ data }) {
-      if (data.type !== 'context-menu') return true;
+      const permissions = [];
 
-      return checkPermission([contextMenuPermission]);
+      if (data.triggers) {
+        data.triggers.forEach((trigger) => {
+          if (trigger.type !== 'context-menu') return;
+
+          permissions.push(contextMenuPermission);
+        });
+      } else if (data.type === 'context-menu') {
+        permissions.push(contextMenuPermission);
+      }
+
+      return checkPermission(permissions);
     },
   },
   clipboard: {
     name: 'clipboardRead',
     hasPermission() {
-      return checkPermission(['clipboardRead']);
+      const clipboardPermissions = ['clipboardRead'];
+      if (BROWSER_TYPE === 'firefox')
+        clipboardPermissions.push('clipboardWrite');
+
+      return checkPermission(clipboardPermissions);
     },
   },
   notification: {

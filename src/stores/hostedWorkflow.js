@@ -1,12 +1,11 @@
 import { defineStore } from 'pinia';
 import browser from 'webextension-polyfill';
 import { fetchApi } from '@/utils/api';
-import { findTriggerBlock } from '@/utils/helper';
 import {
   registerWorkflowTrigger,
   cleanWorkflowTriggers,
 } from '@/utils/workflowTrigger';
-import { useUserStore } from './user';
+import { findTriggerBlock } from '@/utils/helper';
 
 export const useHostedWorkflowStore = defineStore('hosted-workflows', {
   storageMap: {
@@ -31,10 +30,10 @@ export const useHostedWorkflowStore = defineStore('hosted-workflows', {
     async insert(data, idKey = 'hostId') {
       if (Array.isArray(data)) {
         data.forEach((item) => {
-          this.workflows[item[idKey]] = item;
+          this.workflows[idKey] = item;
         });
       } else {
-        this.workflows[data[idKey]] = data;
+        this.workflows[idKey] = data;
       }
 
       await this.saveToStorage('workflows');
@@ -56,44 +55,6 @@ export const useHostedWorkflowStore = defineStore('hosted-workflows', {
       await this.saveToStorage('workflows');
 
       return this.workflows[id];
-    },
-    async addHostedWorkflow(hostId) {
-      if (this.workflows[hostId]) throw new Error('exist');
-
-      const userStore = useUserStore();
-      if (!userStore.user && this.toArray.length >= 3)
-        throw new Error('rate-exceeded');
-
-      const isTheUserHost = userStore.getHostedWorkflows.some(
-        (host) => hostId === host.hostId
-      );
-      if (isTheUserHost) throw new Error('exist');
-
-      const response = await fetchApi('/workflows/hosted', {
-        method: 'POST',
-        body: JSON.stringify({ hostId }),
-      });
-      const result = await response.json();
-
-      if (!response.ok) {
-        const error = new Error(result.message);
-        error.data = result.data;
-
-        throw error;
-      }
-
-      if (result === null) throw new Error('not-found');
-
-      result.hostId = hostId;
-      result.createdAt = Date.now();
-
-      const triggerBlock = findTriggerBlock(result.drawflow);
-      await registerWorkflowTrigger(hostId, triggerBlock);
-
-      this.workflows[hostId] = result;
-      await this.saveToStorage('workflows');
-
-      return result;
     },
     async fetchWorkflows(ids) {
       if (!ids || ids.length === 0) return null;
