@@ -11,7 +11,7 @@
       />
       <ui-popover>
         <template #trigger>
-          <button>/{{ regexExp.join('') }}</button>
+          <button>/{{ regexExp.join('') || 'flags' }}</button>
         </template>
         <p class="mb-2 text-gray-600 dark:text-gray-200">Expression flags</p>
         <div class="space-y-1">
