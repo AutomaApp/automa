@@ -41,13 +41,13 @@
           {{ data.description }}
         </p>
         <span
-          v-if="loopBlocks.includes(block.details.id) && data.loopId"
+          v-if="showTextToCopy"
+          :title="showTextToCopy.name + ' (click to copy)'"
           class="bg-box-transparent rounded-br-lg text-gray-600 dark:text-gray-200 text-overflow rounded-sm py-px px-1 text-xs absolute bottom-0 right-0"
-          title="Loop Id (click to copy)"
           style="max-width: 40%; cursor: pointer"
-          @click.stop="copyLoopId"
+          @click.stop="insertToClipboard(showTextToCopy.value)"
         >
-          {{ data.loopId }}
+          {{ showTextToCopy.value }}
         </span>
       </div>
     </div>
@@ -77,6 +77,7 @@
   </block-base>
 </template>
 <script setup>
+import { computed } from 'vue';
 import { Handle, Position } from '@vue-flow/core';
 import { useI18n } from 'vue-i18n';
 import { useEditorBlock } from '@/composable/editorBlock';
@@ -117,8 +118,26 @@ const { t, te } = useI18n();
 const block = useEditorBlock(props.label);
 const componentId = useComponentId('block-base');
 
-function copyLoopId() {
-  navigator.clipboard.writeText(props.data.loopId);
+const showTextToCopy = computed(() => {
+  if (loopBlocks.includes(block.details.id) && props.data.loopId) {
+    return {
+      name: 'Loop id',
+      value: props.data.loopId,
+    };
+  }
+
+  if (block.details.id === 'google-sheets' && props.data.refKey) {
+    return {
+      name: 'Reference key',
+      value: props.data.refKey,
+    };
+  }
+
+  return null;
+});
+
+function insertToClipboard(text) {
+  navigator.clipboard.writeText(text);
 }
 function getBlockName() {
   const key = `workflow.blocks.${block.details.id}.name`;
