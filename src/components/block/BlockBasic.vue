@@ -47,7 +47,7 @@
           style="max-width: 40%; cursor: pointer"
           @click.stop="insertToClipboard(showTextToCopy.value)"
         >
-          {{ showTextToCopy.value }}
+          {{ state.isCopied ? '✅ Copied' : showTextToCopy.value }}
         </span>
       </div>
     </div>
@@ -77,7 +77,7 @@
   </block-base>
 </template>
 <script setup>
-import { computed } from 'vue';
+import { computed, shallowReactive } from 'vue';
 import { Handle, Position } from '@vue-flow/core';
 import { useI18n } from 'vue-i18n';
 import { useEditorBlock } from '@/composable/editorBlock';
@@ -118,6 +118,10 @@ const { t, te } = useI18n();
 const block = useEditorBlock(props.label);
 const componentId = useComponentId('block-base');
 
+const state = shallowReactive({
+  isCopied: false,
+});
+
 const showTextToCopy = computed(() => {
   if (loopBlocks.includes(block.details.id) && props.data.loopId) {
     return {
@@ -138,6 +142,11 @@ const showTextToCopy = computed(() => {
 
 function insertToClipboard(text) {
   navigator.clipboard.writeText(text);
+
+  state.isCopied = true;
+  setTimeout(() => {
+    state.isCopied = false;
+  }, 1000);
 }
 function getBlockName() {
   const key = `workflow.blocks.${block.details.id}.name`;
