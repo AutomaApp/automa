@@ -10,7 +10,10 @@
     "scripts": ["background.bundle.js"],
     "persistent": false
   },
-  "browser_action": {},
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon-128.png"
+  },
   "icons": {
     "128": "icon-128.png"
   },
