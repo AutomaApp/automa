@@ -103,7 +103,7 @@ export function jsContentHandler($blockData, $preloadScripts, $automaScript) {
         function cleanUp() {
           script.remove();
           preloadScriptsEl.forEach((item) => {
-            if (item.removeAfterExec) item.script.remove();
+            if (item.removeAfterExec) item.element.remove();
           });
 
           clearTimeout(timeout);
