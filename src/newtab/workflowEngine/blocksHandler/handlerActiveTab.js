@@ -15,11 +15,16 @@ async function activeTab(block) {
       return data;
     }
 
+    const currentWindow = await browser.windows.getCurrent();
+    if (currentWindow.focused)
+      await browser.windows.update(currentWindow.id, { focused: false });
+
+    await sleep(500);
+
     const [tab] = await browser.tabs.query({
       active: true,
-      url: '*://*/*',
+      lastFocusedWindow: true,
     });
-
     if (!tab?.url.startsWith('http')) {
       const error = new Error('invalid-active-tab');
       error.data = { url: tab.url };
