@@ -194,6 +194,11 @@ async function syncHostedWorkflows() {
 
   await hostedWorkflowStore.fetchWorkflows(hostIds);
 }
+function stopRecording() {
+  if (!window.stopRecording) return;
+
+  window.stopRecording();
+}
 
 const messageEvents = {
   'refresh-packages': function () {
@@ -228,6 +233,8 @@ const messageEvents = {
   'workflow:execute': function ({ data, options = {} }) {
     executeWorkflow(data, options);
   },
+  'recording:stop': stopRecording,
+  'background--recording:stop': stopRecording,
 };
 
 browser.runtime.onMessage.addListener(({ type, data }) => {
@@ -331,6 +338,9 @@ window.addEventListener('message', ({ data }) => {
     const { isRecording } = await browser.storage.local.get('isRecording');
     if (isRecording) {
       router.push('/recording');
+
+      await browser.action.setBadgeBackgroundColor({ color: '#ef4444' });
+      await browser.action.setBadgeText({ text: 'rec' });
     }
 
     autoDeleteLogs();

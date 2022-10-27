@@ -252,6 +252,8 @@ onMounted(async () => {
 
   if (!isRecording && !recording) return;
 
+  window.stopRecording = stopRecording;
+
   browser.storage.onChanged.addListener(onStorageChanged);
   browser.tabs.onCreated.addListener(browserEvents.onTabCreated);
   browser.tabs.onActivated.addListener(browserEvents.onTabsActivated);
@@ -263,6 +265,7 @@ onMounted(async () => {
   Object.assign(state, recording);
 });
 onBeforeUnmount(() => {
+  window.stopRecording = null;
   browser.storage.local.onChanged.removeListener(onStorageChanged);
   browser.storage.onChanged.removeListener(onStorageChanged);
   browser.tabs.onCreated.removeListener(browserEvents.onTabCreated);

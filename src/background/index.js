@@ -156,6 +156,14 @@ message.on(
 message.on('workflow:register', ({ triggerBlock, workflowId }) => {
   registerWorkflowTrigger(workflowId, triggerBlock);
 });
+message.on('recording:stop', async () => {
+  try {
+    await BackgroundUtils.openDashboard('', false);
+    await BackgroundUtils.sendMessageToDashboard('recording:stop');
+  } catch (error) {
+    console.error(error);
+  }
+});
 
 automa('background', message);
 
