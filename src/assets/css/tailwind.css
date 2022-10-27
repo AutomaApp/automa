@@ -32,6 +32,10 @@
   @apply dark:border-gray-700;
 }
 
+html.dark {
+  @apply bg-gray-900;
+}
+
 body, :host {
   font-family: 'Inter var' !important;
   font-size: 16px !important;
