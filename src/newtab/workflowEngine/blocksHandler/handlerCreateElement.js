@@ -47,7 +47,7 @@ async function handleCreateElement(block, { refData }) {
 
   const payload = { ...block, data };
 
-  if (data.javascript && this.engine.isMV2) {
+  if (data.javascript && !this.engine.isMV2) {
     payload.data.injectJS = true;
     payload.data.automaScript = getAutomaScript({ ...refData, secrets: {} });
   }
@@ -60,7 +60,7 @@ async function handleCreateElement(block, { refData }) {
       args: [
         data.javascript,
         block.id,
-        payload.script.automaScript,
+        payload.data.automaScript,
         preloadScripts,
       ],
       target: {
