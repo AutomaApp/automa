@@ -262,6 +262,44 @@
             />
           </ui-tab-panel>
         </ui-tab-panels>
+        <ui-card
+          v-if="workflowStore.isFirstTime"
+          class="mt-8 first-card relative dark:text-gray-200"
+        >
+          <v-remixicon
+            name="riCloseLine"
+            class="absolute top-4 right-4 cursor-pointer"
+            @click="workflowStore.isFirstTime = false"
+          />
+          <p>Create your first workflow by recording your actions:</p>
+          <ol class="list-decimal list-inside">
+            <li>Open your browser and go to your destination URL</li>
+            <li>
+              Click the "Record workflow" button, and do your simple repetitive
+              task
+            </li>
+            <li>
+              Need more help? Join
+              <a
+                href="https://discord.gg/C6khwwTE84"
+                target="_blank"
+                rel="noreferer"
+                >the community</a
+              >, or email us at
+              <a href="mailto:support@automa.site" target="_blank"
+                >support@automa.site</a
+              >
+            </li>
+          </ol>
+          <p class="mt-4">
+            Learn more about recording in
+            <a
+              href="https://docs.automa.site/guide/quick-start.html#recording-actions"
+              target="_blank"
+              >the documentation</a
+            >
+          </p>
+        </ui-card>
       </div>
     </div>
     <ui-modal v-model="addWorkflowModal.show" title="Workflow">
@@ -551,5 +589,11 @@ onMounted(() => {
 }
 .workflows-container {
   @apply grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4;
+}
+
+.first-card {
+  a {
+    @apply text-blue-400 underline;
+  }
 }
 </style>

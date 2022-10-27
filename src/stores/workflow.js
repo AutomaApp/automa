@@ -94,6 +94,7 @@ export const useWorkflowStore = defineStore('workflow', {
     states: [],
     workflows: {},
     retrieved: false,
+    isFirstTime: false,
   }),
   getters: {
     getById: (state) => (id) => state.workflows[id],
@@ -120,6 +121,7 @@ export const useWorkflowStore = defineStore('workflow', {
         });
       }
 
+      this.isFirstTime = isFirstTime;
       this.workflows = convertWorkflowsToObject(localWorkflows);
 
       this.retrieved = true;
