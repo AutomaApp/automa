@@ -1741,10 +1741,10 @@
   resolved "https://registry.yarnpkg.com/@vue-flow/additional-components/-/additional-components-1.0.0.tgz#527edb54ed6ce527cd0370a46ea4ca74a6a7d8c2"
   integrity sha512-xHDe5r60unpn2YuNEPdNAOgaS2KghdpVMOo5dVFdYJeRDaW8e0tVyXIUzGaP2iDT9t1WL1rlM/8BXizfFIdBaw==
 
-"@vue-flow/core@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@vue-flow/core/-/core-1.0.0.tgz#b342863b4b96635d6e914c6c57141e37ba4ebbde"
-  integrity sha512-CU0Q8o31vXFC8BdOoPdRU7rN0EkgAFNwlG/gLR18Kk6ZnIflAc8BcaT3fShoVXNZLysXg10UF5C/L4wWPk2Gjw==
+"@vue-flow/core@1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@vue-flow/core/-/core-1.2.1.tgz#692b5edb862093ac74f9dbb648a369922ff1467c"
+  integrity sha512-4gG56cAma7xo1Mu0W8YPG9eoYMUAuuXaXqdyTmN3wIUFr4PSOXdEigX+/tRIzzkPiOp5LKBW3M1h2g6MeCYTow==
   dependencies:
     "@vueuse/core" "^9.3.0"
     d3-drag "^3.0.0"
