@@ -34,6 +34,22 @@
   </div>
   <div class="flex items-center pt-4">
     <div class="mr-4 flex-1">
+      <p>Workflow Execution</p>
+      <p class="text-gray-600 dark:text-gray-200 text-sm leading-tight">
+        Workflow execution environment (Use "Popup" if workflow runs more than 5
+        minutes)
+      </p>
+    </div>
+    <ui-select
+      :model-value="settings.execContext || 'popup'"
+      @change="updateSetting('execContext', $event)"
+    >
+      <option value="popup">Popup</option>
+      <option value="background">Background</option>
+    </ui-select>
+  </div>
+  <div class="flex items-center pt-4">
+    <div class="mr-4 flex-1">
       <p>
         {{ t('workflow.settings.notification.title') }}
       </p>

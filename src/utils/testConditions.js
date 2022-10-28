@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash.clonedeep';
 import objectPath from 'object-path';
-import renderString from '@/newtab/workflowEngine/templating/renderString';
+import renderString from '@/workflowEngine/templating/renderString';
 import { conditionBuilder } from './shared';
 
 const isBoolStr = (str) => {
@@ -59,7 +59,8 @@ export default async function (conditionsArr, workflowData) {
     for (const key of Object.keys(data)) {
       const { value, list } = await renderString(
         copyData[key],
-        workflowData.refData
+        workflowData.refData,
+        workflowData.isPopup
       );
 
       copyData[key] = value ?? '';
@@ -83,6 +84,7 @@ export default async function (conditionsArr, workflowData) {
       } else {
         conditionValue = await workflowData.checkCodeCondition({
           data: copyData,
+          isPopup: workflowData.isPopup,
           refData: workflowData.refData,
         });
       }

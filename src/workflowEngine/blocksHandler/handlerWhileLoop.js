@@ -3,6 +3,8 @@ import testConditions from '@/utils/testConditions';
 async function whileLoop({ data, id }, { refData }) {
   const conditionPayload = {
     refData,
+    isMV2: this.engine.isMV2,
+    isPopup: this.engine.isPopup,
     activeTab: this.activeTab.id,
     sendMessage: (payload) =>
       this._sendMessageToTab({ ...payload.data, label: 'conditions', id }),

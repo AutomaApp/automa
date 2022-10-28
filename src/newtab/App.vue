@@ -84,7 +84,7 @@ import dataMigration from '@/utils/dataMigration';
 import iconFirefox from '@/assets/svg/logoFirefox.svg';
 import iconChrome from '@/assets/svg/logo.svg';
 import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
-import { executeWorkflow } from './workflowEngine';
+import { startWorkflowExec } from '@/workflowEngine';
 
 let icon;
 if (window.location.protocol === 'moz-extension:') {
@@ -231,7 +231,7 @@ const messageEvents = {
     }
   },
   'workflow:execute': function ({ data, options = {} }) {
-    executeWorkflow(data, options);
+    startWorkflowExec(data, options);
   },
   'recording:stop': stopRecording,
   'background--recording:stop': stopRecording,
@@ -241,6 +241,12 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
   if (!type || !messageEvents[type]) return;
 
   messageEvents[type](data);
+});
+
+browser.storage.local.onChanged.addListener(({ workflowStates }) => {
+  if (!workflowStates) return;
+
+  workflowStore.states = Object.values(workflowStates.newValue);
 });
 
 useHead(() => {

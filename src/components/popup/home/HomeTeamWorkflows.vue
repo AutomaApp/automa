@@ -35,7 +35,6 @@ import { useUserStore } from '@/stores/user';
 import { sendMessage } from '@/utils/message';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { tagColors } from '@/utils/shared';
-import { executeWorkflow } from '@/newtab/workflowEngine';
 import dayjs from '@/lib/dayjs';
 
 const props = defineProps({
@@ -59,6 +58,9 @@ const workflows = computed(() =>
 function openWorkflowPage({ teamId, id }) {
   const url = `/teams/${teamId}/workflows/${id}`;
   sendMessage('open:dashboard', url, 'background');
+}
+function executeWorkflow(workflow) {
+  sendMessage('workflow:execute', workflow, 'background');
 }
 
 onMounted(() => {

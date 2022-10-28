@@ -1,5 +1,5 @@
 import * as tmpl from '@n8n_io/riot-tmpl';
-import functions from '@/newtab/workflowEngine/templating/templatingFunctions';
+import functions from '@/workflowEngine/templating/templatingFunctions';
 
 tmpl.brackets.set('{{ }}');
 

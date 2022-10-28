@@ -80,7 +80,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { countDuration } from '@/utils/helper';
 import { useWorkflowStore } from '@/stores/workflow';
-import { workflowState } from '@/newtab/workflowEngine';
+import { stopWorkflowExec } from '@/workflowEngine';
 import dbLogs from '@/db/logs';
 import dayjs from '@/lib/dayjs';
 import LogsHistory from '@/components/newtab/logs/LogsHistory.vue';
@@ -100,7 +100,7 @@ const running = computed(() =>
 );
 
 function stopWorkflow() {
-  workflowState.stop(running.value.id);
+  stopWorkflowExec(running.value.id);
 }
 function getBlockPath(blockId) {
   const { workflowId, teamId } = running.value;

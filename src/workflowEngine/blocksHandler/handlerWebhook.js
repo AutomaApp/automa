@@ -28,7 +28,8 @@ export async function webhook({ data, id }, { refData }) {
 
     const newHeaders = [];
     for (const { value, name } of data.headers) {
-      const newValue = await renderString(value, refData).value;
+      const newValue = await renderString(value, refData, this.engine.isPopup)
+        .value;
 
       newHeaders.push({ name, value: newValue });
     }

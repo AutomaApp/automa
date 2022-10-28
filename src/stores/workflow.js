@@ -48,6 +48,7 @@ const defaultWorkflow = (data = null, options = {}) => {
       debugMode: false,
       restartTimes: 3,
       notification: true,
+      execContext: 'popup',
       reuseLastState: false,
       inputAutocomplete: true,
       onError: 'stop-workflow',

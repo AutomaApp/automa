@@ -48,7 +48,11 @@ function checkConditions(data, conditionOptions) {
 async function checkCodeCondition(activeTab, payload) {
   const variableId = nanoid();
 
-  if (!payload.data.context || payload.data.context === 'website') {
+  if (
+    !payload.data.context ||
+    payload.data.context === 'website' ||
+    !payload.isPopup
+  ) {
     if (!activeTab.id) throw new Error('no-tab');
 
     const [{ result }] = await browser.scripting.executeScript({
@@ -132,6 +136,7 @@ async function conditions({ data, id }, { prevBlockData, refData }) {
     const conditionPayload = {
       refData,
       isMV2: this.engine.isMV2,
+      isPopup: this.engine.isPopup,
       checkCodeCondition: (payload) =>
         checkCodeCondition(this.activeTab, payload),
       sendMessage: (payload) =>
@@ -151,9 +156,16 @@ async function conditions({ data, id }, { prevBlockData, refData }) {
     for (const { type, value, compareValue, id: itemId } of data.conditions) {
       if (isConditionMet) break;
 
-      const firstValue = await renderString(compareValue ?? prevData, refData)
-        .value;
-      const secondValue = await renderString(value, refData).value;
+      const firstValue = await renderString(
+        compareValue ?? prevData,
+        refData,
+        this.engine.isPopup
+      ).value;
+      const secondValue = await renderString(
+        value,
+        refData,
+        this.engine.isPopup
+      ).value;
 
       Object.assign(replacedValue, firstValue.list, secondValue.list);
 

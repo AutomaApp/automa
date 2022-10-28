@@ -21,6 +21,9 @@ function doCommand(command, value) {
 }
 
 export default async function ({ data, id, label }) {
+  if (!this.engine.isPopup)
+    throw new Error('Clipboard block is not supported in background execution');
+
   const hasPermission = await browser.permissions.contains({
     permissions: ['clipboardRead'],
   });

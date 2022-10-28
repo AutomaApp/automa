@@ -59,7 +59,7 @@
 import browser from 'webextension-polyfill';
 import { useI18n } from 'vue-i18n';
 import { getBlocks } from '@/utils/getSharedData';
-import { workflowState } from '@/newtab/workflowEngine';
+import { stopWorkflowExec } from '@/workflowEngine';
 import dayjs from '@/lib/dayjs';
 
 const props = defineProps({
@@ -81,6 +81,6 @@ function openTab() {
   browser.tabs.update(props.data.state.tabId, { active: true });
 }
 function stopWorkflow() {
-  workflowState.stop(props.data.id);
+  stopWorkflowExec(props.data.id);
 }
 </script>

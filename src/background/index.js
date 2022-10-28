@@ -98,7 +98,7 @@ message.on('get:tab-screenshot', (options, sender) =>
 
 message.on('dashboard:refresh-packages', async () => {
   const tabs = await browser.tabs.query({
-    url: chrome.runtime.getURL('/newtab.html'),
+    url: browser.runtime.getURL('/newtab.html'),
   });
 
   tabs.forEach((tab) => {
@@ -108,7 +108,18 @@ message.on('dashboard:refresh-packages', async () => {
   });
 });
 
-message.on('workflow:execute', (workflowData, sender) => {
+message.on('workflow:execute', async (workflowData, sender) => {
+  const context = workflowData.settings.execContext;
+  if (!context || context === 'popup') {
+    await BackgroundUtils.openDashboard('', false);
+    await sleep(1000);
+    await BackgroundUtils.sendMessageToDashboard('workflow:execute', {
+      data: workflowData,
+      options: workflowData.option,
+    });
+    return;
+  }
+
   if (workflowData.includeTabId) {
     if (!workflowData.options) workflowData.options = {};
 
