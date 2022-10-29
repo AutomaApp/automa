@@ -143,8 +143,9 @@ export function startWorkflowExec(workflowData, options, isPopup = true) {
 export function executeWorkflow(workflowData, options) {
   if (!workflowData || workflowData.isDisabled) return;
 
+  const isMV2 = browser.runtime.getManifest().manifest_version === 2;
   const context = workflowData.settings.execContext;
-  if (context === 'background') {
+  if (isMV2 || context === 'background') {
     sendMessage('workflow:execute', { ...workflowData, options }, 'background');
     return;
   }

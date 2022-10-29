@@ -3,6 +3,7 @@ import { MessageListener } from '@/utils/message';
 import { sleep } from '@/utils/helper';
 import getFile from '@/utils/getFile';
 import automa from '@business';
+import { workflowState } from '@/workflowEngine';
 import { registerWorkflowTrigger } from '../utils/workflowTrigger';
 import BackgroundUtils from './BackgroundUtils';
 import BackgroundWorkflowUtils from './BackgroundWorkflowUtils';
@@ -108,6 +109,7 @@ message.on('dashboard:refresh-packages', async () => {
   });
 });
 
+message.on('workflow:stop', (stateId) => workflowState.stop(stateId));
 message.on('workflow:execute', async (workflowData, sender) => {
   const context = workflowData.settings.execContext;
   if (!context || context === 'popup') {
@@ -179,3 +181,48 @@ message.on('recording:stop', async () => {
 automa('background', message);
 
 browser.runtime.onMessage.addListener(message.listener());
+
+/* eslint-disable no-use-before-define */
+
+const isMV2 = browser.runtime.getManifest().manifest_version === 2;
+let lifeline;
+async function keepAlive() {
+  if (lifeline) return;
+  for (const tab of await browser.tabs.query({ url: '*://*/*' })) {
+    try {
+      await browser.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: () => chrome.runtime.connect({ name: 'keepAlive' }),
+      });
+      browser.tabs.onUpdated.removeListener(retryOnTabUpdate);
+      return;
+    } catch (e) {
+      // Do nothing
+    }
+  }
+  browser.tabs.onUpdated.addListener(retryOnTabUpdate);
+}
+async function retryOnTabUpdate(tabId, info) {
+  if (info.url && /^(file|https?):/.test(info.url)) {
+    keepAlive();
+  }
+}
+function keepAliveForced() {
+  lifeline?.disconnect();
+  lifeline = null;
+  keepAlive();
+}
+
+if (!isMV2) {
+  browser.runtime.onConnect.addListener((port) => {
+    if (port.name === 'keepAlive') {
+      lifeline = port;
+      /* eslint-disable-next-line */
+      console.log('Stayin alive: ', new Date());
+      setTimeout(keepAliveForced, 295e3);
+      port.onDisconnect.addListener(keepAliveForced);
+    }
+  });
+
+  keepAlive();
+}

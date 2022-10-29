@@ -60,7 +60,7 @@ async function handleCreateElement(block, { refData }) {
       args: [
         data.javascript,
         block.id,
-        payload.data.automaScript,
+        payload.data?.automaScript || '',
         preloadScripts,
       ],
       target: {

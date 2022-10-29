@@ -118,7 +118,7 @@ function deleteLog() {
     .equals(route.params.id)
     .delete()
     .then(() => {
-      if (backHistory.startsWith('/workflows')) {
+      if (backHistory?.startsWith('/workflows')) {
         router.replace(backHistory);
         return;
       }
@@ -129,7 +129,7 @@ function deleteLog() {
 function goToWorkflow() {
   let path = `/workflows/${currentLog.value.workflowId}`;
 
-  if (backHistory.startsWith(path)) {
+  if (backHistory?.startsWith(path)) {
     path = backHistory;
   }
 

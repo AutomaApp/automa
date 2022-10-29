@@ -125,6 +125,8 @@ import automa from '@business';
 import HomeWorkflowCard from '@/components/popup/home/HomeWorkflowCard.vue';
 import HomeTeamWorkflows from '@/components/popup/home/HomeTeamWorkflows.vue';
 
+const isMV2 = browser.runtime.getManifest().manifest_version === 2;
+
 const { t } = useI18n();
 const dialog = useDialog();
 const userStore = useUserStore();
@@ -201,8 +203,25 @@ function togglePinWorkflow(workflow) {
     pinnedWorkflows: copyData,
   });
 }
-function executeWorkflow(workflow) {
-  sendMessage('workflow:execute', workflow, 'background');
+async function executeWorkflow(workflow) {
+  try {
+    const [tab] = await browser.tabs.query({
+      url: browser.runtime.getURL('/newtab.html'),
+    });
+    if (tab && !isMV2) {
+      await browser.tabs.sendMessage(tab.id, {
+        type: 'workflow:execute',
+        data: {
+          data: workflow,
+          options: workflow?.options,
+        },
+      });
+    } else {
+      sendMessage('workflow:execute', workflow, 'background');
+    }
+  } catch (error) {
+    console.error(error);
+  }
 }
 function updateWorkflow(id, data) {
   return workflowStore.update({
@@ -236,7 +255,9 @@ function deleteWorkflow({ id, name }) {
   });
 }
 function openDashboard(url) {
-  sendMessage('open:dashboard', url, 'background');
+  sendMessage('open:dashboard', url, 'background').then(() => {
+    window.close();
+  });
 }
 function initElementSelector() {
   initElementSelectorFunc().then(() => {

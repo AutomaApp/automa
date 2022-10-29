@@ -6,7 +6,23 @@ import {
   registerSpecificDay,
   registerWorkflowTrigger,
 } from '@/utils/workflowTrigger';
+import BackgroundUtils from './BackgroundUtils';
 import BackgroundWorkflowUtils from './BackgroundWorkflowUtils';
+
+async function executeWorkflow(workflowData, options) {
+  const isMV2 = browser.runtime.getManifest().manifest_version === 2;
+  const context = workflowData.settings.execContext;
+  if (isMV2 || context === 'background') {
+    BackgroundWorkflowUtils.executeWorkflow(workflowData, options);
+    return;
+  }
+
+  await BackgroundUtils.openDashboard('', false);
+  await BackgroundUtils.sendMessageToDashboard('workflow:execute', {
+    data: workflowData,
+    options,
+  });
+}
 
 class BackgroundWorkflowTriggers {
   static async visitWebTriggers(tabId, tabUrl) {
@@ -31,8 +47,7 @@ class BackgroundWorkflowTriggers {
       const workflowData = await BackgroundWorkflowUtils.getWorkflow(
         workflowId
       );
-      if (workflowData)
-        BackgroundWorkflowUtils.executeWorkflow(workflowData, { tabId });
+      if (workflowData) executeWorkflow(workflowData, { tabId });
     }
   }
 
@@ -99,7 +114,7 @@ class BackgroundWorkflowTriggers {
         if (isAfter) return;
       }
 
-      BackgroundWorkflowUtils.executeWorkflow(currentWorkflow);
+      executeWorkflow(currentWorkflow);
 
       if (!data) return;
 
@@ -135,7 +150,7 @@ class BackgroundWorkflowTriggers {
       const workflowData = await BackgroundWorkflowUtils.getWorkflow(
         workflowId
       );
-      BackgroundWorkflowUtils.executeWorkflow(workflowData, {
+      executeWorkflow(workflowData, {
         data: {
           variables: message,
         },
@@ -180,7 +195,7 @@ class BackgroundWorkflowTriggers {
 
       if (triggerBlock) {
         if (isStartup && triggerBlock.type === 'on-startup') {
-          BackgroundWorkflowUtils.executeWorkflow(currWorkflow);
+          executeWorkflow(currWorkflow);
         } else {
           if (isStartup && triggerBlock.triggers) {
             for (const trigger of triggerBlock.triggers) {

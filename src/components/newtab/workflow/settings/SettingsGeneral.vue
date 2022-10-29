@@ -32,7 +32,7 @@
       </span>
     </div>
   </div>
-  <div class="flex items-center pt-4">
+  <div v-if="!isMV2" class="flex items-center pt-4">
     <div class="mr-4 flex-1">
       <p>Workflow Execution</p>
       <p class="text-gray-600 dark:text-gray-200 text-sm leading-tight">
@@ -141,6 +141,7 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
+import browser from 'webextension-polyfill';
 import { clearCache } from '@/utils/helper';
 import { useHasPermissions } from '@/composable/hasPermissions';
 
@@ -155,6 +156,8 @@ const emit = defineEmits(['update']);
 const { t } = useI18n();
 const toast = useToast();
 const permissions = useHasPermissions(['notifications']);
+
+const isMV2 = browser.runtime.getManifest().manifest_version === 2;
 
 const browserType = BROWSER_TYPE;
 const onError = [
