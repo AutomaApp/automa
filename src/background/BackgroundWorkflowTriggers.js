@@ -10,6 +10,8 @@ import BackgroundUtils from './BackgroundUtils';
 import BackgroundWorkflowUtils from './BackgroundWorkflowUtils';
 
 async function executeWorkflow(workflowData, options) {
+  if (workflowData.isDisabled) return;
+
   const isMV2 = browser.runtime.getManifest().manifest_version === 2;
   const context = workflowData.settings.execContext;
   if (isMV2 || context === 'background') {

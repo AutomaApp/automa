@@ -40,6 +40,8 @@ class BackgroundWorkflowUtils {
   }
 
   static async executeWorkflow(workflowData, options) {
+    if (workflowData.isDisabled) return;
+
     startWorkflowExec(workflowData, options, false);
   }
 }
