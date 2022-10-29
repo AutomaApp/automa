@@ -208,7 +208,7 @@ async function injectElementSelector() {
       return;
     }
 
-    await initElementSelector(tab);
+    await initElementSelector();
   } catch (error) {
     console.error(error);
   }
