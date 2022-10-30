@@ -213,3 +213,69 @@ export function injectPreloadScript({ target, scripts, frameSelector }) {
     },
   });
 }
+
+export async function checkCSPAndInject({ target, debugMode }, callback) {
+  const [isBlockedByCSP] = await browser.scripting.executeScript({
+    target,
+    func: () => {
+      return new Promise((resolve) => {
+        const eventListener = ({ srcElement }) => {
+          if (!srcElement || srcElement.id !== 'automa-csp') return;
+          srcElement.remove();
+          resolve(true);
+        };
+        document.addEventListener('securitypolicyviolation', eventListener);
+        const script = document.createElement('script');
+        script.id = 'automa-csp';
+        script.innerText = 'console.log("...")';
+
+        setTimeout(() => {
+          document.removeEventListener(
+            'securitypolicyviolation',
+            eventListener
+          );
+          script.remove();
+          resolve(false);
+        }, 500);
+
+        document.body.appendChild(script);
+      });
+    },
+    world: 'MAIN',
+  });
+
+  if (isBlockedByCSP.result) {
+    await new Promise((resolve) => {
+      chrome.debugger.attach({ tabId: target.tabId }, '1.3', resolve);
+    });
+
+    const jsCode = await callback();
+    const execResult = await sendDebugCommand(
+      target.tabId,
+      'Runtime.evaluate',
+      {
+        expression: jsCode,
+        userGesture: true,
+        awaitPromise: true,
+        returnByValue: true,
+      }
+    );
+
+    if (!debugMode) await chrome.debugger.detach({ tabId: target.tabId });
+
+    if (!execResult || !execResult.result) {
+      throw new Error('Unable execute code');
+    }
+
+    if (execResult.result.subtype === 'error') {
+      throw new Error(execResult.result.description);
+    }
+
+    return {
+      isBlocked: true,
+      value: execResult.result.value || null,
+    };
+  }
+
+  return { isBlocked: false, value: null };
+}
