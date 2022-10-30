@@ -40,6 +40,13 @@
         minutes)
       </p>
     </div>
+    <a
+      href="https://docs.automa.site/workflow/settings.html#workflow-execution"
+      class="mr-2"
+      target="_blank"
+    >
+      <v-remixicon name="riInformationLine" />
+    </a>
     <ui-select
       :model-value="settings.execContext || 'popup'"
       @change="updateSetting('execContext', $event)"

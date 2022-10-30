@@ -107,6 +107,28 @@
       @delete="deleteWorkflow"
       @toggle-pin="togglePinWorkflow(workflow)"
     />
+    <div
+      v-if="state.showSettingsPopup"
+      class="bg-accent fixed bottom-5 left-0 m-4 p-4 rounded-lg dark:text-black text-white shadow-md"
+    >
+      <p class="leading-tight text-sm">
+        If the workflow runs for less than 5 minutes, you set it to run in the
+        background in
+        <a
+          href="https://docs.automa.site/workflow/settings.html#workflow-execution"
+          class="font-semibold underline"
+          target="_blank"
+        >
+          workflow settings.
+        </a>
+      </p>
+      <v-remixicon
+        name="riCloseLine"
+        class="absolute dark:text-gray-600 text-gray-300 top-2 right-2 cursor-pointer"
+        size="20"
+        @click="closeSettingsPopup"
+      />
+    </div>
   </div>
 </template>
 <script setup>
@@ -120,6 +142,7 @@ import { useWorkflowStore } from '@/stores/workflow';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
+import { parseJSON } from '@/utils/helper';
 import { initElementSelector as initElementSelectorFunc } from '@/newtab/utils/elementSelector';
 import automa from '@business';
 import HomeWorkflowCard from '@/components/popup/home/HomeWorkflowCard.vue';
@@ -144,6 +167,9 @@ const state = shallowReactive({
   haveAccess: true,
   activeTab: 'local',
   pinnedWorkflows: [],
+  showSettingsPopup: isMV2
+    ? false
+    : parseJSON(localStorage.getItem('settingsPopup'), true) ?? true,
 });
 
 const pinnedWorkflows = computed(() => {
@@ -188,6 +214,10 @@ const showTab = computed(
   () => hostedWorkflowStore.toArray.length > 0 || userStore.user?.teams
 );
 
+function closeSettingsPopup() {
+  state.showSettingsPopup = false;
+  localStorage.setItem('settingsPopup', false);
+}
 function togglePinWorkflow(workflow) {
   const index = state.pinnedWorkflows.indexOf(workflow.id);
   const copyData = [...state.pinnedWorkflows];
