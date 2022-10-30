@@ -190,15 +190,15 @@ async function conditions({ data, id }, { prevBlockData, refData }) {
     for (const { type, value, compareValue, id: itemId } of data.conditions) {
       if (isConditionMet) break;
 
-      const firstValue = await renderString(
-        compareValue ?? prevData,
-        refData,
-        this.engine.isPopup
+      const firstValue = (
+        await renderString(
+          compareValue ?? prevData,
+          refData,
+          this.engine.isPopup
+        )
       ).value;
-      const secondValue = await renderString(
-        value,
-        refData,
-        this.engine.isPopup
+      const secondValue = (
+        await renderString(value, refData, this.engine.isPopup)
       ).value;
 
       Object.assign(replacedValue, firstValue.list, secondValue.list);

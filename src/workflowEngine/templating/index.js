@@ -2,7 +2,7 @@ import objectPath from 'object-path';
 import cloneDeep from 'lodash.clonedeep';
 import renderString from './renderString';
 
-export default async function ({ block, refKeys, data }) {
+export default async function ({ block, refKeys, data, isPopup }) {
   if (!refKeys || refKeys.length === 0) return block;
 
   const copyBlock = cloneDeep(block);
@@ -19,7 +19,7 @@ export default async function ({ block, refKeys, data }) {
     if (Array.isArray(currentData)) {
       for (let index = 0; index < currentData.length; index += 1) {
         const value = currentData[index];
-        const renderedValue = await renderString(value, data);
+        const renderedValue = await renderString(value, data, isPopup);
 
         addReplacedValue(renderedValue.list);
         objectPath.set(
@@ -29,7 +29,7 @@ export default async function ({ block, refKeys, data }) {
         );
       }
     } else if (typeof currentData === 'string') {
-      const renderedValue = await renderString(currentData, data);
+      const renderedValue = await renderString(currentData, data, isPopup);
 
       addReplacedValue(renderedValue.list);
       objectPath.set(copyBlock.data, blockDataKey, renderedValue.value);
