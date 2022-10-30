@@ -6,7 +6,7 @@ export function automaFetchClient(id, { type, resource }) {
       return;
     }
 
-    const eventName = `__autom-fetch-response-${id}__`;
+    const eventName = `__automa-fetch-response-${id}__`;
     const eventListener = ({ detail }) => {
       if (detail.id !== id) return;
 
@@ -30,6 +30,39 @@ export function automaFetchClient(id, { type, resource }) {
       })
     );
   });
+}
+
+export function jsContentHandlerEval({
+  blockData,
+  automaScript,
+  preloadScripts,
+}) {
+  const preloadScriptsStr = preloadScripts
+    .map(({ script }) => script)
+    .join('\n');
+
+  return `(() => {
+    ${preloadScriptsStr}
+
+    return new Promise(($automaResolve) => {
+      const $automaTimeoutMs = ${blockData.data.timeout};
+      let $automaTimeout = setTimeout(() => {
+        $automaResolve();
+      }, $automaTimeoutMs);
+
+      ${automaScript}
+
+      ${blockData.data.code}
+
+      ${
+        blockData.data.code.includes('automaNextBlock')
+          ? ''
+          : 'automaNextBlock()'
+      }
+    }).catch((error) => {
+      return { columns: { data: { $error: true, message: error.message } } }
+    });
+  })();`;
 }
 
 export function jsContentHandler($blockData, $preloadScripts, $automaScript) {

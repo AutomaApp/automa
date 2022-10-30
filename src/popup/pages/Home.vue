@@ -217,8 +217,10 @@ async function executeWorkflow(workflow) {
         },
       });
     } else {
-      sendMessage('workflow:execute', workflow, 'background');
+      await sendMessage('workflow:execute', workflow, 'background');
     }
+
+    window.close();
   } catch (error) {
     console.error(error);
   }
