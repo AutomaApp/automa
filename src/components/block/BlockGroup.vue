@@ -156,7 +156,6 @@ const blocks = computed(() =>
 );
 
 function editItemSettings(element) {
-  console.log(element);
   emit('settings', {
     blockId: props.id,
     data: element.data,

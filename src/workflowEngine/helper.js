@@ -1,6 +1,19 @@
 import browser from 'webextension-polyfill';
 import { customAlphabet } from 'nanoid/non-secure';
 
+export function escapeElementPolicy(script) {
+  if (window?.trustedTypes?.createPolicy) {
+    const escapePolicy = window.trustedTypes.createPolicy('forceInner', {
+      createHTML: (to_escape) => to_escape,
+      createScript: (to_escape) => to_escape,
+    });
+
+    return escapePolicy.createScript(script);
+  }
+
+  return script;
+}
+
 export function messageSandbox(type, data = {}) {
   const nanoid = customAlphabet('1234567890abcdef', 5);
 
@@ -222,6 +235,21 @@ export async function checkCSPAndInject(
     target,
     func: () => {
       return new Promise((resolve) => {
+        const escapePolicy = (script) => {
+          if (window?.trustedTypes?.createPolicy) {
+            const escapeElPolicy = window.trustedTypes.createPolicy(
+              'forceInner',
+              {
+                createHTML: (to_escape) => to_escape,
+                createScript: (to_escape) => to_escape,
+              }
+            );
+
+            return escapeElPolicy.createScript(script);
+          }
+
+          return script;
+        };
         const eventListener = ({ srcElement }) => {
           if (!srcElement || srcElement.id !== 'automa-csp') return;
           srcElement.remove();
@@ -230,7 +258,7 @@ export async function checkCSPAndInject(
         document.addEventListener('securitypolicyviolation', eventListener);
         const script = document.createElement('script');
         script.id = 'automa-csp';
-        script.innerText = 'console.log("...")';
+        script.innerText = escapePolicy('console.log("...")');
 
         setTimeout(() => {
           document.removeEventListener(

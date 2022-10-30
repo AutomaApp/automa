@@ -36,8 +36,8 @@
             <option
               :disabled="
                 isFirefox ||
-                !workflow?.data?.value.settings?.execContext ||
-                workflow?.data?.value.settings?.execContext !== 'popup'
+                (workflow?.data?.value.settings?.execContext || 'popup') !==
+                  'popup'
               "
               value="background"
             >
