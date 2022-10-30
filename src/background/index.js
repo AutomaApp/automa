@@ -112,7 +112,8 @@ message.on('dashboard:refresh-packages', async () => {
 message.on('workflow:stop', (stateId) => workflowState.stop(stateId));
 message.on('workflow:execute', async (workflowData, sender) => {
   const context = workflowData.settings.execContext;
-  if (!context || context === 'popup') {
+  const isMV2 = browser.runtime.getManifest().manifest_version === 2;
+  if (!isMV2 && (!context || context === 'popup')) {
     await BackgroundUtils.openDashboard('', false);
     await sleep(1000);
     await BackgroundUtils.sendMessageToDashboard('workflow:execute', {
