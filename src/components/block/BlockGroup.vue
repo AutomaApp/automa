@@ -76,13 +76,19 @@
           <div class="invisible group-hover:visible">
             <v-remixicon
               name="riPencilLine"
-              size="20"
+              size="18"
               class="cursor-pointer inline-block mr-2"
               @click="editBlock(element)"
             />
             <v-remixicon
+              name="riSettings3Line"
+              size="18"
+              class="cursor-pointer inline-block mr-2"
+              @click="editItemSettings(element)"
+            />
+            <v-remixicon
               name="riDeleteBin7Line"
-              size="20"
+              size="18"
               class="cursor-pointer inline-block"
               @click="deleteItem(index, element.itemId)"
             />
@@ -149,6 +155,15 @@ const blocks = computed(() =>
     : Object.values(props.data.blocks)
 );
 
+function editItemSettings(element) {
+  console.log(element);
+  emit('settings', {
+    blockId: props.id,
+    data: element.data,
+    itemId: element.itemId,
+    details: { id: element.id },
+  });
+}
 function onDragStart(item, event) {
   event.dataTransfer.setData(
     'block',

@@ -167,6 +167,7 @@
             @edit="initEditBlock"
             @update:node="state.dataChanged = true"
             @delete:node="state.dataChanged = true"
+            @update:settings="onUpdateBlockSettings"
           >
             <template
               v-if="!isTeamWorkflow || haveEditAccess"
@@ -670,6 +671,15 @@ const onEdgesChange = debounce((changes) => {
   // if (command) commandManager.add(command);
 }, 250);
 
+function onUpdateBlockSettings({ blockId, itemId, settings }) {
+  state.dataChanged = true;
+
+  if (!editState.editing) return;
+  if (itemId && itemId !== editState.blockData.itemId) return;
+  if (editState.blockData.blockId !== blockId) return;
+
+  editState.blockData.data = { ...editState.blockData.data, ...settings };
+}
 function closeEditingCard() {
   editState.editing = false;
   editState.blockData = {};

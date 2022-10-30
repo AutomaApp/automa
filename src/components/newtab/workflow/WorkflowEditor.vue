@@ -72,7 +72,7 @@
     >
       <edit-block-settings
         :data="blockSettingsState.data"
-        @change="updateBlockData(blockSettingsState.data.blockId, $event)"
+        @change="updateBlockSettingsData"
       />
     </ui-modal>
   </vue-flow>
@@ -124,7 +124,13 @@ const props = defineProps({
   },
   disabled: Boolean,
 });
-const emit = defineEmits(['edit', 'init', 'update:node', 'delete:node']);
+const emit = defineEmits([
+  'edit',
+  'init',
+  'update:node',
+  'delete:node',
+  'update:settings',
+]);
 
 const fallbackBlocks = {
   BlockBasic: ['BlockExportData'],
@@ -190,8 +196,9 @@ const blockSettingsState = reactive({
   data: {},
 });
 
-function initEditBlockSettings({ blockId, details, data }) {
+function initEditBlockSettings({ blockId, details, data, itemId }) {
   blockSettingsState.data = {
+    itemId,
     blockId,
     id: details.id,
     data: cloneDeep(data),
@@ -217,6 +224,32 @@ function updateBlockData(nodeId, data = {}) {
   node.data = { ...node.data, ...data };
 
   emit('update:node', node);
+}
+function updateBlockSettingsData(newSettings) {
+  if (isDisabled.value) return;
+
+  const nodeId = blockSettingsState.data.blockId;
+  const node = editor.getNode.value(nodeId);
+
+  if (blockSettingsState.data.itemId) {
+    const index = node.data.blocks.findIndex(
+      (item) => item.itemId === blockSettingsState.data.itemId
+    );
+    if (index === -1) return;
+
+    node.data.blocks[index].data = {
+      ...node.data.blocks[index].data,
+      ...newSettings,
+    };
+  } else {
+    node.data = { ...node.data, ...newSettings };
+  }
+
+  emit('update:settings', {
+    settings: newSettings,
+    itemId: blockSettingsState.data.itemId,
+    blockId: blockSettingsState.data.blockId,
+  });
 }
 function editBlock({ id, label, data }, additionalData = {}) {
   if (isDisabled.value) return;
