@@ -75,6 +75,7 @@ import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
 import { getUserWorkflows } from '@/utils/api';
 import { getWorkflowPermissions } from '@/utils/workflowData';
 import { sendMessage } from '@/utils/message';
+import { workflowState, startWorkflowExec } from '@/workflowEngine';
 import automa from '@business';
 import dbLogs from '@/db/logs';
 import dayjs from '@/lib/dayjs';
@@ -84,7 +85,6 @@ import dataMigration from '@/utils/dataMigration';
 import iconFirefox from '@/assets/svg/logoFirefox.svg';
 import iconChrome from '@/assets/svg/logo.svg';
 import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
-import { startWorkflowExec } from '@/workflowEngine';
 
 let icon;
 if (window.location.protocol === 'moz-extension:') {
@@ -250,7 +250,7 @@ browser.storage.local.onChanged.addListener(({ workflowStates }) => {
 });
 
 useHead(() => {
-  const runningWorkflows = workflowStore.states.length;
+  const runningWorkflows = workflowStore.popupStates.length;
 
   return {
     title: 'Dashboard',
@@ -263,7 +263,7 @@ useHead(() => {
 
 /* eslint-disable-next-line */
 window.onbeforeunload = () => {
-  const runningWorkflows = workflowStore.states.length;
+  const runningWorkflows = workflowStore.popupStates.length;
   if (window.isDataChanged || runningWorkflows > 0) {
     return t('message.notSaved');
   }
@@ -294,6 +294,15 @@ window.addEventListener('message', ({ data }) => {
 
 (async () => {
   try {
+    workflowState.storage = {
+      get() {
+        return workflowStore.popupStates;
+      },
+      set(key, value) {
+        workflowStore.popupStates = Object.values(value);
+      },
+    };
+
     const tabs = await browser.tabs.query({
       url: browser.runtime.getURL('/newtab.html'),
     });

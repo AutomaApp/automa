@@ -14,7 +14,7 @@ import blocksHandler from './blocksHandler';
 const workflowStateStorage = {
   get() {
     return browser.storage.local
-      .get('states')
+      .get('workflowStates')
       .then(({ workflowStates }) => workflowStates || []);
   },
   set(key, value) {

@@ -96,7 +96,7 @@ const interval = setInterval(() => {
 }, 1000);
 
 const running = computed(() =>
-  workflowStore.states.find(({ id }) => id === route.params.id)
+  workflowStore.getAllStates.find(({ id }) => id === route.params.id)
 );
 
 function stopWorkflow() {

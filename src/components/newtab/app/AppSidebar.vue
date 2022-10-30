@@ -179,7 +179,7 @@ const tabs = [
 ];
 const hoverIndicator = ref(null);
 const showHoverIndicator = ref(false);
-const runningWorkflowsLen = computed(() => workflowStore.states.length);
+const runningWorkflowsLen = computed(() => workflowStore.getAllStates.length);
 
 useShortcut(
   tabs.reduce((acc, { shortcut }) => {
