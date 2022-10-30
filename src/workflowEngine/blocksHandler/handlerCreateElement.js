@@ -1,6 +1,6 @@
 import { customAlphabet } from 'nanoid/non-secure';
 import browser from 'webextension-polyfill';
-import { automaRefDataStr } from '../helper';
+import { automaRefDataStr, checkCSPAndInject } from '../helper';
 
 const nanoid = customAlphabet('1234567890abcdef', 5);
 
@@ -45,46 +45,80 @@ async function handleCreateElement(block, { refData }) {
 
   data.preloadScripts = preloadScripts;
 
-  const payload = { ...block, data };
+  const payload = {
+    ...block,
+    data,
+    preloadCSS: data.preloadScripts.filter((item) => item.type === 'style'),
+  };
 
   if (data.javascript && !this.engine.isMV2) {
-    payload.data.injectJS = true;
+    payload.data.dontInjectJS = true;
     payload.data.automaScript = getAutomaScript({ ...refData, secrets: {} });
   }
 
   await this._sendMessageToTab(payload, {}, data.runBeforeLoad ?? false);
 
   if (data.javascript && !this.engine.isMV2) {
-    await browser.scripting.executeScript({
-      world: 'MAIN',
-      args: [
-        data.javascript,
-        block.id,
-        payload.data?.automaScript || '',
-        preloadScripts,
-      ],
-      target: {
-        tabId: this.activeTab.id,
-        frameIds: [this.activeTab.frameId || 0],
+    const target = {
+      tabId: this.activeTab.id,
+      frameIds: [this.activeTab.frameId || 0],
+    };
+
+    const { debugMode } = this.engine.workflow?.settings || {};
+    const result = await checkCSPAndInject(
+      {
+        target,
+        debugMode,
+        options: {
+          awaitPromise: false,
+          returnByValue: false,
+        },
       },
-      func: (code, blockId, $automaScript, $preloadScripts) => {
-        const baseId = `automa-${blockId}`;
+      () => {
+        let jsPreload = '';
+        preloadScripts.forEach((item) => {
+          if (item.type === 'style') return;
 
-        $preloadScripts.forEach((item) => {
-          const script = document.createElement(item.type);
-          script.id = `${baseId}-script`;
-          script.textContent = item.script;
-
-          document.body.appendChild(script);
+          jsPreload += `${item.script}\n`;
         });
 
-        const script = document.createElement('script');
-        script.id = `${baseId}-javascript`;
-        script.textContent = `(() => { ${$automaScript}\n${code} })()`;
+        const automaScript = payload.data?.automaScript || '';
 
-        document.body.appendChild(script);
-      },
-    });
+        return `(() => { ${jsPreload} \n ${automaScript}\n${data.javascript} })()`;
+      }
+    );
+
+    if (!result.isBlocked) {
+      await browser.scripting.executeScript({
+        world: 'MAIN',
+        target,
+        args: [
+          data.javascript,
+          block.id,
+          payload.data?.automaScript || '',
+          preloadScripts,
+        ],
+        func: (code, blockId, $automaScript, $preloadScripts) => {
+          const baseId = `automa-${blockId}`;
+
+          $preloadScripts.forEach((item) => {
+            if (item.type === 'style') return;
+
+            const script = document.createElement(item.type);
+            script.id = `${baseId}-script`;
+            script.textContent = item.script;
+
+            document.body.appendChild(script);
+          });
+
+          const script = document.createElement('script');
+          script.id = `${baseId}-javascript`;
+          script.textContent = `(() => { ${$automaScript}\n${code} })()`;
+
+          document.body.appendChild(script);
+        },
+      });
+    }
   }
 
   return {

@@ -15,7 +15,8 @@ export default async function (str, data, isPopup = true) {
   }
 
   let renderedValue = {};
-  if (str.startsWith('!!') && !isFirefox && isPopup) {
+  const evaluateJS = str.startsWith('!!');
+  if (evaluateJS && !isFirefox && isPopup) {
     const refKeysRegex =
       /(variables|table|secrets|loopData|workflow|googleSheets|globalData)@/g;
     const strToRender = str.replace(refKeysRegex, '$1.');
@@ -25,7 +26,10 @@ export default async function (str, data, isPopup = true) {
       data,
     });
   } else {
-    renderedValue = mustacheReplacer(str, data);
+    let copyStr = `${str}`;
+    if (evaluateJS) copyStr = copyStr.slice(2);
+
+    renderedValue = mustacheReplacer(copyStr, data);
   }
 
   return renderedValue;

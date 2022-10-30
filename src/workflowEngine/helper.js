@@ -214,7 +214,10 @@ export function injectPreloadScript({ target, scripts, frameSelector }) {
   });
 }
 
-export async function checkCSPAndInject({ target, debugMode }, callback) {
+export async function checkCSPAndInject(
+  { target, debugMode, options = {} },
+  callback
+) {
   const [isBlockedByCSP] = await browser.scripting.executeScript({
     target,
     func: () => {
@@ -258,6 +261,7 @@ export async function checkCSPAndInject({ target, debugMode }, callback) {
         userGesture: true,
         awaitPromise: true,
         returnByValue: true,
+        ...(options || {}),
       }
     );
 
