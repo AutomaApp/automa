@@ -30,6 +30,16 @@
         </p>
       </div>
     </div>
+    <span
+      v-if="blockErrors"
+      v-tooltip="{
+        allowHTML: true,
+        content: blockErrors,
+      }"
+      class="absolute top-2 right-2 text-red-500 dark:text-red-400"
+    >
+      <v-remixicon name="riAlertLine" size="20" />
+    </span>
     <slot :block="block"></slot>
     <div class="fallback flex items-center justify-end">
       <v-remixicon
@@ -54,6 +64,7 @@
 <script setup>
 import { Handle, Position } from '@vue-flow/core';
 import { useI18n } from 'vue-i18n';
+import { useBlockValidation } from '@/composable/blockValidation';
 import { useEditorBlock } from '@/composable/editorBlock';
 import { useComponentId } from '@/composable/componentId';
 import BlockBase from './BlockBase.vue';
@@ -77,4 +88,8 @@ defineEmits(['delete', 'edit', 'update', 'settings']);
 const { t } = useI18n();
 const block = useEditorBlock(props.label);
 const componentId = useComponentId('block-base');
+const { errors: blockErrors } = useBlockValidation(
+  props.label,
+  () => props.data
+);
 </script>

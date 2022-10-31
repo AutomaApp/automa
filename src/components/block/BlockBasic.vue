@@ -28,6 +28,16 @@
         />
       </span>
       <div class="overflow-hidden flex-1">
+        <span
+          v-if="blockErrors"
+          v-tooltip="{
+            allowHTML: true,
+            content: blockErrors,
+          }"
+          class="absolute top-2 right-2 text-red-500 dark:text-red-400"
+        >
+          <v-remixicon name="riAlertLine" size="20" />
+        </span>
         <p
           v-if="block.details.id"
           class="font-semibold leading-tight text-overflow whitespace-nowrap"
@@ -78,6 +88,7 @@
 </template>
 <script setup>
 import { computed, shallowReactive } from 'vue';
+import { useBlockValidation } from '@/composable/blockValidation';
 import { Handle, Position } from '@vue-flow/core';
 import { useI18n } from 'vue-i18n';
 import { useEditorBlock } from '@/composable/editorBlock';
@@ -117,6 +128,10 @@ const loopBlocks = ['loop-data', 'loop-elements'];
 const { t, te } = useI18n();
 const block = useEditorBlock(props.label);
 const componentId = useComponentId('block-base');
+const { errors: blockErrors } = useBlockValidation(
+  props.label,
+  () => props.data
+);
 
 const state = shallowReactive({
   isCopied: false,
