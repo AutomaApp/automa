@@ -27,7 +27,7 @@ export default function (data) {
     const scriptEl = document.createElement('script');
     scriptEl.textContent = item.script;
 
-    document.body.appendChild(scriptEl);
+    (document.body || document.documentElement).appendChild(scriptEl);
 
     return scriptEl;
   });
@@ -131,5 +131,5 @@ export default function (data) {
   };
 
   timeout = setTimeout(cleanUp, data.blockData.timeout);
-  document.body.appendChild(script);
+  (document.body || document.documentElement).appendChild(script);
 }

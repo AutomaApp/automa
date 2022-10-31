@@ -39,5 +39,5 @@ export default function (data) {
     },
   };
 
-  document.body.appendChild(script);
+  (document.body || document.documentElement).appendChild(script);
 }
