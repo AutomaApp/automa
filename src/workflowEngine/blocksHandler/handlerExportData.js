@@ -1,6 +1,14 @@
 import browser from 'webextension-polyfill';
 import { default as dataExporter, files } from '@/utils/dataExporter';
 
+function blobToBase64(blob) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+}
+
 async function exportData({ data, id }, { refData }) {
   const dataToExport = data.dataToExport || 'data-columns';
   let payload = refData.table;
@@ -21,13 +29,20 @@ async function exportData({ data, id }, { refData }) {
   const hasDownloadAccess = await browser.permissions.contains({
     permissions: ['downloads'],
   });
-  const blobUrl = dataExporter(payload, {
+  let blobUrl = dataExporter(payload, {
     ...data,
     csvOptions: {
       delimiter: data.csvDelimiter || ',',
     },
     returnUrl: hasDownloadAccess,
+    returnBlob: !this.engine.isPopup,
   });
+
+  if (!this.engine.isPopup && !hasDownloadAccess) {
+    throw new Error("Don't have download permission");
+  } else if (!this.engine.isPopup) {
+    blobUrl = await blobToBase64(blobUrl);
+  }
 
   if (hasDownloadAccess) {
     const filename = `${data.name || 'unnamed'}${files[data.type].ext}`;
