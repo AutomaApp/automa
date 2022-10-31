@@ -55,14 +55,15 @@ function getLocalFile(path, options) {
         .then((response) => {
           if (!response.ok) throw new Error(response.statusText);
 
-          if (options.returnValue) {
-            resolve(response);
-            return Promise.resolve(null);
-          }
+          if (options.returnValue) return response.text();
 
           return response.blob();
         })
         .then((blob) => {
+          if (options.returnValue) {
+            resolve(blob);
+            return;
+          }
           if (!blob) return;
 
           if (URL.createObjectURL) {
