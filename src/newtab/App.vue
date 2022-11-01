@@ -75,6 +75,7 @@ import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
 import { getUserWorkflows } from '@/utils/api';
 import { getWorkflowPermissions } from '@/utils/workflowData';
 import { sendMessage } from '@/utils/message';
+import { workflowState, startWorkflowExec } from '@/workflowEngine';
 import automa from '@business';
 import dbLogs from '@/db/logs';
 import dayjs from '@/lib/dayjs';
@@ -84,7 +85,6 @@ import dataMigration from '@/utils/dataMigration';
 import iconFirefox from '@/assets/svg/logoFirefox.svg';
 import iconChrome from '@/assets/svg/logo.svg';
 import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
-import { executeWorkflow } from './workflowEngine';
 
 let icon;
 if (window.location.protocol === 'moz-extension:') {
@@ -190,7 +190,14 @@ async function syncHostedWorkflows() {
     hostIds.push({ hostId, updatedAt: hostedWorkflows[hostId].updatedAt });
   });
 
+  if (hostIds.length === 0) return;
+
   await hostedWorkflowStore.fetchWorkflows(hostIds);
+}
+function stopRecording() {
+  if (!window.stopRecording) return;
+
+  window.stopRecording();
 }
 
 const messageEvents = {
@@ -224,8 +231,10 @@ const messageEvents = {
     }
   },
   'workflow:execute': function ({ data, options = {} }) {
-    executeWorkflow(data, options);
+    startWorkflowExec(data, options);
   },
+  'recording:stop': stopRecording,
+  'background--recording:stop': stopRecording,
 };
 
 browser.runtime.onMessage.addListener(({ type, data }) => {
@@ -234,8 +243,14 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
   messageEvents[type](data);
 });
 
+browser.storage.local.onChanged.addListener(({ workflowStates }) => {
+  if (!workflowStates) return;
+
+  workflowStore.states = Object.values(workflowStates.newValue);
+});
+
 useHead(() => {
-  const runningWorkflows = workflowStore.states.length;
+  const runningWorkflows = workflowStore.popupStates.length;
 
   return {
     title: 'Dashboard',
@@ -248,7 +263,7 @@ useHead(() => {
 
 /* eslint-disable-next-line */
 window.onbeforeunload = () => {
-  const runningWorkflows = workflowStore.states.length;
+  const runningWorkflows = workflowStore.popupStates.length;
   if (window.isDataChanged || runningWorkflows > 0) {
     return t('message.notSaved');
   }
@@ -279,6 +294,15 @@ window.addEventListener('message', ({ data }) => {
 
 (async () => {
   try {
+    workflowState.storage = {
+      get() {
+        return workflowStore.popupStates;
+      },
+      set(key, value) {
+        workflowStore.popupStates = Object.values(value);
+      },
+    };
+
     const tabs = await browser.tabs.query({
       url: browser.runtime.getURL('/newtab.html'),
     });
@@ -329,6 +353,9 @@ window.addEventListener('message', ({ data }) => {
     const { isRecording } = await browser.storage.local.get('isRecording');
     if (isRecording) {
       router.push('/recording');
+
+      await browser.action.setBadgeBackgroundColor({ color: '#ef4444' });
+      await browser.action.setBadgeText({ text: 'rec' });
     }
 
     autoDeleteLogs();

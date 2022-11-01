@@ -34,14 +34,19 @@
             class="mr-2"
           >
             <option
-              v-for="context in ['website', 'background']"
-              :key="context"
-              :disabled="isFirefox && context === 'background'"
-              :value="context"
+              :disabled="
+                isFirefox ||
+                (workflow?.data?.value.settings?.execContext || 'popup') !==
+                  'popup'
+              "
+              value="background"
             >
               {{
-                t(`workflow.blocks.javascript-code.context.items.${context}`)
+                t(`workflow.blocks.javascript-code.context.items.background`)
               }}
+            </option>
+            <option value="website">
+              {{ t(`workflow.blocks.javascript-code.context.items.website`) }}
             </option>
           </ui-select>
           <v-remixicon
@@ -94,7 +99,7 @@
   </div>
 </template>
 <script setup>
-import { ref, watch, defineAsyncComponent } from 'vue';
+import { ref, watch, defineAsyncComponent, inject } from 'vue';
 import { nanoid } from 'nanoid';
 import { useI18n } from 'vue-i18n';
 import { autocompletion } from '@codemirror/autocomplete';
@@ -143,6 +148,7 @@ const conditionOperators = conditionBuilder.compareTypes.reduce((acc, type) => {
 }, {});
 
 const excludeData = ['context'];
+const workflow = inject('workflow');
 
 const { t } = useI18n();
 const inputsData = ref(cloneDeep(props.data));

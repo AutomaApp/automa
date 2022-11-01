@@ -3,7 +3,7 @@
     <h1 class="font-semibold text-3xl mb-8">
       {{ t('welcome.title') }}
     </h1>
-    <p class="text-lg">
+    <p>
       Get started by reading the documentation or browsing workflows in the
       Automa Marketplace. <br />
       To learn how to use Automa, watch the tutorials on our YouTube Channel.

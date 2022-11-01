@@ -10,7 +10,11 @@ async function insertData({ id, data }, { refData }) {
     let value = '';
 
     if (item.isFile) {
-      const replacedPath = await renderString(item.filePath || '', refData);
+      const replacedPath = await renderString(
+        item.filePath || '',
+        refData,
+        this.engine.isPopup
+      );
       const path = replacedPath.value;
       const isJSON = path.endsWith('.json');
       const isCSV = path.endsWith('.csv');
@@ -35,7 +39,11 @@ async function insertData({ id, data }, { refData }) {
       value = result;
       Object.assign(replacedValueList, replacedPath.list);
     } else {
-      const replacedValue = await renderString(item.value, refData);
+      const replacedValue = await renderString(
+        item.value,
+        refData,
+        this.engine.isPopup
+      );
       value = parseJSON(replacedValue.value, replacedValue.value);
       Object.assign(replacedValueList, replacedValue.list);
     }

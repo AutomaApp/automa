@@ -4,12 +4,18 @@ import cloneDeep from 'lodash.clonedeep';
 import {
   jsContentHandler,
   automaFetchClient,
-} from '@/newtab/utils/javascriptBlockUtil';
-import { messageSandbox, automaRefDataStr, waitTabLoaded } from '../helper';
+  jsContentHandlerEval,
+} from '../utils/javascriptBlockUtil';
+import {
+  waitTabLoaded,
+  messageSandbox,
+  automaRefDataStr,
+  checkCSPAndInject,
+} from '../helper';
 
 const nanoid = customAlphabet('1234567890abcdef', 5);
 
-function getAutomaScript(varName, refData, everyNewTab) {
+function getAutomaScript(varName, refData, everyNewTab, isEval = false) {
   let str = `
 const ${varName} = ${JSON.stringify(refData)};
 ${automaRefDataStr(varName)}
@@ -17,10 +23,27 @@ function automaSetVariable(name, value) {
   ${varName}.variables[name] = value;
 }
 function automaNextBlock(data, insert = true) {
-  document.body.dispatchEvent(new CustomEvent('__automa-next-block__', { detail: { data, insert, refData: ${varName} } }));
+  if (${isEval}) {
+    $automaResolve({
+      columns: { 
+        data, 
+        insert,
+      }, 
+      variables: ${varName}.variables, 
+    });
+  } else{
+    document.body.dispatchEvent(new CustomEvent('__automa-next-block__', { detail: { data, insert, refData: ${varName} } }));
+  }
 }
 function automaResetTimeout() {
- document.body.dispatchEvent(new CustomEvent('__automa-reset-timeout__'));
+  if (${isEval}) {
+    clearTimeout($automaTimeout);
+    $automaTimeout = setTimeout(() => {
+      resolve();
+    }, $automaTimeoutMs);
+  } else {
+    document.body.dispatchEvent(new CustomEvent('__automa-reset-timeout__'));
+  }
 }
 function automaFetch(type, resource) {
   return (${automaFetchClient.toString()})('${varName}', { type, resource });
@@ -32,7 +55,11 @@ function automaFetch(type, resource) {
   return str;
 }
 async function executeInWebpage(args, target, worker) {
-  if (worker.engine.isMV2 || BROWSER_TYPE === 'firefox') {
+  if (!target.tabId) {
+    throw new Error('no-tab');
+  }
+
+  if (worker.engine.isMV2) {
     args[0] = cloneDeep(args[0]);
 
     const result = await worker._sendMessageToTab({
@@ -42,6 +69,25 @@ async function executeInWebpage(args, target, worker) {
 
     return result;
   }
+
+  const { debugMode } = worker.engine.workflow.settings;
+  const cspResult = await checkCSPAndInject({ target, debugMode }, () => {
+    const { 0: blockData, 1: preloadScripts, 3: varName } = args;
+    const automaScript = getAutomaScript(
+      varName,
+      blockData.refData,
+      blockData.data.everyNewTab,
+      true
+    );
+    const jsCode = jsContentHandlerEval({
+      blockData,
+      automaScript,
+      preloadScripts,
+    });
+
+    return jsCode;
+  });
+  if (cspResult.isBlocked) return cspResult.value;
 
   const [{ result }] = await browser.scripting.executeScript({
     args,
@@ -102,7 +148,7 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
 
   const instanceId = `automa${nanoid()}`;
   const automaScript =
-    data.everyNewTab || data.context === 'background'
+    data.everyNewTab && (!data.context || data.context !== 'background')
       ? ''
       : getAutomaScript(instanceId, payload.refData, data.everyNewTab);
 
@@ -113,7 +159,10 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
     });
   }
 
-  const inSandbox = BROWSER_TYPE !== 'firefox' && data.context === 'background';
+  const inSandbox =
+    BROWSER_TYPE !== 'firefox' &&
+    data.context === 'background' &&
+    this.engine.isPopup;
   const result = await (inSandbox
     ? messageSandbox('javascriptBlock', {
         instanceId,

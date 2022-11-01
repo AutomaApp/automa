@@ -1,4 +1,4 @@
-import { jsContentHandler } from '@/newtab/utils/javascriptBlockUtil';
+import { jsContentHandler } from '@/workflowEngine/utils/javascriptBlockUtil';
 
 function javascriptCode({ data, isPreloadScripts, frameSelector }) {
   if (!isPreloadScripts) return jsContentHandler(...data);

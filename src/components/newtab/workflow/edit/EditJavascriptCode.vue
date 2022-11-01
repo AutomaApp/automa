@@ -17,7 +17,11 @@
         @change="updateData({ timeout: +$event })"
       />
       <ui-select
-        v-if="!isFirefox"
+        v-if="
+          !isFirefox &&
+          (!workflow?.data?.value.settings?.execContext ||
+            workflow?.data?.value.settings?.execContext === 'popup')
+        "
         :model-value="data.context"
         :label="t('workflow.blocks.javascript-code.context.name')"
         class="mb-2 w-full"
@@ -145,7 +149,7 @@
   </div>
 </template>
 <script setup>
-import { watch, reactive, defineAsyncComponent } from 'vue';
+import { watch, reactive, defineAsyncComponent, inject } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { autocompletion } from '@codemirror/autocomplete';
 import {
@@ -192,6 +196,8 @@ const availableFuncs = [
   { name: 'automaResetTimeout()', id: 'automaresettimeout' },
 ];
 const autocompleteList = Object.values(automaFuncsSnippets).slice(0, 4);
+
+const workflow = inject('workflow');
 
 const state = reactive({
   activeTab: 'code',

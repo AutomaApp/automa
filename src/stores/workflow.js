@@ -48,6 +48,7 @@ const defaultWorkflow = (data = null, options = {}) => {
       debugMode: false,
       restartTimes: 3,
       notification: true,
+      execContext: 'popup',
       reuseLastState: false,
       inputAutocomplete: true,
       onError: 'stop-workflow',
@@ -93,13 +94,18 @@ export const useWorkflowStore = defineStore('workflow', {
   state: () => ({
     states: [],
     workflows: {},
+    popupStates: [],
     retrieved: false,
+    isFirstTime: false,
   }),
   getters: {
+    getAllStates: (state) => [...state.popupStates, ...state.states],
     getById: (state) => (id) => state.workflows[id],
     getWorkflows: (state) => Object.values(state.workflows),
     getWorkflowStates: (state) => (id) =>
-      state.states.filter(({ workflowId }) => workflowId === id),
+      [...state.states, ...state.popupStates].filter(
+        ({ workflowId }) => workflowId === id
+      ),
   },
   actions: {
     async loadData() {
@@ -120,6 +126,7 @@ export const useWorkflowStore = defineStore('workflow', {
         });
       }
 
+      this.isFirstTime = isFirstTime;
       this.workflows = convertWorkflowsToObject(localWorkflows);
 
       this.retrieved = true;

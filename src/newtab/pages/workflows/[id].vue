@@ -167,6 +167,7 @@
             @edit="initEditBlock"
             @update:node="state.dataChanged = true"
             @delete:node="state.dataChanged = true"
+            @update:settings="onUpdateBlockSettings"
           >
             <template
               v-if="!isTeamWorkflow || haveEditAccess"
@@ -320,9 +321,9 @@ import { excludeGroupBlocks } from '@/utils/shared';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useCommandManager } from '@/composable/commandManager';
 import { debounce, parseJSON, throttle } from '@/utils/helper';
-import { executeWorkflow } from '@/newtab/workflowEngine';
+import { executeWorkflow } from '@/workflowEngine';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
-import functions from '@/newtab/workflowEngine/templating/templatingFunctions';
+import functions from '@/workflowEngine/templating/templatingFunctions';
 import browser from 'webextension-polyfill';
 import dbStorage from '@/db/storage';
 import DroppedNode from '@/utils/editor/DroppedNode';
@@ -670,6 +671,15 @@ const onEdgesChange = debounce((changes) => {
   // if (command) commandManager.add(command);
 }, 250);
 
+function onUpdateBlockSettings({ blockId, itemId, settings }) {
+  state.dataChanged = true;
+
+  if (!editState.editing) return;
+  if (itemId && itemId !== editState.blockData.itemId) return;
+  if (editState.blockData.blockId !== blockId) return;
+
+  editState.blockData.data = { ...editState.blockData.data, ...settings };
+}
 function closeEditingCard() {
   editState.editing = false;
   editState.blockData = {};
@@ -1564,6 +1574,7 @@ provide('workflow-editor', editor);
 provide('autocompleteData', autocompleteList);
 provide('workflow', {
   editState,
+  isPackage,
   data: workflow,
   columns: workflowColumns,
 });

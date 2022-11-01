@@ -1,6 +1,19 @@
 import browser from 'webextension-polyfill';
 import { customAlphabet } from 'nanoid/non-secure';
 
+export function escapeElementPolicy(script) {
+  if (window?.trustedTypes?.createPolicy) {
+    const escapePolicy = window.trustedTypes.createPolicy('forceInner', {
+      createHTML: (to_escape) => to_escape,
+      createScript: (to_escape) => to_escape,
+    });
+
+    return escapePolicy.createScript(script);
+  }
+
+  return script;
+}
+
 export function messageSandbox(type, data = {}) {
   const nanoid = customAlphabet('1234567890abcdef', 5);
 
@@ -212,4 +225,89 @@ export function injectPreloadScript({ target, scripts, frameSelector }) {
       });
     },
   });
+}
+
+export async function checkCSPAndInject(
+  { target, debugMode, options = {} },
+  callback
+) {
+  const [isBlockedByCSP] = await browser.scripting.executeScript({
+    target,
+    func: () => {
+      return new Promise((resolve) => {
+        const escapePolicy = (script) => {
+          if (window?.trustedTypes?.createPolicy) {
+            const escapeElPolicy = window.trustedTypes.createPolicy(
+              'forceInner',
+              {
+                createHTML: (to_escape) => to_escape,
+                createScript: (to_escape) => to_escape,
+              }
+            );
+
+            return escapeElPolicy.createScript(script);
+          }
+
+          return script;
+        };
+        const eventListener = ({ srcElement }) => {
+          if (!srcElement || srcElement.id !== 'automa-csp') return;
+          srcElement.remove();
+          resolve(true);
+        };
+        document.addEventListener('securitypolicyviolation', eventListener);
+        const script = document.createElement('script');
+        script.id = 'automa-csp';
+        script.innerText = escapePolicy('console.log("...")');
+
+        setTimeout(() => {
+          document.removeEventListener(
+            'securitypolicyviolation',
+            eventListener
+          );
+          script.remove();
+          resolve(false);
+        }, 500);
+
+        document.body.appendChild(script);
+      });
+    },
+    world: 'MAIN',
+  });
+
+  if (isBlockedByCSP.result) {
+    await new Promise((resolve) => {
+      chrome.debugger.attach({ tabId: target.tabId }, '1.3', resolve);
+    });
+
+    const jsCode = await callback();
+    const execResult = await sendDebugCommand(
+      target.tabId,
+      'Runtime.evaluate',
+      {
+        expression: jsCode,
+        userGesture: true,
+        awaitPromise: true,
+        returnByValue: true,
+        ...(options || {}),
+      }
+    );
+
+    if (!debugMode) await chrome.debugger.detach({ tabId: target.tabId });
+
+    if (!execResult || !execResult.result) {
+      throw new Error('Unable execute code');
+    }
+
+    if (execResult.result.subtype === 'error') {
+      throw new Error(execResult.result.description);
+    }
+
+    return {
+      isBlocked: true,
+      value: execResult.result.value || null,
+    };
+  }
+
+  return { isBlocked: false, value: null };
 }

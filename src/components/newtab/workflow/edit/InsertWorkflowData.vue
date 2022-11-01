@@ -17,7 +17,7 @@
       @change="updateData({ variableName: $event })"
     />
   </template>
-  <template v-if="table && workflow.columns?.value">
+  <template v-if="table && !workflow?.isPackage && workflow.columns?.value">
     <ui-checkbox
       :model-value="data.saveData"
       block

@@ -345,7 +345,7 @@ export const tasks = {
       regex: '',
       prefixText: '',
       suffixText: '',
-      regexExp: ['g'],
+      regexExp: [],
       dataColumn: '',
       saveData: true,
       includeTags: false,

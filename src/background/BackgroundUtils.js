@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { waitTabLoaded } from '@/newtab/workflowEngine/helper';
+import { waitTabLoaded } from '@/workflowEngine/helper';
 
 class BackgroundUtils {
   static async openDashboard(url, updateTab = true) {
@@ -27,11 +27,16 @@ class BackgroundUtils {
       } else {
         const windowOptions = {
           url: tabUrl,
-          height: 715,
-          width: 750,
           type: 'popup',
-          focused: updateTab,
         };
+
+        if (updateTab) {
+          windowOptions.height = 715;
+          windowOptions.width = 715;
+          windowOptions.focused = true;
+        } else {
+          windowOptions.state = 'minimized';
+        }
 
         await browser.windows.create(windowOptions);
       }

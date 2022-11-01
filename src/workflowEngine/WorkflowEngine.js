@@ -9,11 +9,12 @@ import WorkflowWorker from './WorkflowWorker';
 let blocks = getBlocks();
 
 class WorkflowEngine {
-  constructor(workflow, { states, logger, blocksHandler, options }) {
+  constructor(workflow, { states, logger, blocksHandler, isPopup, options }) {
     this.id = nanoid();
     this.states = states;
     this.logger = logger;
     this.workflow = workflow;
+    this.isPopup = isPopup ?? true;
     this.blocksHandler = blocksHandler;
     this.parentWorkflow = options?.parentWorkflow;
     this.saveLog = workflow.settings?.saveLog ?? true;

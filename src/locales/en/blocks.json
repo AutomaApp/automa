@@ -483,6 +483,9 @@
           "placeholder": "(millisecond)"
         }
       },
+      "parameter-prompt": {
+        "name": "Parameter Prompt"
+      },
       "get-text": {
         "name": "Get text",
         "description": "Get text from an element",

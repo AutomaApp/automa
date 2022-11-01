@@ -62,11 +62,15 @@ const tabs = [
 const isDebugSupported =
   browserType !== 'firefox' && supportedBlocks.includes(props.data.id);
 
+if (props.data?.itemId) {
+  tabs.pop();
+}
+
 if (isDebugSupported) {
   currActiveTab = 'general';
   tabs.unshift({ id: 'general', name: t('settings.menu.general') });
 } else if (!isOnErrorSupported) {
-  currActiveTab = 'lines';
+  if (!props.data?.itemId) currActiveTab = 'lines';
   tabs.shift();
 }
 

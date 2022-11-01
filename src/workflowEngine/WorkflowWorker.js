@@ -175,6 +175,7 @@ class WorkflowWorker {
     const replacedBlock = await templating({
       block,
       data: refData,
+      isPopup: this.engine.isPopup,
       refKeys:
         isRetry || block.data.disableBlock
           ? null
@@ -248,7 +249,9 @@ class WorkflowWorker {
 
         if (blockOnError.insertData) {
           for (const item of blockOnError.dataToInsert) {
-            let value = await renderString(item.value, refData)?.value;
+            let value = (
+              await renderString(item.value, refData, this.engine.isPopup)
+            )?.value;
             value = parseJSON(value, value);
 
             if (item.type === 'variable') {

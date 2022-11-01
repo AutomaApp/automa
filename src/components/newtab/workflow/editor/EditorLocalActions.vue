@@ -327,7 +327,7 @@ import { tagColors } from '@/utils/shared';
 import { parseJSON, findTriggerBlock } from '@/utils/helper';
 import { exportWorkflow, convertWorkflow } from '@/utils/workflowData';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
-import { executeWorkflow } from '@/newtab/workflowEngine';
+import { executeWorkflow } from '@/workflowEngine';
 import getTriggerText from '@/utils/triggerText';
 import convertWorkflowData from '@/utils/convertWorkflowData';
 import WorkflowShareTeam from '@/components/newtab/workflow/WorkflowShareTeam.vue';

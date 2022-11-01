@@ -14,9 +14,10 @@
       @mousedown="toggleDragging(true, $event)"
     >
       <span
-        class="relative rounded-full bg-red-400 flex items-center justify-center"
-        title="Recording workflow"
+        class="relative cursor-pointer rounded-full bg-red-400 flex items-center justify-center"
         style="height: 24px; width: 24px"
+        title="Stop recording"
+        @click="stopRecording"
       >
         <v-remixicon
           name="riRecordCircleLine"
@@ -245,6 +246,11 @@ const blocksList = {
   default: ['get-text', 'attribute-value'],
 };
 
+function stopRecording() {
+  browser.runtime.sendMessage({
+    type: 'background--recording:stop',
+  });
+}
 function getElementBlocks(element) {
   if (!element) return;
 

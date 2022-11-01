@@ -1,9 +1,9 @@
 import browser from 'webextension-polyfill';
 import dayjs from '@/lib/dayjs';
-import { useWorkflowStore } from '@/stores/workflow';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
 import { parseJSON } from '@/utils/helper';
 import { fetchApi } from '@/utils/api';
+import { sendMessage } from '@/utils/message';
 import getBlockMessage from '@/utils/getBlockMessage';
 import convertWorkflowData from '@/utils/convertWorkflowData';
 import WorkflowState from './WorkflowState';
@@ -13,15 +13,14 @@ import blocksHandler from './blocksHandler';
 
 const workflowStateStorage = {
   get() {
-    const workflowStore = useWorkflowStore();
-    return workflowStore.states;
+    return browser.storage.local
+      .get('workflowStates')
+      .then(({ workflowStates }) => workflowStates || []);
   },
   set(key, value) {
-    const workflowStore = useWorkflowStore();
     const states = Object.values(value);
 
-    browser.storage.local.set({ workflowStates: states });
-    workflowStore.updateStates(states);
+    return browser.storage.local.set({ workflowStates: states });
   },
 };
 
@@ -30,8 +29,12 @@ export const workflowState = new WorkflowState({
   storage: workflowStateStorage,
 });
 
-export function executeWorkflow(workflowData, options) {
-  if (workflowData.isDisabled) return null;
+export function stopWorkflowExec(executionId) {
+  workflowState.stop(executionId);
+  sendMessage('workflow:stop', executionId, 'background');
+}
+
+export function startWorkflowExec(workflowData, options, isPopup = true) {
   if (workflowData.isProtected) {
     const flow = parseJSON(workflowData.drawflow, null);
 
@@ -45,6 +48,7 @@ export function executeWorkflow(workflowData, options) {
   const convertedWorkflow = convertWorkflowData(workflowData);
   const engine = new WorkflowEngine(convertedWorkflow, {
     options,
+    isPopup,
     states: workflowState,
     logger: workflowLogger,
     blocksHandler: blocksHandler(),
@@ -122,15 +126,37 @@ export function executeWorkflow(workflowData, options) {
     }
   );
 
-  const lastCheckStatus = localStorage.getItem('check-status');
-  const isSameDay = dayjs().isSame(lastCheckStatus, 'day');
-  if (!isSameDay) {
-    fetchApi('/status')
-      .then((response) => response.json())
-      .then(() => {
-        localStorage.setItem('check-status', new Date());
-      });
-  }
+  browser.storage.local.get('checkStatus').then(({ checkStatus }) => {
+    const isSameDay = dayjs().isSame(checkStatus, 'day');
+    if (!isSameDay || !checkStatus) {
+      fetchApi('/status')
+        .then((response) => response.json())
+        .then(() => {
+          browser.storage.local.set({ checkStatus: new Date().toString() });
+        });
+    }
+  });
 
   return engine;
+}
+
+export function executeWorkflow(workflowData, options) {
+  if (!workflowData || workflowData.isDisabled) return;
+
+  const isMV2 = browser.runtime.getManifest().manifest_version === 2;
+  const context = workflowData.settings.execContext;
+  if (isMV2 || context === 'background') {
+    sendMessage('workflow:execute', { ...workflowData, options }, 'background');
+    return;
+  }
+
+  browser.tabs
+    .query({ active: true, currentWindow: true })
+    .then(async ([tab]) => {
+      if (tab && tab.url.includes(browser.runtime.getURL(''))) {
+        await browser.windows.update(tab.windowId, { focused: false });
+      }
+
+      startWorkflowExec(workflowData, options);
+    });
 }

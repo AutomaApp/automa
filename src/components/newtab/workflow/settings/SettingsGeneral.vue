@@ -32,6 +32,29 @@
       </span>
     </div>
   </div>
+  <div v-if="!isMV2" class="flex items-center pt-4">
+    <div class="mr-4 flex-1">
+      <p>Workflow Execution</p>
+      <p class="text-gray-600 dark:text-gray-200 text-sm leading-tight">
+        Workflow execution environment (Use "Popup" if workflow runs more than 5
+        minutes)
+      </p>
+    </div>
+    <a
+      href="https://docs.automa.site/workflow/settings.html#workflow-execution"
+      class="mr-2"
+      target="_blank"
+    >
+      <v-remixicon name="riInformationLine" />
+    </a>
+    <ui-select
+      :model-value="settings.execContext || 'popup'"
+      @change="updateSetting('execContext', $event)"
+    >
+      <option value="popup">Popup</option>
+      <option value="background">Background</option>
+    </ui-select>
+  </div>
   <div class="flex items-center pt-4">
     <div class="mr-4 flex-1">
       <p>
@@ -125,6 +148,7 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
+import browser from 'webextension-polyfill';
 import { clearCache } from '@/utils/helper';
 import { useHasPermissions } from '@/composable/hasPermissions';
 
@@ -139,6 +163,8 @@ const emit = defineEmits(['update']);
 const { t } = useI18n();
 const toast = useToast();
 const permissions = useHasPermissions(['notifications']);
+
+const isMV2 = browser.runtime.getManifest().manifest_version === 2;
 
 const browserType = BROWSER_TYPE;
 const onError = [

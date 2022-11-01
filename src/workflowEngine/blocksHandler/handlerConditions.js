@@ -3,9 +3,10 @@ import browser from 'webextension-polyfill';
 import compareBlockValue from '@/utils/compareBlockValue';
 import testConditions from '@/utils/testConditions';
 import renderString from '../templating/renderString';
-import { automaRefDataStr, messageSandbox } from '../helper';
+import { automaRefDataStr, messageSandbox, checkCSPAndInject } from '../helper';
 
 const nanoid = customAlphabet('1234567890abcdef', 5);
+const isMV2 = browser.runtime.getManifest().manifest_version === 2;
 
 function checkConditions(data, conditionOptions) {
   return new Promise((resolve, reject) => {
@@ -46,21 +47,54 @@ function checkConditions(data, conditionOptions) {
   });
 }
 async function checkCodeCondition(activeTab, payload) {
-  const variableId = nanoid();
+  const variableId = `automa${nanoid()}`;
 
-  if (!payload.data.context || payload.data.context === 'website') {
+  if (
+    !payload.data.context ||
+    payload.data.context === 'website' ||
+    !payload.isPopup
+  ) {
     if (!activeTab.id) throw new Error('no-tab');
+
+    const refDataScriptStr = automaRefDataStr(variableId);
+
+    if (!isMV2) {
+      const result = await checkCSPAndInject(
+        {
+          target: { tabId: activeTab.id },
+          debugMode: payload.debugMode,
+        },
+        () => {
+          return `
+          (async () => {
+            const ${variableId} = ${JSON.stringify(payload.refData)};
+            ${refDataScriptStr}
+            try {
+              ${payload.data.code}
+            } catch (error) {
+              return {
+                $isError: true,
+                message: error.message,
+              }
+            }
+          })();
+        `;
+        }
+      );
+
+      if (result.isBlocked) return result.value;
+    }
 
     const [{ result }] = await browser.scripting.executeScript({
       world: 'MAIN',
-      args: [payload, variableId, automaRefDataStr(variableId)],
+      args: [payload, variableId, refDataScriptStr],
       target: {
         tabId: activeTab.id,
         frameIds: [activeTab.frameId || 0],
       },
       func: ({ data, refData }, varId, refDataScript) => {
         return new Promise((resolve, reject) => {
-          const varName = `automa${varId}`;
+          const varName = varId;
 
           const scriptEl = document.createElement('script');
           scriptEl.textContent = `
@@ -128,12 +162,17 @@ async function conditions({ data, id }, { prevBlockData, refData }) {
     ? prevBlockData[0]
     : prevBlockData;
 
+  const { debugMode } = this.engine.workflow?.settings || {};
+
   if (condition && condition.conditions) {
     const conditionPayload = {
+      isMV2,
       refData,
-      isMV2: this.engine.isMV2,
-      checkCodeCondition: (payload) =>
-        checkCodeCondition(this.activeTab, payload),
+      isPopup: this.engine.isPopup,
+      checkCodeCondition: (payload) => {
+        payload.debugMode = debugMode;
+        return checkCodeCondition(this.activeTab, payload);
+      },
       sendMessage: (payload) =>
         this._sendMessageToTab({ ...payload.data, label: 'conditions', id }),
     };
@@ -151,9 +190,16 @@ async function conditions({ data, id }, { prevBlockData, refData }) {
     for (const { type, value, compareValue, id: itemId } of data.conditions) {
       if (isConditionMet) break;
 
-      const firstValue = await renderString(compareValue ?? prevData, refData)
-        .value;
-      const secondValue = await renderString(value, refData).value;
+      const firstValue = (
+        await renderString(
+          compareValue ?? prevData,
+          refData,
+          this.engine.isPopup
+        )
+      ).value;
+      const secondValue = (
+        await renderString(value, refData, this.engine.isPopup)
+      ).value;
 
       Object.assign(replacedValue, firstValue.list, secondValue.list);
 

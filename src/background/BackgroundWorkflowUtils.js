@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import BackgroundUtils from './BackgroundUtils';
+import { startWorkflowExec } from '@/workflowEngine';
 
 class BackgroundWorkflowUtils {
   static flattenTeamWorkflows(workflows) {
@@ -40,16 +40,9 @@ class BackgroundWorkflowUtils {
   }
 
   static async executeWorkflow(workflowData, options) {
-    await BackgroundUtils.openDashboard('', false);
-    const result = await BackgroundUtils.sendMessageToDashboard(
-      'workflow:execute',
-      {
-        data: workflowData,
-        options,
-      }
-    );
+    if (workflowData.isDisabled) return;
 
-    return result;
+    startWorkflowExec(workflowData, options, false);
   }
 }
 

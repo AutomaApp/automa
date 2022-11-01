@@ -15,14 +15,44 @@ async function activeTab(block) {
       return data;
     }
 
+    const minimizeDashboard = async (currentWindow) => {
+      if (currentWindow.type !== 'popup') return;
+
+      const [tab] = currentWindow.tabs;
+      const isDashboard = tab && tab.url.includes(browser.runtime.getURL(''));
+      const isWindowFocus =
+        currentWindow.focused || currentWindow.state === 'maximized';
+
+      if (isWindowFocus && isDashboard) {
+        const windowOptions = { focused: false };
+        if (currentWindow.state === 'maximized')
+          windowOptions.state = 'minimized';
+
+        await browser.windows.update(currentWindow.id, windowOptions);
+      }
+    };
+
+    if (this.engine.isPopup) {
+      const currentWindow = await browser.windows.getCurrent({
+        populate: true,
+      });
+      await minimizeDashboard(currentWindow);
+    } else {
+      const allWindows = await browser.windows.getAll({ populate: true });
+      for (const currWindow of allWindows) {
+        await minimizeDashboard(currWindow);
+      }
+    }
+
+    await sleep(500);
+
     const [tab] = await browser.tabs.query({
       active: true,
-      url: '*://*/*',
+      lastFocusedWindow: true,
     });
-
-    if (!tab?.url.startsWith('http')) {
+    if (!tab || !tab?.url.startsWith('http')) {
       const error = new Error('invalid-active-tab');
-      error.data = { url: tab.url };
+      error.data = { url: tab?.url };
 
       throw error;
     }

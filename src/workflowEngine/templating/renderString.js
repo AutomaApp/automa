@@ -3,7 +3,7 @@ import mustacheReplacer from './mustacheReplacer';
 
 const isFirefox = BROWSER_TYPE === 'firefox';
 
-export default async function (str, data) {
+export default async function (str, data, isPopup = true) {
   if (!str || typeof str !== 'string') return '';
 
   const hasMustacheTag = /\{\{(.*?)\}\}/.test(str);
@@ -15,7 +15,8 @@ export default async function (str, data) {
   }
 
   let renderedValue = {};
-  if (str.startsWith('!!') && !isFirefox) {
+  const evaluateJS = str.startsWith('!!');
+  if (evaluateJS && !isFirefox && isPopup) {
     const refKeysRegex =
       /(variables|table|secrets|loopData|workflow|googleSheets|globalData)@/g;
     const strToRender = str.replace(refKeysRegex, '$1.');
@@ -25,7 +26,10 @@ export default async function (str, data) {
       data,
     });
   } else {
-    renderedValue = mustacheReplacer(str, data);
+    let copyStr = `${str}`;
+    if (evaluateJS) copyStr = copyStr.slice(2);
+
+    renderedValue = mustacheReplacer(copyStr, data);
   }
 
   return renderedValue;

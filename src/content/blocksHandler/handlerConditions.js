@@ -1,6 +1,6 @@
 import { customAlphabet } from 'nanoid/non-secure';
 import { visibleInViewport, isXPath } from '@/utils/helper';
-import { automaRefDataStr } from '@/newtab/workflowEngine/helper';
+import { automaRefDataStr } from '@/workflowEngine/helper';
 import handleSelector from '../handleSelector';
 
 const nanoid = customAlphabet('1234567890abcdef', 5);

@@ -4,9 +4,16 @@ import { isXPath, sleep } from '@/utils/helper';
 const isMV2 = browser.runtime.getManifest().manifest_version === 2;
 
 async function getActiveTab() {
+  const currentWindow = await browser.windows.getCurrent();
+  if (currentWindow)
+    await browser.windows.update(currentWindow.id, { focused: false });
+
+  await sleep(200);
+
   const [tab] = await browser.tabs.query({
     active: true,
     url: '*://*/*',
+    lastFocusedWindow: true,
   });
   if (!tab) throw new Error('No active tab');
 
@@ -26,11 +33,7 @@ export async function initElementSelector(tab = null) {
   let activeTab = tab;
 
   if (!tab) {
-    const [queryTab] = await browser.tabs.query({
-      active: true,
-      url: '*://*/*',
-    });
-    activeTab = queryTab;
+    activeTab = await getActiveTab();
   }
 
   const result = await browser.tabs.sendMessage(activeTab.id, {

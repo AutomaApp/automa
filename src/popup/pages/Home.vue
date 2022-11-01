@@ -11,14 +11,6 @@
       <h1 class="text-xl font-semibold text-white">Automa</h1>
       <div class="flex-grow"></div>
       <ui-button
-        v-tooltip.group="t('home.record.title')"
-        icon
-        class="mr-2"
-        @click="state.newRecordingModal = true"
-      >
-        <v-remixicon name="riRecordCircleLine" />
-      </ui-button>
-      <ui-button
         v-tooltip.group="
           t(`home.elementSelector.${state.haveAccess ? 'name' : 'noAccess'}`)
         "
@@ -115,31 +107,29 @@
       @delete="deleteWorkflow"
       @toggle-pin="togglePinWorkflow(workflow)"
     />
-  </div>
-  <ui-modal v-model="state.newRecordingModal" custom-content>
-    <ui-card
-      :style="{ height: `${state.cardHeight}px` }"
-      class="w-full recording-card overflow-hidden rounded-b-none"
-      padding="p-0"
+    <div
+      v-if="state.showSettingsPopup"
+      class="bg-accent fixed bottom-5 left-0 m-4 p-4 rounded-lg dark:text-black text-white shadow-md"
     >
-      <div class="flex items-center px-4 pt-4 pb-2">
-        <p class="flex-1 font-semibold">
-          {{ t('home.record.title') }}
-        </p>
-        <v-remixicon
-          class="text-gray-600 dark:text-gray-300 cursor-pointer"
-          name="riCloseLine"
-          size="20"
-          @click="state.newRecordingModal = false"
-        ></v-remixicon>
-      </div>
-      <home-start-recording
-        @record="recordWorkflow"
-        @close="state.newRecordingModal = false"
-        @update="state.cardHeight = recordingCardHeight[$event] || 255"
+      <p class="leading-tight text-sm">
+        If the workflow runs for less than 5 minutes, you set it to run in the
+        background in
+        <a
+          href="https://docs.automa.site/workflow/settings.html#workflow-execution"
+          class="font-semibold underline"
+          target="_blank"
+        >
+          workflow settings.
+        </a>
+      </p>
+      <v-remixicon
+        name="riCloseLine"
+        class="absolute dark:text-gray-600 text-gray-300 top-2 right-2 cursor-pointer"
+        size="20"
+        @click="closeSettingsPopup"
       />
-    </ui-card>
-  </ui-modal>
+    </div>
+  </div>
 </template>
 <script setup>
 import { computed, onMounted, shallowReactive } from 'vue';
@@ -152,15 +142,13 @@ import { useWorkflowStore } from '@/stores/workflow';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
+import { parseJSON } from '@/utils/helper';
+import { initElementSelector as initElementSelectorFunc } from '@/newtab/utils/elementSelector';
 import automa from '@business';
 import HomeWorkflowCard from '@/components/popup/home/HomeWorkflowCard.vue';
 import HomeTeamWorkflows from '@/components/popup/home/HomeTeamWorkflows.vue';
-import HomeStartRecording from '@/components/popup/home/HomeStartRecording.vue';
 
-const recordingCardHeight = {
-  new: 255,
-  existing: 480,
-};
+const isMV2 = browser.runtime.getManifest().manifest_version === 2;
 
 const { t } = useI18n();
 const dialog = useDialog();
@@ -179,7 +167,9 @@ const state = shallowReactive({
   haveAccess: true,
   activeTab: 'local',
   pinnedWorkflows: [],
-  newRecordingModal: false,
+  showSettingsPopup: isMV2
+    ? false
+    : parseJSON(localStorage.getItem('settingsPopup'), true) ?? true,
 });
 
 const pinnedWorkflows = computed(() => {
@@ -224,6 +214,10 @@ const showTab = computed(
   () => hostedWorkflowStore.toArray.length > 0 || userStore.user?.teams
 );
 
+function closeSettingsPopup() {
+  state.showSettingsPopup = false;
+  localStorage.setItem('settingsPopup', false);
+}
 function togglePinWorkflow(workflow) {
   const index = state.pinnedWorkflows.indexOf(workflow.id);
   const copyData = [...state.pinnedWorkflows];
@@ -239,8 +233,27 @@ function togglePinWorkflow(workflow) {
     pinnedWorkflows: copyData,
   });
 }
-function executeWorkflow(workflow) {
-  sendMessage('workflow:execute', workflow, 'background');
+async function executeWorkflow(workflow) {
+  try {
+    const [tab] = await browser.tabs.query({
+      url: browser.runtime.getURL('/newtab.html'),
+    });
+    if (tab && !isMV2) {
+      await browser.tabs.sendMessage(tab.id, {
+        type: 'workflow:execute',
+        data: {
+          data: workflow,
+          options: workflow?.options,
+        },
+      });
+    } else {
+      await sendMessage('workflow:execute', workflow, 'background');
+    }
+
+    window.close();
+  } catch (error) {
+    console.error(error);
+  }
 }
 function updateWorkflow(id, data) {
   return workflowStore.update({
@@ -274,71 +287,14 @@ function deleteWorkflow({ id, name }) {
   });
 }
 function openDashboard(url) {
-  sendMessage('open:dashboard', url, 'background');
-}
-async function initElementSelector() {
-  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-  const result = await browser.tabs.sendMessage(tab.id, {
-    type: 'automa-element-selector',
-  });
-
-  if (!result) {
-    await browser.tabs.executeScript(tab.id, {
-      allFrames: true,
-      file: './elementSelector.bundle.js',
-    });
-  }
-
-  window.close();
-}
-async function recordWorkflow(options = {}) {
-  try {
-    const flows = [];
-    const [activeTab] = await browser.tabs.query({
-      active: true,
-      currentWindow: true,
-    });
-
-    if (activeTab && activeTab.url.startsWith('http')) {
-      flows.push({
-        id: 'new-tab',
-        description: activeTab.url,
-        data: { url: activeTab.url },
-      });
-    }
-
-    await browser.storage.local.set({
-      isRecording: true,
-      recording: {
-        flows,
-        name: 'unnamed',
-        activeTab: {
-          id: activeTab.id,
-          url: activeTab.url,
-        },
-        ...options,
-      },
-    });
-    await browser.browserAction.setBadgeBackgroundColor({ color: '#ef4444' });
-    await browser.browserAction.setBadgeText({ text: 'rec' });
-
-    const tabs = await browser.tabs.query({});
-    for (const tab of tabs) {
-      if (
-        tab.url.startsWith('http') &&
-        !tab.url.includes('chrome.google.com')
-      ) {
-        await browser.tabs.executeScript(tab.id, {
-          allFrames: true,
-          file: 'recordWorkflow.bundle.js',
-        });
-      }
-    }
-
+  sendMessage('open:dashboard', url, 'background').then(() => {
     window.close();
-  } catch (error) {
-    console.error(error);
-  }
+  });
+}
+function initElementSelector() {
+  initElementSelectorFunc().then(() => {
+    window.close();
+  });
 }
 function openWorkflowPage({ id, hostId }) {
   let url = `/workflows/${id}`;

@@ -22,12 +22,18 @@ export default async function ({ data, id }) {
     throw new Error('no-tab');
   }
 
+  const currentWindow = await browser.windows.getCurrent();
+  if (currentWindow.focused)
+    await browser.windows.update(currentWindow.id, { focused: false });
+
   const isTabsQuery = ['match-patterns', 'tab-title'];
   const tabs =
-    findTabBy !== 'match-patterns' ? await browser.tabs.query({}) : [];
+    findTabBy !== 'match-patterns'
+      ? await browser.tabs.query({ lastFocusedWindow: true })
+      : [];
 
   if (isTabsQuery.includes(findTabBy)) {
-    const query = {};
+    const query = { lastFocusedWindow: true };
 
     if (data.findTabBy === 'match-patterns') query.url = data.matchPattern;
     else if (data.findTabBy === 'tab-title') query.title = data.tabTitle;
