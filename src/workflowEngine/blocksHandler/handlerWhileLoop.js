@@ -1,4 +1,4 @@
-import testConditions from '@/utils/testConditions';
+import testConditions from '../utils/testConditions';
 import checkCodeCondition from '../utils/conditionCode';
 
 async function whileLoop({ data, id }, { refData }) {

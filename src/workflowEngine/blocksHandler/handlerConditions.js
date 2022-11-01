@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 import compareBlockValue from '@/utils/compareBlockValue';
-import testConditions from '@/utils/testConditions';
+import testConditions from '../utils/testConditions';
 import renderString from '../templating/renderString';
 import checkCodeCondition from '../utils/conditionCode';
 

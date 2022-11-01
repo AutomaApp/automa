@@ -1,4 +1,4 @@
-import { parseJSON, isWhitespace } from './helper';
+import { parseJSON, isWhitespace } from '@/utils/helper';
 
 const renderContent = (content, contentType) => {
   if (contentType === 'text/plain') return content;

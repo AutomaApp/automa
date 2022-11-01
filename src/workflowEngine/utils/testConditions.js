@@ -1,7 +1,7 @@
 import cloneDeep from 'lodash.clonedeep';
 import objectPath from 'object-path';
-import renderString from '@/workflowEngine/templating/renderString';
-import { conditionBuilder } from './shared';
+import { conditionBuilder } from '@/utils/shared';
+import renderString from '../templating/renderString';
 
 const isBoolStr = (str) => {
   if (str === 'true') return true;
