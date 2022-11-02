@@ -46,7 +46,7 @@ export async function validateTrigger(data) {
       });
     },
     'visit-web': (triggerData) => {
-      checkValue(triggerData.value, {
+      checkValue(triggerData.url, {
         name: 'URL',
         location: 'Visit web trigger',
       });
