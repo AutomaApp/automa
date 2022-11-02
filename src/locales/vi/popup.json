@@ -1,5 +1,20 @@
 {
+  "recording": {
+    "stop": "Dừng ghi",
+    "title": "Ghi âm"
+  },
   "home": {
+    "record": {
+      "title": "Ghi lại quy trình làm việc",
+      "button": "Ghi lại",
+      "name": "Tên quy trình làm việc",
+      "selectBlock": "Chọn một khối để bắt đầu",
+      "anotherBlock": "Không thể bắt đầu từ khối này",
+      "tabs": {
+        "new": "Quy trình làm việc mới",
+        "existing": "Quy trình làm việc hiện tại"
+      }
+    },
     "elementSelector": {
       "name": "Bộ chọn phần tử",
       "noAccess": "Không có quyền truy cập vào trang web này"
@@ -7,7 +22,11 @@
     "workflow": {
       "new": "Tạo quy trình mới",
       "rename": "Đổi tên quy trình",
-      "delete": "Xóa quy trình"
-    },
+      "delete": "Xóa quy trình",
+      "type": {
+        "host": "Máy chủ",
+        "local": "Cục bộ",
+      }
+    }
   }
 }
