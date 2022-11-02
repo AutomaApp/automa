@@ -10,7 +10,67 @@
   "workflow": {
     "blocks": {
       "base": {
+        "title": "Khối",
+        "moveToGroup": "Di chuyển khối sang nhóm khối",
         "selector": "Bộ chọn phần tử",
+        "selectorOptions": "Tùy chọn bộ chọn",
+        "timeout": "Thời gian chờ (mili giây)",
+        "noPermission": "Automa không có đủ quyền để thực hiện hành động này",
+        "grantPermission": "Cấp phép",
+        "action": "Hoạt động",
+        "element": {
+          "select": "Chọn một phần tử",
+          "verify": "Xác minh bộ chọn"
+        },
+        "settings": {
+          "title": "Cài đặt chặn",
+          "line": {
+            "title": "Dòng",
+            "label": "Nhãn dòng",
+            "animated": "Hoạt hình",
+            "select": "Chọn dòng",
+            "to": "Dòng tới khối {name}",
+            "lineColor": "Màu đường kẻ"
+          }
+        },
+        "toggle": {
+          "enable": "Bật khối",
+          "disable": "Tắt khối"
+        },
+        "onError": {
+          "info": "Các quy tắc này sẽ được áp dụng khi có lỗi xảy ra trên khối",
+          "button": "Có lỗi",
+          "title": "Khi xảy ra lỗi",
+          "retry": "Thử lại hành động",
+          "fallbackTitle": "Sẽ thực thi khi có lỗi xảy ra trong khối",
+          "times": {
+            "name": "Thời gian",
+            "description": "Số lần thử lại hành động"
+          },
+          "interval": {
+            "name": "Khoảng thời gian",
+            "description": "Khoảng thời gian chờ giữa mỗi lần thử",
+            "second": "thứ hai"
+          },
+          "toDo": {
+            "error": "Ném lỗi",
+            "continue": "Tiếp tục dòng chảy",
+            "fallback": "Thực thi dự phòng",
+            "restart": "Khởi động lại quy trình"
+          },
+          "insertData": {
+            "name": "Chèn dữ liệu"
+          }
+        },
+        "table": {
+          "checkbox": "Chèn vào bảng",
+          "select": "Chọn cột",
+          "extraRow": {
+            "checkbox": "Thêm hàng bổ sung",
+            "placeholder": "Giá trị",
+            "title": "Giá trị của hàng phụ"
+          }
+        },
         "findElement": {
           "placeholder": "Tìm phần tử bằng",
           "options": {
@@ -25,11 +85,223 @@
         "multiple": {
           "title": "Chọn nhiều phần tử",
           "text": "Nhiều"
+        },
+        "waitSelector": {
+          "title": "Chờ bộ chọn",
+          "timeout": "Thời gian chờ của bộ chọn (mili giây)"
+        },
+        "downloads": {
+          "onConflict": {
+            "uniquify": "Thống nhất",
+            "overwrite": "Ghi đè",
+            "prompt": "Lời nhắc"
+          }
         }
+      },
+      "wait-connections": {
+        "name": "Chờ kết nối",
+        "description": "Chờ tất cả các kết nối trước khi tiếp tục khối tiếp theo",
+        "specificFlow": "Chỉ tiếp tục một quy trình cụ thể",
+        "selectFlow": "Chọn luồng"
+      },
+      "cookie": {
+        "name": "Cookie",
+        "description": "Nhận, đặt hoặc xóa cookie",
+        "types": {
+          "get": "Nhận cookie",
+          "set": "Đặt cookie",
+          "remove": "Xóa cookie",
+          "getAll": "Nhận tất cả cookie"
+        }
+      },
+      "note": {
+        "name": "Ghi chú"
+      },
+      "slice-variable": {
+        "name": "Biến Slice",
+        "description": "Trích xuất một phần của một giá trị biến",
+        "start": "Bắt đầu lập chỉ mục",
+        "end": "Chỉ mục kết thúc"
+      },
+      "workflow-state": {
+        "name": "Trạng thái quy trình làm việc",
+        "description": "Quản lý trạng thái quy trình công việc",
+        "actions": {
+          "stop": "Dừng quy trình công việc"
+        }
+      },
+      "regex-variable": {
+        "name": "Biến RegEx",
+        "description": "Khớp một giá trị biến với một biểu thức chính quy"
+      },
+      "data-mapping": {
+        "source": "Nguồn",
+        "destination": "Điểm đến",
+        "name": "Ánh xạ dữ liệu",
+        "edit": "Chỉnh sửa bản đồ dữ liệu",
+        "dataSource": "Nguồn dữ liệu",
+        "description": "Ánh xạ dữ liệu của một biến hoặc bảng",
+        "addSource": "Thêm nguồn",
+        "addDestination": "Thêm điểm đến"
+      },
+      "sort-data": {
+        "name": "Sắp xếp dữ liệu",
+        "description": "Sắp xếp các mục dữ liệu",
+        "property": "Sắp xếp theo thuộc tính của mặt hàng",
+        "addProperty": "Thêm tài sản"
+      },
+      "increase-variable": {
+        "name": "Tăng biến",
+        "description": "Tăng giá trị của một biến bằng số tiền cụ thể",
+        "increase": "Tăng bởi"
+      },
+      "notification": {
+        "name": "thông báo",
+        "description": "Hiển thị thông báo",
+        "title": "Tiêu đề",
+        "message": "Thông điệp",
+        "imageUrl": "URL hình ảnh (tùy chọn)",
+        "iconUrl": "URL biểu tượng (tùy chọn)"
+      },
+      "delete-data": {
+        "name": "Xóa dữ liệu",
+        "description": "Xóa bảng hoặc dữ liệu biến",
+        "from": "Dữ liệu từ",
+        "allColumns": "[Tất cả các cột]"
+      },
+      "log-data": {
+        "name": "Get log data",
+        "description": "Nhận dữ liệu nhật ký mới nhất của quy trình làm việc",
+        "data": "Ghi dữ liệu"
+      },
+      "tab-url": {
+        "name": "Nhận URL tab",
+        "description": "Lấy URL của tab",
+        "select": "Chọn tab",
+        "types": {
+          "active-tab": "Tab hoạt động",
+          "all": "Tất cả các tab"
+        }
+      },
+      "reload-tab": {
+        "name": "Tải lại tab",
+        "description": "Tải lại tab đang hoạt động"
+      },
+      "press-key": {
+        "name": "Nhấn phím",
+        "description": "Nhấn một phím hoặc một tổ hợp",
+        "target": "Yếu tố mục tiêu (tùy chọn)",
+        "key": "Chìa khóa",
+        "detect": "Phát hiện khóa",
+        "actions": {
+          "press-key": "Nhấn một phím",
+          "multiple-keys": "Nhấn nhiều phím"
+        }
+      },
+      "save-assets": {
+        "name": "Tiết kiệm tài sản",
+        "description": "Lưu nội dung (hình ảnh, video, âm thanh hoặc tệp) từ một phần tử hoặc URL",
+        "filename": "Tên tệp (tùy chọn)",
+        "contentTypes": {
+          "title": "Loại hình",
+          "element": "Phần tử phương tiện (hình ảnh, âm thanh hoặc video)",
+          "url": "URL"
+        }
+      },
+      "handle-dialog": {
+        "name": "Xử lý hộp thoại",
+        "description": "Chấp nhận hoặc loại bỏ hộp thoại khởi tạo JavaScript (cảnh báo, xác nhận, lời nhắc hoặc tải lên trên).",
+        "accept": "Hộp thoại chấp nhận",
+        "promptText": {
+          "label": "Văn bản nhắc nhở (tùy chọn)",
+          "description": "Văn bản cần nhập vào lời nhắc hộp thoại trước khi chấp nhận"
+        }
+      },
+      "handle-download": {
+        "name": "Xử lý tải xuống",
+        "description": "Xử lý tệp đã tải xuống",
+        "timeout": "Thời gian chờ (mili giây)",
+        "noPermission": "Không có quyền truy cập các bản tải xuống",
+        "onConflict": "Xung đột",
+        "waitFile": "Chờ tệp được tải xuống"
+      },
+      "insert-data": {
+        "name": "Chèn dữ liệu",
+        "description": "Chèn dữ liệu vào bảng hoặc biến"
+      },
+      "clipboard": {
+        "name": "Bộ nhớ tạm",
+        "description": "Lấy văn bản đã sao chép từ khay nhớ tạm",
+        "data": "Dữ liệu bảng tạm",
+        "noPermission": "Không có quyền truy cập khay nhớ tạm",
+        "grantPermission": "Cấp phép",
+        "copySelection": "Sao chép văn bản đã chọn trên trang",
+        "types": {
+          "get": "Nhận dữ liệu khay nhớ tạm",
+          "insert": "Chèn văn bản vào khay nhớ tạm"
+        }
+      },
+      "hover-element": {
+        "name": "Hover element",
+        "description": "Hover over an element"
+      },
+      "create-element": {
+        "name": "Tạo phần tử",
+        "description": "Tạo một phần tử và chèn nó vào trang",
+        "edit": "Chỉnh sửa phần tử",
+        "wrap": "Bọc phần tử bên trong",
+        "insertEl": {
+          "title": "Chèn phần tử",
+          "items": {
+            "before": "Là đứa con đầu lòng",
+            "after": "Là đứa con cuối cùng",
+            "next-sibling": "Là anh chị em tiếp theo",
+            "prev-sibling": "Là anh chị em trước",
+            "replace": "Thay thế phần tử mục tiêu"
+          }
+        }
+      },
+      "upload-file": {
+        "name": "Cập nhật dử liệu",
+        "description": "Tải tệp lên phần tử <input type=\"file\">",
+        "filePath": "URL hoặc đường dẫn tệp",
+        "addFile": "Thêm tập tin",
+        "onlyURL": "Chỉ hỗ trợ tải tệp lên từ một URL trong trình duyệt Firefox",
+        "requirement": "Xem yêu cầu trước khi sử dụng khối này",
+        "noFileAccess": "Automa không có quyền truy cập tệp"
+      },
+      "browser-event": {
+        "name": "Sự kiện trình duyệt",
+        "description": "Thực thi khối tiếp theo khi sự kiện được kích hoạt",
+        "events": "Sự kiện",
+        "timeout": "Thời gian chờ (mili giây)",
+        "activeTabLoaded": "Tab hoạt động",
+        "setAsActiveTab": "Đặt làm tab hoạt động"
+      },
+      "blocks-group-2": {
+        "name": "@:workflow.blocks.blocks-group.name 2",
+        "description": "@:workflow.blocks.blocks-group.description"
+      },
+      "blocks-group": {
+        "name": "Nhóm khối",
+        "groupName": "Tên nhóm",
+        "description": "Nhóm các khối",
+        "dropText": "Kéo và thả một khối ở đây",
+        "cantAdd": "Không thể thêm khối \"{blockName}\" vào nhóm."
       },
       "trigger": {
         "name": "Kích hoạt",
         "description": "Quy trình bắt đầu được thực thi ở đây",
+        "addTime": "Thêm thời gian",
+        "selectDay": "Chọn ngày",
+        "timeExist": "Bạn đã thêm {time} vào {day}",
+        "fixedDelay": "Cố định độ trễ",
+        "contextMenus": {
+          "noPermission": "Trình kích hoạt này yêu cầu quyền \"contextMenus\" để hoạt động",
+          "grantPermission": "Cấp phép",
+          "appearIn": "Sẽ xuất hiện trong",
+          "contextName": "Tên quy trình làm việc trong menu ngữ cảnh"
+        },
         "days": [
           "Chủ nhật",
           "Thứ hai",
@@ -42,6 +314,7 @@
         "useRegex": "Dùng regex",
         "shortcut": {
           "tooltip": "Ghi lại lối tắt",
+          "stopRecord": "Dừng ghi",
           "checkboxTitle": "Execute shortcut even when you're in an input element",
           "checkbox": "Hoạt động khi nhập liệu",
           "note": "Lưu ý: phím tắt chỉ hoạt động khi bạn đang truy cập một trang web"
@@ -53,14 +326,49 @@
           "date": "Ngày",
           "time": "Giờ",
           "url": "URL hoặc Regex",
-          "shortcut": "Phim tắt"
+          "shortcut": "Phim tắt",
+          "cron-expression": "Biểu thức cron"
+        },
+        "element-change": {
+          "target": "Mục tiêu yếu tố để quan sát",
+          "optionsInfo": "Đột biến phần tử nào sẽ kích hoạt quy trình làm việc",
+          "targetWebsite": "Mẫu Đối sánh của trang web có phần tử mục tiêu (nhấp để xem thêm các ví dụ về Mẫu Đối sánh)",
+          "baseEl": {
+            "title": "Phần tử cơ sở (tùy chọn)",
+            "description": "Automa sẽ bắt đầu lại việc quan sát phần tử mục tiêu khi phần tử này thay đổi"
+          },
+          "subtree": {
+            "title": "Bao gồm cây con",
+            "description": "Mở rộng giám sát cho toàn bộ cây con của phần tử mục tiêu"
+          },
+          "childList": {
+            "title": "Danh sách con",
+            "description": "Giám sát việc thêm các phần tử con mới hoặc xóa các phần tử con hiện có"
+          },
+          "attributes": {
+            "title": "Thuộc tính",
+            "description": "Theo dõi các thay đổi đối với giá trị của các thuộc tính trên phần tử mục tiêu"
+          },
+          "attributeFilter": {
+            "title": "Bộ lọc thuộc tính",
+            "separate": "Sử dụng dấu phẩy (,) để phân tách tên thuộc tính",
+            "description": "Chỉ theo dõi các thuộc tính cụ thể (để trống để theo dõi tất cả)"
+          },
+          "characterData": {
+            "title": "Dữ liệu ký tự",
+            "description": "Theo dõi các thay đổi đối với dữ liệu / văn bản ký tự trong phần tử đích"
+          }
         },
         "items": {
           "manual": "Thủ công",
           "interval": "Chu kỳ",
+          "cron-job": "Lập lịch công việc",
           "date": "Vào một ngày cụ thể",
+          "context-menu": "Danh mục",
+          "element-change": "Khi phần tử thay đổi",
           "specific-day": "Vào một ngày cụ thể",
           "visit-web": "Khi truy cập một trang web",
+          "on-startup": "Khi khởi động trình duyệt",
           "keyboard-shortcut": "Phim tắt"
         }
       },
@@ -68,7 +376,48 @@
         "name": "Thực thi quy trình",
         "overwriteNote": "Thao tác này sẽ ghi đè lên dữ liệu chung của quy trình đã chọn",
         "select": "Chọn quy trình",
-        "description": ""
+        "executeId": "Thực thi ID (tùy chọn)",
+        "description": "",
+        "insertAllVars": "Chèn tất cả các biến quy trình làm việc hiện tại",
+        "insertVars": "Chèn các biến quy trình công việc hiện tại",
+        "useCommas": "Sử dụng dấu phẩy để phân tách tên biến"
+      },
+       "google-sheets": {
+        "name": "Google sheets",
+        "description": "Đọc hoặc cập nhật dữ liệu Google Trang tính",
+        "previewData": "Xem trước dữ liệu",
+        "firstRow": "Sử dụng hàng đầu tiên làm khóa",
+        "keysAsFirstRow": "Sử dụng các phím làm hàng đầu tiên",
+        "insertData": "Chèn dữ liệu",
+        "valueInputOption": "Tùy chọn nhập giá trị",
+        "insertDataOption": "Chèn tùy chọn dữ liệu",
+        "rangeToSearch": "Phạm vi bắt đầu tìm kiếm",
+        "dataFrom": {
+          "label": "Dữ liệu từ",
+          "options": {
+            "data-columns": "Bảng",
+            "custom": "Tùy chỉnh"
+          }
+        },
+        "refKey": {
+          "label": "Khóa tham chiếu (tùy chọn)",
+          "placeholder": "Tên khóa"
+        },
+        "spreadsheetId": {
+          "label": "Id bảng tính",
+          "link": "Xem cách lấy ID bảng tính"
+        },
+        "range": {
+          "label": "Phạm vi",
+          "link": "Bấm để xem thêm ví dụ"
+        },
+        "select": {
+          "get": "Nhận giá trị ô bảng tính",
+          "getRange": "Nhận phạm vi bảng tính",
+          "update": "Cập nhật giá trị ô bảng tính",
+          "append": "Nối các giá trị ô bảng tính",
+          "clear": "Xóa giá trị ô bảng tính"
+        }
       },
       "active-tab": {
         "name": "Tab hoạt động",
@@ -86,6 +435,13 @@
       "new-window": {
         "name": "Cửa sổ mới",
         "description": "Tạo cửa sổ mới",
+        "top": "Trên",
+        "left": "Trái",
+        "height": "Chiều cao",
+        "width": "Chiều rộng",
+        "note": "Lưu ý: sử dụng số 0 để tắt",
+        "position": "Vị trí cửa sổ",
+        "size": "Kích thước cửa sổ",
         "windowState": {
           "placeholder": "Trạng thái cửa sổ",
           "options": {
@@ -111,8 +467,9 @@
       "close-tab": {
         "name": "Đóng tab",
         "description": "",
+        "url": "URL hoặc match pattern",
         "activeTab": "Đóng activeTab",
-        "url": "URL hoặc match pattern"
+        "allWindows": "Đóng tất cả các cửa sổ"
       },
       "event-click": {
         "name": "Nhấp vào phần tử",
@@ -126,9 +483,14 @@
           "placeholder": "(mili giây)"
         }
       },
+      "parameter-prompt": {
+        "name": "Nhắc tham số"
+      },
       "get-text": {
         "name": "Trích văn bản",
         "description": "Trích văn bản từ một phần tử",
+        "checkbox": "Chèn vào bảng",
+        "includeTags": "Bao gồm các thẻ HTML",
         "prefixText": {
           "placeholder": "Tiền tố văn bản",
           "title": "Thêm tiền tố vào văn bản"
@@ -140,7 +502,18 @@
       },
       "export-data": {
         "name": "Xuất dữ liệu",
-        "description": "Xuất dữ liệu của quy trình"
+        "description": "Xuất dữ liệu của quy trình",
+        "exportAs": "Xuất file tại",
+        "refKey": "Khóa liên kết",
+        "bomHeader": "Thêm UTF-8 BOM",
+        "dataToExport": {
+          "placeholder": "Dữ liệu để xuất",
+          "options": {
+            "data-columns": "Bảng",
+            "google-sheets": "Google sheets",
+            "variable": "Biến"
+          }
+        }
       },
       "element-scroll": {
         "name": "Cuộn",
@@ -155,8 +528,11 @@
       "new-tab": {
         "name": "Tab mới",
         "description": "",
+        "url": "URL tab mới",
+        "customUserAgent": "Sử dụng tác nhân người dùng tùy chỉnh",
         "activeTab": "Đặt làm tab hoạt động",
         "tabToGroup": "Thêm tab vào nhóm",
+        "waitTabLoaded": "Chờ cho đến khi tab được tải",
         "updatePrevTab": {
           "title": "Sử dụng tab mới đã mở trước đó thay vì tạo tab mới",
           "text": "Cập nhật tab đã mở trước đó"
@@ -172,7 +548,12 @@
         "forms": {
           "name": "Tên thuộc tính",
           "checkbox": "Lưu dữ liệu",
-          "column": "Chọn cột"
+          "column": "Chọn cột",
+          "extraRow": {
+            "checkbox": "Thêm hàng bổ sung",
+            "placeholder": "Giá trị",
+            "title": "Giá trị của hàng phụ"
+          }
         }
       },
       "forms": {
@@ -205,6 +586,14 @@
         "description": "Thực thi code Javascript trong trang web",
         "availabeFuncs": "Các hàm có sẵn:",
         "removeAfterExec": "Xóa sau khi khối được thực thi",
+        "everyNewTab": "Thực thi mọi tab mới",
+        "context": {
+          "name": "Bối cảnh thực thi",
+          "items": {
+            "website": "Tab hoạt động",
+            "background": "Nền"
+          }
+        },
         "modal": {
           "tabs": {
             "code": "JavaScript code",
@@ -223,13 +612,17 @@
       },
       "conditions": {
         "name": "Điều kiện",
+        "add": "Thêm điều kiện",
         "description": "Khối có điều kiện",
+        "retryConditions": "Thử lại nếu tất cả các điều kiện không được đáp ứng",
+        "refresh": "Làm mới các kết nối điều kiện",
         "fallbackTitle": "Thực thi khi tất cả các phép so sánh không đáp ứng yêu cầu",
         "equals": "Ngang bằng",
         "gt": "Lớn hơn",
         "gte": "Lớn hơn hoặc ngang bằng",
         "lt": "Nhỏ hơn",
         "lte": "Nhỏ hơn hoặc ngang bằng",
+        "ne": "Không bằng",
         "contains": "Bao hàm"
       },
       "element-exists": {
@@ -237,6 +630,7 @@
         "description": "Kiểm tra xem một phần tử có tồn tại không",
         "selector": "Bộ chọn phần tử",
         "fallbackTitle": "Thực thi khi phần tử không tồn tại",
+        "throwError": "Ném lỗi nếu không tồn tại",
         "tryFor": {
           "title": "Cố gắng kiểm tra xem phần tử có tồn tại không",
           "label": "Số lần thử"
@@ -251,6 +645,8 @@
         "description": "Webhook cho phép dịch vụ bên ngoài được thông báo",
         "url": "The Post receive URL",
         "contentType": "Chọn một loại nội dung",
+        "method": "Yêu cầu phương thức",
+        "fallback": "Thực thi khi không thành công hoặc lỗi khi thực hiện một yêu cầu HTTP",
         "buttons": {
           "header": "Thêm header"
         },
@@ -260,13 +656,36 @@
         },
         "tabs": {
           "headers": "Headers",
-          "body": "Nội dung"
+          "body": "Nội dung",
+          "response": "Phản hồi"
+        }
+      },
+      "while-loop": {
+        "name": "Trong khi lặp lại",
+        "description": "Thực thi các khối khi điều kiện được đáp ứng",
+        "editCondition": "Chỉnh sửa điều kiện",
+        "fallback": "Thực thi khi điều kiện sai"
+      },
+      "loop-elements": {
+        "name": "Yếu tố vòng lặp",
+        "description": "Lặp lại qua các phần tử",
+        "loadMore": "Tải thêm các phần tử",
+        "scrollToBottom": "Cuộn xuống dưới cùng",
+        "actions": {
+          "none": "Không có",
+          "click-element": "Nhấp vào một phần tử để tải thêm",
+          "scroll": "Cuộn xuống để tải thêm",
+          "click-link": "Nhấp vào liên kết để tải thêm"
         }
       },
       "loop-data": {
-        "name": "Loop data",
+        "name": "Dữ liệu vòng lặp",
         "description": "Lặp lại qua các cột dữ liệu hoặc dữ liệu tùy chỉnh của bạn",
-        "loopId": "Loop ID",
+        "loopId": "ID Vòng lặp",
+         "refKey": "Khóa liên kết",
+        "startIndex": "Bắt đầu từ chỉ mục",
+        "resumeLastWorkflow": "Tiếp tục quy trình làm việc cuối cùng",
+        "reverse": "Thứ tự vòng lặp đảo ngược",
         "modal": {
           "fileTooLarge": "Tệp quá lớn để chỉnh sửa",
           "maxFile": "Kích thước tệp tối đa là 1MB",
@@ -289,8 +708,12 @@
           "toNumber": "Đến số",
           "options": {
             "numbers": "Số liệu",
+            "variable": "Biến",
             "data-columns": "Cột dữ liệu",
-            "custom-data": "Dữ liệu tùy chỉnh"
+            "table": "Bảng",
+            "custom-data": "Dữ liệu tùy chỉnh",
+            "google-sheets": "Google sheets",
+            "elements": "Các yếu tố"
           }
         }
       },
@@ -300,8 +723,17 @@
       },
       "take-screenshot": {
         "name": "Chụp màn hình",
+        "fullPage": "Chụp ảnh màn hình toàn trang",
         "description": "Chụp màn hình của tab đang hoạt động",
-        "imageQuality": "Chất lượng hình ảnh"
+        "imageQuality": "Chất lượng hình ảnh",
+        "saveToColumn": "Chèn ảnh chụp màn hình vào bảng",
+        "saveToComputer": "Lưu ảnh chụp màn hình vào máy tính",
+        "types": {
+          "title": "Chụp ảnh màn hình của",
+          "page": "Trang",
+          "fullpage": "Toàn trang",
+          "element": "Một yếu tố"
+        }
       },
       "switch-to": {
         "name": "Chuyển đổi frame",
