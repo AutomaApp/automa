@@ -24,9 +24,7 @@ export async function validateTrigger(data) {
     },
     'context-menu': async (triggerData) => {
       const permission = isFirefox ? 'menus' : 'contextMenus';
-      const hasPermission = await checkPermissions({
-        permissions: [permission],
-      });
+      const hasPermission = await checkPermissions([permission]);
 
       if (!hasPermission) {
         errors.push(
@@ -212,7 +210,7 @@ export async function validateClipboard() {
   const permissions = isFirefox
     ? ['clipboardRead', 'clipboardWrite']
     : ['clipboardRead'];
-  const hasPermission = await checkPermissions({ permissions });
+  const hasPermission = await checkPermissions(permissions);
 
   if (!hasPermission)
     return [
