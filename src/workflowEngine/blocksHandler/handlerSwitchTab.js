@@ -23,7 +23,8 @@ export default async function ({ data, id }) {
   }
 
   const isTabsQuery = ['match-patterns', 'tab-title'];
-  const tabs = findTabBy !== 'match-patterns' ? await browser.tabs.query() : [];
+  const tabs =
+    findTabBy !== 'match-patterns' ? await browser.tabs.query({}) : [];
 
   if (isTabsQuery.includes(findTabBy)) {
     const query = {};
