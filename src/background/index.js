@@ -116,6 +116,7 @@ message.on('workflow:execute', async (workflowData, sender) => {
   if (!isMV2 && (!context || context === 'popup')) {
     await BackgroundUtils.openDashboard('', false);
     await sleep(1000);
+    console.log('halo', workflowData);
     await BackgroundUtils.sendMessageToDashboard('workflow:execute', {
       data: workflowData,
       options: workflowData.option,
