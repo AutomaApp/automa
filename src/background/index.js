@@ -27,6 +27,9 @@ browser.runtime.onInstalled.addListener(
 browser.webNavigation.onCompleted.addListener(
   BackgroundEventsListeners.onWebNavigationCompleted
 );
+browser.webNavigation.onHistoryStateUpdated.addListener(
+  BackgroundEventsListeners.onHistoryStateUpdated
+);
 
 const contextMenu =
   BROWSER_TYPE === 'firefox' ? browser.menus : browser.contextMenus;

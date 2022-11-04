@@ -27,17 +27,19 @@ async function executeWorkflow(workflowData, options) {
 }
 
 class BackgroundWorkflowTriggers {
-  static async visitWebTriggers(tabId, tabUrl) {
+  static async visitWebTriggers(tabId, tabUrl, spa = false) {
     const { visitWebTriggers } = await browser.storage.local.get(
       'visitWebTriggers'
     );
     if (!visitWebTriggers || visitWebTriggers.length === 0) return;
 
-    const triggeredWorkflow = visitWebTriggers.find(({ url, isRegex }) => {
-      if (url.trim() === '') return false;
+    const triggeredWorkflow = visitWebTriggers.find(
+      ({ url, isRegex, supportSPA }) => {
+        if (!url.trim() || (spa && !supportSPA)) return false;
 
-      return tabUrl.match(isRegex ? new RegExp(url, 'g') : url);
-    });
+        return tabUrl.match(isRegex ? new RegExp(url, 'g') : url);
+      }
+    );
 
     if (triggeredWorkflow) {
       let workflowId = triggeredWorkflow.id;

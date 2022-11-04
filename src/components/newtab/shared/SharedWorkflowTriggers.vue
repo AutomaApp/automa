@@ -127,6 +127,7 @@ const triggersData = {
     data: {
       url: '',
       isUrlRegex: false,
+      supportSPA: false,
     },
   },
   'keyboard-shortcut': {

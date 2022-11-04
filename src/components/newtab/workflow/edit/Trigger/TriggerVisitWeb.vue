@@ -13,6 +13,13 @@
     >
       {{ t('workflow.blocks.trigger.useRegex') }}
     </ui-checkbox>
+    <ui-checkbox
+      :model-value="data.supportSPA"
+      class="ml-6"
+      @change="$emit('update', { supportSPA: $event })"
+    >
+      Support SPA website
+    </ui-checkbox>
   </div>
 </template>
 <script setup>

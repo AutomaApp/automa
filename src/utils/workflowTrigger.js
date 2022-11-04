@@ -226,6 +226,7 @@ export async function registerVisitWeb(workflowId, data) {
       id: workflowId,
       url: data.url,
       isRegex: data.isUrlRegex,
+      supportSPA: data.supportSPA ?? false,
     };
 
     if (index === -1) {
