@@ -25,7 +25,7 @@
       active-fill="rgba(248, 113, 113, 0.1)"
     />
   </svg>
-  <teleport to="body">
+  <teleport to="html">
     <div
       v-if="!disabled"
       id="automa-selector-overlay"
@@ -155,8 +155,9 @@ function retrieveElementsRect({ clientX, clientY, target: eventTarget }, type) {
   if (!target) return;
 
   const onlyInList = props.onlyInList && elementsState.selected.length > 0;
+  const framesEl = ['IFRAME', 'FRAME'];
 
-  if (target.tagName === 'IFRAME' || target.tagName === 'FRAME') {
+  if (framesEl.includes(target.tagName)) {
     if (type === 'selected') removeElementsList();
 
     if (target.contentDocument) {
