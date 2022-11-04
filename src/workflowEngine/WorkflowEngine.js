@@ -143,7 +143,7 @@ class WorkflowEngine {
           browser.windows.create({
             type: 'popup',
             width: 480,
-            height: window.screen.availHeight,
+            height: 650,
             url: browser.runtime.getURL(
               `/params.html?workflowId=${this.workflow.id}`
             ),
@@ -271,7 +271,7 @@ class WorkflowEngine {
   addLogHistory(detail) {
     if (detail.name === 'blocks-group') return;
 
-    const isLimit = this.history.length >= this.logsLimit;
+    const isLimit = this.history?.length >= this.logsLimit;
     const notErrorLog = detail.type !== 'error';
 
     if ((isLimit || !this.saveLog) && notErrorLog) return;

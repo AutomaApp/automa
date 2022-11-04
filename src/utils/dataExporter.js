@@ -38,7 +38,7 @@ export function generateJSON(keys, data) {
 
 export default function (
   data,
-  { name, type, addBOMHeader, csvOptions, returnUrl },
+  { name, type, addBOMHeader, csvOptions, returnUrl, returnBlob },
   converted
 ) {
   let result = data;
@@ -71,7 +71,10 @@ export default function (
   }
 
   const { mime, ext } = files[type];
-  const blobUrl = URL.createObjectURL(new Blob(payload, { type: mime }));
+  const blob = new Blob(payload, { type: mime });
+  if (returnBlob) return blob;
+
+  const blobUrl = URL.createObjectURL(blob);
 
   if (!returnUrl) fileSaver(`${name || 'unnamed'}${ext}`, blobUrl);
 

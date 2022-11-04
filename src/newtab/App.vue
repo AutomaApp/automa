@@ -230,8 +230,8 @@ const messageEvents = {
         });
     }
   },
-  'workflow:execute': function ({ data, options = {} }) {
-    startWorkflowExec(data, options);
+  'workflow:execute': function ({ data }) {
+    startWorkflowExec(data, data?.options ?? {});
   },
   'recording:stop': stopRecording,
   'background--recording:stop': stopRecording,

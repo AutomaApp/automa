@@ -291,8 +291,14 @@ function openDashboard(url) {
     window.close();
   });
 }
-function initElementSelector() {
-  initElementSelectorFunc().then(() => {
+async function initElementSelector() {
+  const [tab] = await browser.tabs.query({
+    url: '*://*/*',
+    active: true,
+    currentWindow: true,
+  });
+  if (!tab) return;
+  initElementSelectorFunc(tab).then(() => {
     window.close();
   });
 }

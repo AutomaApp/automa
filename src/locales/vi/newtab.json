@@ -1,52 +1,365 @@
 {
   "home": {
-    "viewAll": "Tất cả"
+    "viewAll": "Tất cả",
+    "communities": "Cộng đồng"
+  },
+  "welcome": {
+    "title": "Chào mừng bạn đến với Automa! 🎉",
+    "text": "Bắt đầu bằng cách đọc tài liệu hoặc duyệt quy trình công việc trong Automa Marketplace.",
+    "marketplace": "Cửa hàng"
+  },
+  "packages": {
+    "name": "Gói hàng | Danh sách gói",
+    "add": "Thêm gói",
+    "icon": "Biểu tượng gói",
+    "open": "Mở gói",
+    "new": "Gói mới",
+    "set": "Đặt dưới dạng một gói",
+    "settings": {
+      "asBlock": "Đặt gói dưới dạng khối"
+    },
+    "categories": {
+      "my": "Gói của tôi",
+      "installed": "Các gói đã cài đặt"
+    }
+  },
+  "scheduledWorkflow": {
+    "title": "Quy trình làm việc đã lên lịch",
+    "nextRun": "Lần chạy tiếp theo",
+    "active": "Kích hoạt",
+    "refresh": "Tải lại",
+    "schedule":{
+      "title": "Lịch trình",
+      "types": {
+        "everyDay": "Hằng ngày",
+        "general": "Mỗi {time}",
+        "interval": "Cứ {time} phút một lần"
+      }
+    }
+  },
+  "storage": {
+    "title": "Kho",
+    "table": {
+      "add": "Thêm bảng",
+      "createdAt": "Được tạo lúc",
+      "modifiedAt": "Đã sửa đổi lúc",
+      "rowsCount": "Số hàng",
+      "delete": "Xóa bảng"
+    }
+  },
+  "credential": {
+    "title": "Thông tin xác thực | Danh sách thông tin xác thực",
+    "add": "Thêm thông tin đăng nhập",
+    "use": {
+      "title": "Thông tin đăng nhập đã sử dụng",
+      "description": "Quy trình làm việc này sử dụng các thông tin xác thực này"
+    }
+  },
+  "workflowPermissions": {
+    "title": "Quyền quy trình làm việc",
+    "description": "Dòng công việc này yêu cầu các quyền này chạy đúng cách",
+    "contextMenus": {
+      "title": "Danh mục",
+      "description": "Để thực thi quy trình làm việc qua menu ngữ cảnh"
+    },
+    "clipboardRead": {
+      "title": "Bảng tạm",
+      "description": "Để truy cập dữ liệu khay nhớ tạm"
+    },
+    "notifications": {
+      "title": "Thông báo",
+      "description": "Để hiển thị một thông báo"
+    },
+    "downloads": {
+      "title": "Tải xuống",
+      "description": "Lưu nội dung trang và đổi tên tệp đã tải xuống"
+    },
+    "cookies": {
+      "title": "Cookies",
+      "description": "Đọc, đặt hoặc xóa cookie"
+    }
+  },
+  "updateMessage": {
+    "text1": "Automa đã được cập nhật lên v{version},",
+    "text2": "xem có gì mới."
+  },
+  "workflows": {
+    "folder": {
+      "new": "Thư mục mới",
+      "name": "Tên thư mục",
+      "delete": "Xóa thư mục",
+      "rename": "Đổi tên thư mục"
+    }
+  },
+  "auth": {
+    "title": "Xác thực",
+    "signIn": "Đăng nhập",
+    "username": "Bạn cần đặt tên người dùng của mình trước",
+    "clickHere": "Bấm vào đây",
+    "text": "Bạn cần phải đăng nhập trước khi có thể làm điều đó"
+  },
+  "running": {
+    "start": "Bắt đầu vào {date}",
+    "message": "Điều này chỉ hiển thị 5 bản ghi cuối cùng"
   },
   "settings": {
+    "theme": "Chủ đề",
+    "shortcuts": {
+      "duplicate": "Lối tắt đã được sử dụng bởi \"{name}\""
+    },
+     "editor": {
+      "title": "Tiêu đề",
+      "curvature": {
+        "title": "Đường cong",
+        "line": "Hàng",
+        "reroute": "Định tuyến",
+        "rerouteFirstLast": "Định tuyến lại điểm đầu tiên và điểm cuối cùng"
+      },
+      "arrow": {
+        "title": "Mũi tên dòng",
+        "description": "Thêm mũi tên vào cuối dòng"
+      },
+      "snapGrid": {
+        "title": "Bám vào lưới",
+        "description": "Bám vào lưới khi di chuyển một khối"
+      }
+    },
+    "deleteLog": {
+      "title": "Tự động xóa nhật ký quy trình làm việc",
+      "after": "Xóa sau",
+      "deleteAfter": {
+        "never": "Không bao giờ",
+        "days": "{day} ngày"
+      }
+    },
     "language": {
       "label": "Ngôn ngữ",
       "helpTranslate": "Không tìm thấy ngôn ngữ của bạn? Hãy đóng góp bản dịch với chúng tôi.",
       "reloadPage": "Tải lại trang để hoàn tất thao tác"
+    },
+    "menu": {
+      "backup": "Sao lưu quy trình làm việc",
+      "editor": "Biên tập viên",
+      "general": "Chung",
+      "shortcuts": "Các phím tắt",
+      "about": "Thông tin"
+    },
+    "backupWorkflows": {
+      "title": "Sao lưu cục bộ",
+      "invalidPassword": "Mật khẩu không hợp lệ",
+      "workflowsAdded": "{count} quy trình công việc đã được thêm vào",
+      "name": "Sao lưu quy trình công việc",
+      "needSignin": "Trước tiên bạn cần đăng nhập vào tài khoản của mình",
+      "backup": {
+        "button": "Sao lưu",
+        "encrypt": "Mã hóa bằng mật khẩu"
+      },
+      "restore": {
+        "title": "Khôi phục quy trình làm việc",
+        "button": "Khôi phục",
+        "update": "Cập nhật nếu quy trình làm việc tồn tại"
+      },
+      "cloud": {
+        "buttons": {
+          "local": "Cục bộ",
+          "cloud": "Đám mây"
+        },
+        "location": "Địa điểm",
+        "delete": "Xóa bản sao lưu",
+        "title": "Sao lưu dữ liệu đám mây",
+        "sync": "Đồng bộ",
+        "lastSync": "Lần đồng bộ cuối cùng",
+        "lastBackup": "Sao lưu cuối cùng",
+        "select": "Chọn quy trình làm việc",
+        "storedWorkflows": "Quy trình làm việc được lưu trữ trên đám mây",
+        "selected": "Đã chọn",
+        "selectText": "Chọn quy trình công việc mà bạn muốn sao lưu",
+        "selectAll": "Chọn tất cả",
+        "deselectAll": "Bỏ chọn tất cả",
+        "needSelectWorkflow": "Bạn cần chọn quy trình công việc mà bạn muốn sao lưu"
+      }
     }
   },
   "workflow": {
+    "previewMode": {
+      "title": "Chế độ xem trước",
+      "description": "Bạn đang ở chế độ xem trước, những thay đổi bạn đã thực hiện sẽ không được lưu"
+    },
+    "pinWorkflow": {
+      "pin": "Ghim quy trình làm việc",
+      "unpin": "Bỏ ghim quy trình làm việc",
+      "pinned": "Quy trình công việc được ghim"
+    },
+    "my": "Quy trình làm việc của tôi",
     "import": "Nhập quy trình",
     "new": "Tạo quy trình mới",
     "delete": "Xóa quy trình",
+    "browse": "Duyệt quy trình công việc",
     "name": "Tên quy trình",
     "rename": "Sửa tên quy trình",
+    "backupCloud": "Sao lưu quy trình công việc lên đám mây",
     "add": "Thêm quy trình",
     "clickToEnable": "Nhấn để kích hoạt",
+    "toggleSidebar": "Chuyển đổi thanh bên",
+    "cantEdit": "Không thể chỉnh sửa quy trình làm việc được chia sẻ",
+    "undo": "Hoàn tác",
+    "redo": "Làm lại",
+    "autoAlign": {
+      "title": "Tự động căn chỉnh"
+    },
+    "blocksFolder": {
+      "title": "Thư mục khối",
+      "add": "Thêm khối vào thư mục",
+      "save": "Lưu vào thư mục"
+    },
+    "searchBlocks": {
+      "title": "Các khối tìm kiếm trong trình chỉnh sửa"
+    },
+    "conditionBuilder": {
+      "title": "Trình tạo điều kiện",
+      "add": "Add Thêm điều kiện",
+      "and": "Và",
+      "or": "Hoặc",
+      "topAwait": "Hỗ trợ chức năng chờ đợi cấp cao nhất và \"automaRefData \""
+    },
+    "host": {
+      "title": "Lưu trữ quy trình làm việc",
+      "set": "Đặt làm quy trình làm việc trên máy chủ lưu trữ",
+      "id": "ID Máy chủ",
+      "add": "Thêm quy trình làm việc được lưu trữ",
+      "sync": {
+        "title": "Đồng bộ",
+        "description": "Đồng bộ hóa với quy trình làm việc trên máy chủ"
+      },
+      "messages": {
+        "hostExist": "Bạn đã thêm máy chủ này",
+        "notFound": "Không thể tìm thấy quy trình làm việc được lưu trữ với id \"{id} \""
+      }
+    },
+    "type": {
+      "local": "Cục bộ",
+      "shared": "Được chia sẻ",
+      "host": "Máy chủ"
+    },
+    "unpublish": {
+      "title": "Hủy xuất bản quy trình làm việc",
+      "button": "Hủy xuất bản",
+      "body": "Bạn có chắc chắn muốn hủy xuất bản quy trình làm việc \"{name} \" không?"
+    },
+    "share": {
+      "url": "Chia sẻ URL",
+      "publish": "Xuất bản",
+      "sharedAs": "Được chia sẻ với tên \"{name} \"",
+      "title": "Chia sẻ quy trình làm việc",
+      "download": "Thêm quy trình làm việc vào cục bộ",
+      "edit": "Chỉnh sửa Mô tả",
+      "fetchLocal": "Tìm nạp quy trình làm việc cục bộ",
+      "update": "Cập nhật",
+      "unpublish": "Hủy xuất bản"
+    },
+    "variables": {
+      "title": "Biến | Danh sách biến",
+      "name": "Tên biến",
+      "assign": "Gán cho biến"
+    },
+    "protect": {
+      "title": "Bảo vệ quy trình làm việc ",
+      "remove": "Loại bỏ bảo vệ",
+      "button": "Bảo vệ",
+      "note": "Lưu ý: bạn phải nhớ mật khẩu này, mật khẩu này sẽ được yêu cầu để chỉnh sửa và xóa quy trình làm việc sau này."
+    },
+    "locked": {
+      "title": "Dòng công việc này được bảo vệ",
+      "body": "Nhập mật khẩu để mở khóa",
+      "unlock": "Mở khóa",
+      "messages": {
+        "incorrect-password": "Mật khẩu không đúng"
+      }
+    },
     "state": {
       "executeBy": "Thực hiện bởi: \"{name}\""
     },
-    "dataColumns": {
-      "title": "Cơ sở dữ liệu Cột",
+    "table": {
+      "title": "Bảng | Danh sách bảng",
       "placeholder": "Tìm kiếm hoặc thêm cột",
+      "select": "Chọn cột",
       "column": {
-        "name": "Tên cột",
-        "type": "Kiểu dữ liệu"
+        "name": "Tên cột dọc",
+        "type": "Loại dữ liệu"
       }
     },
     "sidebar": {
-      "workflowIcon": "Icon"
+      "workflowIcon": "Biểu tượng quy trình làm việc"
     },
     "editor": {
       "zoomIn": "Phóng to",
       "zoomOut": "Thu nhỏ",
       "resetZoom": "Về mặc định",
-      "duplicate": "Nhân bản"
+      "duplicate": "Nhân bản",
+      "copy": "Sao chép",
+      "paste": "Dán",
+      "group": "Nhóm khối",
+      "ungroup": "Bỏ nhóm các khối"
     },
     "settings": {
+      "saveLog": "Lưu nhật ký quy trình làm việc",
+      "executedBlockOnWeb": "Hiển thị khối đã thực thi trên trang web",
+      "notification": {
+        "title": "Thông báo quy trình làm việc",
+        "description": "Hiển thị trạng thái dòng công việc (thành công hay không thành công) sau khi nó được thực thi",
+        "noPermission": "Automa yêu cầu quyền \"thông báo \" để làm cho điều này hoạt động"
+      },
+      "publicId": {
+        "title": "ID công khai quy trình làm việc",
+        "description": "Sử dụng id công khai này để thực thi quy trình công việc bằng sự kiện tùy chỉnh JS"
+      },
+      "defaultColumn": {
+        "title": "Chèn vào cột mặc định",
+        "description": "Chèn dữ liệu vào cột mặc định nếu không có cột nào được chọn trong khối",
+        "name": "Tên cột mặc định"
+      },
+      "autocomplete": {
+        "title": "Tự động hoàn thành",
+        "description": "Bật tự động hoàn thành trong khối đầu vào (tắt nếu nó làm cho Automa không ổn định)"
+      },
+      "clearCache": {
+        "title": "Xóa bộ nhớ cache",
+        "description": "Xóa bộ nhớ cache (chỉ mục trạng thái và vòng lặp) của quy trình làm việc",
+        "info": "Xóa thành công bộ nhớ cache của quy trình làm việc",
+        "btn": "Xóa"
+      },
+      "reuseLastState": {
+        "title": "Sử dụng lại trạng thái quy trình làm việc cuối cùng",
+        "description": "Sử dụng dữ liệu trạng thái (bảng, biến và dữ liệu toàn cục) từ quy trình làm việc được thực thi gần đây nhất "
+      },
+      "debugMode": {
+        "title": "Chế độ kiểm tra sửa lỗi",
+        "description": "Thực thi quy trình làm việc bằng Giao thức Chrome DevTools"
+      },
+      "restartWorkflow": {
+        "for": "Khởi động lại cho",
+        "times": "Times",
+        "description": "Tối đa bao nhiêu lần quy trình làm việc sẽ khởi động lại"
+      },
       "onError": {
         "title": "Khi quy trình gặp lỗi",
+        "description": "Đặt những việc cần làm khi xảy ra lỗi trong quy trình làm việc",
         "items": {
           "keepRunning": "Tiếp tục chạy",
-          "stopWorkflow": "Dừng quy trình"
+          "stopWorkflow": "Dừng quy trình",
+          "restartWorkflow": "Khởi động lại quy trình làm việc"
         }
       },
       "timeout": {
         "title": "Thời lượng thực thi tối đa (Mili giây)"
+      },
+      "blockDelay": {
+        "title": "Chậm trễ khối (mili giây)",
+        "description": "Thêm độ trễ trước khi thực hiện từng khối"
+      },
+      "tabLoadTimeout": {
+        "title": "Thời gian chờ tải tab",
+        "description": "Thời gian tối đa để tải tab tính bằng mili giây, vượt qua 0 để tắt thời gian chờ."
       }
     }
   },
@@ -69,7 +382,9 @@
     }
   },
   "log": {
+    "flowId": "ID Luồng",
     "goBack": "Trở lại nhật ký \"{name}\"",
+    "goWorkflow": "Đi tới quy trình làm việc",
     "startedDate": "Ngày bắt đầu",
     "duration": "Thời lượng",
     "selectAll": "Chọn tất cả",
@@ -80,14 +395,33 @@
       "finish": "Hoàn thành"
     },
     "messages": {
+      "url-empty": "URL trống",
+      "invalid-url": "URL không hợp lệ",
+      "conditions-empty": "Điều kiện trống",
       "workflow-disabled": "Quy trình đã được vô hiệu hóa",
+      "selector-empty": "Bộ chọn phần tử trống",
+      "invalid-body": "Nội dung không phải là JSON hợp lệ",
+      "invalid-active-tab": "\"{url} \" là URL không hợp lệ",
+      "empty-spreadsheet-id": "Id bảng tính trống",
+      "invalid-loop-data": "Dữ liệu không hợp lệ để lặp lại",
+      "empty-workflow": "Đầu tiên, bạn phải chọn một quy trình",
+      "active-tab-removed": "Tab hoạt động của quy trình làm việc bị xóa",
+      "empty-spreadsheet-range": "Phạm vi bảng tính trống",
       "stop-timeout": "Quy trình đã bị dừng vì hết thời lượng thực thi",
       "invalid-proxy-host": "Máy chủ proxy không hợp lệ",
-      "no-iframe-id": "Không tìm thấy Frame ID cho iframe element với bộ chọn \"{selector}\"",
-      "no-tab": "Không thể kết nối với một tab, dùng \"New tab\" hoặc khối \"Active tab\" trước khi dùng khối \"{name}\".",
-      "empty-workflow": "Đầu tiên, bạn phải chọn một quy trình",
+      "no-file-access": "Automa không có quyền truy cập vào tệp ",
       "no-workflow": "Không tìm thấy quy trình với ID \"{workflowId}\"",
-      "workflow-infinite-loop": "Quy trình không được thực thi để ngăn vòng lặp vô hạn"
+      "no-match-tab": "Không thể tìm thấy tab có các mẫu \"{pattern} \"",
+      "no-clipboard-acces": "Không có quyền truy cập khay nhớ tạm",
+      "browser-not-supported": "Tính năng này không được hỗ trợ trong trình duyệt {browser}",
+      "element-not-found": "Không thể tìm thấy phần tử có bộ chọn \"{selector} \".",
+      "no-permission": "Không có quyền \"{allow} \" để thực hiện tác vụ này",
+      "not-iframe": "Phần tử có bộ chọn \"{selector} \" không phải là phần tử Iframe",
+      "iframe-not-found": "Không thể tìm thấy phần tử Iframe bằng bộ chọn \"{selector} \".",
+      "workflow-infinite-loop": "Quy trình không được thực thi để ngăn vòng lặp vô hạn",
+      "not-debug-mode": "Dòng công việc phải chạy ở chế độ gỡ lỗi để khối này hoạt động bình thường",
+      "no-iframe-id": "Không tìm thấy Frame ID cho iframe element với bộ chọn \"{selector}\"",
+      "no-tab": "Không thể kết nối với một tab, dùng \"New tab\" hoặc khối \"Active tab\" trước khi dùng khối \"{name}\"."
     },
     "description": {
       "text": "{status} vào {date} trong {duration}",

@@ -1,4 +1,4 @@
-import { parseJSON, isWhitespace } from './helper';
+import { parseJSON, isWhitespace } from '@/utils/helper';
 
 const renderContent = (content, contentType) => {
   if (contentType === 'text/plain') return content;
@@ -29,7 +29,7 @@ const renderContent = (content, contentType) => {
 const filterHeaders = (headers) => {
   const filteredHeaders = {};
 
-  if (!headers) return filteredHeaders;
+  if (!headers || !Array.isArray(headers)) return filteredHeaders;
 
   headers.forEach((item) => {
     if (item.name && item.value) {

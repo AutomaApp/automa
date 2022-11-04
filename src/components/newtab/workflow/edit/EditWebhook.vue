@@ -172,10 +172,11 @@ const { t } = useI18n();
 
 const methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
 const notHaveBody = ['GET', 'DELETE'];
+const copyHeaders = JSON.parse(JSON.stringify(props.data.headers));
 
 const activeTab = ref('headers');
 const showBodyModal = ref(false);
-const headers = ref(JSON.parse(JSON.stringify(props.data.headers)));
+const headers = ref(Array.isArray(copyHeaders) ? copyHeaders : []);
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
