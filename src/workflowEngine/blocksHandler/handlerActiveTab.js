@@ -44,8 +44,6 @@ async function activeTab(block) {
       }
     }
 
-    await sleep(500);
-
     const [tab] = await browser.tabs.query({
       active: true,
       lastFocusedWindow: true,
