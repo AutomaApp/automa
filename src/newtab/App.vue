@@ -231,6 +231,7 @@ const messageEvents = {
     }
   },
   'workflow:execute': function ({ data }) {
+    console.log(data);
     startWorkflowExec(data, data?.options ?? {});
   },
   'recording:stop': stopRecording,
@@ -307,15 +308,8 @@ window.addEventListener('message', ({ data }) => {
       url: browser.runtime.getURL('/newtab.html'),
     });
 
-    const currentWindow = await browser.windows.getCurrent();
-    if (currentWindow.type !== 'popup') {
-      await browser.tabs.remove([tabs[0].id]);
-      return;
-    }
-
     if (tabs.length > 1) {
       const firstTab = tabs.shift();
-      await browser.windows.update(firstTab.windowId, { focused: true });
       await browser.tabs.update(firstTab.id, { active: true });
 
       await browser.tabs.remove(tabs.map((tab) => tab.id));

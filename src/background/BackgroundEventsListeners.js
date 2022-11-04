@@ -48,9 +48,8 @@ class BackgroundEventsListeners {
           isFirstTime: true,
           visitWebTriggers: [],
         });
-        await browser.windows.create({
-          type: 'popup',
-          state: 'maximized',
+        await browser.tabs.create({
+          active: true,
           url: browser.runtime.getURL('newtab.html#/welcome'),
         });
 

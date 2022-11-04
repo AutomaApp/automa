@@ -40,7 +40,11 @@
             :name="data.disableBlock ? 'riToggleLine' : 'riToggleFill'"
           />
         </button>
-        <button title="Run workflow from here" @click.stop="runWorkflow">
+        <button
+          v-if="false"
+          title="Run workflow from here"
+          @click.stop="runWorkflow"
+        >
           <v-remixicon size="20" name="riPlayLine" />
         </button>
         <button

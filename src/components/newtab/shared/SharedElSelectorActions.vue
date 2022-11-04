@@ -1,5 +1,5 @@
 <template>
-  <div class="inline-flex items-center">
+  <div v-if="false" class="inline-flex items-center">
     <ui-button
       v-tooltip.group="$t('workflow.blocks.base.element.select')"
       icon

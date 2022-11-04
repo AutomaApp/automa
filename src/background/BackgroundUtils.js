@@ -25,20 +25,12 @@ class BackgroundUtils {
           });
         }
       } else {
-        const windowOptions = {
+        const tabOptions = {
           url: tabUrl,
-          type: 'popup',
+          active: updateTab,
         };
 
-        if (updateTab) {
-          windowOptions.height = 715;
-          windowOptions.width = 715;
-          windowOptions.focused = true;
-        } else {
-          windowOptions.state = 'minimized';
-        }
-
-        await browser.windows.create(windowOptions);
+        await browser.tabs.create(tabOptions);
       }
     } catch (error) {
       console.error(error);
