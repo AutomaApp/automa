@@ -184,7 +184,6 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
         this
       ));
 
-  console.log(result);
   if (result) {
     if (result.columns.data?.$error) {
       throw new Error(result.columns.data.message);

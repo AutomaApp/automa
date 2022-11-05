@@ -59,7 +59,6 @@ async function updateSpreadsheetValues(
   columns
 ) {
   let values = [];
-  console.log(columns);
   if (['data-columns', 'table'].includes(dataFrom)) {
     if (keysAsFirstRow) {
       values = convertArrObjTo2DArr(columns);
@@ -91,7 +90,6 @@ async function updateSpreadsheetValues(
       insertDataOption: insertDataOption || 'INSERT_ROWS',
     });
   }
-  console.log(values);
 
   const response = await googleSheets.updateValues({
     range,
