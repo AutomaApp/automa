@@ -155,8 +155,8 @@ export function jsContentHandler($blockData, $preloadScripts, $automaScript) {
           cleanUp(detail || {});
           resolve({
             columns: {
-              data: detail?.data,
               insert: detail?.insert,
+              data: JSON.stringify(detail?.data ?? {}),
             },
             variables: detail?.refData?.variables,
           });
