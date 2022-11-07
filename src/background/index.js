@@ -27,6 +27,9 @@ browser.runtime.onInstalled.addListener(
 browser.webNavigation.onCompleted.addListener(
   BackgroundEventsListeners.onWebNavigationCompleted
 );
+browser.webNavigation.onHistoryStateUpdated.addListener(
+  BackgroundEventsListeners.onHistoryStateUpdated
+);
 
 const contextMenu =
   BROWSER_TYPE === 'firefox' ? browser.menus : browser.contextMenus;
@@ -115,8 +118,6 @@ message.on('workflow:execute', async (workflowData, sender) => {
   const isMV2 = browser.runtime.getManifest().manifest_version === 2;
   if (!isMV2 && (!context || context === 'popup')) {
     await BackgroundUtils.openDashboard('', false);
-    await sleep(1000);
-    console.log('halo', workflowData);
     await BackgroundUtils.sendMessageToDashboard('workflow:execute', {
       data: workflowData,
       options: workflowData.option,

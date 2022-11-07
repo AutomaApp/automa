@@ -36,6 +36,12 @@ class BackgroundEventsListeners {
     BackgroundWorkflowTriggers.reRegisterTriggers(true);
   }
 
+  static onHistoryStateUpdated({ frameId, url, tabId }) {
+    if (frameId !== 0) return;
+
+    BackgroundWorkflowTriggers.visitWebTriggers(tabId, url, true);
+  }
+
   static async onRuntimeInstalled({ reason }) {
     try {
       if (reason === 'install') {

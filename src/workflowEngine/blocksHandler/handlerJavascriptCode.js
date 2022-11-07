@@ -1,6 +1,7 @@
 import { customAlphabet } from 'nanoid/non-secure';
 import browser from 'webextension-polyfill';
 import cloneDeep from 'lodash.clonedeep';
+import { parseJSON } from '@/utils/helper';
 import {
   jsContentHandler,
   automaFetchClient,
@@ -95,6 +96,10 @@ async function executeInWebpage(args, target, worker) {
     world: 'MAIN',
     func: jsContentHandler,
   });
+
+  if (typeof result?.columns?.data === 'string') {
+    result.columns.data = parseJSON(result.columns.data, {});
+  }
 
   return result;
 }

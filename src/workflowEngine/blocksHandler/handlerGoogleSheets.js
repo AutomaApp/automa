@@ -59,7 +59,6 @@ async function updateSpreadsheetValues(
   columns
 ) {
   let values = [];
-
   if (['data-columns', 'table'].includes(dataFrom)) {
     if (keysAsFirstRow) {
       values = convertArrObjTo2DArr(columns);
@@ -114,7 +113,6 @@ export default async function ({ data, id }, { refData }) {
   if (isWhitespace(data.range)) throw new Error('empty-spreadsheet-range');
 
   let result = [];
-
   if (data.type === 'get') {
     const spreadsheetValues = await getSpreadsheetValues(data);
 
