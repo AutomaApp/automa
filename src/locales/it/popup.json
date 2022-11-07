@@ -1,0 +1,32 @@
+{
+  "recording": {
+    "stop": "Termina registrazione",
+    "title": "Registrando"
+  },
+  "home": {
+    "record": {
+      "title": "Registra workflow",
+      "button": "Registra",
+      "name": "Nome workflow",
+      "selectBlock": "Seleziona un blocco da cui iniziare",
+      "anotherBlock": "Impossibile iniziare da questo blocco",
+      "tabs": {
+        "new": "Nuovo workflow",
+        "existing": "Workflow esistente"
+      }
+    },
+    "elementSelector": {
+      "name": "Selettore elemento",
+      "noAccess": "Automa non ha accesso a questo sito"
+    },
+    "workflow": {
+      "new": "Nuovo workflow",
+      "rename": "Rinomina workflow",
+      "delete": "Elimina workflow",
+      "type": {
+        "host": "Host",
+        "local": "Locale"
+      }
+    }
+  }
+}
