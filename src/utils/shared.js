@@ -1474,10 +1474,11 @@ export const contentTypes = [
 
 export const supportLocales = [
   { id: 'en', name: 'English' },
+  { id: 'fr', name: 'Français' },
+  { id: 'it', name: 'Italiano' },
+  { id: 'vi', name: 'Tiếng Việt' },
   { id: 'zh', name: '简体中文' },
   { id: 'zh-tw', name: '繁體中文' },
-  { id: 'vi', name: 'Tiếng Việt' },
-  { id: 'fr', name: 'Français' },
 ];
 
 export const communities = [
