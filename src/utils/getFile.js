@@ -1,3 +1,13 @@
+function readFile(blob) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      resolve(reader.result);
+    };
+    reader.readAsDataURL(blob);
+  });
+}
+
 async function downloadFile(url, options) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(response.statusText);
@@ -9,9 +19,12 @@ async function downloadFile(url, options) {
     return result;
   }
 
-  const objUrl = URL.createObjectURL(result);
-
-  return { objUrl, path: url, type: result.type };
+  if (URL.createObjectURL) {
+    const objUrl = URL.createObjectURL(result);
+    return { objUrl, path: url, type: result.type };
+  }
+  const base64 = await readFile(result);
+  return { path: url, objUrl: base64, type: result.type };
 }
 function getLocalFile(path, options) {
   return new Promise((resolve, reject) => {
