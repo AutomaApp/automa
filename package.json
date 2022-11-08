@@ -86,7 +86,7 @@
   "devDependencies": {
     "@babel/core": "^7.19.6",
     "@babel/eslint-parser": "^7.18.2",
-    "@babel/preset-env": "^7.18.2",
+    "@babel/preset-env": "^7.20.2",
     "@intlify/vue-i18n-loader": "^4.2.0",
     "@tailwindcss/typography": "^0.5.1",
     "@vue/compiler-sfc": "^3.2.41",
