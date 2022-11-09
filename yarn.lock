@@ -1582,6 +1582,31 @@
   dependencies:
     "@types/node" "*"
 
+"@types/d3-color@*":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@types/d3-color/-/d3-color-3.1.0.tgz#6594da178ded6c7c3842f3cc0ac84b156f12f2d4"
+  integrity sha512-HKuicPHJuvPgCD+np6Se9MQvS6OCbJmOjGvylzMJRlDwUXjKTTXs6Pwgk79O09Vj/ho3u1ofXnhFOaEWWPrlwA==
+
+"@types/d3-interpolate@*":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@types/d3-interpolate/-/d3-interpolate-3.0.1.tgz#e7d17fa4a5830ad56fe22ce3b4fac8541a9572dc"
+  integrity sha512-jx5leotSeac3jr0RePOH1KdR9rISG91QIE4Q2PYTu4OymLTZfA3SrnURSLzKH48HmXVUru50b8nje4E79oQSQw==
+  dependencies:
+    "@types/d3-color" "*"
+
+"@types/d3-selection@*", "@types/d3-selection@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@types/d3-selection/-/d3-selection-3.0.3.tgz#57be7da68e7d9c9b29efefd8ea5a9ef1171e42ba"
+  integrity sha512-Mw5cf6nlW1MlefpD9zrshZ+DAWL4IQ5LnWfRheW6xwsdaWOb6IRRu2H7XPAQcyXEx1D7XQWgdoKR83ui1/HlEA==
+
+"@types/d3-zoom@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@types/d3-zoom/-/d3-zoom-3.0.1.tgz#4bfc7e29625c4f79df38e2c36de52ec3e9faf826"
+  integrity sha512-7s5L9TjfqIYQmQQEUcpMAcBOahem7TRoSO/+Gkz02GbMVuULiZzjF2BOdw291dbO2aNon4m2OdFsRGaCq2caLQ==
+  dependencies:
+    "@types/d3-interpolate" "*"
+    "@types/d3-selection" "*"
+
 "@types/eslint-scope@^3.7.3":
   version "3.7.4"
   resolved "https://registry.yarnpkg.com/@types/eslint-scope/-/eslint-scope-3.7.4.tgz#37fc1223f0786c39627068a12e94d6e6fc61de16"
@@ -1736,10 +1761,15 @@
   resolved "https://registry.yarnpkg.com/@viselect/vanilla/-/vanilla-3.1.1.tgz#e63ef3529f819cc83e8c1aea6b3ab9936d550f76"
   integrity sha512-aS1UF6WkV3TvO5vqg2uQk8WRI36b2SAtfozVrxtfVI1WTuaOG0uYxvdXTmIYwfki6fFF4qQpkiQcg8+NqpJA8Q==
 
-"@vue-flow/additional-components@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@vue-flow/additional-components/-/additional-components-1.0.0.tgz#527edb54ed6ce527cd0370a46ea4ca74a6a7d8c2"
-  integrity sha512-xHDe5r60unpn2YuNEPdNAOgaS2KghdpVMOo5dVFdYJeRDaW8e0tVyXIUzGaP2iDT9t1WL1rlM/8BXizfFIdBaw==
+"@vue-flow/additional-components@1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@vue-flow/additional-components/-/additional-components-1.2.2.tgz#d9b8c0aa53a20d4056f169cdfe710aabe8976478"
+  integrity sha512-rD+HERTZCvGz8AxrSH4Qp/jlOJR08tP0C0b94stT52ASphQBCpI09+PdEwgWxbGyAU7Zea6JHC/vb5DlvOTb6w==
+  dependencies:
+    "@types/d3-selection" "^3.0.3"
+    "@types/d3-zoom" "^3.0.1"
+    d3-selection "^3.0.0"
+    d3-zoom "^3.0.0"
 
 "@vue-flow/core@1.0.0":
   version "1.0.0"
