@@ -1,13 +1,15 @@
 import { jsContentHandler } from '@/workflowEngine/utils/javascriptBlockUtil';
 
 function javascriptCode({ data, isPreloadScripts, frameSelector }) {
-  if (!isPreloadScripts) return jsContentHandler(...data);
+  if (!isPreloadScripts && Array.isArray(data))
+    return jsContentHandler(...data);
+  if (!data.scripts) return Promise.resolve({ success: true });
 
   let $documentCtx = document;
 
   if (frameSelector) {
     const iframeCtx = document.querySelector(frameSelector)?.contentDocument;
-    if (!iframeCtx) return Promise.resolve(false);
+    if (!iframeCtx) return Promise.resolve({ success: false });
 
     $documentCtx = iframeCtx;
   }
@@ -29,7 +31,7 @@ function javascriptCode({ data, isPreloadScripts, frameSelector }) {
     $documentCtx.documentElement.appendChild(scriptEl);
   });
 
-  return Promise.resolve(true);
+  return Promise.resolve({ success: true });
 }
 
 export default javascriptCode;

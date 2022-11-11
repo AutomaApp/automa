@@ -207,6 +207,7 @@ function messageListener({ data, source }) {
         executeBlock(data)
           .then(resolve)
           .catch((error) => {
+            console.error(error);
             const elNotFound = error.message === 'element-not-found';
             const isLoopItem = data.data?.selector?.includes('automa-loop');
             if (elNotFound && isLoopItem) {

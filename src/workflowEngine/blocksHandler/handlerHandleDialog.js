@@ -1,4 +1,5 @@
-import { sendDebugCommand } from '../helper';
+import browser from 'webextension-polyfill';
+import { sendDebugCommand, checkCSPAndInject } from '../helper';
 
 const overwriteDialog = (accept, promptText) => `
   const realConfirm = window.confirm;
@@ -22,18 +23,56 @@ async function handleDialog({ data, id: blockId }) {
     const isScriptExist = this.preloadScripts.some(({ id }) => id === blockId);
 
     if (!isScriptExist) {
+      const jsCode = overwriteDialog(data.accept, data.promptText);
       const payload = {
         id: blockId,
         isBlock: true,
         name: 'javascript-code',
+        isPreloadScripts: true,
         data: {
           everyNewTab: true,
-          code: overwriteDialog(data.accept, data.promptText),
+          scripts: [{ data: { code: jsCode }, id: blockId }],
         },
       };
 
-      this.preloadScripts.push(payload);
-      await this._sendMessageToTab(payload, {}, true);
+      if (this.engine.isMV2) {
+        this.preloadScripts.push(payload);
+        await this._sendMessageToTab(payload, {}, true);
+      } else {
+        const target = { tabId: this.activeTab.id, allFrames: true };
+        const { debugMode } = this.engine.workflow.settings;
+        const cspResult = await checkCSPAndInject(
+          {
+            target,
+            debugMode,
+            injectOptions: {
+              injectImmediately: true,
+            },
+          },
+          () => jsCode
+        );
+        if (!cspResult.isBlocked) {
+          await browser.scripting.executeScript({
+            target,
+            args: [data],
+            world: 'MAIN',
+            injectImmediately: true,
+            func: (blockData) => {
+              window.confirm = function () {
+                return blockData.accept;
+              };
+
+              window.alert = function () {
+                return blockData.accept;
+              };
+
+              window.prompt = function () {
+                return blockData.accept ? blockData.promptText : null;
+              };
+            },
+          });
+        }
+      }
     }
   } else {
     this.dialogParams = {

@@ -374,7 +374,6 @@ class WorkflowWorker {
         frameSelector: this.frameSelector,
         ...payload,
       };
-
       const data = await browser.tabs.sendMessage(
         this.activeTab.id,
         messagePayload,

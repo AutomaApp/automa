@@ -191,6 +191,9 @@ window.addEventListener('DOMContentLoaded', async () => {
         const isInstalled = packages.some((pkg) => pkg.id === data);
 
         sendMessageBack(type, isInstalled);
+      } else if (type === 'get-workflows') {
+        const storage = await browser.storage.local.get('workflows');
+        sendMessageBack(type, storage.workflows);
       }
     });
   } catch (error) {
