@@ -1736,10 +1736,13 @@
   resolved "https://registry.yarnpkg.com/@viselect/vanilla/-/vanilla-3.1.1.tgz#e63ef3529f819cc83e8c1aea6b3ab9936d550f76"
   integrity sha512-aS1UF6WkV3TvO5vqg2uQk8WRI36b2SAtfozVrxtfVI1WTuaOG0uYxvdXTmIYwfki6fFF4qQpkiQcg8+NqpJA8Q==
 
-"@vue-flow/additional-components@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@vue-flow/additional-components/-/additional-components-1.0.0.tgz#527edb54ed6ce527cd0370a46ea4ca74a6a7d8c2"
-  integrity sha512-xHDe5r60unpn2YuNEPdNAOgaS2KghdpVMOo5dVFdYJeRDaW8e0tVyXIUzGaP2iDT9t1WL1rlM/8BXizfFIdBaw==
+"@vue-flow/additional-components@1.2.4":
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/@vue-flow/additional-components/-/additional-components-1.2.4.tgz#251173d6eb95bf189393049aa1d906fbbe0fa380"
+  integrity sha512-WaZ8IDXO8M3WhlxwZyjCj1OSL3icrRY9M+Y9wQFYbBgFIDOj4V5E2SR7KGhrBZ4L0Amv1pezbI19p+v/DymC1g==
+  dependencies:
+    d3-selection "^3.0.0"
+    d3-zoom "^3.0.0"
 
 "@vue-flow/core@1.0.0":
   version "1.0.0"
