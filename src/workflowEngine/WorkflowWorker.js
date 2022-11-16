@@ -291,12 +291,11 @@ class WorkflowWorker {
           this.executeNextBlocks(nodeConnections, error.data || '');
         }, blockDelay);
       } else if (onError === 'restart-workflow' && !this.parentWorkflow) {
-        const restartKey = `restart-count:${this.id}`;
-        const restartCount = +localStorage.getItem(restartKey) || 0;
+        const restartCount = this.engine.restartWorkersCount[this.id] || 0;
         const maxRestart = this.settings.restartTimes ?? 3;
 
         if (restartCount >= maxRestart) {
-          localStorage.removeItem(restartKey);
+          delete this.engine.restartWorkersCount[this.id];
           this.engine.destroy('error', error.message, errorLogItem);
           return;
         }
@@ -306,7 +305,7 @@ class WorkflowWorker {
         const triggerBlock = this.engine.blocks[this.engine.triggerBlockId];
         if (triggerBlock) this.executeBlock(triggerBlock, execParam);
 
-        localStorage.setItem(restartKey, restartCount + 1);
+        this.engine.restartWorkersCount[this.id] = restartCount + 1;
       } else {
         this.engine.destroy('error', error.message, errorLogItem);
       }

@@ -27,6 +27,7 @@ class WorkflowEngine {
     this.extractedGroup = {};
     this.connectionsMap = {};
     this.waitConnections = {};
+    this.restartWorkersCount = {};
 
     this.isDestroyed = false;
     this.isUsingProxy = false;

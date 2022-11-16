@@ -76,7 +76,7 @@ async function loopData({ data, id }, { refData }) {
           throw new Error('invalid-loop-data');
         }
 
-        if (data.resumeLastWorkflow) {
+        if (data.resumeLastWorkflow && this.engine.isPopup) {
           index = JSON.parse(localStorage.getItem(`index:${id}`)) || 0;
         } else if (data.startIndex > 0) {
           index = data.startIndex;
@@ -108,7 +108,9 @@ async function loopData({ data, id }, { refData }) {
       };
     }
 
-    localStorage.setItem(`index:${id}`, this.loopList[data.loopId].index);
+    if (this.engine.isPopup) {
+      localStorage.setItem(`index:${id}`, this.loopList[data.loopId].index);
+    }
 
     return {
       data: refData.loopData[data.loopId],
