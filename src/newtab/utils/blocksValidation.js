@@ -255,8 +255,6 @@ export async function validateSaveAssets(data) {
 export async function validatePressKey(data) {
   const errors = [];
 
-  if (isEmptyStr(data.selector)) errors.push('The Selector is empty');
-
   const isKeyEmpty =
     !data.action || (data.action === 'press-key' && isEmptyStr(data.keys));
   const isMultipleKeysEmpty =
