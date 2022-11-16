@@ -46,7 +46,7 @@
     </div>
     <div class="grid grid-cols-2 gap-x-4 gap-y-2 mt-4">
       <ui-expand
-        v-for="(day, index) in sortedDaysArr"
+        v-for="day in sortedDaysArr"
         :key="day.id"
         header-class="focus:ring-0 flex items-center w-full group text-left"
         type="time"
@@ -60,7 +60,7 @@
             <v-remixicon
               name="riDeleteBin7Line"
               class="mr-1 group invisible group-hover:visible inline-block"
-              @click="daysArr.splice(index, 1)"
+              @click="removeDay(day.id)"
             />
             {{ day.times.length }}x
           </span>
@@ -68,7 +68,7 @@
         <div class="grid grid-cols-2 gap-1 mb-1">
           <div
             v-for="(time, timeIndex) in day.times"
-            :key="time"
+            :key="day.id + time"
             class="flex items-center p-2 border rounded-lg group"
           >
             <span class="flex-1"> {{ formatTime(time) }} </span>
@@ -76,7 +76,7 @@
               name="riDeleteBin7Line"
               class="cursor-pointer"
               size="18"
-              @click.stop="removeDayTime(index, timeIndex)"
+              @click.stop="removeDayTime(day.id, timeIndex)"
             />
           </div>
         </div>
@@ -131,11 +131,20 @@ function formatTime(time) {
     .second(seconds || 0)
     .format('hh:mm:ss A');
 }
-function removeDayTime(index, timeIndex) {
-  daysArr.value[index].times.splice(timeIndex, 1);
+function removeDay(dayId) {
+  const dayIndex = daysArr.value.findIndex((day) => day.id === dayId);
+  if (dayIndex === -1) return;
 
-  if (daysArr.value[index].times.length === 0) {
-    daysArr.value.splice(index, 1);
+  daysArr.value.splice(dayIndex, 1);
+}
+function removeDayTime(dayId, timeIndex) {
+  const dayIndex = daysArr.value.findIndex((day) => day.id === dayId);
+  if (dayIndex === -1) return;
+
+  daysArr.value[dayIndex].times.splice(timeIndex, 1);
+
+  if (daysArr.value[dayIndex].times.length === 0) {
+    daysArr.value.splice(dayIndex, 1);
   }
 }
 function addTime() {
