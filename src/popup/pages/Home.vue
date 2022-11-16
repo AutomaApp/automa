@@ -12,6 +12,16 @@
       <div class="flex-grow"></div>
       <ui-button
         v-tooltip.group="
+          'Start recording by opening the dashboard. Click to learn more'
+        "
+        icon
+        class="mr-2"
+        @click="openDocs"
+      >
+        <v-remixicon name="riRecordCircleLine" />
+      </ui-button>
+      <ui-button
+        v-tooltip.group="
           t(`home.elementSelector.${state.haveAccess ? 'name' : 'noAccess'}`)
         "
         icon
@@ -51,7 +61,7 @@
       <ui-tab v-if="hostedWorkflowStore.toArray.length > 0" value="host">
         {{ t(`home.workflow.type.host`) }}
       </ui-tab>
-      <ui-tab v-if="userStore.user?.teams" value="team"> Teams </ui-tab>
+      <ui-tab v-if="userStore.user?.teams?.length" value="team"> Teams </ui-tab>
     </ui-tabs>
   </div>
   <home-team-workflows
@@ -211,9 +221,16 @@ const workflows = computed(() =>
   state.activeTab === 'local' ? localWorkflows.value : hostedWorkflows.value
 );
 const showTab = computed(
-  () => hostedWorkflowStore.toArray.length > 0 || userStore.user?.teams
+  () =>
+    hostedWorkflowStore.toArray.length > 0 || userStore.user?.teams?.length > 0
 );
 
+function openDocs() {
+  window.open(
+    'https://docs.automa.site/guide/quick-start.html#recording-actions',
+    '_blank'
+  );
+}
 function closeSettingsPopup() {
   state.showSettingsPopup = false;
   localStorage.setItem('settingsPopup', false);
