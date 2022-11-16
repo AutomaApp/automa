@@ -1007,10 +1007,10 @@
     "@codemirror/state" "^6.0.0"
     "@lezer/css" "^1.0.0"
 
-"@codemirror/lang-html@^6.1.2":
-  version "6.1.2"
-  resolved "https://registry.yarnpkg.com/@codemirror/lang-html/-/lang-html-6.1.2.tgz#64979e583c6120c70d3123e6ce3f8595b20abc52"
-  integrity sha512-e8JAUWyOo7N26tmek+WK0+Zg+pZRe+dQi8TZq0OOVVygpLV+mNAT2n5b5JhknY+TVZIVGLjuhdsoizw1SDFfPg==
+"@codemirror/lang-html@^6.1.4":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@codemirror/lang-html/-/lang-html-6.1.4.tgz#0c3cab2907dd557f214dd7b1be5a6f71bda0b709"
+  integrity sha512-sMXDSmOzQkvQdJq+v/Bfs7y29wDdhsFZfKftchfHBF6aBD+x7lGCBFzBpn5+JCdyvAYi7LLfQcjVvIxy41PkAw==
   dependencies:
     "@codemirror/autocomplete" "^6.0.0"
     "@codemirror/lang-css" "^6.0.0"
