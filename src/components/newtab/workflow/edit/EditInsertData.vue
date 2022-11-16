@@ -117,13 +117,21 @@
                 </ui-button>
                 <div class="flex-grow" />
                 <ui-select
-                  v-if="item.filePath.endsWith('.csv')"
-                  v-model="item.csvAction"
-                  placeholder="CSV File Action"
+                  :model-value="item.action || item.csvAction"
+                  placeholder="File Action"
+                  @change="item.action = $event"
                 >
-                  <option value="text">Read as text</option>
-                  <option value="json">Read as JSON</option>
-                  <option value="json-header">Read as JSON with headers</option>
+                  <option value="default">Default</option>
+                  <option value="base64">Read as base64</option>
+                  <optgroup
+                    v-if="item.filePath.endsWith('.csv')"
+                    label="CSV File"
+                  >
+                    <option value="json">Read as JSON</option>
+                    <option value="json-header">
+                      Read as JSON with headers
+                    </option>
+                  </optgroup>
                 </ui-select>
               </template>
             </div>
@@ -151,7 +159,7 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 import Papa from 'papaparse';
 import browser from 'webextension-polyfill';
-import getFile from '@/utils/getFile';
+import getFile, { readFileAsBase64 } from '@/utils/getFile';
 import EditAutocomplete from './EditAutocomplete.vue';
 
 const SharedCodemirror = defineAsyncComponent(() =>
@@ -200,7 +208,7 @@ function addItem() {
     value: '',
     filePath: '',
     isFile: false,
-    csvAction: 'text',
+    action: 'default',
   });
 }
 function changeItemType(index, type) {
@@ -223,19 +231,28 @@ async function previewData(index, item) {
     const path = item.filePath || '';
     const isJSON = path.endsWith('.json');
     const isCSV = path.endsWith('.csv');
+    let action = item.action || item.csvAction || 'default';
 
-    let stringify = isJSON;
+    if (action === 'text' && !isCSV) action = 'default';
+
+    let stringify = isJSON && action !== 'base64';
+    let responseType = isJSON ? 'json' : 'text';
+
+    if (action === 'base64') responseType = 'blob';
+
     let result = await getFile(path, {
+      responseType,
       returnValue: true,
-      responseType: isJSON ? 'json' : 'text',
     });
 
-    if (result && isCSV && item.csvAction && item.csvAction.includes('json')) {
+    if (result && isCSV && action && action.includes('json')) {
       const parsedCSV = Papa.parse(result, {
-        header: item.csvAction.includes('header'),
+        header: action.includes('header'),
       });
       result = parsedCSV.data || [];
       stringify = true;
+    } else if (action === 'base64') {
+      result = await readFileAsBase64(result);
     }
 
     previewState.itemId = index;

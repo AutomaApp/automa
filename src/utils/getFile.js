@@ -1,4 +1,4 @@
-function readFile(blob) {
+export function readFileAsBase64(blob) {
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = () => {
@@ -23,7 +23,7 @@ async function downloadFile(url, options) {
     const objUrl = URL.createObjectURL(result);
     return { objUrl, path: url, type: result.type };
   }
-  const base64 = await readFile(result);
+  const base64 = await readFileAsBase64(result);
   return { path: url, objUrl: base64, type: result.type };
 }
 function getLocalFile(path, options) {

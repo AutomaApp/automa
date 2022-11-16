@@ -1,6 +1,6 @@
 import Papa from 'papaparse';
 import { parseJSON } from '@/utils/helper';
-import getFile from '@/utils/getFile';
+import getFile, { readFileAsBase64 } from '@/utils/getFile';
 import renderString from '../templating/renderString';
 
 async function insertData({ id, data }, { refData }) {
@@ -19,21 +19,24 @@ async function insertData({ id, data }, { refData }) {
       const isJSON = path.endsWith('.json');
       const isCSV = path.endsWith('.csv');
 
+      let action = item.action || item.csvAction || 'default';
+      if (action === 'text' && !isCSV) action = 'default';
+
+      let responseType = isJSON ? 'json' : 'text';
+      if (action === 'base64') responseType = 'blob';
+
       let result = await getFile(path, {
+        responseType,
         returnValue: true,
-        responseType: isJSON ? 'json' : 'text',
       });
 
-      if (
-        result &&
-        isCSV &&
-        item.csvAction &&
-        item.csvAction.includes('json')
-      ) {
+      if (result && isCSV && action && action.includes('json')) {
         const parsedCSV = Papa.parse(result, {
-          header: item.csvAction.includes('header'),
+          header: action.includes('header'),
         });
         result = parsedCSV.data || [];
+      } else if (action === 'base64') {
+        result = await readFileAsBase64(result);
       }
 
       value = result;
