@@ -279,7 +279,9 @@ function applyFlowData() {
     editor.snapGrid.value = Object.values(settings.snapGrid);
   }
 
-  editor.setNodes(props.data?.nodes || []);
+  editor.setNodes(
+    props.data?.nodes.map((node) => ({ ...node, events: {} })) || []
+  );
   editor.setEdges(props.data?.edges || []);
   editor.setTransform({
     x: props.data?.x || 0,

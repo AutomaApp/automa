@@ -1,16 +1,12 @@
 <template>
-  <path
+  <base-edge
     :id="id"
     :style="style"
-    class="vue-flow__edge-path"
-    :d="edgePath"
+    :path="path[0]"
     :marker-end="markerEnd"
-  />
-  <edge-text
-    v-if="label"
-    :x="center[0]"
-    :y="center[1]"
     :label="label"
+    :label-x="path[1]"
+    :label-y="path[2]"
     :label-style="{ fill: 'white' }"
     :label-show-bg="true"
     :label-bg-style="{ fill: '#3b82f6' }"
@@ -20,12 +16,7 @@
 </template>
 <script setup>
 import { computed } from 'vue';
-import {
-  getBezierPath,
-  getSmoothStepPath,
-  getEdgeCenter,
-  EdgeText,
-} from '@vue-flow/core';
+import { BaseEdge, getBezierPath, getSmoothStepPath } from '@vue-flow/core';
 
 const props = defineProps({
   id: {
@@ -78,17 +69,7 @@ const props = defineProps({
   },
 });
 
-const center = computed(() => {
-  if (!props.label) return null;
-
-  return getEdgeCenter({
-    sourceX: props.sourceX,
-    sourceY: props.sourceY,
-    targetX: props.targetX,
-    targetY: props.targetY,
-  });
-});
-const edgePath = computed(() => {
+const path = computed(() => {
   const options = {
     sourceX: props.sourceX,
     sourceY: props.sourceY,
