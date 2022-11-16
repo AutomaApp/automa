@@ -1306,7 +1306,7 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
   }
 
   const block = parseJSON(dataTransfer.getData('block'), null);
-  if (!block) return;
+  if (!block || block.fromBlockBasic) return;
 
   if (block.id === 'trigger' && isPackage) return;
 
