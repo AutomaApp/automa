@@ -46,6 +46,7 @@ async function activeTab(block) {
 
     const [tab] = await browser.tabs.query({
       active: true,
+      url: '*://*/*',
       lastFocusedWindow: true,
     });
     if (!tab || !tab?.url.startsWith('http')) {
