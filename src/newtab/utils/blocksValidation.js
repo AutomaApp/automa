@@ -272,6 +272,13 @@ export async function validateNotification() {
   return [];
 }
 
+export async function validateCookie() {
+  const hasPermission = await checkPermissions(['cookies']);
+  if (!hasPermission) return ["Don't have cookies permissions"];
+
+  return [];
+}
+
 export default {
   trigger: {
     ...defaultOptions,
@@ -385,5 +392,9 @@ export default {
   'create-element': {
     ...defaultOptions,
     func: validateInteractionBasic,
+  },
+  cookie: {
+    ...defaultOptions,
+    func: validateCookie,
   },
 };

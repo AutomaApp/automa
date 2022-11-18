@@ -1,4 +1,5 @@
 import browser from 'webextension-polyfill';
+import { parseJSON } from '@/utils/helper';
 
 function getValues(data, keys) {
   const values = {};
@@ -46,23 +47,30 @@ async function cookie({ data, id }) {
   let key = data.type;
   if (key === 'get' && data.getAll) key = 'getAll';
 
-  const values = getValues(data, keys[key]);
-  if (values.expirationDate) {
-    values.expirationDate = Date.now() / 1000 + +values.expirationDate;
-  }
-
   let result = null;
 
-  if (data.type === 'remove' && !data.name) {
-    const cookies = await browser.cookies.getAll({ url: data.url });
-    const removePromise = cookies.map(({ name }) =>
-      browser.cookies.remove({ name, url: data.url })
-    );
-    await Promise.allSettled(removePromise);
+  if (data.useJson) {
+    const obj = parseJSON(data.jsonCode, null);
+    if (!obj) throw new Error('Invalid JSON format');
 
-    result = cookies;
+    result = await browser.cookies[key](obj);
   } else {
-    result = await browser.cookies[key](values);
+    const values = getValues(data, keys[key]);
+    if (values.expirationDate) {
+      values.expirationDate = Date.now() / 1000 + +values.expirationDate;
+    }
+
+    if (data.type === 'remove' && !data.name) {
+      const cookies = await browser.cookies.getAll({ url: data.url });
+      const removePromise = cookies.map(({ name }) =>
+        browser.cookies.remove({ name, url: data.url })
+      );
+      await Promise.allSettled(removePromise);
+
+      result = cookies;
+    } else {
+      result = await browser.cookies[key](values);
+    }
   }
 
   if (data.type === 'get') {

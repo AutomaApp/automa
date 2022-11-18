@@ -112,7 +112,8 @@
           "set": "Set cookie",
           "remove": "Remove cookies",
           "getAll": "Get all cookies"
-        }
+        },
+        "useJson": "Use JSON format"
       },
       "note": {
         "name": "Note"
