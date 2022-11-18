@@ -587,7 +587,7 @@ const updateHostedWorkflow = throttle(async () => {
   if (!userStore.user || workflowPayload.isUpdating) return;
 
   const isHosted = userStore.hostedWorkflows[route.params.id];
-  const isBackup = userStore.backupIds.includes(route.params.id);
+  const isBackup = userStore.backupIds?.includes(route.params.id);
   const workflowExist = workflowStore.getById(route.params.id);
 
   if (

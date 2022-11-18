@@ -106,6 +106,7 @@ async function loopData({ data, id }, { refData }) {
             : currLoopData[index],
         $index: index,
       };
+      this.engine.addRefDataSnapshot('loopData');
     }
 
     if (this.engine.isPopup) {

@@ -262,27 +262,25 @@
           </tbody>
         </table>
       </div>
-      <template v-if="ctxData[state.itemId]">
-        <div class="px-4 pb-4 flex items-center">
-          <p>Log data</p>
-          <div class="flex-grow" />
-          <ui-select v-model="state.activeTab">
-            <option v-for="option in tabs" :key="option.id" :value="option.id">
-              {{ option.name }}
-            </option>
-          </ui-select>
-        </div>
-        <div class="pb-4 px-2 log-data-prev">
-          <shared-codemirror
-            :model-value="logCtxData"
-            readonly
-            hide-lang
-            lang="json"
-            style="max-height: 460px"
-            class="scroll"
-          />
-        </div>
-      </template>
+      <div class="px-4 pb-4 flex items-center">
+        <p>Log data</p>
+        <div class="flex-grow" />
+        <ui-select v-model="state.activeTab">
+          <option v-for="option in tabs" :key="option.id" :value="option.id">
+            {{ option.name }}
+          </option>
+        </ui-select>
+      </div>
+      <div class="pb-4 px-2 log-data-prev">
+        <shared-codemirror
+          :model-value="logCtxData"
+          readonly
+          hide-lang
+          lang="json"
+          style="max-height: 460px"
+          class="scroll"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -423,15 +421,35 @@ const errorBlock = computed(() => {
   };
 });
 const logCtxData = computed(() => {
-  if (!state.itemId || !props.ctxData[state.itemId]) return '';
+  let logData = props.ctxData;
+  if (logData.ctxData) logData = logData.ctxData;
 
-  const data = props.ctxData[state.itemId];
-  const logData =
+  if (!state.itemId || !logData[state.itemId]) return '';
+
+  const data = logData[state.itemId];
+  const itemLogData =
     state.activeTab === 'all' ? data : objectPath.get(data, state.activeTab);
 
-  return JSON.stringify(logData, null, 2);
+  /* eslint-disable-next-line */
+  getDataSnapshot(itemLogData.referenceData);
+
+  return JSON.stringify(itemLogData, null, 2);
 });
 
+function getDataSnapshot(refData) {
+  if (!props.ctxData?.dataSnapshot) return;
+
+  const data = props.ctxData.dataSnapshot;
+  const getData = (key) => {
+    const currentData = refData[key];
+    if (typeof currentData !== 'string') return currentData;
+
+    return data[currentData] ?? {};
+  };
+
+  refData.loopData = getData('loopData');
+  refData.variables = getData('variables');
+}
 function exportLogs(type) {
   let data = type === 'plain-text' ? '' : [];
   const getItemData = {
@@ -475,6 +493,12 @@ function exportLogs(type) {
     },
   };
   translatedLog.value.forEach((item, index) => {
+    let logData = props.ctxData;
+    if (logData.ctxData) logData = logData.ctxData;
+
+    const itemData = logData[item.id] || null;
+    if (itemData) getDataSnapshot(itemData.referenceData);
+
     getItemData[type](
       [
         dayjs(item.timestamp || Date.now()).format('DD-MM-YYYY, hh:mm:ss'),
@@ -482,7 +506,7 @@ function exportLogs(type) {
         item.name,
         item.description || 'NULL',
         item.message || 'NULL',
-        props.ctxData[item.id] || null,
+        itemData,
       ],
       index
     );

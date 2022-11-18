@@ -263,7 +263,6 @@ function messageListener({ data, source }) {
               $ctxElSelector,
               $ctxTextSelection,
             });
-            console.log(cloneContextData);
 
             $ctxLink = '';
             $ctxMediaUrl = '';

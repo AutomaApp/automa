@@ -70,6 +70,7 @@ async function loopBreakpoint(block, { prevBlockData }) {
 
   delete this.loopList[block.data.loopId];
   delete this.engine.referenceData.loopData[block.data.loopId];
+  this.engine.addRefDataSnapshot('loopData');
 
   return {
     data: prevBlockData,

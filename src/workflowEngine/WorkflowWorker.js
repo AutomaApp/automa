@@ -87,6 +87,7 @@ class WorkflowWorker {
 
   setVariable(name, value) {
     this.engine.referenceData.variables[name] = value;
+    this.engine.addRefDataSnapshot('variables');
   }
 
   getBlockConnections(blockId, outputIndex = 1) {
@@ -196,6 +197,7 @@ class WorkflowWorker {
         blockId: block.id,
         workerId: this.id,
         timestamp: startExecuteTime,
+        activeTabUrl: this.activeTab?.url,
         replacedValue: replacedBlock.replacedValue,
         duration: Math.round(Date.now() - startExecuteTime),
         ...obj,
