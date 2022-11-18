@@ -80,7 +80,12 @@
           @highlight="toggleHighlightElement"
           @execute="state.isExecuting = $event"
         />
-        <div v-if="state.showSettings && !state.hide" class="mt-4">
+        <div
+          v-if="
+            state.showSettings && state.selectorType === 'css' && !state.hide
+          "
+          class="mt-4"
+        >
           <p class="font-semibold mb-4">Selector settings</p>
           <ul class="space-y-4">
             <li>
