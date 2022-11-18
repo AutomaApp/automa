@@ -1,0 +1,762 @@
+{
+  "collection": {
+    "blocks": {
+      "export-result": {
+        "name": "Esporta risultato",
+        "description": "Esporta il risultato della raccolta come JSON"
+      }
+    }
+  },
+  "workflow": {
+    "blocks": {
+      "base": {
+        "title": "Blocchi",
+        "moveToGroup": "Sposta il blocco nel gruppo di blocchi",
+        "selector": "Selettore elemento",
+        "selectorOptions": "Opzioni del selettore",
+        "timeout": "Timeout (millisecondi)",
+        "noPermission": "Automa non ha permessi sufficienti per eseguire questa azione",
+        "grantPermission": "Autorizza",
+        "action": "Azione",
+        "element": {
+          "select": "Seleziona un elemento",
+          "verify": "Verifica il selettore"
+        },
+        "settings": {
+          "title": "Impostazioni del blocco",
+          "line": {
+            "title": "Linee",
+            "label": "Etichetta",
+            "animated": "Animato",
+            "select": "Seleziona linea",
+            "to": "Linea al blocco {name}",
+            "lineColor": "Colore"
+          }
+        },
+        "toggle": {
+          "enable": "Abilita blocco",
+          "disable": "Disabilita blocco"
+        },
+        "onError": {
+          "info": "Le regole verranno applicate al verificarsi di un errore sul blocco",
+          "button": "In caso di errore",
+          "title": "Al verificarsi di un errore",
+          "retry": "Ritenta l'azione",
+          "fallbackTitle": "Verrà eseguito al verificarsi di un errore nel blocco",
+          "times": {
+            "name": "Volte",
+            "description": "Il numero di volte in cui riprovare l'azione"
+          },
+          "interval": {
+            "name": "Intervallo",
+            "description": "L'intervallo di tempo da attendere tra ogni tentativo",
+            "second": "secondo/i"
+          },
+          "toDo": {
+            "error": "Lancia un errore",
+            "continue": "Continua l'esecuzione",
+            "fallback": "Esegui il fallback",
+            "restart": "Riavvia il flusso"
+          },
+          "insertData": {
+            "name": "Inserisci dati"
+          }
+        },
+        "table": {
+          "checkbox": "Inserisci in tabella",
+          "select": "Seleziona colonna",
+          "extraRow": {
+            "checkbox": "Aggiungi riga extra",
+            "placeholder": "Valore",
+            "title": "Valore della riga extra"
+          }
+        },
+        "findElement": {
+          "placeholder": "Trova elemento per",
+          "options": {
+            "cssSelector": "Selettore CSS",
+            "xpath": "XPath"
+          }
+        },
+        "markElement": {
+          "title": "Ogni elemento verrà selezionato una volta sola",
+          "text": "Contrassegna l'elemento"
+        },
+        "multiple": {
+          "title": "Seleziona più elementi",
+          "text": "Multipli"
+        },
+        "waitSelector": {
+          "title": "Attendi il selettore",
+          "timeout": "Timeout del selettore (ms)"
+        },
+        "downloads": {
+          "onConflict": {
+            "uniquify": "Diversifica",
+            "overwrite": "Sovrascrivi",
+            "prompt": "Visualizza"
+          }
+        }
+      },
+      "wait-connections": {
+        "name": "Attendi connessioni",
+        "description": "Attendi tutte le connessioni prima di passare al blocco successivo",
+        "specificFlow": "Continua solo un flusso specifico",
+        "selectFlow": "Seleziona flusso"
+      },
+      "cookie": {
+        "name": "Cookie",
+        "description": "Ottieni, imposta o rimuovi cookie",
+        "types": {
+          "get": "Ottieni cookie",
+          "set": "Imposta cookie",
+          "remove": "Rimuovi cookie",
+          "getAll": "Ottieni tutti i cookie"
+        }
+      },
+      "note": {
+        "name": "Annotazioni"
+      },
+      "slice-variable": {
+        "name": "Taglia variabile",
+        "description": "Estrae una sezione del valore di una variabile",
+        "start": "Indice di inizio",
+        "end": "Indice di fine"
+      },
+      "workflow-state": {
+        "name": "Stato workflow",
+        "description": "Gestisci gli stati dei workflow",
+        "actions": {
+          "stop": "Interrompi i workflow"
+        }
+      },
+      "regex-variable": {
+        "name": "Variabile RegEx",
+        "description": "Confronta il valore di una variabile con un'espressione regolare"
+      },
+      "data-mapping": {
+        "source": "Sorgente",
+        "destination": "Destinazione",
+        "name": "Mappatura dati",
+        "edit": "Modifica mappa dei dati",
+        "dataSource": "Sorgente dei dati",
+        "description": "Mappa i dati di una variabile o di una tabella",
+        "addSource": "Aggiungi sorgente",
+        "addDestination": "Aggiungi destinazione"
+      },
+      "sort-data": {
+        "name": "Ordina dati",
+        "description": "Ordina gli elementi dei dati",
+        "property": "Ordina per proprietà dell'elemento",
+        "addProperty": "Aggiungi proprietà"
+      },
+      "increase-variable": {
+        "name": "Incrementa variabile",
+        "description": "Incrementa il valore di una variabile di una quantità specifica",
+        "increase": "Incrementa di"
+      },
+      "notification": {
+        "name": "notifica",
+        "description": "Visualizza una notifica",
+        "title": "Titolo",
+        "message": "Messaggio",
+        "imageUrl": "URL dell'immagine (opzionale)",
+        "iconUrl": "URL dell'icona (opzionale)"
+      },
+      "delete-data": {
+        "name": "Elimina dati",
+        "description": "Elimina tabella o dati variabili",
+        "from": "Dati da",
+        "allColumns": "[Tutte le colonne]"
+      },
+      "log-data": {
+        "name": "Ottieni dati di log",
+        "description": "Ottieni i dati dei log più recenti di un workflow",
+        "data": "Dati di log"
+      },
+      "tab-url": {
+        "name": "Ottieni URL scheda",
+        "description": "Ottieni l'URL della scheda",
+        "select": "Seleziona scheda",
+        "types": {
+          "active-tab": "Scheda attiva",
+          "all": "Tutte le schede"
+        }
+      },
+      "reload-tab": {
+        "name": "Ricarica scheda",
+        "description": "Ricarica la scheda attiva"
+      },
+      "press-key": {
+        "name": "Premi tasto",
+        "description": "Premi un tasto o una combinazione",
+        "target": "Elemento target (opzionale)",
+        "key": "Tasto",
+        "detect": "Rileva tasto",
+        "actions": {
+          "press-key": "Premi un tasto",
+          "multiple-keys": "Premi una combinazione di tasti"
+        }
+      },
+      "save-assets": {
+        "name": "Salva risorse",
+        "description": "Salva le risorse (immagine, video, audio o file) da un elemento o URL",
+        "filename": "Nome file (opzionale)",
+        "contentTypes": {
+          "title": "Tipo",
+          "element": "Elemento multimediale (immagine, audio o video)",
+          "url": "URL"
+        }
+      },
+      "handle-dialog": {
+        "name": "Gestisci dialogo",
+        "description": "Accetta o chiude una finestra di dialogo avviata da JavaScript (alert, confirm, prompt o onbeforeunload)",
+        "accept": "Accetta finestra di dialogo",
+        "promptText": {
+          "label": "Testo del prompt (opzionale)",
+          "description": "Il testo da inserire nella finestra di dialogo del prompt prima di accettare"
+        }
+      },
+      "handle-download": {
+        "name": "Gestici download",
+        "description": "Gestisci il file da scaricare",
+        "timeout": "Timeout (millisecondi)",
+        "noPermission": "Automa non dispone del permesso per accedere ai download",
+        "onConflict": "In caso di conflitto",
+        "waitFile": "Attendi il download del file"
+      },
+      "insert-data": {
+        "name": "Inserisci dati",
+        "description": "Inserisci dati in una tabella o variabile"
+      },
+      "clipboard": {
+        "name": "Appunti",
+        "description": "Ottieni il testo copiato dagli appunti",
+        "data": "Dati degli appunti",
+        "noPermission": "Automa non dispone del permesso per accedere agli appunti",
+        "grantPermission": "Autorizza",
+        "copySelection": "Copia il testo selezionato sulla pagina",
+        "types": {
+          "get": "Ottieni i dati degli appunti",
+          "insert": "Inserisci testo negli appunti"
+        }
+      },
+      "hover-element": {
+        "name": "Hover elemento",
+        "description": "Passa il mouse sopra un elemento"
+      },
+      "create-element": {
+        "name": "Crea elemento",
+        "description": "Crea un elemento da inserire nella pagina",
+        "edit": "Modifica elemento",
+        "wrap": "Avvolgi l'elemento dentro",
+        "insertEl": {
+          "title": "Inserisci elemento",
+          "items": {
+            "before": "Come first child",
+            "after": "Come last child",
+            "next-sibling": "Come next sibling",
+            "prev-sibling": "Come previous sibling",
+            "replace": "Sostituisci l'elemento target"
+          }
+        }
+      },
+      "upload-file": {
+        "name": "Carica file",
+        "description": "Carica un file in un elemento <input type=\"file\">",
+        "filePath": "URL o percorso del file",
+        "addFile": "Aggiungi file",
+        "onlyURL": "Nel browser Firefox è supportato solo il caricamento di file da un URL",
+        "requirement": "Leggi i requisiti prima di usare questo blocco",
+        "noFileAccess": "Automa non ha accesso ai file"
+      },
+      "browser-event": {
+        "name": "Evento browser",
+        "description": "Esegue il blocco successivo quando si verifica l'evento specificato",
+        "events": "Eventi",
+        "timeout": "Timeout (millisecondi)",
+        "activeTabLoaded": "Scheda attiva",
+        "setAsActiveTab": "Imposta come scheda attiva"
+      },
+      "blocks-group-2": {
+        "name": "@:workflow.blocks.blocks-group.name 2",
+        "description": "@:workflow.blocks.blocks-group.description"
+      },
+      "blocks-group": {
+        "name": "Gruppo blocchi",
+        "groupName": "Nome gruppo",
+        "description": "Raggruppa dei blocchi insieme",
+        "dropText": "Trascina e rilascia un blocco qui",
+        "cantAdd": "Non è possibile aggiungere il blocco \"{blockName}\" al gruppo"
+      },
+      "trigger": {
+        "name": "Trigger",
+        "description": "Blocco da cui inizierà l'esecuzione del workflow",
+        "addTime": "Aggiungi l'ora",
+        "selectDay": "Seleziona il giorno",
+        "timeExist": "Hai già aggiunto un trigger alle ore {time} del giorno {day}",
+        "fixedDelay": "Delay fisso",
+        "contextMenus": {
+          "noPermission": "Questo trigger richiede il permesso \"contextMenus\" per funzionare",
+          "grantPermission": "Autorizza",
+          "appearIn": "Apparirà in",
+          "contextName": "Nome del workflow nel menu contestuale"
+        },
+        "days": [
+          "Domenica",
+          "Lunedì",
+          "Martedì",
+          "Mercoledì",
+          "Giovedì",
+          "Venerdì",
+          "Sabato"
+        ],
+        "useRegex": "Usa regex",
+        "shortcut": {
+          "tooltip": "Registra scorciatoia",
+          "stopRecord": "Termina registrazione",
+          "checkboxTitle": "Esegui la scorciatoia da tastiera anche all'interno di ​​un elemento di input",
+          "checkbox": "Rileva anche negli input",
+          "note": "Nota: la scorciatoia da tastiera funziona solo mentre si è su una pagina web"
+        },
+        "forms": {
+          "triggerWorkflow": "Attiva workflow",
+          "interval": "Intervallo (minuti)",
+          "delay": "Delay (minuti)",
+          "date": "Data",
+          "time": "Ora",
+          "url": "URL o Regex",
+          "shortcut": "Scorciatoia",
+          "cron-expression": "Espressione Cron"
+        },
+        "element-change": {
+          "target": "Seleziona elemento da osservare",
+          "optionsInfo": "Quale variazione dell'elemento attiverà il workflow",
+          "targetWebsite": "Il Match Pattern del sito web in cui si trova l'elemento target (clicca per vedere più esempi di Match Pattern)",
+          "baseEl": {
+            "title": "Elemento base (opzionale)",
+            "description": "Automa ricomincerà ad osservare l'elemento target quando questo elemento cambia"
+          },
+          "subtree": {
+            "title": "Includi sottoalbero",
+            "description": "Estendi il monitoraggio all'intero sottoalbero dell'elemento target"
+          },
+          "childList": {
+            "title": "Elenco elementi figlio",
+            "description": "Monitora l'aggiunta di nuovi elementi figlio o la rimozione di quelli esistenti"
+          },
+          "attributes": {
+            "title": "Attributi",
+            "description": "Osserva le modifiche ai valori degli attributi dell'elemento target"
+          },
+          "attributeFilter": {
+            "title": "Filtro attributi",
+            "separate": "Usa le virgole (,) per separare i nomi degli attributi",
+            "description": "Monitora solo attributi specifici (lascia vuoto per monitorare tutti)"
+          },
+          "characterData": {
+            "title": "Character data",
+            "description": "Monitora modifiche ai character data/testo all'interno dell'elemento target"
+          }
+        },
+        "items": {
+          "manual": "Manualmente",
+          "interval": "Intervallo",
+          "cron-job": "Cron job",
+          "date": "In una data specifica",
+          "context-menu": "Menu contestuale",
+          "element-change": "Alla variazione di un elemento",
+          "specific-day": "In un giorno specifico",
+          "visit-web": "Quando si visita un sito web",
+          "on-startup": "All'avvio del browser",
+          "keyboard-shortcut": "Scorciatoia da tastiera"
+        }
+      },
+      "execute-workflow": {
+        "name": "Esegui workflow",
+        "overwriteNote": "Questo sovrascriverà i dati globali del workflow selezionato",
+        "select": "Seleziona workflow",
+        "executeId": "Esegui ID (opzionale)",
+        "description": "",
+        "insertAllVars": "Usa tutte le variabili del workflow corrente",
+        "insertVars": "Inserisci le variabili del workflow corrente",
+        "useCommas": "Usa le virgole per separare i nomi delle variabili"
+      },
+      "google-sheets": {
+        "name": "Google Sheets",
+        "description": "Leggi o aggiorna dati di Google Sheets",
+        "previewData": "Anteprima dei dati",
+        "firstRow": "Usa la prima riga come chiavi",
+        "keysAsFirstRow": "Usa le chiavi come prima riga",
+        "insertData": "Inserisci dati",
+        "valueInputOption": "Opzione di immissione del valore",
+        "insertDataOption": "Opzione di inserimento dati",
+        "rangeToSearch": "Intervallo da ricercare",
+        "dataFrom": {
+          "label": "Dati da",
+          "options": {
+            "data-columns": "Tabella",
+            "custom": "Personalizzato"
+          }
+        },
+        "refKey": {
+          "label": "Chiave di riferimento (opzionale)",
+          "placeholder": "Nome chiave"
+        },
+        "spreadsheetId": {
+          "label": "ID foglio di calcolo",
+          "link": "Scopri come ottenere l'ID del foglio di calcolo"
+        },
+        "range": {
+          "label": "Intervallo",
+          "link": "Clicca per vedere più esempi"
+        },
+        "select": {
+          "get": "Ottieni i valori delle celle",
+          "getRange": "Ottieni un intervallo",
+          "update": "Aggiorna i valori delle celle",
+          "append": "Aggiungi valori alle celle",
+          "clear": "Cancella i valori delle celle"
+        }
+      },
+      "active-tab": {
+        "name": "Scheda attiva",
+        "description": "Imposta la scheda in cui ti trovi come scheda attiva"
+      },
+      "proxy": {
+        "name": "Proxy",
+        "description": "Imposta il proxy del browser",
+        "clear": "Cancella tutti i proxy",
+        "bypass": {
+          "label": "Elenco dei bypass",
+          "note": "Usa le virgole (,) per separare gli URL"
+        }
+      },
+      "new-window": {
+        "name": "Nuova finestra",
+        "description": "Crea una nuova finestra",
+        "top": "Top",
+        "left": "Left",
+        "height": "Altezza",
+        "width": "Larghezza",
+        "note": "Nota: usa 0 per disabilitare",
+        "position": "Posizione finestra",
+        "size": "Dimensione finestra",
+        "windowState": {
+          "placeholder": "Stato finestra",
+          "options": {
+            "normal": "Normale",
+            "minimized": "Minimizzato",
+            "maximized": "Massimizzato",
+            "fullscreen": "Schermo intero"
+          }
+        },
+        "incognito": {
+          "text": "Apri come finestra in incognito",
+          "note": "Devi prima abilitare 'Consenti modalità di navigazione in incognito' per questa estensione"
+        }
+      },
+      "go-back": {
+        "name": "Torna indietro",
+        "description": "Torna alla pagina precedente"
+      },
+      "forward-page": {
+        "name": "Vai avanti",
+        "description": "Vai alla pagina successiva"
+      },
+      "close-tab": {
+        "name": "Chiudi scheda/finestra",
+        "description": "",
+        "url": "Match Pattern",
+        "activeTab": "Chiudi scheda attiva",
+        "allWindows": "Chiudi tutte le finestre"
+      },
+      "event-click": {
+        "name": "Clicca elemento",
+        "description": ""
+      },
+      "delay": {
+        "name": "Delay",
+        "description": "Aggiungi un delay per ritardare l'esecuzione del blocco successivo",
+        "input": {
+          "title": "Delay in millisecondi",
+          "placeholder": "(millisecondi)"
+        }
+      },
+      "parameter-prompt": {
+        "name": "Prompt parametri"
+      },
+      "get-text": {
+        "name": "Ottieni testo",
+        "description": "Ottieni testo da un elemento",
+        "checkbox": "Inserisci in tabella",
+        "includeTags": "Includi tag HTML",
+        "prefixText": {
+          "placeholder": "Prefisso del testo",
+          "title": "Aggiungi un prefisso al testo"
+        },
+        "suffixText": {
+          "placeholder": "Suffisso del testo",
+          "title": "Aggiungi un suffisso al testo"
+        }
+      },
+      "export-data": {
+        "name": "Esporta dati",
+        "description": "Esporta i dati del workflow",
+        "exportAs": "Esporta come",
+        "refKey": "Chiave di riferimento",
+        "bomHeader": "Aggiungi UTF-8 BOM",
+        "dataToExport": {
+          "placeholder": "Dati da esportare",
+          "options": {
+            "data-columns": "Tabella",
+            "google-sheets": "Google Sheets",
+            "variable": "Variabile"
+          }
+        }
+      },
+      "element-scroll": {
+        "name": "Scorri elemento",
+        "description": "",
+        "scrollY": "Scorri verticalmente",
+        "scrollX": "Scorri orizzontalmente",
+        "intoView": "Scorri in vista",
+        "smooth": "Scorrimento fluido",
+        "incScrollX": "Incrementa lo scorrimento orizzontale",
+        "incScrollY": "Incrementa lo scorrimento verticale"
+      },
+      "switch-tab": {
+        "name": "Cambia scheda",
+        "description": "Passa da una scheda all'altra",
+        "matchPattern": "Match Pattern",
+        "url": "URL della nuova scheda",
+        "createIfNoMatch": "Crea se non c'è corrispondenza"
+      },
+      "new-tab": {
+        "name": "Nuova scheda",
+        "description": "",
+        "url": "URL della nuova scheda",
+        "customUserAgent": "Usa un User-Agent personalizzato",
+        "activeTab": "Imposta come scheda attiva",
+        "tabToGroup": "Aggiungi scheda a un gruppo",
+        "waitTabLoaded": "Attendi il caricamento",
+        "updatePrevTab": {
+          "title": "Usa la scheda aperta in precedenza invece di crearne una nuova",
+          "text": "Aggiorna la scheda aperta prima"
+        }
+      },
+      "link": {
+        "name": "Link",
+        "description": "Apri elemento di collegamento"
+      },
+      "attribute-value": {
+        "name": "Valore attributo",
+        "description": "Ottieni il valore dell'attributo di un elemento",
+        "forms": {
+          "name": "Nome attributo",
+          "checkbox": "Inserisci in tabella",
+          "column": "Seleziona colonna",
+          "extraRow": {
+            "checkbox": "Aggiungi riga extra",
+            "placeholder": "Valore",
+            "title": "Valore della riga extra"
+          }
+        }
+      },
+      "forms": {
+        "name": "Moduli",
+        "description": "",
+        "selected": "Selezionato",
+        "type": "Tipo di modulo",
+        "getValue": "Ottini il valore del modulo",
+        "text-field": {
+          "name": "Campo di testo",
+          "value": "Valore",
+          "clearValue": "Cancella il valore del modulo",
+          "delay": {
+            "placeholder": "Delay",
+            "label": "Delay di battitura (ms) (0 per disabilitare)"
+          }
+        },
+        "select": {
+          "name": "Select"
+        },
+        "radio": {
+          "name": "Radio"
+        },
+        "checkbox": {
+          "name": "Checkbox"
+        }
+      },
+      "repeat-task": {
+        "name": "Ripeti operazione",
+        "description": "",
+        "times": "volte",
+        "repeatFrom": "Ripeti da"
+      },
+      "javascript-code": {
+        "name": "Codice JavaScript",
+        "description": "Esegui il tuo codice JavaScript nella pagina web",
+        "availabeFuncs": "Metodi disponibili:",
+        "removeAfterExec": "Rimuovi dopo l'esecuzione del blocco",
+        "everyNewTab": "Esegui in ogni nuova scheda",
+        "context": {
+          "name": "Contesto di esecuzione",
+          "items": {
+            "website": "Scheda attiva",
+            "background": "Background"
+          }
+        },
+        "modal": {
+          "tabs": {
+            "code": "Codice JavaScript",
+            "preloadScript": "Script di precaricamento"
+          }
+        },
+        "timeout": {
+          "placeholder": "Timeout (millisecondi)",
+          "title": "Timeout di esecuzione del codice JavaScript"
+        }
+      },
+      "trigger-event": {
+        "name": "Innesca evento",
+        "description": "",
+        "selectEvent": "Seleziona evento"
+      },
+      "conditions": {
+        "name": "Condizioni",
+        "add": "Aggiungi percorso",
+        "retryConditions": "Riprova se non si verifica nessuna condizione",
+        "description": "Blocco condizionale",
+        "refresh": "Aggiorna le connessioni delle condizioni",
+        "fallbackTitle": "Viene eseguito quando tutti i confronti non soddisfano il requisito",
+        "equals": "Equivale",
+        "gt": "Maggiore di",
+        "gte": "Maggiore o uguale",
+        "lt": "Minore di",
+        "lte": "Minore o uguale",
+        "ne": "Non equivale",
+        "contains": "Contiene"
+      },
+      "element-exists": {
+        "name": "Esiste elemento",
+        "description": "Controlla se esiste un elemento",
+        "selector": "Selettore elemento",
+        "fallbackTitle": "Viene eseguito quando l'elemento non esiste",
+        "throwError": "Lancia un errore se non esiste",
+        "tryFor": {
+          "title": "Quante volte provare a verificare se l'elemento esiste",
+          "label": "Prova per"
+        },
+        "timeout": {
+          "label": "Timeout (millisecondi)",
+          "title": "Timeout per ogni tentativo"
+        }
+      },
+      "webhook": {
+        "name": "Richiesta HTTP",
+        "description": "Effettua una richiesta HTTP",
+        "contentType": "Tipo di contenuto",
+        "method": "Metodo di richiesta",
+        "url": "URL di richiesta",
+        "fallback": "Viene eseguito quando la richiesta HTTP ha esito negativo",
+        "buttons": {
+          "header": "Aggiungi header"
+        },
+        "timeout": {
+          "placeholder": "Timeout",
+          "title": "Timeout di esecuzione della richiesta HTTP (ms)"
+        },
+        "tabs": {
+          "headers": "Intestazioni",
+          "body": "Corpo",
+          "response": "Risposta"
+        }
+      },
+      "while-loop": {
+        "name": "Ciclo while",
+        "description": "Esegue i blocchi fintantoché si verifica la condizione",
+        "editCondition": "Modifica condizione",
+        "fallback": "Viene eseguito quando la condizione risulta falsa"
+      },
+      "loop-elements": {
+        "name": "Itera elementi",
+        "description": "Itera gli elementi",
+        "loadMore": "Carica altri elementi",
+        "scrollToBottom": "Scorri fino in fondo",
+        "actions": {
+          "none": "Nessuna azione",
+          "click-element": "Clicca un elemento",
+          "scroll": "Scorri verso il basso",
+          "click-link": "Clicca un link"
+        }
+      },
+      "loop-data": {
+        "name": "Itera dati",
+        "description": "Itera una tabella o dei dati personalizzati",
+        "loopId": "ID ciclo",
+        "refKey": "Chiave di riferimento",
+        "startIndex": "Inizia dall'indice",
+        "resumeLastWorkflow": "Riprendi l'ultimo workflow",
+        "reverse": "Inverti l'ordine del ciclo",
+        "modal": {
+          "fileTooLarge": "File troppo grande per essere modificato",
+          "maxFile": "La dimensione massima del file è di 1MB",
+          "options": {
+            "firstRow": "Usa la prima riga come chiavi"
+          }
+        },
+        "buttons": {
+          "clear": "Cancella dati",
+          "insert": "Inserisci dati",
+          "import": "Importa file"
+        },
+        "maxLoop": {
+          "title": "Numero massimo di dati da iterare",
+          "label": "Numero massimo di cicli (0 per disabilitare)"
+        },
+        "loopThrough": {
+          "placeholder": "Itera attraverso",
+          "fromNumber": "Dal numero",
+          "toNumber": "Al numero",
+          "options": {
+            "numbers": "Numeri",
+            "variable": "Variabile",
+            "data-columns": "Tabella",
+            "table": "Tabella",
+            "custom-data": "Dati personalizzati",
+            "google-sheets": "Google Sheets",
+            "elements": "Elementi"
+          }
+        }
+      },
+      "loop-breakpoint": {
+        "name": "Breakpoint ciclo",
+        "description": "Per indicare il punto di interruzione del blocco Itera Dati"
+      },
+      "take-screenshot": {
+        "name": "Effettua screenshot",
+        "fullPage": "Cattura la schermata dell'intera pagina",
+        "description": "Cattura la schermata della scheda attiva",
+        "imageQuality": "Qualità dell'immagine",
+        "saveToColumn": "Inserisci in tabella",
+        "saveToComputer": "Salva sul computer",
+        "types": {
+          "title": "Cattura",
+          "page": "Una pagina",
+          "fullpage": "Una pagina intera",
+          "element": "Un elemento"
+        }
+      },
+      "switch-to": {
+        "name": "Cambia frame",
+        "description": "Passa dalla finestra principale a un iframe",
+        "iframeSelector": "Selettore elemento",
+        "windowTypes": {
+          "main": "Finestra principale",
+          "iframe": "Iframe"
+        }
+      }
+    }
+  }
+}

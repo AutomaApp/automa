@@ -122,8 +122,8 @@
       class="bg-accent fixed bottom-5 left-0 m-4 p-4 rounded-lg dark:text-black text-white shadow-md"
     >
       <p class="leading-tight text-sm">
-        If the workflow runs for less than 5 minutes, you set it to run in the
-        background in
+        If the workflow runs for less than 5 minutes, set it to run in the
+        background in the
         <a
           href="https://docs.automa.site/workflow/settings.html#workflow-execution"
           class="font-semibold underline"

@@ -15,7 +15,7 @@
         "selector": "Element selector",
         "selectorOptions": "Selector options",
         "timeout": "Timeout (milliseconds)",
-        "noPermission": "Automa don't have enough permission to do this action",
+        "noPermission": "Automa doesn't have enough permissions to perform this action",
         "grantPermission": "Grant permission",
         "action": "Action",
         "element": {
@@ -26,16 +26,16 @@
           "title": "Block settings",
           "line": {
             "title": "Lines",
-            "label": "Line label",
+            "label": "Label",
             "animated": "Animated",
             "select": "Select line",
             "to": "Line to {name} block",
-            "lineColor": "Line color"
+            "lineColor": "Color"
           }
         },
         "toggle": {
           "enable": "Enable block",
-          "disable": "Disable block",
+          "disable": "Disable block"
         },
         "onError": {
           "info": "These rules will apply when an error occurs on the block",
@@ -45,7 +45,7 @@
           "fallbackTitle": "Will execute when an error occurs in the block",
           "times": {
             "name": "Times",
-            "description": "The number of times to retry the action",
+            "description": "The number of times to retry the action"
           },
           "interval": {
             "name": "Interval",
@@ -152,7 +152,7 @@
       },
       "increase-variable": {
         "name": "Increase variable",
-        "description": "Increase the value of a variable by specific amount",
+        "description": "Increase the value of a variable by a specific amount",
         "increase": "Increase by"
       },
       "notification": {
@@ -210,11 +210,11 @@
       },
       "handle-dialog": {
         "name": "Handle dialog",
-        "description": "Accepts or dismisses a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload).",
+        "description": "Accepts or dismisses a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload)",
         "accept": "Accept dialog",
         "promptText": {
           "label": "Prompt text (optional)",
-          "description": "The text to enter into the dialog prompt before accepting"
+          "description": "The text to enter into the prompt dialog before accepting"
         }
       },
       "handle-download": {
@@ -266,13 +266,13 @@
         "description": "Upload file into <input type=\"file\"> element",
         "filePath": "URL or File path",
         "addFile": "Add file",
-        "onlyURL": "Only support upload files from an URL in the Firefox browser",
-        "requirement": "See the requirement before using this block",
-        "noFileAccess": "Automa doesn't have file access"
+        "onlyURL": "Only uploading files from a URL is supported in the Firefox browser",
+        "requirement": "Read the requirements before using this block",
+        "noFileAccess": "Automa doesn't have access to files"
       },
       "browser-event": {
         "name": "Browser event",
-        "description": "Execute the next block when the event is triggered",
+        "description": "Executes the next block when the specified event is triggered",
         "events": "Events",
         "timeout": "Timeout (milliseconds)",
         "activeTabLoaded": "Active tab",
@@ -287,14 +287,14 @@
         "groupName": "Group name",
         "description": "Grouping blocks",
         "dropText": "Drag & drop a block here",
-        "cantAdd": "Can't add \"{blockName}\" block to the group."
+        "cantAdd": "Can't add \"{blockName}\" block to the group"
       },
       "trigger": {
         "name": "Trigger",
         "description": "Block where the workflow will start executing",
         "addTime": "Add time",
         "selectDay": "Select day",
-        "timeExist": "You alread add {time} on {day}",
+        "timeExist": "You already added a trigger at {time} on {day}",
         "fixedDelay": "Fixed delay",
         "contextMenus": {
           "noPermission": "This trigger requires \"contextMenus\" permission to be working",
@@ -317,7 +317,7 @@
           "stopRecord": "Stop recording",
           "checkboxTitle": "Execute shortcut even when you're in an input element",
           "checkbox": "Active while in input",
-          "note": "Note: keyboard shortcut only working when you're on a webpage"
+          "note": "Note: keyboard shortcut only works when you're on a webpage"
         },
         "forms": {
           "triggerWorkflow": "Trigger workflow",
@@ -335,7 +335,7 @@
           "targetWebsite": "The Match Pattern of the website where the target element is (click to see more Match Pattern examples)",
           "baseEl": {
             "title": "Base element (optional)",
-            "description": "Automa will restart observing the target element when this element changed"
+            "description": "Automa will restart observing the target element when this element changes"
           },
           "subtree": {
             "title": "Include subtree",
@@ -343,21 +343,21 @@
           },
           "childList": {
             "title": "Child list",
-            "description": "Monitor for the addition of new child elements or removal of existing child elements"
+            "description": "Monitor the addition of new child elements or the removal of existing ones"
           },
           "attributes": {
             "title": "Attributes",
-            "description": "Watch for changes to the value of attributes on the target element"
+            "description": "Watch for changes to the attribute values of the target element"
           },
           "attributeFilter": {
             "title": "Attribute filter",
-            "separate": "Use commas(,) to separate attribute name",
+            "separate": "Use commas (,) to separate attribute names",
             "description": "Only monitor specific attributes (leave blank to monitor all)"
           },
           "characterData": {
             "title": "Character data",
             "description": "Monitor changes to the character data/text within the target element"
-          },
+          }
         },
         "items": {
           "manual": "Manually",
@@ -365,9 +365,9 @@
           "cron-job": "Cron job",
           "date": "On a specific date",
           "context-menu": "Context menu",
-          "element-change": "When element change",
+          "element-change": "On element change",
           "specific-day": "On a specific day",
-          "visit-web": "When visit a website",
+          "visit-web": "When visiting a website",
           "on-startup": "On browser startup",
           "keyboard-shortcut": "Keyboard shortcut"
         }
@@ -378,12 +378,12 @@
         "select": "Select workflow",
         "executeId": "Execute Id (optional)",
         "description": "",
-        "insertAllVars": "Insert all current workflow variables",
+        "insertAllVars": "Use all current workflow variables",
         "insertVars": "Insert current workflow variables",
         "useCommas": "Use commas to separate the variable name"
       },
       "google-sheets": {
-        "name": "Google sheets",
+        "name": "Google Sheets",
         "description": "Read or update Google Sheets data",
         "previewData": "Preview data",
         "firstRow": "Use the first row as keys",
@@ -409,7 +409,7 @@
         },
         "range": {
           "label": "Range",
-          "link": "Click to see more example"
+          "link": "Click to see more examples"
         },
         "select": {
           "get": "Get spreadsheet cell values",
@@ -421,12 +421,12 @@
       },
       "active-tab": {
         "name": "Active tab",
-        "description": "Set current tab that you're in as an active tab"
+        "description": "Set the tab you're in as the active tab"
       },
       "proxy": {
         "name": "Proxy",
         "description": "Set the proxy of the browser",
-        "clear": "Clear all proxy",
+        "clear": "Clear all proxies",
         "bypass": {
           "label": "Bypass list",
           "note": "Use commas (,) to separate URL"
@@ -452,8 +452,8 @@
           }
         },
         "incognito": {
-          "text": "Set as incognito window",
-          "note": "You must enable 'Allow in incognito' for this extension to use the option"
+          "text": "Set as an incognito window",
+          "note": "You must enable 'Allow in incognito' for this extension first"
         }
       },
       "go-back": {
@@ -477,10 +477,10 @@
       },
       "delay": {
         "name": "Delay",
-        "description": "Add delay before executing the next block",
+        "description": "Add a delay before executing the next block",
         "input": {
-          "title": "Delay in millisecond",
-          "placeholder": "(millisecond)"
+          "title": "Delay in milliseconds",
+          "placeholder": "(milliseconds)"
         }
       },
       "parameter-prompt": {
@@ -510,9 +510,9 @@
           "placeholder": "Data to export",
           "options": {
             "data-columns": "Table",
-            "google-sheets": "Google sheets",
+            "google-sheets": "Google Sheets",
             "variable": "Variable"
-          },
+          }
         }
       },
       "element-scroll": {
@@ -529,17 +529,17 @@
         "name": "Switch tab",
         "description": "Switch between tab",
         "matchPattern": "Match Patterns",
-        "url": "URL for the new tab",
+        "url": "New tab URL",
         "createIfNoMatch": "Create if there's no match"
       },
       "new-tab": {
         "name": "New tab",
         "description": "",
-        "url": "New Tab URL",
+        "url": "New tab URL",
         "customUserAgent": "Use custom User-Agent",
         "activeTab": "Set as active tab",
-        "tabToGroup": "Add tab to group",
-        "waitTabLoaded": "Wait till tab loaded",
+        "tabToGroup": "Add tab to a group",
+        "waitTabLoaded": "Wait until the tab is loaded",
         "updatePrevTab": {
           "title": "Use the previously opened new tab instead of creating a new one",
           "text": "Update previously opened tab"
@@ -551,7 +551,7 @@
       },
       "attribute-value": {
         "name": "Attribute value",
-        "description": "Get value of an element attribute",
+        "description": "Get the value of an element attribute",
         "forms": {
           "name": "Attribute name",
           "checkbox": "Insert to table",
@@ -596,10 +596,10 @@
       },
       "javascript-code": {
         "name": "JavaScript code",
-        "description": "Execute your javascript code in the web page",
+        "description": "Execute your JavaScript code in the web page",
         "availabeFuncs": "Available functions:",
-        "removeAfterExec": "Remove after block executed",
-        "everyNewTab": "Execute every new tab",
+        "removeAfterExec": "Remove after block execution",
+        "everyNewTab": "Execute in every new tab",
         "context": {
           "name": "Execution context",
           "items": {
@@ -615,7 +615,7 @@
         },
         "timeout": {
           "placeholder": "Timeout (milliseconds)",
-          "title": "Javascript code execution timeout"
+          "title": "JavaScript code execution timeout"
         }
       },
       "trigger-event": {
@@ -625,11 +625,11 @@
       },
       "conditions": {
         "name": "Conditions",
-        "add": "Add condition",
-        "retryConditions": "Retry if all conditions are not met",
+        "add": "Add path",
+        "retryConditions": "Retry if no conditions are met",
         "description": "Conditional block",
-        "refresh": "Refresh conditions connections",
-        "fallbackTitle": "Execute when all comparisons don't meet the requirement",
+        "refresh": "Refresh condition connections",
+        "fallbackTitle": "Executes when all comparisons don't meet the requirement",
         "equals": "Equals",
         "gt": "Greater than",
         "gte": "Greater than or equal",
@@ -640,12 +640,12 @@
       },
       "element-exists": {
         "name": "Element exists",
-        "description": "Check if an element is exists",
+        "description": "Check if an element exists",
         "selector": "Element selector",
-        "fallbackTitle": "Execute when element doesn't exists",
+        "fallbackTitle": "Executes when the element doesn't exist",
         "throwError": "Throw an error if doesn't exist",
         "tryFor": {
-          "title": "How many times to try to check if element exist",
+          "title": "How many times to try to check if the element exists",
           "label": "Try for"
         },
         "timeout": {
@@ -656,17 +656,16 @@
       "webhook": {
         "name": "HTTP request",
         "description": "Make an HTTP Request",
-        "url": "The Post receive URL",
         "contentType": "Content type",
         "method": "Request method",
         "url": "Request URL",
-        "fallback": "Execute when failed or error making an HTTP request",
+        "fallback": "Executes when the HTTP request fails",
         "buttons": {
           "header": "Add header"
         },
         "timeout": {
           "placeholder": "Timeout",
-          "title": "Http request execution timeout(ms)"
+          "title": "HTTP request execution timeout (ms)"
         },
         "tabs": {
           "headers": "Headers",
@@ -676,9 +675,9 @@
       },
       "while-loop": {
         "name": "While loop",
-        "description": "Execute blocks while the condition is met",
+        "description": "Executes blocks while the condition is met",
         "editCondition": "Edit condition",
-        "fallback": "Execute when the condition is false"
+        "fallback": "Executes when the condition is false"
       },
       "loop-elements": {
         "name": "Loop elements",
@@ -687,15 +686,15 @@
         "scrollToBottom": "Scroll to bottom",
         "actions": {
           "none": "None",
-          "click-element": "Click an element to load more",
-          "scroll": "Scroll down to load more",
-          "click-link": "Click a link to load more"
+          "click-element": "Click an element",
+          "scroll": "Scroll down",
+          "click-link": "Click a link"
         }
       },
       "loop-data": {
         "name": "Loop data",
-        "description": "Iterate through table or your custom data",
-        "loopId": "Loop id",
+        "description": "Iterate through a table or your custom data",
+        "loopId": "Loop ID",
         "refKey": "Reference key",
         "startIndex": "Start from index",
         "resumeLastWorkflow": "Resume last workflow",
@@ -713,7 +712,7 @@
           "import": "Import file"
         },
         "maxLoop": {
-          "title": "Max numbers of data to loop",
+          "title": "Max number of data to loop",
           "label": "Max data to loop (0 to disable)"
         },
         "loopThrough": {
@@ -726,14 +725,14 @@
             "data-columns": "Table",
             "table": "Table",
             "custom-data": "Custom data",
-            "google-sheets": "Google sheets",
+            "google-sheets": "Google Sheets",
             "elements": "Elements"
           }
         }
       },
       "loop-breakpoint": {
         "name": "Loop breakpoint",
-        "description": "To tell where loop data block must stop"
+        "description": "To indicate where the Loop Data block must stop"
       },
       "take-screenshot": {
         "name": "Take screenshot",
@@ -744,15 +743,15 @@
         "saveToComputer": "Save screenshot to computer",
         "types": {
           "title": "Take a screenshot of",
-          "page": "Page",
-          "fullpage": "Full page",
+          "page": "A page",
+          "fullpage": "A full page",
           "element": "An element"
         }
       },
       "switch-to": {
         "name": "Switch frame",
-        "description": "Switch between main window and iframe",
-        "iframeSelector": "Iframe element selector",
+        "description": "Switch between the main window and an iframe",
+        "iframeSelector": "Element selector",
         "windowTypes": {
           "main": "Main window",
           "iframe": "Iframe"

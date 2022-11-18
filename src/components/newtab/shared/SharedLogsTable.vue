@@ -98,7 +98,7 @@
             <span
               :class="statusColors[log.status]"
               :title="log.status === 'error' ? getErrorMessage(log) : null"
-              class="inline-block py-1 w-16 text-center text-sm rounded-md dark:text-black"
+              class="inline-block py-1 w-24 text-center text-sm rounded-md dark:text-black"
             >
               {{ t(`logStatus.${log.status}`) }}
             </span>
