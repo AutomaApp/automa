@@ -20,7 +20,7 @@
     },
     "categories": {
       "my": "My Packages",
-      "installed": "Installed Packages",
+      "installed": "Installed Packages"
     }
   },
   "scheduledWorkflow": {
@@ -52,7 +52,7 @@
     "add": "Add credential",
     "use": {
       "title": "Used credentials",
-      "description": "This workflow using these credentials"
+      "description": "This workflow uses these credentials"
     }
   },
   "workflowPermissions": {
@@ -100,7 +100,7 @@
   },
   "running": {
     "start": "Started on {date}",
-    "message": "This only display the last 5 logs"
+    "message": "This only displays the last 5 logs"
   },
   "settings": {
     "theme": "Theme",
@@ -125,7 +125,7 @@
       }
     },
     "deleteLog": {
-      "title": "Auto delete workflow logs",
+      "title": "Auto-delete workflow logs",
       "after": "Delete after",
       "deleteAfter": {
         "never": "Never",
@@ -135,7 +135,7 @@
     "language": {
       "label": "Language",
       "helpTranslate": "Can't find your language? Help translate.",
-      "reloadPage": "Reload the page to take effect"
+      "reloadPage": "Reload the page for the change to take effect"
     },
     "menu": {
       "backup": "Backup Workflows",
@@ -149,7 +149,7 @@
       "invalidPassword": "Invalid password",
       "workflowsAdded": "{count} workflows have been added",
       "name": "Backup workflows",
-      "needSignin": "You need to sign in to your account first",
+      "needSignin": "You need to sign in first",
       "backup": {
         "button": "Backup",
         "encrypt": "Encrypt with password"
@@ -183,7 +183,7 @@
   "workflow": {
     "previewMode": {
       "title": "Preview mode",
-      "description": "You're in preview mode, changes you made won't be saved"
+      "description": "You're in preview mode, changes you've made won't be saved"
     },
     "pinWorkflow": {
       "pin": "Pin workflow",
@@ -225,33 +225,33 @@
     "host": {
       "title": "Host workflow",
       "set": "Set as host workflow",
-      "id": "Host Id",
+      "id": "Host ID",
       "add": "Add hosted workflow",
       "sync": {
         "title": "Sync",
         "description": "Sync with host workflow"
       },
       "messages": {
-        "hostExist": "You already add this host",
-        "notFound": "Can't find hosted workflow with \"{id}\" id"
-      },
+        "hostExist": "You have already added this host",
+        "notFound": "Can't find a hosted workflow with the ID \"{id}\""
+      }
     },
     "type": {
       "local": "Local",
       "shared": "Shared",
-      "host": "Host",
+      "host": "Host"
     },
     "unpublish": {
       "title": "Unpublish workflow",
       "button": "Unpublish",
-      "body": "Are you sure want to unpublish \"{name}\" workflow?"
+      "body": "Are you sure you want to unpublish the workflow \"{name}\"?"
     },
     "share": {
       "url": "Share URL",
       "publish": "Publish",
       "sharedAs": "Shared as \"{name}\"",
       "title": "Share workflow",
-      "download": "Add workflow to local",
+      "download": "Save workflow to local",
       "edit": "Edit description",
       "fetchLocal": "Fetch local workflow",
       "update": "Update",
@@ -266,7 +266,7 @@
       "title": "Protect workflow",
       "remove": "Remove protection",
       "button": "Protect",
-      "note": "Note: you must remember this password, this password will be required to edit and delete the workflow later on."
+      "note": "Note: this password will be required later on to edit or delete the workflow."
     },
     "locked": {
       "title": "This Workflow is Protected",
@@ -281,7 +281,7 @@
     },
     "table": {
       "title": "Table | Tables",
-      "placeholder": "Search or add column",
+      "placeholder": "Search or add a column",
       "select": "Select column",
       "column": {
         "name": "Column name",
@@ -303,15 +303,15 @@
     },
     "settings": {
       "saveLog": "Save workflow log",
-      "executedBlockOnWeb": "Show executed block on web page",
+      "executedBlockOnWeb": "Show executed block on the web page",
       "notification": {
         "title": "Workflow notification",
-        "description": "Show workflow status(success or failed) after it executed",
-        "noPermission": "Automa requires \"notifications\" permission to make this work"
+        "description": "Show workflow status (success or failed) after it executed",
+        "noPermission": "This option requires \"notifications\" permission to work"
       },
       "publicId": {
-        "title": "Workflow public Id",
-        "description": "Use this public id to execute workflow using JS custom event"
+        "title": "Workflow public ID",
+        "description": "Set a public ID to execute the workflow via a JavaScript custom event"
       },
       "defaultColumn": {
         "title": "Insert into the default column",
@@ -325,11 +325,11 @@
       "clearCache": {
         "title": "Clear cache",
         "description": "Clear cache (state and loop index) of the workflow",
-        "info": "Successful clear workflow cache",
+        "info": "Successfully cleared workflow cache",
         "btn": "Clear"
       },
       "reuseLastState": {
-        "title": "Reuse last workflow state",
+        "title": "Reuse last workflow's state",
         "description": "Use the state data (table, variables, and global data) from the last executed workflow"
       },
       "debugMode": {
@@ -339,11 +339,11 @@
       "restartWorkflow": {
         "for": "Restart for",
         "times": "Times",
-        "description": "Max how many times the workflow will restart"
+        "description": "Max number of times the workflow will restart"
       },
       "onError": {
         "title": "On workflow error",
-        "description": "Set what to do when an error occurs in the workflow",
+        "description": "Set the action to take if an error occurs in the workflow",
         "items": {
           "keepRunning": "Keep running",
           "stopWorkflow": "Stop workflow",
@@ -359,8 +359,8 @@
       },
       "tabLoadTimeout": {
         "title": "Tab load timeout",
-        "description": "Maximum time to load tab in milliseconds, pass 0 to disable the timeout."
-      },
+        "description": "Maximum time to load a tab in milliseconds, input 0 to disable the timeout"
+      }
     }
   },
   "collection": {
@@ -374,7 +374,7 @@
     "options": {
       "atOnce": {
         "title": "Execute all workflows in the collection at once",
-        "description": "Block not gonna executed when using this option"
+        "description": "Blocks will not execute when this option is used"
       }
     },
     "globalData": {
@@ -382,8 +382,8 @@
     }
   },
   "log": {
-    "flowId": "Flow Id",
-    "goBack": "Go back to \"{name}\" log",
+    "flowId": "Flow ID",
+    "goBack": "Go back to \"{name}\"'s logs",
     "goWorkflow": "Go to workflow",
     "startedDate": "Started date",
     "duration": "Duration",
@@ -392,7 +392,7 @@
     "deleteSelected": "Delete selected logs",
     "clearLogs": {
       "title": "Clear logs",
-      "description": "Are you sure to clear all logs?"
+      "description": "Are you sure you want to clear all logs?"
     },
     "types": {
       "stop": "Workflow is stopped",
@@ -401,31 +401,31 @@
     "messages": {
       "url-empty": "URL is empty",
       "invalid-url": "URL is not valid",
-      "conditions-empty": "Conditions is empty",
+      "conditions-empty": "Conditions are empty",
       "invalid-proxy-host": "Invalid proxy host",
       "workflow-disabled": "Workflow is disabled",
       "selector-empty": "Element selector is empty",
-      "invalid-body": "Content body is not valid JSON",
-      "invalid-active-tab": "\"{url}\" is invalid URL",
-      "empty-spreadsheet-id": "Spreadsheet Id is empty",
+      "invalid-body": "Content body is not a valid JSON",
+      "invalid-active-tab": "\"{url}\" is an invalid URL",
+      "empty-spreadsheet-id": "Spreadsheet ID is empty",
       "invalid-loop-data": "Invalid data to loop through",
       "empty-workflow": "You must select a workflow first",
-      "active-tab-removed": "Workflow active tab is removed",
+      "active-tab-removed": "Workflow active tab was removed",
       "empty-spreadsheet-range": "Spreadsheet range is empty",
-      "stop-timeout": "Workflow is stopped because of timeout",
+      "stop-timeout": "Workflow was stopped due to timeout",
       "no-file-access": "Automa doesn't have access to the file",
-      "no-workflow": "Can't find workflow with \"{workflowId}\" ID",
-      "no-match-tab": "Can't find a tab with \"{pattern}\" patterns",
-      "no-clipboard-acces": "Don't have permission to access clipboard",
+      "no-workflow": "Can't find a workflow with the ID \"{workflowId}\"",
+      "no-match-tab": "Can't find a tab matching the pattern \"{pattern}\"",
+      "no-clipboard-acces": "Don't have permission to access the clipboard",
       "browser-not-supported": "This feature not supported in {browser} browser",
-      "element-not-found": "Can't find an element with \"{selector}\" selector.",
-      "no-permission": "Don't have \"{permission}\" permission to do this action",
-      "not-iframe": "Element with \"{selector}\" selector is not an Iframe element",
-      "iframe-not-found": "Can't find an Iframe element with \"{selector}\" selector.",
+      "element-not-found": "Can't find an element with the selector \"{selector}\"",
+      "no-permission": "Don't have \"{permission}\" permission to perform this action",
+      "not-iframe": "Element with \"{selector}\" selector is not an iframe element",
+      "iframe-not-found": "Can't find an iframe element with the selector \"{selector}\"",
       "workflow-infinite-loop": "Can't execute the workflow to prevent an infinite loop",
       "not-debug-mode": "The workflow must run in debug mode for this block to work properly",
-      "no-iframe-id": "Can't find Frame ID for the iframe element with \"{selector}\" selector",
-      "no-tab": "Can't connect to a tab, use \"New tab\" or \"Active tab\" block before using the \"{name}\" block."
+      "no-iframe-id": "Can't find the Frame ID for the iframe element with the selector \"{selector}\"",
+      "no-tab": "Can't connect to a tab, use \"New tab\" or \"Active tab\" block before using the \"{name}\" block"
     },
     "description": {
       "text": "{status} on {date} in {duration}",
@@ -437,7 +437,7 @@
     },
     "delete": {
       "title": "Delete log",
-      "description": "Are you sure want to delete all the selected logs?"
+      "description": "Are you sure you want to delete all the selected logs?"
     },
     "exportData": {
       "title": "Export data",
