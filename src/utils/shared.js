@@ -699,6 +699,7 @@ export const tasks = {
     refDataKeys: [
       'maxLoop',
       'loopData',
+      'startIndex',
       'variableName',
       'referenceKey',
       'elementSelector',
