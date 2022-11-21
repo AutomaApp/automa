@@ -383,7 +383,7 @@
   },
   "log": {
     "flowId": "ID flusso",
-    "goBack": "Torna ai log di \"{name}\"",
+    "goBack": "Torna al log di \"{name}\"",
     "goWorkflow": "Vai al workflow",
     "startedDate": "Data di inizio",
     "duration": "Durata",
