@@ -104,7 +104,8 @@ export default async function (
 
     return elements;
   } catch (error) {
-    console.error(error);
+    if (onError) onError(error);
+
     throw error;
   }
 }
