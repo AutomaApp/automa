@@ -1563,7 +1563,8 @@ function checkWorkflowUpdate() {
 }
 
 useHead({
-  title: () => `${workflow.value?.name} workflow - Automa` || 'Automa',
+  title: () =>
+    `${workflow.value?.name} ${isPackage ? 'package' : 'workflow'}` || 'Automa',
 });
 const shortcut = useShortcut([
   getShortcut('editor:toggle-sidebar', toggleSidebar),
