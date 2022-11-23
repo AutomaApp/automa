@@ -297,7 +297,7 @@ class WorkflowEngine {
   addLogHistory(detail) {
     if (detail.name === 'blocks-group') return;
 
-    const isLimit = this.history.length >= this.logsLimit;
+    const isLimit = this.history?.length >= this.logsLimit;
     const notErrorLog = detail.type !== 'error';
 
     if ((isLimit || !this.saveLog) && notErrorLog) return;

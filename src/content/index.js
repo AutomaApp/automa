@@ -4,9 +4,8 @@ import cloneDeep from 'lodash.clonedeep';
 import findSelector from '@/lib/findSelector';
 import { sendMessage } from '@/utils/message';
 import automa from '@business';
-import FindElement from '@/utils/FindElement';
 import { toCamelCase, isXPath } from '@/utils/helper';
-import handleSelector from './handleSelector';
+import handleSelector, { queryElements } from './handleSelector';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
 import shortcutListener from './services/shortcutListener';
@@ -53,7 +52,12 @@ async function executeBlock(data) {
       findBy = isXPath(frameSelector) ? 'xpath' : 'cssSelector';
     }
 
-    const frameElement = FindElement[findBy]({ selector: frameSelector });
+    const frameElement = await queryElements({
+      findBy,
+      multiple: false,
+      waitForSelector: 5000,
+      selector: frameSelector,
+    });
     const frameError = (message) => {
       const error = new Error(message);
       error.data = { selector: frameSelector };
