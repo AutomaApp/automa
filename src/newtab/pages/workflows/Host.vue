@@ -30,12 +30,12 @@
         </div>
       </ui-card>
       <ui-tabs
-        v-model="state.activeTab"
+        model-value="'editor'"
         class="border-none px-2 rounded-lg h-full space-x-1 bg-white dark:bg-gray-800 ml-4"
         style="height: 48px"
       >
         <ui-tab value="editor">{{ t('common.editor') }}</ui-tab>
-        <ui-tab value="logs">
+        <ui-tab value="logs" @click="openLogs">
           {{ t('common.log', 2) }}
           <span
             v-if="workflowStates.length > 0"
@@ -101,12 +101,6 @@
           @init="onEditorInit"
         />
       </ui-tab-panel>
-      <ui-tab-panel value="logs">
-        <editor-logs
-          :workflow-id="workflowId"
-          :workflow-states="workflowStates"
-        />
-      </ui-tab-panel>
     </ui-tab-panels>
   </div>
 </template>
@@ -123,8 +117,8 @@ import { useWorkflowStore } from '@/stores/workflow';
 import { executeWorkflow } from '@/workflowEngine';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import getTriggerText from '@/utils/triggerText';
-import EditorLogs from '@/components/newtab/workflow/editor/EditorLogs.vue';
 import WorkflowEditor from '@/components/newtab/workflow/WorkflowEditor.vue';
+import emitter from '@/lib/mitt';
 
 useGroupTooltip();
 
@@ -161,6 +155,12 @@ const workflowStates = computed(() =>
   workflowStore.getWorkflowStates(workflowId)
 );
 
+function openLogs() {
+  emitter.emit('ui:logs', {
+    workflowId,
+    show: true,
+  });
+}
 function syncWorkflow() {
   state.loadingSync = true;
   const hostId = {

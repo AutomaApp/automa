@@ -17,10 +17,17 @@
               />
             </td>
             <td class="w-4/12">
+              <p
+                v-if="modal"
+                class="log-link text-overflow"
+                @click="$emit('select', { type: 'running', id: item.id })"
+              >
+                {{ item.state.name }}
+              </p>
               <router-link
+                v-else
                 :to="`/logs/${item.id}/running`"
-                class="inline-block text-overflow w-full align-middle min-h"
-                style="min-height: 28px"
+                class="log-link text-overflow"
               >
                 {{ item.state.name }}
               </router-link>
@@ -65,10 +72,17 @@
             class="text-overflow w-4/12"
             style="min-width: 140px; max-width: 330px"
           >
+            <p
+              v-if="modal"
+              class="log-link text-overflow"
+              @click="$emit('select', { type: 'log', id: log.id })"
+            >
+              {{ log.name }}
+            </p>
             <router-link
+              v-else
               :to="`/logs/${log.id}`"
-              class="inline-block text-overflow w-full align-middle min-h"
-              style="min-height: 28px"
+              class="log-link text-overflow"
             >
               {{ log.name }}
             </router-link>
@@ -126,8 +140,10 @@ defineProps({
     type: Array,
     default: () => [],
   },
+  modal: Boolean,
   hideSelect: Boolean,
 });
+defineEmits(['select']);
 
 const { t, te } = useI18n();
 
@@ -185,5 +201,11 @@ function stopSelectedWorkflow() {
 .log-time span {
   display: inline-block;
   vertical-align: middle;
+}
+
+.log-link {
+  @apply inline-block w-full align-middle;
+  cursor: pointer;
+  min-height: 28px;
 }
 </style>

@@ -1,18 +1,71 @@
 <template>
-  <div class="container pt-8 pb-4 logs-list">
-    <h1 class="text-2xl font-semibold mb-6">{{ t('common.log', 2) }}</h1>
+  <div class="pb-4 pt-1 overflow-auto logs-list">
+    <div class="flex items-center mb-8">
+      <h1 class="text-2xl font-semibold flex-1">
+        {{ $t('common.log', 2) }}
+      </h1>
+      <v-remixicon
+        name="riCloseLine"
+        class="cursor-pointer text-gray-600 dark:text-gray-300"
+        @click="$emit('close')"
+      />
+    </div>
     <logs-filters
       :sorts="sortsBuilder"
       :filters="filtersBuilder"
       @clear="clearLogs"
       @updateSorts="sortsBuilder[$event.key] = $event.value"
       @updateFilters="filtersBuilder[$event.key] = $event.value"
-    />
+    >
+      <ui-popover padding="" @click="filtersBuilder.workflowQuery = ''">
+        <template #trigger>
+          <ui-button>
+            <span class="text-overflow text-left" style="max-width: 160px">
+              {{ activeWorkflowName }}
+            </span>
+            <v-remixicon name="riArrowDropDownLine" class="-mr-1 ml-2" />
+          </ui-button>
+        </template>
+        <div class="w-64">
+          <div class="p-4">
+            <ui-input
+              v-model="filtersBuilder.workflowQuery"
+              autofocus
+              placeholder="Search..."
+              class="w-full"
+              prepend-icon="riSearch2Line"
+            />
+            <div class="text-right">
+              <span
+                class="underline text-sm cursor-pointer text-gray-600 dark:text-gray-300"
+                @click="filtersBuilder.workflowId = ''"
+              >
+                Clear
+              </span>
+            </div>
+          </div>
+          <ui-list class="mb-4 px-4 space-y-1 overflow-auto max-h-96 scroll">
+            <ui-list-item
+              v-for="workflow in workflows"
+              :key="workflow.id"
+              :active="filtersBuilder.workflowId === workflow.id"
+              class="cursor-pointer"
+              @click="filtersBuilder.workflowId = workflow.id"
+            >
+              <p class="text-overflow">{{ workflow.name }}</p>
+            </ui-list-item>
+          </ui-list>
+        </div>
+      </ui-popover>
+    </logs-filters>
     <div v-if="logs" style="min-height: 320px">
       <shared-logs-table
         :logs="logs"
-        :running="workflowStore.getAllStates"
+        :modal="true"
+        :running="workflowStates"
         class="w-full"
+        style="max-height: calc(100vh - 18rem)"
+        @select="$emit('select', $event)"
       >
         <template #item-prepend="{ log }">
           <td class="w-8">
@@ -85,14 +138,24 @@ import { useI18n } from 'vue-i18n';
 import { useDialog } from '@/composable/dialog';
 import dbLogs from '@/db/logs';
 import { useWorkflowStore } from '@/stores/workflow';
+import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import { useLiveQuery } from '@/composable/liveQuery';
 import LogsFilters from '@/components/newtab/logs/LogsFilters.vue';
 import LogsDataViewer from '@/components/newtab/logs/LogsDataViewer.vue';
 import SharedLogsTable from '@/components/newtab/shared/SharedLogsTable.vue';
 
+const props = defineProps({
+  workflowId: {
+    type: String,
+    default: '',
+  },
+});
+defineEmits(['select', 'close']);
+
 const { t } = useI18n();
 const dialog = useDialog();
 const workflowStore = useWorkflowStore();
+const hostedWorkflows = useHostedWorkflowStore();
 const storedlogs = useLiveQuery(() => dbLogs.items.toArray());
 
 const savedSorts = JSON.parse(localStorage.getItem('logs-sorts') || '{}');
@@ -106,6 +169,8 @@ const filtersBuilder = shallowReactive({
   query: '',
   byDate: 0,
   byStatus: 'all',
+  workflowQuery: '',
+  workflowId: props.workflowId,
 });
 const sortsBuilder = shallowReactive({
   order: savedSorts.order || 'desc',
@@ -116,13 +181,47 @@ const exportDataModal = shallowReactive({
   log: {},
 });
 
+const allWorkflows = computed(() =>
+  [...hostedWorkflows.toArray, ...workflowStore.getWorkflows].sort((a, b) =>
+    a.createdAt > b.createdAt ? -1 : 1
+  )
+);
+const workflows = computed(() =>
+  allWorkflows.value.filter((workflow) =>
+    workflow.name
+      .toLocaleLowerCase()
+      .includes(filtersBuilder.workflowQuery.toLocaleLowerCase())
+  )
+);
+const activeWorkflowName = computed(() => {
+  if (!filtersBuilder.workflowId) return 'All workflows';
+
+  const workflow = allWorkflows.value.find(
+    (item) => item.id === filtersBuilder.workflowId
+  );
+
+  return workflow?.name ?? 'All workflows';
+});
+
+const workflowStates = computed(() => {
+  const states = workflowStore.getAllStates;
+  if (!filtersBuilder.workflowId) return states;
+
+  return states.filter(
+    (state) => state.workflowId === filtersBuilder.workflowId
+  );
+});
+
 const filteredLogs = computed(() => {
   if (!storedlogs.value) return [];
 
   return storedlogs.value
-    .filter(({ name, status, endedAt }) => {
+    .filter(({ name, status, endedAt, workflowId }) => {
       let dateFilter = true;
       let statusFilter = true;
+      const workflowIdFilter = filtersBuilder.workflowId
+        ? filtersBuilder.workflowId === workflowId
+        : true;
       const searchFilter = name
         .toLocaleLowerCase()
         .includes(filtersBuilder.query.toLocaleLowerCase());
@@ -137,7 +236,7 @@ const filteredLogs = computed(() => {
         dateFilter = date <= endedAt;
       }
 
-      return searchFilter && statusFilter && dateFilter;
+      return searchFilter && workflowIdFilter && statusFilter && dateFilter;
     })
     .slice()
     .sort((a, b) => {

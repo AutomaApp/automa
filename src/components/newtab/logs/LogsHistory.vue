@@ -10,7 +10,7 @@
   </router-link>
   <div class="flex items-start flex-col-reverse lg:flex-row">
     <div class="lg:flex-1 w-full lg:w-auto">
-      <div class="rounded-lg bg-gray-900 dark:bg-gray-800 text-gray-100 dark">
+      <div class="rounded-lg bg-gray-900 text-gray-100 dark">
         <div
           class="border-b px-4 pt-4 flex items-center text-gray-200 pb-4 mb-4"
         >
@@ -44,7 +44,7 @@
           </div>
           <slot name="header-prepend" />
           <div class="flex-grow" />
-          <ui-popover trigger-width class="mr-4">
+          <ui-popover v-if="!isRunning" trigger-width class="mr-4">
             <template #trigger>
               <ui-button>
                 <span>
@@ -66,6 +66,7 @@
             </ui-list>
           </ui-popover>
           <ui-input
+            v-if="!isRunning"
             v-model="state.search"
             :placeholder="t('common.search')"
             prepend-icon="riSearch2Line"
@@ -73,7 +74,7 @@
         </div>
         <div
           id="log-history"
-          style="max-height: 600px"
+          style="max-height: 500px"
           class="scroll p-4 overflow-auto"
         >
           <slot name="prepend" />
@@ -209,7 +210,7 @@
     </div>
     <div
       v-if="state.itemId && activeLog"
-      class="w-full lg:w-4/12 lg:ml-8 mb-4 lg:mb-0 rounded-lg bg-gray-900 dark:bg-gray-800 text-gray-100 dark"
+      class="w-full lg:w-4/12 lg:ml-8 mb-4 lg:mb-0 rounded-lg bg-gray-900 text-gray-100 dark"
     >
       <div class="p-4 relative">
         <v-remixicon
@@ -318,6 +319,7 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  isRunning: Boolean,
 });
 
 const files = {
