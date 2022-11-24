@@ -157,6 +157,7 @@ import { initElementSelector as initElementSelectorFunc } from '@/newtab/utils/e
 import automa from '@business';
 import HomeWorkflowCard from '@/components/popup/home/HomeWorkflowCard.vue';
 import HomeTeamWorkflows from '@/components/popup/home/HomeTeamWorkflows.vue';
+import BackgroundUtils from '@/background/BackgroundUtils';
 
 const isMV2 = browser.runtime.getManifest().manifest_version === 2;
 
@@ -304,9 +305,7 @@ function deleteWorkflow({ id, name }) {
   });
 }
 function openDashboard(url) {
-  sendMessage('open:dashboard', url, 'background').then(() => {
-    window.close();
-  });
+  BackgroundUtils.openDashboard(url);
 }
 async function initElementSelector() {
   const [tab] = await browser.tabs.query({
