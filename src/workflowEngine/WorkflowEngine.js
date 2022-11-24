@@ -261,6 +261,8 @@ class WorkflowEngine {
         this.referenceData.variables[`$$${name}`] = value;
       });
 
+      this.addRefDataSnapshot('variables');
+
       await this.states.add(this.id, {
         id: this.id,
         state: this.state,
