@@ -15,40 +15,31 @@ async function activeTab(block) {
       return data;
     }
 
-    const minimizeDashboard = async (currentWindow) => {
-      if (currentWindow.type !== 'popup') return;
-
-      const [tab] = currentWindow.tabs;
-      const isDashboard = tab && tab.url.includes(browser.runtime.getURL(''));
-      const isWindowFocus =
-        currentWindow.focused || currentWindow.state === 'maximized';
-
-      if (isWindowFocus && isDashboard) {
-        const windowOptions = { focused: false };
-        if (currentWindow.state === 'maximized')
-          windowOptions.state = 'minimized';
-
-        await browser.windows.update(currentWindow.id, windowOptions);
-      }
-    };
-
-    if (this.engine.isPopup) {
-      const currentWindow = await browser.windows.getCurrent({
-        populate: true,
-      });
-      await minimizeDashboard(currentWindow);
-    } else {
-      const allWindows = await browser.windows.getAll({ populate: true });
-      for (const currWindow of allWindows) {
-        await minimizeDashboard(currWindow);
-      }
-    }
-
-    const [tab] = await browser.tabs.query({
+    const tabsQuery = {
       active: true,
       url: '*://*/*',
-      lastFocusedWindow: true,
-    });
+    };
+
+    if (BROWSER_TYPE === 'firefox') {
+      tabsQuery.currentWindow = true;
+    } else {
+      const dashboards = await browser.tabs.query({
+        url: chrome.runtime.getURL('*'),
+      });
+      for (const dashboard of dashboards) {
+        await browser.windows.update(dashboard.windowId, {
+          focused: false,
+          state: 'minimized',
+        });
+      }
+
+      tabsQuery.lastFocusedWindow = true;
+    }
+
+    const [tab] = await browser.tabs.query(tabsQuery);
+    if (!tab) {
+      throw new Error("Can't find active tab");
+    }
     if (!tab || !tab?.url.startsWith('http')) {
       const error = new Error('invalid-active-tab');
       error.data = { url: tab?.url };
