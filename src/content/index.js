@@ -70,7 +70,16 @@ async function executeBlock(data) {
     const isFrameEelement = ['IFRAME', 'FRAME'].includes(frameElement.tagName);
     if (!isFrameEelement) throw frameError('not-iframe');
 
+    const { x, y } = frameElement.getBoundingClientRect();
+    const iframeDetails = { x, y };
+
+    if (isMainFrame) {
+      iframeDetails.windowWidth = window.innerWidth;
+      iframeDetails.windowHeight = window.innerHeight;
+    }
+
     data.data.selector = selector;
+    data.data.$frameRect = iframeDetails;
     data.data.$frameSelector = frameSelector;
 
     if (frameElement.contentDocument) {
