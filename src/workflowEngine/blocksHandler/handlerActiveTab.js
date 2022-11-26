@@ -22,18 +22,29 @@ async function activeTab(block) {
 
     if (BROWSER_TYPE === 'firefox') {
       tabsQuery.currentWindow = true;
-    } else {
-      const dashboards = await browser.tabs.query({
-        url: chrome.runtime.getURL('*'),
-      });
-      for (const dashboard of dashboards) {
-        await browser.windows.update(dashboard.windowId, {
-          focused: false,
-          state: 'minimized',
-        });
+    } else if (this.engine.isPopup) {
+      let windowId = null;
+      const extURL = browser.runtime.getURL('');
+      const windows = await browser.windows.getAll({ populate: true });
+      for (const browserWindow of windows) {
+        const [tab] = browserWindow.tabs;
+        const isDashboard =
+          browserWindow.tabs.length === 1 && tab.url?.includes(extURL);
+
+        if (isDashboard) {
+          await browser.windows.update(browserWindow.id, {
+            focused: false,
+            state: 'minimized',
+          });
+        } else if (browserWindow.focused) {
+          windowId = browserWindow.id;
+        }
       }
 
-      tabsQuery.lastFocusedWindow = true;
+      if (windowId) tabsQuery.windowId = windowId;
+      else if (windows.length > 2) tabsQuery.lastFocusedWindow = true;
+    } else {
+      tabsQuery.currentWindow = true;
     }
 
     const [tab] = await browser.tabs.query(tabsQuery);
