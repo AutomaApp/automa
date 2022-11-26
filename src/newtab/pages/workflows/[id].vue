@@ -315,7 +315,7 @@ import { getBlocks } from '@/utils/getSharedData';
 import { excludeGroupBlocks } from '@/utils/shared';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useCommandManager } from '@/composable/commandManager';
-import { debounce, parseJSON, throttle } from '@/utils/helper';
+import { debounce, parseJSON, throttle, getActiveTab } from '@/utils/helper';
 import { executeWorkflow } from '@/workflowEngine';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
 import emitter from '@/lib/mitt';
@@ -697,7 +697,10 @@ async function executeFromBlock(blockId) {
 
     const workflowOptions = { blockId };
 
-    const [tab] = await browser.tabs.query({ active: true, url: '*://*/*' });
+    let tab = await getActiveTab();
+    if (!tab) {
+      [tab] = await browser.tabs.query({ active: true, url: '*://*/*' });
+    }
     if (tab) {
       workflowOptions.tabId = tab.id;
     }
