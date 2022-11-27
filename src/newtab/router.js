@@ -8,9 +8,7 @@ import WorkflowShared from './pages/workflows/Shared.vue';
 import ScheduledWorkflow from './pages/ScheduledWorkflow.vue';
 import Storage from './pages/Storage.vue';
 import StorageTables from './pages/storage/Tables.vue';
-import Logs from './pages/Logs.vue';
 import LogsDetails from './pages/logs/[id].vue';
-import LogsRunning from './pages/logs/Running.vue';
 import Recording from './pages/Recording.vue';
 import Settings from './pages/Settings.vue';
 import SettingsIndex from './pages/settings/SettingsIndex.vue';
@@ -87,19 +85,9 @@ const routes = [
     component: StorageTables,
   },
   {
-    name: 'logs',
-    path: '/logs',
-    component: Logs,
-  },
-  {
     name: 'logs-details',
     path: '/logs/:id',
     component: LogsDetails,
-  },
-  {
-    name: 'logs-running',
-    path: '/logs/:id/running',
-    component: LogsRunning,
   },
   {
     path: '/settings',

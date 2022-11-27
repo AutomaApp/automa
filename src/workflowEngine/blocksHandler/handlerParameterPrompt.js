@@ -1,18 +1,19 @@
+import { nanoid } from 'nanoid/non-secure';
 import browser from 'webextension-polyfill';
 import { sleep } from '@/utils/helper';
 
-function getInputtedParams({ execId, blockId }, ms) {
+function getInputtedParams(promptId, ms = 10000) {
   return new Promise((resolve, reject) => {
-    let timeout = null;
-    const key = `params-prompt:${execId}__${blockId}`;
+    const timeout = null;
 
     const storageListener = (event) => {
-      if (!event[key]) return;
+      if (!event[promptId]) return;
 
       clearTimeout(timeout);
       browser.storage.onChanged.removeListener(storageListener);
+      browser.storage.local.remove(promptId);
 
-      const { newValue } = event[key];
+      const { newValue } = event[promptId];
       if (newValue.$isError) {
         reject(new Error(newValue.message));
         return;
@@ -21,10 +22,12 @@ function getInputtedParams({ execId, blockId }, ms) {
       resolve(newValue);
     };
 
-    timeout = setTimeout(() => {
-      browser.storage.onChanged.removeListener(storageListener);
-      resolve({});
-    }, ms || 10000);
+    if (ms > 0) {
+      setTimeout(() => {
+        browser.storage.onChanged.removeListener(storageListener);
+        resolve({});
+      }, ms);
+    }
 
     browser.storage.onChanged.addListener(storageListener);
   });
@@ -52,12 +55,15 @@ export default async function ({ data, id }) {
     await browser.windows.update(tab.windowId, { focused: true });
   }
 
-  const timeout = data.timeout || 20000;
+  const promptId = `params-prompt:${nanoid(4)}__${id}`;
+  const { timeout } = data;
 
   await browser.tabs.sendMessage(tab.id, {
     name: 'workflow:params-block',
     data: {
+      promptId,
       blockId: id,
+      timeoutMs: timeout,
       execId: this.engine.id,
       params: data.parameters,
       timeout: Date.now() + timeout,
@@ -67,13 +73,7 @@ export default async function ({ data, id }) {
     },
   });
 
-  const result = await getInputtedParams(
-    {
-      blockId: id,
-      execId: this.engine.id,
-    },
-    timeout
-  );
+  const result = await getInputtedParams(promptId, timeout);
 
   Object.entries(result).forEach(([varName, varValue]) => {
     this.setVariable(varName, varValue);

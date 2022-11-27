@@ -4,6 +4,7 @@
     <main :class="{ 'pl-16': $route.name !== 'recording' }">
       <router-view />
     </main>
+    <app-logs />
     <ui-dialog>
       <template #auth>
         <div class="text-center">
@@ -76,10 +77,12 @@ import { getUserWorkflows } from '@/utils/api';
 import { getWorkflowPermissions } from '@/utils/workflowData';
 import { sendMessage } from '@/utils/message';
 import { workflowState, startWorkflowExec } from '@/workflowEngine';
+import emitter from '@/lib/mitt';
 import automa from '@business';
 import dbLogs from '@/db/logs';
 import dayjs from '@/lib/dayjs';
 import AppSurvey from '@/components/newtab/app/AppSurvey.vue';
+import AppLogs from '@/components/newtab/app/AppLogs.vue';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 import dataMigration from '@/utils/dataMigration';
 import iconFirefox from '@/assets/svg/logoFirefox.svg';
@@ -204,6 +207,12 @@ const messageEvents = {
   'refresh-packages': function () {
     packageStore.loadData(true);
   },
+  'open-logs': function (data) {
+    emitter.emit('ui:logs', {
+      show: true,
+      logId: data.logId,
+    });
+  },
   'workflow:added': function (data) {
     if (data.source === 'team') {
       teamWorkflowStore.loadData().then(() => {
@@ -230,8 +239,8 @@ const messageEvents = {
         });
     }
   },
-  'workflow:execute': function ({ data }) {
-    startWorkflowExec(data, data?.options ?? {});
+  'workflow:execute': function ({ data, options }) {
+    startWorkflowExec(data, options ?? data?.options ?? {});
   },
   'recording:stop': stopRecording,
   'background--recording:stop': stopRecording,

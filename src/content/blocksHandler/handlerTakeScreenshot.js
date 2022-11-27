@@ -62,7 +62,7 @@ async function takeScreenshot(tabId, options) {
 
   return imageUrl;
 }
-async function captureElement({ selector, tabId, options }) {
+async function captureElement({ selector, tabId, options, $frameRect }) {
   const element = document.querySelector(selector);
 
   if (!element) {
@@ -77,7 +77,6 @@ async function captureElement({ selector, tabId, options }) {
   });
 
   await sleep(500);
-
   const imageUrl = await takeScreenshot(tabId, options);
   const image = await loadAsyncImg(imageUrl);
 
@@ -85,8 +84,16 @@ async function captureElement({ selector, tabId, options }) {
   const context = canvas.getContext('2d');
   const { height, width, x, y } = element.getBoundingClientRect();
 
-  const diffHeight = image.height / window.innerHeight;
-  const diffWidth = image.width / window.innerWidth;
+  let windowWidth = window.innerWidth;
+  let windowHeight = window.innerHeight;
+
+  if ($frameRect) {
+    windowWidth = $frameRect.windowWidth;
+    windowHeight = $frameRect.windowHeight;
+  }
+
+  const diffWidth = image.width / windowWidth;
+  const diffHeight = image.height / windowHeight;
 
   const newWidth = width * diffWidth;
   const newHeight = height * diffHeight;
@@ -94,10 +101,21 @@ async function captureElement({ selector, tabId, options }) {
   canvas.width = newWidth;
   canvas.height = newHeight;
 
+  let xPos = x;
+  let yPos = y;
+
+  if ($frameRect) {
+    yPos += $frameRect.y;
+    xPos += $frameRect.x;
+  }
+
+  xPos *= diffWidth;
+  yPos *= diffHeight;
+
   context.drawImage(
     image,
-    x * diffHeight,
-    y * diffWidth,
+    xPos,
+    yPos,
     newWidth,
     newHeight,
     0,
@@ -109,12 +127,17 @@ async function captureElement({ selector, tabId, options }) {
   return canvasToBase64(canvas, options);
 }
 
-export default async function ({ tabId, options, data: { type, selector } }) {
+export default async function ({
+  tabId,
+  options,
+  data: { type, selector, $frameRect },
+}) {
   if (type === 'element') {
     const imageUrl = await captureElement({
       tabId,
       options,
       selector,
+      $frameRect,
     });
 
     return imageUrl;

@@ -84,7 +84,11 @@ export async function webhook({ data, id }, { refData }) {
       data: returnData,
     };
   } catch (error) {
-    if (fallbackOutput && error.message === 'Failed to fetch') {
+    const fallbackErrors = ['Failed to fetch', 'user aborted'];
+    const executeFallback =
+      fallbackOutput &&
+      fallbackErrors.some((message) => error.message.includes(message));
+    if (executeFallback) {
       return {
         data: '',
         nextBlockId: fallbackOutput,

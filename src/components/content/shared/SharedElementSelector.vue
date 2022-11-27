@@ -117,8 +117,8 @@ function getElementRectWithOffset(
   }
   if (withElOptions && element.tagName === 'SELECT') {
     rect.options = Array.from(element.querySelectorAll('option')).map((el) => ({
+      value: el.value,
       name: el.innerText,
-      value: el.textContent,
     }));
   }
 

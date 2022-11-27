@@ -255,8 +255,6 @@ export async function validateSaveAssets(data) {
 export async function validatePressKey(data) {
   const errors = [];
 
-  if (isEmptyStr(data.selector)) errors.push('The Selector is empty');
-
   const isKeyEmpty =
     !data.action || (data.action === 'press-key' && isEmptyStr(data.keys));
   const isMultipleKeysEmpty =
@@ -270,6 +268,13 @@ export async function validatePressKey(data) {
 export async function validateNotification() {
   const hasPermission = await checkPermissions(['notifications']);
   if (!hasPermission) return ["Don't have notifications permissions"];
+
+  return [];
+}
+
+export async function validateCookie() {
+  const hasPermission = await checkPermissions(['cookies']);
+  if (!hasPermission) return ["Don't have cookies permissions"];
 
   return [];
 }
@@ -387,5 +392,9 @@ export default {
   'create-element': {
     ...defaultOptions,
     func: validateInteractionBasic,
+  },
+  cookie: {
+    ...defaultOptions,
+    func: validateCookie,
   },
 };

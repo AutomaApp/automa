@@ -4,9 +4,8 @@ import cloneDeep from 'lodash.clonedeep';
 import findSelector from '@/lib/findSelector';
 import { sendMessage } from '@/utils/message';
 import automa from '@business';
-import FindElement from '@/utils/FindElement';
 import { toCamelCase, isXPath } from '@/utils/helper';
-import handleSelector from './handleSelector';
+import handleSelector, { queryElements } from './handleSelector';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
 import shortcutListener from './services/shortcutListener';
@@ -53,7 +52,12 @@ async function executeBlock(data) {
       findBy = isXPath(frameSelector) ? 'xpath' : 'cssSelector';
     }
 
-    const frameElement = FindElement[findBy]({ selector: frameSelector });
+    const frameElement = await queryElements({
+      findBy,
+      multiple: false,
+      waitForSelector: 5000,
+      selector: frameSelector,
+    });
     const frameError = (message) => {
       const error = new Error(message);
       error.data = { selector: frameSelector };
@@ -66,7 +70,16 @@ async function executeBlock(data) {
     const isFrameEelement = ['IFRAME', 'FRAME'].includes(frameElement.tagName);
     if (!isFrameEelement) throw frameError('not-iframe');
 
+    const { x, y } = frameElement.getBoundingClientRect();
+    const iframeDetails = { x, y };
+
+    if (isMainFrame) {
+      iframeDetails.windowWidth = window.innerWidth;
+      iframeDetails.windowHeight = window.innerHeight;
+    }
+
     data.data.selector = selector;
+    data.data.$frameRect = iframeDetails;
     data.data.$frameSelector = frameSelector;
 
     if (frameElement.contentDocument) {
@@ -207,6 +220,7 @@ function messageListener({ data, source }) {
         executeBlock(data)
           .then(resolve)
           .catch((error) => {
+            console.error(error);
             const elNotFound = error.message === 'element-not-found';
             const isLoopItem = data.data?.selector?.includes('automa-loop');
             if (elNotFound && isLoopItem) {

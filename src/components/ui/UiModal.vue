@@ -7,7 +7,8 @@
       <transition name="modal" mode="out-in">
         <div
           v-if="show"
-          class="overflow-y-auto modal-ui__content-container z-50 flex justify-center items-center"
+          :class="[positions[contentPosition]]"
+          class="overflow-y-auto modal-ui__content-container z-50 flex justify-center"
           :style="{ 'backdrop-filter': blur && 'blur(2px)' }"
         >
           <div
@@ -68,6 +69,10 @@ export default {
       type: String,
       default: 'p-4',
     },
+    contentPosition: {
+      type: String,
+      default: 'center',
+    },
     customContent: Boolean,
     persist: Boolean,
     blur: Boolean,
@@ -75,6 +80,11 @@ export default {
   },
   emits: ['close', 'update:modelValue'],
   setup(props, { emit }) {
+    const positions = {
+      center: 'items-center',
+      start: 'items-start',
+    };
+
     const show = ref(false);
     const modalContent = ref(null);
 
@@ -98,7 +108,6 @@ export default {
       () => props.modelValue,
       (value) => {
         show.value = value;
-        toggleBodyOverflow(value);
       },
       { immediate: true }
     );
@@ -106,10 +115,13 @@ export default {
     watch(show, (value) => {
       if (value) window.addEventListener('keyup', keyupHandler);
       else window.removeEventListener('keyup', keyupHandler);
+
+      toggleBodyOverflow(value);
     });
 
     return {
       show,
+      positions,
       closeModal,
       modalContent,
     };

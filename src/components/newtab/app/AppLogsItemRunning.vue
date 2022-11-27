@@ -1,6 +1,14 @@
 <template>
-  <div v-if="running" class="container py-8">
+  <div v-if="running">
     <div class="flex items-center">
+      <button
+        v-tooltip:bottom="t('workflow.blocks.go-back.name')"
+        role="button"
+        class="h-12 px-1 transition mr-2 bg-input rounded-lg dark:text-gray-300 text-gray-600"
+        @click="$emit('close')"
+      >
+        <v-remixicon name="riArrowLeftSLine" />
+      </button>
       <div class="flex-grow overflow-hidden">
         <h1 class="text-2xl max-w-md text-overflow font-semibold text-overflow">
           {{ running.state.name }}
@@ -21,6 +29,7 @@
     </div>
     <div class="mt-8">
       <logs-history
+        :is-running="true"
         :current-log="{
           history: running.state.logs,
           workflowId: running.workflowId,
@@ -76,7 +85,7 @@
 </template>
 <script setup>
 import { computed, watch, shallowRef, onBeforeUnmount } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { countDuration } from '@/utils/helper';
 import { useWorkflowStore } from '@/stores/workflow';
@@ -85,8 +94,15 @@ import dbLogs from '@/db/logs';
 import dayjs from '@/lib/dayjs';
 import LogsHistory from '@/components/newtab/logs/LogsHistory.vue';
 
+const props = defineProps({
+  logId: {
+    type: String,
+    default: '',
+  },
+});
+const emit = defineEmits(['close']);
+
 const { t } = useI18n();
-const route = useRoute();
 const router = useRouter();
 const workflowStore = useWorkflowStore();
 
@@ -96,11 +112,12 @@ const interval = setInterval(() => {
 }, 1000);
 
 const running = computed(() =>
-  workflowStore.getAllStates.find(({ id }) => id === route.params.id)
+  workflowStore.getAllStates.find(({ id }) => id === props.logId)
 );
 
 function stopWorkflow() {
   stopWorkflowExec(running.value.id);
+  emit('close');
 }
 function getBlockPath(blockId) {
   const { workflowId, teamId } = running.value;
@@ -116,16 +133,12 @@ function getBlockPath(blockId) {
 watch(
   running,
   async () => {
-    if (!route.name.startsWith('logs')) return;
-    if (!running.value && route.params.id) {
-      const log = await dbLogs.items
-        .where('id')
-        .equals(route.params.id)
-        .first();
+    if (!running.value && props.logId) {
+      const log = await dbLogs.items.where('id').equals(props.logId).first();
       let path = '/logs';
 
       if (log) {
-        path = `/logs/${route.params.id}`;
+        path = `/logs/${props.logId}`;
       }
 
       router.replace(path);

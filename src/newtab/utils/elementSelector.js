@@ -1,24 +1,8 @@
 import browser from 'webextension-polyfill';
-import { isXPath, sleep } from '@/utils/helper';
+import { isXPath, sleep, getActiveTab } from '@/utils/helper';
 
 const isMV2 = browser.runtime.getManifest().manifest_version === 2;
 
-async function getActiveTab() {
-  const currentWindow = await browser.windows.getCurrent();
-  if (currentWindow)
-    await browser.windows.update(currentWindow.id, { focused: false });
-
-  await sleep(200);
-
-  const [tab] = await browser.tabs.query({
-    active: true,
-    url: '*://*/*',
-    lastFocusedWindow: true,
-  });
-  if (!tab) throw new Error('No active tab');
-
-  return tab;
-}
 async function makeDashboardFocus() {
   const [currentTab] = await browser.tabs.query({
     active: true,

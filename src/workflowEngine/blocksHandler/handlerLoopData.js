@@ -76,10 +76,12 @@ async function loopData({ data, id }, { refData }) {
           throw new Error('invalid-loop-data');
         }
 
-        if (data.resumeLastWorkflow) {
+        const startIndex = +data.startIndex;
+
+        if (data.resumeLastWorkflow && this.engine.isPopup) {
           index = JSON.parse(localStorage.getItem(`index:${id}`)) || 0;
-        } else if (data.startIndex > 0) {
-          index = data.startIndex;
+        } else if (!Number.isNaN(startIndex) && startIndex > 0) {
+          index = startIndex;
         }
 
         if (data.reverseLoop && data.loopThrough !== 'elements') {
@@ -106,9 +108,12 @@ async function loopData({ data, id }, { refData }) {
             : currLoopData[index],
         $index: index,
       };
+      this.engine.addRefDataSnapshot('loopData');
     }
 
-    localStorage.setItem(`index:${id}`, this.loopList[data.loopId].index);
+    if (this.engine.isPopup) {
+      localStorage.setItem(`index:${id}`, this.loopList[data.loopId].index);
+    }
 
     return {
       data: refData.loopData[data.loopId],

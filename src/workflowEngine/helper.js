@@ -228,7 +228,7 @@ export function injectPreloadScript({ target, scripts, frameSelector }) {
 }
 
 export async function checkCSPAndInject(
-  { target, debugMode, options = {} },
+  { target, debugMode, options = {}, injectOptions = {} },
   callback
 ) {
   const [isBlockedByCSP] = await browser.scripting.executeScript({
@@ -273,6 +273,7 @@ export async function checkCSPAndInject(
       });
     },
     world: 'MAIN',
+    ...(injectOptions || {}),
   });
 
   if (isBlockedByCSP.result) {

@@ -57,8 +57,9 @@
           </div>
         </ui-card>
         <ui-tabs
-          v-model="state.activeTab"
+          :model-value="'editor'"
           class="border-none px-2 rounded-lg h-full space-x-1 bg-white dark:bg-gray-800 pointer-events-auto"
+          @change="onTabChange"
         >
           <button
             v-if="haveEditAccess"
@@ -234,12 +235,6 @@
             @duplicate="duplicateElements"
           />
         </ui-tab-panel>
-        <ui-tab-panel value="logs" class="mt-24 container">
-          <editor-logs
-            :workflow-id="route.params.id"
-            :workflow-states="workflowStates"
-          />
-        </ui-tab-panel>
       </ui-tab-panels>
     </div>
   </div>
@@ -320,9 +315,10 @@ import { getBlocks } from '@/utils/getSharedData';
 import { excludeGroupBlocks } from '@/utils/shared';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useCommandManager } from '@/composable/commandManager';
-import { debounce, parseJSON, throttle } from '@/utils/helper';
+import { debounce, parseJSON, throttle, getActiveTab } from '@/utils/helper';
 import { executeWorkflow } from '@/workflowEngine';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
+import emitter from '@/lib/mitt';
 import functions from '@/workflowEngine/templating/templatingFunctions';
 import browser from 'webextension-polyfill';
 import dbStorage from '@/db/storage';
@@ -340,7 +336,6 @@ import WorkflowDataTable from '@/components/newtab/workflow/WorkflowDataTable.vu
 import WorkflowGlobalData from '@/components/newtab/workflow/WorkflowGlobalData.vue';
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
 import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
-import EditorLogs from '@/components/newtab/workflow/editor/EditorLogs.vue';
 import EditorAddPackage from '@/components/newtab/workflow/editor/EditorAddPackage.vue';
 import EditorPkgActions from '@/components/newtab/workflow/editor/EditorPkgActions.vue';
 import EditorLocalCtxMenu from '@/components/newtab/workflow/editor/EditorLocalCtxMenu.vue';
@@ -587,7 +582,7 @@ const updateHostedWorkflow = throttle(async () => {
   if (!userStore.user || workflowPayload.isUpdating) return;
 
   const isHosted = userStore.hostedWorkflows[route.params.id];
-  const isBackup = userStore.backupIds.includes(route.params.id);
+  const isBackup = userStore.backupIds?.includes(route.params.id);
   const workflowExist = workflowStore.getById(route.params.id);
 
   if (
@@ -671,6 +666,16 @@ const onEdgesChange = debounce((changes) => {
   // if (command) commandManager.add(command);
 }, 250);
 
+function onTabChange(tabVal) {
+  if (tabVal !== 'logs') return;
+
+  state.activeTab = 'editor';
+
+  emitter.emit('ui:logs', {
+    workflowId,
+    show: true,
+  });
+}
 function onUpdateBlockSettings({ blockId, itemId, settings }) {
   state.dataChanged = true;
 
@@ -692,7 +697,10 @@ async function executeFromBlock(blockId) {
 
     const workflowOptions = { blockId };
 
-    const [tab] = await browser.tabs.query({ active: true, url: '*://*/*' });
+    let tab = await getActiveTab();
+    if (!tab) {
+      [tab] = await browser.tabs.query({ active: true, url: '*://*/*' });
+    }
     if (tab) {
       workflowOptions.tabId = tab.id;
     }
@@ -1306,7 +1314,7 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
   }
 
   const block = parseJSON(dataTransfer.getData('block'), null);
-  if (!block) return;
+  if (!block || block.fromBlockBasic) return;
 
   if (block.id === 'trigger' && isPackage) return;
 
@@ -1563,7 +1571,8 @@ function checkWorkflowUpdate() {
 }
 
 useHead({
-  title: () => `${workflow.value?.name} workflow - Automa` || 'Automa',
+  title: () =>
+    `${workflow.value?.name} ${isPackage ? 'package' : 'workflow'}` || 'Automa',
 });
 const shortcut = useShortcut([
   getShortcut('editor:toggle-sidebar', toggleSidebar),

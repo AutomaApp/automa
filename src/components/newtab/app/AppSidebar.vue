@@ -31,9 +31,9 @@
             }`
           "
           :class="{ 'is-active': isActive }"
-          :href="href"
+          :href="tab.id === 'log' ? '#' : href"
           class="z-10 relative w-full flex items-center justify-center tab relative"
-          @click="navigate"
+          @click="navigateLink($event, navigate, tab)"
           @mouseenter="hoverHandler"
         >
           <div class="p-2 rounded-lg transition-colors inline-block">
@@ -124,6 +124,7 @@ import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { communities } from '@/utils/shared';
 import { initElementSelector } from '@/newtab/utils/elementSelector';
+import emitter from '@/lib/mitt';
 
 useGroupTooltip();
 
@@ -192,10 +193,24 @@ useShortcut(
   ({ data }) => {
     if (!data) return;
 
+    if (data.includes('/logs')) {
+      emitter.emit('ui:logs', { show: true });
+      return;
+    }
+
     router.push(data);
   }
 );
 
+function navigateLink(event, navigateFn, tab) {
+  event.preventDefault();
+
+  if (tab.id === 'log') {
+    emitter.emit('ui:logs', { show: true });
+  } else {
+    navigateFn();
+  }
+}
 function hoverHandler({ target }) {
   showHoverIndicator.value = true;
   hoverIndicator.value.style.transform = `translate(-50%, ${target.offsetTop}px)`;

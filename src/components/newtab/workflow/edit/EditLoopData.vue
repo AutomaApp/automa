@@ -119,8 +119,6 @@
         :label="t('workflow.blocks.loop-data.startIndex')"
         placeholder="0"
         class="w-full mt-2"
-        min="0"
-        type="number"
         @change="updateData({ startIndex: +$event || 0 })"
       />
       <ui-checkbox

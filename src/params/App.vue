@@ -252,10 +252,9 @@ function runWorkflow(index, { data, params }) {
     });
 }
 function cancelParamBlock(index, { data }, message) {
-  const key = `params-prompt:${data.execId}__${data.blockId}`;
   browser.storage.local
     .set({
-      [key]: {
+      [data.promptId]: {
         message,
         $isError: true,
       },
@@ -265,15 +264,11 @@ function cancelParamBlock(index, { data }, message) {
     });
 }
 function continueWorkflow(index, { data, params }) {
-  if (Date.now() > data.timeout) {
-    deleteWorkflow(index);
-    return;
-  }
+  const timeout = Date.now() > data.timeout;
 
-  const key = `params-prompt:${data.execId}__${data.blockId}`;
   browser.storage.local
     .set({
-      [key]: getParamsValues(params),
+      [data.promptId]: timeout ? { $timeout: true } : getParamsValues(params),
     })
     .then(() => {
       deleteWorkflow(index);
@@ -308,7 +303,11 @@ browser.runtime.onMessage.addListener(({ name, data }) => {
     if (!checkTimeout) {
       checkTimeout = setInterval(() => {
         workflows.value.forEach((workflow, index) => {
-          if (workflow.type !== 'block' || Date.now() < workflow.data.timeout)
+          if (
+            workflow.type !== 'block' ||
+            Date.now() < workflow.data.timeout ||
+            workflow.data.timeoutMs <= 0
+          )
             return;
 
           cancelParamBlock(index, workflow, 'Timeout');

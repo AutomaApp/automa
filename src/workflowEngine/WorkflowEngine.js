@@ -64,6 +64,17 @@ class WorkflowEngine {
     }
     this.options = options;
 
+    this.refDataSnapshots = {};
+    this.refDataSnapshotsKeys = {
+      loopData: {
+        index: 0,
+        key: '##loopData0',
+      },
+      variables: {
+        index: 0,
+        key: '##variables0',
+      },
+    };
     this.referenceData = {
       variables,
       table: [],
@@ -120,6 +131,10 @@ class WorkflowEngine {
         return;
       }
 
+      if (!this.workflow.settings) {
+        this.workflow.settings = {};
+      }
+
       blocks = getBlocks();
 
       const checkParams = this.options?.checkParams ?? true;
@@ -143,7 +158,7 @@ class WorkflowEngine {
           browser.windows.create({
             type: 'popup',
             width: 480,
-            height: 650,
+            height: 700,
             url: browser.runtime.getURL(
               `/params.html?workflowId=${this.workflow.id}`
             ),
@@ -173,7 +188,8 @@ class WorkflowEngine {
         {}
       );
 
-      const workflowTable = this.workflow.table || this.workflow.dataColumns;
+      const workflowTable =
+        this.workflow.table || this.workflow.dataColumns || [];
       let columns = Array.isArray(workflowTable)
         ? workflowTable
         : Object.values(workflowTable);
@@ -245,6 +261,8 @@ class WorkflowEngine {
         this.referenceData.variables[`$$${name}`] = value;
       });
 
+      this.addRefDataSnapshot('variables');
+
       await this.states.add(this.id, {
         id: this.id,
         state: this.state,
@@ -256,6 +274,16 @@ class WorkflowEngine {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  addRefDataSnapshot(key) {
+    this.refDataSnapshotsKeys[key].index += 1;
+    this.refDataSnapshotsKeys[
+      key
+    ].key = `##${key}${this.refDataSnapshotsKeys[key].index}`;
+
+    const keyName = this.refDataSnapshotsKeys[key].key;
+    this.refDataSnapshots[keyName] = cloneDeep(this.referenceData[key]);
   }
 
   addWorker(detail) {
@@ -285,15 +313,13 @@ class WorkflowEngine {
       detail.name === 'javascript-code' ||
       (blocks[detail.name]?.refDataKeys && this.saveLog)
     ) {
-      const { activeTabUrl, variables, loopData } = JSON.parse(
-        JSON.stringify(this.referenceData)
-      );
+      const { variables, loopData } = this.refDataSnapshotsKeys;
 
       this.historyCtxData[this.logHistoryId] = {
         referenceData: {
-          loopData,
-          variables,
-          activeTabUrl,
+          loopData: loopData.key,
+          variables: variables.key,
+          activeTabUrl: detail.activeTabUrl,
           prevBlockData: detail.prevBlockData || '',
         },
         replacedValue: cloneDeep(detail.replacedValue),
@@ -481,7 +507,10 @@ class WorkflowEngine {
           },
           ctxData: {
             logId: this.id,
-            data: this.historyCtxData,
+            data: {
+              ctxData: this.historyCtxData,
+              dataSnapshot: this.refDataSnapshots,
+            },
           },
           data: {
             logId: this.id,

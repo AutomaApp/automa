@@ -699,6 +699,7 @@ export const tasks = {
     refDataKeys: [
       'maxLoop',
       'loopData',
+      'startIndex',
       'variableName',
       'referenceKey',
       'elementSelector',
@@ -1278,11 +1279,14 @@ export const tasks = {
       'name',
       'url',
       'value',
+      'jsonCode',
     ],
     data: {
       disableBlock: false,
       description: '',
       type: 'get',
+      jsonCode: '{\n\n}',
+      useJson: false,
       getAll: false,
       domain: '',
       expirationDate: '',

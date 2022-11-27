@@ -15,39 +15,42 @@ async function activeTab(block) {
       return data;
     }
 
-    const minimizeDashboard = async (currentWindow) => {
-      if (currentWindow.type !== 'popup') return;
-
-      const [tab] = currentWindow.tabs;
-      const isDashboard = tab && tab.url.includes(browser.runtime.getURL(''));
-      const isWindowFocus =
-        currentWindow.focused || currentWindow.state === 'maximized';
-
-      if (isWindowFocus && isDashboard) {
-        const windowOptions = { focused: false };
-        if (currentWindow.state === 'maximized')
-          windowOptions.state = 'minimized';
-
-        await browser.windows.update(currentWindow.id, windowOptions);
-      }
+    const tabsQuery = {
+      active: true,
+      url: '*://*/*',
     };
 
-    if (this.engine.isPopup) {
-      const currentWindow = await browser.windows.getCurrent({
-        populate: true,
-      });
-      await minimizeDashboard(currentWindow);
-    } else {
-      const allWindows = await browser.windows.getAll({ populate: true });
-      for (const currWindow of allWindows) {
-        await minimizeDashboard(currWindow);
+    if (BROWSER_TYPE === 'firefox') {
+      tabsQuery.currentWindow = true;
+    } else if (this.engine.isPopup) {
+      let windowId = null;
+      const extURL = browser.runtime.getURL('');
+      const windows = await browser.windows.getAll({ populate: true });
+      for (const browserWindow of windows) {
+        const [tab] = browserWindow.tabs;
+        const isDashboard =
+          browserWindow.tabs.length === 1 && tab.url?.includes(extURL);
+
+        if (isDashboard) {
+          await browser.windows.update(browserWindow.id, {
+            focused: false,
+            state: 'minimized',
+          });
+        } else if (browserWindow.focused) {
+          windowId = browserWindow.id;
+        }
       }
+
+      if (windowId) tabsQuery.windowId = windowId;
+      else if (windows.length > 2) tabsQuery.lastFocusedWindow = true;
+    } else {
+      tabsQuery.currentWindow = true;
     }
 
-    const [tab] = await browser.tabs.query({
-      active: true,
-      lastFocusedWindow: true,
-    });
+    const [tab] = await browser.tabs.query(tabsQuery);
+    if (!tab) {
+      throw new Error("Can't find active tab");
+    }
     if (!tab || !tab?.url.startsWith('http')) {
       const error = new Error('invalid-active-tab');
       error.data = { url: tab?.url };

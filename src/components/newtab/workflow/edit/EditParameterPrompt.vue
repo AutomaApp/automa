@@ -9,7 +9,7 @@
     <ui-input
       :model-value="data.timeout"
       type="number"
-      label="Timeout (millisecond)"
+      label="Timeout (millisecond) (0 to disable)"
       class="w-full mt-2"
       @change="updateData({ timeout: +$event })"
     />

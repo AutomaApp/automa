@@ -3,13 +3,12 @@
     <ui-input
       id="search-input"
       :model-value="filters.query"
-      :placeholder="`${t('common.search')}... (${
-        shortcut['action:search'].readable
-      })`"
+      :placeholder="`${t('common.search')}...`"
       prepend-icon="riSearch2Line"
       class="w-6/12 md:w-auto md:flex-1"
       @change="updateFilters('query', $event)"
     />
+    <slot />
     <div class="flex items-center workflow-sort w-5/12 ml-4 md:ml-0 md:w-auto">
       <ui-button
         icon
@@ -78,7 +77,6 @@
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
-import { useShortcut } from '@/composable/shortcut';
 
 defineProps({
   filters: {
@@ -89,15 +87,14 @@ defineProps({
     type: Object,
     default: () => ({}),
   },
+  workflows: {
+    type: Array,
+    default: () => [],
+  },
 });
 const emit = defineEmits(['updateSorts', 'updateFilters', 'clear']);
 
 const { t } = useI18n();
-const shortcut = useShortcut('action:search', () => {
-  const searchInput = document.querySelector('#search-input input');
-
-  searchInput?.focus();
-});
 
 const filterByStatus = [
   { id: 'all', name: t('common.all') },

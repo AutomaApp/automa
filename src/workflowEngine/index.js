@@ -1,3 +1,4 @@
+import { toRaw } from 'vue';
 import browser from 'webextension-polyfill';
 import dayjs from '@/lib/dayjs';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
@@ -45,7 +46,12 @@ export function startWorkflowExec(workflowData, options, isPopup = true) {
     }
   }
 
-  const convertedWorkflow = convertWorkflowData(workflowData);
+  const clonedWorkflowData = {};
+  Object.keys(workflowData).forEach((key) => {
+    clonedWorkflowData[key] = toRaw(workflowData[key]);
+  });
+
+  const convertedWorkflow = convertWorkflowData(clonedWorkflowData);
   const engine = new WorkflowEngine(convertedWorkflow, {
     options,
     isPopup,
@@ -65,10 +71,13 @@ export function startWorkflowExec(workflowData, options, isPopup = true) {
       endedTimestamp,
       blockDetail,
     }) => {
-      if (workflowData.id.startsWith('team') && workflowData.teamId) {
+      if (
+        clonedWorkflowData.id.startsWith('team') &&
+        clonedWorkflowData.teamId
+      ) {
         const payload = {
           status,
-          workflowId: workflowData.id,
+          workflowId: clonedWorkflowData.id,
           workflowLog: {
             status,
             endedTimestamp,
@@ -97,7 +106,7 @@ export function startWorkflowExec(workflowData, options, isPopup = true) {
           };
         }
 
-        fetchApi(`/teams/${workflowData.teamId}/workflows/logs`, {
+        fetchApi(`/teams/${clonedWorkflowData.teamId}/workflows/logs`, {
           method: 'POST',
           body: JSON.stringify(payload),
         }).catch((error) => {
@@ -109,9 +118,10 @@ export function startWorkflowExec(workflowData, options, isPopup = true) {
         browser.permissions
           .contains({ permissions: ['notifications'] })
           .then((hasPermission) => {
-            if (!hasPermission || !workflowData.settings.notification) return;
+            if (!hasPermission || !clonedWorkflowData.settings.notification)
+              return;
 
-            const name = workflowData.name.slice(0, 32);
+            const name = clonedWorkflowData.name.slice(0, 32);
 
             browser.notifications.create(`logs:${id}`, {
               type: 'basic',
