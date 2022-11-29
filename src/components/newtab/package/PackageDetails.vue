@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-2xl mt-8 pb-8">
+  <div class="w-full max-w-2xl pb-8">
     <ui-input
       :model-value="data.name"
       label="Package name"

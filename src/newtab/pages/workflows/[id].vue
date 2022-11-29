@@ -57,7 +57,7 @@
           </div>
         </ui-card>
         <ui-tabs
-          :model-value="'editor'"
+          :model-value="isPackage ? state.activeTab : 'editor'"
           class="border-none px-2 rounded-lg h-full space-x-1 bg-white dark:bg-gray-800 pointer-events-auto"
           @change="onTabChange"
         >
@@ -667,14 +667,15 @@ const onEdgesChange = debounce((changes) => {
 }, 250);
 
 function onTabChange(tabVal) {
-  if (tabVal !== 'logs') return;
+  if (tabVal === 'logs') {
+    emitter.emit('ui:logs', {
+      workflowId,
+      show: true,
+    });
+    return;
+  }
 
-  state.activeTab = 'editor';
-
-  emitter.emit('ui:logs', {
-    workflowId,
-    show: true,
-  });
+  state.activeTab = tabVal;
 }
 function onUpdateBlockSettings({ blockId, itemId, settings }) {
   state.dataChanged = true;

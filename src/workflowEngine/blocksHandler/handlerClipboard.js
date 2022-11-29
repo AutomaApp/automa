@@ -21,11 +21,16 @@ function doCommand(command, value) {
 }
 
 export default async function ({ data, id, label }) {
-  if (!this.engine.isPopup && !this.engins.isMV2)
+  if (!this.engine?.isPopup && !this.engins?.isMV2)
     throw new Error('Clipboard block is not supported in background execution');
 
+  const permissions = ['clipboardRead'];
+  if (BROWSER_TYPE === 'firefox') {
+    permissions.push('clipboardWrite');
+  }
+
   const hasPermission = await browser.permissions.contains({
-    permissions: ['clipboardRead'],
+    permissions,
   });
 
   if (!hasPermission) {
