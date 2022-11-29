@@ -429,11 +429,10 @@ const logCtxData = computed(() => {
   if (!state.itemId || !logData[state.itemId]) return '';
 
   const data = logData[state.itemId];
+  /* eslint-disable-next-line */
+  if (data?.referenceData) getDataSnapshot(data.referenceData);
   const itemLogData =
     state.activeTab === 'all' ? data : objectPath.get(data, state.activeTab);
-
-  /* eslint-disable-next-line */
-  getDataSnapshot(itemLogData.referenceData);
 
   return JSON.stringify(itemLogData, null, 2);
 });
