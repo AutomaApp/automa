@@ -1007,10 +1007,10 @@
     "@codemirror/state" "^6.0.0"
     "@lezer/css" "^1.0.0"
 
-"@codemirror/lang-html@^6.1.2":
-  version "6.1.2"
-  resolved "https://registry.yarnpkg.com/@codemirror/lang-html/-/lang-html-6.1.2.tgz#64979e583c6120c70d3123e6ce3f8595b20abc52"
-  integrity sha512-e8JAUWyOo7N26tmek+WK0+Zg+pZRe+dQi8TZq0OOVVygpLV+mNAT2n5b5JhknY+TVZIVGLjuhdsoizw1SDFfPg==
+"@codemirror/lang-html@^6.3.1":
+  version "6.3.1"
+  resolved "https://registry.yarnpkg.com/@codemirror/lang-html/-/lang-html-6.3.1.tgz#01094bf141794e47f050000adce44c10c6533871"
+  integrity sha512-36PoquiZ1S8HW0mF2hupZYPajYgpSwK27YDPOOwMk4jFW+shkS79I7mSNmYlDBkgRS8p3ldfh3dG2/HknwsawA==
   dependencies:
     "@codemirror/autocomplete" "^6.0.0"
     "@codemirror/lang-css" "^6.0.0"
@@ -1019,7 +1019,7 @@
     "@codemirror/state" "^6.0.0"
     "@codemirror/view" "^6.2.2"
     "@lezer/common" "^1.0.0"
-    "@lezer/html" "^1.0.1"
+    "@lezer/html" "^1.1.0"
 
 "@codemirror/lang-javascript@^6.0.0", "@codemirror/lang-javascript@^6.0.2":
   version "6.1.0"
@@ -1268,10 +1268,10 @@
   dependencies:
     "@lezer/common" "^1.0.0"
 
-"@lezer/html@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@lezer/html/-/html-1.0.1.tgz#5d62b98cdd37e50394e1b7097c86d8ce3ef128b8"
-  integrity sha512-sC00zEt3GBh3vVO6QaGX4YZCl41S9dHWN/WGBsDixy9G+sqOC7gsa4cxA/fmRVAiBvhqYkJk+5Ul4oul92CPVw==
+"@lezer/html@^1.1.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@lezer/html/-/html-1.2.0.tgz#1db82c8005be288eb99c568baf66c8730b01877a"
+  integrity sha512-T6sseEJQPTFayX3h9DINh7KyFBwCjEtrqQRD+7USmtkJh1xHDutsB6KYHKveSd+TbsedIPAcZwar+gkHl1rVSw==
   dependencies:
     "@lezer/common" "^1.0.0"
     "@lezer/highlight" "^1.0.0"
