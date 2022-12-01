@@ -112,7 +112,8 @@
           "set": "Imposta cookie",
           "remove": "Rimuovi cookie",
           "getAll": "Ottieni tutti i cookie"
-        }
+        },
+        "useJson": "Usa il formato JSON"
       },
       "note": {
         "name": "Annotazioni"
