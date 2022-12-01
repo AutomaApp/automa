@@ -6,7 +6,7 @@
           <p class="text-overflow">
             {{ t('workflow.blocks.base.settings.blockTimeout.title') }}
           </p>
-          <p class="line-clamp leading-tight text-gray-600">
+          <p class="line-clamp leading-tight dark:text-gray-300 text-gray-600">
             {{ t('workflow.blocks.base.settings.blockTimeout.description') }}
           </p>
         </div>
@@ -22,7 +22,9 @@
           <p class="text-overflow">
             {{ t('workflow.settings.debugMode.title') }}
           </p>
-          <p class="text-overflow leading-tight text-gray-600">
+          <p
+            class="text-overflow leading-tight dark:text-gray-300 text-gray-600"
+          >
             Execute block using the Chrome DevTools Protocol
           </p>
         </div>

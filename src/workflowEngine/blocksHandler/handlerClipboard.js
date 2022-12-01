@@ -68,7 +68,6 @@ export default async function ({ data, id, label }) {
     valueToReturn = text;
 
     if (isFirefox) {
-      console.log('hello');
       await copyTextToClipboard(text);
     } else {
       doCommand('copy', text);
