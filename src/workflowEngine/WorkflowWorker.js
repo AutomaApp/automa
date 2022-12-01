@@ -12,6 +12,29 @@ import renderString from './templating/renderString';
 import { convertData, waitTabLoaded } from './helper';
 import injectContentScript from './injectContentScript';
 
+function blockExecutionWrapper(blockHandler, blockData) {
+  return new Promise((resolve, reject) => {
+    let timeout = null;
+    const timeoutMs = blockData?.settings?.blockTimeout;
+    if (timeoutMs && timeoutMs > 0) {
+      timeout = setTimeout(() => {
+        reject(new Error('Timeout'));
+      }, timeoutMs);
+    }
+
+    blockHandler()
+      .then((result) => {
+        resolve(result);
+      })
+      .catch((error) => {
+        reject(error);
+      })
+      .finally(() => {
+        clearTimeout(timeout);
+      });
+  });
+}
+
 class WorkflowWorker {
   constructor(id, engine, options = {}) {
     this.id = id;
@@ -213,11 +236,17 @@ class WorkflowWorker {
           nextBlockId: this.getBlockConnections(block.id),
         };
       } else {
-        result = await handler.call(this, replacedBlock, {
+        const bindedHandler = handler.bind(this, replacedBlock, {
           refData,
           prevBlock,
           ...(execParam || {}),
         });
+        result = await blockExecutionWrapper(bindedHandler, block.data);
+        // result = await handler.call(this, replacedBlock, {
+        //   refData,
+        //   prevBlock,
+        //   ...(execParam || {}),
+        // });
 
         if (this.engine.isDestroyed) return;
 

@@ -1,13 +1,28 @@
 <template>
   <div class="block-setting-general">
     <ui-list>
-      <ui-list-item v-if="browserType !== 'firefox'" small>
+      <div v-if="props.data.id !== 'delay'" class="flex items-center">
+        <div class="flex-1 overflow-hidden">
+          <p class="text-overflow">
+            {{ t('workflow.blocks.base.settings.blockTimeout.title') }}
+          </p>
+          <p class="line-clamp leading-tight text-gray-600">
+            {{ t('workflow.blocks.base.settings.blockTimeout.description') }}
+          </p>
+        </div>
+        <ui-input
+          v-model.number="state.blockTimeout"
+          placeholder="0"
+          class="w-24"
+        />
+      </div>
+      <ui-list-item v-if="isDebugSupported" small>
         <ui-switch v-model="state.debugMode" class="mr-4" />
         <div class="flex-1 overflow-hidden">
           <p class="text-overflow">
             {{ t('workflow.settings.debugMode.title') }}
           </p>
-          <p class="text-overflow">
+          <p class="text-overflow leading-tight text-gray-600">
             Execute block using the Chrome DevTools Protocol
           </p>
         </div>
@@ -27,10 +42,18 @@ const props = defineProps({
 });
 const emit = defineEmits(['change']);
 
+const supportedDebugBlocks = [
+  'forms',
+  'event-click',
+  'trigger-event',
+  'press-key',
+];
 const browserType = BROWSER_TYPE;
+const isDebugSupported =
+  browserType !== 'firefox' && supportedDebugBlocks.includes(props.data.id);
 
 const { t } = useI18n();
-const state = reactive({});
+const state = reactive({ blockTimeout: 0 });
 
 watch(
   () => state,

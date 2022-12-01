@@ -48,30 +48,23 @@ const emit = defineEmits(['change', 'close']);
 
 const { t } = useI18n();
 
-let currActiveTab = 'on-error';
-const browserType = BROWSER_TYPE;
+const currActiveTab = 'general';
 const isOnErrorSupported = !excludeOnError.includes(props.data.id);
-const supportedBlocks = ['forms', 'event-click', 'trigger-event', 'press-key'];
 const tabs = [
+  { id: 'general', name: t('settings.menu.general') },
   {
     id: 'on-error',
     name: props.onErrorLabel || t('workflow.blocks.base.onError.button'),
   },
   { id: 'lines', name: t('workflow.blocks.base.settings.line.title') },
 ];
-const isDebugSupported =
-  browserType !== 'firefox' && supportedBlocks.includes(props.data.id);
 
 if (props.data?.itemId) {
   tabs.pop();
 }
-
-if (isDebugSupported) {
-  currActiveTab = 'general';
-  tabs.unshift({ id: 'general', name: t('settings.menu.general') });
-} else if (!isOnErrorSupported) {
-  if (!props.data?.itemId) currActiveTab = 'lines';
-  tabs.shift();
+if (!isOnErrorSupported) {
+  const onErrorTabIndex = tabs.findIndex((tab) => tab.id === 'on-error');
+  tabs.splice(onErrorTabIndex, 1);
 }
 
 const defaultSettings = {
