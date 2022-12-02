@@ -2971,10 +2971,10 @@ cron-parser@^4.6.0:
   dependencies:
     luxon "^3.0.1"
 
-cronstrue@^2.11.0:
-  version "2.12.0"
-  resolved "https://registry.yarnpkg.com/cronstrue/-/cronstrue-2.12.0.tgz#3497b98dab3cba54d3acdc63fe424947b708098b"
-  integrity sha512-PAIluUuZfZnJQcrS0XrhEVywO5+rIneWgBnwS4R0ebIeUdLnbsNBW/pWiJQIKx48WabRYwlxIEPy+qWJVmaINQ==
+cronstrue@^2.20.0:
+  version "2.20.0"
+  resolved "https://registry.yarnpkg.com/cronstrue/-/cronstrue-2.20.0.tgz#709ef674ccf385f3c0e77c40a5141911e38b5d05"
+  integrity sha512-cGGxqXGt+yf46nQw2nipLpQLaqlXbeAdcR2HoHYar91bpWRFViw16XCwbSLs0uwhzzYjHwN9BVw5SYIXNqIFwg==
 
 cross-env@^7.0.3:
   version "7.0.3"
