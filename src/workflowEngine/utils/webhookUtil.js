@@ -1,6 +1,7 @@
 import { parseJSON, isWhitespace } from '@/utils/helper';
+import getFile from '@/utils/getFile';
 
-const renderContent = (content, contentType) => {
+const renderContent = async (content, contentType) => {
   if (contentType === 'text/plain') return content;
 
   const renderedJson = parseJSON(content, new Error('invalid-body'));
@@ -16,9 +17,33 @@ const renderContent = (content, contentType) => {
     }
 
     const formData = new FormData();
-    renderedJson.forEach((data) => {
-      formData.append(...data);
-    });
+    for (const data of renderedJson) {
+      const [name, path, customFilename] = data;
+      const isFile = /\.(.*)/.test(path) && BROWSER_TYPE !== 'firefox';
+      const isURL = path.startsWith('http');
+
+      let formContent = path;
+      let filename = customFilename;
+
+      if (isFile || isURL) {
+        formContent = await getFile(path, { returnValue: true });
+
+        if (!filename) {
+          const { pathname } = new URL(path);
+          filename = pathname.split('/').pop();
+        }
+      } else if (path.includes('base64')) {
+        const response = await fetch(path);
+        const result = await response.blob();
+
+        formContent = result;
+      }
+
+      const args = [name, formContent];
+      if (filename) args.push(filename);
+
+      formData.append(...args);
+    }
 
     return formData;
   }
@@ -74,7 +99,7 @@ export async function executeWebhook({
     };
 
     if (!notHaveBody.includes(method || 'POST') && !isWhitespace(body)) {
-      payload.body = renderContent(body, payload.headers['Content-Type']);
+      payload.body = await renderContent(body, payload.headers['Content-Type']);
     }
 
     const response = await fetch(url, payload);
