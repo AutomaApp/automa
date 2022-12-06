@@ -1,4 +1,5 @@
 import browser from 'webextension-polyfill';
+import { copyTextToClipboard } from '../helper';
 
 function doCommand(command, value) {
   const textarea = document.createElement('textarea');
@@ -21,11 +22,17 @@ function doCommand(command, value) {
 }
 
 export default async function ({ data, id, label }) {
-  if (!this.engine.isPopup && !this.engins.isMV2)
+  const isFirefox = BROWSER_TYPE === 'firefox';
+  if (!isFirefox && !this.engine?.isPopup && !this.engins?.isMV2)
     throw new Error('Clipboard block is not supported in background execution');
 
+  const permissions = ['clipboardRead'];
+  if (isFirefox) {
+    permissions.push('clipboardWrite');
+  }
+
   const hasPermission = await browser.permissions.contains({
-    permissions: ['clipboardRead'],
+    permissions,
   });
 
   if (!hasPermission) {
@@ -59,7 +66,12 @@ export default async function ({ data, id, label }) {
     }
 
     valueToReturn = text;
-    doCommand('copy', text);
+
+    if (isFirefox) {
+      await copyTextToClipboard(text);
+    } else {
+      doCommand('copy', text);
+    }
   }
 
   return {
