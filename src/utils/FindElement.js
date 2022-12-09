@@ -1,8 +1,20 @@
+import Sizzle from 'sizzle';
+
+const specialSelectors = [':contains', ':header', ':parent'];
+const specialSelectorsRegex = new RegExp(specialSelectors.join('|'));
+
 class FindElement {
   static cssSelector(data, documentCtx = document) {
     const selector = data.markEl
       ? `${data.selector.trim()}:not([${data.blockIdAttr}])`
       : data.selector;
+
+    if (specialSelectorsRegex.test(selector)) {
+      const elements = Sizzle.matches(selector);
+      if (!elements) return null;
+
+      return data.multiple ? elements : elements[0];
+    }
 
     if (data.multiple) {
       const elements = documentCtx.querySelectorAll(selector);

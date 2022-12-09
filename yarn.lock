@@ -5966,6 +5966,11 @@ simple-git-hooks@^2.8.1:
   resolved "https://registry.yarnpkg.com/simple-git-hooks/-/simple-git-hooks-2.8.1.tgz#05e8306f3211d7eee9f5fdb5cc42521280ee82a9"
   integrity sha512-DYpcVR1AGtSfFUNzlBdHrQGPsOhuuEJ/FkmPOOlFysP60AHd3nsEpkGq/QEOdtUyT1Qhk7w9oLmFoMG+75BDog==
 
+sizzle@^2.3.8:
+  version "2.3.8"
+  resolved "https://registry.yarnpkg.com/sizzle/-/sizzle-2.3.8.tgz#a09daf9f7da7c3833f3ec4bff3e66265fdd23362"
+  integrity sha512-ZfDSwa4my4STaWJNcju5jEUa8boT9IPTgSz3SeuCzkNUZ5EpDtFtNkrbEcSkgMZEUag9XZzAOvstTiXdD9Mbtg==
+
 slash@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-4.0.0.tgz#2422372176c4c6c5addb5e2ada885af984b396a7"
