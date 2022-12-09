@@ -160,6 +160,8 @@ export function executeWorkflow(workflowData, options) {
     return;
   }
 
+  if (window) window.fromBackground = false;
+
   browser.tabs
     .query({ active: true, currentWindow: true })
     .then(async ([tab]) => {

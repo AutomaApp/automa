@@ -57,9 +57,9 @@
   <app-survey />
 </template>
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { compare } from 'compare-versions';
 import { useHead } from '@vueuse/head';
 import browser from 'webextension-polyfill';
@@ -89,19 +89,16 @@ import iconFirefox from '@/assets/svg/logoFirefox.svg';
 import iconChrome from '@/assets/svg/logo.svg';
 import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
 
-let icon;
-if (window.location.protocol === 'moz-extension:') {
-  icon = iconFirefox;
-} else {
-  icon = iconChrome;
-}
-
 const iconElement = document.createElement('link');
 iconElement.rel = 'icon';
-iconElement.href = icon;
+iconElement.href =
+  window.location.protocol === 'moz-extension' ? iconFirefox : iconChrome;
 document.head.appendChild(iconElement);
 
+window.fromBackground = window.location.href.includes('?fromBackground=true');
+
 const { t } = useI18n();
+const route = useRoute();
 const store = useStore();
 const theme = useTheme();
 const router = useRouter();
@@ -255,7 +252,8 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
 browser.storage.local.onChanged.addListener(({ workflowStates }) => {
   if (!workflowStates) return;
 
-  workflowStore.states = Object.values(workflowStates.newValue);
+  const states = Object.values(workflowStates.newValue);
+  workflowStore.states = states;
 });
 
 useHead(() => {
@@ -300,6 +298,20 @@ window.addEventListener('message', ({ data }) => {
       sendResponse({ isError: true, result: error.message });
     });
 });
+
+watch(
+  () => workflowStore.popupStates,
+  () => {
+    if (
+      !window.fromBackground ||
+      workflowStore.popupStates.length !== 0 ||
+      route.name !== 'workflows'
+    )
+      return;
+
+    window.close();
+  }
+);
 
 (async () => {
   try {

@@ -19,7 +19,7 @@ async function executeWorkflow(workflowData, options) {
     return;
   }
 
-  await BackgroundUtils.openDashboard('', false);
+  await BackgroundUtils.openDashboard('?fromBackground=true', false);
   await BackgroundUtils.sendMessageToDashboard('workflow:execute', {
     data: workflowData,
     options,

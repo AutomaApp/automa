@@ -72,7 +72,7 @@ const updateListener = EditorView.updateListener.of((event) => {
 const customExtension = Array.isArray(props.extensions)
   ? props.extensions
   : [props.extensions];
-console.log(langs[props.lang]);
+
 const state = EditorState.create({
   doc: props.modelValue,
   extensions: [
