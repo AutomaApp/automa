@@ -16,8 +16,7 @@
           class="w-24"
         />
       </div>
-      <ui-list-item v-if="isDebugSupported" small>
-        <ui-switch v-model="state.debugMode" class="mr-4" />
+      <ui-list-item v-if="isDebugSupported" small class="mt-4">
         <div class="flex-1 overflow-hidden">
           <p class="text-overflow">
             {{ t('workflow.settings.debugMode.title') }}
@@ -28,6 +27,7 @@
             Execute block using the Chrome DevTools Protocol
           </p>
         </div>
+        <ui-switch v-model="state.debugMode" class="mr-4" />
       </ui-list-item>
     </ui-list>
   </div>
@@ -38,6 +38,10 @@ import { useI18n } from 'vue-i18n';
 
 const props = defineProps({
   data: {
+    type: Object,
+    default: () => ({}),
+  },
+  block: {
     type: Object,
     default: () => ({}),
   },
@@ -52,7 +56,7 @@ const supportedDebugBlocks = [
 ];
 const browserType = BROWSER_TYPE;
 const isDebugSupported =
-  browserType !== 'firefox' && supportedDebugBlocks.includes(props.data.id);
+  browserType !== 'firefox' && supportedDebugBlocks.includes(props.block.id);
 
 const { t } = useI18n();
 const state = reactive({ blockTimeout: 0 });
