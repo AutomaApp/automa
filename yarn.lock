@@ -1293,6 +1293,11 @@
   resolved "https://registry.yarnpkg.com/@tiptap/core/-/core-2.0.0-beta.205.tgz#477ee72fd66fffeea7a72114b0fda881ef93ddda"
   integrity sha512-uGV+U5UfKkhu3sidyG2LC2IzqeU1MfkuHxv3NF1PvvFDX6cSNbOy8ZBxXHfIqUMsloqzMv9mXrrqiPUB3jQisg==
 
+"@tiptap/core@^2.0.0-beta.207":
+  version "2.0.0-beta.207"
+  resolved "https://registry.yarnpkg.com/@tiptap/core/-/core-2.0.0-beta.207.tgz#df41b1acb61375c6cc003aaa554e8d0360cf00a5"
+  integrity sha512-mhXuTgVnZ4HuXhfz9vDUlcpklfQ7Iqeh3PcpT5avmV8Az8Oyxsb54IEdTer2sJrIAZc3YS2cxBG1vH0sMqwndw==
+
 "@tiptap/extension-blockquote@^2.0.0-beta.205":
   version "2.0.0-beta.205"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-blockquote/-/extension-blockquote-2.0.0-beta.205.tgz#19a2be40a2e6be85fd1136b57906d601d47c0018"
@@ -1303,12 +1308,12 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-bold/-/extension-bold-2.0.0-beta.205.tgz#a3b60adb2c0680878f350e872b2110fd11d3511a"
   integrity sha512-ojCN61iVQ+XdeHVfe70i9iMBOQ+/XAtXpe2Uc4+6Gk9+To8l7LHz1OHg3/NPir+xTKMR0jH0HhLPD1nsO77gyA==
 
-"@tiptap/extension-bubble-menu@^2.0.0-beta.205":
-  version "2.0.0-beta.205"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-bubble-menu/-/extension-bubble-menu-2.0.0-beta.205.tgz#b032d769d6e1e4fd80b08c72caff01a322f333d2"
-  integrity sha512-XqHo698TioWBBomk6l7gfWZ8bj7Oj+UHYSgmuvTAZLAEjOvDQcykjqS2ks9CN0M+f8Hd+IhnSXMvbLciKQIp4g==
+"@tiptap/extension-bubble-menu@^2.0.0-beta.207":
+  version "2.0.0-beta.207"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-bubble-menu/-/extension-bubble-menu-2.0.0-beta.207.tgz#bd305219f77e31442f7bd5e8d1582228df21ef7a"
+  integrity sha512-Lo+mO71CJaWAvDuPmxGCGS6XGyH6gt2hTVkGAQKR3PRmctnutBvaJF/BOY5wb20/wtkK39UHVc75enn0svdYmg==
   dependencies:
-    "@tiptap/core" "^2.0.0-beta.205"
+    "@tiptap/core" "^2.0.0-beta.207"
     lodash "^4.17.21"
     prosemirror-state "^1.4.1"
     prosemirror-view "^1.28.2"
@@ -1344,10 +1349,10 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-dropcursor/-/extension-dropcursor-2.0.0-beta.205.tgz#c47d6089b400d3d8ec2e146e92f025f38d076f6e"
   integrity sha512-0DL1uQwtRZMw356WyYla4l2ailci6DVtJ6pgNpUX5Zlv8+IfwBQ2jU9XXbSUAJOlRPLI8NgUlB/JWg4A6MrO4g==
 
-"@tiptap/extension-floating-menu@^2.0.0-beta.205":
-  version "2.0.0-beta.205"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-floating-menu/-/extension-floating-menu-2.0.0-beta.205.tgz#c8e8bcd12a9670e1565916f47698a9822a4fa8ff"
-  integrity sha512-L6GV0jfYqOpDQplRiB3dnOCnxOPVRLr76VxRQgEVlE7FamPd9/KlL+7Bk+3w7qwlcXYAo3ROz8EL6Q1ZzoJeXw==
+"@tiptap/extension-floating-menu@^2.0.0-beta.207":
+  version "2.0.0-beta.207"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-floating-menu/-/extension-floating-menu-2.0.0-beta.207.tgz#c0399c2c7c473855ead13d643f8f0027d706ce7e"
+  integrity sha512-yWg5kt3SnxnVzQYFtmxoS0tX5gF1tIXDV0mO3LN/vJ5VryqmXNO3soqTJASzCv/Kmgbr7ijBtsBn+Da3Au0Hvw==
   dependencies:
     tippy.js "^6.3.7"
 
@@ -1448,13 +1453,13 @@
     "@tiptap/extension-strike" "^2.0.0-beta.205"
     "@tiptap/extension-text" "^2.0.0-beta.205"
 
-"@tiptap/vue-3@^2.0.0-beta.205":
-  version "2.0.0-beta.205"
-  resolved "https://registry.yarnpkg.com/@tiptap/vue-3/-/vue-3-2.0.0-beta.205.tgz#cdcfc6edbcdbbbbbd6f59c4090dcc54ee7c348a8"
-  integrity sha512-Vq/t0UBB/a56FOE0Wapag7Jkf7/FXh/aUWZRGvWh3T9PQ2SabHEJ3gupx1Yx4QVx5SdDySjldJ7vGxEYTq4hhQ==
+"@tiptap/vue-3@^2.0.0-beta.207":
+  version "2.0.0-beta.207"
+  resolved "https://registry.yarnpkg.com/@tiptap/vue-3/-/vue-3-2.0.0-beta.207.tgz#9c8fd4309d10a52c29bb8378cb56eba97c4a3281"
+  integrity sha512-tJ3Yv9I77R60jMUhy893JpfsLPIJ2G6/yzLpG4ZDliNNPoOIKCTCk6+wDm1DpVls6ovyalOrTWyXzpf00q0/XQ==
   dependencies:
-    "@tiptap/extension-bubble-menu" "^2.0.0-beta.205"
-    "@tiptap/extension-floating-menu" "^2.0.0-beta.205"
+    "@tiptap/extension-bubble-menu" "^2.0.0-beta.207"
+    "@tiptap/extension-floating-menu" "^2.0.0-beta.207"
 
 "@types/body-parser@*":
   version "1.19.2"

@@ -44,7 +44,7 @@
     "@tiptap/extension-link": "^2.0.0-beta.205",
     "@tiptap/extension-placeholder": "^2.0.0-beta.205",
     "@tiptap/starter-kit": "^2.0.0-beta.205",
-    "@tiptap/vue-3": "^2.0.0-beta.205",
+    "@tiptap/vue-3": "^2.0.0-beta.207",
     "@viselect/vanilla": "^3.1.0",
     "@vue-flow/additional-components": "^1.2.4",
     "@vue-flow/core": "^1.5.0",
