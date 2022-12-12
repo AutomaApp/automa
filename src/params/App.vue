@@ -53,9 +53,15 @@
                 :is="paramsList[param.type].valueComp"
                 v-if="paramsList[param.type]"
                 v-model="param.value"
+                :autofocus="paramIdx === 0"
                 :label="param.name + (param.data?.required ? '*' : '')"
                 :param-data="param"
                 class="w-full"
+                @execute="
+                  workflow.type === 'block'
+                    ? continueWorkflow(index, workflow)
+                    : runWorkflow(index, workflow)
+                "
               />
               <ui-input
                 v-else
@@ -228,6 +234,10 @@ function getParamsValues(params) {
   }, {});
 }
 function runWorkflow(index, { data, params }) {
+  /* eslint-disable-next-line */
+  const isParamsValid = isValidParams(params);
+  if (!isParamsValid) return;
+
   const variables = getParamsValues(params);
   let payload = {
     name: 'background--workflow:execute',
@@ -264,6 +274,10 @@ function cancelParamBlock(index, { data }, message) {
     });
 }
 function continueWorkflow(index, { data, params }) {
+  /* eslint-disable-next-line */
+  const isParamsValid = isValidParams(params);
+  if (!isParamsValid) return;
+
   const timeout = Date.now() > data.timeout;
 
   browser.storage.local
