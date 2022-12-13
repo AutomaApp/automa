@@ -8,6 +8,7 @@
     <ui-tab-panel value="general">
       <block-setting-general
         v-model:data="state.settings"
+        :block="data"
         @change="onDataChange('settings', $event)"
       />
     </ui-tab-panel>

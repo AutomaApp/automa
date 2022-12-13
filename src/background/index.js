@@ -117,7 +117,7 @@ message.on('workflow:execute', async (workflowData, sender) => {
   const context = workflowData.settings.execContext;
   const isMV2 = browser.runtime.getManifest().manifest_version === 2;
   if (!isMV2 && (!context || context === 'popup')) {
-    await BackgroundUtils.openDashboard('', false);
+    await BackgroundUtils.openDashboard('?fromBackground=true', false);
     await BackgroundUtils.sendMessageToDashboard('workflow:execute', {
       data: workflowData,
       options: workflowData.option,

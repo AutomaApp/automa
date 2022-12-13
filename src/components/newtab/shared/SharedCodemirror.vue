@@ -72,6 +72,7 @@ const updateListener = EditorView.updateListener.of((event) => {
 const customExtension = Array.isArray(props.extensions)
   ? props.extensions
   : [props.extensions];
+
 const state = EditorState.create({
   doc: props.modelValue,
   extensions: [

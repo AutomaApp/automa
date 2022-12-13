@@ -6,6 +6,7 @@
     class="w-full"
     :placeholder="paramData.placeholder"
     @change="$emit('update:modelValue', $event)"
+    @keyup.enter="$emit('execute')"
   />
 </template>
 <script setup>
@@ -21,7 +22,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-defineEmits(['update:modelValue']);
+defineEmits(['update:modelValue', 'execute']);
 
 const mask = computed(() => {
   const options = props.paramData.data;

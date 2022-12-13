@@ -54,7 +54,7 @@
     "notSaved": "你真的要退出吗？ 你有未保存的更改！",
     "somethingWrong": "出现错误",
     "limitExceeded": "您已超出限制"
-   },
+  },
   "sort": {
     "sortBy": "排序方式",
     "name": "名称",
@@ -64,5 +64,5 @@
     "stopped": "停止",
     "error": "错误",
     "success": "成功"
-  },
+  }
 }
