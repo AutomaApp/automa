@@ -29,11 +29,20 @@ const renderContent = async (content, contentType) => {
         formContent = await getFile(path, { returnValue: true });
 
         if (!filename) {
-          const { pathname } = new URL(path);
-          filename = pathname.split('/').pop();
+          filename = path.split('/').pop();
         }
-      } else if (path.includes('base64')) {
-        const response = await fetch(path);
+
+        if (!formContent) throw new Error('File not found');
+      } else {
+        let base64Str = '';
+
+        if (path.includes('base64')) {
+          base64Str = path;
+        } else {
+          base64Str = `data:text/plain;base64,${window.btoa(path)}`;
+        }
+
+        const response = await fetch(base64Str);
         const result = await response.blob();
 
         formContent = result;
