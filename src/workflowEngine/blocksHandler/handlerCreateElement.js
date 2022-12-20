@@ -45,20 +45,22 @@ async function handleCreateElement(block, { refData }) {
 
   data.preloadScripts = preloadScripts;
 
+  const isMV3 =
+    (data.javascript || data.preloadScripts.length > 0) && !this.engine.isMV2;
   const payload = {
     ...block,
     data,
     preloadCSS: data.preloadScripts.filter((item) => item.type === 'style'),
   };
 
-  if (data.javascript && !this.engine.isMV2) {
+  if (isMV3) {
     payload.data.dontInjectJS = true;
     payload.data.automaScript = getAutomaScript({ ...refData, secrets: {} });
   }
 
   await this._sendMessageToTab(payload, {}, data.runBeforeLoad ?? false);
 
-  if (data.javascript && !this.engine.isMV2) {
+  if (isMV3) {
     const target = {
       tabId: this.activeTab.id,
       frameIds: [this.activeTab.frameId || 0],

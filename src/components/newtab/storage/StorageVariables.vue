@@ -116,7 +116,8 @@ function deleteVariable({ id }) {
 function editVariable({ id, name, value }) {
   state.id = id;
   editState.name = name;
-  editState.value = value;
+  editState.value =
+    typeof value !== 'string' ? JSON.stringify(value, null, 2) : value;
   editState.type = 'edit';
   editState.show = true;
 }

@@ -119,7 +119,7 @@
         :label="t('workflow.blocks.loop-data.startIndex')"
         placeholder="0"
         class="w-full mt-2"
-        @change="updateData({ startIndex: +$event || 0 })"
+        @change="updateData({ startIndex: $event })"
       />
       <ui-checkbox
         :model-value="data.resumeLastWorkflow"
