@@ -13,7 +13,7 @@
       "tabs": {
         "new": "新建模块",
         "existing": "已存在工作流"
-	    }
+      }
     },
     "elementSelector": {
       "name": "元素选择器",
@@ -25,8 +25,8 @@
       "delete": "删除工作流",
       "type": {
         "host": "主机",
-        "local": "本地",
+        "local": "本地"
       }
-    },
+    }
   }
 }

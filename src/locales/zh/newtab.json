@@ -20,7 +20,7 @@
     },
     "categories": {
       "my": "我的包",
-      "installed": "已安装的包",
+      "installed": "已安装的包"
     }
   },
   "scheduledWorkflow": {
