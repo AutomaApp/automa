@@ -1,7 +1,5 @@
-import * as tmpl from '@n8n_io/riot-tmpl';
+import tmpl from '@/lib/tmpl';
 import functions from '@/workflowEngine/templating/templatingFunctions';
-
-tmpl.brackets.set('{{ }}');
 
 const templatingFunctions = Object.keys(functions).reduce((acc, funcName) => {
   acc[`$${funcName}`] = functions[funcName];

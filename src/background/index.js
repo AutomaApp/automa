@@ -9,6 +9,8 @@ import BackgroundUtils from './BackgroundUtils';
 import BackgroundWorkflowUtils from './BackgroundWorkflowUtils';
 import BackgroundEventsListeners from './BackgroundEventsListeners';
 
+const isFirefox = BROWSER_TYPE === 'firefox';
+
 browser.alarms.onAlarm.addListener(BackgroundEventsListeners.onAlarms);
 
 browser.commands.onCommand.addListener(BackgroundEventsListeners.onCommand);
@@ -31,8 +33,7 @@ browser.webNavigation.onHistoryStateUpdated.addListener(
   BackgroundEventsListeners.onHistoryStateUpdated
 );
 
-const contextMenu =
-  BROWSER_TYPE === 'firefox' ? browser.menus : browser.contextMenus;
+const contextMenu = isFirefox ? browser.menus : browser.contextMenus;
 if (contextMenu && contextMenu.onClicked) {
   contextMenu.onClicked.addListener(
     BackgroundEventsListeners.onContextMenuClicked
@@ -228,4 +229,10 @@ if (!isMV2) {
   });
 
   keepAlive();
+} else if (!isFirefox) {
+  const sandboxIframe = document.createElement('iframe');
+  sandboxIframe.src = '/sandbox.html';
+  sandboxIframe.id = 'sandbox';
+
+  document.body.appendChild(sandboxIframe);
 }
