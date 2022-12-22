@@ -689,11 +689,13 @@
         "description": "Iterate through elements",
         "loadMore": "Load more elements",
         "scrollToBottom": "Scroll to bottom",
+        "scrollToTop": "Scroll to top",
         "actions": {
           "none": "None",
           "click-element": "Click an element",
           "scroll": "Scroll down",
-          "click-link": "Click a link"
+          "click-link": "Click a link",
+          "scroll-up": "Scroll up"
         }
       },
       "loop-data": {
