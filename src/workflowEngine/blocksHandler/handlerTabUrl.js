@@ -9,7 +9,16 @@ export async function logData({ id, data }) {
     const tab = await browser.tabs.get(this.activeTab.id);
     urls = tab.url || tab.pendingUrl || '';
   } else {
-    const tabs = await browser.tabs.query({});
+    const query = {};
+
+    if (data.qMatchPatterns) {
+      query.url = data.qMatchPatterns;
+    }
+    if (data.qTitle) {
+      query.title = data.qTitle;
+    }
+
+    const tabs = await browser.tabs.query(query);
     urls = tabs.map((tab) => tab.url);
   }
 

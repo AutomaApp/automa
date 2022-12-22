@@ -186,6 +186,11 @@
         "types": {
           "active-tab": "Active tab",
           "all": "All tabs"
+        },
+        "query": {
+          "title": "Query",
+          "matchPatterns": "@:workflow.blocks.switch-tab.matchPattern (optional)",
+          "tabTitle": "Tab title (optional)"
         }
       },
       "reload-tab": {

@@ -1124,6 +1124,8 @@ export const tasks = {
       saveData: true,
       assignVariable: false,
       variableName: '',
+      qTitle: '',
+      qMatchPatterns: '',
     },
   },
   'slice-variable': {
