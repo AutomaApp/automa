@@ -323,6 +323,7 @@ class WorkflowEngine {
           prevBlockData: detail.prevBlockData || '',
         },
         replacedValue: cloneDeep(detail.replacedValue),
+        ...(detail?.ctxData || {}),
       };
 
       delete detail.replacedValue;

@@ -256,6 +256,7 @@ class WorkflowWorker {
 
         addBlockLog(result.status || 'success', {
           logId: result.logId,
+          ctxData: result?.ctxData,
         });
       }
 
@@ -268,6 +269,13 @@ class WorkflowWorker {
       }
     } catch (error) {
       console.error(error);
+
+      const errorLogData = {
+        message: error.message,
+        ...(error.data || {}),
+        ...(error.ctxData || {}),
+      };
+
       const { onError: blockOnError } = replacedBlock.data;
       if (blockOnError && blockOnError.enable) {
         if (blockOnError.retry && blockOnError.retryTimes) {
@@ -298,10 +306,7 @@ class WorkflowWorker {
           blockOnError.toDo === 'continue' ? 1 : 'fallback'
         );
         if (blockOnError.toDo !== 'error' && nextBlocks) {
-          addBlockLog('error', {
-            message: error.message,
-            ...(error.data || {}),
-          });
+          addBlockLog('error', errorLogData);
 
           this.executeNextBlocks(nextBlocks, prevBlockData);
 
@@ -309,7 +314,7 @@ class WorkflowWorker {
         }
       }
 
-      const errorLogItem = { message: error.message, ...(error.data || {}) };
+      const errorLogItem = errorLogData;
       addBlockLog('error', errorLogItem);
 
       errorLogItem.blockId = block.id;
