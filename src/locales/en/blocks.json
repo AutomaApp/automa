@@ -557,7 +557,8 @@
       },
       "link": {
         "name": "Link",
-        "description": "Open link element"
+        "description": "Open link element",
+        "openInNewTab": "Open in new tab"
       },
       "attribute-value": {
         "name": "Attribute value",

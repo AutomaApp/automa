@@ -6,11 +6,14 @@ async function link(block) {
   if (!element) {
     throw new Error('element-not-found');
   }
+  if (element.tagName !== 'A') {
+    throw new Error('Element is not a link');
+  }
 
   markElement(element, block);
 
   const url = element.href;
-  if (url) window.open(url, '_self');
+  if (url && !block.data.openInNewTab) window.open(url, '_self');
 
   return url;
 }

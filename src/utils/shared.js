@@ -414,7 +414,7 @@ export const tasks = {
     description: 'Open link element',
     icon: 'riLink',
     component: 'BlockBasic',
-    editComponent: 'EditInteractionBase',
+    editComponent: 'EditLink',
     category: 'interaction',
     inputs: 1,
     outputs: 1,
@@ -430,6 +430,7 @@ export const tasks = {
       selector: '',
       markEl: false,
       disableMultiple: true,
+      openInNewTab: false,
     },
   },
   'attribute-value': {
