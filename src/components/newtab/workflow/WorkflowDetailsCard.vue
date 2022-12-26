@@ -44,7 +44,6 @@
         :class="descriptionCollapsed ? 'line-clamp' : 'whitespace-pre-wrap'"
         @click="descriptionCollapsed = !descriptionCollapsed"
       >
-        <!-- description here -->
         {{ workflow.description }}
       </p>
     </div>
