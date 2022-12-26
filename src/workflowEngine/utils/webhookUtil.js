@@ -2,16 +2,16 @@ import { parseJSON, isWhitespace } from '@/utils/helper';
 import getFile from '@/utils/getFile';
 
 const renderContent = async (content, contentType) => {
-  if (contentType === 'text/plain') return content;
+  if (contentType === 'text') return content;
 
   const renderedJson = parseJSON(content, new Error('invalid-body'));
 
   if (renderedJson instanceof Error) throw renderedJson;
 
-  if (contentType === 'application/x-www-form-urlencoded') {
+  if (contentType === 'form') {
     return new URLSearchParams(renderedJson);
   }
-  if (contentType === 'multipart/form-data') {
+  if (contentType === 'form-data') {
     if (!Array.isArray(renderedJson) || !Array.isArray(renderedJson[0])) {
       throw new Error('The body must be 2D Array');
     }
@@ -96,19 +96,17 @@ export async function executeWebhook({
 
   try {
     const finalHeaders = filterHeaders(headers);
-    const contentTypeHeader = contentTypes[contentType || 'json'];
+    if (contentType !== 'form-data')
+      finalHeaders['Content-Type'] = contentTypes[contentType || 'json'];
 
     const payload = {
+      headers: finalHeaders,
       method: method || 'POST',
-      headers: {
-        'Content-Type': contentTypeHeader,
-        ...finalHeaders,
-      },
       signal: controller.signal,
     };
 
     if (!notHaveBody.includes(method || 'POST') && !isWhitespace(body)) {
-      payload.body = await renderContent(body, payload.headers['Content-Type']);
+      payload.body = await renderContent(body, contentType);
     }
 
     const response = await fetch(url, payload);
