@@ -280,7 +280,7 @@ function applyFlowData() {
   }
 
   editor.setNodes(
-    props.data?.nodes.map((node) => ({ ...node, events: {} })) || []
+    props.data?.nodes?.map((node) => ({ ...node, events: {} })) || []
   );
   editor.setEdges(props.data?.edges || []);
   editor.setTransform({

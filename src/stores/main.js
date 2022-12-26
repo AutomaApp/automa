@@ -5,9 +5,11 @@ import deepmerge from 'lodash.merge';
 
 export const useStore = defineStore('main', {
   storageMap: {
+    tabs: 'tabs',
     settings: 'settings',
   },
   state: () => ({
+    tabs: [],
     copiedEls: {
       edges: [],
       nodes: [],

@@ -1,7 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import Welcome from './pages/Welcome.vue';
 import Packages from './pages/Packages.vue';
-import Workflows from './pages/Workflows.vue';
+import Workflows from './pages/workflows/index.vue';
+import WorkflowContainer from './pages/Workflows.vue';
 import WorkflowHost from './pages/workflows/Host.vue';
 import WorkflowDetails from './pages/workflows/[id].vue';
 import WorkflowShared from './pages/workflows/Shared.vue';
@@ -45,34 +46,40 @@ const routes = [
     component: WorkflowDetails,
   },
   {
-    name: 'workflows',
     path: '/workflows',
-    component: Workflows,
+    component: WorkflowContainer,
+    children: [
+      {
+        path: '',
+        name: 'workflows',
+        component: Workflows,
+      },
+      {
+        path: ':id',
+        name: 'workflows-details',
+        component: WorkflowDetails,
+      },
+      {
+        name: 'team-workflows',
+        path: 'teams/:teamId/workflows/:id',
+        component: WorkflowDetails,
+      },
+      {
+        name: 'workflow-host',
+        path: 'workflows/:id/host',
+        component: WorkflowHost,
+      },
+      {
+        name: 'workflow-shared',
+        path: '/workflows/:id/shared',
+        component: WorkflowShared,
+      },
+    ],
   },
   {
     name: 'schedule',
     path: '/schedule',
     component: ScheduledWorkflow,
-  },
-  {
-    name: 'team-workflows',
-    path: '/teams/:teamId/workflows/:id',
-    component: WorkflowDetails,
-  },
-  {
-    name: 'workflows-details',
-    path: '/workflows/:id',
-    component: WorkflowDetails,
-  },
-  {
-    name: 'workflow-host',
-    path: '/workflows/:id/host',
-    component: WorkflowHost,
-  },
-  {
-    name: 'workflow-shared',
-    path: '/workflows/:id/shared',
-    component: WorkflowShared,
   },
   {
     name: 'storage',

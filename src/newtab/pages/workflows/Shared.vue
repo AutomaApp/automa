@@ -149,8 +149,9 @@
   </ui-modal>
 </template>
 <script setup>
-import { reactive, onMounted, watch, shallowRef } from 'vue';
+import { reactive, onMounted, watch, shallowRef, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useHead } from '@vueuse/head';
 import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import browser from 'webextension-polyfill';
@@ -201,7 +202,15 @@ const state = reactive({
   trigger: 'Trigger: Manually',
 });
 const editor = shallowRef(null);
-const workflow = shallowRef(null);
+
+const workflow = computed(() => sharedWorkflowStore.getById(route.params.id));
+
+useHead({
+  title: () =>
+    workflow.value?.name
+      ? `${workflow.value.name} workflow`
+      : 'Shared workflow',
+});
 
 const changingKeys = new Set();
 
@@ -210,7 +219,10 @@ function updateSharedWorkflow(data = {}) {
     changingKeys.add(key);
   });
 
-  Object.assign(workflow.value, data);
+  sharedWorkflowStore.update({
+    data,
+    id: workflowId,
+  });
 
   if (data.drawflow) {
     editor.value.setNodes(data.drawflow.nodes);
@@ -349,14 +361,18 @@ watch(workflow, () => {
 });
 
 onMounted(() => {
-  const currentWorkflow = sharedWorkflowStore.getById(workflowId);
-  if (!currentWorkflow) {
+  if (!workflow.value) {
     router.push('/workflows');
     return;
   }
 
-  const convertedData = convertWorkflowData(currentWorkflow);
-  workflow.value = convertedData;
+  const convertedData = convertWorkflowData(workflow.value);
+  sharedWorkflowStore.update({
+    id: workflowId,
+    data: {
+      drawflow: convertedData.drawflow ?? workflow.value.drawflow,
+    },
+  });
 
   state.hasLocalCopy = workflowStore.getWorkflows.some(
     ({ id }) => id === workflowId

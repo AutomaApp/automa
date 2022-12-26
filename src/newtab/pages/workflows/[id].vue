@@ -1604,15 +1604,6 @@ watch(
     window.isDataChanged = isDataChanged && haveEditAccess.value;
   }
 );
-watch(
-  () => route.params.id,
-  (value, oldValue) => {
-    if (route.name !== 'workflows-details') return;
-    if (value && oldValue && value !== oldValue) {
-      window.location.reload();
-    }
-  }
-);
 
 /* eslint-disable consistent-return */
 onBeforeRouteLeave(() => {
