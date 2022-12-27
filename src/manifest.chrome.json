@@ -1,12 +1,13 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Automa",
-  "browser_action": {
+  "action": {
     "default_popup": "popup.html",
     "default_icon": "icon-128.png"
   },
   "background": {
-    "scripts": ["background.bundle.js"]
+    "service_worker": "background.bundle.js",
+    "type": "module"
   },
   "icons": {
     "128": "icon-128.png"
@@ -51,18 +52,29 @@
     "alarms",
     "storage",
     "debugger",
-    "<all_urls>",
+    "scripting",
     "webNavigation",
     "unlimitedStorage"
   ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "web_accessible_resources": [
-    "/elementSelector.css",
-    "/Inter-roman-latin.var.woff2",
-    "/icon-128.png",
-    "/locales/*",
-    "elementSelector.bundle.js"
+    {
+      "resources": [
+        "/elementSelector.css",
+        "/Inter-roman-latin.var.woff2",
+        "/icon-128.png",
+        "/locales/*",
+        "elementSelector.bundle.js"
+      ],
+      "matches": ["<all_urls>"]
+    }
   ],
   "sandbox": {
-    "pages": ["/sandbox.html", "uiSandbox.html"]
+    "pages": ["/sandbox.html"]
+  },
+  "content_security_policy": {
+    "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';"
   }
 }

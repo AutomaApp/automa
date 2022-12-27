@@ -1,18 +1,18 @@
 <template>
   <div class="flex flex-col">
-    <div class="flex items-center border-b h-12">
+    <div class="flex items-center border-b h-10">
       <draggable
         v-model="state.tabs"
         item-key="id"
-        class="scroll overflow-auto text-gray-600 h-full dark:text-gray-300 scroll-xs flex items-center"
+        class="scroll overflow-auto text-gray-600 h-full dark:text-gray-300 scroll-xs flex items-center text-sm"
       >
         <template #item="{ element: tab, index }">
           <button
             :value="tab.id"
             :class="[
               state.activeTab === tab.id
-                ? 'border-accent'
-                : 'border-transparent',
+                ? 'border-accent dark:border-accent'
+                : 'border-transparent dark:border-transparent',
               {
                 'bg-box-transparent text-black dark:text-gray-100':
                   state.activeTab === tab.id,

@@ -155,7 +155,7 @@
             />
           </ui-tab-panel>
         </template>
-        <ui-tab-panel cache value="editor" class="w-full">
+        <ui-tab-panel cache value="editor" class="w-full" @keydown="onKeydown">
           <workflow-editor
             v-if="state.workflowConverted"
             :id="route.params.id"
@@ -1570,6 +1570,18 @@ function checkWorkflowUpdate() {
       console.error(error);
     });
 }
+/* eslint-disable consistent-return */
+function onBeforeLeave() {
+  updateHostedWorkflow();
+
+  const dataNotChanged = !state.dataChanged || !haveEditAccess.value;
+  const isExternalPkg = isPackage && workflow.value.isExternal;
+  if (dataNotChanged || isExternalPkg) return;
+
+  const confirm = window.confirm(t('message.notSaved'));
+
+  if (!confirm) return false;
+}
 
 useHead({
   title: () =>
@@ -1605,18 +1617,7 @@ watch(
   }
 );
 
-/* eslint-disable consistent-return */
-onBeforeRouteLeave(() => {
-  updateHostedWorkflow();
-
-  const dataNotChanged = !state.dataChanged || !haveEditAccess.value;
-  const isExternalPkg = isPackage && workflow.value.isExternal;
-  if (dataNotChanged || isExternalPkg) return;
-
-  const confirm = window.confirm(t('message.notSaved'));
-
-  if (!confirm) return false;
-});
+onBeforeRouteLeave(onBeforeLeave);
 onMounted(() => {
   if (!workflow.value) {
     router.replace(isPackage ? '/packages' : '/');
@@ -1649,17 +1650,14 @@ onMounted(() => {
   }
 
   initAutocomplete();
-
-  window.addEventListener('keydown', onKeydown);
 });
 onBeforeUnmount(() => {
   const editorContainer = document.querySelector(
     '.vue-flow__viewport.vue-flow__container'
   );
-  if (editorContainer)
+  if (editorContainer) {
     editorContainer.removeEventListener('click', onClickEditor);
-
-  window.removeEventListener('keydown', onKeydown);
+  }
 
   if (isPackage && workflow.value.isExternal) return;
   updateHostedWorkflow();

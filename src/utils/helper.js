@@ -281,12 +281,22 @@ export async function clearCache(workflow) {
 }
 
 export function arraySorter({ data, key, order = 'asc' }) {
+  let runCounts = {};
   const copyData = data.slice();
+
+  if (key === 'mostUsed') {
+    runCounts = parseJSON(localStorage.getItem('runCounts'), {}) || {};
+  }
 
   return copyData.sort((a, b) => {
     let comparison = 0;
-    const itemA = a[key] || a;
-    const itemB = b[key] || b;
+    let itemA = a[key] || a;
+    let itemB = b[key] || b;
+
+    if (key === 'mostUsed') {
+      itemA = runCounts[a.id] || 0;
+      itemB = runCounts[b.id] || 0;
+    }
 
     if (itemA > itemB) {
       comparison = 1;

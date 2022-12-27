@@ -36,6 +36,13 @@ export function stopWorkflowExec(executionId) {
 }
 
 export function startWorkflowExec(workflowData, options, isPopup = true) {
+  if (localStorage) {
+    const runCounts = parseJSON(localStorage.getItem('runCounts'), {}) || {};
+    runCounts[workflowData.id] = (runCounts[workflowData.id] || 0) + 1;
+
+    localStorage.setItem('runCounts', JSON.stringify(runCounts));
+  }
+
   if (workflowData.isProtected) {
     const flow = parseJSON(workflowData.drawflow, null);
 

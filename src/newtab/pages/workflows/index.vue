@@ -386,7 +386,7 @@ const workflowStore = useWorkflowStore();
 const teamWorkflowStore = useTeamWorkflowStore();
 const hostedWorkflowStore = useHostedWorkflowStore();
 
-const sorts = ['name', 'createdAt'];
+const sorts = ['name', 'createdAt', 'mostUsed'];
 const { teamId, active } = router.currentRoute.value.query;
 const savedSorts = JSON.parse(localStorage.getItem('workflow-sorts') || '{}');
 const validTeamId = userStore.user?.teams?.some(
