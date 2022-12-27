@@ -26,7 +26,7 @@
           "title": "Block settings",
           "blockTimeout": {
             "title": "Block execution timeout (millisecond)",
-            "description": "The maximum time the block is executing (0 to disable)"
+            "description": "The maximum execution time of the block (0 to disable)"
           },
           "line": {
             "title": "Lines",

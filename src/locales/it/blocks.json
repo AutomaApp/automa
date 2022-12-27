@@ -24,6 +24,10 @@
         },
         "settings": {
           "title": "Impostazioni del blocco",
+          "blockTimeout": {
+            "title": "Timeout di esecuzione (millisecondi)",
+            "description": "Il tempo massimo di esecuzione del blocco (0 per disabilitare)"
+          },
           "line": {
             "title": "Linee",
             "label": "Etichetta",
