@@ -17,7 +17,7 @@
       v-model="showModal"
       title="Insert data"
       padding="p-0"
-      content-class="max-w-2xl insert-data-modal"
+      content-class="max-w-3xl insert-data-modal"
     >
       <ul
         class="mt-4 data-list px-4 pb-4 overflow-auto scroll"
@@ -69,18 +69,36 @@
             />
           </div>
           <div class="p-2">
-            <edit-autocomplete
-              v-if="hasFileAccess && item.isFile"
-              class="w-full"
-            >
-              <ui-input
-                v-model="item.filePath"
-                class="w-full"
-                :placeholder="
-                  isFirefox ? 'File URL' : 'File absolute path/File URL'
+            <div v-if="hasFileAccess && item.isFile" class="flex items-end">
+              <edit-autocomplete class="w-full">
+                <ui-input
+                  v-model="item.filePath"
+                  class="w-full"
+                  :placeholder="
+                    isFirefox ? 'File URL' : 'File absolute path/File URL'
+                  "
+                />
+              </edit-autocomplete>
+              <template
+                v-if="
+                  /.xlsx?$/.test(item.filePath) &&
+                  (item.action || item.csvAction)?.includes?.('json')
                 "
-              />
-            </edit-autocomplete>
+              >
+                <ui-input
+                  v-model="item.xlsSheet"
+                  label="Sheet (optional)"
+                  class="ml-2"
+                  placeholder="Sheet1"
+                />
+                <ui-input
+                  v-model="item.xlsRange"
+                  label="Range (optional)"
+                  class="ml-2"
+                  placeholder="A1:C10"
+                />
+              </template>
+            </div>
             <edit-autocomplete v-else class="w-full">
               <ui-textarea
                 v-model="item.value"
@@ -124,8 +142,8 @@
                   <option value="default">Default</option>
                   <option value="base64">Read as base64</option>
                   <optgroup
-                    v-if="item.filePath.endsWith('.csv')"
-                    label="CSV File"
+                    v-if="/.(csv|xlsx?)$/.test(item.filePath)"
+                    label="CSV/Excel File"
                   >
                     <option value="json">Read as JSON</option>
                     <option value="json-header">
@@ -157,6 +175,7 @@
 import { ref, watch, inject, shallowReactive, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
+import { read as readXlsx, utils as utilsXlsx } from 'xlsx';
 import Papa from 'papaparse';
 import browser from 'webextension-polyfill';
 import getFile, { readFileAsBase64 } from '@/utils/getFile';
@@ -229,34 +248,53 @@ function setAsFile(item) {
 async function previewData(index, item) {
   try {
     const path = item.filePath || '';
+    const isExcel = /.xlsx?$/.test(path);
     const isJSON = path.endsWith('.json');
-    const isCSV = path.endsWith('.csv');
-    let action = item.action || item.csvAction || 'default';
 
-    if (action === 'text' && !isCSV) action = 'default';
+    const action = item.action || item.csvAction || 'default';
+    let responseType = 'text';
 
-    let stringify = isJSON && action !== 'base64';
-    let responseType = isJSON ? 'json' : 'text';
-
-    if (action === 'base64') responseType = 'blob';
+    if (isJSON) responseType = 'json';
+    else if (action === 'base64' || (isExcel && action !== 'default'))
+      responseType = 'blob';
 
     let result = await getFile(path, {
       responseType,
       returnValue: true,
     });
 
-    if (result && isCSV && action && action.includes('json')) {
+    const readAsJson = action.includes('json');
+
+    if (action === 'base64') {
+      result = await readFileAsBase64(result);
+    } else if (result && path.endsWith('.csv') && readAsJson) {
       const parsedCSV = Papa.parse(result, {
         header: action.includes('header'),
       });
-      result = parsedCSV.data || [];
-      stringify = true;
-    } else if (action === 'base64') {
-      result = await readFileAsBase64(result);
+      result = JSON.stringify(parsedCSV.data || [], null, 2);
+    } else if (isJSON) {
+      result = JSON.stringify(result, null, 2);
+    } else if (isExcel && readAsJson) {
+      const base64Xls = await readFileAsBase64(result);
+      const wb = readXlsx(base64Xls.slice(base64Xls.indexOf(',')), {
+        type: 'base64',
+      });
+
+      const inputtedSheet = (item.xlsSheet || '').trim();
+      const sheetName = wb.SheetNames.includes(inputtedSheet)
+        ? inputtedSheet
+        : wb.SheetNames[0];
+
+      const options = {};
+      if (item.xlsRange) options.range = item.xlsRange;
+      if (!action.includes('header')) options.header = 1;
+
+      const sheetData = utilsXlsx.sheet_to_json(wb.Sheets[sheetName], options);
+      result = JSON.stringify(sheetData, null, 2);
     }
 
     previewState.itemId = index;
-    previewState.data = stringify ? JSON.stringify(result, null, 2) : result;
+    previewState.data = result;
   } catch (error) {
     console.error(error);
     toast.error(error.message);

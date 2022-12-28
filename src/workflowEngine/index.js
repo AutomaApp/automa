@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import { toRaw } from 'vue';
 import browser from 'webextension-polyfill';
 import dayjs from '@/lib/dayjs';
@@ -36,11 +37,12 @@ export function stopWorkflowExec(executionId) {
 }
 
 export function startWorkflowExec(workflowData, options, isPopup = true) {
-  if (localStorage) {
-    const runCounts = parseJSON(localStorage.getItem('runCounts'), {}) || {};
+  if (self.localStorage) {
+    const runCounts =
+      parseJSON(self.localStorage.getItem('runCounts'), {}) || {};
     runCounts[workflowData.id] = (runCounts[workflowData.id] || 0) + 1;
 
-    localStorage.setItem('runCounts', JSON.stringify(runCounts));
+    self.localStorage.setItem('runCounts', JSON.stringify(runCounts));
   }
 
   if (workflowData.isProtected) {
