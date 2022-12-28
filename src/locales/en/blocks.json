@@ -212,6 +212,7 @@
         "name": "Save assets",
         "description": "Save assets (image, video, audio, or file) from an element or URL",
         "filename": "Filename (optional)",
+        "saveDownloadIds": "Save items' download ids",
         "contentTypes": {
           "title": "Type",
           "element": "Media element (image, audio, or video)",

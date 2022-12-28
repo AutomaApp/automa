@@ -943,7 +943,12 @@ export const tasks = {
       type: 'element',
       url: '',
       filename: '',
+      saveDownloadIds: false,
       onConflict: 'uniquify',
+      dataColumn: '',
+      saveData: true,
+      assignVariable: false,
+      variableName: '',
     },
   },
   'press-key': {
