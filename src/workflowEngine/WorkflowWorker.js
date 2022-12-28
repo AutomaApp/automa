@@ -109,7 +109,18 @@ class WorkflowWorker {
   }
 
   setVariable(name, value) {
-    this.engine.referenceData.variables[name] = value;
+    const vars = this.engine.referenceData.variables;
+
+    if (name.startsWith('$push:')) {
+      const { 1: varName } = name.split('$push:');
+
+      if (!objectHasKey(vars, varName)) vars[varName] = [];
+      else if (!Array.isArray(vars[varName])) vars[varName] = [vars[varName]];
+
+      vars[varName].push(value);
+    }
+
+    vars[name] = value;
     this.engine.addRefDataSnapshot('variables');
   }
 
