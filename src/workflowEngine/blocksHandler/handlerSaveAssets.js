@@ -55,7 +55,7 @@ export default async function ({ data, id, label }) {
 
     downloadIds = await Promise.all(sources.map((url) => downloadFile(url)));
   } else if (data.type === 'url') {
-    downloadIds = await downloadFile(data.url);
+    downloadIds = [await downloadFile(data.url)];
   }
 
   if (data.saveDownloadIds) {

@@ -1003,7 +1003,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['filename'],
+    refDataKeys: ['filename', 'downloadId'],
     autocomplete: ['variableName'],
     data: {
       disableBlock: false,
@@ -1016,6 +1016,7 @@ export const tasks = {
       saveData: true,
       assignVariable: false,
       variableName: '',
+      downloadId: '',
     },
   },
   'reload-tab': {

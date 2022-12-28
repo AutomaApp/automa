@@ -234,7 +234,9 @@
         "timeout": "Timeout (milliseconds)",
         "noPermission": "Don't have permission to access the downloads",
         "onConflict": "On conflict",
-        "waitFile": "Wait for the file to be downloaded"
+        "waitFile": "Wait for the file to be downloaded",
+        "downloadId": "The file download id (optional)",
+        "filePath": "File path"
       },
       "insert-data": {
         "name": "Insert data",

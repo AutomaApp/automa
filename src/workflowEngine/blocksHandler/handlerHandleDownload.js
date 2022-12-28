@@ -27,12 +27,40 @@ function determineFilenameListener(item, suggest) {
   return false;
 }
 
-function handleDownload({ data, id: blockId }) {
+async function handleDownload({ data, id: blockId }) {
   const nextBlockId = this.getBlockConnections(blockId);
   const getFilesname = () =>
     JSON.parse(sessionStorage.getItem('rename-downloaded-files')) || {};
 
-  return new Promise((resolve) => {
+  let downloadId = null;
+  if (data.downloadId?.trim()) {
+    if (Number.isNaN(+data.downloadId))
+      throw new Error('Download id is not a number');
+
+    const [downloadItem] = await browser.downloads.search({
+      id: +data.downloadId,
+    });
+    if (!downloadItem)
+      throw new Error(`Can't find download item with ${data.downloadId} id`);
+
+    if (downloadItem.state === 'complete') {
+      if (data.saveData) {
+        this.addDataToColumn(data.dataColumn, downloadItem.filename);
+      }
+      if (data.assignVariable) {
+        this.setVariable(data.variableName, downloadItem.filename);
+      }
+
+      return {
+        nextBlockId,
+        data: downloadItem.filename,
+      };
+    }
+
+    downloadId = +data.downloadId;
+  }
+
+  const result = await new Promise((resolve) => {
     if (!this.activeTab.id) throw new Error('no-tab');
 
     const hasListener =
@@ -44,7 +72,6 @@ function handleDownload({ data, id: blockId }) {
       );
     }
 
-    let downloadId = null;
     const handleCreated = ({ id }) => {
       if (downloadId) return;
 
@@ -56,7 +83,9 @@ function handleDownload({ data, id: blockId }) {
 
       browser.downloads.onCreated.removeListener(handleCreated);
     };
-    browser.downloads.onCreated.addListener(handleCreated);
+    if (!downloadId) {
+      browser.downloads.onCreated.addListener(handleCreated);
+    }
 
     if (!data.waitForDownload) {
       resolve({
@@ -132,6 +161,8 @@ function handleDownload({ data, id: blockId }) {
 
     browser.downloads.onChanged.addListener(handleChanged);
   });
+
+  return result;
 }
 
 export default handleDownload;
