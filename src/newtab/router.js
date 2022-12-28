@@ -93,7 +93,7 @@ const routes = [
   },
   {
     name: 'logs-details',
-    path: '/logs/:id',
+    path: '/logs/:id?',
     component: LogsDetails,
   },
   {
