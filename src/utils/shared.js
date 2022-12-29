@@ -27,6 +27,7 @@ export const tasks = {
       contextMenuName: '',
       contextTypes: [],
       parameters: [],
+      preferParamsInTab: false,
       observeElement: {
         selector: '',
         baseSelector: '',

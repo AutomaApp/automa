@@ -122,9 +122,18 @@
       </draggable>
     </table>
   </div>
-  <ui-button variant="accent" class="mt-4" @click="addParameter">
-    Add parameter
-  </ui-button>
+  <div class="flex items-center mt-4">
+    <ui-button variant="accent" @click="addParameter">
+      {{ $t('workflow.parameters.add') }}
+    </ui-button>
+    <div class="flex-grow" />
+    <ui-checkbox
+      :model-value="preferTab"
+      @change="$emit('update:preferTab', $event)"
+    >
+      {{ $t('workflow.parameters.preferInTab') }}
+    </ui-checkbox>
+  </div>
 </template>
 <script setup>
 import { reactive, watch } from 'vue';
@@ -141,8 +150,9 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  preferTab: Boolean,
 });
-const emit = defineEmits(['update']);
+const emit = defineEmits(['update', 'update:preferTab']);
 
 const customParameters = workflowParameters();
 

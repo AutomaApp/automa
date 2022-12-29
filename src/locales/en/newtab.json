@@ -190,6 +190,10 @@
       "unpin": "Unpin workflow",
       "pinned": "Pinned workflows"
     },
+    "parameters": {
+      "add": "Add parameter",
+      "preferInTab": "Prefer input parameters in the tab"
+    },
     "my": "My workflows",
     "import": "Import workflow",
     "new": "New workflow",

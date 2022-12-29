@@ -24,8 +24,10 @@
       content-class="max-w-4xl"
     >
       <edit-workflow-parameters
+        :prefer-tab="data.preferParamsInTab"
         :data="data.parameters"
         @update="updateData({ parameters: $event })"
+        @update:prefer-tab="updateData({ preferParamsInTab: $event })"
       />
     </ui-modal>
     <ui-modal
