@@ -1386,10 +1386,10 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-horizontal-rule/-/extension-horizontal-rule-2.0.0-beta.209.tgz#06d8c9ca43933e338fca31963332639d8dcbe7e8"
   integrity sha512-53RU9kDVb1jowJ3Frx8QW0E05uEOCpeG3HfUCMjz8anGtefxFtMS7xYZ9sC+niJeVmXC+mUSjFGageL4iRIdqA==
 
-"@tiptap/extension-image@^2.0.0-beta.205":
-  version "2.0.0-beta.205"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-image/-/extension-image-2.0.0-beta.205.tgz#f5bc3d6d4629764b84fa4380ce8819b705507d1b"
-  integrity sha512-wsugHfFVyD6TU/5Ij9T08zN9YHZILR7fc5p49zUU2V6RjNqwjaAqeMuyifu7QinvuUoo7dEe4HvI9zgfDT+aYQ==
+"@tiptap/extension-image@^2.0.0-beta.209":
+  version "2.0.0-beta.209"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-image/-/extension-image-2.0.0-beta.209.tgz#8e8a9316d4f2a3168cd21c8faea52d569102dace"
+  integrity sha512-Erjs9/vRud5TYATt7gJ1cBPNp0LAxtQ4mYZ+6Avpu0FfOWDv9WHXGtV85vJnbqKkRBf031L3dfLnYZPhTkS2sQ==
 
 "@tiptap/extension-italic@^2.0.0-beta.209":
   version "2.0.0-beta.209"
