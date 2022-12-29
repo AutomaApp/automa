@@ -166,6 +166,7 @@
             tabindex="0"
             @init="onEditorInit"
             @edit="initEditBlock"
+            @click="onClickEditor"
             @update:node="state.dataChanged = true"
             @delete:node="state.dataChanged = true"
             @update:settings="onUpdateBlockSettings"
@@ -1226,11 +1227,6 @@ function onEditorInit(instance) {
     });
   });
 
-  const editorContainer = document.querySelector(
-    '.vue-flow__viewport.vue-flow__container'
-  );
-  editorContainer.addEventListener('click', onClickEditor);
-
   const convertToObj = (array) =>
     array.reduce((acc, item) => {
       acc[item.id] = item;
@@ -1652,13 +1648,6 @@ onMounted(() => {
   initAutocomplete();
 });
 onBeforeUnmount(() => {
-  const editorContainer = document.querySelector(
-    '.vue-flow__viewport.vue-flow__container'
-  );
-  if (editorContainer) {
-    editorContainer.removeEventListener('click', onClickEditor);
-  }
-
   if (isPackage && workflow.value.isExternal) return;
   updateHostedWorkflow();
 });
