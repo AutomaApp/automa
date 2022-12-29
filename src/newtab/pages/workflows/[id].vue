@@ -1510,12 +1510,14 @@ function undoRedoCommand(type, { target }) {
 
   executeCommand(type);
 }
-function onKeydown({ ctrlKey, metaKey, shiftKey, key, target }) {
+function onKeydown({ ctrlKey, metaKey, shiftKey, key, target, repeat }) {
+  if (repeat) return;
+
   const els = ['INPUT', 'SELECT', 'TEXTAREA'];
   if (
     els.includes(target.tagName) ||
     target.isContentEditable ||
-    !target.classList.contains('workflow-editor')
+    !target.closest('.workflow-editor')
   )
     return;
 
