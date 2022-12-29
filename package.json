@@ -96,7 +96,7 @@
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.1/xlsx-0.19.1.tgz"
   },
   "devDependencies": {
-    "@babel/core": "^7.19.6",
+    "@babel/core": "^7.20.7",
     "@babel/eslint-parser": "^7.18.2",
     "@babel/preset-env": "^7.20.2",
     "@intlify/vue-i18n-loader": "^4.2.0",
