@@ -181,6 +181,19 @@
     }
   },
   "workflow": {
+      "previewMode": {
+      "title": "预览模式",
+      "description": "正处于预览模式，你所做的修改不会被保存下来"
+    },
+    "pinWorkflow": {
+      "pin": "固定工作流",
+      "unpin": "取消固定工作流",
+      "pinned": "已固定的工作流"
+    },
+    "parameters": {
+      "add": "添加参数",
+      "preferInTab": "在标签页中输入参数"
+    },
     "my": "我的工作流",
     "import": "导入工作流",
     "new": "新建工作流",
