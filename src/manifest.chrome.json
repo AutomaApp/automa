@@ -26,6 +26,7 @@
       "matches": ["<all_urls>"],
       "js": ["contentScript.bundle.js"],
       "run_at": "document_start",
+      "match_about_blank": true,
       "all_frames": true
     },
     {
