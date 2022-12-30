@@ -61,12 +61,12 @@ const routes = [
       },
       {
         name: 'team-workflows',
-        path: 'teams/:teamId/workflows/:id',
+        path: '/teams/:teamId/workflows/:id',
         component: WorkflowDetails,
       },
       {
         name: 'workflow-host',
-        path: 'workflows/:id/host',
+        path: '/workflows/:id/host',
         component: WorkflowHost,
       },
       {
