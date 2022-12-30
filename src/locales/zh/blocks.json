@@ -17,8 +17,17 @@
         "timeout": "超时 (毫秒)",
         "noPermission": "Automa 没有足够的权限执行此操作",
         "grantPermission": "授予权限",
+	"action": "操作",
+        "element": {
+          "select": "选择一个元素",
+          "verify": "验证选择器"
+        },
         "settings": {
           "title": "模块设置",
+          "blockTimeout": {
+            "title": "模块执行超时（毫秒）",
+            "description": "模块的最大执行时间（0表示禁用）"
+          },
           "line": {
             "title": "线段",
             "label": "线段标签",
@@ -108,12 +117,23 @@
           "remove": "移除 cookies",
           "getAll": "获取所有 cookies"
         }
+        "useJson": "使用 JSON 格式"
+      },
+      "note": {
+        "name": "注释"
       },
       "slice-variable": {
         "name": "切片变量",
         "description": "提取变量值的一部分",
         "start": "开始序列",
         "end": "结束序列"
+      },
+      "workflow-state": {
+        "name": "工作流状态",
+        "description": "管理工作流状态",
+        "actions": {
+          "stop": "停止工作流"
+        }
       },
       "regex-variable": {
         "name": "RegEx 变量",
@@ -166,6 +186,11 @@
         "types": {
           "active-tab": "活动标签页",
           "all": "所有标签页"
+        },
+        "query": {
+          "title": "查询",
+          "matchPatterns": "@:workflow.blocks.switch-tab.matchPattern (可选项)",
+          "tabTitle": "表格标题 (可选项)"
         }
       },
       "reload-tab": {
@@ -178,11 +203,16 @@
         "target": "目标元素 (可选项)",
         "key": "按键",
         "detect": "检测按键"
+        "actions": {
+          "press-key": "按下一个按键",
+          "multiple-keys": "按下多个按键"
+        }
       },
       "save-assets": {
         "name": "保存资源",
         "description": "保存资源 (图像, 视频, 音频, 或文件) 从一个元素或 URL",
         "filename": "文件名 (可选项)",
+        "saveDownloadIds": "保存条目'下载 id",
         "contentTypes": {
           "title": "类型",
           "element": "多媒体元素 (图像, 音频, 或视频)",
@@ -205,6 +235,8 @@
         "noPermission": "没有访问下载的权限",
         "onConflict": "冲突时",
         "waitFile": "等待下载文件"
+        "downloadId": "文件下载 id (可选项)",
+        "filePath": "文件路径"
       },
       "insert-data": {
         "name": "插入数据",
@@ -308,6 +340,7 @@
           "time": "时间",
           "url": "URL 或 正则表达式",
           "shortcut": "快捷键"
+          "cron-expression": "Cron 表达式"
         },
         "element-change": {
           "target": "要监测的目标元素",
@@ -342,6 +375,7 @@
         "items": {
           "manual": "手动",
           "interval": "间隔",
+          "cron-job": "Cron 任务",
           "date": "在特定日期",
           "context-menu": "上下文菜单",
           "element-change": "元素更改时",
@@ -395,6 +429,7 @@
           "getRange": "获取电子表格范围",
           "update": "更新电子表格单元格值",
           "append": "追加电子表格单元格值"
+          "clear": "清除电子表格单元格值"
         }
       },
       "active-tab": {
@@ -461,6 +496,9 @@
           "placeholder": "(毫秒)"
         }
       },
+      "parameter-prompt": {
+        "name": "参数提示"
+      },
       "get-text": {
         "name": "获取文本",
         "description": "从元素中获取文本",
@@ -523,6 +561,7 @@
       "link": {
         "name": "链接",
         "description": "打开链接元素"
+        "openInNewTab": "在新标签页打开"
       },
       "attribute-value": {
         "name": "属性值",
@@ -575,6 +614,13 @@
         "availabeFuncs": "可用函数:",
         "removeAfterExec": "模块执行后移除",
         "everyNewTab": "每次新建标签都执行",
+        "context": {
+          "name": "执行上下文",
+          "items": {
+            "website": "当前标签页",
+            "background": "背景"
+          }
+        },
         "modal": {
           "tabs": {
             "code": "JavaScript 代码",
@@ -624,7 +670,6 @@
       "webhook": {
         "name": "HTTP 请求",
         "description": "发出 HTTP 请求",
-        "url": "接收 POST 请求的 URL",
         "contentType": "内容类型",
         "method": "请求方法",
         "url": "请求 URL",
@@ -648,6 +693,20 @@
         "editCondition": "编辑条件",
         "fallback": "当条件为 false 时执行"
       },
+      "loop-elements": {
+        "name": "循环元素",
+        "description": "遍历元素",
+        "loadMore": "载入更多元素",
+        "scrollToBottom": "滚动到底部",
+        "scrollToTop": "滚动到顶部",
+        "actions": {
+          "none": "无",
+          "click-element": "点击一个元素",
+          "scroll": "向下滚动",
+          "click-link": "点击一个链接",
+          "scroll-up": "向上滚动"
+        }
+      },
       "loop-data": {
         "name": "循环数据",
         "description": "遍历表格或您的自定义数据",
@@ -655,6 +714,7 @@
         "refKey": "参考键",
         "startIndex": "从索引开始",
         "resumeLastWorkflow": "恢复上次工作流",
+        "reverse": "反转循环顺序",
         "modal": {
           "fileTooLarge": "文件太大，无法编辑",
           "maxFile": "最大文件尺寸为 1MB",
