@@ -1,7 +1,7 @@
 import browser from 'webextension-polyfill';
 import { MessageListener } from '@/utils/message';
 import { sleep } from '@/utils/helper';
-import getFile from '@/utils/getFile';
+import getFile, { readFileAsBase64 } from '@/utils/getFile';
 import automa from '@business';
 import { workflowState } from '@/workflowEngine';
 import { registerWorkflowTrigger } from '../utils/workflowTrigger';
@@ -48,12 +48,22 @@ if (browser.notifications && browser.notifications.onClicked) {
 
 const message = new MessageListener('background');
 
-message.on('fetch', ({ type, resource }) => {
-  return fetch(resource.url, resource).then((response) => {
-    if (!response.ok) throw new Error(response.statusText);
+message.on('fetch', async ({ type, resource }) => {
+  const response = await fetch(resource.url, resource);
+  if (!response.ok) throw new Error(response.statusText);
 
-    return response[type]();
-  });
+  let result = null;
+
+  if (type === 'base64') {
+    const blob = await response.blob();
+    const base64 = await readFileAsBase64(blob);
+
+    result = base64;
+  } else {
+    result = await response[type]();
+  }
+
+  return result;
 });
 message.on('fetch:text', (url) => {
   return fetch(url).then((response) => response.text());
