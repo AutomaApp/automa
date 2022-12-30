@@ -60,7 +60,7 @@ export default async function ({ data, id }) {
     };
     let elements = null;
 
-    if (data.type === 'scroll') {
+    if (data.type.includes('scroll')) {
       const loopItems = document.querySelectorAll(
         `[automa-loop*="${data.loopAttrId}"]`
       );
@@ -71,7 +71,13 @@ export default async function ({ data, id }) {
 
       if (data.scrollToBottom) {
         const { scrollHeight } = scrollableParent;
-        scrollableParent.scrollTo(0, scrollHeight + 30);
+        scrollableParent.scrollTo(
+          0,
+          data.type === 'scroll-up' ? 0 : scrollHeight + 30
+        );
+      } else if (data.type === 'scroll-up') {
+        const [firstElement] = loopItems;
+        firstElement.scrollIntoView();
       } else {
         const lastElement = loopItems[loopItems.length - 1];
         lastElement.scrollIntoView();

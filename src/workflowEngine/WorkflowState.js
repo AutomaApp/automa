@@ -1,4 +1,5 @@
 /* eslint-disable  no-param-reassign */
+import browser from 'webextension-polyfill';
 
 class WorkflowState {
   constructor({ storage, key = 'workflowState' }) {
@@ -7,6 +8,11 @@ class WorkflowState {
 
     this.states = new Map();
     this.eventListeners = {};
+  }
+
+  _updateBadge() {
+    const browserAction = browser.action || browser.browserAction;
+    browserAction.setBadgeText({ text: (this.states.size || '').toString() });
   }
 
   _saveToStorage() {
@@ -58,6 +64,7 @@ class WorkflowState {
 
   async add(id, data = {}) {
     this.states.set(id, data);
+    this._updateBadge();
     await this._saveToStorage(this.key);
   }
 
@@ -84,6 +91,7 @@ class WorkflowState {
   async delete(id) {
     this.states.delete(id);
     this.dispatchEvent('delete', id);
+    this._updateBadge();
     await this._saveToStorage();
   }
 }

@@ -155,7 +155,7 @@
             />
           </ui-tab-panel>
         </template>
-        <ui-tab-panel cache value="editor" class="w-full">
+        <ui-tab-panel cache value="editor" class="w-full" @keydown="onKeydown">
           <workflow-editor
             v-if="state.workflowConverted"
             :id="route.params.id"
@@ -166,6 +166,7 @@
             tabindex="0"
             @init="onEditorInit"
             @edit="initEditBlock"
+            @click="onClickEditor"
             @update:node="state.dataChanged = true"
             @delete:node="state.dataChanged = true"
             @update:settings="onUpdateBlockSettings"
@@ -1226,11 +1227,6 @@ function onEditorInit(instance) {
     });
   });
 
-  const editorContainer = document.querySelector(
-    '.vue-flow__viewport.vue-flow__container'
-  );
-  editorContainer.addEventListener('click', onClickEditor);
-
   const convertToObj = (array) =>
     array.reduce((acc, item) => {
       acc[item.id] = item;
@@ -1514,12 +1510,14 @@ function undoRedoCommand(type, { target }) {
 
   executeCommand(type);
 }
-function onKeydown({ ctrlKey, metaKey, shiftKey, key, target }) {
+function onKeydown({ ctrlKey, metaKey, shiftKey, key, target, repeat }) {
+  if (repeat) return;
+
   const els = ['INPUT', 'SELECT', 'TEXTAREA'];
   if (
     els.includes(target.tagName) ||
     target.isContentEditable ||
-    !target.classList.contains('workflow-editor')
+    !target.closest('.workflow-editor')
   )
     return;
 
@@ -1570,6 +1568,18 @@ function checkWorkflowUpdate() {
       console.error(error);
     });
 }
+/* eslint-disable consistent-return */
+function onBeforeLeave() {
+  updateHostedWorkflow();
+
+  const dataNotChanged = !state.dataChanged || !haveEditAccess.value;
+  const isExternalPkg = isPackage && workflow.value.isExternal;
+  if (dataNotChanged || isExternalPkg) return;
+
+  const confirm = window.confirm(t('message.notSaved'));
+
+  if (!confirm) return false;
+}
 
 useHead({
   title: () =>
@@ -1604,28 +1614,8 @@ watch(
     window.isDataChanged = isDataChanged && haveEditAccess.value;
   }
 );
-watch(
-  () => route.params.id,
-  (value, oldValue) => {
-    if (route.name !== 'workflows-details') return;
-    if (value && oldValue && value !== oldValue) {
-      window.location.reload();
-    }
-  }
-);
 
-/* eslint-disable consistent-return */
-onBeforeRouteLeave(() => {
-  updateHostedWorkflow();
-
-  const dataNotChanged = !state.dataChanged || !haveEditAccess.value;
-  const isExternalPkg = isPackage && workflow.value.isExternal;
-  if (dataNotChanged || isExternalPkg) return;
-
-  const confirm = window.confirm(t('message.notSaved'));
-
-  if (!confirm) return false;
-});
+onBeforeRouteLeave(onBeforeLeave);
 onMounted(() => {
   if (!workflow.value) {
     router.replace(isPackage ? '/packages' : '/');
@@ -1658,18 +1648,8 @@ onMounted(() => {
   }
 
   initAutocomplete();
-
-  window.addEventListener('keydown', onKeydown);
 });
 onBeforeUnmount(() => {
-  const editorContainer = document.querySelector(
-    '.vue-flow__viewport.vue-flow__container'
-  );
-  if (editorContainer)
-    editorContainer.removeEventListener('click', onClickEditor);
-
-  window.removeEventListener('keydown', onKeydown);
-
   if (isPackage && workflow.value.isExternal) return;
   updateHostedWorkflow();
 });

@@ -247,7 +247,8 @@ export async function validateSaveAssets(data) {
     errors.push(
       "Don't have download permission (ignore if you already grant the permissions)"
     );
-  else if (isEmptyStr(data.selector)) errors.push('The Selector is empty');
+  else if (isEmptyStr(data.selector) && data.type === 'element')
+    errors.push('The Selector is empty');
 
   return errors;
 }

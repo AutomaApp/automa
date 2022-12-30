@@ -375,8 +375,12 @@ watch(
     if (isRecording) {
       router.push('/recording');
 
-      await browser.action.setBadgeBackgroundColor({ color: '#ef4444' });
-      await browser.action.setBadgeText({ text: 'rec' });
+      await (browser.action || browser.browserAction).setBadgeBackgroundColor({
+        color: '#ef4444',
+      });
+      await (browser.action || browser.browserAction).setBadgeText({
+        text: 'rec',
+      });
     }
 
     autoDeleteLogs();

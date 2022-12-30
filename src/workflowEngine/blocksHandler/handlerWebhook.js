@@ -37,14 +37,28 @@ export async function webhook({ data, id }, { refData }) {
     const response = await executeWebhook({ ...data, headers: newHeaders });
 
     if (!response.ok) {
+      const { status, statusText } = response;
+      const responseData = await (data.responseType === 'json'
+        ? response.json()
+        : response.text());
+      const ctxData = {
+        ctxData: {
+          request: { status, statusText, data: responseData },
+        },
+      };
+
       if (fallbackOutput && fallbackOutput.length > 0) {
         return {
+          ctxData,
           data: '',
           nextBlockId: fallbackOutput,
         };
       }
 
-      throw new Error(`(${response.status}) ${response.statusText}`);
+      const error = new Error(`(${response.status}) ${response.statusText}`);
+      error.ctxData = ctxData;
+
+      throw error;
     }
 
     if (!data.assignVariable && !data.saveData) {

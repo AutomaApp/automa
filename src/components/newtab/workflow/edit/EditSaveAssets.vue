@@ -58,6 +58,22 @@
           {{ t(`workflow.blocks.base.downloads.onConflict.${item}`) }}
         </option>
       </ui-select>
+      <hr class="w-full my-4" />
+      <label class="flex items-center">
+        <ui-switch
+          :model-value="data.saveDownloadIds"
+          @change="updateData({ saveDownloadIds: $event })"
+        />
+        <p class="ml-2">
+          {{ t('workflow.blocks.save-assets.saveDownloadIds') }}
+        </p>
+      </label>
+      <insert-workflow-data
+        v-if="data.saveDownloadIds"
+        :data="data"
+        variables
+        @update="updateData"
+      />
     </template>
   </edit-interaction-base>
 </template>
@@ -66,6 +82,7 @@ import { useI18n } from 'vue-i18n';
 import { useHasPermissions } from '@/composable/hasPermissions';
 import EditInteractionBase from './EditInteractionBase.vue';
 import EditAutocomplete from './EditAutocomplete.vue';
+import InsertWorkflowData from './InsertWorkflowData.vue';
 
 const props = defineProps({
   data: {

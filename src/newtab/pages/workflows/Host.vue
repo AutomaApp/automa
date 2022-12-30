@@ -108,6 +108,7 @@
 import { computed, reactive, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
+import { useHead } from '@vueuse/head';
 import { useDialog } from '@/composable/dialog';
 import { useShortcut } from '@/composable/shortcut';
 import { useGroupTooltip } from '@/composable/groupTooltip';
@@ -154,6 +155,13 @@ const workflow = computed(() => hostedWorkflowStore.getById(workflowId));
 const workflowStates = computed(() =>
   workflowStore.getWorkflowStates(workflowId)
 );
+
+useHead({
+  title: () =>
+    workflow.value?.name
+      ? `${workflow.value.name} workflow`
+      : 'Hosted workflow',
+});
 
 function openLogs() {
   emitter.emit('ui:logs', {

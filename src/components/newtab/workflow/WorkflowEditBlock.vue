@@ -1,5 +1,5 @@
 <template>
-  <div id="workflow-edit-block" class="px-4 overflow-auto scroll pb-1">
+  <div id="workflow-edit-block" class="px-4 overflow-auto scroll pb-1 h-full">
     <div
       class="sticky top-0 z-20 bg-white dark:bg-gray-800 pb-4 mb-2 flex items-center space-x-2"
     >

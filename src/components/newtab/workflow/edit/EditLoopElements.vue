@@ -35,7 +35,7 @@
       <ui-select
         :model-value="data.loadMoreAction"
         :label="t('common.action')"
-        class="mt-2"
+        class="mt-2 w-full"
         @change="updateData({ loadMoreAction: $event })"
       >
         <option v-for="action in actions" :key="action" :value="action">
@@ -62,7 +62,9 @@
         />
       </edit-autocomplete>
       <ui-input
-        v-if="['click-element', 'scroll'].includes(data.loadMoreAction)"
+        v-if="
+          ['click-element', 'scroll', 'scroll-up'].includes(data.loadMoreAction)
+        "
         :model-value="data.actionElMaxWaitTime"
         label="Max seconds wait for more elements"
         class="w-full mt-2"
@@ -71,12 +73,20 @@
         @change="updateData({ actionElMaxWaitTime: +$event })"
       />
       <ui-checkbox
-        v-if="data.loadMoreAction === 'scroll'"
+        v-if="data.loadMoreAction.includes('scroll')"
         :model-value="data.scrollToBottom"
         class="mt-4"
         @change="updateData({ scrollToBottom: $event })"
       >
-        {{ t('workflow.blocks.loop-elements.scrollToBottom') }}
+        {{
+          t(
+            `workflow.blocks.loop-elements.${
+              data.loadMoreAction === 'scroll-up'
+                ? 'scrollToTop'
+                : 'scrollToBottom'
+            }`
+          )
+        }}
       </ui-checkbox>
       <ui-input
         v-if="data.loadMoreAction === 'click-link'"
@@ -106,7 +116,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:data']);
 
-const actions = ['none', 'click-element', 'click-link', 'scroll'];
+const actions = ['none', 'click-element', 'click-link', 'scroll', 'scroll-up'];
 
 const { t } = useI18n();
 

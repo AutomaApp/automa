@@ -143,6 +143,25 @@ class WorkflowEngine {
       if (hasParams) {
         this.eventListeners = {};
 
+        if (triggerBlock.data.preferParamsInTab) {
+          const [activeTab] = await browser.tabs.query({
+            active: true,
+            url: '*://*/*',
+            lastFocusedWindow: true,
+          });
+          if (activeTab) {
+            const result = await browser.tabs.sendMessage(activeTab.id, {
+              type: 'input-workflow-params',
+              data: {
+                workflow: this.workflow,
+                params: triggerBlock.data.parameters,
+              },
+            });
+
+            if (result) return;
+          }
+        }
+
         const paramUrl = browser.runtime.getURL('params.html');
         const tabs = await browser.tabs.query({});
         const paramTab = tabs.find((tab) => tab.url?.includes(paramUrl));
@@ -323,6 +342,7 @@ class WorkflowEngine {
           prevBlockData: detail.prevBlockData || '',
         },
         replacedValue: cloneDeep(detail.replacedValue),
+        ...(detail?.ctxData || {}),
       };
 
       delete detail.replacedValue;

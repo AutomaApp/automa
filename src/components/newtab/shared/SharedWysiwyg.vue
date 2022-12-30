@@ -2,7 +2,7 @@
   <div class="wysiwyg-editor">
     <slot v-if="editor" name="prepend" :editor="editor" />
     <div
-      v-if="editor && !readonly"
+      v-if="editor && toolbar && !readonly"
       class="p-2 rounded-lg backdrop-blur flex items-center sticky top-0 z-50 bg-box-transparent space-x-1 mb-2"
     >
       <button
@@ -114,6 +114,10 @@ const props = defineProps({
   options: {
     type: Object,
     default: () => ({}),
+  },
+  toolbar: {
+    type: Boolean,
+    default: true,
   },
   readonly: Boolean,
 });

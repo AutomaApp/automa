@@ -43,6 +43,8 @@ export default async function ({ data, id, label }) {
     return browser.downloads.download(options);
   };
 
+  let downloadIds = null;
+
   if (data.type === 'element') {
     sources = await this._sendMessageToTab({
       id,
@@ -51,13 +53,22 @@ export default async function ({ data, id, label }) {
       tabId: this.activeTab.id,
     });
 
-    await Promise.all(sources.map((url) => downloadFile(url)));
+    downloadIds = await Promise.all(sources.map((url) => downloadFile(url)));
   } else if (data.type === 'url') {
-    await downloadFile(data.url);
+    downloadIds = [await downloadFile(data.url)];
+  }
+
+  if (data.saveDownloadIds) {
+    if (data.assignVariable) {
+      this.setVariable(data.variableName, downloadIds);
+    }
+    if (data.saveData) {
+      this.addDataToColumn(data.dataColumn, downloadIds);
+    }
   }
 
   return {
-    data: sources,
+    data: { sources, downloadIds },
     nextBlockId: this.getBlockConnections(id),
   };
 }

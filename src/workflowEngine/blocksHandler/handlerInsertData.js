@@ -1,3 +1,4 @@
+import { read as readXlsx, utils as utilsXlsx } from 'xlsx';
 import Papa from 'papaparse';
 import { parseJSON } from '@/utils/helper';
 import getFile, { readFileAsBase64 } from '@/utils/getFile';
@@ -16,27 +17,50 @@ async function insertData({ id, data }, { refData }) {
         this.engine.isPopup
       );
       const path = replacedPath.value;
+      const isExcel = /.xlsx?$/.test(path);
       const isJSON = path.endsWith('.json');
-      const isCSV = path.endsWith('.csv');
 
-      let action = item.action || item.csvAction || 'default';
-      if (action === 'text' && !isCSV) action = 'default';
+      const action = item.action || item.csvAction || 'default';
+      let responseType = 'text';
 
-      let responseType = isJSON ? 'json' : 'text';
-      if (action === 'base64') responseType = 'blob';
+      if (isJSON) responseType = 'json';
+      else if (action === 'base64' || (isExcel && action !== 'default'))
+        responseType = 'blob';
 
       let result = await getFile(path, {
         responseType,
         returnValue: true,
       });
 
-      if (result && isCSV && action && action.includes('json')) {
+      const readAsJson = action.includes('json');
+
+      if (action === 'base64') {
+        result = await readFileAsBase64(result);
+      } else if (result && path.endsWith('.csv') && readAsJson) {
         const parsedCSV = Papa.parse(result, {
           header: action.includes('header'),
         });
         result = parsedCSV.data || [];
-      } else if (action === 'base64') {
-        result = await readFileAsBase64(result);
+      } else if (isExcel && readAsJson) {
+        const base64Xls = await readFileAsBase64(result);
+        const wb = readXlsx(base64Xls.slice(base64Xls.indexOf(',')), {
+          type: 'base64',
+        });
+
+        const inputtedSheet = (item.xlsSheet || '').trim();
+        const sheetName = wb.SheetNames.includes(inputtedSheet)
+          ? inputtedSheet
+          : wb.SheetNames[0];
+
+        const options = {};
+        if (item.xlsRange) options.range = item.xlsRange;
+        if (!action.includes('header')) options.header = 1;
+
+        const sheetData = utilsXlsx.sheet_to_json(
+          wb.Sheets[sheetName],
+          options
+        );
+        result = sheetData;
       }
 
       value = result;

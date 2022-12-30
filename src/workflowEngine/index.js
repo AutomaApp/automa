@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import { toRaw } from 'vue';
 import browser from 'webextension-polyfill';
 import dayjs from '@/lib/dayjs';
@@ -36,6 +37,14 @@ export function stopWorkflowExec(executionId) {
 }
 
 export function startWorkflowExec(workflowData, options, isPopup = true) {
+  if (self.localStorage) {
+    const runCounts =
+      parseJSON(self.localStorage.getItem('runCounts'), {}) || {};
+    runCounts[workflowData.id] = (runCounts[workflowData.id] || 0) + 1;
+
+    self.localStorage.setItem('runCounts', JSON.stringify(runCounts));
+  }
+
   if (workflowData.isProtected) {
     const flow = parseJSON(workflowData.drawflow, null);
 
@@ -154,7 +163,8 @@ export function executeWorkflow(workflowData, options) {
   if (!workflowData || workflowData.isDisabled) return;
 
   const isMV2 = browser.runtime.getManifest().manifest_version === 2;
-  const context = workflowData.settings.execContext;
+  const context = workflowData?.settings?.execContext;
+
   if (isMV2 || context === 'background') {
     sendMessage('workflow:execute', { ...workflowData, options }, 'background');
     return;

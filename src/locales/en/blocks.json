@@ -26,7 +26,7 @@
           "title": "Block settings",
           "blockTimeout": {
             "title": "Block execution timeout (millisecond)",
-            "description": "The maximum time the block is executing (0 to disable)"
+            "description": "The maximum execution time of the block (0 to disable)"
           },
           "line": {
             "title": "Lines",
@@ -186,6 +186,11 @@
         "types": {
           "active-tab": "Active tab",
           "all": "All tabs"
+        },
+        "query": {
+          "title": "Query",
+          "matchPatterns": "@:workflow.blocks.switch-tab.matchPattern (optional)",
+          "tabTitle": "Tab title (optional)"
         }
       },
       "reload-tab": {
@@ -207,6 +212,7 @@
         "name": "Save assets",
         "description": "Save assets (image, video, audio, or file) from an element or URL",
         "filename": "Filename (optional)",
+        "saveDownloadIds": "Save items' download ids",
         "contentTypes": {
           "title": "Type",
           "element": "Media element (image, audio, or video)",
@@ -228,7 +234,9 @@
         "timeout": "Timeout (milliseconds)",
         "noPermission": "Don't have permission to access the downloads",
         "onConflict": "On conflict",
-        "waitFile": "Wait for the file to be downloaded"
+        "waitFile": "Wait for the file to be downloaded",
+        "downloadId": "The file download id (optional)",
+        "filePath": "File path"
       },
       "insert-data": {
         "name": "Insert data",
@@ -552,7 +560,8 @@
       },
       "link": {
         "name": "Link",
-        "description": "Open link element"
+        "description": "Open link element",
+        "openInNewTab": "Open in new tab"
       },
       "attribute-value": {
         "name": "Attribute value",
@@ -689,11 +698,13 @@
         "description": "Iterate through elements",
         "loadMore": "Load more elements",
         "scrollToBottom": "Scroll to bottom",
+        "scrollToTop": "Scroll to top",
         "actions": {
           "none": "None",
           "click-element": "Click an element",
           "scroll": "Scroll down",
-          "click-link": "Click a link"
+          "click-link": "Click a link",
+          "scroll-up": "Scroll up"
         }
       },
       "loop-data": {

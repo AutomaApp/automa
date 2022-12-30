@@ -12,7 +12,7 @@ const destDir = path.join(__dirname, '../build');
 const zipDir = path.join(__dirname, '../build-zip', appVersion);
 
 if (!fs.existsSync(zipDir)) {
-  fs.mkdirSync(zipDir);
+  fs.mkdirSync(zipDir, { recursive: true });
 }
 
 const archive = archiver('zip', { zlib: { level: 9 } });

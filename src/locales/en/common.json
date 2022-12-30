@@ -60,7 +60,8 @@
   "sort": {
     "sortBy": "Sort by",
     "name": "Name",
-    "createdAt": "Created date"
+    "createdAt": "Created date",
+    "mostUsed": "Most used"
   },
   "logStatus": {
     "stopped": "stopped",

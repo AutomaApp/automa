@@ -250,6 +250,10 @@ function messageListener({ data, source }) {
           });
       } else {
         switch (data.type) {
+          case 'input-workflow-params':
+            window.initPaletteParams?.(data.data);
+            resolve(Boolean(window.initPaletteParams));
+            break;
           case 'content-script-exists':
             resolve(true);
             break;

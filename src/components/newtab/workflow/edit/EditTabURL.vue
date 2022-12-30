@@ -16,7 +16,28 @@
         {{ t(`workflow.blocks.tab-url.types.${type}`) }}
       </option>
     </ui-select>
-    <insert-workflow-data :data="data" variables @update="updateData" />
+    <div v-if="data.type === 'all'" class="mt-4 p-2 rounded-lg border">
+      <p class="text-sm text-gray-600">
+        {{ t('workflow.blocks.tab-url.query.title') }}
+      </p>
+      <ui-input
+        :model-value="data.qMatchPatterns"
+        class="mt-2 w-full"
+        placeholder="https://example.com/*"
+        @change="updateData({ qMatchPatterns: $event })"
+      >
+        <template #label>
+          {{ t('workflow.blocks.tab-url.query.matchPatterns') }}
+        </template>
+      </ui-input>
+      <ui-input
+        :model-value="data.qTitle"
+        :label="t('workflow.blocks.tab-url.query.tabTitle')"
+        class="mt-2 w-full"
+        @change="updateData({ qTitle: $event })"
+      />
+    </div>
+    <insert-workflow-data variables @update="updateData" />
   </div>
 </template>
 <script setup>

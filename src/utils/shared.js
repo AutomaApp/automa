@@ -27,6 +27,7 @@ export const tasks = {
       contextMenuName: '',
       contextTypes: [],
       parameters: [],
+      preferParamsInTab: false,
       observeElement: {
         selector: '',
         baseSelector: '',
@@ -414,7 +415,7 @@ export const tasks = {
     description: 'Open link element',
     icon: 'riLink',
     component: 'BlockBasic',
-    editComponent: 'EditInteractionBase',
+    editComponent: 'EditLink',
     category: 'interaction',
     inputs: 1,
     outputs: 1,
@@ -430,6 +431,7 @@ export const tasks = {
       selector: '',
       markEl: false,
       disableMultiple: true,
+      openInNewTab: false,
     },
   },
   'attribute-value': {
@@ -942,7 +944,12 @@ export const tasks = {
       type: 'element',
       url: '',
       filename: '',
+      saveDownloadIds: false,
       onConflict: 'uniquify',
+      dataColumn: '',
+      saveData: true,
+      assignVariable: false,
+      variableName: '',
     },
   },
   'press-key': {
@@ -997,7 +1004,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['filename'],
+    refDataKeys: ['filename', 'downloadId'],
     autocomplete: ['variableName'],
     data: {
       disableBlock: false,
@@ -1010,6 +1017,7 @@ export const tasks = {
       saveData: true,
       assignVariable: false,
       variableName: '',
+      downloadId: '',
     },
   },
   'reload-tab': {
@@ -1124,6 +1132,8 @@ export const tasks = {
       saveData: true,
       assignVariable: false,
       variableName: '',
+      qTitle: '',
+      qMatchPatterns: '',
     },
   },
   'slice-variable': {

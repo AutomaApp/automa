@@ -44,6 +44,18 @@ async function activeTab(block) {
       if (windowId) tabsQuery.windowId = windowId;
       else if (windows.length > 2) tabsQuery.lastFocusedWindow = true;
     } else {
+      const dashboardTabs = await browser.tabs.query({
+        url: browser.runtime.getURL('/newtab.html'),
+      });
+      await Promise.all(
+        dashboardTabs.map((item) =>
+          browser.windows.update(item.windowId, {
+            state: 'minimized',
+            focused: false,
+          })
+        )
+      );
+
       tabsQuery.currentWindow = true;
     }
 

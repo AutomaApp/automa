@@ -462,6 +462,14 @@ watch(
   }, 100)
 );
 
+window.initPaletteParams = (data) => {
+  paramsState.items = data.params;
+  paramsState.workflow = data.workflow;
+  paramsState.active = true;
+
+  state.active = true;
+};
+
 onMounted(() => {
   browser.storage.local.get('automaShortcut').then(({ automaShortcut }) => {
     if (Array.isArray(automaShortcut) && automaShortcut.length < 1) return;
