@@ -1,4 +1,5 @@
 import browser from 'webextension-polyfill';
+import { initElementSelector } from '@/newtab/utils/elementSelector';
 import BackgroundUtils from './BackgroundUtils';
 import BackgroundWorkflowTriggers from './BackgroundWorkflowTriggers';
 
@@ -8,7 +9,11 @@ class BackgroundEventsListeners {
   }
 
   static onCommand(name) {
-    if (name === 'open-dashboard') BackgroundUtils.openDashboard();
+    if (name === 'open-dashboard') {
+      BackgroundUtils.openDashboard();
+    } else if (name === 'element-picker') {
+      initElementSelector();
+    }
   }
 
   static onAlarms(event) {
