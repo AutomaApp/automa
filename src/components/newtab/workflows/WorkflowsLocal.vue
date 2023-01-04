@@ -53,7 +53,11 @@
     >
       <div>
         {{ t('components.pagination.text1') }}
-        <select v-model="pagination.perPage" class="p-1 rounded-md bg-input">
+        <select
+          :value="pagination.perPage"
+          class="p-1 rounded-md bg-input"
+          @change="onPerPageChange"
+        >
           <option v-for="num in [18, 32, 64, 128]" :key="num" :value="num">
             {{ num }}
           </option>
@@ -136,6 +140,7 @@ const props = defineProps({
     default: 18,
   },
 });
+const emit = defineEmits(['update:perPage']);
 
 const { t } = useI18n();
 const dialog = useDialog();
@@ -230,6 +235,11 @@ const pinnedWorkflows = computed(() => {
   });
 });
 
+function onPerPageChange(event) {
+  const { value } = event.target;
+  pagination.perPage = +value;
+  emit('update:perPage', +value);
+}
 function toggleDisableWorkflow({ id, isDisabled }) {
   workflowStore.update({
     id,
