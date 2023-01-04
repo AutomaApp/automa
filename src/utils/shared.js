@@ -1475,6 +1475,7 @@ export const excludeOnError = [
   'trigger',
   'while-loop',
   'conditions',
+  'blocks-group',
   'block-package',
   'element-exists',
 ];
