@@ -105,7 +105,13 @@
   </ui-modal>
 </template>
 <script setup>
-import { shallowReactive, computed, onMounted, onBeforeUnmount } from 'vue';
+import {
+  shallowReactive,
+  computed,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 import SelectionArea from '@viselect/vanilla';
 import browser from 'webextension-polyfill';
@@ -397,6 +403,13 @@ const menu = [
     action: deleteWorkflow,
   },
 ];
+
+watch(
+  () => props.folderId,
+  () => {
+    pagination.currentPage = 1;
+  }
+);
 
 onMounted(() => {
   window.addEventListener('keydown', deleteSelectedWorkflows);
