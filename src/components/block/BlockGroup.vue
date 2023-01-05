@@ -33,6 +33,7 @@
         :placeholder="t('workflow.blocks.blocks-group.groupName')"
         type="text"
         class="bg-transparent w-full focus:ring-0"
+        @keydown.stop
         @input="$emit('update', { name: $event.target.value })"
       />
     </div>

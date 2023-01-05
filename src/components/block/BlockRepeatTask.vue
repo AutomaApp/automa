@@ -24,8 +24,8 @@
         :value="data.repeatFor"
         placeholder="0"
         class="bg-transparent py-2 px-4 focus:ring-0"
-        required
         style="padding-right: 57px; width: 95%"
+        @keydown.stop
         @input="handleInput"
       />
       <span class="text-gray-600 dark:text-gray-200 absolute right-4">
