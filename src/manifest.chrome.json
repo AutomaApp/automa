@@ -18,7 +18,14 @@
         "default": "Alt+A",
         "mac": "Alt+A"
       },
-      "description": "Open the Automa dashboard"
+      "description": "Open the dashboard"
+    },
+    "element-picker": {
+      "suggested_key": {
+        "default": "Alt+P",
+        "mac": "Alt+P"
+      },
+      "description": "Open element picker"
     }
   },
   "content_scripts": [

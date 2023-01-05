@@ -255,8 +255,8 @@
           </ui-tab-panel>
           <ui-tab-panel value="local">
             <workflows-local
+              v-model:per-page="state.perPage"
               :search="state.query"
-              :per-page="state.perPage"
               :folder-id="state.activeFolder"
               :sort="{ by: state.sortBy, order: state.sortOrder }"
             />

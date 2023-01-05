@@ -37,7 +37,7 @@
         @change="updateData({ qTitle: $event })"
       />
     </div>
-    <insert-workflow-data variables @update="updateData" />
+    <insert-workflow-data :data="data" variables @update="updateData" />
   </div>
 </template>
 <script setup>
