@@ -39,7 +39,7 @@
     "@n8n_io/riot-tmpl": "^1.0.1",
     "@tiptap/core": "^2.0.0-beta.209",
     "@tiptap/extension-character-count": "^2.0.0-beta.209",
-    "@tiptap/extension-history": "^2.0.0-beta.205",
+    "@tiptap/extension-history": "^2.0.0-beta.209",
     "@tiptap/extension-image": "^2.0.0-beta.209",
     "@tiptap/extension-link": "^2.0.0-beta.205",
     "@tiptap/extension-placeholder": "^2.0.0-beta.205",
