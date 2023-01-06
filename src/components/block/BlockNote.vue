@@ -58,6 +58,7 @@
       rows="7"
       style="resize: both; min-width: 280px; min-height: 168px"
       class="focus:ring-0 mt-2 bg-transparent"
+      @keydown.stop
       @input="updateData({ note: $event.target.value })"
       @mousedown.stop
       @mouseup="onMouseup"
