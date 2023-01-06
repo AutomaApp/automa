@@ -25,26 +25,41 @@
     </ui-dialog>
     <div
       v-if="isUpdated"
-      class="p-4 shadow-2xl z-50 fixed bottom-8 left-1/2 -translate-x-1/2 rounded-lg bg-accent text-white dark:text-gray-900 flex items-center"
+      class="z-50 fixed bottom-8 left-1/2 -translate-x-1/2 max-w-xl text-white dark:text-gray-900"
     >
-      <v-remixicon name="riInformationLine" class="mr-3" />
-      <p>
-        {{ t('updateMessage.text1', { version: currentVersion }) }}
-      </p>
-      <a
-        :href="`https://github.com/AutomaApp/automa/releases/latest`"
-        target="_blank"
-        rel="noopener"
-        class="underline ml-1"
-      >
-        {{ t('updateMessage.text2') }}
-      </a>
-      <button
-        class="ml-6 text-gray-200 dark:text-gray-600"
-        @click="isUpdated = false"
-      >
-        <v-remixicon size="20" name="riCloseLine" />
-      </button>
+      <div class="p-4 shadow-2xl rounded-lg bg-accent flex items-center">
+        <v-remixicon name="riInformationLine" class="mr-3" />
+        <p>
+          {{ t('updateMessage.text1', { version: currentVersion }) }}
+        </p>
+        <a
+          :href="`https://github.com/AutomaApp/automa/releases/latest`"
+          target="_blank"
+          rel="noopener"
+          class="underline ml-1"
+        >
+          {{ t('updateMessage.text2') }}
+        </a>
+        <div class="flex-1" />
+        <button
+          class="ml-6 text-gray-200 dark:text-gray-600"
+          @click="isUpdated = false"
+        >
+          <v-remixicon size="20" name="riCloseLine" />
+        </button>
+      </div>
+      <div class="p-4 shadow-2xl rounded-lg bg-accent flex items-center mt-4">
+        <v-remixicon name="riInformationLine" class="mr-3 flex-shrink-0" />
+        <p>
+          Export your Automa workflows as a standalone extension using
+          <a
+            href="https://docs.automa.site/extension-builder/"
+            target="_blank"
+            class="underline"
+            >Automa Chrome Extension Builder</a
+          >
+        </p>
+      </div>
     </div>
     <shared-permissions-modal
       v-model="permissionState.showModal"
@@ -54,7 +69,6 @@
   <div v-else class="py-8 text-center">
     <ui-spinner color="text-accent" size="28" />
   </div>
-  <app-survey />
 </template>
 <script setup>
 import { ref, reactive, watch } from 'vue';
@@ -81,7 +95,6 @@ import emitter from '@/lib/mitt';
 import automa from '@business';
 import dbLogs from '@/db/logs';
 import dayjs from '@/lib/dayjs';
-import AppSurvey from '@/components/newtab/app/AppSurvey.vue';
 import AppLogs from '@/components/newtab/app/AppLogs.vue';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
 import dataMigration from '@/utils/dataMigration';
