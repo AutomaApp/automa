@@ -31,6 +31,7 @@
       placeholder="Loop ID"
       type="text"
       required
+      @keydown.stop
       @input="handleInput"
     />
     <ui-checkbox

@@ -33,6 +33,7 @@
       class="px-4 py-2 w-full rounded-lg bg-input"
       type="text"
       required
+      @keydown.stop
       @input="$emit('update', { time: $event.target.value })"
     />
     <div
