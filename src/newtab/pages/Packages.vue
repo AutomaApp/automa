@@ -121,15 +121,24 @@
                     <v-remixicon name="riExternalLinkLine" class="mr-2 -ml-1" />
                     <span>Open package page</span>
                   </ui-list-item>
-                  <ui-list-item
-                    v-else
-                    v-close-popover
-                    class="cursor-pointer"
-                    @click="exportPackage(pkg)"
-                  >
-                    <v-remixicon name="riDownloadLine" class="mr-2 -ml-1" />
-                    <span>{{ t('common.export') }}</span>
-                  </ui-list-item>
+                  <template v-else>
+                    <ui-list-item
+                      v-close-popover
+                      class="cursor-pointer"
+                      @click="duplicatePackage(pkg)"
+                    >
+                      <v-remixicon name="riFileCopyLine" class="mr-2 -ml-1" />
+                      <span>{{ t('common.duplicate') }}</span>
+                    </ui-list-item>
+                    <ui-list-item
+                      v-close-popover
+                      class="cursor-pointer"
+                      @click="exportPackage(pkg)"
+                    >
+                      <v-remixicon name="riDownloadLine" class="mr-2 -ml-1" />
+                      <span>{{ t('common.export') }}</span>
+                    </ui-list-item>
+                  </template>
                   <ui-list-item
                     v-close-popover
                     class="cursor-pointer text-red-500 dark:text-red-400"
@@ -251,6 +260,14 @@ const packages = computed(() => {
   });
 });
 
+function duplicatePackage(pkg) {
+  const copyPkg = JSON.parse(JSON.stringify(pkg));
+  delete copyPkg.id;
+
+  copyPkg.name += ' - copy';
+
+  packageStore.insert(copyPkg);
+}
 function importPackage() {
   openFilePicker(['application/json']).then(([file]) => {
     if (file.type !== 'application/json') return;
