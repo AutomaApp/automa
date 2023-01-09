@@ -5,13 +5,32 @@
     </h1>
     <div class="mt-8 flex items-start">
       <div class="w-60 mr-8 hidden lg:block">
-        <ui-button
-          class="w-full"
-          variant="accent"
-          @click="addState.show = true"
-        >
-          <p>{{ t('packages.new') }}</p>
-        </ui-button>
+        <div class="flex items-center">
+          <ui-button
+            class="w-full rounded-r-none border-r"
+            variant="accent"
+            @click="addState.show = true"
+          >
+            <p>{{ t('packages.new') }}</p>
+          </ui-button>
+          <hr />
+          <ui-popover>
+            <template #trigger>
+              <ui-button icon variant="accent" class="rounded-l-none">
+                <v-remixicon name="riArrowDropDownLine" />
+              </ui-button>
+            </template>
+            <ui-list>
+              <ui-list-item
+                v-close-popover
+                class="cursor-pointer"
+                @click="importPackage"
+              >
+                {{ t('packages.import') }}
+              </ui-list-item>
+            </ui-list>
+          </ui-popover>
+        </div>
         <ui-list class="text-gray-600 dark:text-gray-200 mt-4 space-y-1">
           <ui-list-item
             v-for="cat in categories"
@@ -103,6 +122,15 @@
                     <span>Open package page</span>
                   </ui-list-item>
                   <ui-list-item
+                    v-else
+                    v-close-popover
+                    class="cursor-pointer"
+                    @click="exportPackage(pkg)"
+                  >
+                    <v-remixicon name="riDownloadLine" class="mr-2 -ml-1" />
+                    <span>{{ t('common.export') }}</span>
+                  </ui-list-item>
+                  <ui-list-item
                     v-close-popover
                     class="cursor-pointer text-red-500 dark:text-red-400"
                     @click="deletePackage(pkg)"
@@ -172,8 +200,9 @@ import { reactive, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDialog } from '@/composable/dialog';
 import { usePackageStore } from '@/stores/package';
-import { arraySorter } from '@/utils/helper';
+import { arraySorter, openFilePicker, parseJSON } from '@/utils/helper';
 import dayjs from '@/lib/dayjs';
+import dataExporter from '@/utils/dataExporter';
 
 const { t } = useI18n();
 const dialog = useDialog();
@@ -222,6 +251,32 @@ const packages = computed(() => {
   });
 });
 
+function importPackage() {
+  openFilePicker(['application/json']).then(([file]) => {
+    if (file.type !== 'application/json') return;
+
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      const pkgJson = parseJSON(fileReader.result, null);
+      if (!pkgJson) return;
+      if (!pkgJson.name || !pkgJson.data) return;
+
+      packageStore.insert(pkgJson);
+    };
+    fileReader.readAsText(file);
+  });
+}
+function exportPackage(pkg) {
+  const copyPkg = JSON.parse(JSON.stringify(pkg));
+  delete copyPkg.id;
+
+  const blobUrl = dataExporter(
+    copyPkg,
+    { type: 'json', name: `${pkg.name}.automa-pkg` },
+    true
+  );
+  URL.revokeObjectURL(blobUrl);
+}
 function deletePackage({ id, name }) {
   dialog.confirm({
     title: 'Delete package',
