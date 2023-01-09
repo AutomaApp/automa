@@ -108,7 +108,7 @@
     "babel-loader": "^8.2.2",
     "clean-webpack-plugin": "4.0.0",
     "copy-webpack-plugin": "^11.0.0",
-    "core-js": "^3.26.0",
+    "core-js": "^3.27.1",
     "cross-env": "^7.0.3",
     "css-loader": "^6.7.3",
     "eslint": "^8.25.0",
