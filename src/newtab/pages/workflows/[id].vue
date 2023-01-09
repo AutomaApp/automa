@@ -641,30 +641,20 @@ const updateHostedWorkflow = throttle(async () => {
   }
 }, 5000);
 const onEdgesChange = debounce((changes) => {
-  // const edgeChanges = { added: [], removed: [] };
+  changes.forEach(({ type, item }) => {
+    if (
+      type === 'add' &&
+      item.sourceHandle.includes('output') &&
+      item.targetHandle.includes('output')
+    ) {
+      editor.value.removeEdges([item.id]);
 
-  changes.forEach(({ type }) => {
-    // if (type === 'remove') {
-    //   edgeChanges.removed.push(id);
-    // } else if (type === 'add') {
-    //   edgeChanges.added.push(item);
-    // }
+      return;
+    }
 
     if (state.dataChanged) return;
     state.dataChanged = type !== 'select';
   });
-
-  // if (state.isExecuteCommand) return;
-
-  // let command = null;
-
-  // if (edgeChanges.added.length > 0) {
-  //   command = editorCommands.edgeAdded(edgeChanges.added);
-  // } else if (edgeChanges.removed.length > 0) {
-  //   command = editorCommands.edgeRemoved(edgeChanges.removed);
-  // }
-
-  // if (command) commandManager.add(command);
 }, 250);
 
 function onTabChange(tabVal) {
@@ -1190,8 +1180,14 @@ function onEditorInit(instance) {
   instance.onConnectEnd(({ target }) => {
     if (!nodeToConnect) return;
 
+    if (target.hasAttribute('data-handleid')) {
+      const handleId = target.getAttribute('data-handleid');
+      if (handleId.includes('-output-')) return;
+    }
+
     const isNotTargetHandle = !target.closest('.vue-flow__handle.target');
     const targetNode = isNotTargetHandle && target.closest('.vue-flow__node');
+
     if (targetNode && targetNode.dataset.id !== nodeToConnect.nodeId) {
       const nodeId = targetNode.dataset.id;
       const nodeData = editor.value.getNode.value(nodeId);
