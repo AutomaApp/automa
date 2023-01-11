@@ -89,10 +89,15 @@ export async function executeWebhook({
   body,
   method,
 }) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => {
-    controller.abort();
-  }, timeout);
+  let timeoutId = null;
+  let controller = null;
+
+  if (timeout > 0) {
+    controller = new AbortController();
+    timeoutId = setTimeout(() => {
+      controller.abort();
+    }, timeout);
+  }
 
   try {
     const finalHeaders = filterHeaders(headers);
@@ -102,8 +107,8 @@ export async function executeWebhook({
     const payload = {
       headers: finalHeaders,
       method: method || 'POST',
-      signal: controller.signal,
     };
+    if (controller) payload.signal = controller.signal;
 
     if (!notHaveBody.includes(method || 'POST') && !isWhitespace(body)) {
       payload.body = await renderContent(body, contentType);
@@ -111,11 +116,12 @@ export async function executeWebhook({
 
     const response = await fetch(url, payload);
 
-    clearTimeout(timeoutId);
+    if (timeoutId) clearTimeout(timeoutId);
 
     return response;
   } catch (error) {
-    clearTimeout(timeoutId);
+    if (timeoutId) clearTimeout(timeoutId);
+
     throw error;
   }
 }

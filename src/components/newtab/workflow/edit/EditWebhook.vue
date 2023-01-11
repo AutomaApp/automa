@@ -45,7 +45,10 @@
     </ui-select>
     <ui-input
       :model-value="data.timeout"
-      :label="t('workflow.blocks.webhook.timeout.placeholder')"
+      :label="
+        t('workflow.blocks.webhook.timeout.placeholder') +
+        ` (${t('common.0disable')})`
+      "
       :title="t('workflow.blocks.webhook.timeout.title')"
       class="mb-2 w-full"
       type="number"
