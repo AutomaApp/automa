@@ -3,7 +3,7 @@
     <div class="flex items-center">
       <ui-select
         v-model="state.selectedBlock"
-        class="flex-1 mr-4"
+        class="flex-1 mr-4 p-0.5"
         placeholder="Select block"
         @change="onSelectChanged"
       >
