@@ -72,5 +72,6 @@
   ],
   "sandbox": {
     "pages": ["/sandbox.html"]
-  }
+  },
+  "content_security_policy": "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; object-src 'self'"
 }
