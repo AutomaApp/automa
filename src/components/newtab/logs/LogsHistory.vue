@@ -164,7 +164,7 @@
                 />
               </router-link>
               <router-link
-                v-if="getBlockPath(item.blockId)"
+                v-if="!isRunning && getBlockPath(item.blockId)"
                 v-show="currentLog.workflowId && item.blockId"
                 :to="getBlockPath(item.blockId)"
               >

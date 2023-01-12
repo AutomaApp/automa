@@ -64,19 +64,6 @@
             <p class="flex-1">
               {{ t(`workflow.blocks.${block.name}.name`) }}
             </p>
-            <router-link
-              v-if="getBlockPath(block.id)"
-              :to="getBlockPath(block.id)"
-              title="Go to block"
-              class="invisible group-hover:visible"
-            >
-              <v-remixicon
-                name="riExternalLinkLine"
-                size="20"
-                title="Go to block"
-                class="text-gray-300 cursor-pointer ml-2 invisible group-hover:visible"
-              />
-            </router-link>
           </div>
         </template>
       </logs-history>
@@ -118,16 +105,6 @@ const running = computed(() =>
 function stopWorkflow() {
   stopWorkflowExec(running.value.id);
   emit('close');
-}
-function getBlockPath(blockId) {
-  const { workflowId, teamId } = running.value;
-  let path = `/workflows/${workflowId}`;
-
-  if (workflowId.startsWith('team') && !teamId) return null;
-
-  path = `/teams/${teamId}/workflows/${workflowId}`;
-
-  return `${path}?blockId=${blockId}`;
 }
 
 watch(
