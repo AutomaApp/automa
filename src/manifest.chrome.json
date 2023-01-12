@@ -59,7 +59,6 @@
     "alarms",
     "storage",
     "debugger",
-    "scripting",
     "<all_urls>",
     "webNavigation",
     "unlimitedStorage"
