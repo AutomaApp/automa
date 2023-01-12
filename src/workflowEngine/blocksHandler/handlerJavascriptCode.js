@@ -1,7 +1,7 @@
 import { customAlphabet } from 'nanoid/non-secure';
 import browser from 'webextension-polyfill';
 import cloneDeep from 'lodash.clonedeep';
-import { parseJSON } from '@/utils/helper';
+import { parseJSON, isObject } from '@/utils/helper';
 import {
   jsContentHandler,
   automaFetchClient,
@@ -105,7 +105,7 @@ async function executeInWebpage(args, target, worker) {
 }
 
 export async function javascriptCode({ outputs, data, ...block }, { refData }) {
-  const nextBlockId = this.getBlockConnections(block.id);
+  let nextBlockId = this.getBlockConnections(block.id);
 
   if (data.everyNewTab) {
     const isScriptExist = this.preloadScripts.some(({ id }) => id === block.id);
@@ -195,7 +195,25 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
       });
     }
 
-    if (result.columns.insert && result.columns.data) {
+    let insert = true;
+    if (isObject(result.columns.insert)) {
+      const { insert: insertData, nextBlockId: inputNextBlockId } =
+        result.columns.insert;
+
+      insert = Boolean(insertData);
+
+      if (inputNextBlockId) {
+        const customNextBlockId = this.getBlockConnections(inputNextBlockId);
+        if (!customNextBlockId)
+          throw new Error(`Can't find block with "${inputNextBlockId}" id`);
+
+        nextBlockId = customNextBlockId;
+      }
+    } else {
+      insert = result.columns.insert;
+    }
+
+    if (insert && result.columns.data) {
       const params = Array.isArray(result.columns.data)
         ? result.columns.data
         : [result.columns.data];

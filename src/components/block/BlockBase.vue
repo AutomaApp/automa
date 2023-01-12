@@ -4,6 +4,15 @@
       class="top-0 w-full absolute block-menu-container hidden"
       style="transform: translateY(-100%)"
     >
+      <div>
+        <p
+          title="Block id (click to copy)"
+          class="dark:text-gray-300 px-1 inline-block block-menu"
+          @click="insertToClipboard"
+        >
+          {{ isCopied ? '✅ Copied' : blockId }}
+        </p>
+      </div>
       <div class="inline-flex items-center dark:text-gray-300 block-menu">
         <button
           v-if="!blockData.details?.disableDelete"
@@ -61,7 +70,7 @@
   </div>
 </template>
 <script setup>
-import { inject } from 'vue';
+import { inject, ref } from 'vue';
 import { excludeGroupBlocks } from '@/utils/shared';
 
 const props = defineProps({
@@ -84,8 +93,17 @@ const props = defineProps({
 });
 defineEmits(['delete', 'edit', 'update', 'settings']);
 
+const isCopied = ref(false);
 const workflowUtils = inject('workflow-utils', null);
 
+function insertToClipboard() {
+  navigator.clipboard.writeText(props.blockId);
+
+  isCopied.value = true;
+  setTimeout(() => {
+    isCopied.value = false;
+  }, 1000);
+}
 function handleStartDrag(event) {
   const payload = {
     data: props.data,
