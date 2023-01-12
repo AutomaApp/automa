@@ -1,4 +1,8 @@
 import Sizzle from 'sizzle';
+import {
+  querySelectorAllDeep,
+  querySelectorDeep,
+} from 'query-selector-shadow-dom';
 
 const specialSelectors = [':contains', ':header', ':parent'];
 const specialSelectorsRegex = new RegExp(specialSelectors.join('|'));
@@ -14,6 +18,14 @@ class FindElement {
       if (!elements) return null;
 
       return data.multiple ? elements : elements[0];
+    }
+
+    if (selector.includes('>>')) {
+      const newSelector = selector.replaceAll('>>', '');
+
+      return data.multiple
+        ? querySelectorAllDeep(newSelector)
+        : querySelectorDeep(newSelector);
     }
 
     if (data.multiple) {
