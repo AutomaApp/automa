@@ -104,6 +104,45 @@
         @toggle-pin="togglePinWorkflow(workflow)"
       />
     </div>
+    <div
+      :class="{ 'p-2 rounded-lg bg-white': pinnedWorkflows.length === 0 }"
+      class="flex items-center"
+    >
+      <ui-select v-model="state.activeFolder" class="flex-1">
+        <option value="">Folder (all)</option>
+        <option
+          v-for="folder in folderStore.items"
+          :key="folder.id"
+          :value="folder.id"
+        >
+          {{ folder.name }}
+        </option>
+      </ui-select>
+      <ui-popover class="ml-2">
+        <template #trigger>
+          <ui-button>
+            <v-remixicon name="riSortDesc" class="mr-2 -ml-1" />
+            <span>Sort</span>
+          </ui-button>
+        </template>
+        <div class="w-48">
+          <ui-select v-model="sortState.order" block placeholder="Sort order">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </ui-select>
+          <ui-select
+            v-model="sortState.by"
+            :placeholder="t('sort.sortBy')"
+            block
+            class="flex-1 mt-2"
+          >
+            <option v-for="sort in sorts" :key="sort" :value="sort">
+              {{ t(`sort.${sort}`) }}
+            </option>
+          </ui-select>
+        </div>
+      </ui-popover>
+    </div>
     <home-workflow-card
       v-for="workflow in workflows"
       :key="workflow.id"
@@ -142,17 +181,18 @@
   </div>
 </template>
 <script setup>
-import { computed, onMounted, shallowReactive } from 'vue';
+import { computed, onMounted, shallowReactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import browser from 'webextension-polyfill';
 import { useUserStore } from '@/stores/user';
+import { useFolderStore } from '@/stores/folder';
 import { useDialog } from '@/composable/dialog';
 import { sendMessage } from '@/utils/message';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
-import { parseJSON } from '@/utils/helper';
+import { parseJSON, arraySorter } from '@/utils/helper';
 import { initElementSelector as initElementSelectorFunc } from '@/newtab/utils/elementSelector';
 import automa from '@business';
 import HomeWorkflowCard from '@/components/popup/home/HomeWorkflowCard.vue';
@@ -164,12 +204,21 @@ const isMV2 = browser.runtime.getManifest().manifest_version === 2;
 const { t } = useI18n();
 const dialog = useDialog();
 const userStore = useUserStore();
+const folderStore = useFolderStore();
 const workflowStore = useWorkflowStore();
 const teamWorkflowStore = useTeamWorkflowStore();
 const hostedWorkflowStore = useHostedWorkflowStore();
 
 useGroupTooltip();
 
+const sorts = ['name', 'createdAt', 'mostUsed'];
+const savedSorts =
+  parseJSON(localStorage.getItem('popup-workflow-sort'), {}) || {};
+
+const sortState = shallowReactive({
+  by: savedSorts.sortBy || 'createdAt',
+  order: savedSorts.sortOrder || 'desc',
+});
 const state = shallowReactive({
   query: '',
   teams: [],
@@ -178,6 +227,7 @@ const state = shallowReactive({
   haveAccess: true,
   activeTab: 'local',
   pinnedWorkflows: [],
+  activeFolder: savedSorts.activeFolder,
   showSettingsPopup: isMV2
     ? false
     : parseJSON(localStorage.getItem('settingsPopup'), true) ?? true,
@@ -212,11 +262,23 @@ const hostedWorkflows = computed(() => {
 const localWorkflows = computed(() => {
   if (state.activeTab !== 'local') return [];
 
-  return workflowStore.getWorkflows
-    .filter(({ name }) =>
-      name.toLocaleLowerCase().includes(state.query.toLocaleLowerCase())
-    )
-    .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
+  const filteredLocalWorkflows = workflowStore.getWorkflows.filter(
+    ({ name, folderId }) => {
+      const isInFoloder =
+        !state.activeFolder || state.activeFolder === folderId;
+      const nameMatch = name
+        .toLocaleLowerCase()
+        .includes(state.query.toLocaleLowerCase());
+
+      return isInFoloder && nameMatch;
+    }
+  );
+
+  return arraySorter({
+    key: sortState.by,
+    order: sortState.order,
+    data: filteredLocalWorkflows,
+  });
 });
 const workflows = computed(() =>
   state.activeTab === 'local' ? localWorkflows.value : hostedWorkflows.value
@@ -331,6 +393,16 @@ function onTabChange(value) {
   localStorage.setItem('popup-tab', value);
 }
 
+watch(
+  () => [sortState.by, sortState.order, state.activeFolder],
+  ([sortBy, sortOrder, activeFolder]) => {
+    localStorage.setItem(
+      'popup-workflow-sort',
+      JSON.stringify({ sortOrder, sortBy, activeFolder })
+    );
+  }
+);
+
 onMounted(async () => {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   state.haveAccess = /^(https?)/.test(tab.url);
@@ -338,6 +410,7 @@ onMounted(async () => {
   const storage = await browser.storage.local.get('pinnedWorkflows');
   state.pinnedWorkflows = storage.pinnedWorkflows || [];
 
+  await folderStore.load();
   await userStore.loadUser({ storage: localStorage, ttl: 1000 * 60 * 5 });
   await teamWorkflowStore.loadData();
 
@@ -351,6 +424,13 @@ onMounted(async () => {
 
   state.retrieved = true;
   state.activeTab = activeTab;
+
+  if (state.activeFolder) {
+    const folderExist = folderStore.items.some(
+      (folder) => folder.id === state.activeFolder
+    );
+    if (!folderExist) state.activeFolder = '';
+  }
 });
 </script>
 <style>
