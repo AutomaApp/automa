@@ -128,6 +128,7 @@
     </ui-button>
     <div class="flex-grow" />
     <ui-checkbox
+      v-if="!hidePreferTab"
       :model-value="preferTab"
       @change="$emit('update:preferTab', $event)"
     >
@@ -151,6 +152,7 @@ const props = defineProps({
     default: () => [],
   },
   preferTab: Boolean,
+  hidePreferTab: Boolean,
 });
 const emit = defineEmits(['update', 'update:preferTab']);
 
