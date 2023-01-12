@@ -47,6 +47,12 @@
             {{ item.description }}
           </p>
         </div>
+        <span
+          title="Block id"
+          class="text-xs w-16 text-overflow text-gray-600 dark:text-gray-300 bg-box-transparent p-1 rounded-md"
+        >
+          {{ item.id }}
+        </span>
       </template>
     </ui-autocomplete>
   </div>
@@ -90,12 +96,10 @@ const shortcut = useShortcut('editor:search-blocks', () => {
 });
 
 function searchNodes({ item, text }) {
-  const query = text.toLocaleLowerCase();
+  const isMatch = (str) =>
+    str.toLocaleLowerCase().includes(text.toLocaleLowerCase());
 
-  return (
-    item.name.toLocaleLowerCase().includes(query) ||
-    item.description.toLocaleLowerCase().includes(query)
-  );
+  return isMatch(item.id) || isMatch(item.name) || isMatch(item.description);
 }
 function toggleActiveSearch() {
   state.active = !state.active;
