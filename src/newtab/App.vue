@@ -337,6 +337,11 @@ watch(
       },
     };
 
+    const { workflowStates } = await browser.storage.local.get(
+      'workflowStates'
+    );
+    workflowStore.states = Object.values(workflowStates || {});
+
     const tabs = await browser.tabs.query({
       url: browser.runtime.getURL('/newtab.html'),
     });
