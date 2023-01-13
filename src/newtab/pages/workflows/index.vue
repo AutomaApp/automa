@@ -156,7 +156,7 @@
             />
             <ui-popover>
               <template #trigger>
-                <ui-button variant="accent" class="ml-4 md:hidden">
+                <ui-button variant="accent" class="ml-4 lg:hidden">
                   <v-remixicon name="riAddLine" class="mr-2 -ml-1" />
                   <span>{{ t('common.workflow') }}</span>
                 </ui-button>
@@ -230,6 +230,21 @@
                 </option>
               </ui-select>
             </div>
+            <ui-select
+              v-model="state.activeTab"
+              class="ml-4 lg:hidden"
+              :placeholder="t('common.workflow', 2)"
+            >
+              <option value="local">
+                {{ t('workflow.type.local') }}
+              </option>
+              <option v-if="userStore.user" value="shared">
+                {{ t('workflow.type.shared') }}
+              </option>
+              <option v-if="hostedWorkflows?.length > 0" value="host">
+                {{ t('workflow.type.host') }}
+              </option>
+            </ui-select>
           </div>
         </div>
         <ui-tab-panels v-model="state.activeTab" class="mt-6 flex-1">

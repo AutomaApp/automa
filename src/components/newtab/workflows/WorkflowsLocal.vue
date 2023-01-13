@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="workflowStore.getWorkflows.length === 0"
-    class="flex items-center py-12"
+    class="md:flex items-center md:text-left text-center py-12"
   >
     <img src="@/assets/svg/alien.svg" class="w-96" />
     <div class="ml-4">

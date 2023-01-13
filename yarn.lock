@@ -1791,10 +1791,10 @@
     d3-selection "^3.0.0"
     d3-zoom "^3.0.0"
 
-"@vue-flow/core@^1.12.0":
-  version "1.12.0"
-  resolved "https://registry.yarnpkg.com/@vue-flow/core/-/core-1.12.0.tgz#14a6c01eb376178fc7b6afaef7c6bfffc48d1880"
-  integrity sha512-kxfQNd/Vx9H3kMG+lBbJzwhXX4CVkfBwb7sdi5Bk64bRilLfzZIo90f842yohhLuKx3I7VQ7Xx2aO+9iUETUjQ==
+"@vue-flow/core@^1.12.1":
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/@vue-flow/core/-/core-1.12.1.tgz#f0c6ad4278a7be07e13b924ccb8942339ddaf582"
+  integrity sha512-1Rl3CQ6JS5Wz+s4qhx7KwY4q4JCoJlry92JSwKP1d+YNRll3vncSeBhdk/BjoMxlvLWKXDh/2nJDrc0t4zRqPQ==
   dependencies:
     "@vueuse/core" "^9.6.0"
     d3-drag "^3.0.0"
