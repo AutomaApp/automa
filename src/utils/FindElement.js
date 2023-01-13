@@ -2,7 +2,7 @@ import Sizzle from 'sizzle';
 import {
   querySelectorAllDeep,
   querySelectorDeep,
-} from 'query-selector-shadow-dom';
+} from '@/lib/query-selector-shadow-dom';
 
 const specialSelectors = [':contains', ':header', ':parent'];
 const specialSelectorsRegex = new RegExp(specialSelectors.join('|'));
