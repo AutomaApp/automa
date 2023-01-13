@@ -23,7 +23,7 @@
           :label="
             t('workflow.blocks.trigger.element-change.subtree.description')
           "
-          class="w-full block"
+          class="block w-full"
           placeholder="id,label,class"
           @change="onAttrFilterChange"
         >

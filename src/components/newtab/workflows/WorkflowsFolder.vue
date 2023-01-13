@@ -1,9 +1,9 @@
 <template>
-  <div class="mt-6 pt-4 border-t">
+  <div class="mt-6 border-t pt-4">
     <div class="flex items-center text-gray-600 dark:text-gray-300">
       <span class="flex-1"> Folders </span>
       <button
-        class="dark:hover:text-gray-100 hover:text-black rounded-md transition"
+        class="rounded-md transition hover:text-black dark:hover:text-gray-100"
         @click="newFolder"
       >
         <v-remixicon
@@ -25,28 +25,28 @@
         @click="$emit('update:modelValue', '')"
       >
         <v-remixicon name="riFolderLine" class="mr-2" />
-        <p class="flex-1 text-overflow">All</p>
+        <p class="text-overflow flex-1">All</p>
       </ui-list-item>
       <ui-list-item
         v-for="folder in folders"
         :key="folder.id"
         :active="folder.id === modelValue"
         small
-        class="group overflow-hidden cursor-pointer"
+        class="group cursor-pointer overflow-hidden"
         @dragover="onDragover($event, true)"
         @dragleave="onDragover($event, false)"
         @drop="onWorkflowsDrop($event, folder.id)"
         @click="$emit('update:modelValue', folder.id)"
       >
         <v-remixicon name="riFolderLine" class="mr-2" />
-        <p class="flex-1 text-overflow">
+        <p class="text-overflow flex-1">
           {{ folder.name }}
         </p>
         <ui-popover class="leading-none">
           <template #trigger>
             <v-remixicon
               name="riMoreLine"
-              class="group-hover:visible cursor-pointer invisible"
+              class="invisible cursor-pointer group-hover:visible"
             />
           </template>
           <ui-list class="w-36 space-y-1">

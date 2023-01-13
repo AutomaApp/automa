@@ -22,7 +22,7 @@
     </edit-autocomplete>
     <ui-checkbox
       :model-value="data.updatePrevTab"
-      class="leading-tight mt-2"
+      class="mt-2 leading-tight"
       :title="t('workflow.blocks.new-tab.updatePrevTab.title')"
       @change="updateData({ updatePrevTab: $event })"
     >
@@ -30,7 +30,7 @@
     </ui-checkbox>
     <ui-checkbox
       :model-value="data.waitTabLoaded"
-      class="leading-tight mt-2"
+      class="mt-2 leading-tight"
       :title="t('workflow.blocks.new-tab.waitTabLoaded')"
       @change="updateData({ waitTabLoaded: $event })"
     >

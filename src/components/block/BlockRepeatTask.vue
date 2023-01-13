@@ -10,16 +10,16 @@
     @settings="$emit('settings', $event)"
   >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
-    <div class="flex items-center mb-2">
+    <div class="mb-2 flex items-center">
       <div
         :class="data.disableBlock ? 'bg-box-transparent' : block.category.color"
-        class="inline-block text-sm mr-4 p-2 rounded-lg dark:text-black"
+        class="mr-4 inline-block rounded-lg p-2 text-sm dark:text-black"
       >
-        <v-remixicon name="riRepeat2Line" size="20" class="inline-block mr-1" />
+        <v-remixicon name="riRepeat2Line" size="20" class="mr-1 inline-block" />
         <span>{{ t('workflow.blocks.repeat-task.name') }}</span>
       </div>
     </div>
-    <div class="flex bg-input rounded-lg items-center relative">
+    <div class="bg-input relative flex items-center rounded-lg">
       <input
         :value="data.repeatFor"
         placeholder="0"
@@ -28,7 +28,7 @@
         @keydown.stop
         @input="handleInput"
       />
-      <span class="text-gray-600 dark:text-gray-200 absolute right-4">
+      <span class="absolute right-4 text-gray-600 dark:text-gray-200">
         {{ t('workflow.blocks.repeat-task.times') }}
       </span>
     </div>

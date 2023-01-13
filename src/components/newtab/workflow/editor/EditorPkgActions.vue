@@ -1,7 +1,7 @@
 <template>
   <ui-card
     v-if="userStore.user"
-    class="pointer-events-auto space-x-1 mr-2"
+    class="pointer-events-auto mr-2 space-x-1"
     padding="p-1"
   >
     <ui-popover>
@@ -37,7 +37,7 @@
             readonly
             title="URL"
             type="url"
-            class="w-full mt-2"
+            class="mt-2 w-full"
             @click="$event.target.select()"
           />
         </transition-expand>
@@ -54,7 +54,7 @@
       <ui-list class="space-y-1" style="min-width: 9rem">
         <ui-list-item
           v-close-popover
-          class="text-red-400 dark:text-red-500 cursor-pointer"
+          class="cursor-pointer text-red-400 dark:text-red-500"
           @click="deletePackage"
         >
           <v-remixicon name="riDeleteBin7Line" class="mr-2 -ml-1" />
@@ -72,16 +72,16 @@
     >
       <span
         v-if="isDataChanged"
-        class="flex h-3 w-3 absolute top-0 left-0 -ml-1 -mt-1"
+        class="absolute top-0 left-0 -ml-1 -mt-1 flex h-3 w-3"
       >
         <span
-          class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"
+          class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"
         ></span>
         <span
-          class="relative inline-flex rounded-full h-3 w-3 bg-blue-600"
+          class="relative inline-flex h-3 w-3 rounded-full bg-blue-600"
         ></span>
       </span>
-      <v-remixicon name="riSaveLine" class="mr-2 -ml-1 my-1" />
+      <v-remixicon name="riSaveLine" class="my-1 mr-2 -ml-1" />
       {{ $t('common.save') }}
     </ui-button>
     <ui-button

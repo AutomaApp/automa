@@ -3,13 +3,13 @@
     <div
       ref="targetEl"
       :class="triggerClass"
-      class="ui-popover__trigger h-full inline-block"
+      class="ui-popover__trigger inline-block h-full"
     >
       <slot name="trigger" v-bind="{ isShow }"></slot>
     </div>
     <div
       ref="content"
-      class="ui-popover__content bg-white dark:bg-gray-800 rounded-lg shadow-xl border dark:border-gray-700"
+      class="ui-popover__content rounded-lg border bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800"
       :class="[padding]"
     >
       <slot v-bind="{ isShow }"></slot>

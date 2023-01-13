@@ -7,10 +7,10 @@
     <template v-if="hasFileAccess || browserType === 'firefox'">
       <div
         v-if="browserType === 'firefox'"
-        class="mt-4 p-2 rounded-lg bg-primary mt-4 flex text-white items-start"
+        class="mt-4 flex items-start rounded-lg bg-primary p-2 text-white"
       >
         <v-remixicon name="riErrorWarningLine" size="20" />
-        <div class="ml-2 flex-1 leading-tight text-sm">
+        <div class="ml-2 flex-1 text-sm leading-tight">
           <p>{{ t('workflow.blocks.upload-file.onlyURL') }}</p>
         </div>
       </div>
@@ -18,7 +18,7 @@
         <div
           v-for="(path, index) in filePaths"
           :key="index"
-          class="flex items-center group"
+          class="group flex items-center"
         >
           <edit-autocomplete class="mr-2">
             <ui-input
@@ -41,7 +41,7 @@
     </template>
     <template v-else>
       <div
-        class="mt-4 p-2 rounded-lg bg-red-200 dark:bg-red-400 flex items-start"
+        class="mt-4 flex items-start rounded-lg bg-red-200 p-2 dark:bg-red-400"
       >
         <v-remixicon name="riErrorWarningLine" />
         <div class="ml-2 flex-1 leading-tight">
@@ -52,7 +52,7 @@
         href="https://docs.automa.site/blocks/upload-file.html#requirements"
         target="_blank"
         rel="noopener"
-        class="leading-tight inline-block text-primary mt-2"
+        class="mt-2 inline-block leading-tight text-primary"
       >
         {{ t('workflow.blocks.upload-file.requirement') }}
       </a>

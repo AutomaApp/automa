@@ -1,7 +1,7 @@
 <template>
   <div>
     <form
-      class="mb-4 flex items-center w-full"
+      class="mb-4 flex w-full items-center"
       @submit.prevent="protectWorkflow"
     >
       <ui-input
@@ -10,7 +10,7 @@
         :type="state.showPassword ? 'text' : 'password'"
         input-class="pr-10"
         autofocus
-        class="flex-1 mr-6"
+        class="mr-6 flex-1"
       >
         <template #append>
           <v-remixicon

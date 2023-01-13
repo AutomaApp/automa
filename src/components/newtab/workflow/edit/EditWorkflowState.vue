@@ -9,7 +9,7 @@
     <ui-select
       :model-value="data.type"
       label="Action"
-      class="w-full mt-4"
+      class="mt-4 w-full"
       @change="updateData({ type: $event })"
     >
       <optgroup v-for="action in actions" :key="action.id" :label="action.name">
@@ -32,17 +32,17 @@
     </ui-checkbox>
     <div
       v-if="data.type === 'stop-specific'"
-      class="rounded-lg bg-input focus-within:bg-box-transparent-2 transition mt-4"
+      class="bg-input focus-within:bg-box-transparent-2 mt-4 rounded-lg transition"
     >
       <div
         v-if="data.workflowsToStop.length > 0"
-        class="px-4 py-2 overflow-auto scroll"
+        class="scroll overflow-auto px-4 py-2"
         style="max-height: 114px"
       >
         <div
           v-for="item in data.workflowsToStop"
           :key="item"
-          class="inline-flex mb-1 mr-1 items-center p-1 bg-box-transparent rounded-md text-sm"
+          class="bg-box-transparent mb-1 mr-1 inline-flex items-center rounded-md p-1 text-sm"
         >
           <span class="flex-1">
             {{ selectedWorkflows[item] }}
@@ -67,7 +67,7 @@
           v-model="query"
           type="text"
           placeholder="Select a workflow"
-          class="w-full py-2 px-4 bg-transparent rounded-lg"
+          class="w-full rounded-lg bg-transparent py-2 px-4"
         />
       </ui-autocomplete>
     </div>

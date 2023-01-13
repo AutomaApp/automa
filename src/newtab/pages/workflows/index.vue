@@ -3,13 +3,13 @@
     <h1 class="text-2xl font-semibold capitalize">
       {{ t('common.workflow', 2) }}
     </h1>
-    <div class="flex items-start mt-8">
-      <div class="w-60 sticky top-8 hidden lg:block">
+    <div class="mt-8 flex items-start">
+      <div class="sticky top-8 hidden w-60 lg:block">
         <div class="flex w-full">
           <ui-button
             :title="shortcut['action:new'].readable"
             variant="accent"
-            class="border-r rounded-r-none flex-1 font-semibold"
+            class="flex-1 rounded-r-none border-r font-semibold"
             @click="addWorkflowModal.show = true"
           >
             {{ t('workflow.new') }}
@@ -63,7 +63,7 @@
           >
             <template #header>
               <v-remixicon name="riTeamLine" />
-              <span class="ml-4 capitalize flex-1 text-left">
+              <span class="ml-4 flex-1 text-left capitalize">
                 Team Workflows
               </span>
             </template>
@@ -74,7 +74,7 @@
                 :active="state.teamId === team.id || +state.teamId === team.id"
                 :title="team.name"
                 color="bg-box-transparent font-semibold"
-                class="pl-14 cursor-pointer"
+                class="cursor-pointer pl-14"
                 @click="updateActiveTab({ activeTab: 'team', teamId: team.id })"
               >
                 <span class="text-overflow">
@@ -90,11 +90,11 @@
           >
             <template #header>
               <v-remixicon name="riFlowChart" />
-              <span class="ml-4 capitalize flex-1 text-left">
+              <span class="ml-4 flex-1 text-left capitalize">
                 {{ t('workflow.my') }}
               </span>
             </template>
-            <ui-list class="space-y-1 mt-1">
+            <ui-list class="mt-1 space-y-1">
               <ui-list-item
                 tag="button"
                 :active="state.activeTab === 'local'"
@@ -139,12 +139,12 @@
         />
       </div>
       <div
-        class="flex-1 workflows-list lg:ml-8"
+        class="workflows-list flex-1 lg:ml-8"
         style="min-height: calc(100vh - 8rem)"
         @dblclick="clearSelectedWorkflows"
       >
-        <div class="flex items-center flex-wrap">
-          <div class="flex items-center w-full md:w-auto">
+        <div class="flex flex-wrap items-center">
+          <div class="flex w-full items-center md:w-auto">
             <ui-input
               id="search-input"
               v-model="state.query"
@@ -156,7 +156,7 @@
             />
             <ui-popover>
               <template #trigger>
-                <ui-button variant="accent" class="md:hidden ml-4">
+                <ui-button variant="accent" class="ml-4 md:hidden">
                   <v-remixicon name="riAddLine" class="mr-2 -ml-1" />
                   <span>{{ t('common.workflow') }}</span>
                 </ui-button>
@@ -193,8 +193,8 @@
               </ui-list>
             </ui-popover>
           </div>
-          <div class="flex-grow"></div>
-          <div class="w-full md:w-auto flex items-center mt-4 md:mt-0">
+          <div class="grow"></div>
+          <div class="mt-4 flex w-full items-center md:mt-0 md:w-auto">
             <span
               v-tooltip:bottom.group="t('workflow.backupCloud')"
               class="mr-4"
@@ -208,10 +208,10 @@
                 <v-remixicon name="riUploadCloud2Line" />
               </ui-button>
             </span>
-            <div class="flex items-center workflow-sort flex-1">
+            <div class="workflow-sort flex flex-1 items-center">
               <ui-button
                 icon
-                class="rounded-r-none border-gray-300 dark:border-gray-700 border-r"
+                class="rounded-r-none border-r border-gray-300 dark:border-gray-700"
                 @click="
                   state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc'
                 "
@@ -232,7 +232,7 @@
             </div>
           </div>
         </div>
-        <ui-tab-panels v-model="state.activeTab" class="flex-1 mt-6">
+        <ui-tab-panels v-model="state.activeTab" class="mt-6 flex-1">
           <ui-tab-panel value="team" cache>
             <workflows-user-team
               :active="state.activeTab === 'team'"
@@ -264,7 +264,7 @@
         </ui-tab-panels>
         <ui-card
           v-if="workflowStore.isFirstTime"
-          class="mt-8 first-card relative dark:text-gray-200"
+          class="first-card relative mt-8 dark:text-gray-200"
         >
           <v-remixicon
             name="riCloseLine"
@@ -272,7 +272,7 @@
             @click="workflowStore.isFirstTime = false"
           />
           <p>Create your first workflow by recording your actions:</p>
-          <ol class="list-decimal list-inside">
+          <ol class="list-inside list-decimal">
             <li>Open your browser and go to your destination URL</li>
             <li>
               Click the "Record workflow" button, and do your simple repetitive
@@ -307,7 +307,7 @@
         v-model="addWorkflowModal.name"
         :placeholder="t('common.name')"
         autofocus
-        class="w-full mb-4"
+        class="mb-4 w-full"
         @keyup.enter="
           addWorkflowModal.type === 'manual'
             ? addWorkflow()
@@ -324,7 +324,7 @@
       <p class="mb-6 text-right text-gray-600 dark:text-gray-200">
         {{ addWorkflowModal.description.length }}/300
       </p>
-      <div class="space-x-2 flex">
+      <div class="flex space-x-2">
         <ui-button class="w-full" @click="clearAddWorkflowModal">
           {{ t('common.cancel') }}
         </ui-button>

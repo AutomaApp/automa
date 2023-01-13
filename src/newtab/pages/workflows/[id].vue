@@ -7,7 +7,7 @@
           ? 'absolute h-full w-full md:relative z-50'
           : 'hidden md:flex'
       "
-      class="w-80 bg-white dark:bg-gray-800 py-6 border-l border-gray-100 dark:border-gray-700 dark:border-opacity-50 flex-col"
+      class="w-80 flex-col border-l border-gray-100 bg-white py-6 dark:border-gray-700 dark:border-opacity-50 dark:bg-gray-800"
     >
       <workflow-edit-block
         v-if="editState.editing"
@@ -23,9 +23,9 @@
         @update="updateWorkflow"
       />
     </div>
-    <div class="flex-1 relative overflow-auto">
+    <div class="relative flex-1 overflow-auto">
       <div
-        class="absolute w-full flex items-center z-10 left-0 p-4 top-0 pointer-events-none"
+        class="pointer-events-none absolute left-0 top-0 z-10 flex w-full items-center p-4"
       >
         <ui-card
           v-if="!haveEditAccess"
@@ -37,20 +37,20 @@
             <ui-img
               v-if="workflow.icon.startsWith('http')"
               :src="workflow.icon"
-              class="w-8 h-8"
+              class="h-8 w-8"
             />
             <v-remixicon v-else :name="workflow.icon" size="26" />
           </span>
           <div class="ml-2 max-w-sm">
             <p
               :class="{ 'text-lg': !workflow.description }"
-              class="font-semibold leading-tight text-overflow"
+              class="text-overflow font-semibold leading-tight"
             >
               {{ workflow.name }}
             </p>
             <p
               :class="{ 'text-sm': workflow.description }"
-              class="text-gray-600 leading-tight dark:text-gray-200 text-overflow"
+              class="text-overflow leading-tight text-gray-600 dark:text-gray-200"
             >
               {{ workflow.description }}
             </p>
@@ -58,7 +58,7 @@
         </ui-card>
         <ui-tabs
           :model-value="isPackage ? state.activeTab : 'editor'"
-          class="border-none px-2 rounded-lg h-full space-x-1 bg-white dark:bg-gray-800 pointer-events-auto"
+          class="pointer-events-auto h-full space-x-1 rounded-lg border-none bg-white px-2 dark:bg-gray-800"
           @change="onTabChange"
         >
           <button
@@ -86,7 +86,7 @@
             {{ t('common.log', 2) }}
             <span
               v-if="workflowStates.length > 0"
-              class="ml-2 p-1 text-center inline-block text-xs rounded-full bg-accent text-white dark:text-black"
+              class="ml-2 inline-block rounded-full bg-accent p-1 text-center text-xs text-white dark:text-black"
               style="min-width: 25px"
             >
               {{ workflowStates.length }}
@@ -102,7 +102,7 @@
             @click="$event.target.select()"
           />
         </ui-card>
-        <div class="flex-grow pointer-events-none" />
+        <div class="pointer-events-none grow" />
         <editor-used-credentials v-if="editor" :editor="editor" />
         <template v-if="isPackage">
           <ui-button
@@ -143,10 +143,10 @@
         @dragover.prevent="onDragoverEditor"
       >
         <template v-if="isPackage">
-          <ui-tab-panel value="package-details" class="pt-24 container">
+          <ui-tab-panel value="package-details" class="container pt-24">
             <package-details :data="workflow" @update="updateWorkflow" />
           </ui-tab-panel>
-          <ui-tab-panel value="package-settings" class="pt-24 container">
+          <ui-tab-panel value="package-settings" class="container pt-24">
             <package-settings
               :data="workflow"
               :editor="editor"
@@ -162,7 +162,7 @@
             :data="editorData"
             :disabled="isTeamWorkflow && !haveEditAccess"
             :class="{ 'animate-blocks': state.animateBlocks }"
-            class="h-screen focus:outline-none workflow-editor"
+            class="workflow-editor h-screen focus:outline-none"
             tabindex="0"
             @init="onEditorInit"
             @edit="initEditBlock"
@@ -181,7 +181,7 @@
                     `${t('workflow.undo')} (${getReadableShortcut('mod+z')})`
                   "
                   :disabled="!commandManager.state.value.canUndo"
-                  class="p-2 rounded-lg transition-colors"
+                  class="rounded-lg p-2 transition-colors"
                   @click="executeCommand('undo')"
                 >
                   <v-remixicon name="riArrowGoBackLine" />
@@ -193,7 +193,7 @@
                     )})`
                   "
                   :disabled="!commandManager.state.value.canRedo"
-                  class="p-2 rounded-lg transition-colors"
+                  class="rounded-lg p-2 transition-colors"
                   @click="executeCommand('redo')"
                 >
                   <v-remixicon name="riArrowGoForwardLine" />

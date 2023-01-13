@@ -12,13 +12,13 @@
         :label="t('workflow.blocks.handle-download.timeout')"
         placeholder="1000"
         type="number"
-        class="w-full mt-2"
+        class="mt-2 w-full"
         @change="updateData({ timeout: +$event || 1000 })"
       />
       <ui-input
         :model-value="data.downloadId"
         :label="t('workflow.blocks.handle-download.downloadId')"
-        class="w-full mt-2"
+        class="mt-2 w-full"
         placeholder="0"
         @change="updateData({ downloadId: $event })"
       />
@@ -50,7 +50,7 @@
       </ui-checkbox>
       <template v-if="data.waitForDownload">
         <hr class="my-4 w-full" />
-        <p class="text-sm dark:text-gray-300 text-gray-600">
+        <p class="text-sm text-gray-600 dark:text-gray-300">
           {{ t('workflow.blocks.handle-download.filePath') }}
         </p>
         <insert-workflow-data :data="data" variables @update="updateData" />

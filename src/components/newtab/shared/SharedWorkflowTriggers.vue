@@ -1,12 +1,12 @@
 <template>
   <div
-    class="overflow-auto scroll"
+    class="scroll overflow-auto"
     style="min-height: 350px; max-height: calc(100vh - 14rem)"
   >
     <ui-expand
       v-for="(trigger, index) in triggersList"
       :key="index"
-      class="border rounded-lg mb-2 trigger-item"
+      class="trigger-item mb-2 rounded-lg border"
     >
       <template #header>
         <p class="flex-1">

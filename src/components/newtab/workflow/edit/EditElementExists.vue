@@ -9,7 +9,7 @@
     <ui-select
       :model-value="data.findBy || 'cssSelector'"
       :placeholder="t('workflow.blocks.base.findElement.placeholder')"
-      class="w-full mb-1 mt-4"
+      class="mb-1 mt-4 w-full"
       @change="updateData({ findBy: $event })"
     >
       <option v-for="type in selectorTypes" :key="type" :value="type">
@@ -30,7 +30,7 @@
       :model-value="data.tryCount"
       :title="t('workflow.blocks.element-exists.tryFor.title')"
       :label="t('workflow.blocks.element-exists.tryFor.label')"
-      class="w-full mb-1"
+      class="mb-1 w-full"
       type="number"
       min="1"
       @change="updateData({ tryCount: +$event })"
@@ -44,7 +44,7 @@
       min="200"
       @change="updateData({ timeout: +$event })"
     />
-    <label class="flex items-center mt-4">
+    <label class="mt-4 flex items-center">
       <ui-switch
         :model-value="data.throwError"
         class="mr-2"

@@ -4,7 +4,7 @@
       :model-value="data.description"
       autoresize
       :placeholder="t('common.description')"
-      class="w-full mb-1"
+      class="mb-1 w-full"
       @change="updateData({ description: $event })"
     />
     <template v-if="!data.everyNewTab">
@@ -36,12 +36,12 @@
         </option>
       </ui-select>
     </template>
-    <p class="text-sm ml-1 text-gray-600 dark:text-gray-200">
+    <p class="ml-1 text-sm text-gray-600 dark:text-gray-200">
       {{ t('workflow.blocks.javascript-code.name') }}
     </p>
     <pre
       v-if="!state.showCodeModal"
-      class="rounded-lg overflow-auto text-gray-200 p-4 max-h-80 bg-gray-900"
+      class="max-h-80 overflow-auto rounded-lg bg-gray-900 p-4 text-gray-200"
       @click="state.showCodeModal = true"
       v-text="data.code"
     />
@@ -85,20 +85,20 @@
             class="overflow-auto"
           />
           <template v-if="!data.everyNewTab">
-            <p class="mt-1 text-sm flex justify-between">
+            <p class="mt-1 flex justify-between text-sm">
               <span>{{
                 t('workflow.blocks.javascript-code.availabeFuncs')
               }}</span>
               <span>
                 <span
-                  class="underline cursor-pointer select-none"
+                  class="cursor-pointer select-none underline"
                   @click="modifyWhiteSpace"
                   >wrap line</span
                 >
               </span>
             </p>
             <p
-              class="space-x-1 whitespace-nowrap overflow-x-auto overflow-y-hidden pb-1 scroll"
+              class="scroll space-x-1 overflow-x-auto overflow-y-hidden whitespace-nowrap pb-1"
             >
               <a
                 v-for="func in availableFuncs"
@@ -119,7 +119,7 @@
           <div
             v-for="(script, index) in state.preloadScripts"
             :key="index"
-            class="flex items-center mt-4"
+            class="mt-4 flex items-center"
           >
             <v-remixicon
               name="riDeleteBin7Line"
@@ -129,7 +129,7 @@
             <ui-input
               v-model="state.preloadScripts[index].src"
               placeholder="http://example.com/script.js"
-              class="flex-1 mr-4"
+              class="mr-4 flex-1"
             />
             <ui-checkbox
               v-if="
@@ -140,7 +140,7 @@
               {{ t('workflow.blocks.javascript-code.removeAfterExec') }}
             </ui-checkbox>
           </div>
-          <ui-button variant="accent" class="w-20 mt-4" @click="addScript">
+          <ui-button variant="accent" class="mt-4 w-20" @click="addScript">
             {{ t('common.add') }}
           </ui-button>
         </ui-tab-panel>

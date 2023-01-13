@@ -14,18 +14,18 @@
     <div class="flex items-center">
       <span
         :class="data.disableBlock ? 'bg-box-transparent' : block.category.color"
-        class="inline-block p-2 mr-2 rounded-lg dark:text-black"
+        class="mr-2 inline-block rounded-lg p-2 dark:text-black"
       >
         <v-remixicon :name="block.details.icon || 'riGlobalLine'" />
       </span>
-      <div class="overflow-hidden flex-1">
+      <div class="flex-1 overflow-hidden">
         <p
           v-if="block.details.id"
-          class="font-semibold leading-tight text-overflow whitespace-nowrap"
+          class="text-overflow whitespace-nowrap font-semibold leading-tight"
         >
           {{ t(`workflow.blocks.${block.details.id}.name`) }}
         </p>
-        <p class="text-gray-600 dark:text-gray-200 text-overflow leading-tight">
+        <p class="text-overflow leading-tight text-gray-600 dark:text-gray-200">
           {{ data.description }}
         </p>
       </div>

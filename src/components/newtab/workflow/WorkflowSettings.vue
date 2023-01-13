@@ -19,7 +19,7 @@
     </div>
     <ui-tab-panels
       v-model="activeTab"
-      class="overflow-auto scroll pt-4 px-4 pb-4 settings-content"
+      class="scroll settings-content overflow-auto p-4"
       style="height: calc(100vh - 10rem); max-height: 600px"
     >
       <ui-tab-panel v-for="tab in tabs" :key="tab.value" :value="tab.value">

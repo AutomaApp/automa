@@ -16,7 +16,7 @@
     <template v-else>
       <ui-select
         :model-value="data.type"
-        class="block w-full mb-2 mt-4"
+        class="mb-2 mt-4 block w-full"
         :placeholder="t('workflow.blocks.forms.type')"
         @change="updateData({ type: $event })"
       >
@@ -32,7 +32,7 @@
         {{ t('workflow.blocks.forms.selected') }}
       </ui-checkbox>
       <template v-if="data.type === 'text-field'">
-        <edit-autocomplete class="w-full mb-1">
+        <edit-autocomplete class="mb-1 w-full">
           <ui-textarea
             :model-value="data.value"
             :placeholder="t('workflow.blocks.forms.text-field.value')"
@@ -62,7 +62,7 @@
           </optgroup>
         </ui-select>
         <div v-if="data.selectOptionBy === 'value'" class="mt-2">
-          <edit-autocomplete class="w-full mb-1">
+          <edit-autocomplete class="mb-1 w-full">
             <ui-textarea
               :model-value="data.value"
               :placeholder="t('workflow.blocks.forms.text-field.value')"
@@ -91,7 +91,7 @@
         :model-value="data.delay"
         :label="t('workflow.blocks.forms.text-field.delay.label')"
         :placeholder="t('workflow.blocks.forms.text-field.delay.placeholder')"
-        class="w-full mt-1"
+        class="mt-1 w-full"
         min="0"
         @change="updateData({ delay: $event })"
       />

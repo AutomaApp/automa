@@ -1,6 +1,6 @@
 <template>
-  <div v-if="workflow" class="h-screen relative">
-    <div class="absolute top-0 left-0 w-full flex items-center p-4 z-10">
+  <div v-if="workflow" class="relative h-screen">
+    <div class="absolute top-0 left-0 z-10 flex w-full items-center p-4">
       <ui-card
         padding="px-2"
         class="flex items-center overflow-hidden"
@@ -10,20 +10,20 @@
           <ui-img
             v-if="workflow.icon.startsWith('http')"
             :src="workflow.icon"
-            class="w-8 h-8"
+            class="h-8 w-8"
           />
           <v-remixicon v-else :name="workflow.icon" size="26" />
         </span>
         <div class="ml-2 max-w-sm">
           <p
             :class="{ 'text-lg': !workflow.description }"
-            class="font-semibold leading-tight text-overflow"
+            class="text-overflow font-semibold leading-tight"
           >
             {{ workflow.name }}
           </p>
           <p
             :class="{ 'text-sm': workflow.description }"
-            class="text-gray-600 leading-tight dark:text-gray-200 text-overflow"
+            class="text-overflow leading-tight text-gray-600 dark:text-gray-200"
           >
             {{ workflow.description }}
           </p>
@@ -31,7 +31,7 @@
       </ui-card>
       <ui-tabs
         model-value="'editor'"
-        class="border-none px-2 rounded-lg h-full space-x-1 bg-white dark:bg-gray-800 ml-4"
+        class="ml-4 h-full space-x-1 rounded-lg border-none bg-white px-2 dark:bg-gray-800"
         style="height: 48px"
       >
         <ui-tab value="editor">{{ t('common.editor') }}</ui-tab>
@@ -39,18 +39,18 @@
           {{ t('common.log', 2) }}
           <span
             v-if="workflowStates.length > 0"
-            class="ml-2 p-1 text-center inline-block text-xs rounded-full bg-accent text-white dark:text-black"
+            class="ml-2 inline-block rounded-full bg-accent p-1 text-center text-xs text-white dark:text-black"
             style="min-width: 25px"
           >
             {{ workflowStates.length }}
           </span>
         </ui-tab>
       </ui-tabs>
-      <div class="flex-grow"></div>
+      <div class="grow"></div>
       <ui-card padding="p-1">
         <button
           v-tooltip.group="state.triggerText"
-          class="p-2 hoverable rounded-lg"
+          class="hoverable rounded-lg p-2"
         >
           <v-remixicon name="riFlashlightLine" />
         </button>
@@ -60,7 +60,7 @@
               shortcut['editor:execute-workflow'].readable
             })`
           "
-          class="p-2 hoverable rounded-lg"
+          class="hoverable rounded-lg p-2"
           @click="executeCurrWorkflow"
         >
           <v-remixicon name="riPlayLine" />
@@ -69,7 +69,7 @@
       <ui-card padding="p-1 ml-4 flex items-center">
         <button
           v-tooltip.group="t('common.delete')"
-          class="p-2 hoverable rounded-lg mr-2"
+          class="hoverable mr-2 rounded-lg p-2"
           @click="deleteWorkflowHost"
         >
           <v-remixicon name="riDeleteBin7Line" />

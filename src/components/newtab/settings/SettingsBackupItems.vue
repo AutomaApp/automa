@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-auto scroll w-full content">
+  <div class="scroll content w-full overflow-auto">
     <div v-if="!query && workflows.length === 0" class="text-center">
       <img src="@/assets/svg/files-and-folder.svg" class="mx-auto max-w-sm" />
       <p class="text-xl font-semibold">{{ t('message.noData') }}</p>
@@ -9,7 +9,7 @@
         v-for="workflow in workflows"
         :key="workflow.id"
         :class="{ 'bg-box-transparent': isActive(workflow.id) }"
-        class="overflow-hidden group"
+        class="group overflow-hidden"
       >
         <ui-checkbox
           v-if="!isLocal || !workflow.isInCloud"
@@ -18,7 +18,7 @@
           class="mr-4"
           @change="toggleDeleteWorkflow($event, workflow.id)"
         />
-        <div v-else class="w-5 h-5 mr-4" />
+        <div v-else class="mr-4 h-5 w-5" />
         <ui-img
           v-if="workflow.icon?.startsWith('http')"
           :src="workflow.icon"
@@ -26,10 +26,10 @@
           alt="Can not display"
         />
         <v-remixicon v-else :name="workflow.icon" />
-        <div class="flex-1 ml-2 overflow-hidden">
+        <div class="ml-2 flex-1 overflow-hidden">
           <p class="text-overflow flex-1">{{ workflow.name }}</p>
           <p
-            class="text-gray-600 text-sm dark:text-gray-200 leading-tight text-overflow"
+            class="text-overflow text-sm leading-tight text-gray-600 dark:text-gray-200"
           >
             {{ workflow.description }}
           </p>
@@ -55,7 +55,7 @@
         )
       }}
     </ui-checkbox>
-    <div class="flex-grow"></div>
+    <div class="grow"></div>
     <span> {{ modelValue.length }}/{{ limit }} </span>
   </div>
 </template>

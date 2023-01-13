@@ -12,18 +12,18 @@
         <span
           v-else
           icon
-          class="inline-block p-2 bg-box-transparent rounded-lg"
+          class="bg-box-transparent inline-block rounded-lg p-2"
         >
           <v-remixicon :name="state.icon || 'mdiPackageVariantClosed'" />
         </span>
       </template>
       <div class="w-64">
         <p>{{ t('packages.icon') }}</p>
-        <div class="mt-4 gap-2 grid grid-cols-6">
+        <div class="mt-4 grid grid-cols-6 gap-2">
           <div v-for="icon in icons" :key="icon">
             <span
               :class="{ 'bg-box-transparent': icon === state.icon }"
-              class="inline-block p-2 cursor-pointer hoverable rounded-lg"
+              class="hoverable inline-block cursor-pointer rounded-lg p-2"
               @click="state.icon = icon"
             >
               <v-remixicon :name="icon" />
@@ -52,9 +52,9 @@
     v-model="state.description"
     :label="t('common.description')"
     placeholder="Description..."
-    class="w-full mt-4"
+    class="mt-4 w-full"
   />
-  <div class="flex items-center justify-end space-x-4 mt-6">
+  <div class="mt-6 flex items-center justify-end space-x-4">
     <ui-button @click="$emit('cancel')">
       {{ t('common.cancel') }}
     </ui-button>

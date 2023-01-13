@@ -1,10 +1,10 @@
 <template>
   <div v-if="tableDetail && tableData" class="container py-8 pb-4">
     <div class="mb-12 flex items-center">
-      <h1 class="font-semibold text-3xl">
+      <h1 class="text-3xl font-semibold">
         {{ tableDetail.name }}
       </h1>
-      <div class="flex-grow"></div>
+      <div class="grow"></div>
       <ui-button
         v-tooltip.group="'Clear data'"
         icon
@@ -16,20 +16,20 @@
       <ui-button
         v-tooltip="'Delete table'"
         icon
-        class="text-red-400 dark:text-red-300 ml-4"
+        class="ml-4 text-red-400 dark:text-red-300"
         @click="deleteTable"
       >
         <v-remixicon name="riDeleteBin7Line" />
       </ui-button>
     </div>
-    <div class="flex items-center flex-wrap mb-4">
+    <div class="mb-4 flex flex-wrap items-center">
       <ui-input
         v-model="state.query"
         :placeholder="t('common.search')"
         prepend-icon="riSearch2Line"
-        class="w-full md:w-auto mb-4 md:mb-0"
+        class="mb-4 w-full md:mb-0 md:w-auto"
       />
-      <div class="flex-grow" />
+      <div class="grow" />
       <ui-button class="md:ml-4" @click="editTable">
         <v-remixicon name="riPencilLine" class="mr-2 -ml-1" />
         <span>Edit table</span>
@@ -54,7 +54,7 @@
         </ui-list>
       </ui-popover>
     </div>
-    <div class="overflow-x-auto w-full scroll">
+    <div class="scroll w-full overflow-x-auto">
       <ui-table
         :headers="table.header"
         :items="rows"
@@ -74,11 +74,11 @@
     </div>
     <div
       v-if="table.body && table.body.length >= 10"
-      class="flex flex-col md:flex-row md:items-center md:justify-between mt-4"
+      class="mt-4 flex flex-col md:flex-row md:items-center md:justify-between"
     >
       <div class="mb-4 md:mb-0">
         {{ t('components.pagination.text1') }}
-        <select v-model="pagination.perPage" class="p-1 rounded-md bg-input">
+        <select v-model="pagination.perPage" class="bg-input rounded-md p-1">
           <option
             v-for="num in [10, 15, 25, 50, 100, 150]"
             :key="num"

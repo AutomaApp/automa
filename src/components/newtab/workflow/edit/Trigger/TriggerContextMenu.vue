@@ -19,25 +19,25 @@
       <ui-popover
         :options="{ animation: null }"
         trigger-width
-        class="w-full mt-2"
+        class="mt-2 w-full"
         trigger-class="w-full"
       >
         <template #trigger>
-          <span class="text-sm ml-1 text-gray-600 dark:text-gray-200">
+          <span class="ml-1 text-sm text-gray-600 dark:text-gray-200">
             {{ t('workflow.blocks.trigger.contextMenus.appearIn') }}
           </span>
           <ui-button class="w-full">
-            <p class="text-left flex-1 text-overflow mr-2">
+            <p class="text-overflow mr-2 flex-1 text-left">
               {{ data.contextTypes.join(', ') || 'All' }}
             </p>
             <v-remixicon
               size="28"
               name="riArrowDropDownLine"
-              class="text-gray-600 dark:text-gray-200 -mr-2"
+              class="-mr-2 text-gray-600 dark:text-gray-200"
             />
           </ui-button>
         </template>
-        <div class="grid gap-2 grid-cols-2">
+        <div class="grid grid-cols-2 gap-2">
           <ui-checkbox
             v-for="type in types"
             :key="type"

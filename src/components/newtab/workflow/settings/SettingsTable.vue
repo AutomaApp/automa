@@ -1,10 +1,10 @@
 <template>
   <div class="flex items-center">
-    <div class="flex-grow">
+    <div class="grow">
       <p>
         {{ t('workflow.settings.defaultColumn.title') }}
       </p>
-      <p class="text-gray-600 dark:text-gray-200 text-sm leading-tight">
+      <p class="text-sm leading-tight text-gray-600 dark:text-gray-200">
         {{ t('workflow.settings.defaultColumn.description') }}
       </p>
     </div>
@@ -14,7 +14,7 @@
     />
   </div>
   <transition-expand>
-    <div v-if="settings.insertDefaultColumn" class="flex pt-4 items-center">
+    <div v-if="settings.insertDefaultColumn" class="flex items-center pt-4">
       <p class="flex-1">
         {{ t('workflow.settings.defaultColumn.name') }}
       </p>

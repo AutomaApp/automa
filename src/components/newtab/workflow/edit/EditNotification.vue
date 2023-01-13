@@ -3,7 +3,7 @@
     <ui-textarea
       :model-value="data.description"
       :placeholder="t('common.description')"
-      class="w-full mb-2"
+      class="mb-2 w-full"
       @change="updateData({ description: $event })"
     />
     <template v-if="permission.has.notifications">

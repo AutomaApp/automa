@@ -3,7 +3,7 @@
     <slot v-if="editor" name="prepend" :editor="editor" />
     <div
       v-if="editor && toolbar && !readonly"
-      class="p-2 rounded-lg backdrop-blur flex items-center sticky top-0 z-50 bg-box-transparent space-x-1 mb-2"
+      class="bg-box-transparent sticky top-0 z-50 mb-2 flex items-center space-x-1 rounded-lg p-2 backdrop-blur"
     >
       <button
         :class="{
@@ -30,7 +30,7 @@
         <v-remixicon name="riH2" />
       </button>
       <span
-        class="w-px h-5 bg-gray-300 dark:bg-gray-600"
+        class="h-5 w-px bg-gray-300 dark:bg-gray-600"
         style="margin: 0 12px"
       ></span>
       <button
@@ -46,7 +46,7 @@
         <v-remixicon :name="item.icon" />
       </button>
       <span
-        class="w-px h-5 bg-gray-300 dark:bg-gray-600"
+        class="h-5 w-px bg-gray-300 dark:bg-gray-600"
         style="margin: 0 12px"
       ></span>
       <button

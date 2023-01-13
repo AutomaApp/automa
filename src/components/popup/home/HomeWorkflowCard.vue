@@ -1,12 +1,12 @@
 <template>
   <ui-card
-    class="w-full flex items-center space-x-2 hover:ring-2 hover:ring-gray-900"
+    class="flex w-full items-center space-x-2 hover:ring-2 hover:ring-gray-900"
   >
     <div
-      class="flex-1 text-overflow cursor-pointer"
+      class="text-overflow flex-1 cursor-pointer"
       @click="$emit('details', workflow)"
     >
-      <p class="leading-tight text-overflow">{{ workflow.name }}</p>
+      <p class="text-overflow leading-tight">{{ workflow.name }}</p>
       <p class="leading-tight text-gray-500">
         {{ dayjs(workflow.createdAt).fromNow() }}
       </p>
@@ -29,7 +29,7 @@
       <ui-list class="space-y-1" style="min-width: 160px">
         <template v-if="tab === 'local'">
           <ui-list-item
-            class="capitalize cursor-pointer"
+            class="cursor-pointer capitalize"
             @click="$emit('update', { isDisabled: !workflow.isDisabled })"
           >
             <v-remixicon name="riToggleLine" class="mr-2 -ml-1" />
@@ -38,7 +38,7 @@
             }}</span>
           </ui-list-item>
           <ui-list-item
-            class="capitalize cursor-pointer"
+            class="cursor-pointer capitalize"
             @click="$emit('togglePin')"
           >
             <v-remixicon name="riPushpin2Line" class="mr-2 -ml-1" />
@@ -49,7 +49,7 @@
           v-for="item in filteredMenu"
           :key="item.name"
           v-close-popover
-          class="capitalize cursor-pointer"
+          class="cursor-pointer capitalize"
           @click="$emit(item.name, workflow)"
         >
           <v-remixicon :name="item.icon" class="mr-2 -ml-1" />

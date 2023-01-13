@@ -1,6 +1,6 @@
 <template>
-  <div v-if="workflow" class="h-screen relative">
-    <div class="absolute top-0 left-0 w-full flex items-center p-4 z-10">
+  <div v-if="workflow" class="relative h-screen">
+    <div class="absolute top-0 left-0 z-10 flex w-full items-center p-4">
       <ui-card
         padding="px-2"
         class="flex items-center overflow-hidden"
@@ -10,20 +10,20 @@
           <ui-img
             v-if="workflow.icon.startsWith('http')"
             :src="workflow.icon"
-            class="w-8 h-8"
+            class="h-8 w-8"
           />
           <v-remixicon v-else :name="workflow.icon" size="26" />
         </span>
         <div class="ml-2 max-w-sm">
           <p
             :class="{ 'text-lg': !workflow.description }"
-            class="font-semibold leading-tight text-overflow"
+            class="text-overflow font-semibold leading-tight"
           >
             {{ workflow.name }}
           </p>
           <p
             :class="{ 'text-sm': workflow.description }"
-            class="text-gray-600 leading-tight dark:text-gray-200 text-overflow"
+            class="text-overflow leading-tight text-gray-600 dark:text-gray-200"
           >
             {{ workflow.description }}
           </p>
@@ -38,13 +38,13 @@
           @click="$event.target.select()"
         />
       </ui-card>
-      <div class="flex-grow pointer-events-none" />
+      <div class="pointer-events-none grow" />
       <ui-card padding="p-1 ml-4">
         <router-link
           v-if="state.hasLocalCopy"
           v-tooltip.group="'Go to local version'"
           :to="`/workflows/${workflowId}`"
-          class="hoverable p-2 rounded-lg block"
+          class="hoverable block rounded-lg p-2"
         >
           <v-remixicon name="riComputerLine" />
         </router-link>
@@ -53,7 +53,7 @@
         <button
           v-if="state.hasLocalCopy"
           v-tooltip.group="t('workflow.share.fetchLocal')"
-          class="hoverable p-2 rounded-lg"
+          class="hoverable rounded-lg p-2"
           @click="fetchLocalWorkflow"
         >
           <v-remixicon name="riRefreshLine" />
@@ -61,14 +61,14 @@
         <button
           v-else
           v-tooltip.group="t('workflow.share.download')"
-          class="hoverable p-2 rounded-lg"
+          class="hoverable rounded-lg p-2"
           @click="insertToLocal"
         >
           <v-remixicon name="riDownloadLine" />
         </button>
         <button
           v-tooltip.group="t('workflow.share.edit')"
-          class="hoverable p-2 rounded-lg"
+          class="hoverable rounded-lg p-2"
           @click="initEditWorkflow"
         >
           <v-remixicon name="riFileEditLine" />
@@ -77,7 +77,7 @@
       <ui-card padding="p-1 flex ml-4">
         <button
           v-tooltip.group="t('workflow.share.unpublish')"
-          class="hoverable p-2 mr-2 rounded-lg relative"
+          class="hoverable relative mr-2 rounded-lg p-2"
           @click="unpublishSharedWorkflow"
         >
           <ui-spinner
@@ -98,13 +98,13 @@
         >
           <span
             v-if="state.isChanged"
-            class="flex h-3 w-3 absolute top-0 left-0 -ml-1 -mt-1"
+            class="absolute top-0 left-0 -ml-1 -mt-1 flex h-3 w-3"
           >
             <span
-              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"
+              class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"
             ></span>
             <span
-              class="relative inline-flex rounded-full h-3 w-3 bg-blue-600"
+              class="relative inline-flex h-3 w-3 rounded-full bg-blue-600"
             ></span>
           </span>
           {{ t('workflow.share.update') }}
@@ -133,7 +133,7 @@
       @change="onEditWorkflowChange"
     >
       <template #prepend>
-        <div class="flex justify-between mb-6">
+        <div class="mb-6 flex justify-between">
           <p>{{ t('workflow.share.edit') }}</p>
           <v-remixicon
             name="riCloseLine"

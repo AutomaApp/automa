@@ -25,7 +25,7 @@
     />
     <ui-select
       :model-value="data.windowState"
-      class="w-full mt-2"
+      class="mt-2 w-full"
       :label="t('workflow.blocks.new-window.windowState.placeholder')"
       @change="updateData({ windowState: $event })"
     >
@@ -47,7 +47,7 @@
     <div v-if="data.windowState === 'normal'" class="mt-2">
       <div
         :title="t('workflow.blocks.new-window.position')"
-        class="flex items-center space-x-2 mb-1"
+        class="mb-1 flex items-center space-x-2"
       >
         <ui-input
           :model-value="data.top"

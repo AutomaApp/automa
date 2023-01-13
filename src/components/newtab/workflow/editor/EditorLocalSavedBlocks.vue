@@ -1,6 +1,6 @@
 <template>
-  <div class="p-4 absolute w-full bottom-0 z-50">
-    <ui-card class="w-full h-full" padding="p-0">
+  <div class="absolute bottom-0 z-50 w-full p-4">
+    <ui-card class="h-full w-full" padding="p-0">
       <div class="flex items-center p-4">
         <ui-input
           v-model="state.query"
@@ -9,18 +9,18 @@
           autocomplete="off"
           prepend-icon="riSearch2Line"
         />
-        <div class="flex-grow" />
+        <div class="grow" />
         <ui-button icon @click="$emit('close')">
           <v-remixicon name="riCloseLine" />
         </ui-button>
       </div>
       <div
-        class="flex overflow-x-auto space-x-4 mx-4 pb-4 scroll"
+        class="scroll mx-4 flex space-x-4 overflow-x-auto pb-4"
         style="min-height: 95px"
       >
         <p
           v-if="packageStore.packages.length === 0"
-          class="py-8 w-full text-center"
+          class="w-full py-8 text-center"
         >
           {{ t('message.noData') }}
         </p>
@@ -28,17 +28,17 @@
           v-for="item in items"
           :key="item.id"
           draggable="true"
-          class="rounded-lg flex-shrink-0 border-2 cursor-move hoverable flex flex-col relative transition"
+          class="hoverable relative flex shrink-0 cursor-move flex-col rounded-lg border-2 transition"
           style="width: 288px; height: 125px"
           @dragstart="
             $event.dataTransfer.setData('savedBlocks', JSON.stringify(item))
           "
         >
-          <div class="flex items-start p-4 flex-1">
+          <div class="flex flex-1 items-start p-4">
             <div
               v-if="item.icon"
               :class="{ 'mr-2': item.icon.startsWith('http') }"
-              class="w-8 flex-shrink-0"
+              class="w-8 shrink-0"
             >
               <img
                 v-if="item.icon.startsWith('http')"
@@ -53,23 +53,23 @@
               />
             </div>
             <div class="flex-1 overflow-hidden">
-              <p class="font-semibold text-overflow leading-tight">
+              <p class="text-overflow font-semibold leading-tight">
                 {{ item.name }}
               </p>
               <p
-                class="text-gray-600 dark:text-gray-200 line-clamp leading-tight"
+                class="line-clamp leading-tight text-gray-600 dark:text-gray-200"
               >
                 {{ item.description }}
               </p>
             </div>
           </div>
           <div
-            class="space-x-3 pb-4 px-4 text-gray-600 dark:text-gray-200 flex items-center"
+            class="flex items-center space-x-3 px-4 pb-4 text-gray-600 dark:text-gray-200"
           >
             <span v-if="item.author" class="text-overflow">
               By {{ item.author }}
             </span>
-            <div class="flex-grow" />
+            <div class="grow" />
             <a
               v-if="item.isExternal"
               :href="`https://automa.site/packages/${item.id}`"
@@ -104,7 +104,7 @@
                 </ui-list-item>
                 <ui-list-item
                   v-close-popover
-                  class="text-red-400 dark:text-red-500 cursor-pointer"
+                  class="cursor-pointer text-red-400 dark:text-red-500"
                   @click="deleteItem(item)"
                 >
                   {{ t('common.delete') }}

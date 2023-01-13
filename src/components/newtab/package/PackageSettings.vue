@@ -5,7 +5,7 @@
       {{ $t('packages.settings.asBlock') }}
     </span>
   </label>
-  <div v-if="packageState.settings.asBlock" class="mt-6 pb-8 flex space-x-6">
+  <div v-if="packageState.settings.asBlock" class="mt-6 flex space-x-6 pb-8">
     <div class="flex-1">
       <p class="font-semibold">Block inputs</p>
       <div class="mt-4">
@@ -24,10 +24,10 @@
         >
           <template #item="{ element, index }">
             <div
-              class="grid grid-cols-12 mb-2 relative gap-x-4 items-center group"
+              class="group relative mb-2 grid grid-cols-12 items-center gap-x-4"
             >
               <span
-                class="absolute left-0 handle -ml-6 cursor-move invisible group-hover:visible"
+                class="handle invisible absolute left-0 -ml-6 cursor-move group-hover:visible"
               >
                 <v-remixicon name="mdiDrag" />
               </span>
@@ -36,7 +36,7 @@
                 class="col-span-5"
                 :placeholder="`Input ${index + 1}`"
               />
-              <div class="flex items-center col-span-6">
+              <div class="col-span-6 flex items-center">
                 <ui-button
                   v-tooltip="'Go to block'"
                   class="mr-2"
@@ -55,7 +55,7 @@
               <div class="col-span-1 text-right">
                 <v-remixicon
                   name="riDeleteBin7Line"
-                  class="cursor-pointer text-gray-600 dark:text-gray-200 inline-block"
+                  class="inline-block cursor-pointer text-gray-600 dark:text-gray-200"
                   @click="deleteBlockIo('inputs', index)"
                 />
               </div>
@@ -83,10 +83,10 @@
         >
           <template #item="{ element, index }">
             <div
-              class="grid grid-cols-12 mb-2 relative gap-x-4 items-center group"
+              class="group relative mb-2 grid grid-cols-12 items-center gap-x-4"
             >
               <span
-                class="absolute left-0 handle -ml-6 cursor-move invisible group-hover:visible"
+                class="handle invisible absolute left-0 -ml-6 cursor-move group-hover:visible"
               >
                 <v-remixicon name="mdiDrag" />
               </span>
@@ -95,7 +95,7 @@
                 class="col-span-5"
                 :placeholder="`Output ${index + 1}`"
               />
-              <div class="flex items-center col-span-6">
+              <div class="col-span-6 flex items-center">
                 <ui-button
                   v-tooltip="'Go to block'"
                   class="mr-2"
@@ -114,7 +114,7 @@
               <div class="col-span-1 text-right">
                 <v-remixicon
                   name="riDeleteBin7Line"
-                  class="cursor-pointer text-gray-600 dark:text-gray-200 inline-block"
+                  class="inline-block cursor-pointer text-gray-600 dark:text-gray-200"
                   @click="deleteBlockIo('outputs', index)"
                 />
               </div>

@@ -3,19 +3,19 @@
     <ui-textarea
       :model-value="data.description"
       :placeholder="t('common.description')"
-      class="w-full mb-1"
+      class="mb-1 w-full"
       @change="updateData({ description: $event })"
     />
     <ui-button
       variant="accent"
-      class="w-full mt-4"
+      class="mt-4 w-full"
       @click="showConditionBuilder = true"
     >
       {{ t('workflow.blocks.while-loop.editCondition') }}
     </ui-button>
     <ui-modal v-model="showConditionBuilder" custom-content>
       <ui-card padding="p-0" class="w-full max-w-3xl">
-        <div class="px-4 pt-4 flex items-center">
+        <div class="flex items-center px-4 pt-4">
           <p class="flex-1">
             {{ t('workflow.conditionBuilder.title') }}
           </p>
@@ -27,7 +27,7 @@
         </div>
         <shared-condition-builder
           :model-value="data.conditions"
-          class="overflow-auto p-4 mt-4 scroll"
+          class="scroll mt-4 overflow-auto p-4"
           style="height: calc(100vh - 8rem)"
           @change="updateData({ conditions: $event })"
         />

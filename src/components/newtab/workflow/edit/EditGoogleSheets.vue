@@ -2,13 +2,13 @@
   <div class="mb-10">
     <ui-textarea
       :model-value="data.description"
-      class="w-full mb-2"
+      class="mb-2 w-full"
       :placeholder="t('common.description')"
       @change="updateData({ description: $event })"
     />
     <ui-select
       :model-value="data.type"
-      class="w-full mb-2"
+      class="mb-2 w-full"
       @change="onActionChange"
     >
       <option v-for="action in actions" :key="action" :value="action">
@@ -40,7 +40,7 @@
       href="https://docs.automa.site/blocks/google-sheets.html#access-to-spreadsheet"
       target="_blank"
       rel="noopener"
-      class="text-sm leading-tight inline-block ml-1"
+      class="ml-1 inline-block text-sm leading-tight"
     >
       Automa doesn't have access to the spreadsheet
       <v-remixicon name="riInformationLine" size="18" class="inline" />
@@ -48,7 +48,7 @@
     <edit-autocomplete>
       <ui-input
         :model-value="data.range"
-        class="w-full mt-1"
+        class="mt-1 w-full"
         placeholder="Sheet1!A1:B2"
         @change="updateData({ range: $event })"
       >
@@ -106,7 +106,7 @@
     <template v-else-if="['update', 'append'].includes(data.type)">
       <ui-select
         :model-value="data.valueInputOption"
-        class="w-full mt-2"
+        class="mt-2 w-full"
         @change="updateData({ valueInputOption: $event })"
       >
         <template #label>
@@ -130,7 +130,7 @@
       <ui-select
         v-if="data.type === 'append'"
         :model-value="data.insertDataOption || 'INSERT_ROWS'"
-        class="w-full mt-2"
+        class="mt-2 w-full"
         @change="updateData({ insertDataOption: $event })"
       >
         <template #label>
@@ -154,7 +154,7 @@
       <ui-select
         :model-value="data.dataFrom"
         :label="t('workflow.blocks.google-sheets.dataFrom.label')"
-        class="w-full mt-2"
+        class="mt-2 w-full"
         @change="updateData({ dataFrom: $event })"
       >
         <option v-for="item in dataFrom" :key="item" :value="item">
@@ -171,7 +171,7 @@
       </ui-checkbox>
       <ui-button
         v-else
-        class="w-full mt-2"
+        class="mt-2 w-full"
         variant="accent"
         @click="customDataState.showModal = true"
       >
@@ -188,7 +188,7 @@
       :line-numbers="false"
       readonly
       hide-lang
-      class="mt-4 max-h-96 scroll"
+      class="scroll mt-4 max-h-96"
     />
     <ui-modal
       v-model="customDataState.showModal"

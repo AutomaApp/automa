@@ -1,7 +1,7 @@
 <template>
   <edit-interaction-base v-bind="{ data }" @change="updateData">
     <hr />
-    <div class="flex rounded-lg bg-input px-4 items-center transition">
+    <div class="bg-input flex items-center rounded-lg px-4 transition">
       <span>/</span>
       <input
         :value="data.regex"

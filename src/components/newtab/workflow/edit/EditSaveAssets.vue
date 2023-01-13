@@ -58,7 +58,7 @@
           {{ t(`workflow.blocks.base.downloads.onConflict.${item}`) }}
         </option>
       </ui-select>
-      <hr class="w-full my-4" />
+      <hr class="my-4 w-full" />
       <label class="flex items-center">
         <ui-switch
           :model-value="data.saveDownloadIds"

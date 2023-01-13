@@ -1,15 +1,15 @@
 <template>
   <div
     :class="[!showTab ? 'h-48' : 'h-56']"
-    class="bg-accent rounded-b-2xl absolute top-0 left-0 w-full"
+    class="absolute top-0 left-0 w-full rounded-b-2xl bg-accent"
   ></div>
   <div
     :class="[!showTab ? 'mb-6' : 'mb-2']"
-    class="dark placeholder-black relative z-10 text-white px-5 pt-8"
+    class="dark relative z-10 px-5 pt-8 text-white placeholder:text-black"
   >
-    <div class="flex items-center mb-4">
+    <div class="mb-4 flex items-center">
       <h1 class="text-xl font-semibold text-white">Automa</h1>
-      <div class="flex-grow"></div>
+      <div class="grow"></div>
       <ui-button
         v-tooltip.group="
           'Start recording by opening the dashboard. Click to learn more'
@@ -45,7 +45,7 @@
         :placeholder="`${t('common.search')}...`"
         autocomplete="off"
         prepend-icon="riSearch2Line"
-        class="w-full search-input"
+        class="search-input w-full"
       />
     </div>
     <ui-tabs
@@ -71,7 +71,7 @@
   />
   <div
     v-if="state.activeTab !== 'team'"
-    class="px-5 z-20 relative pb-5 space-y-2"
+    class="relative z-20 space-y-2 px-5 pb-5"
   >
     <ui-card v-if="workflowStore.getWorkflows.length === 0" class="text-center">
       <img src="@/assets/svg/alien.svg" />
@@ -85,7 +85,7 @@
       </ui-button>
     </ui-card>
     <div v-if="pinnedWorkflows.length > 0" class="mt-1 mb-4 border-b pb-4">
-      <div class="flex items-center text-gray-300 mb-1">
+      <div class="mb-1 flex items-center text-gray-300">
         <v-remixicon name="riPushpin2Line" size="20" class="mr-2" />
         <span>Pinned workflows</span>
       </div>
@@ -134,7 +134,7 @@
             v-model="sortState.by"
             :placeholder="t('sort.sortBy')"
             block
-            class="flex-1 mt-2"
+            class="mt-2 flex-1"
           >
             <option v-for="sort in sorts" :key="sort" :value="sort">
               {{ t(`sort.${sort}`) }}
@@ -158,9 +158,9 @@
     />
     <div
       v-if="state.showSettingsPopup"
-      class="bg-accent fixed bottom-5 left-0 m-4 p-4 rounded-lg dark:text-black text-white shadow-md"
+      class="fixed bottom-5 left-0 m-4 rounded-lg bg-accent p-4 text-white shadow-md dark:text-black"
     >
-      <p class="leading-tight text-sm">
+      <p class="text-sm leading-tight">
         If the workflow runs for less than 5 minutes, set it to run in the
         background in the
         <a
@@ -173,7 +173,7 @@
       </p>
       <v-remixicon
         name="riCloseLine"
-        class="absolute dark:text-gray-600 text-gray-300 top-2 right-2 cursor-pointer"
+        class="absolute top-2 right-2 cursor-pointer text-gray-300 dark:text-gray-600"
         size="20"
         @click="closeSettingsPopup"
       />

@@ -1,27 +1,27 @@
 <template>
   <ui-card
     v-if="modalState.show"
-    class="fixed bottom-8 right-8 shadow-2xl border-2 w-72 group"
+    class="group fixed bottom-8 right-8 w-72 border-2 shadow-2xl"
   >
     <button
-      class="absolute bg-white shadow-md rounded-full -right-2 -top-2 transition scale-0 group-hover:scale-100"
+      class="absolute -right-2 -top-2 scale-0 rounded-full bg-white shadow-md transition group-hover:scale-100"
       @click="closeModal"
     >
       <v-remixicon class="text-gray-600" name="riCloseLine" />
     </button>
-    <h2 class="font-semibold text-lg">
+    <h2 class="text-lg font-semibold">
       {{ activeModal.title }}
     </h2>
-    <p class="mt-1 dark:text-gray-100 text-gray-700">
+    <p class="mt-1 text-gray-700 dark:text-gray-100">
       {{ activeModal.body }}
     </p>
-    <div class="space-y-2 mt-4">
+    <div class="mt-4 space-y-2">
       <ui-button
         :href="activeModal.url"
         tag="a"
         target="_blank"
         rel="noopener"
-        class="w-full block"
+        class="block w-full"
         variant="accent"
       >
         {{ activeModal.button }}

@@ -1,22 +1,22 @@
 <template>
   <div
-    class="ui-switch relative inline-flex h-6 w-12 justify-center items-center bg-input p-1 rounded-full"
+    class="ui-switch bg-input relative inline-flex h-6 w-12 items-center justify-center rounded-full p-1"
     :class="{ 'pointer-events-none opacity-50': disabled }"
   >
     <input
       :checked="modelValue"
       type="checkbox"
-      class="absolute h-full w-full opacity-0 cursor-pointer left-0 top-0 z-50"
+      class="absolute left-0 top-0 z-50 h-full w-full cursor-pointer opacity-0"
       v-bind="{ disabled, readonly: disabled || null }"
       @input="emitEvent"
     />
     <div
-      class="ui-switch__ball z-40 rounded-full absolute h-4 w-4 shadow-xl bg-white flex justify-center items-center"
+      class="ui-switch__ball absolute z-40 flex h-4 w-4 items-center justify-center rounded-full bg-white shadow-xl"
     >
       <slot v-if="$slots.ball" name="ball"></slot>
     </div>
     <div
-      class="ui-switch__background absolute h-full rounded-md w-full left-0 top-0 bg-accent"
+      class="ui-switch__background absolute left-0 top-0 h-full w-full rounded-md bg-accent"
     ></div>
   </div>
 </template>

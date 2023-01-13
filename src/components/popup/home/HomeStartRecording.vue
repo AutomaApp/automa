@@ -10,7 +10,7 @@
     </ui-tab>
   </ui-tabs>
   <ui-tab-panels :model-value="state.activeTab">
-    <ui-tab-panel value="new" class="px-4 mt-3">
+    <ui-tab-panel value="new" class="mt-3 px-4">
       <form @submit.prevent="$emit('record', { name: state.workflowName })">
         <ui-input
           v-model="state.workflowName"
@@ -19,7 +19,7 @@
           autofocus
           class="w-full"
         />
-        <ui-button class="w-full mt-6" variant="accent" type="submit">
+        <ui-button class="mt-6 w-full" variant="accent" type="submit">
           {{ t('home.record.button') }}
         </ui-button>
       </form>
@@ -33,7 +33,7 @@
         @goBack="state.activeWorkflow = ''"
       />
       <template v-else>
-        <div class="px-4 mt-4">
+        <div class="mt-4 px-4">
           <ui-input
             v-model="state.query"
             class="w-full"
@@ -41,7 +41,7 @@
             :placeholder="t('common.search')"
           />
         </div>
-        <ui-list class="overflow-y-auto scroll px-4 mt-2 mb-4 h-72">
+        <ui-list class="scroll mt-2 mb-4 h-72 overflow-y-auto px-4">
           <ui-list-item
             v-for="workflow in workflows"
             :key="workflow.id"
@@ -56,16 +56,16 @@
               style="height: 32px; width: 32px"
               alt="Can not display"
             />
-            <span v-else class="p-2 rounded-lg bg-box-transparent">
+            <span v-else class="bg-box-transparent rounded-lg p-2">
               <v-remixicon :name="workflow.icon" size="20" />
             </span>
-            <div class="ml-2 overflow-hidden flex-1">
+            <div class="ml-2 flex-1 overflow-hidden">
               <p :title="workflow.name" class="text-overflow leading-tight">
                 {{ workflow.name }}
               </p>
               <p
                 :title="workflow.description"
-                class="text-overflow text-gray-600 leading-tight text-sm"
+                class="text-overflow text-sm leading-tight text-gray-600"
               >
                 {{ workflow.description }}
               </p>

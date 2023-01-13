@@ -1,6 +1,6 @@
 <template>
-  <div class="py-16 max-w-xl mx-auto">
-    <h1 class="font-semibold text-3xl mb-8">
+  <div class="mx-auto max-w-xl py-16">
+    <h1 class="mb-8 text-3xl font-semibold">
       {{ t('welcome.title') }}
     </h1>
     <p>
@@ -8,14 +8,14 @@
       Automa Marketplace. <br />
       To learn how to use Automa, watch the tutorials on our YouTube Channel.
     </p>
-    <div class="mt-8 space-x-2 flex items-center">
+    <div class="mt-8 flex items-center space-x-2">
       <a
         v-for="link in links"
         :key="link.name"
         :href="link.url"
         target="_blank"
         rel="noopener"
-        class="p-4 rounded-lg hoverable flex-1 transition border-2 w-40"
+        class="hoverable w-40 flex-1 rounded-lg border-2 p-4 transition"
       >
         <v-remixicon size="28" :name="link.icon" />
         <p class="mt-2">
@@ -25,14 +25,14 @@
     </div>
     <div class="mt-8">
       <p>{{ t('home.communities') }}</p>
-      <div class="space-x-2 flex items-center mt-2">
+      <div class="mt-2 flex items-center space-x-2">
         <a
           v-for="link in communities"
           :key="link.name"
           :href="link.url"
           target="_blank"
           rel="noopener"
-          class="p-4 rounded-lg hoverable transition border-2 w-40"
+          class="hoverable w-40 rounded-lg border-2 p-4 transition"
         >
           <v-remixicon size="28" :name="link.icon" />
           <p class="mt-2">

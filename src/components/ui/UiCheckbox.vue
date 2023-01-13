@@ -7,18 +7,18 @@
       :class="{
         'pointer-events-none opacity-75': disabled,
       }"
-      class="relative h-5 w-5 inline-block focus-within:ring-2 focus-within:ring-accent rounded"
+      class="relative inline-block h-5 w-5 rounded focus-within:ring-2 focus-within:ring-accent"
     >
       <input
         :class="{ indeterminate }"
         type="checkbox"
-        class="opacity-0 checkbox-ui__input"
+        class="checkbox-ui__input opacity-0"
         :value="modelValue"
         v-bind="{ checked: modelValue, disabled }"
         @change="changeHandler"
       />
       <div
-        class="border dark:border-gray-700 rounded absolute top-0 left-0 bg-input checkbox-ui__mark cursor-pointer"
+        class="bg-input checkbox-ui__mark absolute top-0 left-0 cursor-pointer rounded border dark:border-gray-700"
       >
         <v-remixicon
           :name="indeterminate ? 'riSubtractLine' : 'riCheckLine'"

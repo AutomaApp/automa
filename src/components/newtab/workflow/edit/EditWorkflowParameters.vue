@@ -1,6 +1,6 @@
 <template>
   <div
-    class="overflow-auto scroll"
+    class="scroll overflow-auto"
     style="max-height: calc(100vh - 15rem); min-height: 200px"
   >
     <p
@@ -10,7 +10,7 @@
       No parameters
     </p>
     <table v-else class="w-full">
-      <div class="text-sm grid grid-cols-12 space-x-2">
+      <div class="grid grid-cols-12 space-x-2 text-sm">
         <div class="col-span-3" style="padding-left: 28px">Name</div>
         <div class="col-span-2">Type</div>
         <div class="col-span-3">Placeholder</div>
@@ -87,12 +87,12 @@
                   <v-remixicon
                     :rotate="show ? 270 : 180"
                     name="riArrowLeftSLine"
-                    class="mr-2 transition-transform -ml-1"
+                    class="mr-2 -ml-1 transition-transform"
                   />
                   <span>Options</span>
                 </template>
-                <div class="pl-[28px] mt-2 mb-4">
-                  <div class="flex mb-2 items-start">
+                <div class="mt-2 mb-4 pl-[28px]">
+                  <div class="mb-2 flex items-start">
                     <ui-textarea
                       v-model="param.description"
                       placeholder="Description"
@@ -122,11 +122,11 @@
       </draggable>
     </table>
   </div>
-  <div class="flex items-center mt-4">
+  <div class="mt-4 flex items-center">
     <ui-button variant="accent" @click="addParameter">
       {{ $t('workflow.parameters.add') }}
     </ui-button>
-    <div class="flex-grow" />
+    <div class="grow" />
     <ui-checkbox
       v-if="!hidePreferTab"
       :model-value="preferTab"

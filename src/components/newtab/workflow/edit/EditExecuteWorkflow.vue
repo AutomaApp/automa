@@ -4,13 +4,13 @@
       :model-value="data.description"
       :placeholder="t('common.description')"
       autoresize
-      class="w-full mb-2"
+      class="mb-2 w-full"
       @change="updateData({ description: $event })"
     />
     <ui-select
       :model-value="data.workflowId"
       :placeholder="t('workflow.blocks.execute-workflow.select')"
-      class="w-full mb-2"
+      class="mb-2 w-full"
       @change="updateData({ workflowId: $event })"
     >
       <optgroup label="Local">
@@ -40,25 +40,25 @@
       class="w-full"
       @change="updateData({ executeId: $event })"
     />
-    <p class="text-sm mt-4 text-gray-600 dark:text-gray-200 ml-1 mb-1">
+    <p class="mt-4 ml-1 mb-1 text-sm text-gray-600 dark:text-gray-200">
       {{ t('common.globalData') }}
     </p>
     <pre
       v-if="!state.showGlobalData"
-      class="rounded-lg text-gray-200 p-4 max-h-80 bg-gray-900 overflow-auto"
+      class="max-h-80 overflow-auto rounded-lg bg-gray-900 p-4 text-gray-200"
       @click="state.showGlobalData = true"
       v-text="data.globalData || '____'"
     />
     <ui-checkbox
       :model-value="data.insertAllVars"
-      class="leading-tight mt-4"
+      class="mt-4 leading-tight"
       @change="updateData({ insertAllVars: $event })"
     >
       {{ t('workflow.blocks.execute-workflow.insertAllVars') }}
     </ui-checkbox>
     <template v-if="!data.insertAllVars">
       <label class="mt-4 block">
-        <span class="text-sm ml-1 block text-gray-600 dark:text-gray-200">
+        <span class="ml-1 block text-sm text-gray-600 dark:text-gray-200">
           {{ t('workflow.blocks.execute-workflow.insertVars') }}
         </span>
         <ui-textarea
@@ -68,7 +68,7 @@
         />
       </label>
       <span
-        class="text-sm ml-1 block text-gray-600 dark:text-gray-200 leading-tight"
+        class="ml-1 block text-sm leading-tight text-gray-600 dark:text-gray-200"
       >
         {{ t('workflow.blocks.execute-workflow.useCommas') }}
       </span>
@@ -82,7 +82,7 @@
       <shared-codemirror
         :model-value="data.globalData"
         lang="json"
-        class="w-full scroll"
+        class="scroll w-full"
         style="height: calc(100vh - 10rem)"
         @change="updateData({ globalData: $event })"
       />

@@ -1,6 +1,6 @@
 <template>
   <svg
-    class="animate-spin inline-block"
+    class="inline-block animate-spin"
     :class="[color]"
     xmlns="http://www.w3.org/2000/svg"
     fill="none"

@@ -3,7 +3,7 @@
     <ui-textarea
       :model-value="data.description"
       :placeholder="t('common.description')"
-      class="w-full mb-2"
+      class="mb-2 w-full"
       @change="updateData({ description: $event })"
     />
     <ui-select
@@ -68,7 +68,7 @@
     <ui-tab-panels v-model="activeTab">
       <ui-tab-panel
         value="headers"
-        class="grid grid-cols-7 justify-items-center mt-4 gap-2"
+        class="mt-4 grid grid-cols-7 justify-items-center gap-2"
       >
         <template v-for="(items, index) in headers" :key="index">
           <ui-input
@@ -96,7 +96,7 @@
       <ui-tab-panel value="body" class="mt-4">
         <pre
           v-if="!showBodyModal"
-          class="rounded-lg text-gray-200 p-4 max-h-80 bg-gray-900 overflow-auto"
+          class="max-h-80 overflow-auto rounded-lg bg-gray-900 p-4 text-gray-200"
           @click="showBodyModal = true"
           v-text="data.body"
         />
@@ -117,7 +117,7 @@
           :model-value="data.dataPath"
           placeholder="path.to.data"
           label="Data path"
-          class="w-full mt-2"
+          class="mt-2 w-full"
           @change="updateData({ dataPath: $event })"
         />
         <insert-workflow-data

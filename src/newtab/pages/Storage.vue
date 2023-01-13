@@ -7,7 +7,7 @@
       <a
         href="https://docs.automa.site/reference/storage.html"
         title="Docs"
-        class="text-gray-600 dark:text-gray-200 ml-2"
+        class="ml-2 text-gray-600 dark:text-gray-200"
         target="_blank"
       >
         <v-remixicon name="riInformationLine" size="20" />

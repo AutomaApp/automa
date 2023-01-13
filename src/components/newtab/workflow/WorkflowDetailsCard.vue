@@ -1,26 +1,26 @@
 <template>
-  <div class="px-4 flex items-start mb-2 mt-1">
+  <div class="mb-2 mt-1 flex items-start px-4">
     <ui-popover class="mr-2 h-8">
       <template #trigger>
         <span
           :title="t('workflow.sidebar.workflowIcon')"
-          class="cursor-pointer inline-block h-full"
+          class="inline-block h-full cursor-pointer"
         >
           <ui-img
             v-if="workflow.icon.startsWith('http')"
             :src="workflow.icon"
-            class="w-8 h-8"
+            class="h-8 w-8"
           />
           <v-remixicon v-else :name="workflow.icon" size="26" class="mt-1" />
         </span>
       </template>
       <div class="w-56">
         <p class="mb-2">{{ t('workflow.sidebar.workflowIcon') }}</p>
-        <div class="grid grid-cols-5 mb-2 gap-1">
+        <div class="mb-2 grid grid-cols-5 gap-1">
           <span
             v-for="icon in icons"
             :key="icon"
-            class="cursor-pointer rounded-lg inline-block text-center p-2 hoverable"
+            class="hoverable inline-block cursor-pointer rounded-lg p-2 text-center"
             @click="$emit('update', { icon })"
           >
             <v-remixicon :name="icon" />
@@ -36,11 +36,11 @@
       </div>
     </ui-popover>
     <div class="flex-1 overflow-hidden">
-      <p class="font-semibold mt-1 text-overflow text-lg leading-tight">
+      <p class="text-overflow mt-1 text-lg font-semibold leading-tight">
         {{ workflow.name }}
       </p>
       <p
-        class="leading-tight cursor-pointer"
+        class="cursor-pointer leading-tight"
         :class="descriptionCollapsed ? 'line-clamp' : 'whitespace-pre-wrap'"
         @click="descriptionCollapsed = !descriptionCollapsed"
       >
@@ -55,9 +55,9 @@
       shortcut['action:search'].readable
     })`"
     prepend-icon="riSearch2Line"
-    class="px-4 mt-4 mb-2 w-full"
+    class="mt-4 mb-2 w-full px-4"
   />
-  <div class="scroll bg-scroll px-4 flex-1 relative overflow-auto">
+  <div class="scroll relative flex-1 overflow-auto bg-scroll px-4">
     <workflow-block-list
       v-if="pinnedBlocksList.length > 0"
       :model-value="true"

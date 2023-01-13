@@ -5,12 +5,12 @@
     padding="p-3"
     @close="clearContextMenu"
   >
-    <ui-list class="space-y-1 w-52">
+    <ui-list class="w-52 space-y-1">
       <ui-list-item
         v-for="item in state.items"
         :key="item.id"
         v-close-popover
-        class="cursor-pointer text-sm justify-between"
+        class="cursor-pointer justify-between text-sm"
         @click="item.event"
       >
         <span>

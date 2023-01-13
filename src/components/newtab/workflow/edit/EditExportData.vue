@@ -18,7 +18,7 @@
       <ui-select
         :model-value="data.dataToExport"
         :label="t('workflow.blocks.export-data.dataToExport.placeholder')"
-        class="w-full mt-2"
+        class="mt-2 w-full"
         @change="updateData({ dataToExport: $event })"
       >
         <option v-for="option in dataToExport" :key="option" :value="option">
@@ -30,7 +30,7 @@
         :model-value="data.refKey"
         :title="t('workflow.blocks.export-data.refKey')"
         :placeholder="t('workflow.blocks.export-data.refKey')"
-        class="w-full mt-2"
+        class="mt-2 w-full"
         @change="updateData({ refKey: $event })"
       />
       <ui-input
@@ -38,7 +38,7 @@
         :model-value="data.variableName"
         :title="t('workflow.variables.name')"
         :placeholder="t('workflow.variables.name')"
-        class="w-full mt-2"
+        class="mt-2 w-full"
         @change="updateData({ variableName: $event })"
       />
       <edit-autocomplete class="mt-2">
@@ -64,7 +64,7 @@
       <ui-select
         :model-value="data.type"
         :label="t('workflow.blocks.export-data.exportAs')"
-        class="w-full mt-2"
+        class="mt-2 w-full"
         @change="updateData({ type: $event })"
       >
         <option v-for="type in dataExportTypes" :key="type.id" :value="type.id">
@@ -80,11 +80,11 @@
           <v-remixicon
             :rotate="show ? 270 : 180"
             name="riArrowLeftSLine"
-            class="transition-transform text-gray-600 dark:text-gray-300"
+            class="text-gray-600 transition-transform dark:text-gray-300"
           />
           {{ t('common.options') }}
         </template>
-        <div class="pl-6 mt-1">
+        <div class="mt-1 pl-6">
           <ui-checkbox
             v-if="data.type === 'csv'"
             :model-value="data.addBOMHeader"

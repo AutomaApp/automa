@@ -9,7 +9,7 @@
     <ui-select
       :label="t('workflow.blocks.data-mapping.dataSource')"
       :model-value="data.dataSource"
-      class="w-full mt-4"
+      class="mt-4 w-full"
       @change="updateData({ dataSource: $event })"
     >
       <option v-for="source in dataSources" :key="source.id" :value="source.id">
@@ -24,7 +24,7 @@
       class="mt-2 w-full"
       @change="updateData({ varSourceName: $event })"
     />
-    <label class="flex items-center mt-4">
+    <label class="mt-4 flex items-center">
       <ui-switch
         :model-value="data.sortByProperty"
         @change="updateData({ sortByProperty: $event })"
@@ -53,7 +53,7 @@
               class="w-full"
             />
           </ui-autocomplete>
-          <div class="flex items-center mt-2">
+          <div class="mt-2 flex items-center">
             <ui-select v-model="property.order" class="flex-1">
               <option value="asc">Ascending</option>
               <option value="desc">Descending</option>

@@ -1,9 +1,9 @@
 <template>
-  <ui-card class="w-full max-w-2xl share-workflow overflow-auto scroll">
+  <ui-card class="share-workflow scroll w-full max-w-2xl overflow-auto">
     <template v-if="!userStore.user?.username">
-      <div class="flex items-center mb-12">
+      <div class="mb-12 flex items-center">
         <p>{{ t('workflow.share.title') }}</p>
-        <div class="flex-grow"></div>
+        <div class="grow"></div>
         <button @click="$emit('close')">
           <v-remixicon name="riCloseLine" />
         </button>
@@ -20,9 +20,9 @@
       </p>
     </template>
     <template v-else>
-      <div v-if="!isUpdate" class="flex items-center mb-4">
+      <div v-if="!isUpdate" class="mb-4 flex items-center">
         <p>{{ t('workflow.share.title') }}</p>
-        <div class="flex-grow"></div>
+        <div class="grow"></div>
         <ui-button class="mr-2" @click="$emit('close')">
           {{ t('common.cancel') }}
         </ui-button>
@@ -36,13 +36,13 @@
         </ui-button>
       </div>
       <slot name="prepend"></slot>
-      <div class="flex mb-4">
+      <div class="mb-4 flex">
         <input
           v-model="state.workflow.name"
           :placeholder="t('workflow.name')"
           type="text"
           name="workflow name"
-          class="font-semibold leading-none text-2xl focus:ring-0 block w-full bg-transparent mr-4 flex-1"
+          class="mr-4 block w-full flex-1 bg-transparent text-2xl font-semibold leading-none focus:ring-0"
         />
         <ui-select v-model="state.workflow.category">
           <option value="">{{ t('common.category') }} (none)</option>
@@ -60,10 +60,10 @@
           v-model="state.workflow.description"
           :max="300"
           placeholder="Short description"
-          class="w-full h-32 scroll resize-none"
+          class="scroll h-32 w-full resize-none"
         />
         <p
-          class="text-sm text-gray-600 dark:text-gray-200 absolute bottom-2 right-2"
+          class="absolute bottom-2 right-2 text-sm text-gray-600 dark:text-gray-200"
         >
           {{ state.workflow.description.length }}/300
         </p>
@@ -72,12 +72,12 @@
         v-model="state.workflow.content"
         :placeholder="t('common.description')"
         :limit="5000"
-        class="prose prose-zinc dark:prose-invert max-w-none content-editor p-4 bg-box-transparent rounded-lg relative"
+        class="content-editor bg-box-transparent prose prose-zinc relative max-w-none rounded-lg p-4 dark:prose-invert"
         @count="state.contentLength = $event"
       >
         <template #append>
           <p
-            class="text-sm text-gray-600 dark:text-gray-200 absolute bottom-2 right-2"
+            class="absolute bottom-2 right-2 text-sm text-gray-600 dark:text-gray-200"
           >
             {{ state.contentLength }}/5000
           </p>

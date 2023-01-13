@@ -3,7 +3,7 @@
     <div class="flex items-center">
       <ui-select
         v-model="state.selectedBlock"
-        class="flex-1 mr-4 p-0.5"
+        class="mr-4 flex-1 p-0.5"
         placeholder="Select block"
         @change="onSelectChanged"
       >
@@ -28,7 +28,7 @@
     />
     <pre
       v-if="state.blockResult"
-      class="p-2 rounded-lg text-gray-100 bg-accent h-full mt-2 overflow-auto text-sm"
+      class="mt-2 h-full overflow-auto rounded-lg bg-accent p-2 text-sm text-gray-100"
       >{{ state.blockResult }}</pre
     >
   </div>

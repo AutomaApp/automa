@@ -1,12 +1,12 @@
 <template>
   <div
     :class="[data.color || 'white', colors[data.color || 'white']]"
-    class="p-4 rounded-lg block-note"
+    class="block-note rounded-lg p-4"
     style="min-width: 192px"
   >
-    <div class="pb-2 border-b flex items-center">
+    <div class="flex items-center border-b pb-2">
       <v-remixicon name="riFileEditLine" size="20" />
-      <p class="flex-1 ml-2 mr-2 font-semibold">Note</p>
+      <p class="mx-2 flex-1 font-semibold">Note</p>
       <ui-popover class="note-color">
         <template #trigger>
           <v-remixicon
@@ -22,7 +22,7 @@
             :key="colorId"
             :class="color"
             style="border-width: 3px"
-            class="h-8 w-8 rounded-full inline-block cursor-pointer"
+            class="inline-block h-8 w-8 cursor-pointer rounded-full"
             @click="updateData({ color: colorId })"
           />
         </div>
@@ -57,7 +57,7 @@
       cols="30"
       rows="7"
       style="resize: both; min-width: 280px; min-height: 168px"
-      class="focus:ring-0 mt-2 bg-transparent"
+      class="mt-2 bg-transparent focus:ring-0"
       @keydown.stop
       @input="updateData({ note: $event.target.value })"
       @mousedown.stop

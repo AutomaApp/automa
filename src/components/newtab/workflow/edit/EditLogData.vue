@@ -20,7 +20,7 @@
         {{ workflow.name }}
       </option>
     </ui-select>
-    <div class="mb-8 log-data">
+    <div class="log-data mb-8">
       <template v-if="data.workflowId">
         <p class="mt-4 mb-2">
           {{ t('workflow.blocks.log-data.data') }}

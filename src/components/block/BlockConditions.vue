@@ -14,15 +14,15 @@
     <div class="flex items-center">
       <div
         :class="data.disableBlock ? 'bg-box-transparent' : block.category.color"
-        class="inline-block text-sm mr-4 p-2 rounded-lg dark:text-black"
+        class="mr-4 inline-block rounded-lg p-2 text-sm dark:text-black"
       >
-        <v-remixicon name="riAB" size="20" class="inline-block mr-1" />
+        <v-remixicon name="riAB" size="20" class="mr-1 inline-block" />
         <span>{{ t('workflow.blocks.conditions.name') }}</span>
       </div>
     </div>
     <p
       v-show="data.description"
-      class="text-gray-600 mt-2 dark:text-gray-200 text-overflow leading-tight"
+      class="text-overflow mt-2 leading-tight text-gray-600 dark:text-gray-200"
     >
       {{ data.description }}
     </p>
@@ -33,7 +33,7 @@
       <li
         v-for="item in data.conditions"
         :key="item.id"
-        class="flex items-center flex-1 p-2 bg-box-transparent rounded-lg w-full relative"
+        class="bg-box-transparent relative flex w-full flex-1 items-center rounded-lg p-2"
         @dblclick.stop="$emit('edit', { editCondition: item.id })"
       >
         <p
@@ -44,13 +44,13 @@
           {{ item.name }}
         </p>
         <template v-else>
-          <p class="w-5/12 text-overflow text-right">
+          <p class="text-overflow w-5/12 text-right">
             {{ item.compareValue || '_____' }}
           </p>
-          <p class="w-2/12 text-center mx-1 font-mono">
+          <p class="mx-1 w-2/12 text-center font-mono">
             {{ item.type }}
           </p>
-          <p class="w-5/12 text-overflow">
+          <p class="text-overflow w-5/12">
             {{ item.value || '_____' }}
           </p>
         </template>

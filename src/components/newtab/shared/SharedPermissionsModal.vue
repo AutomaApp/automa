@@ -15,13 +15,13 @@
           <p class="leading-tight">
             {{ t(`workflowPermissions.${permission}.title`) }}
           </p>
-          <p class="text-gray-600 dark:text-gray-200 leading-tight">
+          <p class="leading-tight text-gray-600 dark:text-gray-200">
             {{ t(`workflowPermissions.${permission}.description`) }}
           </p>
         </div>
       </ui-list-item>
     </ui-list>
-    <div class="text-right mt-8">
+    <div class="mt-8 text-right">
       <ui-button class="mr-2" @click="emit('update:modelValue', false)">
         {{ t('common.cancel') }}
       </ui-button>

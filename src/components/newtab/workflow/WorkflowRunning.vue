@@ -1,11 +1,11 @@
 <template>
   <div class="grid grid-cols-2 gap-4">
     <ui-card v-for="item in data" :key="item">
-      <div class="flex items-center mb-4">
-        <div class="flex-1 text-overflow mr-4">
-          <p class="w-full mr-2 text-overflow">{{ item.state.name }}</p>
+      <div class="mb-4 flex items-center">
+        <div class="text-overflow mr-4 flex-1">
+          <p class="text-overflow mr-2 w-full">{{ item.state.name }}</p>
           <p
-            class="w-full mr-2 text-gray-600 dark:text-gray-200 leading-tight text-overflow"
+            class="text-overflow mr-2 w-full leading-tight text-gray-600 dark:text-gray-200"
             :title="`Started at: ${formatDate(
               item.state.startedTimestamp,
               'DD MMM, hh:mm A'
@@ -28,10 +28,10 @@
           <span>{{ t('common.stop') }}</span>
         </ui-button>
       </div>
-      <div class="flex items-center bg-box-transparent px-4 py-2 rounded-lg">
+      <div class="bg-box-transparent flex items-center rounded-lg px-4 py-2">
         <template v-if="item.state.currentBlock">
           <v-remixicon :name="getBlock(item).icon" />
-          <p class="flex-1 ml-2 mr-4">{{ getBlock(item).name }}</p>
+          <p class="ml-2 mr-4 flex-1">{{ getBlock(item).name }}</p>
           <ui-spinner color="text-accent" size="20" />
         </template>
         <p v-else>{{ t('message.noBlock') }}</p>

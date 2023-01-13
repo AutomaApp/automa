@@ -1,5 +1,5 @@
 <template>
-  <ui-card class="w-full max-w-4xl share-workflow overflow-auto scroll">
+  <ui-card class="share-workflow scroll w-full max-w-4xl overflow-auto">
     <template v-if="!isUpdate">
       <h1 class="text-xl font-semibold">Share workflow with team</h1>
       <p class="text-gray-600 dark:text-gray-200">
@@ -7,8 +7,8 @@
       </p>
     </template>
     <p v-else class="font-semibold">Update workflow</p>
-    <div class="flex items-start mt-4">
-      <div class="flex-1 mr-8">
+    <div class="mt-4 flex items-start">
+      <div class="mr-8 flex-1">
         <div class="flex items-center">
           <ui-input
             v-model="state.workflow.name"
@@ -33,10 +33,10 @@
             </option>
           </ui-select>
         </div>
-        <div class="relative mb-2 mt-2">
+        <div class="relative my-2">
           <label
             for="short-description"
-            class="text-sm ml-2 text-gray-600 dark:text-gray-200"
+            class="ml-2 text-sm text-gray-600 dark:text-gray-200"
           >
             Short description
           </label>
@@ -46,10 +46,10 @@
             :max="300"
             label="Short description"
             placeholder="Write here..."
-            class="w-full h-28 scroll resize-none"
+            class="scroll h-28 w-full resize-none"
           />
           <p
-            class="text-sm text-gray-600 dark:text-gray-200 absolute bottom-2 right-2"
+            class="absolute bottom-2 right-2 text-sm text-gray-600 dark:text-gray-200"
           >
             {{ state.workflow.description.length }}/300
           </p>
@@ -58,19 +58,19 @@
           v-model="state.workflow.content"
           :placeholder="t('common.description')"
           :limit="5000"
-          class="prose prose-zinc dark:prose-invert max-w-none content-editor p-4 bg-box-transparent rounded-lg relative"
+          class="content-editor bg-box-transparent prose prose-zinc relative max-w-none rounded-lg p-4 dark:prose-invert"
           @count="state.contentLength = $event"
         >
           <template #append>
             <p
-              class="text-sm text-gray-600 dark:text-gray-200 absolute bottom-2 right-2"
+              class="absolute bottom-2 right-2 text-sm text-gray-600 dark:text-gray-200"
             >
               {{ state.contentLength }}/5000
             </p>
           </template>
         </shared-wysiwyg>
       </div>
-      <div class="w-64 sticky top-4 pb-4">
+      <div class="sticky top-4 w-64 pb-4">
         <template v-if="isUpdate">
           <ui-button
             variant="accent"
@@ -79,7 +79,7 @@
           >
             Save
           </ui-button>
-          <ui-button class="w-full mt-2" @click="$emit('close')">
+          <ui-button class="mt-2 w-full" @click="$emit('close')">
             {{ t('common.cancel') }}
           </ui-button>
         </template>
@@ -97,7 +97,7 @@
               :loading="state.isPublishing"
               :disabled="!state.workflow.name.trim()"
               variant="accent"
-              class="w-full ml-2"
+              class="ml-2 w-full"
               @click="publishWorkflow"
             >
               Publish
@@ -125,7 +125,7 @@
             {{ category }}
           </option>
         </ui-select>
-        <span class="text-sm ml-2 text-gray-600 dark:text-gray-200 mt-5 block">
+        <span class="ml-2 mt-5 block text-sm text-gray-600 dark:text-gray-200">
           Environment
         </span>
         <ui-tabs v-model="state.workflow.tag" type="fill" fill>

@@ -10,11 +10,11 @@
         v-if="state.selectType === 'nodes'"
         v-model="state.query"
         placeholder="Search..."
-        class="w-full mb-4"
+        class="mb-4 w-full"
       />
       <template v-else>
         <div
-          class="flex items-center cursor-pointer"
+          class="flex cursor-pointer items-center"
           @click="state.selectType = 'nodes'"
         >
           <v-remixicon
@@ -22,7 +22,7 @@
             title="Go back"
             class="mr-1 -ml-1"
           />
-          <span class="flex-1 text-overflow">
+          <span class="text-overflow flex-1">
             {{ getBlockName(selectedNode) }}
           </span>
         </div>

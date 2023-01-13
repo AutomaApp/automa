@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div class="flex items-center mb-2">
+    <div class="mb-2 flex items-center">
       <ui-input
         :model-value="getReadableShortcut(recordKeys.keys)"
         readonly
-        class="flex-1 mr-2"
+        class="mr-2 flex-1"
         :placeholder="t('workflow.blocks.trigger.forms.shortcut')"
       />
       <ui-button

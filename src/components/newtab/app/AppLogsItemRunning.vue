@@ -4,13 +4,13 @@
       <button
         v-tooltip:bottom="t('workflow.blocks.go-back.name')"
         role="button"
-        class="h-12 px-1 transition mr-2 bg-input rounded-lg dark:text-gray-300 text-gray-600"
+        class="bg-input mr-2 h-12 rounded-lg px-1 text-gray-600 transition dark:text-gray-300"
         @click="$emit('close')"
       >
         <v-remixicon name="riArrowLeftSLine" />
       </button>
-      <div class="flex-grow overflow-hidden">
-        <h1 class="text-2xl max-w-md text-overflow font-semibold text-overflow">
+      <div class="grow overflow-hidden">
+        <h1 class="text-overflow max-w-md text-2xl font-semibold">
           {{ running.state.name }}
         </h1>
         <p>
@@ -49,14 +49,14 @@
           <div
             v-for="block in running.state.currentBlock"
             :key="block.id"
-            class="px-2 py-1 rounded-md w-full group hoverable flex items-center"
+            class="hoverable group flex w-full items-center rounded-md px-2 py-1"
           >
             <span
               :key="key"
               :title="`Duration: ${Math.round(
                 (Date.now() - block.startedAt) / 1000
               )}s`"
-              class="w-14 flex-shrink-0 text-overflow text-gray-400 ml-6"
+              class="text-overflow ml-6 w-14 shrink-0 text-gray-400"
             >
               {{ countDuration(block.startedAt, Date.now()) }}
             </span>

@@ -1,13 +1,13 @@
 <template>
   <div
-    class="on-block-error overflow-auto scroll"
+    class="on-block-error scroll overflow-auto"
     style="max-height: calc(100vh - 13rem)"
   >
     <div
-      class="p-4 rounded-lg bg-green-200 dark:bg-green-300 flex items-start text-black"
+      class="flex items-start rounded-lg bg-green-200 p-4 text-black dark:bg-green-300"
     >
       <v-remixicon name="riInformationLine" />
-      <p class="flex-1 ml-4">
+      <p class="ml-4 flex-1">
         {{ t('workflow.blocks.base.onError.info') }}
       </p>
     </div>
@@ -46,7 +46,7 @@
                 class="w-20"
               />
             </div>
-            <div class="inline-flex items-center ml-12">
+            <div class="ml-12 inline-flex items-center">
               <span>
                 {{ t('workflow.blocks.base.onError.interval.name') }}
               </span>
@@ -68,7 +68,7 @@
             </div>
           </div>
         </transition-expand>
-        <ui-select v-model="state.toDo" class="w-56 mt-2">
+        <ui-select v-model="state.toDo" class="mt-2 w-56">
           <option
             v-for="type in toDoTypes"
             :key="type"
@@ -143,7 +143,7 @@
                 <td>
                   <v-remixicon
                     name="riCloseLine"
-                    class="text-gray-600 dark:text-gray-200 cursor-pointer"
+                    class="cursor-pointer text-gray-600 dark:text-gray-200"
                     @click="state.dataToInsert.splice(index, 1)"
                   />
                 </td>

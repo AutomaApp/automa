@@ -4,14 +4,14 @@
       {{ t('workflow.conditionBuilder.add') }}
     </ui-button>
     <div v-for="(item, index) in conditions" :key="item.id">
-      <div class="flex relative condition-group">
+      <div class="condition-group relative flex">
         <div
           v-show="item.conditions.length > 1"
-          class="and-text mr-4 relative mb-12 flex items-center"
+          class="and-text relative mr-4 mb-12 flex items-center"
           :class="{ 'add-line': item.conditions.length > 1 }"
         >
           <span
-            class="py-1 w-14 text-center text-white dark:text-black rounded-md dark:bg-blue-300 bg-blue-500 inline-block z-10 relative"
+            class="relative z-10 inline-block w-14 rounded-md bg-blue-500 py-1 text-center text-white dark:bg-blue-300 dark:text-black"
           >
             {{ t('workflow.conditionBuilder.and') }}
           </span>
@@ -28,11 +28,11 @@
             <template #item="{ element: inputs, index: inputsIndex }">
               <div class="condition-item">
                 <ui-expand
-                  class="border rounded-lg w-full"
+                  class="w-full rounded-lg border"
                   header-class="px-4 py-2 w-full flex items-center h-full rounded-lg overflow-hidden group focus:ring-0"
                 >
                   <template #header>
-                    <p class="text-overflow flex-1 text-left space-x-2 w-64">
+                    <p class="text-overflow w-64 flex-1 space-x-2 text-left">
                       <span
                         v-for="input in inputs.items"
                         :key="`text-${input.id}`"
@@ -47,12 +47,12 @@
                     </p>
                     <v-remixicon
                       name="riDeleteBin7Line"
-                      class="ml-4 group-hover:visible invisible"
+                      class="invisible ml-4 group-hover:visible"
                       @click.stop="deleteCondition(index, inputsIndex)"
                     />
                     <v-remixicon
                       name="mdiDrag"
-                      class="ml-2 cursor-move handle"
+                      class="handle ml-2 cursor-move"
                     />
                   </template>
                   <div class="space-y-2 px-4 py-2">
@@ -68,7 +68,7 @@
               </div>
             </template>
           </draggable>
-          <div class="space-x-2 text-sm mt-2 condition-action">
+          <div class="condition-action mt-2 space-x-2 text-sm">
             <ui-button @click="addAndCondition(index)">
               <v-remixicon name="riAddLine" class="-ml-2 mr-1" size="20" />
               {{ t('workflow.conditionBuilder.and') }}
@@ -85,14 +85,14 @@
       </div>
       <div
         v-show="index !== conditions.length - 1"
-        class="text-left or-text relative mt-4"
+        class="or-text relative mt-4 text-left"
       >
         <span
-          class="line bg-indigo-500 dark:bg-indigo-400 w-full absolute top-1/2 -translate-y-1/2 left-0"
+          class="line absolute top-1/2 left-0 w-full -translate-y-1/2 bg-indigo-500 dark:bg-indigo-400"
           style="height: 2px"
         ></span>
         <span
-          class="py-1 dark:text-black rounded-md dark:bg-indigo-300 bg-indigo-500 w-14 relative z-10 inline-block text-white text-center"
+          class="relative z-10 inline-block w-14 rounded-md bg-indigo-500 py-1 text-center text-white dark:bg-indigo-300 dark:text-black"
         >
           {{ t('workflow.conditionBuilder.or') }}
         </span>

@@ -3,7 +3,7 @@
     <ui-select
       :model-value="data.eventName"
       :placeholder="t('workflow.blocks.trigger-event.selectEvent')"
-      class="w-full mt-4"
+      class="mt-4 w-full"
       @change="handleSelectChange"
     >
       <option v-for="event in eventList" :key="event.id" :value="event.id">
@@ -11,12 +11,12 @@
       </option>
     </ui-select>
     <button
-      class="mb-2 block flex items-center w-full text-left mt-1 focus:ring-0"
+      class="mb-2 mt-1 block flex w-full items-center text-left focus:ring-0"
       @click="showOptions = !showOptions"
     >
       <v-remixicon
         name="riArrowLeftSLine"
-        class="mr-1 transition-transform -ml-1"
+        class="mr-1 -ml-1 transition-transform"
         :rotate="showOptions ? 270 : 180"
       />
       <span class="flex-1">{{ t('common.options') }}</span>
@@ -32,7 +32,7 @@
     </button>
     <transition-expand>
       <div v-if="showOptions">
-        <div class="grid grid-cols-2 gap-2 mb-4">
+        <div class="mb-4 grid grid-cols-2 gap-2">
           <ui-checkbox
             :model-value="params.bubbles"
             @change="updateParams({ ...params, bubbles: $event })"

@@ -1,10 +1,10 @@
 <template>
   <ui-card>
-    <div class="flex items-center mb-4">
-      <div class="flex-1 text-overflow mr-4">
-        <p class="w-full mr-2 text-overflow">{{ data.state.name }}</p>
+    <div class="mb-4 flex items-center">
+      <div class="text-overflow mr-4 flex-1">
+        <p class="text-overflow mr-2 w-full">{{ data.state.name }}</p>
         <p
-          class="w-full mr-2 text-gray-600 dark:text-gray-200 leading-tight text-overflow"
+          class="text-overflow mr-2 w-full leading-tight text-gray-600 dark:text-gray-200"
           :title="`Started at: ${formatDate(
             data.state.startedTimestamp,
             'DD MMM, hh:mm A'
@@ -27,14 +27,14 @@
         <span>{{ t('common.stop') }}</span>
       </ui-button>
     </div>
-    <div class="divide-y bg-box-transparent divide-y px-4 rounded-lg">
+    <div class="bg-box-transparent divide-y rounded-lg px-4">
       <div
         v-for="block in data.state.currentBlock"
         :key="block.id || block.name"
         class="flex items-center py-2"
       >
         <v-remixicon :name="blocks[block.name].icon" />
-        <p class="flex-1 ml-2 mr-4 text-overflow">
+        <p class="text-overflow ml-2 mr-4 flex-1">
           {{ blocks[block.name].name }}
         </p>
         <ui-spinner color="text-accent" size="20" />
@@ -42,7 +42,7 @@
     </div>
     <div
       v-if="data.parentState"
-      class="py-2 px-4 bg-yellow-200 rounded-lg mt-2 text-sm"
+      class="mt-2 rounded-lg bg-yellow-200 py-2 px-4 text-sm"
     >
       {{ t('workflow.state.executeBy', { name: data.parentState.name }) }}
       <span class="lowercase">

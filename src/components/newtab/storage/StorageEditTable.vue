@@ -2,20 +2,20 @@
   <ui-modal :model-value="modelValue" persist custom-content>
     <ui-card
       padding="p-0"
-      class="max-w-xl w-full flex flex-col"
+      class="flex w-full max-w-xl flex-col"
       style="height: 600px"
     >
       <p class="p-4 font-semibold">
         {{ t('storage.table.add') }}
       </p>
-      <div class="overflow-auto scroll px-4 pb-4 flex-1">
+      <div class="scroll flex-1 overflow-auto px-4 pb-4">
         <ui-input
           v-model="state.name"
-          class="w-full -mt-1"
+          class="-mt-1 w-full"
           label="Table name"
           placeholder="My table"
         />
-        <div class="flex items-center mt-4">
+        <div class="mt-4 flex items-center">
           <p class="flex-1">Columns</p>
           <ui-button icon :title="t('common.add')" @click="addColumn">
             <v-remixicon name="riAddLine" />
@@ -23,7 +23,7 @@
         </div>
         <p
           v-if="state.columns && state.columns.length === 0"
-          class="text-center my-4 text-gray-600 dark:text-gray-300"
+          class="my-4 text-center text-gray-600 dark:text-gray-300"
         >
           {{ t('message.noData') }}
         </p>
@@ -54,7 +54,7 @@
           </li>
         </ul>
       </div>
-      <div class="text-right p-4">
+      <div class="p-4 text-right">
         <ui-button class="mr-4" @click="clearTempTables(true)">
           {{ t('common.cancel') }}
         </ui-button>

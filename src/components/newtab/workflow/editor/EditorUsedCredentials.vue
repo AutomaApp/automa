@@ -6,7 +6,7 @@
   >
     <ui-popover v-tooltip="t('credential.use.title')" @show="checkCredentials">
       <template #trigger>
-        <button class="p-2 hoverable transition rounded-lg">
+        <button class="hoverable rounded-lg p-2 transition">
           <v-remixicon name="riKey2Line" />
         </button>
       </template>
@@ -14,7 +14,7 @@
         <p class="leading-tight">
           {{ t('credential.use.description') }}
         </p>
-        <ui-list class="mt-2 overflow-auto scroll" style="max-height: 400px">
+        <ui-list class="scroll mt-2 overflow-auto" style="max-height: 400px">
           <ui-list-item
             v-for="item in credentials"
             :key="item.nodeId"
@@ -22,10 +22,10 @@
             small
             class="group"
           >
-            <div class="flex-1 mr-2">
+            <div class="mr-2 flex-1">
               <p
                 title="Jump to block"
-                class="text-sm text-gray-600 dark:text-gray-200 cursor-pointer"
+                class="cursor-pointer text-sm text-gray-600 dark:text-gray-200"
                 @click="jumpToBlock(item.nodeId)"
               >
                 {{ item.nodeName }}
@@ -40,7 +40,7 @@
               name="riArrowGoForwardLine"
               size="18"
               title="Jump to block"
-              class="cursor-pointer text-gray-600 dark:text-gray-200 invisible group-hover:visible"
+              class="invisible cursor-pointer text-gray-600 group-hover:visible dark:text-gray-200"
               @click="jumpToBlock(item.nodeId)"
             />
           </ui-list-item>

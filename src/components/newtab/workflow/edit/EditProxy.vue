@@ -3,13 +3,13 @@
     <ui-textarea
       :model-value="data.description"
       :placeholder="t('common.description')"
-      class="w-full mb-2"
+      class="mb-2 w-full"
       @change="updateData({ description: $event })"
     />
     <ui-input
       :model-value="data.host"
       placeholder="socks5://1.2.3.4:1080"
-      class="w-full mb-2"
+      class="mb-2 w-full"
       @change="updateData({ host: $event })"
     >
       <template #label>
@@ -26,7 +26,7 @@
       :model-value="data.port"
       label="Port"
       placeholder="443"
-      class="w-full mb-2"
+      class="mb-2 w-full"
       @change="updateData({ port: $event })"
     />
     <label for="input-bypass" class="input-label">
@@ -47,7 +47,7 @@
       @change="updateData({ bypassList: $event })"
     >
     </ui-textarea>
-    <p class="text-gray-600 dark:text-gray-200 text-sm">
+    <p class="text-sm text-gray-600 dark:text-gray-200">
       {{ t('workflow.blocks.proxy.bypass.note') }}
     </p>
     <ui-checkbox

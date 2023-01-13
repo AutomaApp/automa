@@ -2,7 +2,7 @@
   <component
     :is="tag"
     v-bind="$attrs"
-    class="bg-white dark:bg-gray-800 transform rounded-lg ui-card"
+    class="ui-card rounded-lg bg-white dark:bg-gray-800"
     :class="[padding, { 'hover:shadow-xl hover:-translate-y-1': hover }]"
   >
     <slot></slot>

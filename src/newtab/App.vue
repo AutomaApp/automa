@@ -8,14 +8,14 @@
     <ui-dialog>
       <template #auth>
         <div class="text-center">
-          <p class="font-semibold text-xl">Oops!! 😬</p>
+          <p class="text-xl font-semibold">Oops!! 😬</p>
           <p class="mt-2 text-gray-600 dark:text-gray-200">
             {{ t('auth.text') }}
           </p>
           <ui-button
             tag="a"
             href="https://www.automa.site/auth"
-            class="mt-6 w-full block"
+            class="mt-6 block w-full"
             variant="accent"
           >
             {{ t('auth.signIn') }}
@@ -25,9 +25,9 @@
     </ui-dialog>
     <div
       v-if="isUpdated"
-      class="z-50 fixed bottom-8 left-1/2 -translate-x-1/2 max-w-xl text-white dark:text-gray-900"
+      class="fixed bottom-8 left-1/2 z-50 max-w-xl -translate-x-1/2 text-white dark:text-gray-900"
     >
-      <div class="p-4 shadow-2xl rounded-lg bg-accent flex items-center">
+      <div class="flex items-center rounded-lg bg-accent p-4 shadow-2xl">
         <v-remixicon name="riInformationLine" class="mr-3" />
         <p>
           {{ t('updateMessage.text1', { version: currentVersion }) }}
@@ -36,7 +36,7 @@
           :href="`https://github.com/AutomaApp/automa/releases/latest`"
           target="_blank"
           rel="noopener"
-          class="underline ml-1"
+          class="ml-1 underline"
         >
           {{ t('updateMessage.text2') }}
         </a>
@@ -48,8 +48,8 @@
           <v-remixicon size="20" name="riCloseLine" />
         </button>
       </div>
-      <div class="p-4 shadow-2xl rounded-lg bg-accent flex items-center mt-4">
-        <v-remixicon name="riInformationLine" class="mr-3 flex-shrink-0" />
+      <div class="mt-4 flex items-center rounded-lg bg-accent p-4 shadow-2xl">
+        <v-remixicon name="riInformationLine" class="mr-3 shrink-0" />
         <p>
           Export your Automa workflows as a standalone extension using
           <a

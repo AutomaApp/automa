@@ -1,17 +1,17 @@
 <template>
   <label class="radio-ui inline-flex items-center">
     <div
-      class="relative h-5 w-5 inline-block focus-within:ring-2 focus-within:ring-accent rounded-full"
+      class="relative inline-block h-5 w-5 rounded-full focus-within:ring-2 focus-within:ring-accent"
     >
       <input
         type="radio"
-        class="opacity-0 radio-ui__input"
+        class="radio-ui__input opacity-0"
         :value="value"
         v-bind="{ checked: isChecked }"
         @change="changeHandler"
       />
       <div
-        class="border rounded-full absolute top-0 left-0 bg-input radio-ui__mark cursor-pointer"
+        class="bg-input radio-ui__mark absolute top-0 left-0 cursor-pointer rounded-full border"
       ></div>
     </div>
     <span v-if="$slots.default" class="ml-2 inline-block">

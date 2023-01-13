@@ -8,14 +8,14 @@
         v-if="!hideHeaderIcon && !appendIcon"
         :rotate="show ? 90 : -90"
         name="riArrowLeftSLine"
-        class="mr-2 transition-transform -ml-1"
+        class="mr-2 -ml-1 transition-transform"
       />
       <slot v-bind="{ show }" name="header" />
       <v-remixicon
         v-if="appendIcon"
         :rotate="show ? 90 : -90"
         name="riArrowLeftSLine"
-        class="transition-transform -mr-1 ml-2"
+        class="-mr-1 ml-2 transition-transform"
       />
     </button>
     <transition-expand>

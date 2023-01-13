@@ -4,7 +4,7 @@
       <p>
         {{ t('workflow.settings.blockDelay.title') }}
       </p>
-      <p class="text-gray-600 dark:text-gray-200 text-sm leading-tight">
+      <p class="text-sm leading-tight text-gray-600 dark:text-gray-200">
         {{ t('workflow.settings.blockDelay.description') }}
       </p>
     </div>
@@ -19,7 +19,7 @@
       <p>
         {{ t('workflow.settings.tabLoadTimeout.title') }}
       </p>
-      <p class="text-gray-600 dark:text-gray-200 text-sm leading-tight">
+      <p class="text-sm leading-tight text-gray-600 dark:text-gray-200">
         {{ t('workflow.settings.tabLoadTimeout.description') }}
       </p>
     </div>

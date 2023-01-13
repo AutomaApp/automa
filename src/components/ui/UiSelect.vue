@@ -3,18 +3,18 @@
     <label
       v-if="label || $slots.label"
       :for="selectId"
-      class="text-gray-600 dark:text-gray-200 text-sm ml-1"
+      class="ml-1 text-sm text-gray-600 dark:text-gray-200"
     >
       <slot name="label">
         {{ label }}
       </slot>
     </label>
-    <div class="ui-select__content flex items-center w-full block relative">
+    <div class="ui-select__content relative block flex w-full items-center">
       <v-remixicon
         v-if="prependIcon"
         size="20"
         :name="prependIcon"
-        class="absolute text-gray-600 dark:text-gray-200 left-0 ml-2"
+        class="absolute left-0 ml-2 text-gray-600 dark:text-gray-200"
       />
       <select
         :id="selectId"
@@ -24,7 +24,7 @@
           'opacity-75 pointer-events-none': disabled,
         }"
         :value="modelValue"
-        class="px-4 pr-10 transition rounded-lg bg-input bg-transparent py-2 z-10 appearance-none w-full h-full appearance-none"
+        class="bg-input z-10 h-full w-full appearance-none rounded-lg bg-transparent px-4 py-2 pr-10 transition"
         @change="emitValue"
       >
         <option v-if="placeholder" value="" disabled selected>
@@ -35,7 +35,7 @@
       <v-remixicon
         size="28"
         name="riArrowDropDownLine"
-        class="absolute text-gray-600 dark:text-gray-200 mr-2 right-0"
+        class="absolute right-0 mr-2 text-gray-600 dark:text-gray-200"
       />
     </div>
   </div>

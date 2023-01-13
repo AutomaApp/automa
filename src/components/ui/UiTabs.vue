@@ -5,13 +5,13 @@
       { [color]: type === 'fill' },
     ]"
     aria-role="tablist"
-    class="ui-tabs text-gray-600 dark:text-gray-200 flex space-x-1 items-center relative"
+    class="ui-tabs relative flex items-center space-x-1 text-gray-600 dark:text-gray-200"
     @mouseleave="showHoverIndicator = false"
   >
     <div
       v-show="showHoverIndicator"
       ref="hoverIndicator"
-      class="ui-tabs__indicator z-0 absolute left-0 rounded-lg bg-box-transparent"
+      class="ui-tabs__indicator bg-box-transparent absolute left-0 z-0 rounded-lg"
       style="top: 50%; transform: translate(0, -50%)"
     ></div>
     <slot></slot>

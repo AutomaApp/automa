@@ -2,7 +2,7 @@
   <component
     :is="tag"
     role="button"
-    class="ui-button h-10 relative transition"
+    class="ui-button relative h-10 transition"
     :class="[
       color ? color : variants[btnType][variant],
       icon ? 'p-2' : 'py-2 px-4',
@@ -15,7 +15,7 @@
     v-bind="{ disabled: loading || disabled, ...$attrs }"
   >
     <span
-      class="flex justify-center h-full items-center"
+      class="flex h-full items-center justify-center"
       :class="{ 'opacity-25': loading }"
     >
       <slot></slot>

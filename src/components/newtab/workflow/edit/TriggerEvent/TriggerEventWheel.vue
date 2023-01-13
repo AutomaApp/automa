@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-2 grid-cols-2">
+  <div class="grid grid-cols-2 gap-2">
     <ui-input
       v-model.number="defaultParams.deltaX"
       type="number"

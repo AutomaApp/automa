@@ -7,7 +7,7 @@
       @change="updateData({ description: $event })"
     />
     <ui-button
-      class="w-full mt-4 mb-2"
+      class="mt-4 mb-2 w-full"
       variant="accent"
       @click="showModal = !showModal"
     >
@@ -20,7 +20,7 @@
       content-class="max-w-3xl insert-data-modal"
     >
       <ul
-        class="mt-4 data-list px-4 pb-4 overflow-auto scroll"
+        class="data-list scroll mt-4 overflow-auto px-4 pb-4"
         style="max-height: calc(100vh - 13rem)"
       >
         <li
@@ -28,10 +28,10 @@
           :key="index"
           class="mb-4 rounded-lg border"
         >
-          <div class="p-2 border-b flex items-center">
+          <div class="flex items-center border-b p-2">
             <ui-select
               :model-value="item.type"
-              class="mr-2 flex-shrink-0"
+              class="mr-2 shrink-0"
               @change="changeItemType(index, $event)"
             >
               <option value="table">
@@ -61,7 +61,7 @@
                 {{ column.name }}
               </option>
             </ui-select>
-            <div class="flex-grow" />
+            <div class="grow" />
             <v-remixicon
               name="riDeleteBin7Line"
               class="cursor-pointer"
@@ -107,7 +107,7 @@
                 class="w-full"
               />
             </edit-autocomplete>
-            <div class="flex mt-2 items-center">
+            <div class="mt-2 flex items-center">
               <ui-button
                 v-tooltip="
                   hasFileAccess
@@ -133,7 +133,7 @@
                 >
                   <v-remixicon name="riBrush2Line" />
                 </ui-button>
-                <div class="flex-grow" />
+                <div class="grow" />
                 <ui-select
                   :model-value="item.action || item.csvAction"
                   placeholder="File Action"
@@ -158,7 +158,7 @@
               :model-value="previewState.data"
               readonly
               hide-lang
-              class="w-full mt-4"
+              class="mt-4 w-full"
               lang="json"
               style="max-height: 500px"
             />

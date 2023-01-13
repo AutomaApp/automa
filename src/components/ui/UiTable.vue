@@ -18,7 +18,7 @@
           </span>
           <span
             v-if="header.sortable"
-            class="cursor-pointer ml-1 sort-icon"
+            class="sort-icon ml-1 cursor-pointer"
             @click="updateSort(header)"
           >
             <v-remixicon

@@ -4,7 +4,7 @@
     :data="data"
     :block-id="id"
     :block-data="block"
-    class="w-64 block-package"
+    class="block-package w-64"
     @delete="$emit('delete', id)"
     @update="$emit('update', $event)"
     @settings="$emit('settings', $event)"
@@ -19,17 +19,17 @@
       />
       <div
         :class="data.disableBlock ? 'bg-box-transparent' : block.category.color"
-        class="inline-block text-sm mr-4 p-2 rounded-lg dark:text-black overflow-hidden"
+        class="mr-4 inline-block overflow-hidden rounded-lg p-2 text-sm dark:text-black"
       >
         <v-remixicon
           v-if="!data.icon.startsWith('http')"
           :name="data.icon"
           size="20"
-          class="inline-block mr-1"
+          class="mr-1 inline-block"
         />
         <span class="text-overflow">{{ data.name || 'Unnamed package' }}</span>
       </div>
-      <div class="flex-grow" />
+      <div class="grow" />
       <v-remixicon
         v-if="state.isInstalled"
         title="Update package"
@@ -45,13 +45,13 @@
         @click="installPackage"
       />
     </div>
-    <div class="grid grid-cols-2 mt-4 gap-x-2">
+    <div class="mt-4 grid grid-cols-2 gap-x-2">
       <ul class="pkg-handle-container">
         <li
           v-for="input in data.inputs"
           :key="input.id"
           :title="input.name"
-          class="relative target"
+          class="target relative"
         >
           <Handle
             :id="`${id}-input-${input.id}`"
@@ -66,7 +66,7 @@
           v-for="output in data.outputs"
           :key="output.id"
           :title="output.name"
-          class="relative source"
+          class="source relative"
         >
           <Handle
             :id="`${id}-output-${output.id}`"
@@ -79,7 +79,7 @@
     </div>
     <div
       v-if="data.author"
-      class="mt-1 text-sm text-gray-600 flex items-center dark:text-gray-200"
+      class="mt-1 flex items-center text-sm text-gray-600 dark:text-gray-200"
     >
       <p>By {{ data.author }}</p>
       <a

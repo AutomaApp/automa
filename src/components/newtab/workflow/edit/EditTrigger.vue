@@ -4,12 +4,12 @@
       :model-value="data.description"
       autoresize
       :placeholder="t('common.description')"
-      class="w-full mb-2"
+      class="mb-2 w-full"
       @change="updateData({ description: $event })"
     />
     <ui-button
       variant="accent"
-      class="w-full mt-4"
+      class="mt-4 w-full"
       @click="state.showTriggersModal = true"
     >
       Edit Triggers

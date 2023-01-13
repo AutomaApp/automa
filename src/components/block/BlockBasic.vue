@@ -20,14 +20,14 @@
     <div class="flex items-center">
       <span
         :class="data.disableBlock ? 'bg-box-transparent' : block.category.color"
-        class="inline-block p-2 mr-2 rounded-lg dark:text-black"
+        class="mr-2 inline-block rounded-lg p-2 dark:text-black"
       >
         <v-remixicon
           :path="getIconPath(block.details.icon)"
           :name="block.details.icon || 'riGlobalLine'"
         />
       </span>
-      <div class="overflow-hidden flex-1">
+      <div class="flex-1 overflow-hidden">
         <span
           v-if="blockErrors"
           v-tooltip="{
@@ -40,20 +40,20 @@
         </span>
         <p
           v-if="block.details.id"
-          class="font-semibold leading-tight text-overflow whitespace-nowrap"
+          class="text-overflow whitespace-nowrap font-semibold leading-tight"
         >
           {{ getBlockName() }}
         </p>
         <p
           :class="{ 'mb-1': data.description && data.loopId }"
-          class="text-gray-600 dark:text-gray-200 text-overflow leading-tight"
+          class="text-overflow leading-tight text-gray-600 dark:text-gray-200"
         >
           {{ data.description }}
         </p>
         <span
           v-if="showTextToCopy"
           :title="showTextToCopy.name + ' (click to copy)'"
-          class="bg-box-transparent rounded-br-lg text-gray-600 dark:text-gray-200 text-overflow rounded-sm py-px px-1 text-xs absolute bottom-0 right-0"
+          class="bg-box-transparent text-overflow absolute bottom-0 right-0 rounded-sm rounded-br-lg py-px px-1 text-xs text-gray-600 dark:text-gray-200"
           style="max-width: 40%; cursor: pointer"
           @click.stop="insertToClipboard(showTextToCopy.value)"
         >

@@ -21,7 +21,7 @@
     </ui-input>
     <ui-input
       v-model="observeDetail.baseSelector"
-      class="w-full mt-4"
+      class="mt-4 w-full"
       placeholder="CSS Selector or XPath"
     >
       <template #label>
@@ -47,7 +47,7 @@
     <ui-input
       v-model="observeDetail.selector"
       :label="t('workflow.blocks.trigger.element-change.target')"
-      class="w-full mt-4"
+      class="mt-4 w-full"
       placeholder="CSS Selector or XPath"
     />
     <ui-expand header-class="w-full flex items-center focus:ring-0 group">

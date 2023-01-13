@@ -1,19 +1,20 @@
 <template>
   <div class="block-base relative w-48" @dblclick.stop="$emit('edit')">
     <div
-      class="top-0 w-full absolute block-menu-container hidden"
+      class="block-menu-container absolute top-0 hidden w-full"
       style="transform: translateY(-100%)"
     >
       <div>
         <p
           title="Block id (click to copy)"
-          class="dark:text-gray-300 px-1 inline-block block-menu"
+          class="block-menu text-overflow inline-block px-1 dark:text-gray-300"
+          style="max-width: 96px"
           @click="insertToClipboard"
         >
           {{ isCopied ? '✅ Copied' : blockId }}
         </p>
       </div>
-      <div class="inline-flex items-center dark:text-gray-300 block-menu">
+      <div class="block-menu inline-flex items-center dark:text-gray-300">
         <button
           v-if="!blockData.details?.disableDelete"
           title="Delete block"
@@ -63,7 +64,7 @@
       </div>
     </div>
     <slot name="prepend" />
-    <ui-card :class="contentClass" class="z-10 relative block-base__content">
+    <ui-card :class="contentClass" class="block-base__content relative z-10">
       <slot></slot>
     </ui-card>
     <slot name="append" />

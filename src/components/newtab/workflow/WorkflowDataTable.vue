@@ -5,7 +5,7 @@
         <ui-button> Connect to a storage table </ui-button>
       </template>
       <p>Select a table</p>
-      <ui-list class="mt-2 space-y-1 max-h-80 overflow-auto w-64">
+      <ui-list class="mt-2 max-h-80 w-64 space-y-1 overflow-auto">
         <p v-if="state.tableList.length === 0">
           {{ t('message.noData') }}
         </p>
@@ -19,7 +19,7 @@
         </ui-list-item>
       </ui-list>
     </ui-popover>
-    <div class="flex mb-4">
+    <div class="mb-4 flex">
       <ui-input
         v-model="state.query"
         autofocus
@@ -36,7 +36,7 @@
   </template>
   <div
     v-else-if="state.connectedTable"
-    class="py-2 px-4 rounded-md bg-green-200 dark:bg-green-300 flex items-center mb-4 text-black"
+    class="mb-4 flex items-center rounded-md bg-green-200 py-2 px-4 text-black dark:bg-green-300"
   >
     <p class="mr-1">
       This workflow is connected to the
@@ -56,10 +56,10 @@
     />
   </div>
   <div
-    class="overflow-y-auto scroll px-1"
+    class="scroll overflow-y-auto px-1"
     style="max-height: calc(100vh - 16rem); min-height: 300px"
   >
-    <p v-if="columns.length === 0" class="text-center mt-4">
+    <p v-if="columns.length === 0" class="mt-4 text-center">
       {{ t('message.noData') }}
     </p>
     <ul v-else class="space-y-2 py-1">

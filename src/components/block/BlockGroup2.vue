@@ -4,7 +4,7 @@
       width: `${data.width || 400}px`,
       height: `${data.height || 300}px`,
     }"
-    class="group-block-2 group relative border-2 rounded-lg relative"
+    class="group-block-2 group relative rounded-lg border-2"
     style="
       min-width: 400px;
       min-height: 300px;
@@ -12,12 +12,12 @@
       background-color: rgb(37, 99, 235, 0.3);
     "
   >
-    <div class="p-4 flex items-center">
+    <div class="flex items-center p-4">
       <input
         :value="data.name"
         placeholder="name"
         type="text"
-        class="px-4 py-2 bg-white rounded-lg"
+        class="rounded-lg bg-white px-4 py-2"
         @input="emit('update', { name: $event.target.value })"
       />
       <div class="flex-1" />
@@ -30,7 +30,7 @@
     <span
       ref="dragHandle"
       style="cursor: nw-resize"
-      class="drag-handle h-4 w-4 invisible group-hover:visible bg-accent absolute bottom-0 right-0"
+      class="drag-handle invisible absolute bottom-0 right-0 h-4 w-4 bg-accent group-hover:visible"
     />
   </div>
 </template>

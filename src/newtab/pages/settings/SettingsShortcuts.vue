@@ -1,9 +1,9 @@
 <template>
-  <p v-if="recording.isChanged" class="text-gray-600 dark:text-gray-200 mb-4">
+  <p v-if="recording.isChanged" class="mb-4 text-gray-600 dark:text-gray-200">
     {{ t('settings.language.reloadPage') }}
   </p>
-  <div class="mb-8 border p-4 rounded-lg dark:border-gray-800 border-gray-200">
-    <p class="font-semibold mb-2 capitalize">Automa</p>
+  <div class="mb-8 rounded-lg border border-gray-200 p-4 dark:border-gray-800">
+    <p class="mb-2 font-semibold capitalize">Automa</p>
     <ui-list>
       <ui-list-item class="group">
         <p class="flex-1">Shortcut</p>
@@ -28,14 +28,14 @@
         <template v-else>
           <button
             v-tooltip="'Remove shortcut'"
-            class="group-hover:visible invisible mr-4"
+            class="invisible mr-4 group-hover:visible"
             @click="removeShortcut('automa:shortcut')"
           >
             <v-remixicon name="riDeleteBin7Line" />
           </button>
           <button
             v-tooltip="t('workflow.blocks.trigger.shortcut.tooltip')"
-            class="group-hover:visible invisible"
+            class="invisible group-hover:visible"
             @click="startRecording({ id: 'automa:shortcut' })"
           >
             <v-remixicon name="riRecordCircleLine" />
@@ -50,16 +50,16 @@
   <div
     v-for="(items, category) in shortcutsCats"
     :key="category"
-    class="mb-8 border p-4 rounded-lg dark:border-gray-800 border-gray-200"
+    class="mb-8 rounded-lg border border-gray-200 p-4 dark:border-gray-800"
   >
-    <p class="font-semibold mb-2 capitalize">{{ category }}</p>
+    <p class="mb-2 font-semibold capitalize">{{ category }}</p>
     <ui-list class="space-y-1 text-gray-600 dark:text-gray-200">
       <ui-list-item
         v-for="shortcut in items"
         :key="shortcut.id"
         class="group h-12"
       >
-        <p class="flex-1 mr-4 capitalize">
+        <p class="mr-4 flex-1 capitalize">
           {{ shortcut.name }}
         </p>
         <template v-if="recording.id === shortcut.id">
@@ -83,7 +83,7 @@
         <template v-else>
           <button
             v-tooltip="t('workflow.blocks.trigger.shortcut.tooltip')"
-            class="group-hover:visible invisible"
+            class="invisible group-hover:visible"
             @click="startRecording(shortcut)"
           >
             <v-remixicon name="riRecordCircleLine" />

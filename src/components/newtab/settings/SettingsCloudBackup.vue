@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-start mt-4 cloud-backup">
+  <div class="cloud-backup mt-4 flex items-start">
     <div class="w-56">
       <ui-input
         v-model="state.query"
@@ -23,7 +23,7 @@
           {{ t(`settings.backupWorkflows.cloud.buttons.${location}`) }}
           <span
             v-if="location === 'cloud'"
-            class="ml-2 text-sm rounded-full bg-accent dark:text-black text-gray-100 text-center"
+            class="ml-2 rounded-full bg-accent text-center text-sm text-gray-100 dark:text-black"
             style="height: 29px; width: 29px; line-height: 29px"
           >
             {{ state.cloudWorkflows.length }}
@@ -51,10 +51,10 @@
         ({{ state.deleteIds.length }})
       </ui-button>
     </div>
-    <div v-if="!state.backupRetrieved" class="text-center block flex-1 content">
+    <div v-if="!state.backupRetrieved" class="content block flex-1 text-center">
       <ui-spinner color="text-accent" />
     </div>
-    <div v-else class="flex-1 ml-4 overflow-hidden">
+    <div v-else class="ml-4 flex-1 overflow-hidden">
       <template v-if="state.activeTab === 'cloud'">
         <settings-backup-items
           v-slot="{ workflow }"
@@ -69,7 +69,7 @@
               workflow,
               'DD MMMM YYYY, hh:mm A'
             )}`"
-            class="ml-4 w-3/12 mr-8"
+            class="ml-4 mr-8 w-3/12"
           >
             {{ formatDate(workflow, 'DD MMM YYYY') }}
           </p>
@@ -78,7 +78,7 @@
             color="text-accent"
             class="ml-4"
           />
-          <div v-else class="ml-4 invisible group-hover:visible">
+          <div v-else class="invisible ml-4 group-hover:visible">
             <button
               v-if="workflow.hasLocalCopy"
               title="Sync cloud backup to local"
@@ -138,7 +138,7 @@
                 !backupState.uploading &&
                 state.selectedWorkflows.length <= workflowLimit
               "
-              class="ml-4 invisible group-hover:visible"
+              class="invisible ml-4 group-hover:visible"
               title="Backup workflow"
               @click="backupWorkflowsToCloud(workflow.id)"
             >

@@ -8,7 +8,7 @@
     <template #prepend:selector>
       <ui-input
         :model-value="data.loopId"
-        class="w-full mb-4"
+        class="mb-4 w-full"
         :label="t('workflow.blocks.loop-data.loopId')"
         :placeholder="t('workflow.blocks.loop-data.loopId')"
         @change="updateLoopId"
@@ -18,7 +18,7 @@
       :model-value="data.maxLoop"
       :label="t('workflow.blocks.loop-data.maxLoop.label')"
       :title="t('workflow.blocks.loop-data.maxLoop.title')"
-      class="w-full mt-3"
+      class="mt-3 w-full"
       @change="updateData({ maxLoop: $event })"
     />
     <ui-checkbox
@@ -28,7 +28,7 @@
     >
       {{ t('workflow.blocks.loop-data.reverse') }}
     </ui-checkbox>
-    <div class="mt-4 border-t pt-4 mb-8">
+    <div class="mt-4 mb-8 border-t pt-4">
       <p class="text-sm text-gray-600 dark:text-gray-200">
         {{ t('workflow.blocks.loop-elements.loadMore') }}
       </p>
@@ -67,7 +67,7 @@
         "
         :model-value="data.actionElMaxWaitTime"
         label="Max seconds wait for more elements"
-        class="w-full mt-2"
+        class="mt-2 w-full"
         placeholder="0"
         type="number"
         @change="updateData({ actionElMaxWaitTime: +$event })"
@@ -92,7 +92,7 @@
         v-if="data.loadMoreAction === 'click-link'"
         :model-value="data.actionPageMaxWaitTime"
         label="Max seconds wait for the page to load"
-        class="w-full mt-2"
+        class="mt-2 w-full"
         placeholder="0"
         type="number"
         @change="updateData({ actionPageMaxWaitTime: +$event })"

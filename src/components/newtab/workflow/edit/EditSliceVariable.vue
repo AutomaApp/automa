@@ -26,7 +26,7 @@
           :model-value="data[param.id]"
           placeholder="0"
           type="number"
-          class="w-full mb-2"
+          class="mb-2 w-full"
           @change="updateData({ [param.id]: +$event })"
         />
       </li>

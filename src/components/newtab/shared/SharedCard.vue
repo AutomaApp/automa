@@ -1,9 +1,9 @@
 <template>
   <ui-card
-    class="hover:ring-2 flex flex-col group hover:ring-accent dark:hover:ring-gray-200"
+    class="group flex flex-col hover:ring-2 hover:ring-accent dark:hover:ring-gray-200"
   >
     <slot name="header">
-      <div class="flex items-center mb-4">
+      <div class="mb-4 flex items-center">
         <ui-img
           v-if="data.icon?.startsWith('http')"
           :src="data.icon"
@@ -11,10 +11,10 @@
           style="height: 40px; width: 40px"
           alt="Can not display"
         />
-        <span v-else class="p-2 rounded-lg bg-box-transparent">
+        <span v-else class="bg-box-transparent rounded-lg p-2">
           <v-remixicon :name="data.icon || icon" />
         </span>
-        <div class="flex-grow"></div>
+        <div class="grow"></div>
         <span
           v-if="data.isDisabled"
           class="text-sm text-gray-600 dark:text-gray-200"
@@ -28,7 +28,7 @@
         >
           <v-remixicon name="riPlayLine" />
         </button>
-        <ui-popover v-if="showDetails" class="h-6 ml-2">
+        <ui-popover v-if="showDetails" class="ml-2 h-6">
           <template #trigger>
             <button>
               <v-remixicon name="riMoreLine" />
@@ -50,13 +50,13 @@
         </ui-popover>
       </div>
     </slot>
-    <div class="cursor-pointer flex-1" @click="$emit('click', data)">
+    <div class="flex-1 cursor-pointer" @click="$emit('click', data)">
       <p class="line-clamp font-semibold leading-tight">
         {{ data.name }}
       </p>
       <p
         v-show="data.description"
-        class="text-gray-600 dark:text-gray-200 line-clamp leading-tight mb-1"
+        class="line-clamp mb-1 leading-tight text-gray-600 dark:text-gray-200"
       >
         {{ data.description }}
       </p>

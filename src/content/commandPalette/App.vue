@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="state.active"
-    class="bg-black bg-opacity-50 fixed text-black h-full w-full top-0 left-0 p-4"
+    class="fixed top-0 left-0 h-full w-full bg-black bg-opacity-50 p-4 text-black"
     style="z-index: 99999999"
     @click.self="state.active = false"
   >
@@ -13,13 +13,13 @@
     >
       <div class="p-4">
         <label
-          class="flex items-center bg-input rounded-lg h-12 transition focus-within:ring-2 ring-accent px-2"
+          class="bg-input flex h-12 items-center rounded-lg px-2 ring-accent transition focus-within:ring-2"
         >
           <img :src="logoUrl" class="h-8 w-8" />
           <input
             ref="inputRef"
             type="text"
-            class="h-full flex-1 focus:ring-0 rounded-lg px-2 bg-transparent"
+            class="h-full flex-1 rounded-lg bg-transparent px-2 focus:ring-0"
             :placeholder="
               paramsState.active
                 ? paramsState.workflow.name
@@ -30,7 +30,7 @@
           />
           <template v-for="key in state.shortcutKeys" :key="key">
             <span
-              class="rounded-md bg-box-transparent capitalize p-1 text-gray-600 ml-1 text-xs text-center inline-block border-2 border-gray-300 font-semibold"
+              class="bg-box-transparent ml-1 inline-block rounded-md border-2 border-gray-300 p-1 text-center text-xs font-semibold capitalize text-gray-600"
               style="min-width: 29px; font-family: inherit"
             >
               {{ getReadableShortcut(key) }}
@@ -39,10 +39,10 @@
         </label>
       </div>
       <div
-        class="px-4 pb-4 overflow-auto scroll workflows-list"
+        class="scroll workflows-list overflow-auto px-4 pb-4"
         style="max-height: calc(100vh - 200px)"
       >
-        <div v-if="!state.retrieved" class="text-center mb-2">
+        <div v-if="!state.retrieved" class="mb-2 text-center">
           <ui-spinner color="text-accent" />
         </div>
         <template v-else>
@@ -82,7 +82,7 @@
           <template v-else>
             <p
               v-if="state.query && workflows.length === 0"
-              class="text-gray-600 text-center"
+              class="text-center text-gray-600"
             >
               Can't find workflows
             </p>
@@ -112,17 +112,17 @@
                     size="26"
                   />
                 </div>
-                <div class="flex-1 overflow-hidden mx-2">
+                <div class="mx-2 flex-1 overflow-hidden">
                   <p class="text-overflow">
                     {{ workflow.name }}
                   </p>
-                  <p class="text-overflow text-gray-500 leading-tight">
+                  <p class="text-overflow leading-tight text-gray-500">
                     {{ workflow.description }}
                   </p>
                 </div>
                 <v-remixicon
                   name="riArrowGoForwardLine"
-                  class="text-gray-600 invisible group-hover:visible"
+                  class="invisible text-gray-600 group-hover:visible"
                   size="20"
                   rotate="180"
                 />
@@ -131,7 +131,7 @@
           </template>
         </template>
       </div>
-      <div class="px-4 py-2 flex items-center">
+      <div class="flex items-center px-4 py-2">
         <div v-if="paramsState.active" class="pl-2 text-gray-500">
           <div class="flex items-center">
             <p class="mr-4">
@@ -140,7 +140,7 @@
             <p>
               Press
               <span
-                class="rounded-md bg-box-transparent p-1 text-gray-600 ml-1 text-xs text-center inline-block border-2 border-gray-300 font-semibold"
+                class="bg-box-transparent ml-1 inline-block rounded-md border-2 border-gray-300 p-1 text-center text-xs font-semibold text-gray-600"
               >
                 Escape
               </span>
@@ -150,17 +150,17 @@
         </div>
         <p
           v-else
-          class="inline-flex items-center cursor-pointer text-gray-600"
+          class="inline-flex cursor-pointer items-center text-gray-600"
           @click="openDashboard"
         >
           Open dashboard
           <v-remixicon
             name="riExternalLinkLine"
-            class="inline-block ml-1"
+            class="ml-1 inline-block"
             size="20"
           />
         </p>
-        <div class="flex-grow" />
+        <div class="grow" />
         <ui-button
           v-if="paramsState.active"
           variant="accent"

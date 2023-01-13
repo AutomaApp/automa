@@ -15,7 +15,7 @@
         <ui-tab value="table"> Table </ui-tab>
         <ui-tab value="raw"> Raw </ui-tab>
       </ui-tabs>
-      <div class="flex-grow"></div>
+      <div class="grow"></div>
       <ui-input
         v-if="state.activeTab === 'table'"
         v-model="state.query"
@@ -65,11 +65,11 @@
         tableData.body &&
         tableData.body.length >= 10
       "
-      class="flex items-center justify-between mt-4"
+      class="mt-4 flex items-center justify-between"
     >
       <div>
         {{ t('components.pagination.text1') }}
-        <select v-model="pagination.perPage" class="p-1 rounded-md bg-input">
+        <select v-model="pagination.perPage" class="bg-input rounded-md p-1">
           <option
             v-for="num in [10, 15, 25, 50, 100, 150]"
             :key="num"

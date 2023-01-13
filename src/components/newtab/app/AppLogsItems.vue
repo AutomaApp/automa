@@ -1,7 +1,7 @@
 <template>
-  <div class="pb-4 pt-1 overflow-auto logs-list">
-    <div class="flex items-center mb-8">
-      <h1 class="text-2xl font-semibold flex-1">
+  <div class="logs-list overflow-auto pb-4 pt-1">
+    <div class="mb-8 flex items-center">
+      <h1 class="flex-1 text-2xl font-semibold">
         {{ $t('common.log', 2) }}
       </h1>
       <v-remixicon
@@ -37,14 +37,14 @@
             />
             <div class="text-right">
               <span
-                class="underline text-sm cursor-pointer text-gray-600 dark:text-gray-300"
+                class="cursor-pointer text-sm text-gray-600 underline dark:text-gray-300"
                 @click="filtersBuilder.workflowId = ''"
               >
                 Clear
               </span>
             </div>
           </div>
-          <ui-list class="mb-4 px-4 space-y-1 overflow-auto max-h-96 scroll">
+          <ui-list class="scroll mb-4 max-h-96 space-y-1 overflow-auto px-4">
             <ui-list-item
               v-for="workflow in workflows"
               :key="workflow.id"
@@ -80,17 +80,17 @@
           <td class="ml-4 text-right">
             <v-remixicon
               name="riDeleteBin7Line"
-              class="text-red-500 inline-block dark:text-red-400 cursor-pointer"
+              class="inline-block cursor-pointer text-red-500 dark:text-red-400"
               @click="deleteLog(log.id)"
             />
           </td>
         </template>
       </shared-logs-table>
     </div>
-    <div class="md:flex md:items-center md:justify-between mt-4">
+    <div class="mt-4 md:flex md:items-center md:justify-between">
       <div>
         {{ t('components.pagination.text1') }}
-        <select v-model="pagination.perPage" class="p-1 rounded-md bg-input">
+        <select v-model="pagination.perPage" class="bg-input rounded-md p-1">
           <option v-for="num in [10, 15, 25, 50, 100]" :key="num" :value="num">
             {{ num }}
           </option>
@@ -106,7 +106,7 @@
     </div>
     <ui-card
       v-if="selectedLogs.length !== 0"
-      class="fixed right-0 bottom-0 m-5 shadow-xl space-x-2"
+      class="fixed right-0 bottom-0 m-5 space-x-2 shadow-xl"
     >
       <ui-button @click="selectAllLogs">
         {{

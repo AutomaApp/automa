@@ -1,13 +1,13 @@
 <template>
   <div class="px-4 pb-4">
-    <div class="flex items-center mt-4">
+    <div class="mt-4 flex items-center">
       <button @click="$emit('goBack')">
         <v-remixicon
           name="riArrowLeftLine"
-          class="-ml-1 mr-1 align-bottom inline-block"
+          class="-ml-1 mr-1 inline-block align-bottom"
         />
       </button>
-      <p class="font-semibold flex-1 text-overflow">
+      <p class="text-overflow flex-1 font-semibold">
         {{ workflow.name }}
       </p>
     </div>
@@ -18,7 +18,7 @@
       :minimap="false"
       :editor-controls="false"
       :options="editorOptions"
-      class="h-56 w-full rounded-lg bg-box-transparent"
+      class="bg-box-transparent h-56 w-full rounded-lg"
       @init="onEditorInit"
     />
     <ui-button

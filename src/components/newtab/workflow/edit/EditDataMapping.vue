@@ -9,7 +9,7 @@
     <ui-select
       :label="t('workflow.blocks.data-mapping.dataSource')"
       :model-value="data.dataSource"
-      class="w-full mt-4"
+      class="mt-4 w-full"
       @change="updateData({ dataSource: $event })"
     >
       <option v-for="source in dataSources" :key="source.id" :value="source.id">
@@ -38,7 +38,7 @@
       content-class="max-w-2xl data-map"
     >
       <div
-        class="px-4 my-4 overflow-auto scroll"
+        class="scroll my-4 overflow-auto px-4"
         style="min-height: 400px; max-height: calc(100vh - 12rem)"
       >
         <table class="w-full">
@@ -54,7 +54,7 @@
           </thead>
           <tbody class="divide-y">
             <tr v-for="(source, index) in state.sources" :key="source.id">
-              <td class="align-baseline group relative pr-4">
+              <td class="group relative pr-4 align-baseline">
                 <div class="flex items-center space-x-2">
                   <ui-autocomplete
                     :items="state.autocompleteItems"
@@ -69,7 +69,7 @@
                   </ui-autocomplete>
                   <v-remixicon
                     name="riDeleteBin7Line"
-                    class="invisible group-hover:visible cursor-pointer"
+                    class="invisible cursor-pointer group-hover:visible"
                     @click="state.sources.splice(index, 1)"
                   />
                   <v-remixicon
@@ -79,12 +79,12 @@
                   />
                 </div>
               </td>
-              <td class="align-baseline pl-4">
+              <td class="pl-4 align-baseline">
                 <ul class="space-y-1">
                   <li
                     v-for="(destination, destIndex) in source.destinations"
                     :key="destination.id"
-                    class="flex items-center space-x-2 group"
+                    class="group flex items-center space-x-2"
                   >
                     <ui-input
                       :model-value="destination.name"
@@ -101,7 +101,7 @@
                     />
                     <v-remixicon
                       name="riDeleteBin7Line"
-                      class="invisible group-hover:visible cursor-pointer"
+                      class="invisible cursor-pointer group-hover:visible"
                       @click="
                         state.sources[index].destinations.splice(destIndex, 1)
                       "

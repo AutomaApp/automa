@@ -1,6 +1,6 @@
 <template>
   <div class="mb-12">
-    <p class="font-semibold mb-1">{{ t('settings.theme') }}</p>
+    <p class="mb-1 font-semibold">{{ t('settings.theme') }}</p>
     <div class="flex items-center space-x-4">
       <div
         v-for="item in theme.themes"
@@ -11,7 +11,7 @@
       >
         <div
           :class="{ 'ring ring-accent': item.id === theme.activeTheme.value }"
-          class="p-0.5 rounded-lg"
+          class="rounded-lg p-0.5"
         >
           <img
             :src="require(`@/assets/images/theme-${item.id}.png`)"
@@ -19,7 +19,7 @@
             class="rounded-lg"
           />
         </div>
-        <span class="text-sm text-gray-600 dark:text-gray-200 ml-1">
+        <span class="ml-1 text-sm text-gray-600 dark:text-gray-200">
           {{ item.name }}
         </span>
       </div>
@@ -27,7 +27,7 @@
   </div>
   <div class="flex items-center">
     <div id="languages">
-      <p class="font-semibold mb-1">{{ t('settings.language.label') }}</p>
+      <p class="mb-1 font-semibold">{{ t('settings.language.label') }}</p>
       <ui-select
         :model-value="settings.locale"
         class="w-80"
@@ -42,7 +42,7 @@
         </option>
       </ui-select>
       <a
-        class="block text-gray-600 dark:text-gray-200 ml-1"
+        class="ml-1 block text-gray-600 dark:text-gray-200"
         href="https://github.com/Kholid060/automa/wiki/Help-Translate"
         target="_blank"
         rel="noopener"
@@ -50,12 +50,12 @@
         {{ t('settings.language.helpTranslate') }}
       </a>
     </div>
-    <p v-if="isLangChange" class="inline-block ml-4">
+    <p v-if="isLangChange" class="ml-4 inline-block">
       {{ t('settings.language.reloadPage') }}
     </p>
   </div>
   <div id="delete-logs" class="mt-12">
-    <p class="font-semibold mb-1">Workflow Logs</p>
+    <p class="mb-1 font-semibold">Workflow Logs</p>
     <div class="flex items-center">
       <ui-select
         :model-value="settings.deleteLogAfter"
