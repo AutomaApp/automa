@@ -1,0 +1,32 @@
+{
+  "recording": {
+    "stop": "Зупинити запис",
+    "title": "Запис"
+  },
+  "home": {
+    "record": {
+      "title": "Запис workflow",
+      "button": "Запис",
+      "name": "Назва workflow",
+      "selectBlock": "Виберіть блок, з якого потрібно розпочати",
+      "anotherBlock": "Неможливо почати з цього блоку",
+      "tabs": {
+        "new": "Новий workflow",
+        "existing": "Існуючий workflow"
+      }
+    },
+    "elementSelector": {
+      "name": "Вибір елемента",
+      "noAccess": "Немає доступу до цього сайту"
+    },
+    "workflow": {
+      "new": "Новий workflow",
+      "rename": "Перейменувати workflow",
+      "delete": "Видалити workflow",
+      "type": {
+        "host": "Хост",
+        "local": "Локальний"
+      }
+    }
+  }
+}
