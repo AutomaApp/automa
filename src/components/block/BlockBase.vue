@@ -8,7 +8,7 @@
         <p
           title="Block id (click to copy)"
           class="block-menu text-overflow inline-block px-1 dark:text-gray-300"
-          style="max-width: 96px"
+          style="max-width: 96px; margin-bottom: 0"
           @click="insertToClipboard"
         >
           {{ isCopied ? '✅ Copied' : blockId }}

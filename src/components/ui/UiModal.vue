@@ -13,6 +13,7 @@
         >
           <div
             class="absolute h-full w-full bg-black bg-opacity-20 dark:bg-opacity-60"
+            style="z-index: -2"
             @click="closeModal"
           />
           <slot v-if="customContent"></slot>
