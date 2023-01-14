@@ -212,7 +212,7 @@
         "name": "Save assets",
         "description": "Save assets (image, video, audio, or file) from an element or URL",
         "filename": "Filename (optional)",
-        "saveDownloadIds": "Save items' download ids",
+        "saveDownloadIds": "Save items' download IDs",
         "contentTypes": {
           "title": "Type",
           "element": "Media element (image, audio, or video)",
@@ -235,7 +235,7 @@
         "noPermission": "Don't have permission to access the downloads",
         "onConflict": "On conflict",
         "waitFile": "Wait for the file to be downloaded",
-        "downloadId": "The file download id (optional)",
+        "downloadId": "File download ID (optional)",
         "filePath": "File path"
       },
       "insert-data": {

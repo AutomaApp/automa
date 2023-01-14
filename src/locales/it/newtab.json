@@ -14,6 +14,7 @@
     "icon": "Icona pacchetto",
     "open": "Apri pacchetti",
     "new": "Nuovo pacchetto",
+    "import": "Importa pacchetto",
     "set": "Imposta come pacchetto",
     "settings": {
       "asBlock": "Imposta pacchetto come blocco"
@@ -189,6 +190,10 @@
       "pin": "Fissa in alto",
       "unpin": "Rimuovi da in alto",
       "pinned": "Fissati in alto"
+    },
+    "parameters": {
+      "add": "Aggiungi parametro",
+      "preferInTab": "Preferisci i parametri di input nella scheda"
     },
     "my": "I miei workflow",
     "import": "Importa workflow",

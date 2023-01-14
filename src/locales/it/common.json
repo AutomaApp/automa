@@ -43,7 +43,8 @@
     "duplicate": "Duplica",
     "password": "Password",
     "category": "Categoria",
-    "optional": "Opzionale"
+    "optional": "Opzionale",
+    "0disable": "0 per disabilitare"
   },
   "message": {
     "noBlock": "Nessun blocco",
@@ -60,7 +61,8 @@
   "sort": {
     "sortBy": "Ordina per",
     "name": "Nome",
-    "createdAt": "Data di creazione"
+    "createdAt": "Data di creazione",
+    "mostUsed": "Più usato"
   },
   "logStatus": {
     "stopped": "interrotto",
