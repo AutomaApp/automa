@@ -186,6 +186,11 @@
         "types": {
           "active-tab": "Scheda attiva",
           "all": "Tutte le schede"
+        },
+        "query": {
+          "title": "Query",
+          "matchPatterns": "@:workflow.blocks.switch-tab.matchPattern (opzionale)",
+          "tabTitle": "Titolo della scheda (opzionale)"
         }
       },
       "reload-tab": {
@@ -207,6 +212,7 @@
         "name": "Salva risorse",
         "description": "Salva le risorse (immagine, video, audio o file) da un elemento o URL",
         "filename": "Nome file (opzionale)",
+        "saveDownloadIds": "Salva gli ID di download",
         "contentTypes": {
           "title": "Tipo",
           "element": "Elemento multimediale (immagine, audio o video)",
@@ -228,7 +234,9 @@
         "timeout": "Timeout (millisecondi)",
         "noPermission": "Automa non dispone del permesso per accedere ai download",
         "onConflict": "In caso di conflitto",
-        "waitFile": "Attendi il download del file"
+        "waitFile": "Attendi il download del file",
+        "downloadId": "ID di download del file (opzionale)",
+        "filePath": "Percorso del file"
       },
       "insert-data": {
         "name": "Inserisci dati",
@@ -552,7 +560,8 @@
       },
       "link": {
         "name": "Link",
-        "description": "Apri elemento di collegamento"
+        "description": "Apri elemento di collegamento",
+        "openInNewTab": "Apri in una nuova scheda"
       },
       "attribute-value": {
         "name": "Valore attributo",
@@ -689,11 +698,13 @@
         "description": "Itera gli elementi",
         "loadMore": "Carica altri elementi",
         "scrollToBottom": "Scorri fino in fondo",
+        "scrollToTop": "Scorri fino in cima",
         "actions": {
           "none": "Nessuna azione",
           "click-element": "Clicca un elemento",
           "scroll": "Scorri verso il basso",
-          "click-link": "Clicca un link"
+          "click-link": "Clicca un link",
+          "scroll-up": "Scorri verso l'alto"
         }
       },
       "loop-data": {
