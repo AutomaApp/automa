@@ -3,12 +3,12 @@
     <ui-textarea
       :model-value="data.description"
       :placeholder="t('common.description')"
-      class="w-full mb-1"
+      class="mb-1 w-full"
       @change="updateData({ description: $event })"
     />
     <ui-input
       :model-value="data.loopId"
-      class="w-full mb-2"
+      class="mb-2 w-full"
       :label="t('workflow.blocks.loop-data.loopId')"
       :placeholder="t('workflow.blocks.loop-data.loopId')"
       @change="updateLoopID"
@@ -28,7 +28,7 @@
       :model-value="data.referenceKey"
       :label="t('workflow.blocks.loop-data.refKey')"
       placeholder="abc123"
-      class="w-full mt-2"
+      class="mt-2 w-full"
       @change="updateData({ referenceKey: $event })"
     />
     <ui-input
@@ -36,7 +36,7 @@
       :model-value="data.variableName"
       :label="t('workflow.variables.name')"
       placeholder="abc123"
-      class="w-full mt-2"
+      class="mt-2 w-full"
       @change="updateData({ variableName: $event })"
     />
     <template v-else-if="data.loopThrough === 'elements'">
@@ -46,7 +46,7 @@
           :label="t('workflow.blocks.base.selector')"
           autocomplete="off"
           placeholder="CSS Selector or XPath"
-          class="flex-1 mr-2"
+          class="mr-2 flex-1"
           @change="updateData({ elementSelector: $event })"
         />
         <shared-el-selector-actions
@@ -73,7 +73,7 @@
     </template>
     <ui-button
       v-else-if="data.loopThrough === 'custom-data'"
-      class="w-full mt-4"
+      class="mt-4 w-full"
       variant="accent"
       @click="state.showDataModal = true"
     >
@@ -81,7 +81,7 @@
     </ui-button>
     <div
       v-else-if="data.loopThrough === 'numbers'"
-      class="flex items-center space-x-2 mt-2"
+      class="mt-2 flex items-center space-x-2"
     >
       <ui-input
         :model-value="data.fromNumber"
@@ -110,7 +110,7 @@
         :model-value="data.maxLoop"
         :label="t('workflow.blocks.loop-data.maxLoop.label')"
         :title="t('workflow.blocks.loop-data.maxLoop.title')"
-        class="w-full mt-2"
+        class="mt-2 w-full"
         @change="updateData({ maxLoop: $event })"
       />
       <ui-input
@@ -118,7 +118,7 @@
         :model-value="data.startIndex"
         :label="t('workflow.blocks.loop-data.startIndex')"
         placeholder="0"
-        class="w-full mt-2"
+        class="mt-2 w-full"
         @change="updateData({ startIndex: $event })"
       />
       <ui-checkbox
@@ -141,7 +141,7 @@
       title="Data"
       content-class="max-w-3xl"
     >
-      <div class="flex mb-4 items-center">
+      <div class="mb-4 flex items-center">
         <ui-button variant="accent" @click="importFile">
           {{ t('workflow.blocks.loop-data.buttons.import') }}
         </ui-button>
@@ -154,7 +154,7 @@
         >
           <v-remixicon name="riSettings3Line" />
         </ui-button>
-        <p class="flex-1 text-overflow mx-4">{{ file.name }}</p>
+        <p class="text-overflow mx-4 flex-1">{{ file.name }}</p>
         <p>{{ t('workflow.blocks.loop-data.modal.maxFile') }}</p>
       </div>
       <div style="height: calc(100vh - 11rem)">
@@ -166,7 +166,7 @@
           @change="updateLoopData"
         />
         <div v-show="state.showOptions">
-          <p class="font-semibold mb-2">CSV</p>
+          <p class="mb-2 font-semibold">CSV</p>
           <ui-checkbox v-model="options.header">
             {{ t('workflow.blocks.loop-data.modal.options.firstRow') }}
           </ui-checkbox>

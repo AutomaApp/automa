@@ -1,26 +1,26 @@
 <template>
-  <div class="p-5 w-full max-w-xl mx-auto">
+  <div class="mx-auto w-full max-w-xl p-5">
     <div class="flex items-center">
       <button
         v-tooltip="t('recording.stop')"
-        class="h-12 w-12 rounded-full focus:ring-0 bg-red-400 relative flex items-center justify-center"
+        class="relative flex h-12 w-12 items-center justify-center rounded-full bg-red-400 focus:ring-0"
         @click="stopRecording"
       >
         <span
-          class="absolute animate-ping bg-red-400 rounded-full"
+          class="absolute animate-ping rounded-full bg-red-400"
           style="height: 80%; width: 80%; animation-duration: 1.3s"
         ></span>
         <ui-spinner v-if="state.isGenerating" color="text-white" />
-        <v-remixicon v-else name="riStopLine" class="z-10 relative" />
+        <v-remixicon v-else name="riStopLine" class="relative z-10" />
       </button>
       <div class="ml-4 flex-1 overflow-hidden">
         <p class="text-sm">{{ t('recording.title') }}</p>
-        <p class="font-semibold text-xl leading-tight text-overflow">
+        <p class="text-overflow text-xl font-semibold leading-tight">
           {{ state.name }}
         </p>
       </div>
     </div>
-    <p class="font-semibold mt-6 mb-2">Flows</p>
+    <p class="mt-6 mb-2 font-semibold">Flows</p>
     <ui-list class="space-y-1">
       <ui-list-item
         v-for="(item, index) in state.flows"
@@ -29,7 +29,7 @@
         small
       >
         <v-remixicon :name="tasks[item.id].icon" />
-        <div class="overflow-hidden flex-1 mx-2">
+        <div class="mx-2 flex-1 overflow-hidden">
           <p class="leading-tight">
             {{ t(`workflow.blocks.${item.id}.name`) }}
           </p>
@@ -42,7 +42,7 @@
         </div>
         <v-remixicon
           name="riDeleteBin7Line"
-          class="invisible group-hover:visible cursor-pointer"
+          class="invisible cursor-pointer group-hover:visible"
           @click="removeBlock(index)"
         />
       </ui-list-item>

@@ -1,9 +1,9 @@
 <template>
   <div ref="imageContainer" class="ui-image relative">
-    <div class="flex justify-center items-center">
+    <div class="flex items-center justify-center">
       <slot v-if="state.loading" name="loading">
         <div
-          class="absolute h-full rounded-lg bg-input-dark w-full animate-pulse"
+          class="bg-input-dark absolute h-full w-full animate-pulse rounded-lg"
         ></div>
       </slot>
       <slot v-else-if="state.error" name="error">
@@ -16,7 +16,7 @@
           backgroundSize: contain ? 'contain' : 'cover',
         }"
         v-bind="{ role: alt ? 'img' : null, 'aria-label': alt }"
-        class="h-full absolute top-0 left-0 w-full bg-no-repeat bg-center"
+        class="absolute top-0 left-0 h-full w-full bg-center bg-no-repeat"
       >
         <slot></slot>
       </div>

@@ -1,17 +1,17 @@
 <template>
   <div class="max-w-xl">
     <ui-card class="mb-12">
-      <h2 class="font-semibold mb-2">
+      <h2 class="mb-2 font-semibold">
         {{ t('settings.backupWorkflows.cloud.title') }}
       </h2>
       <template v-if="userStore.user">
         <div
-          class="border dark:border-gray-700 p-4 rounded-lg flex items-center"
+          class="flex items-center rounded-lg border p-4 dark:border-gray-700"
         >
-          <span class="inline-block p-2 rounded-full bg-box-transparent">
+          <span class="bg-box-transparent inline-block rounded-full p-2">
             <v-remixicon name="riUploadLine" />
           </span>
-          <div class="flex-1 ml-4 leading-tight">
+          <div class="ml-4 flex-1 leading-tight">
             <p class="text-sm text-gray-600 dark:text-gray-200">
               {{ t('settings.backupWorkflows.cloud.lastBackup') }}
             </p>
@@ -25,12 +25,12 @@
           </ui-button>
         </div>
         <div
-          class="border dark:border-gray-700 p-4 rounded-lg flex items-center mt-2"
+          class="mt-2 flex items-center rounded-lg border p-4 dark:border-gray-700"
         >
-          <span class="inline-block p-2 rounded-full bg-box-transparent">
+          <span class="bg-box-transparent inline-block rounded-full p-2">
             <v-remixicon name="riDownloadLine" />
           </span>
-          <p class="flex-1 ml-4">
+          <p class="ml-4 flex-1">
             {{ t('settings.backupWorkflows.cloud.sync') }}
           </p>
           <ui-button
@@ -42,7 +42,7 @@
           </ui-button>
         </div>
       </template>
-      <div v-else class="text-center py-4">
+      <div v-else class="py-4 text-center">
         <p>
           {{ t('settings.backupWorkflows.needSignin') }}
         </p>
@@ -50,7 +50,7 @@
           tag="a"
           href="https://automa.site/auth"
           target="_blank"
-          class="mt-4 w-44 inline-block"
+          class="mt-4 inline-block w-44"
         >
           {{ t('auth.signIn') }}
         </ui-button>
@@ -60,20 +60,20 @@
         <a
           href="https://automa.site/pricing"
           target="_blank"
-          class="dark:text-yellow-300 text-yellow-500 underline"
+          class="text-yellow-500 underline dark:text-yellow-300"
         >
           pro plan
         </a>
         to start back up your workflows to the cloud
       </p>
     </ui-card>
-    <h2 class="font-semibold mb-2">
+    <h2 class="mb-2 font-semibold">
       {{ t('settings.backupWorkflows.title') }}
     </h2>
     <div class="flex space-x-4">
-      <div class="border dark:border-gray-700 p-4 rounded-lg w-6/12">
+      <div class="w-6/12 rounded-lg border p-4 dark:border-gray-700">
         <div class="text-center">
-          <span class="inline-block p-4 rounded-full bg-box-transparent">
+          <span class="bg-box-transparent inline-block rounded-full p-4">
             <v-remixicon name="riDownloadLine" size="36" />
           </span>
         </div>
@@ -84,9 +84,9 @@
           {{ t('settings.backupWorkflows.backup.button') }}
         </ui-button>
       </div>
-      <div class="border dark:border-gray-700 p-4 rounded-lg w-6/12">
+      <div class="w-6/12 rounded-lg border p-4 dark:border-gray-700">
         <div class="text-center">
-          <span class="inline-block p-4 rounded-full bg-box-transparent">
+          <span class="bg-box-transparent inline-block rounded-full p-4">
             <v-remixicon name="riUploadLine" size="36" />
           </span>
         </div>

@@ -1,8 +1,8 @@
 <template>
   <div class="container pt-8 pb-4">
-    <h1 class="text-2xl font-semibold mb-10">{{ t('common.settings') }}</h1>
+    <h1 class="mb-10 text-2xl font-semibold">{{ t('common.settings') }}</h1>
     <div class="flex items-start">
-      <ui-list class="w-64 mr-12 hidden md:block space-y-2 sticky top-8">
+      <ui-list class="sticky top-8 mr-12 hidden w-64 space-y-2 md:block">
         <router-link
           v-for="menu in menus"
           :key="menu.id"
@@ -28,7 +28,7 @@
       <div class="settings-content flex-1">
         <ui-select
           :model-value="$route.path"
-          class="w-full mb-4 md:hidden"
+          class="mb-4 w-full md:hidden"
           @change="onSelectChanged"
         >
           <option v-for="menu in menus" :key="menu.id" :value="menu.path">

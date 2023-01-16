@@ -1,6 +1,6 @@
 <template>
   <div class="container pt-8 pb-4">
-    <h1 class="text-2xl font-semibold mb-12 capitalize">
+    <h1 class="mb-12 text-2xl font-semibold capitalize">
       {{ t('scheduledWorkflow.title', 2) }}
     </h1>
     <div class="flex items-center">
@@ -9,7 +9,7 @@
         prepend-icon="riSearch2Line"
         :placeholder="t('common.search')"
       />
-      <div class="flex-grow" />
+      <div class="grow" />
       <ui-button
         class="ml-4"
         style="min-width: 210px"
@@ -19,12 +19,12 @@
         Schedule workflow
       </ui-button>
     </div>
-    <div class="overflow-x-auto w-full scroll">
+    <div class="scroll w-full overflow-x-auto">
       <ui-table
         :headers="tableHeaders"
         :items="triggers"
         item-key="id"
-        class="w-full mt-8"
+        class="mt-8 w-full"
       >
         <template #item-name="{ item }">
           <router-link
@@ -47,7 +47,7 @@
         <template #item-active="{ item }">
           <v-remixicon
             v-if="item.active"
-            class="text-green-500 dark:text-green-400 inline-block"
+            class="inline-block text-green-500 dark:text-green-400"
             name="riCheckLine"
           />
           <span v-else></span>

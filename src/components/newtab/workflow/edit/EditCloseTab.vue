@@ -9,7 +9,7 @@
     <ui-select
       :model-value="data.closeType"
       :placeholder="Close"
-      class="w-full mt-2"
+      class="mt-2 w-full"
       @change="updateData({ closeType: $event })"
     >
       <option
@@ -33,7 +33,7 @@
       <edit-autocomplete v-if="!data.activeTab">
         <ui-input
           :model-value="data.url"
-          class="w-full mt-1"
+          class="mt-1 w-full"
           placeholder="http://example.com/*"
           @change="updateData({ url: $event })"
         >

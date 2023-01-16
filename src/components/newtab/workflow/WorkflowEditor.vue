@@ -17,11 +17,11 @@
     />
     <div
       v-if="editorControls"
-      class="flex items-center absolute w-full p-4 left-0 bottom-0 z-10 md:pr-60"
+      class="absolute left-0 bottom-0 z-10 flex w-full items-center p-4 md:pr-60"
     >
       <slot name="controls-prepend" />
       <editor-search-blocks :editor="editor" />
-      <div class="flex-grow pointer-events-none" />
+      <div class="pointer-events-none grow" />
       <slot name="controls-append" />
       <button
         v-tooltip.group="t('workflow.editor.resetZoom')"
@@ -30,18 +30,18 @@
       >
         <v-remixicon name="riFullscreenLine" />
       </button>
-      <div class="rounded-lg bg-white dark:bg-gray-800 inline-block">
+      <div class="inline-block rounded-lg bg-white dark:bg-gray-800">
         <button
           v-tooltip.group="t('workflow.editor.zoomOut')"
-          class="p-2 rounded-lg relative z-10"
+          class="relative z-10 rounded-lg p-2"
           @click="editor.zoomOut()"
         >
           <v-remixicon name="riSubtractLine" />
         </button>
-        <hr class="h-6 border-r inline-block" />
+        <hr class="inline-block h-6 border-r" />
         <button
           v-tooltip.group="t('workflow.editor.zoomIn')"
-          class="p-2 rounded-lg"
+          class="rounded-lg p-2"
           @click="editor.zoomIn()"
         >
           <v-remixicon name="riAddLine" />

@@ -13,17 +13,17 @@
   >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div class="p-4">
-      <div class="flex items-center mb-2">
+      <div class="mb-2 flex items-center">
         <div
           :class="
             data.disableBlock ? 'bg-box-transparent' : block.category.color
           "
-          class="inline-flex items-center text-sm mr-4 p-2 rounded-lg dark:text-black"
+          class="mr-4 inline-flex items-center rounded-lg p-2 text-sm dark:text-black"
         >
           <v-remixicon
             :name="block.details.icon || 'riFolderZipLine'"
             size="20"
-            class="inline-block mr-2"
+            class="mr-2 inline-block"
           />
           <span>{{ t('workflow.blocks.blocks-group.name') }}</span>
         </div>
@@ -32,7 +32,7 @@
         :value="data.name"
         :placeholder="t('workflow.blocks.blocks-group.groupName')"
         type="text"
-        class="bg-transparent w-full focus:ring-0"
+        class="w-full bg-transparent focus:ring-0"
         @keydown.stop
         @input="$emit('update', { name: $event.target.value })"
       />
@@ -40,7 +40,7 @@
     <draggable
       :model-value="blocks"
       item-key="itemId"
-      class="px-4 pb-4 overflow-auto nowheel scroll text-sm space-y-1 max-h-60"
+      class="nowheel scroll max-h-60 space-y-1 overflow-auto px-4 pb-4 text-sm"
       @mousedown.stop
       @dragover.prevent
       @drop="handleDrop"
@@ -48,7 +48,7 @@
     >
       <template #item="{ element, index }">
         <div
-          class="p-2 rounded-lg bg-input space-x-2 flex items-center group"
+          class="bg-input group flex items-center space-x-2 rounded-lg p-2"
           style="cursor: grab"
           @dragstart="onDragStart(element, $event)"
           @dragend="onDragEnd(element.itemId)"
@@ -56,9 +56,9 @@
           <v-remixicon
             :name="tasks[element.id].icon"
             size="20"
-            class="flex-shrink-0"
+            class="shrink-0"
           />
-          <div class="leading-tight flex-1 overflow-hidden">
+          <div class="flex-1 overflow-hidden leading-tight">
             <p class="text-overflow">
               {{
                 getTranslation(
@@ -69,7 +69,7 @@
             </p>
             <p
               :title="element.data.description"
-              class="text-gray-600 dark:text-gray-200 text-overflow"
+              class="text-overflow text-gray-600 dark:text-gray-200"
             >
               {{ element.data.description }}
             </p>
@@ -78,19 +78,19 @@
             <v-remixicon
               name="riPencilLine"
               size="18"
-              class="cursor-pointer inline-block mr-2"
+              class="mr-2 inline-block cursor-pointer"
               @click="editBlock(element)"
             />
             <v-remixicon
               name="riSettings3Line"
               size="18"
-              class="cursor-pointer inline-block mr-2"
+              class="mr-2 inline-block cursor-pointer"
               @click="editItemSettings(element)"
             />
             <v-remixicon
               name="riDeleteBin7Line"
               size="18"
-              class="cursor-pointer inline-block"
+              class="inline-block cursor-pointer"
               @click="deleteItem(index, element.itemId)"
             />
           </div>
@@ -98,7 +98,7 @@
       </template>
       <template #footer>
         <div
-          class="p-2 rounded-lg text-gray-600 dark:text-gray-200 border text-center border-dashed"
+          class="rounded-lg border border-dashed p-2 text-center text-gray-600 dark:text-gray-200"
         >
           {{ t('workflow.blocks.blocks-group.dropText') }}
         </div>

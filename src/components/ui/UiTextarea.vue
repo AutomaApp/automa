@@ -4,7 +4,7 @@
     :id="textareaId"
     ref="textarea"
     :value="modelValue"
-    class="ui-textarea w-full ui-input rounded-lg px-4 py-2 transition bg-input"
+    class="ui-textarea ui-input bg-input w-full rounded-lg px-4 py-2 transition"
     :class="{ 'overflow-hidden resize-none': autoresize }"
     @input="emitValue"
     @keyup="$emit('keyup', $event)"

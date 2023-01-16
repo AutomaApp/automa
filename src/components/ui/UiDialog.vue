@@ -13,7 +13,7 @@
       :name="state.type"
     />
     <template v-else>
-      <p class="text-gray-600 dark:text-gray-200 leading-tight">
+      <p class="leading-tight text-gray-600 dark:text-gray-200">
         {{ state.options.body }}
       </p>
       <ui-input

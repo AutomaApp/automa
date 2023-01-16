@@ -36,12 +36,12 @@
       <ui-input
         :model-value="selector"
         placeholder="Element selector"
-        class="leading-normal flex-1 h-full element-selector"
+        class="element-selector h-full flex-1 leading-normal"
         @change="$emit('selector', $event)"
       >
         <template #prepend>
           <button
-            class="absolute ml-2 left-0"
+            class="absolute left-0 ml-2"
             @click.stop.prevent="copySelector"
           >
             <v-remixicon name="riFileCopyLine" />

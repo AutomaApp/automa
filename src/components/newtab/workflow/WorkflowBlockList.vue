@@ -5,22 +5,22 @@
   >
     <template #header="{ show }">
       <span :class="category.color" class="h-3 w-3 rounded-full"></span>
-      <p class="capitalize flex-1 ml-2">
+      <p class="ml-2 flex-1 capitalize">
         {{ category.name }}
       </p>
       <v-remixicon :name="show ? 'riSubtractLine' : 'riAddLine'" size="20" />
     </template>
-    <div class="grid grid-cols-2 gap-2 mb-4">
+    <div class="mb-4 grid grid-cols-2 gap-2">
       <div
         v-for="block in blocks"
         :key="block.id"
         :title="getBlockTitle(block)"
         draggable="true"
-        class="transform select-none cursor-move relative p-4 rounded-lg bg-input transition group"
+        class="bg-input group relative cursor-move select-none rounded-lg p-4 transition"
         @dragstart="$event.dataTransfer.setData('block', JSON.stringify(block))"
       >
         <div
-          class="flex items-center absolute right-2 invisible group-hover:visible top-2 text-gray-600 dark:text-gray-300"
+          class="invisible absolute right-2 top-2 flex items-center text-gray-600 group-hover:visible dark:text-gray-300"
         >
           <a
             :href="`https://docs.automa.site/blocks/${block.id}.html`"
@@ -32,7 +32,7 @@
           </a>
           <span
             :title="`${pinned.includes(block.id) ? 'Unpin' : 'Pin'} block`"
-            class="cursor-pointer ml-1"
+            class="ml-1 cursor-pointer"
             @click="$emit('pin', block)"
           >
             <v-remixicon
@@ -49,7 +49,7 @@
           size="24"
           class="mb-2"
         />
-        <p class="leading-tight text-overflow capitalize">
+        <p class="text-overflow capitalize leading-tight">
           {{ block.name }}
         </p>
       </div>

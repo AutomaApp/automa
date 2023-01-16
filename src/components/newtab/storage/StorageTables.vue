@@ -1,11 +1,11 @@
 <template>
-  <div class="flex mt-6">
+  <div class="mt-6 flex">
     <ui-input
       v-model="state.query"
       :placeholder="t('common.search')"
       prepend-icon="riSearch2Line"
     />
-    <div class="flex-grow"></div>
+    <div class="grow"></div>
     <ui-button
       variant="accent"
       class="ml-4"
@@ -15,18 +15,18 @@
       {{ t('storage.table.add') }}
     </ui-button>
   </div>
-  <div class="overflow-x-auto w-full scroll">
+  <div class="scroll w-full overflow-x-auto">
     <ui-table
       item-key="id"
       :headers="tableHeaders"
       :items="items"
       :search="state.query"
-      class="w-full mt-4"
+      class="mt-4 w-full"
     >
       <template #item-name="{ item }">
         <router-link
           :to="`/storage/tables/${item.id}`"
-          class="w-full block"
+          class="block w-full"
           style="min-height: 29px"
         >
           {{ item.name }}

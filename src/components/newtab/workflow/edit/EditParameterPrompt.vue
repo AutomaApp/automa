@@ -10,11 +10,11 @@
       :model-value="data.timeout"
       type="number"
       label="Timeout (millisecond) (0 to disable)"
-      class="w-full mt-2"
+      class="mt-2 w-full"
       @change="updateData({ timeout: +$event })"
     />
     <ui-button
-      class="w-full mt-4"
+      class="mt-4 w-full"
       variant="accent"
       @click="showModal = !showModal"
     >
@@ -23,6 +23,7 @@
     <ui-modal v-model="showModal" title="Parameters" content-class="max-w-4xl">
       <edit-workflow-parameters
         :data="data.parameters"
+        hide-prefer-tab
         @update="updateData({ parameters: $event })"
       />
     </ui-modal>

@@ -9,7 +9,7 @@
     <edit-autocomplete class="mt-2" trigger-class="!flex items-end">
       <ui-input
         :model-value="data.selector"
-        class="flex-1 mr-2"
+        class="mr-2 flex-1"
         autocomplete="off"
         label="Target element (Optional)"
         placeholder="CSS Selector or XPath"
@@ -23,7 +23,7 @@
     <ui-select
       :model-value="data.action || 'press-key'"
       :label="t('workflow.blocks.base.action')"
-      class="w-full mt-2"
+      class="mt-2 w-full"
       @change="updateData({ action: $event })"
     >
       <option
@@ -71,7 +71,7 @@
     <ui-textarea
       v-else
       :model-value="data.keysToPress"
-      class="w-full mt-2"
+      class="mt-2 w-full"
       placeholder="keys"
       @change="updateData({ keysToPress: $event })"
     />

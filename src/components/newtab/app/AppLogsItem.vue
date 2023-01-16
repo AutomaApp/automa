@@ -4,13 +4,13 @@
       <button
         v-tooltip:bottom="t('workflow.blocks.go-back.name')"
         role="button"
-        class="h-12 px-1 transition mr-2 bg-input rounded-lg dark:text-gray-300 text-gray-600"
+        class="bg-input mr-2 h-12 rounded-lg px-1 text-gray-600 transition dark:text-gray-300"
         @click="$emit('close')"
       >
         <v-remixicon name="riArrowLeftSLine" />
       </button>
       <div>
-        <h1 class="text-2xl max-w-md text-overflow font-semibold">
+        <h1 class="text-overflow max-w-md text-2xl font-semibold">
           {{ currentLog.name }}
         </h1>
         <p class="text-gray-600 dark:text-gray-200">
@@ -25,7 +25,7 @@
           }}
         </p>
       </div>
-      <div class="flex-grow"></div>
+      <div class="grow"></div>
       <ui-button
         v-if="state.workflowExists"
         v-tooltip="t('log.goWorkflow')"
@@ -46,7 +46,7 @@
     </ui-tabs>
     <ui-tab-panels
       :model-value="state.activeTab"
-      class="mt-4 pb-4 overflow-auto scroll px-2"
+      class="scroll mt-4 overflow-auto px-2 pb-4"
       style="min-height: 500px; max-height: calc(100vh - 15rem)"
     >
       <ui-tab-panel value="logs">

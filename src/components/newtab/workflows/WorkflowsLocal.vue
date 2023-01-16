@@ -1,17 +1,17 @@
 <template>
   <div
     v-if="workflowStore.getWorkflows.length === 0"
-    class="py-12 flex items-center"
+    class="md:flex items-center md:text-left text-center py-12"
   >
     <img src="@/assets/svg/alien.svg" class="w-96" />
     <div class="ml-4">
-      <h1 class="text-2xl font-semibold max-w-md mb-6">
+      <h1 class="mb-6 max-w-md text-2xl font-semibold">
         {{ t('message.empty') }}
       </h1>
     </div>
   </div>
   <template v-else>
-    <div v-if="pinnedWorkflows.length > 0" class="mb-8 pb-8 border-b">
+    <div v-if="pinnedWorkflows.length > 0" class="mb-8 border-b pb-8">
       <div class="flex items-center">
         <v-remixicon name="riPushpin2Line" class="mr-2" size="20" />
         <span>{{ t('workflow.pinWorkflow.pinned') }}</span>
@@ -49,13 +49,13 @@
     </div>
     <div
       v-if="filteredWorkflows.length > 18"
-      class="flex items-center justify-between mt-8"
+      class="mt-8 flex items-center justify-between"
     >
       <div>
         {{ t('components.pagination.text1') }}
         <select
           :value="pagination.perPage"
-          class="p-1 rounded-md bg-input"
+          class="bg-input rounded-md p-1"
           @change="onPerPageChange"
         >
           <option v-for="num in [18, 32, 64, 128]" :key="num" :value="num">
@@ -80,7 +80,7 @@
       v-model="renameState.name"
       :placeholder="t('common.name')"
       autofocus
-      class="w-full mb-4"
+      class="mb-4 w-full"
       @keyup.enter="renameWorkflow"
     />
     <ui-textarea
@@ -94,7 +94,7 @@
     <p class="mb-6 text-right text-gray-600 dark:text-gray-200">
       {{ renameState.description.length }}/300
     </p>
-    <div class="space-x-2 flex">
+    <div class="flex space-x-2">
       <ui-button class="w-full" @click="clearRenameModal">
         {{ t('common.cancel') }}
       </ui-button>

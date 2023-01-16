@@ -12,7 +12,7 @@
     <button
       v-if="data.hasLocal"
       v-tooltip.group="t('workflow.share.fetchLocal')"
-      class="hoverable p-2 rounded-lg"
+      class="hoverable rounded-lg p-2"
       @click="$emit('fetchLocal')"
     >
       <v-remixicon name="riRefreshLine" />
@@ -20,14 +20,14 @@
     <button
       v-if="!data.hasLocal"
       v-tooltip.group="t('workflow.share.download')"
-      class="hoverable p-2 rounded-lg"
+      class="hoverable rounded-lg p-2"
       @click="$emit('insertLocal')"
     >
       <v-remixicon name="riDownloadLine" />
     </button>
     <button
       v-tooltip.group="t('workflow.share.edit')"
-      class="hoverable p-2 rounded-lg"
+      class="hoverable rounded-lg p-2"
       @click="state.showModal = true"
     >
       <v-remixicon name="riFileEditLine" />
@@ -36,7 +36,7 @@
   <ui-card padding="p-1 flex ml-4">
     <button
       v-tooltip.group="t('workflow.share.unpublish')"
-      class="hoverable p-2 mr-2 rounded-lg relative"
+      class="hoverable relative mr-2 rounded-lg p-2"
       @click="$emit('unpublish')"
     >
       <ui-spinner
@@ -57,13 +57,13 @@
     >
       <span
         v-if="data.isChanged"
-        class="flex h-3 w-3 absolute top-0 left-0 -ml-1 -mt-1"
+        class="absolute top-0 left-0 -ml-1 -mt-1 flex h-3 w-3"
       >
         <span
-          class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"
+          class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"
         ></span>
         <span
-          class="relative inline-flex rounded-full h-3 w-3 bg-blue-600"
+          class="relative inline-flex h-3 w-3 rounded-full bg-blue-600"
         ></span>
       </span>
       {{ t('workflow.share.update') }}
@@ -76,7 +76,7 @@
       @change="onDescriptionUpdated"
     >
       <template #prepend>
-        <div class="flex justify-between mb-6">
+        <div class="mb-6 flex justify-between">
           <p>{{ t('workflow.share.edit') }}</p>
           <v-remixicon
             name="riCloseLine"

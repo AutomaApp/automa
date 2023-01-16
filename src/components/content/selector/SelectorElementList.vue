@@ -1,5 +1,5 @@
 <template>
-  <ul class="space-y-4 mt-2">
+  <ul class="mt-2 space-y-4">
     <li
       v-for="(element, index) in elements"
       :key="index"

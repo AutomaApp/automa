@@ -8,21 +8,22 @@
         <div
           v-if="show"
           :class="[positions[contentPosition]]"
-          class="overflow-y-auto modal-ui__content-container z-50 flex justify-center"
+          class="modal-ui__content-container z-50 flex justify-center overflow-y-auto"
           :style="{ 'backdrop-filter': blur && 'blur(2px)' }"
         >
           <div
             class="absolute h-full w-full bg-black bg-opacity-20 dark:bg-opacity-60"
+            style="z-index: -2"
             @click="closeModal"
           />
           <slot v-if="customContent"></slot>
           <ui-card
             v-else
-            class="modal-ui__content shadow-lg w-full"
+            class="modal-ui__content w-full shadow-lg"
             :padding="padding"
             :class="[contentClass]"
           >
-            <div class="mb-4 modal-ui__content-header">
+            <div class="modal-ui__content-header mb-4">
               <div class="flex items-center justify-between">
                 <span class="content-header">
                   <slot name="header">{{ title }}</slot>
@@ -30,7 +31,7 @@
                 <slot name="header-append" />
                 <v-remixicon
                   v-show="!persist"
-                  class="text-gray-600 dark:text-gray-300 cursor-pointer"
+                  class="cursor-pointer text-gray-600 dark:text-gray-300"
                   name="riCloseLine"
                   size="20"
                   @click="closeModal"

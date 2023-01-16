@@ -8,7 +8,7 @@
     <ui-select
       v-model="blockData.insertAt"
       :label="$t('workflow.blocks.create-element.insertEl.title')"
-      class="w-full mt-4"
+      class="mt-4 w-full"
     >
       <option v-for="item in insertOptions" :key="item" :value="item">
         {{ $t(`workflow.blocks.create-element.insertEl.items.${item}`) }}
@@ -23,7 +23,7 @@
     </ui-checkbox>
     <ui-button
       variant="accent"
-      class="w-full mt-4"
+      class="mt-4 w-full"
       @click="state.showModal = true"
     >
       {{ $t('workflow.blocks.create-element.edit') }}
@@ -34,7 +34,7 @@
       padding="p-0"
     >
       <template #header>
-        <ui-tabs v-model="state.activeTab" class="border-none space-x-1">
+        <ui-tabs v-model="state.activeTab" class="space-x-1 border-none">
           <ui-tab v-for="tab in tabs" :key="tab.id" :value="tab.id">
             {{ tab.name }}
           </ui-tab>
@@ -45,7 +45,7 @@
       </template>
       <ui-tab-panels
         :model-value="state.activeTab"
-        class="overflow-auto scroll px-4 mb-4"
+        class="scroll mb-4 overflow-auto px-4"
         style="height: calc(100vh - 12rem)"
       >
         <ui-tab-panel value="html" class="h-full">
@@ -74,7 +74,7 @@
                 :href="`https://docs.automa.site/blocks/javascript-code.html#${func.id}`"
                 target="_blank"
                 rel="noopener"
-                class="inline-block text-sm rounded-md p-1 bg-box-transparent"
+                class="bg-box-transparent inline-block rounded-md p-1 text-sm"
               >
                 <code>
                   {{ func.name }}

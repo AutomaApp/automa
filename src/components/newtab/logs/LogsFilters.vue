@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center mb-6 md:space-x-4 flex-wrap">
+  <div class="mb-6 flex flex-wrap items-center md:space-x-4">
     <ui-input
       id="search-input"
       :model-value="filters.query"
@@ -9,10 +9,10 @@
       @change="updateFilters('query', $event)"
     />
     <slot />
-    <div class="flex items-center workflow-sort w-5/12 ml-4 md:ml-0 md:w-auto">
+    <div class="workflow-sort ml-4 flex w-5/12 items-center md:ml-0 md:w-auto">
       <ui-button
         icon
-        class="rounded-r-none border-gray-300 border-r"
+        class="rounded-r-none border-r border-gray-300"
         @click="updateSorts('order', sorts.order === 'asc' ? 'desc' : 'asc')"
       >
         <v-remixicon
@@ -37,7 +37,7 @@
         </ui-button>
       </template>
       <div class="w-48">
-        <p class="flex-1 mb-2 font-semibold">{{ t('log.filter.title') }}</p>
+        <p class="mb-2 flex-1 font-semibold">{{ t('log.filter.title') }}</p>
         <p class="mb-2 text-sm text-gray-600 dark:text-gray-200">
           {{ t('log.filter.byStatus') }}
         </p>
@@ -47,13 +47,13 @@
             :key="status.id"
             :model-value="filters.byStatus"
             :value="status.id"
-            class="capitalize text-sm"
+            class="text-sm capitalize"
             @change="updateFilters('byStatus', $event)"
           >
             {{ status.name }}
           </ui-radio>
         </div>
-        <p class="mb-1 text-sm text-gray-600 dark:text-gray-200 mt-3">
+        <p class="mb-1 mt-3 text-sm text-gray-600 dark:text-gray-200">
           {{ t('log.filter.byDate.title') }}
         </p>
         <ui-select
@@ -67,7 +67,7 @@
         </ui-select>
       </div>
     </ui-popover>
-    <ui-button class="ml-4 md:ml-0 mt-4 md:mt-0" @click="$emit('clear')">
+    <ui-button class="ml-4 mt-4 md:ml-0 md:mt-0" @click="$emit('clear')">
       <v-remixicon name="riDeleteBin7Line" class="mr-2 -ml-1" />
       <span>
         {{ t('log.clearLogs.title') }}

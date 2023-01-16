@@ -6,9 +6,9 @@
   >
     <div
       v-if="!hideLang"
-      class="absolute text-xs text-gray-300 px-2 items-center bottom-0 left-0 w-full h-6 flex z-10"
+      class="absolute bottom-0 left-0 z-10 flex h-6 w-full items-center px-2 text-xs text-gray-300"
     >
-      <div class="flex-grow" />
+      <div class="grow" />
       <span>
         {{ lang }}
       </span>

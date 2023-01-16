@@ -2,12 +2,12 @@
   <ui-input
     :model-value="data.expression"
     :label="t('workflow.blocks.trigger.forms.cron-expression')"
-    class="w-full -mt-2"
+    class="-mt-2 w-full"
     placeholder="0 15 10 ? * *"
     @change="updateCronExpression($event, true)"
   />
   <p
-    class="ml-1 leading-tight mt-1"
+    class="ml-1 mt-1 leading-tight"
     :class="{ 'text-red-400 dark:text-red-500': state.isError }"
   >
     {{ state.nextSchedule }}

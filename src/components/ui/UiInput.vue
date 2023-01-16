@@ -1,17 +1,17 @@
 <template>
-  <div class="inline-block input-ui">
+  <div class="input-ui inline-block">
     <label
       v-if="label || $slots.label"
       :for="componentId"
-      class="text-sm dark:text-gray-200 text-gray-600 ml-1 inline-block leading-none"
+      class="ml-1 inline-block text-sm leading-none text-gray-600 dark:text-gray-200"
     >
       <slot name="label">{{ label }}</slot>
     </label>
-    <div class="flex items-center relative w-full">
+    <div class="relative flex w-full items-center">
       <slot name="prepend">
         <v-remixicon
           v-if="prependIcon"
-          class="ml-2 dark:text-gray-200 text-gray-600 absolute left-0"
+          class="absolute left-0 ml-2 text-gray-600 dark:text-gray-200"
           :name="prependIcon"
         ></v-remixicon>
       </slot>
@@ -40,7 +40,7 @@
           },
         ]"
         :value="modelValue"
-        class="py-2 px-4 rounded-lg w-full bg-input bg-transparent transition"
+        class="bg-input w-full rounded-lg bg-transparent py-2 px-4 transition"
         @keydown="$emit('keydown', $event)"
         @keyup="$emit('keyup', $event)"
         @blur="$emit('blur', $event)"

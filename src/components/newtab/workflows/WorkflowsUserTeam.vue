@@ -1,5 +1,5 @@
 <template>
-  <p v-if="!userStore.user" class="text-center my-4">
+  <p v-if="!userStore.user" class="my-4 text-center">
     <ui-spinner v-if="!userStore.retrieved" color="text-accent" />
     <template v-else>
       You must
@@ -42,7 +42,7 @@
       <template #footer-content>
         <span
           :class="tagColors[workflow.tag]"
-          class="text-sm rounded-md text-black capitalize p-1"
+          class="rounded-md p-1 text-sm capitalize text-black"
         >
           {{ workflow.tag }}
         </span>

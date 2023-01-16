@@ -10,7 +10,7 @@
       <li
         v-for="(item, index) in deleteList"
         :key="item.id"
-        class="mb-2 pb-4 border-b"
+        class="mb-2 border-b pb-4"
       >
         <div class="flex items-end space-x-2">
           <ui-select
@@ -32,13 +32,13 @@
           :placeholder="t('workflow.variables.name')"
           :title="t('workflow.variables.name')"
           autocomplete="off"
-          class="w-full mt-2"
+          class="mt-2 w-full"
         />
         <ui-select
           v-else
           v-model="deleteList[index].columnId"
           :label="t('workflow.table.select')"
-          class="w-full mt-1"
+          class="mt-1 w-full"
         >
           <option value="[all]">
             {{ t('workflow.blocks.delete-data.allColumns') }}

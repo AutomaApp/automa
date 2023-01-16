@@ -16,7 +16,7 @@
       <td class="text-right">
         <v-remixicon
           name="riDeleteBin7Line"
-          class="inline-block text-red-500 cursor-pointer dark:text-red-400"
+          class="inline-block cursor-pointer text-red-500 dark:text-red-400"
           @click="deleteLog(itemLog.id)"
         />
       </td>

@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-2xl">
     <p class="font-semibold">Zoom</p>
-    <div class="flex items-center mt-1 space-x-4">
+    <div class="mt-1 flex items-center space-x-4">
       <ui-input
         v-model.number="settings.minZoom"
         type="number"
@@ -16,22 +16,22 @@
     <ui-list class="mt-8 space-y-2">
       <ui-list-item small>
         <ui-switch v-model="settings.arrow" />
-        <div class="flex-1 ml-4">
+        <div class="ml-4 flex-1">
           <p class="leading-tight">
             {{ t('settings.editor.arrow.title') }}
           </p>
-          <p class="text-gray-600 text-sm leading-tight dark:text-gray-200">
+          <p class="text-sm leading-tight text-gray-600 dark:text-gray-200">
             {{ t('settings.editor.arrow.description') }}
           </p>
         </div>
       </ui-list-item>
       <ui-list-item small>
         <ui-switch v-model="settings.snapToGrid" />
-        <div class="flex-1 ml-4">
+        <div class="ml-4 flex-1">
           <p class="leading-tight">
             {{ t('settings.editor.snapGrid.title') }}
           </p>
-          <p class="text-gray-600 text-sm leading-tight dark:text-gray-200">
+          <p class="text-sm leading-tight text-gray-600 dark:text-gray-200">
             {{ t('settings.editor.snapGrid.description') }}
           </p>
         </div>
@@ -39,7 +39,7 @@
       <transition-expand>
         <div
           v-if="settings.snapToGrid"
-          class="pl-16 ml-2 space-x-2"
+          class="ml-2 space-x-2 pl-16"
           style="margin-top: 0"
         >
           <ui-input

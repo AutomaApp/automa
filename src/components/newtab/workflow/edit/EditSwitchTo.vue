@@ -32,7 +32,7 @@
         :label="t('workflow.blocks.switch-to.iframeSelector')"
         placeholder="CSS Selector or XPath"
         autocomplete="off"
-        class="w-full mr-2"
+        class="mr-2 w-full"
         @change="updateData({ selector: $event })"
       />
       <shared-el-selector-actions

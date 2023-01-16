@@ -43,7 +43,8 @@
     "duplicate": "Duplicate",
     "password": "Password",
     "category": "Category",
-    "optional": "Optional"
+    "optional": "Optional",
+    "0disable": "0 to disable"
   },
   "message": {
     "noBlock": "No block",

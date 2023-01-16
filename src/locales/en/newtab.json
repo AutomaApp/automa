@@ -14,6 +14,7 @@
     "icon": "Package icon",
     "open": "Open packages",
     "new": "New package",
+    "import": "Import package",
     "set": "Set as a package",
     "settings": {
       "asBlock": "Set package as block"

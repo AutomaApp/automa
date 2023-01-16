@@ -14,7 +14,7 @@
       :placeholder="t('workflow.blocks.trigger.forms.time')"
       type="time"
       step="1"
-      class="w-full mt-2"
+      class="mt-2 w-full"
       @change="$emit('update', { time: $event || '00:00' })"
     />
   </div>

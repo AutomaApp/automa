@@ -34,7 +34,7 @@
         v-if="!data.activeTabLoaded"
         :model-value="data.tabLoadedUrl"
         type="url"
-        class="w-full mt-1"
+        class="mt-1 w-full"
         placeholder="https://example.org/*"
         @change="updateData({ tabLoadedUrl: $event })"
       >
@@ -47,7 +47,7 @@
             title="Examples"
           >
             <v-remixicon
-              class="inline-block ml-1"
+              class="ml-1 inline-block"
               name="riInformationLine"
               size="18"
             />
@@ -67,7 +67,7 @@
         :model-value="data.tabUrl"
         type="url"
         label="Filter"
-        class="w-full mt-1"
+        class="mt-1 w-full"
         placeholder="URL or Regex"
         @change="updateData({ tabUrl: $event })"
       />

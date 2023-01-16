@@ -18,7 +18,7 @@
       :label="t('workflow.blocks.increase-variable.increase')"
       placeholder="0"
       type="number"
-      class="w-full mt-2"
+      class="mt-2 w-full"
       @change="updateData({ increaseBy: +$event })"
     />
   </div>

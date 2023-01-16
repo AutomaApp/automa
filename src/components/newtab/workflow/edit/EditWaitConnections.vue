@@ -11,7 +11,7 @@
       :label="t('workflow.blocks.base.timeout')"
       placeholder="10000"
       type="number"
-      class="w-full mt-1"
+      class="mt-1 w-full"
       @change="updateData({ timeout: +$event })"
     />
     <ui-checkbox
@@ -25,7 +25,7 @@
       v-if="data.specificFlow"
       :model-value="data.flowBlockId"
       :label="t('workflow.blocks.wait-connections.selectFlow')"
-      class="w-full mt-1"
+      class="mt-1 w-full"
       @change="updateData({ flowBlockId: $event })"
     >
       <option v-for="item in connections" :key="item.id" :value="item.id">

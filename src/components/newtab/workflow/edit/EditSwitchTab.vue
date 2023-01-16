@@ -9,7 +9,7 @@
     <ui-select
       :model-value="data.findTabBy"
       label="Find tab by"
-      class="w-full mb-2 mt-3"
+      class="mb-2 mt-3 w-full"
       @change="updateData({ findTabBy: $event })"
     >
       <option v-for="type in types" :key="type.id" :value="type.id">
@@ -31,7 +31,7 @@
               href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns#examples"
               target="_blank"
               rel="noopener"
-              class="inline-block ml-1"
+              class="ml-1 inline-block"
             >
               <v-remixicon
                 name="riInformationLine"

@@ -1,5 +1,6 @@
 import cloneDeep from 'lodash.clonedeep';
 import objectPath from 'object-path';
+import { parseJSON } from '@/utils/helper';
 import { conditionBuilder } from '@/utils/shared';
 import renderString from '../templating/renderString';
 
@@ -35,6 +36,13 @@ const comparisons = {
   ifl: (a) => !isBoolStr(a),
 };
 
+const convertDataType = {
+  string: (val) => `${val}`,
+  number: (val) => +val,
+  json: (val) => parseJSON(val, null),
+  boolean: (val) => Boolean(isBoolStr(val)),
+};
+
 export default async function (conditionsArr, workflowData) {
   const result = {
     isMatch: false,
@@ -67,7 +75,15 @@ export default async function (conditionsArr, workflowData) {
       Object.assign(result.replacedValue, list);
     }
 
-    if (type === 'value') return copyData.value;
+    if (type === 'value') {
+      const regex = /^(json|string|number|boolean)::/;
+      if (regex.test(copyData.value)) {
+        const [dataType, value] = copyData.value.split(/::(.*)/s);
+        return convertDataType[dataType](value);
+      }
+
+      return copyData.value;
+    }
 
     if (type.startsWith('code')) {
       let conditionValue;

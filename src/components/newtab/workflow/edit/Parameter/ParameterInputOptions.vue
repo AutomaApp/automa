@@ -10,7 +10,7 @@
       class="ml-1 text-gray-600 dark:text-gray-200"
       size="20"
     />
-    <label v-if="false" class="flex items-center ml-4">
+    <label v-if="false" class="ml-4 flex items-center">
       <ui-switch v-model="options.unmaskValue" />
       <span class="ml-2">Return unmask value</span>
     </label>
@@ -30,10 +30,10 @@
         <ui-checkbox v-model="mask.isRegex" class="ml-4">
           Is RegEx
         </ui-checkbox>
-        <div class="flex-grow" />
+        <div class="grow" />
         <v-remixicon
           name="riDeleteBin7Line"
-          class="cursor-pointer flex-shrink-0 ml-1"
+          class="ml-1 shrink-0 cursor-pointer"
           @click="options.masks.splice(index, 1)"
         />
       </div>
@@ -54,11 +54,11 @@
           <ui-input
             v-model="token.regex"
             placeholder="RegEx"
-            class="flex-1 ml-2"
+            class="ml-2 flex-1"
           />
           <v-remixicon
             name="riDeleteBin7Line"
-            class="cursor-pointer flex-shrink-0 ml-1"
+            class="ml-1 shrink-0 cursor-pointer"
             @click="options.customTokens.splice(index, 1)"
           />
         </div>

@@ -1,21 +1,21 @@
 <template>
-  <div class="px-5 pb-5 space-y-2">
+  <div class="space-y-2 px-5 pb-5">
     <ui-card
       v-for="workflow in workflows"
       :key="workflow.id"
-      class="w-full flex items-center relative space-x-2 hover:ring-2 hover:ring-gray-900"
+      class="relative flex w-full items-center space-x-2 hover:ring-2 hover:ring-gray-900"
     >
       <div
-        class="flex-1 text-overflow cursor-pointer mr-4"
+        class="text-overflow mr-4 flex-1 cursor-pointer"
         @click="openWorkflowPage(workflow)"
       >
-        <p class="leading-tight text-overflow">{{ workflow.name }}</p>
-        <div class="text-gray-500 flex items-center">
+        <p class="text-overflow leading-tight">{{ workflow.name }}</p>
+        <div class="flex items-center text-gray-500">
           <span>{{ dayjs(workflow.createdAt).fromNow() }}</span>
-          <div class="flex-grow" />
+          <div class="grow" />
           <span
             :class="tagColors[workflow.tag]"
-            class="text-overflow px-2 text-sm ml-2 text-gray-600 py-1 rounded-md"
+            class="text-overflow ml-2 rounded-md px-2 py-1 text-sm text-gray-600"
             style="max-width: 120px"
           >
             {{ workflow.tag }}

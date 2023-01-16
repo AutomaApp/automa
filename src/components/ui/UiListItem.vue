@@ -1,7 +1,7 @@
 <template>
   <component
     :is="tag"
-    class="ui-list-item rounded-lg flex items-center transition w-full focus:outline-none"
+    class="ui-list-item flex w-full items-center rounded-lg transition focus:outline-none"
     role="listitem"
     :class="[
       active ? color : 'hoverable',

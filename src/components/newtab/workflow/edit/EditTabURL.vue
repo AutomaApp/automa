@@ -16,7 +16,7 @@
         {{ t(`workflow.blocks.tab-url.types.${type}`) }}
       </option>
     </ui-select>
-    <div v-if="data.type === 'all'" class="mt-4 p-2 rounded-lg border">
+    <div v-if="data.type === 'all'" class="mt-4 rounded-lg border p-2">
       <p class="text-sm text-gray-600">
         {{ t('workflow.blocks.tab-url.query.title') }}
       </p>

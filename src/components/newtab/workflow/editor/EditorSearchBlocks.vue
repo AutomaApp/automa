@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-white dark:bg-gray-800 ml-2 inline-flex items-center rounded-lg"
+    class="ml-2 inline-flex items-center rounded-lg bg-white dark:bg-gray-800"
   >
     <button
       v-tooltip="
@@ -8,7 +8,7 @@
           shortcut['editor:search-blocks'].readable
         })`
       "
-      class="hoverable p-2 rounded-lg rounded-lg"
+      class="hoverable rounded-lg p-2"
       icon
       @click="toggleActiveSearch"
     >
@@ -32,7 +32,7 @@
         :style="{ width: state.active ? '250px' : '0px' }"
         type="search"
         autocomplete="off"
-        class="py-2 focus:ring-0 rounded-lg bg-transparent"
+        class="rounded-lg bg-transparent py-2 focus:ring-0"
         @focus="extractBlocks"
         @blur="clearState"
       />
@@ -42,11 +42,17 @@
             {{ item.name }}
           </p>
           <p
-            class="text-sm text-overflow leading-none text-gray-600 dark:text-gray-300"
+            class="text-overflow text-sm leading-none text-gray-600 dark:text-gray-300"
           >
             {{ item.description }}
           </p>
         </div>
+        <span
+          title="Block id"
+          class="text-overflow bg-box-transparent w-16 rounded-md p-1 text-xs text-gray-600 dark:text-gray-300"
+        >
+          {{ item.id }}
+        </span>
       </template>
     </ui-autocomplete>
   </div>
@@ -90,12 +96,10 @@ const shortcut = useShortcut('editor:search-blocks', () => {
 });
 
 function searchNodes({ item, text }) {
-  const query = text.toLocaleLowerCase();
+  const isMatch = (str) =>
+    str.toLocaleLowerCase().includes(text.toLocaleLowerCase());
 
-  return (
-    item.name.toLocaleLowerCase().includes(query) ||
-    item.description.toLocaleLowerCase().includes(query)
-  );
+  return isMatch(item.id) || isMatch(item.name) || isMatch(item.description);
 }
 function toggleActiveSearch() {
   state.active = !state.active;

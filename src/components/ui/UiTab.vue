@@ -12,7 +12,7 @@
     ]"
     :tabIndex="uiTabs.modelValue.value === value ? 0 : -1"
     aria-role="tab"
-    class="transition-colors z-[1] ui-tab focus:ring-0 ui-tab"
+    class="ui-tab z-[1] transition-colors focus:ring-0"
     @mouseenter="uiTabs.hoverHandler"
     @click="uiTabs.updateActive(value)"
   >

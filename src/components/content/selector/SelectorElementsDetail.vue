@@ -12,7 +12,7 @@
   </ui-tabs>
   <ui-tab-panels
     :model-value="activeTab"
-    class="overflow-y-auto scroll"
+    class="scroll overflow-y-auto"
     style="max-height: calc(100vh - 17rem)"
   >
     <ui-tab-panel value="attributes">
@@ -27,7 +27,7 @@
             class="bg-box-transparent mb-1 rounded-lg py-2 px-3"
           >
             <p
-              class="text-sm text-overflow leading-tight text-gray-600"
+              class="text-overflow text-sm leading-tight text-gray-600"
               title="Attribute name"
             >
               {{ name }}
@@ -71,7 +71,7 @@
             class="bg-box-transparent mb-1 rounded-lg py-2 px-3"
           >
             <p
-              class="text-sm text-overflow leading-tight text-gray-600"
+              class="text-overflow text-sm leading-tight text-gray-600"
               title="Option name"
             >
               {{ option.name }}
@@ -79,7 +79,7 @@
             <input
               :value="option.value"
               title="Option value"
-              class="text-overflow focus:ring-0 w-full bg-transparent"
+              class="text-overflow w-full bg-transparent focus:ring-0"
               readonly
               @click="$event.target.select()"
             />

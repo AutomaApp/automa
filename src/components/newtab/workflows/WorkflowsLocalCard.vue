@@ -3,25 +3,25 @@
     :data="workflow"
     :data-workflow="workflow.id"
     draggable="true"
-    class="cursor-default select-none ring-accent local-workflow"
+    class="local-workflow cursor-default select-none ring-accent"
     @click="$router.push(`/workflows/${$event.id}`)"
   >
     <template #header>
-      <div class="flex items-center mb-4">
+      <div class="mb-4 flex items-center">
         <template v-if="workflow && !workflow.isDisabled">
           <ui-img
             v-if="workflow.icon.startsWith('http')"
             :src="workflow.icon"
-            class="rounded-lg overflow-hidden"
+            class="overflow-hidden rounded-lg"
             style="height: 40px; width: 40px"
             alt="Can not display"
           />
-          <span v-else class="p-2 rounded-lg bg-box-transparent inline-block">
+          <span v-else class="bg-box-transparent inline-block rounded-lg p-2">
             <v-remixicon :name="workflow.icon" />
           </span>
         </template>
         <p v-else class="py-2">{{ t('common.disabled') }}</p>
-        <div class="flex-grow"></div>
+        <div class="grow"></div>
         <button
           v-if="!workflow.isDisabled"
           class="invisible group-hover:visible"
@@ -29,7 +29,7 @@
         >
           <v-remixicon name="riPlayLine" />
         </button>
-        <ui-popover class="h-6 ml-2">
+        <ui-popover class="ml-2 h-6">
           <template #trigger>
             <button>
               <v-remixicon name="riMoreLine" />

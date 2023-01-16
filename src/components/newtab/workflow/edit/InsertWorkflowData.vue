@@ -3,7 +3,7 @@
     <ui-checkbox
       :model-value="data.assignVariable"
       block
-      class="mt-4 block-variable"
+      class="block-variable mt-4"
       @change="updateData({ assignVariable: $event })"
     >
       {{ t('workflow.variables.assign') }}
@@ -30,7 +30,7 @@
       v-if="data.saveData"
       :model-value="data.dataColumn"
       :placeholder="t('workflow.blocks.base.table.select')"
-      class="w-full mt-2"
+      class="mt-2 w-full"
       @change="updateData({ dataColumn: $event })"
     >
       <option
@@ -56,7 +56,7 @@
         :model-value="data.extraRowValue"
         :title="t('workflow.blocks.base.table.extraRow.title')"
         :placeholder="t('workflow.blocks.base.table.extraRow.placeholder')"
-        class="w-full mt-2 mb-2"
+        class="my-2 w-full"
         @change="updateData({ extraRowValue: $event })"
       />
       <ui-select

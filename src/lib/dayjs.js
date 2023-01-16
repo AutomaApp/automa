@@ -5,6 +5,7 @@ import 'dayjs/locale/zh-tw';
 import 'dayjs/locale/vi';
 import 'dayjs/locale/fr';
 import 'dayjs/locale/it';
+import 'dayjs/locale/uk';
 
 dayjs.extend(relativeTime);
 

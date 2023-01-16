@@ -1,11 +1,11 @@
 <template>
-  <div class="flex mt-6">
+  <div class="mt-6 flex">
     <ui-input
       v-model="state.query"
       :placeholder="t('common.search')"
       prepend-icon="riSearch2Line"
     />
-    <div class="flex-grow"></div>
+    <div class="grow"></div>
     <ui-button
       variant="accent"
       style="min-width: 120px"
@@ -20,7 +20,7 @@
     :headers="tableHeaders"
     :items="credentials"
     :search="state.query"
-    class="w-full mt-4"
+    class="mt-4 w-full"
   >
     <template #item-value> ************ </template>
     <template #item-createdAt="{ item }">
@@ -29,7 +29,7 @@
     <template #item-actions="{ item }">
       <v-remixicon
         name="riDeleteBin7Line"
-        class="cursor-pointer inline-block"
+        class="inline-block cursor-pointer"
         @click="deleteCredential(item)"
       />
     </template>
@@ -39,9 +39,9 @@
     <ui-textarea
       v-model="addState.value"
       placeholder="value"
-      class="w-full mt-4"
+      class="mt-4 w-full"
     />
-    <div class="text-right mt-8">
+    <div class="mt-8 text-right">
       <ui-button class="mr-4" @click="addState.show = false">
         {{ t('common.cancel') }}
       </ui-button>

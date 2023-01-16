@@ -4,15 +4,34 @@
       {{ $t('common.packages') }}
     </h1>
     <div class="mt-8 flex items-start">
-      <div class="w-60 mr-8 hidden lg:block">
-        <ui-button
-          class="w-full"
-          variant="accent"
-          @click="addState.show = true"
-        >
-          <p>{{ t('packages.new') }}</p>
-        </ui-button>
-        <ui-list class="text-gray-600 dark:text-gray-200 mt-4 space-y-1">
+      <div class="mr-8 hidden w-60 lg:block">
+        <div class="flex items-center">
+          <ui-button
+            class="w-full rounded-r-none border-r"
+            variant="accent"
+            @click="addState.show = true"
+          >
+            <p>{{ t('packages.new') }}</p>
+          </ui-button>
+          <hr />
+          <ui-popover>
+            <template #trigger>
+              <ui-button icon variant="accent" class="rounded-l-none">
+                <v-remixicon name="riArrowDropDownLine" />
+              </ui-button>
+            </template>
+            <ui-list>
+              <ui-list-item
+                v-close-popover
+                class="cursor-pointer"
+                @click="importPackage"
+              >
+                {{ t('packages.import') }}
+              </ui-list-item>
+            </ui-list>
+          </ui-popover>
+        </div>
+        <ui-list class="mt-4 space-y-1 text-gray-600 dark:text-gray-200">
           <ui-list-item
             v-for="cat in categories"
             :key="cat.id"
@@ -26,8 +45,8 @@
         </ui-list>
       </div>
       <div class="flex-1">
-        <div class="flex items-center flex-wrap">
-          <div class="w-full flex items-center md:w-auto">
+        <div class="flex flex-wrap items-center">
+          <div class="flex w-full items-center md:w-auto">
             <ui-input
               v-model="state.query"
               :placeholder="t('common.search')"
@@ -43,11 +62,11 @@
               <span>{{ t('common.packages') }}</span>
             </ui-button>
           </div>
-          <div class="flex-grow" />
-          <div class="flex items-center workflow-sort mt-4 lg:mt-0">
+          <div class="grow" />
+          <div class="workflow-sort mt-4 flex items-center lg:mt-0">
             <ui-button
               icon
-              class="rounded-r-none border-gray-300 dark:border-gray-700 border-r"
+              class="rounded-r-none border-r border-gray-300 dark:border-gray-700"
               @click="
                 sortState.order = sortState.order === 'asc' ? 'desc' : 'asc'
               "
@@ -64,12 +83,12 @@
           </div>
         </div>
         <div
-          class="mt-8 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
+          class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
         >
           <ui-card
             v-for="pkg in packages"
             :key="pkg.id"
-            class="hover:ring-2 flex flex-col group hover:ring-accent dark:hover:ring-gray-200"
+            class="group flex flex-col hover:ring-2 hover:ring-accent dark:hover:ring-gray-200"
           >
             <div class="flex items-center">
               <ui-img
@@ -79,15 +98,15 @@
                 style="height: 40px; width: 40px"
                 alt="Can not display"
               />
-              <span v-else class="p-2 rounded-lg bg-box-transparent">
+              <span v-else class="bg-box-transparent rounded-lg p-2">
                 <v-remixicon :name="pkg.icon || 'mdiPackageVariantClosed'" />
               </span>
-              <div class="flex-grow" />
+              <div class="grow" />
               <ui-popover>
                 <template #trigger>
                   <v-remixicon
                     name="riMoreLine"
-                    class="text-gray-600 dark:text-gray-200 cursor-pointer"
+                    class="cursor-pointer text-gray-600 dark:text-gray-200"
                   />
                 </template>
                 <ui-list class="space-y-1" style="min-width: 180px">
@@ -102,6 +121,24 @@
                     <v-remixicon name="riExternalLinkLine" class="mr-2 -ml-1" />
                     <span>Open package page</span>
                   </ui-list-item>
+                  <template v-else>
+                    <ui-list-item
+                      v-close-popover
+                      class="cursor-pointer"
+                      @click="duplicatePackage(pkg)"
+                    >
+                      <v-remixicon name="riFileCopyLine" class="mr-2 -ml-1" />
+                      <span>{{ t('common.duplicate') }}</span>
+                    </ui-list-item>
+                    <ui-list-item
+                      v-close-popover
+                      class="cursor-pointer"
+                      @click="exportPackage(pkg)"
+                    >
+                      <v-remixicon name="riDownloadLine" class="mr-2 -ml-1" />
+                      <span>{{ t('common.export') }}</span>
+                    </ui-list-item>
+                  </template>
                   <ui-list-item
                     v-close-popover
                     class="cursor-pointer text-red-500 dark:text-red-400"
@@ -117,20 +154,20 @@
               :to="`/packages/${pkg.id}`"
               class="mt-4 flex-1 cursor-pointer"
             >
-              <p class="font-semibold text-overflow">
+              <p class="text-overflow font-semibold">
                 {{ pkg.name }}
               </p>
               <p
-                class="line-clamp text-gray-600 dark:text-gray-200 leading-tight"
+                class="line-clamp leading-tight text-gray-600 dark:text-gray-200"
               >
                 {{ pkg.description }}
               </p>
             </router-link>
             <div
-              class="flex items-center text-gray-600 dark:text-gray-200 mt-2"
+              class="mt-2 flex items-center text-gray-600 dark:text-gray-200"
             >
               <p>{{ dayjs(pkg.createdAt).fromNow() }}</p>
-              <p v-if="pkg.author" class="text-overflow flex-1 ml-4 text-right">
+              <p v-if="pkg.author" class="text-overflow ml-4 flex-1 text-right">
                 By {{ pkg.author }}
               </p>
             </div>
@@ -154,9 +191,9 @@
         v-model="addState.description"
         :placeholder="t('common.description')"
         style="min-height: 200px"
-        class="w-full mt-2"
+        class="mt-2 w-full"
       />
-      <div class="flex space-x-4 mt-6">
+      <div class="mt-6 flex space-x-4">
         <ui-button class="flex-1" @click="clearNewPackage">
           {{ t('common.cancel') }}
         </ui-button>
@@ -172,8 +209,9 @@ import { reactive, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDialog } from '@/composable/dialog';
 import { usePackageStore } from '@/stores/package';
-import { arraySorter } from '@/utils/helper';
+import { arraySorter, openFilePicker, parseJSON } from '@/utils/helper';
 import dayjs from '@/lib/dayjs';
+import dataExporter from '@/utils/dataExporter';
 
 const { t } = useI18n();
 const dialog = useDialog();
@@ -222,6 +260,40 @@ const packages = computed(() => {
   });
 });
 
+function duplicatePackage(pkg) {
+  const copyPkg = JSON.parse(JSON.stringify(pkg));
+  delete copyPkg.id;
+
+  copyPkg.name += ' - copy';
+
+  packageStore.insert(copyPkg);
+}
+function importPackage() {
+  openFilePicker(['application/json']).then(([file]) => {
+    if (file.type !== 'application/json') return;
+
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      const pkgJson = parseJSON(fileReader.result, null);
+      if (!pkgJson) return;
+      if (!pkgJson.name || !pkgJson.data) return;
+
+      packageStore.insert(pkgJson);
+    };
+    fileReader.readAsText(file);
+  });
+}
+function exportPackage(pkg) {
+  const copyPkg = JSON.parse(JSON.stringify(pkg));
+  delete copyPkg.id;
+
+  const blobUrl = dataExporter(
+    copyPkg,
+    { type: 'json', name: `${pkg.name}.automa-pkg` },
+    true
+  );
+  URL.revokeObjectURL(blobUrl);
+}
 function deletePackage({ id, name }) {
   dialog.confirm({
     title: 'Delete package',

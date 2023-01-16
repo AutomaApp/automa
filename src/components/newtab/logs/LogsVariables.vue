@@ -15,11 +15,11 @@
       <ui-tab value="raw"> Raw </ui-tab>
     </ui-tabs>
     <div v-if="state.activeTab === 'gui'" class="mt-4">
-      <ul class="space-y-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <ul class="grid grid-cols-1 gap-4 space-y-2 md:grid-cols-2">
         <li
           v-for="(varValue, varName) in variables"
           :key="varName"
-          class="px-2 pb-2 pt-1 rounded-lg flex items-center border-2 space-x-2"
+          class="flex items-center space-x-2 rounded-lg border-2 px-2 pb-2 pt-1"
         >
           <ui-input
             :model-value="varName"

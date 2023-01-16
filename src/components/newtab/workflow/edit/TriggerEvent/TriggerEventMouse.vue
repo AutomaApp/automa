@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-2 grid-cols-2">
+  <div class="grid grid-cols-2 gap-2">
     <ui-checkbox
       v-for="item in ['altKey', 'ctrlKey', 'metaKey', 'shiftKey']"
       :key="item"
@@ -20,7 +20,7 @@
   <div
     v-for="items in posGroups"
     :key="items[0]"
-    class="flex items-center space-x-2 mt-2"
+    class="mt-2 flex items-center space-x-2"
   >
     <template v-if="items[0].startsWith('client')">
       <ui-input

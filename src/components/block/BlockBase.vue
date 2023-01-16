@@ -1,10 +1,20 @@
 <template>
   <div class="block-base relative w-48" @dblclick.stop="$emit('edit')">
     <div
-      class="top-0 w-full absolute block-menu-container hidden"
+      class="block-menu-container absolute top-0 hidden w-full"
       style="transform: translateY(-100%)"
     >
-      <div class="inline-flex items-center dark:text-gray-300 block-menu">
+      <div>
+        <p
+          title="Block id (click to copy)"
+          class="block-menu text-overflow inline-block px-1 dark:text-gray-300"
+          style="max-width: 96px; margin-bottom: 0"
+          @click="insertToClipboard"
+        >
+          {{ isCopied ? '✅ Copied' : blockId }}
+        </p>
+      </div>
+      <div class="block-menu inline-flex items-center dark:text-gray-300">
         <button
           v-if="!blockData.details?.disableDelete"
           title="Delete block"
@@ -54,14 +64,14 @@
       </div>
     </div>
     <slot name="prepend" />
-    <ui-card :class="contentClass" class="z-10 relative block-base__content">
+    <ui-card :class="contentClass" class="block-base__content relative z-10">
       <slot></slot>
     </ui-card>
     <slot name="append" />
   </div>
 </template>
 <script setup>
-import { inject } from 'vue';
+import { inject, ref } from 'vue';
 import { excludeGroupBlocks } from '@/utils/shared';
 
 const props = defineProps({
@@ -84,8 +94,17 @@ const props = defineProps({
 });
 defineEmits(['delete', 'edit', 'update', 'settings']);
 
+const isCopied = ref(false);
 const workflowUtils = inject('workflow-utils', null);
 
+function insertToClipboard() {
+  navigator.clipboard.writeText(props.blockId);
+
+  isCopied.value = true;
+  setTimeout(() => {
+    isCopied.value = false;
+  }, 1000);
+}
 function handleStartDrag(event) {
   const payload = {
     data: props.data,

@@ -1,15 +1,15 @@
 <template>
-  <div v-if="state.status === 'loading'" class="text-center py-8">
+  <div v-if="state.status === 'loading'" class="py-8 text-center">
     <ui-spinner color="text-primary" />
   </div>
   <template v-else-if="state.status === 'idle'">
-    <div class="flex items-center mb-2">
+    <div class="mb-2 flex items-center">
       <ui-input
         v-model="state.fileName"
         :placeholder="t('common.fileName')"
         :title="t('common.fileName')"
       />
-      <div class="flex-grow"></div>
+      <div class="grow"></div>
       <ui-popover trigger-width>
         <template #trigger>
           <ui-button variant="accent">

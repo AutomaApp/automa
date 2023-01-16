@@ -5,7 +5,7 @@
     content-position="start"
     @close="clearState"
   >
-    <ui-card class="w-full mt-8" style="max-width: 1400px; min-height: 600px">
+    <ui-card class="mt-8 w-full" style="max-width: 1400px; min-height: 600px">
       <app-logs-items
         v-if="!state.logId"
         :workflow-id="state.workflowId"

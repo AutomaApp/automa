@@ -1,20 +1,20 @@
 <template>
   <aside
-    class="fixed flex flex-col items-center h-screen left-0 top-0 w-16 py-6 bg-white dark:bg-gray-800 z-50"
+    class="fixed left-0 top-0 z-50 flex h-screen w-16 flex-col items-center bg-white py-6 dark:bg-gray-800"
   >
     <img
       :title="`v${extensionVersion}`"
       src="@/assets/svg/logo.svg"
-      class="w-10 mb-4 mx-auto"
+      class="mx-auto mb-4 w-10"
     />
     <div
-      class="space-y-2 w-full relative text-center"
+      class="relative w-full space-y-2 text-center"
       @mouseleave="showHoverIndicator = false"
     >
       <div
         v-show="showHoverIndicator"
         ref="hoverIndicator"
-        class="rounded-lg h-10 w-10 absolute left-1/2 bg-box-transparent transition-transform duration-200"
+        class="bg-box-transparent absolute left-1/2 h-10 w-10 rounded-lg transition-transform duration-200"
         style="transform: translate(-50%, 0)"
       ></div>
       <router-link
@@ -32,23 +32,23 @@
           "
           :class="{ 'is-active': isActive }"
           :href="tab.id === 'log' ? '#' : href"
-          class="z-10 relative w-full flex items-center justify-center tab relative"
+          class="tab relative z-10 flex w-full items-center justify-center"
           @click="navigateLink($event, navigate, tab)"
           @mouseenter="hoverHandler"
         >
-          <div class="p-2 rounded-lg transition-colors inline-block">
+          <div class="inline-block rounded-lg p-2 transition-colors">
             <v-remixicon :name="tab.icon" />
           </div>
           <span
             v-if="tab.id === 'log' && runningWorkflowsLen > 0"
-            class="absolute h-4 w-4 text-xs dark:text-black text-white rounded-full bg-accent -top-1 right-2"
+            class="absolute -top-1 right-2 h-4 w-4 rounded-full bg-accent text-xs text-white dark:text-black"
           >
             {{ runningWorkflowsLen }}
           </span>
         </a>
       </router-link>
     </div>
-    <hr class="w-8/12 my-4" />
+    <hr class="my-4 w-8/12" />
     <button
       v-tooltip:right.group="$t('home.elementSelector.name')"
       class="focus:ring-0"
@@ -56,14 +56,14 @@
     >
       <v-remixicon name="riFocus3Line" />
     </button>
-    <div class="flex-grow"></div>
+    <div class="grow"></div>
     <ui-popover
       v-if="userStore.user"
       trigger="mouseenter click"
       placement="right"
     >
       <template #trigger>
-        <span class="inline-block p-1 bg-box-transparent rounded-full">
+        <span class="bg-box-transparent inline-block rounded-full p-1">
           <img
             :src="userStore.user.avatar_url"
             height="32"
@@ -74,13 +74,13 @@
       </template>
       <div class="w-44">
         <div class="flex items-center">
-          <p class="flex-1 text-overflow">
+          <p class="text-overflow flex-1">
             {{ userStore.user.username }}
           </p>
           <span
             title="Subscription"
             :class="subColors[userStore.user.subscription]"
-            class="px-2 py-1 rounded-md text-sm capitalize"
+            class="rounded-md px-2 py-1 text-sm capitalize"
           >
             {{ userStore.user.subscription }}
           </span>

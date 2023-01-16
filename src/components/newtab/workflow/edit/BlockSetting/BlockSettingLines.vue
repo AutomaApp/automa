@@ -17,8 +17,8 @@
         class="w-full"
         @change="updateActiveEdge('label', $event)"
       />
-      <div class="flex items-center mt-4">
-        <label class="flex items-center mr-4 block">
+      <div class="mt-4 flex items-center">
+        <label class="mr-4 block flex items-center">
           <ui-switch
             :model-value="activeEdge.animated"
             @change="updateActiveEdge('animated', $event)"
@@ -33,7 +33,7 @@
             :value="activeEdge.style?.stroke ?? null"
             type="color"
             name="color"
-            class="h-10 w-10 rounded-lg bg-input p-1"
+            class="bg-input h-10 w-10 rounded-lg p-1"
             @input="updateActiveEdge('style', { stroke: $event.target.value })"
           />
           <span class="ml-2">

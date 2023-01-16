@@ -1,15 +1,15 @@
 <template>
-  <div id="workflow-edit-block" class="px-4 overflow-auto scroll pb-1 h-full">
+  <div id="workflow-edit-block" class="scroll h-full overflow-auto px-4 pb-1">
     <div
-      class="sticky top-0 z-20 bg-white dark:bg-gray-800 pb-4 mb-2 flex items-center space-x-2"
+      class="sticky top-0 z-20 mb-2 flex items-center space-x-2 bg-white pb-4 dark:bg-gray-800"
     >
       <button @click="$emit('close')">
         <v-remixicon name="riArrowLeftLine" />
       </button>
-      <p class="font-semibold inline-block capitalize">
+      <p class="inline-block font-semibold capitalize">
         {{ getBlockName() }}
       </p>
-      <div class="flex-grow"></div>
+      <div class="grow"></div>
       <a
         :title="t('common.docs')"
         :href="`https://docs.automa.site/blocks/${data.id}.html`"

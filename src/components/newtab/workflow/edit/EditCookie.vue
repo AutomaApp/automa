@@ -9,7 +9,7 @@
     <template v-if="permission.has.cookies">
       <ui-select
         :model-value="data.type"
-        class="w-full mt-4"
+        class="mt-4 w-full"
         @change="updateData({ type: $event })"
       >
         <option v-for="type in types" :key="type" :value="type">
@@ -37,7 +37,7 @@
           :model-value="data.jsonCode"
           :extensions="codemirrorExts"
           lang="json"
-          class="mt-4 cookie-editor"
+          class="cookie-editor mt-4"
           @change="updateData({ jsonCode: $event })"
         />
         <a
@@ -45,7 +45,7 @@
             data.type === 'get' && data.getAll ? 'getAll' : data.type
           }`"
           rel="noopener"
-          class="underline mt-2 inline-block"
+          class="mt-2 inline-block underline"
           target="_blank"
         >
           See all available properties
@@ -128,7 +128,7 @@
           </ui-checkbox>
         </div>
       </template>
-      <div v-if="data.type === 'get'" class="pt-4 border-t mt-4 cookie-data">
+      <div v-if="data.type === 'get'" class="cookie-data mt-4 border-t pt-4">
         <insert-workflow-data :data="data" variables @update="updateData" />
       </div>
     </template>

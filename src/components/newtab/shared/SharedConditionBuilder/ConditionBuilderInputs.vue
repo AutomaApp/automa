@@ -6,11 +6,11 @@
   >
     <div
       v-if="item.category === 'value'"
-      class="flex items-end space-x-2 flex-wrap"
+      class="flex flex-wrap items-end space-x-2"
     >
       <ui-select
         :model-value="item.type"
-        class="flex-shrink-0"
+        class="shrink-0"
         @change="updateValueType($event, index)"
       >
         <optgroup

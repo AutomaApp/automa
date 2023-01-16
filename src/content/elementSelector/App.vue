@@ -4,17 +4,17 @@
       'select-none': state.isDragging,
       'bg-black bg-opacity-30': !state.hide,
     }"
-    class="root fixed h-full w-full pointer-events-none top-0 text-black left-0"
+    class="root pointer-events-none fixed top-0 left-0 h-full w-full text-black"
     style="z-index: 99999999"
   >
     <div
       ref="cardEl"
       :style="{ transform: `translate(${cardRect.x}px, ${cardRect.y}px)` }"
       style="width: 320px"
-      class="relative root-card bg-white shadow-xl z-50 pointer-events-auto rounded-lg"
+      class="root-card pointer-events-auto relative z-50 rounded-lg bg-white shadow-xl"
     >
       <div
-        class="absolute p-2 drag-button z-50 shadow-xl bg-white p-1 cursor-move rounded-lg"
+        class="drag-button absolute z-50 cursor-move rounded-lg bg-white p-2 p-1 shadow-xl"
         style="top: -15px; left: -15px"
       >
         <v-remixicon
@@ -22,11 +22,11 @@
           @mousedown="state.isDragging = true"
         />
       </div>
-      <div class="flex px-4 pt-4 items-center">
+      <div class="flex items-center px-4 pt-4">
         <p class="text-lg font-semibold">Automa</p>
-        <div class="flex-grow"></div>
+        <div class="grow"></div>
         <button
-          class="mr-2 hoverable p-1 rounded-md transition"
+          class="hoverable mr-2 rounded-md p-1 transition"
           @mousedown.stop.prevent
           @click.stop.prevent="
             state.hide = !state.hide;
@@ -36,7 +36,7 @@
           <v-remixicon :name="state.hide ? 'riEyeOffLine' : 'riEyeLine'" />
         </button>
         <button
-          class="hoverable p-1 rounded-md transition"
+          class="hoverable rounded-md p-1 transition"
           @mousedown.stop.prevent
           @click.stop.prevent="destroy"
         >
@@ -59,7 +59,7 @@
           v-if="state.isSelectBlockElement"
           :disabled="!state.elSelector"
           variant="accent"
-          class="w-full mt-4"
+          class="mt-4 w-full"
           @click="saveSelector"
         >
           Select Element
@@ -86,7 +86,7 @@
           "
           class="mt-4"
         >
-          <p class="font-semibold mb-4">Selector settings</p>
+          <p class="mb-4 font-semibold">Selector settings</p>
           <ul class="space-y-4">
             <li>
               <label class="flex items-center space-x-2">
@@ -113,7 +113,7 @@
               </label>
               <template v-if="selectorSettings.attr">
                 <label
-                  class="ml-1 text-sm text-gray-600 mt-2 block"
+                  class="ml-1 mt-2 block text-sm text-gray-600"
                   for="automa-attribute-names"
                 >
                   Attribute names
@@ -133,7 +133,7 @@
         </div>
         <p class="mt-1 text-sm text-gray-600">
           Click or press
-          <kbd class="p-1 rounded-md bg-box-transparent">Space</kbd> to select
+          <kbd class="bg-box-transparent rounded-md p-1">Space</kbd> to select
           an element
         </p>
       </div>

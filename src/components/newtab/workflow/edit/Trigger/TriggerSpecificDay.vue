@@ -3,12 +3,12 @@
     <ui-popover
       :options="{ animation: null }"
       trigger-width
-      class="w-full mb-2"
+      class="mb-2 w-full"
       trigger-class="w-full"
     >
       <template #trigger>
         <ui-button class="w-full">
-          <p class="text-left flex-1 text-overflow mr-2">
+          <p class="text-overflow mr-2 flex-1 text-left">
             {{
               tempDate.days.length === 0
                 ? t('workflow.blocks.trigger.selectDay')
@@ -18,11 +18,11 @@
           <v-remixicon
             size="28"
             name="riArrowDropDownLine"
-            class="text-gray-600 dark:text-gray-200 -mr-2"
+            class="-mr-2 text-gray-600 dark:text-gray-200"
           />
         </ui-button>
       </template>
-      <div class="grid gap-2 grid-cols-2">
+      <div class="grid grid-cols-2 gap-2">
         <ui-checkbox
           v-for="(day, id) in days"
           :key="id"
@@ -37,14 +37,14 @@
       <ui-input
         v-model="tempDate.time"
         type="time"
-        class="flex-1 mr-2"
+        class="mr-2 flex-1"
         step="1"
       />
       <ui-button variant="accent" @click="addTime">
         {{ t('workflow.blocks.trigger.addTime') }}
       </ui-button>
     </div>
-    <div class="grid grid-cols-2 gap-x-4 gap-y-2 mt-4">
+    <div class="mt-4 grid grid-cols-2 gap-x-4 gap-y-2">
       <ui-expand
         v-for="day in sortedDaysArr"
         :key="day.id"
@@ -59,17 +59,17 @@
           <span class="text-gray-600 dark:text-gray-200">
             <v-remixicon
               name="riDeleteBin7Line"
-              class="mr-1 group invisible group-hover:visible inline-block"
+              class="group invisible mr-1 inline-block group-hover:visible"
               @click="removeDay(day.id)"
             />
             {{ day.times.length }}x
           </span>
         </template>
-        <div class="grid grid-cols-2 gap-1 mb-1">
+        <div class="mb-1 grid grid-cols-2 gap-1">
           <div
             v-for="(time, timeIndex) in day.times"
             :key="day.id + time"
-            class="flex items-center p-2 border rounded-lg group"
+            class="group flex items-center rounded-lg border p-2"
           >
             <span class="flex-1"> {{ formatTime(time) }} </span>
             <v-remixicon

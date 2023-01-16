@@ -2,20 +2,20 @@
   <span
     v-if="isTeam && workflow.tag"
     :class="tagColors[workflow.tag]"
-    class="text-sm rounded-md text-black capitalize p-1 mr-2"
+    class="mr-2 rounded-md p-1 text-sm capitalize text-black"
   >
     {{ workflow.tag }}
   </span>
   <ui-card
     v-if="!isTeam"
     padding="p-1"
-    class="flex items-center pointer-events-auto ml-4"
+    class="pointer-events-auto ml-4 flex items-center"
   >
     <ui-popover>
       <template #trigger>
         <button
           v-tooltip.group="t('workflow.host.title')"
-          class="hoverable p-2 rounded-lg"
+          class="hoverable rounded-lg p-2"
         >
           <v-remixicon
             :class="{ 'text-primary': hosted }"
@@ -36,7 +36,7 @@
           >
             <v-remixicon name="riInformationLine" size="20" />
           </a>
-          <div class="flex-grow"></div>
+          <div class="grow"></div>
           <ui-spinner v-if="state.isUploadingHost" color="text-accent" />
           <ui-switch
             v-else
@@ -62,14 +62,14 @@
         <button
           v-tooltip.group="t('workflow.share.title')"
           :class="{ 'text-primary': shared }"
-          class="hoverable p-2 rounded-lg"
+          class="hoverable rounded-lg p-2"
           @click="shareWorkflow(!userDontHaveTeamsAccess)"
         >
           <v-remixicon name="riShareLine" />
         </button>
       </template>
       <p class="font-semibold">Share the workflow</p>
-      <ui-list class="mt-2 space-y-1 w-56">
+      <ui-list class="mt-2 w-56 space-y-1">
         <ui-list-item
           v-close-popover
           class="cursor-pointer"
@@ -97,7 +97,7 @@
       v-for="item in modalActions"
       :key="item.id"
       v-tooltip.group="item.name"
-      class="hoverable p-2 rounded-lg"
+      class="hoverable rounded-lg p-2"
       @click="$emit('modal', item.id)"
     >
       <v-remixicon :name="item.icon" />
@@ -106,11 +106,11 @@
   <ui-card padding="p-1 ml-4 flex items-center pointer-events-auto">
     <ui-popover v-if="canEdit" class="md:hidden">
       <template #trigger>
-        <button class="rounded-lg p-2 hoverable">
+        <button class="hoverable rounded-lg p-2">
           <v-remixicon name="riMore2Line" />
         </button>
       </template>
-      <ui-list class="space-y-1 cursor-pointer">
+      <ui-list class="cursor-pointer space-y-1">
         <ui-list-item
           v-for="item in modalActions"
           :key="item.id"
@@ -129,7 +129,7 @@
           shortcuts['editor:execute-workflow'].readable
         })`
       "
-      class="hoverable p-2 rounded-lg"
+      class="hoverable rounded-lg p-2"
       @click="executeCurrWorkflow"
     >
       <v-remixicon name="riPlayLine" />
@@ -147,13 +147,13 @@
     <button
       v-if="!canEdit"
       v-tooltip.group="state.triggerText"
-      class="p-2 hoverable rounded-lg"
+      class="hoverable rounded-lg p-2"
     >
       <v-remixicon name="riFlashlightLine" />
     </button>
     <ui-popover>
       <template #trigger>
-        <button class="rounded-lg p-2 hoverable">
+        <button class="hoverable rounded-lg p-2">
           <v-remixicon name="riMore2Line" />
         </button>
       </template>
@@ -217,17 +217,17 @@
     >
       <span
         v-if="isDataChanged"
-        class="flex h-3 w-3 absolute top-0 left-0 -ml-1 -mt-1"
+        class="absolute top-0 left-0 -ml-1 -mt-1 flex h-3 w-3"
       >
         <span
-          class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"
+          class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"
         ></span>
         <span
-          class="relative inline-flex rounded-full h-3 w-3 bg-blue-600"
+          class="relative inline-flex h-3 w-3 rounded-full bg-blue-600"
         ></span>
       </span>
-      <v-remixicon name="riSaveLine" class="md:-ml-1 my-1" />
-      <span class="hidden md:block ml-2">{{ t('common.save') }}</span>
+      <v-remixicon name="riSaveLine" class="my-1 md:-ml-1" />
+      <span class="ml-2 hidden md:block">{{ t('common.save') }}</span>
     </ui-button>
     <ui-button
       v-else-if="!canEdit"
@@ -250,13 +250,13 @@
       >
         <span
           v-if="isDataChanged"
-          class="flex h-3 w-3 absolute top-0 left-0 -ml-1 -mt-1"
+          class="absolute top-0 left-0 -ml-1 -mt-1 flex h-3 w-3"
         >
           <span
-            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"
+            class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"
           ></span>
           <span
-            class="relative inline-flex rounded-full h-3 w-3 bg-blue-600"
+            class="relative inline-flex h-3 w-3 rounded-full bg-blue-600"
           ></span>
         </span>
         <v-remixicon name="riSaveLine" />
@@ -284,7 +284,7 @@
       v-model="renameState.name"
       :placeholder="t('common.name')"
       autofocus
-      class="w-full mb-4"
+      class="mb-4 w-full"
       @keyup.enter="renameWorkflow"
     />
     <ui-textarea
@@ -298,7 +298,7 @@
     <p class="mb-6 text-right text-gray-600 dark:text-gray-200">
       {{ renameState.description.length }}/300
     </p>
-    <div class="space-x-2 flex">
+    <div class="flex space-x-2">
       <ui-button class="w-full" @click="clearRenameModal">
         {{ t('common.cancel') }}
       </ui-button>

@@ -1,20 +1,20 @@
 <template>
   <div
     ref="rootEl"
-    class="content rounded-lg bg-white shadow-xl fixed overflow-hidden text-black top-0 left-0"
+    class="content fixed top-0 left-0 overflow-hidden rounded-lg bg-white text-black shadow-xl"
     style="z-index: 99999999; font-size: 16px"
     :style="{
       transform: `translate(${draggingState.xPos}px, ${draggingState.yPos}px)`,
     }"
   >
     <div
-      class="px-4 py-2 hoverable flex items-center transition select-none"
+      class="hoverable flex select-none items-center px-4 py-2 transition"
       :class="[draggingState.dragging ? 'cursor-grabbing' : 'cursor-grab']"
       @mouseup="toggleDragging(false, $event)"
       @mousedown="toggleDragging(true, $event)"
     >
       <span
-        class="relative cursor-pointer rounded-full bg-red-400 flex items-center justify-center"
+        class="relative flex cursor-pointer items-center justify-center rounded-full bg-red-400"
         style="height: 24px; width: 24px"
         title="Stop recording"
         @click="stopRecording"
@@ -25,24 +25,24 @@
           size="20"
         />
         <span
-          class="absolute animate-ping bg-red-400 rounded-full"
+          class="absolute animate-ping rounded-full bg-red-400"
           style="height: 80%; width: 80%; animation-duration: 1.3s"
         ></span>
       </span>
-      <p class="font-semibold ml-2">Automa</p>
-      <div class="flex-grow"></div>
+      <p class="ml-2 font-semibold">Automa</p>
+      <div class="grow"></div>
       <v-remixicon name="mdiDragHorizontal" />
     </div>
     <div class="p-4">
       <template v-if="selectState.status === 'idle'">
         <button
-          class="px-4 py-2 rounded-lg bg-input transition w-full"
+          class="bg-input w-full rounded-lg px-4 py-2 transition"
           @click="startSelecting()"
         >
           Select element
         </button>
         <button
-          class="px-4 py-2 rounded-lg bg-input transition w-full mt-2"
+          class="bg-input mt-2 w-full rounded-lg px-4 py-2 transition"
           @click="startSelecting(true)"
         >
           Select list element
@@ -61,22 +61,22 @@
               id="list-id"
               v-model="tempListId"
               placeholder="listId"
-              class="px-4 py-2 rounded-lg bg-input w-full"
+              class="bg-input w-full rounded-lg px-4 py-2"
               @keyup.enter="saveElementListId"
             />
             <button
               :class="{ 'opacity-75 pointer-events-none': !tempListId }"
-              class="px-4 py-2 w-full bg-accent rounded-lg mt-2 text-white"
+              class="mt-2 w-full rounded-lg bg-accent px-4 py-2 text-white"
               @click="saveElementListId"
             >
               Save
             </button>
           </template>
           <template v-else>
-            <div class="flex items-center space-x-2 w-full">
+            <div class="flex w-full items-center space-x-2">
               <input
                 :value="selectState.childSelector || selectState.parentSelector"
-                class="px-4 py-2 rounded-lg bg-input w-full"
+                class="bg-input w-full rounded-lg px-4 py-2"
                 readonly
               />
               <template
@@ -94,7 +94,7 @@
             </div>
             <select
               v-model="addBlockState.activeBlock"
-              class="px-4 py-2 rounded-lg bg-input w-full mt-2"
+              class="bg-input mt-2 w-full rounded-lg px-4 py-2"
             >
               <option value="" disabled selected>Select what to do</option>
               <option
@@ -115,7 +115,7 @@
               <select
                 v-if="addBlockState.activeBlock === 'attribute-value'"
                 v-model="addBlockState.activeAttr"
-                class="px-4 py-2 rounded-lg bg-input mt-2 block w-full"
+                class="bg-input mt-2 block w-full rounded-lg px-4 py-2"
               >
                 <option value="" selected disabled>Select attribute</option>
                 <option
@@ -128,7 +128,7 @@
               </select>
               <label
                 for="variable-name"
-                class="text-sm ml-2 text-gray-600 mt-2"
+                class="ml-2 mt-2 text-sm text-gray-600"
               >
                 Assign to variable
               </label>
@@ -136,18 +136,18 @@
                 id="variable-name"
                 v-model="addBlockState.varName"
                 placeholder="Variable name"
-                class="px-4 py-2 w-full rounded-lg bg-input"
+                class="bg-input w-full rounded-lg px-4 py-2"
               />
               <label
                 for="select-column"
-                class="text-sm ml-2 text-gray-600 mt-2"
+                class="ml-2 mt-2 text-sm text-gray-600"
               >
                 Insert to table
               </label>
               <select
                 id="select-column"
                 v-model="addBlockState.column"
-                class="block w-full rounded-lg px-4 py-2 bg-input"
+                class="bg-input block w-full rounded-lg px-4 py-2"
               >
                 <option value="" selected>Select column [none]</option>
                 <option
@@ -166,7 +166,7 @@
                   addBlockState.activeBlock === 'attribute-value' &&
                   !addBlockState.activeAttr,
               }"
-              class="px-4 py-2 rounded-lg block w-full bg-accent text-white mt-4"
+              class="mt-4 block w-full rounded-lg bg-accent px-4 py-2 text-white"
               @click="addFlowItem"
             >
               Save
@@ -174,7 +174,7 @@
           </template>
         </template>
         <p class="mt-4" style="font-size: 14px">
-          Press <kbd class="p-1 rounded-md bg-box-transparent">Esc</kbd> to
+          Press <kbd class="bg-box-transparent rounded-md p-1">Esc</kbd> to
           cancel
         </p>
       </div>

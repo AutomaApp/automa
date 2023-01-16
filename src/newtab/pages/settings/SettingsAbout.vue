@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-lg">
-    <div class="p-3 mb-2 bg-box-transparent rounded-full inline-block">
+    <div class="bg-box-transparent mb-2 inline-block rounded-full p-3">
       <img src="@/assets/svg/logo.svg" class="w-14" />
     </div>
     <p class="text-2xl font-semibold">Automa</p>
@@ -17,18 +17,18 @@
         v-tooltip.group="link.name"
         :href="link.url"
         target="_blank"
-        class="inline-block p-2 rounded-lg transition hoverable"
+        class="hoverable inline-block rounded-lg p-2 transition"
       >
         <v-remixicon :name="link.icon" />
       </a>
     </div>
-    <div class="border-b dark:border-gray-700 my-8"></div>
+    <div class="my-8 border-b dark:border-gray-700"></div>
     <h2 class="text-xl font-semibold">Contributors</h2>
     <p class="mt-1 text-gray-600 dark:text-gray-200">
       Thanks to everyone who has submitted issues, made suggestions, and
       generally helped make this a better project.
     </p>
-    <div class="mt-4 gap-2 mb-12 grid grid-cols-7">
+    <div class="mt-4 mb-12 grid grid-cols-7 gap-2">
       <a
         v-for="contributor in store.contributors"
         :key="contributor.username"

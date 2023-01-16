@@ -1,16 +1,16 @@
 <template>
   <div
     v-if="retrieved"
-    class="w-full flex flex-col h-full max-w-lg mx-auto dark:text-gray-100"
+    class="mx-auto flex h-full w-full max-w-lg flex-col dark:text-gray-100"
   >
-    <nav class="flex items-center w-full p-4 border-b mb-4">
-      <span class="p-1 rounded-full bg-box-transparent dark:bg-none">
+    <nav class="mb-4 flex w-full items-center border-b p-4">
+      <span class="bg-box-transparent rounded-full p-1 dark:bg-none">
         <img src="@/assets/svg/logo.svg" class="w-10" />
       </span>
-      <p class="font-semibold text-lg ml-4">Automa</p>
+      <p class="ml-4 text-lg font-semibold">Automa</p>
     </nav>
-    <div class="px-4 pb-4 flex-1 overflow-auto scroll">
-      <p class="text-gray-600 my-4 dark:text-gray-200">
+    <div class="scroll flex-1 overflow-auto px-4 pb-4">
+      <p class="my-4 text-gray-600 dark:text-gray-200">
         Input these workflows parameters before it runs.
       </p>
       <ui-expand
@@ -19,7 +19,7 @@
         :model-value="true"
         append-icon
         header-class="flex items-center text-left p-4 w-full rounded-lg"
-        class="bg-white mb-4 dark:bg-gray-800 rounded-lg"
+        class="mb-4 rounded-lg bg-white dark:bg-gray-800"
       >
         <template #header>
           <ui-img
@@ -29,15 +29,15 @@
             style="height: 40px; width: 40px"
             alt="Can not display"
           />
-          <span v-else class="p-2 rounded-lg bg-box-transparent">
+          <span v-else class="bg-box-transparent rounded-lg p-2">
             <v-remixicon :name="workflow.data.icon" />
           </span>
-          <div class="ml-4 flex-1 ml-2 overflow-hidden">
-            <p class="text-overflow leading-tight mr-4">
+          <div class="ml-4 ml-2 flex-1 overflow-hidden">
+            <p class="text-overflow mr-4 leading-tight">
               {{ workflow.data.name }}
             </p>
             <p
-              class="leading-tight text-overflow text-gray-600 dark:text-gray-200"
+              class="text-overflow leading-tight text-gray-600 dark:text-gray-200"
             >
               {{ workflow.data.description }}
             </p>
@@ -74,15 +74,15 @@
               <p
                 v-if="param.description"
                 title="Description"
-                class="ml-1 text-sm"
+                class="ml-1 whitespace-pre text-sm leading-tight"
               >
                 {{ param.description }}
               </p>
             </li>
           </ul>
-          <div class="flex items-center mt-6">
+          <div class="mt-6 flex items-center">
             <p>{{ dayjs(workflow.addedDate).fromNow() }}</p>
-            <div class="flex-grow" />
+            <div class="grow" />
             <template v-if="workflow.type === 'block'">
               <ui-button
                 class="mr-4"

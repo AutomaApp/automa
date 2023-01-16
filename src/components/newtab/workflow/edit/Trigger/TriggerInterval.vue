@@ -16,7 +16,7 @@
       v-if="!data.fixedDelay"
       :model-value="data.delay"
       type="number"
-      class="w-full ml-2"
+      class="ml-2 w-full"
       :label="t('workflow.blocks.trigger.forms.delay')"
       min="0"
       max="20"

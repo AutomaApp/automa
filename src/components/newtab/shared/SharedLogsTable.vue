@@ -1,5 +1,5 @@
 <template>
-  <div class="logs-table overflow-x-auto scroll">
+  <div class="logs-table scroll overflow-x-auto">
     <transition-expand>
       <div v-if="state.selected.length > 0" class="border-x border-t px-4 py-2">
         <ui-button @click="stopSelectedWorkflow"> Stop selected </ui-button>
@@ -8,7 +8,7 @@
     <table class="w-full">
       <tbody class="divide-y dark:divide-gray-800">
         <template v-if="running && running[0]?.state">
-          <tr v-for="item in running" :key="item.id" class="p-2 border">
+          <tr v-for="item in running" :key="item.id" class="border p-2">
             <td v-if="!hideSelect" class="w-8">
               <ui-checkbox
                 :model-value="state.selected.includes(item.id)"
@@ -43,7 +43,7 @@
             </td>
             <td title="Executing block" class="text-overflow">
               <ui-spinner color="text-accent" size="20" />
-              <span class="align-middle inline-block ml-3 text-overflow">
+              <span class="text-overflow ml-3 inline-block align-middle">
                 {{
                   getTranslation(
                     `workflow.blocks.${item.state.currentBlock[0].name}.name`,
@@ -54,7 +54,7 @@
             </td>
             <td class="text-right">
               <span
-                class="inline-block py-1 w-16 text-center text-sm rounded-md dark:text-black bg-blue-300"
+                class="inline-block w-16 rounded-md bg-blue-300 py-1 text-center text-sm dark:text-black"
               >
                 {{ t('common.running') }}
               </span>
@@ -112,7 +112,7 @@
             <span
               :class="statusColors[log.status]"
               :title="log.status === 'error' ? getErrorMessage(log) : null"
-              class="inline-block py-1 w-24 text-center text-sm rounded-md dark:text-black"
+              class="inline-block w-24 rounded-md py-1 text-center text-sm dark:text-black"
             >
               {{ t(`logStatus.${log.status}`) }}
             </span>

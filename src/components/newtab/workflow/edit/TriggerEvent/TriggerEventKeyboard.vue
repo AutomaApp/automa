@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-2 grid-cols-2">
+  <div class="grid grid-cols-2 gap-2">
     <ui-checkbox
       v-for="item in ['altKey', 'ctrlKey', 'metaKey', 'shiftKey']"
       :key="item"
@@ -10,12 +10,12 @@
   </div>
   <ui-input
     v-model="defaultParams.key"
-    class="w-full mt-2"
+    class="mt-2 w-full"
     label="key"
     placeholder="a"
     @change="findKeyDefintion"
   />
-  <div class="flex items-center mt-1 space-x-2">
+  <div class="mt-1 flex items-center space-x-2">
     <ui-input
       v-model="defaultParams.code"
       class="flex-1"

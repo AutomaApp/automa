@@ -8,14 +8,12 @@
     <v-remixicon name="riArrowLeftLine" class="mr-2" />
     {{ t('log.goBack', { name: parentLog.name }) }}
   </router-link>
-  <div class="flex items-start flex-col-reverse lg:flex-row">
-    <div class="lg:flex-1 w-full lg:w-auto">
-      <div class="rounded-lg bg-gray-900 text-gray-100 dark">
-        <div
-          class="border-b px-4 pt-4 flex items-center text-gray-200 pb-4 mb-4"
-        >
+  <div class="flex flex-col-reverse items-start lg:flex-row">
+    <div class="w-full lg:w-auto lg:flex-1">
+      <div class="dark rounded-lg bg-gray-900 text-gray-100">
+        <div class="mb-4 flex items-center border-b p-4 text-gray-200">
           <div v-if="currentLog.status === 'error' && errorBlock">
-            <p class="leading-tight line-clamp">
+            <p class="line-clamp leading-tight">
               {{ errorBlock.message }}
               <a
                 v-if="errorBlock.messageId"
@@ -27,7 +25,7 @@
                 <v-remixicon
                   name="riArrowLeftLine"
                   size="20"
-                  class="text-gray-300 inline-block"
+                  class="inline-block text-gray-300"
                   rotate="135"
                 />
               </a>
@@ -36,14 +34,14 @@
               On the {{ errorBlock.name }} block
               <v-remixicon
                 name="riArrowLeftLine"
-                class="inline-block -ml-1"
+                class="-ml-1 inline-block"
                 size="18"
                 rotate="135"
               />
             </p>
           </div>
           <slot name="header-prepend" />
-          <div class="flex-grow" />
+          <div class="grow" />
           <ui-popover v-if="!isRunning" trigger-width class="mr-4">
             <template #trigger>
               <ui-button>
@@ -75,28 +73,28 @@
         <div
           id="log-history"
           style="max-height: 500px"
-          class="scroll p-4 overflow-auto"
+          class="scroll overflow-auto p-4"
         >
           <slot name="prepend" />
           <p
             v-if="currentLog.history.length === 0"
-            class="text-gray-300 text-center"
+            class="text-center text-gray-300"
           >
             The workflow log is not saved
           </p>
-          <div class="text-sm font-mono space-y-1 w-full overflow-auto">
+          <div class="w-full space-y-1 overflow-auto font-mono text-sm">
             <div
               v-for="(item, index) in history"
               :key="item.id || index"
               :disabled="!ctxData[item.id]"
               :class="{ 'bg-box-transparent': item.id === state.itemId }"
               hide-header-icon
-              class="hoverable rounded-md px-2 w-full text-left focus:ring-0 py-1 rounded-md group cursor-default flex items-start"
+              class="hoverable group flex w-full cursor-default items-start rounded-md px-2 py-1 text-left focus:ring-0"
               @click="setActiveLog(item)"
             >
               <div
                 style="min-width: 54px"
-                class="flex-shrink-0 mr-4 text-overflow text-gray-400"
+                class="text-overflow mr-4 shrink-0 text-gray-400"
               >
                 <span
                   v-if="item.timestamp"
@@ -114,24 +112,24 @@
               <span
                 :class="logsType[item.type]?.color"
                 :title="item.type"
-                class="w-2/12 flex-shrink-0 text-overflow"
+                class="text-overflow w-2/12 shrink-0"
               >
                 <v-remixicon
                   :name="logsType[item.type]?.icon"
                   size="18"
-                  class="inline-block -mr-1 align-text-top"
+                  class="-mr-1 inline-block align-text-top"
                 />
                 {{ item.name }}
               </span>
               <span
                 :title="`${t('common.description')} (${item.description})`"
-                class="ml-2 w-2/12 text-overflow flex-shrink-0"
+                class="text-overflow ml-2 w-2/12 shrink-0"
               >
                 {{ item.description }}
               </span>
               <p
                 :title="item.message"
-                class="text-sm line-clamp ml-2 flex-1 leading-tight text-gray-600 dark:text-gray-200"
+                class="line-clamp ml-2 flex-1 text-sm leading-tight text-gray-600 dark:text-gray-200"
               >
                 {{ item.message }}
                 <a
@@ -144,7 +142,7 @@
                   <v-remixicon
                     name="riArrowLeftLine"
                     size="20"
-                    class="text-gray-300 inline-block"
+                    class="inline-block text-gray-300"
                     rotate="135"
                   />
                 </a>
@@ -157,14 +155,14 @@
               >
                 <v-remixicon
                   title="Open log detail"
-                  class="ml-2 text-gray-300 cursor-pointer"
+                  class="ml-2 cursor-pointer text-gray-300"
                   size="20"
                   name="riFileTextLine"
                   @click.stop="navigate"
                 />
               </router-link>
               <router-link
-                v-if="getBlockPath(item.blockId)"
+                v-if="!isRunning && getBlockPath(item.blockId)"
                 v-show="currentLog.workflowId && item.blockId"
                 :to="getBlockPath(item.blockId)"
               >
@@ -172,7 +170,7 @@
                   name="riExternalLinkLine"
                   size="20"
                   title="Go to block"
-                  class="text-gray-300 cursor-pointer ml-2 invisible group-hover:visible"
+                  class="invisible ml-2 cursor-pointer text-gray-300 group-hover:visible"
                 />
               </router-link>
             </div>
@@ -182,11 +180,11 @@
       </div>
       <div
         v-if="currentLog.history.length >= 25"
-        class="lg:flex lg:items-center lg:justify-between mt-4"
+        class="mt-4 lg:flex lg:items-center lg:justify-between"
       >
         <div class="mb-4 lg:mb-0">
           {{ t('components.pagination.text1') }}
-          <select v-model="pagination.perPage" class="p-1 rounded-md bg-input">
+          <select v-model="pagination.perPage" class="bg-input rounded-md p-1">
             <option
               v-for="num in [25, 50, 75, 100, 150, 200]"
               :key="num"
@@ -210,15 +208,15 @@
     </div>
     <div
       v-if="state.itemId && activeLog"
-      class="w-full lg:w-4/12 lg:ml-8 mb-4 lg:mb-0 rounded-lg bg-gray-900 text-gray-100 dark"
+      class="dark mb-4 w-full rounded-lg bg-gray-900 text-gray-100 lg:ml-8 lg:mb-0 lg:w-4/12"
     >
-      <div class="p-4 relative">
+      <div class="relative p-4">
         <v-remixicon
           name="riCloseLine"
           class="absolute top-2 right-2 cursor-pointer text-gray-500"
           @click="clearActiveItem"
         />
-        <table class="w-full ctx-data-table">
+        <table class="ctx-data-table w-full">
           <thead>
             <tr>
               <td class="w-5/12"></td>
@@ -263,16 +261,16 @@
           </tbody>
         </table>
       </div>
-      <div class="px-4 pb-4 flex items-center">
+      <div class="flex items-center px-4 pb-4">
         <p>Log data</p>
-        <div class="flex-grow" />
+        <div class="grow" />
         <ui-select v-model="state.activeTab">
           <option v-for="option in tabs" :key="option.id" :value="option.id">
             {{ option.name }}
           </option>
         </ui-select>
       </div>
-      <div class="pb-4 px-2 log-data-prev">
+      <div class="log-data-prev px-2 pb-4">
         <shared-codemirror
           :model-value="logCtxData"
           readonly

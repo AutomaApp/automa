@@ -10,15 +10,15 @@
     @settings="$emit('settings', $event)"
   >
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
-    <div class="flex items-center mb-2">
+    <div class="mb-2 flex items-center">
       <div
         :class="data.disableBlock ? 'bg-box-transparent' : block.category.color"
-        class="inline-block text-sm mr-4 p-2 rounded-lg dark:text-black"
+        class="mr-4 inline-block rounded-lg p-2 text-sm dark:text-black"
       >
-        <v-remixicon name="riTimerLine" size="20" class="inline-block mr-1" />
+        <v-remixicon name="riTimerLine" size="20" class="mr-1 inline-block" />
         <span>{{ t('workflow.blocks.delay.name') }}</span>
       </div>
-      <div class="flex-grow"></div>
+      <div class="grow"></div>
       <v-remixicon
         name="riDeleteBin7Line"
         class="cursor-pointer"
@@ -30,16 +30,17 @@
       min="0"
       :title="t('workflow.blocks.delay.input.title')"
       :placeholder="t('workflow.blocks.delay.input.placeholder')"
-      class="px-4 py-2 w-full rounded-lg bg-input"
+      class="bg-input w-full rounded-lg px-4 py-2"
       type="text"
       required
+      @keydown.stop
       @input="$emit('update', { time: $event.target.value })"
     />
     <div
       v-if="block.details.id !== 'trigger'"
       :title="t('workflow.blocks.base.moveToGroup')"
       draggable="true"
-      class="bg-white dark:bg-gray-700 invisible move-to-group z-50 absolute -top-2 -right-2 rounded-md p-1 shadow-md"
+      class="move-to-group invisible absolute -top-2 -right-2 z-50 rounded-md bg-white p-1 shadow-md dark:bg-gray-700"
       @dragstart="handleStartDrag"
       @mousedown.stop
     >

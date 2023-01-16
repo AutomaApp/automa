@@ -1,6 +1,6 @@
 <template>
   <edit-interaction-base v-bind="{ data, hide: hideBase }" @change="updateData">
-    <div v-if="!data.scrollIntoView" class="flex items-center mt-3 space-x-2">
+    <div v-if="!data.scrollIntoView" class="mt-3 flex items-center space-x-2">
       <ui-input
         :model-value="data.scrollX || 0"
         :label="t('workflow.blocks.element-scroll.scrollX')"

@@ -23,7 +23,7 @@ function doCommand(command, value) {
 
 export default async function ({ data, id, label }) {
   const isFirefox = BROWSER_TYPE === 'firefox';
-  if (!isFirefox && !this.engine?.isPopup && !this.engins?.isMV2)
+  if (!isFirefox && !this.engine?.isPopup && !this.engine?.isMV2)
     throw new Error('Clipboard block is not supported in background execution');
 
   const permissions = ['clipboardRead'];

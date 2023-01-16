@@ -9,7 +9,7 @@
     <ui-select
       :model-value="data.type"
       :label="t('workflow.blocks.take-screenshot.types.title')"
-      class="w-full mt-2"
+      class="mt-2 w-full"
       @change="updateData({ type: $event })"
     >
       <option v-for="type in types" :key="type" :value="type">
@@ -25,14 +25,14 @@
       @change="updateData({ selector: $event })"
     />
     <template v-if="data.ext === 'jpeg'">
-      <p class="text-sm text-gray-600 dark:text-gray-200 ml-2 mt-4">
+      <p class="ml-2 mt-4 text-sm text-gray-600 dark:text-gray-200">
         {{ t('workflow.blocks.take-screenshot.imageQuality') }}
       </p>
-      <div class="bg-box-transparent px-4 py-2 rounded-lg flex items-center">
+      <div class="bg-box-transparent flex items-center rounded-lg px-4 py-2">
         <input
           :value="data.quality"
           :title="t('workflow.blocks.take-screenshot.imageQuality')"
-          class="focus:outline-none flex-1"
+          class="flex-1 focus:outline-none"
           type="range"
           min="0"
           max="100"
@@ -48,13 +48,13 @@
     >
       {{ t('workflow.blocks.take-screenshot.saveToComputer') }}
     </ui-checkbox>
-    <div v-if="data.saveToComputer" class="flex items-center mt-1">
-      <edit-autocomplete class="flex-1 mr-2">
+    <div v-if="data.saveToComputer" class="mt-1 flex items-center">
+      <edit-autocomplete class="mr-2 flex-1">
         <ui-input
           :model-value="data.fileName"
           :placeholder="t('common.fileName')"
           autocomplete="off"
-          class="flex-1 mr-2"
+          class="mr-2 flex-1"
           title="File name"
           @change="updateData({ fileName: $event })"
         />
@@ -79,7 +79,7 @@
       v-if="data.saveToColumn"
       :model-value="data.dataColumn"
       placeholder="Select column"
-      class="w-full mt-1"
+      class="mt-1 w-full"
       @change="updateData({ dataColumn: $event })"
     >
       <option

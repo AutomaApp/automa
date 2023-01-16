@@ -13,15 +13,15 @@
     <Handle :id="`${id}-input-1`" type="target" :position="Position.Left" />
     <div
       :class="data.disableBlock ? 'bg-box-transparent' : block.category.color"
-      class="inline-block text-sm mb-2 p-2 rounded-lg dark:text-black"
+      class="mb-2 inline-block rounded-lg p-2 text-sm dark:text-black"
     >
-      <v-remixicon name="riFocus3Line" size="20" class="inline-block mr-1" />
+      <v-remixicon name="riFocus3Line" size="20" class="mr-1 inline-block" />
       <span>{{ t('workflow.blocks.element-exists.name') }}</span>
     </div>
     <p
       :title="t('workflow.blocks.element-exists.selector')"
       :class="{ 'font-mono': !data.description }"
-      class="text-overflow p-2 rounded-lg bg-box-transparent text-sm text-right mb-2"
+      class="text-overflow bg-box-transparent mb-2 rounded-lg p-2 text-right text-sm"
       style="max-width: 200px"
     >
       {{

@@ -126,6 +126,11 @@ export default {
 
     return value.replace(search, replace);
   },
+  replaceAll(value, search, replace) {
+    if (!value) return value;
+
+    return value.replaceAll(search, replace);
+  },
   toLowerCase(value) {
     if (!value) return value;
 

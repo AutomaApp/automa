@@ -19,7 +19,7 @@
       >
         {{ t('workflow.blocks.conditions.add') }}
       </ui-button>
-      <div class="flex-grow"></div>
+      <div class="grow"></div>
       <ui-button
         v-tooltip:bottom="t('common.settings')"
         icon
@@ -31,7 +31,7 @@
       </ui-button>
     </div>
     <template v-if="state.showSettings">
-      <label class="flex items-center mt-6">
+      <label class="mt-6 flex items-center">
         <ui-switch
           :model-value="data.retryConditions"
           @change="updateData({ retryConditions: $event })"
@@ -45,7 +45,7 @@
           :model-value="data.retryCount"
           :title="t('workflow.blocks.element-exists.tryFor.title')"
           :label="t('workflow.blocks.element-exists.tryFor.label')"
-          class="w-full mb-1"
+          class="mb-1 w-full"
           type="number"
           min="1"
           @change="updateData({ retryCount: +$event })"
@@ -72,11 +72,11 @@
       <template #item="{ element, index }">
         <ui-list-item class="group cursor-move">
           <v-remixicon name="riGuideLine" size="20" class="mr-2 -ml-1" />
-          <p class="flex-1 text-overflow" :title="element.name">
+          <p class="text-overflow flex-1" :title="element.name">
             {{ element.name }}
           </p>
           <v-remixicon
-            class="cursor-pointer group-hover:visible invisible"
+            class="invisible cursor-pointer group-hover:visible"
             name="riPencilLine"
             size="20"
             @click="editCondition(index)"
@@ -92,7 +92,7 @@
     </draggable>
     <ui-modal v-model="state.showModal" custom-content>
       <ui-card padding="p-0" class="w-full max-w-3xl">
-        <div class="px-4 pt-4 flex items-center">
+        <div class="flex items-center px-4 pt-4">
           <p class="flex-1">
             {{ t('workflow.conditionBuilder.title') }}
           </p>
@@ -103,12 +103,12 @@
           />
         </div>
         <div
-          class="overflow-auto p-4 scroll"
+          class="scroll overflow-auto p-4"
           style="height: calc(100vh - 8rem)"
         >
           <input
             v-model="conditions[state.conditionsIndex].name"
-            class="text-xl font-semibold mb-4 bg-transparent focus:ring-0"
+            class="mb-4 bg-transparent text-xl font-semibold focus:ring-0"
           />
           <shared-condition-builder
             :model-value="conditions[state.conditionsIndex].conditions"

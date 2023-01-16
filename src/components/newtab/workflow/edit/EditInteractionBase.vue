@@ -6,15 +6,15 @@
         v-if="!hideDescription"
         :model-value="data.description"
         :placeholder="t('common.description')"
-        class="w-full mb-2"
+        class="mb-2 w-full"
         @change="updateData({ description: $event })"
       />
       <slot name="prepend:selector" />
-      <div v-if="!hideSelector" class="flex items-center mb-2">
+      <div v-if="!hideSelector" class="mb-2 flex items-center">
         <ui-select
           :model-value="data.findBy || 'cssSelector'"
           :placeholder="t('workflow.blocks.base.findElement.placeholder')"
-          class="flex-1 mr-2"
+          class="mr-2 flex-1"
           @change="updateData({ findBy: $event })"
         >
           <option v-for="type in selectorTypes" :key="type" :value="type">
@@ -47,7 +47,7 @@
           <v-remixicon
             name="riArrowLeftSLine"
             :rotate="show ? 270 : 180"
-            class="mr-1 transition-transform -ml-1"
+            class="mr-1 -ml-1 transition-transform"
           />
           {{ t('workflow.blocks.base.selectorOptions') }}
         </template>
