@@ -201,6 +201,7 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
         result.columns.insert;
 
       insert = Boolean(insertData);
+      console.log(insert);
 
       if (inputNextBlockId) {
         const customNextBlockId = this.getBlockConnections(inputNextBlockId);
