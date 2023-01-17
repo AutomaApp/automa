@@ -201,7 +201,6 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
         result.columns.insert;
 
       insert = Boolean(insertData);
-      console.log(insert);
 
       if (inputNextBlockId) {
         const customNextBlockId = this.getBlockConnections(inputNextBlockId);
@@ -214,12 +213,18 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
       insert = result.columns.insert;
     }
 
-    if (insert && result.columns.data) {
-      const params = Array.isArray(result.columns.data)
-        ? result.columns.data
-        : [result.columns.data];
-
-      this.addDataToColumn(params);
+    const columnData = result.columns.data;
+    if (insert && columnData) {
+      const columnDataObj =
+        typeof columnData === 'string'
+          ? parseJSON(columnData, null)
+          : columnData;
+      if (columnDataObj) {
+        const params = Array.isArray(columnDataObj)
+          ? columnDataObj
+          : [columnDataObj];
+        this.addDataToColumn(params);
+      }
     }
   }
 
