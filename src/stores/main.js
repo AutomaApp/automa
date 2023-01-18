@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import defu from 'defu';
 import browser from 'webextension-polyfill';
 import deepmerge from 'lodash.merge';
+import { fetchGapi } from '@/utils/api';
 
 export const useStore = defineStore('main', {
   storageMap: {
@@ -28,6 +29,9 @@ export const useStore = defineStore('main', {
       },
     },
     retrieved: true,
+    connectedSheets: [],
+    isGDriveConnected: false,
+    connectedSheetsRetrieved: false,
   }),
   actions: {
     loadSettings() {
@@ -39,6 +43,30 @@ export const useStore = defineStore('main', {
     async updateSettings(settings = {}) {
       this.settings = deepmerge(this.settings, settings);
       await this.saveToStorage('settings');
+    },
+    async getConnectedSheets() {
+      try {
+        if (this.connectedSheetsRetrieved) return;
+
+        // const query = encodeURIComponent('mimeType="application/vnd.google-apps.spreadsheet"');
+        const result = await fetchGapi(
+          `https://www.googleapis.com/drive/v3/files?q=${''}`
+        );
+
+        this.isGDriveConnected = true;
+        this.connectedSheets = result.files.filter(
+          (file) => file.mimeType === 'application/vnd.google-apps.spreadsheet'
+        );
+      } catch (error) {
+        if (
+          error.message === 'no-scope' ||
+          error.message.includes('insufficient authentication')
+        ) {
+          this.isGDriveConnected = false;
+        }
+
+        console.error(error);
+      }
     },
   },
 });

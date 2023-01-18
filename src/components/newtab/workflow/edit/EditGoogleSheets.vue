@@ -15,7 +15,10 @@
         {{ t(`workflow.blocks.google-sheets.select.${action}`) }}
       </option>
     </ui-select>
-    <edit-autocomplete>
+    <slot />
+    <edit-autocomplete
+      v-if="!googleDrive || data.inputSpreadsheetId === 'manually'"
+    >
       <ui-input
         :model-value="data.spreadsheetId"
         class="w-full"
@@ -45,7 +48,7 @@
       Automa doesn't have access to the spreadsheet
       <v-remixicon name="riInformationLine" size="18" class="inline" />
     </a>
-    <edit-autocomplete>
+    <edit-autocomplete v-if="data.type !== 'create'">
       <ui-input
         :model-value="data.range"
         class="mt-1 w-full"
@@ -92,9 +95,13 @@
         {{ previewDataState.errorMessage }}
       </p>
     </template>
-    <template v-else-if="data.type === 'getRange'">
+    <template v-else-if="['getRange', 'create'].includes(data.type)">
+      <p class="mt-4">
+        {{ t('workflow.blocks.google-sheets.spreadsheetId.label') }}
+      </p>
       <insert-workflow-data :data="data" variables @update="updateData" />
       <ui-button
+        v-if="data.type === 'getRange'"
         :loading="previewDataState.status === 'loading'"
         variant="accent"
         class="mt-4"
@@ -207,8 +214,10 @@
 <script setup>
 import { shallowReactive, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { googleSheets, fetchApi } from '@/utils/api';
+import { useToast } from 'vue-toastification';
+import { fetchApi } from '@/utils/api';
 import { convert2DArrayToArrayObj, debounce } from '@/utils/helper';
+import googleSheetsApi from '@/utils/googleSheetsApi';
 import EditAutocomplete from './EditAutocomplete.vue';
 import InsertWorkflowData from './InsertWorkflowData.vue';
 
@@ -221,12 +230,25 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  googleDrive: Boolean,
+  additionalActions: {
+    type: Array,
+    default: () => [],
+  },
 });
 const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
+const toast = useToast();
 
-const actions = ['get', 'getRange', 'update', 'append', 'clear'];
+const actions = [
+  'get',
+  'getRange',
+  'update',
+  'append',
+  'clear',
+  ...props.additionalActions,
+];
 const dataFrom = ['data-columns', 'custom'];
 const valueInputOptions = ['RAW', 'USER_ENTERED'];
 const insertDataOptions = ['OVERWRITE', 'INSERT_ROWS'];
@@ -272,17 +294,31 @@ async function previewData() {
       range: props.data.range,
       spreadsheetId: props.data.spreadsheetId,
     };
-    const response = await (isGetValues
-      ? googleSheets.getValues(params)
-      : googleSheets.getRange(params));
 
-    if (!response.ok) {
-      const error = await response.json();
-
-      throw new Error(error.message || response.statusText);
+    if (!props.data.spreadsheetId) {
+      toast.error(
+        props.googleDrive
+          ? 'No spreadsheet is selected'
+          : 'Spreadsheet id is empty'
+      );
+      previewDataState.status = 'idle';
+      return;
+    }
+    if (!props.data.range) {
+      toast.error('Spreadsheet range is empty');
+      previewDataState.status = 'idle';
+      return;
     }
 
-    let result = await response.json();
+    const response = await (isGetValues
+      ? googleSheetsApi(props.googleDrive).getValues(params)
+      : googleSheetsApi(props.googleDrive).getRange(params));
+
+    let result = props.googleDrive ? response : await response.json();
+
+    if (!response.ok && !props.googleDrive) {
+      throw new Error(result.message || response.statusText);
+    }
 
     if (isGetValues) {
       const values = result?.values ?? [];

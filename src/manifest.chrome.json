@@ -73,5 +73,5 @@
   "sandbox": {
     "pages": ["/sandbox.html"]
   },
-  "content_security_policy": "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; object-src 'self'"
+  "content_security_policy": "script-src 'self' https://apis.google.com/ https://accounts.google.com/ https://www.googleapis.com https://ajax.googleapis.com; object-src 'self'"
 }

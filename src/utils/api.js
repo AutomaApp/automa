@@ -2,69 +2,38 @@ import secrets from 'secrets';
 import browser from 'webextension-polyfill';
 import { parseJSON, isObject } from './helper';
 
-function queryBuilder(obj) {
-  let str = '';
-
-  Object.entries(obj).forEach(([key, value], index) => {
-    if (index !== 0) str += `&`;
-
-    str += `${key}=${value}`;
-  });
-
-  return str;
-}
-
 export async function fetchApi(path, options) {
   const urlPath = path.startsWith('/') ? path : `/${path}`;
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(options?.headers || {}),
+  };
+
+  const { session } = await browser.storage.local.get('session');
+  if (session) {
+    let token = session.access_token;
+
+    if (Date.now() > session.expires_at * 1000) {
+      const response = await fetch(
+        `${secrets.baseApiUrl}/me/refresh-auth-session`
+      );
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message);
+      }
+
+      await browser.storage.local.set({ session: result });
+      token = result.access_token;
+    }
+
+    headers.Authorization = `Bearer ${token}`;
+  }
 
   return fetch(`${secrets.baseApiUrl}${urlPath}`, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
     ...options,
+    headers,
   });
 }
-
-export const googleSheets = {
-  getUrl(spreadsheetId, range) {
-    return `/services/google-sheets?spreadsheetId=${spreadsheetId}&range=${range}`;
-  },
-  getValues({ spreadsheetId, range }) {
-    const url = this.getUrl(spreadsheetId, range);
-
-    return fetchApi(url);
-  },
-  getRange({ spreadsheetId, range }) {
-    return googleSheets.updateValues({
-      range,
-      append: true,
-      spreadsheetId,
-      options: {
-        body: JSON.stringify({ values: [] }),
-        queries: {
-          valueInputOption: 'RAW',
-          includeValuesInResponse: false,
-          insertDataOption: 'INSERT_ROWS',
-        },
-      },
-    });
-  },
-  clearValues({ spreadsheetId, range }) {
-    return fetchApi(this.getUrl(spreadsheetId, range), {
-      method: 'DELETE',
-    });
-  },
-  updateValues({ spreadsheetId, range, options = {}, append }) {
-    const url = `${this.getUrl(spreadsheetId, range)}&${queryBuilder(
-      options?.queries || {}
-    )}`;
-
-    return fetchApi(url, {
-      ...options,
-      method: append ? 'POST' : 'PUT',
-    });
-  },
-};
 
 export async function cacheApi(key, callback, useCache = true) {
   const isBoolOpts = typeof useCache === 'boolean';
@@ -175,4 +144,62 @@ export async function getUserWorkflows(useCache = true) {
     },
     useCache
   );
+}
+
+export async function fetchGapi(url, resource = {}, options = {}) {
+  const { sessionToken } = await browser.storage.local.get('sessionToken');
+  if (!sessionToken) throw new Error('unauthorized');
+
+  const { search, origin, pathname } = new URL(url);
+  const searchParams = new URLSearchParams(search);
+  searchParams.set('access_token', sessionToken.access);
+
+  let tryCount = 0;
+  const maxTry = options?.tryCount || 3;
+
+  const startFetch = async () => {
+    const response = await fetch(
+      `${origin}${pathname}?${searchParams.toString()}`,
+      resource
+    );
+    const result = await response.json();
+    const insufficientScope =
+      response.status === 403 &&
+      result.error?.message.includes('insufficient authentication scopes');
+    if (
+      (response.status === 401 || insufficientScope) &&
+      sessionToken.refresh
+    ) {
+      const refreshResponse = await fetchApi(
+        `/me/refresh-session?token=${sessionToken.refresh}`
+      );
+      const refreshResult = await refreshResponse.json();
+
+      if (!refreshResponse.ok) {
+        throw new Error(refreshResult.message);
+      }
+
+      searchParams.set('access_token', refreshResult.token);
+      sessionToken.access = refreshResult.token;
+
+      await browser.storage.local.set({ sessionToken });
+
+      if (tryCount < maxTry) {
+        tryCount += 1;
+        const awaitResult = await startFetch();
+
+        return awaitResult;
+      }
+
+      throw new Error('unauthorized');
+    }
+    if (!response.ok) {
+      throw new Error(result?.error?.message, { cause: result });
+    }
+
+    return result;
+  };
+
+  const result = await startFetch();
+  return result;
 }

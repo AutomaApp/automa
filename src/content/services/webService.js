@@ -46,11 +46,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     await db.put('store', workflows, 'workflows');
 
-    const session =
-      parseJSON(localStorage.getItem('supabase.auth.token'), null)
-        ?.currentSession ?? null;
-    await browser.storage.local.set({ session });
-
     const webListener = initWebListener();
     webListener.on('open-dashboard', ({ path }) => {
       if (!path) return;
@@ -196,6 +191,60 @@ window.addEventListener('DOMContentLoaded', async () => {
         sendMessageBack(type, storage.workflows);
       }
     });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+window.addEventListener('user-logout', () => {
+  browser.storage.local.remove(['session', 'sessionToken']);
+});
+
+window.addEventListener('app-mounted', async () => {
+  try {
+    const STORAGE_KEY = 'supabase.auth.token';
+    const session = parseJSON(localStorage.getItem(STORAGE_KEY), null);
+    const storage = await browser.storage.local.get([
+      'session',
+      'sessionToken',
+    ]);
+
+    const setUserSession = async () => {
+      const saveToStorage = { session };
+
+      const isGoogleProvider =
+        session?.user?.user_metadata?.iss.includes('googleapis.com');
+      const { session: currSession, sessionToken: currSessionToken } =
+        await browser.storage.local.get(['session', 'sessionToken']);
+      if (
+        isGoogleProvider &&
+        ((session && session.user.id === currSession?.user.id) ||
+          !currSessionToken)
+      ) {
+        saveToStorage.sessionToken = {
+          access: session.provider_token,
+          refresh: session.provider_refresh_token,
+        };
+      }
+
+      await browser.storage.local.set(saveToStorage);
+    };
+
+    if (session && !storage.session) {
+      await setUserSession();
+    } else if (session && storage.session) {
+      if (session.user.id !== storage.session.id) {
+        await setUserSession();
+      } else {
+        const currentSession = { ...storage.session };
+        if (storage.sessionToken) {
+          currentSession.provider_token = storage.sessionToken.access;
+          currentSession.provider_refresh_token = storage.sessionToken.refresh;
+        }
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(currentSession));
+      }
+    }
   } catch (error) {
     console.error(error);
   }
