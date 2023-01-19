@@ -123,8 +123,12 @@ async function updateSpreadsheetValues(
 }
 
 export default async function ({ data, id }, { refData }) {
-  if (isWhitespace(data.spreadsheetId)) throw new Error('empty-spreadsheet-id');
-  if (isWhitespace(data.range)) throw new Error('empty-spreadsheet-range');
+  const isNotCreateAction = data.type !== 'create';
+
+  if (isWhitespace(data.spreadsheetId) && isNotCreateAction)
+    throw new Error('empty-spreadsheet-id');
+  if (isWhitespace(data.range) && isNotCreateAction)
+    throw new Error('empty-spreadsheet-range');
 
   let result = [];
   const handleUpdate = async (append = false) => {

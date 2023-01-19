@@ -146,6 +146,44 @@ export async function getUserWorkflows(useCache = true) {
   );
 }
 
+export function validateOauthToken() {
+  let retryCount = 0;
+
+  const startFetch = async () => {
+    try {
+      const { sessionToken } = await browser.storage.local.get('sessionToken');
+      if (!sessionToken) return null;
+
+      const response = await fetch(
+        `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${sessionToken.access}`
+      );
+      if (response.status === 400 && sessionToken.refresh && retryCount <= 3) {
+        const refreshResponse = await fetchApi(
+          `/me/refresh-session?token=${sessionToken.refresh}`
+        );
+        const refreshResult = await refreshResponse.json();
+
+        if (!refreshResponse.ok) {
+          throw new Error(refreshResult.message);
+        }
+
+        retryCount += 1;
+
+        const result = await startFetch();
+        return result;
+      }
+
+      return null;
+    } catch (error) {
+      console.error(error);
+    }
+
+    return null;
+  };
+
+  return startFetch();
+}
+
 export async function fetchGapi(url, resource = {}, options = {}) {
   const { sessionToken } = await browser.storage.local.get('sessionToken');
   if (!sessionToken) throw new Error('unauthorized');
@@ -162,10 +200,14 @@ export async function fetchGapi(url, resource = {}, options = {}) {
       `${origin}${pathname}?${searchParams.toString()}`,
       resource
     );
-    const result = await response.json();
+
+    const isResJson = response.headers
+      .get('content-type')
+      ?.includes('application/json');
+    const result = isResJson && (await response.json());
     const insufficientScope =
       response.status === 403 &&
-      result.error?.message.includes('insufficient authentication scopes');
+      result?.error?.message.includes('insufficient authentication scopes');
     if (
       (response.status === 401 || insufficientScope) &&
       sessionToken.refresh
@@ -195,6 +237,10 @@ export async function fetchGapi(url, resource = {}, options = {}) {
     }
     if (!response.ok) {
       throw new Error(result?.error?.message, { cause: result });
+    }
+
+    if (options?.response) {
+      return { response, result };
     }
 
     return result;

@@ -402,6 +402,13 @@
         "select": "Select sheet",
         "connect": "Connect sheet"
       },
+      "google-drive": {
+        "name": "Google Drive",
+        "description": "Upload files to Google Drive",
+        "actions": {
+          "upload": "Upload files"
+        }
+      },
       "google-sheets": {
         "name": "Google Sheets",
         "description": "Read or update Google Sheets data",

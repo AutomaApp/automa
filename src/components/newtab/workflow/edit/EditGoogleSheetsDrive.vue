@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!store.isGDriveConnected">
+  <div v-if="!store.integrations.googleDrive">
     <p>
       You haven't
       <a href="https://google.com" target="_blank" class="underline"

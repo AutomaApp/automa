@@ -28,9 +28,14 @@ export const useStore = defineStore('main', {
         snapGrid: { 0: 15, 1: 15 },
       },
     },
+    integrations: {
+      googleDrive: false,
+    },
+    integrationsRetrieved: {
+      googleDrive: false,
+    },
     retrieved: true,
     connectedSheets: [],
-    isGDriveConnected: false,
     connectedSheetsRetrieved: false,
   }),
   actions: {
@@ -44,16 +49,36 @@ export const useStore = defineStore('main', {
       this.settings = deepmerge(this.settings, settings);
       await this.saveToStorage('settings');
     },
+    async checkGDriveIntegration(force = false) {
+      try {
+        if (!this.integrationsRetrieved.googleDrive && !force) return;
+
+        const { sessionToken } = await browser.storage.local.get(
+          'sessionToken'
+        );
+        if (!sessionToken) return;
+
+        const response = await fetch(
+          `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${sessionToken.access}`
+        );
+        if (!response.ok) throw new Error(response.statusText);
+
+        const result = response.json();
+        this.integrations.googleDrive =
+          result.scope.includes('auth/drive.file');
+      } catch (error) {
+        console.error(error);
+      }
+    },
     async getConnectedSheets() {
       try {
         if (this.connectedSheetsRetrieved) return;
 
-        // const query = encodeURIComponent('mimeType="application/vnd.google-apps.spreadsheet"');
         const result = await fetchGapi(
-          `https://www.googleapis.com/drive/v3/files?q=${''}`
+          'https://www.googleapis.com/drive/v3/files'
         );
 
-        this.isGDriveConnected = true;
+        this.integrations.googleDrive = true;
         this.connectedSheets = result.files.filter(
           (file) => file.mimeType === 'application/vnd.google-apps.spreadsheet'
         );
@@ -62,7 +87,7 @@ export const useStore = defineStore('main', {
           error.message === 'no-scope' ||
           error.message.includes('insufficient authentication')
         ) {
-          this.isGDriveConnected = false;
+          this.integrations.googleDrive = false;
         }
 
         console.error(error);

@@ -609,7 +609,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['customData', 'range', 'spreadsheetId'],
+    refDataKeys: ['customData', 'range', 'spreadsheetId', 'sheetName'],
     autocomplete: ['refKey'],
     data: {
       disableBlock: false,
@@ -630,6 +630,25 @@ export const tasks = {
       valueInputOption: 'RAW',
       InsertDataOption: 'INSERT_ROWS',
       dataFrom: 'data-columns',
+    },
+  },
+  'google-drive': {
+    name: 'Google drive',
+    description: 'Upload files to Google Drive',
+    icon: 'riDriveFill',
+    component: 'BlockBasic',
+    editComponent: 'EditGoogleDrive',
+    category: 'onlineServices',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    refDataKeys: [],
+    autocomplete: ['refKey'],
+    data: {
+      disableBlock: false,
+      action: 'upload',
+      filePaths: [],
     },
   },
   conditions: {
@@ -984,6 +1003,7 @@ export const tasks = {
       saveData: true,
       assignVariable: false,
       variableName: '',
+      saveToGDrive: false,
     },
   },
   'press-key': {
