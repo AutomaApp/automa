@@ -601,7 +601,7 @@ export const tasks = {
   'google-sheets-drive': {
     name: 'Google sheets (GDrive)',
     description: 'Read Google Sheets data',
-    icon: 'riDriveLine',
+    icon: 'riDriveFill',
     component: 'BlockBasic',
     editComponent: 'EditGoogleSheetsDrive',
     category: 'onlineServices',
@@ -635,7 +635,7 @@ export const tasks = {
   'google-drive': {
     name: 'Google drive',
     description: 'Upload files to Google Drive',
-    icon: 'riDriveFill',
+    icon: 'riDriveLine',
     component: 'BlockBasic',
     editComponent: 'EditGoogleDrive',
     category: 'onlineServices',
