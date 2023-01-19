@@ -124,7 +124,7 @@ import { ref, watch, onMounted, shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid';
 import Draggable from 'vuedraggable';
-import { sleep } from '@/utils/helper';
+import { debounce } from '@/utils/helper';
 import SharedConditionBuilder from '@/components/newtab/shared/SharedConditionBuilder/index.vue';
 
 const props = defineProps({
@@ -190,11 +190,10 @@ function deleteCondition(index, id) {
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }
-async function onEnd() {
-  props.editor.addSelectedNodes([]);
-  await sleep(1000);
-  props.editor.addSelectedNodes([props.editor.getNode.value(props.blockId)]);
-}
+
+const onEnd = debounce(() => {
+  props.editor.updateNodeInternals([props.blockId]);
+}, 500);
 
 watch(
   conditions,

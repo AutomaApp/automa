@@ -13,9 +13,9 @@ export async function fetchApi(path, options) {
   if (session) {
     let token = session.access_token;
 
-    if (Date.now() > session.expires_at * 1000) {
+    if (Date.now() > (session.expires_at - 2000) * 1000) {
       const response = await fetch(
-        `${secrets.baseApiUrl}/me/refresh-auth-session`
+        `${secrets.baseApiUrl}/me/refresh-auth-session?token=${session.refresh_token}`
       );
       const result = await response.json();
       if (!response.ok) {
