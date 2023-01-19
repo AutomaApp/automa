@@ -2,7 +2,10 @@
   <div v-if="!store.integrations.googleDrive">
     <p>
       You haven't
-      <a href="https://google.com" target="_blank" class="underline"
+      <a
+        href="https://docs.automa.site/integrations/google-drive.html"
+        target="_blank"
+        class="underline"
         >connected Automa to Google Drive</a
       >.
     </p>

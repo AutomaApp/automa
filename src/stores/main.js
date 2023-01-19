@@ -51,19 +51,13 @@ export const useStore = defineStore('main', {
     },
     async checkGDriveIntegration(force = false) {
       try {
-        if (!this.integrationsRetrieved.googleDrive && !force) return;
+        if (this.integrationsRetrieved.googleDrive && !force) return;
 
-        const { sessionToken } = await browser.storage.local.get(
-          'sessionToken'
+        const result = await fetchGapi(
+          `https://www.googleapis.com/oauth2/v1/tokeninfo`
         );
-        if (!sessionToken) return;
+        if (!result) return;
 
-        const response = await fetch(
-          `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${sessionToken.access}`
-        );
-        if (!response.ok) throw new Error(response.statusText);
-
-        const result = response.json();
         this.integrations.googleDrive =
           result.scope.includes('auth/drive.file');
       } catch (error) {

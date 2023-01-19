@@ -1,66 +1,82 @@
 <template>
   <div>
-    <ui-textarea
-      :model-value="data.description"
-      class="w-full"
-      :placeholder="t('common.description')"
-      @change="updateData({ description: $event })"
-    />
-    <ui-select
-      :model-value="data.action"
-      class="w-full mt-4"
-      @change="updateData({ action: $event })"
-    >
-      <option v-for="action in actions" :key="action" :value="action">
-        {{ t(`workflow.blocks.google-drive.actions.${action}`) }}
-      </option>
-    </ui-select>
-    <div class="mt-4">
-      <ul class="space-y-2">
-        <li
-          v-for="(item, index) in filePaths"
-          :key="item.id"
-          class="p-2 border rounded-lg"
-        >
-          <div class="flex items-center">
-            <ui-select
-              v-model="item.type"
-              class="grow mr-2"
-              placeholder="File location"
-            >
-              <option value="url">URL</option>
-              <option value="local" :disabled="!hasFileAccess">
-                Local computer
-              </option>
-              <option value="downloadId" :disabled="!permissions.has.downloads">
-                Download id
-              </option>
-            </ui-select>
-            <ui-button icon @click="filePaths.splice(index, 1)">
-              <v-remixicon name="riDeleteBin7Line" />
-            </ui-button>
-          </div>
-          <edit-autocomplete>
-            <ui-input
-              v-model="item.name"
-              placeholder="Filename (optional)"
-              class="w-full mt-2"
-            />
-          </edit-autocomplete>
-          <edit-autocomplete>
-            <ui-input
-              v-model="item.path"
-              :placeholder="placeholders[item.type]"
-              title="File location"
-              class="w-full mt-2"
-            />
-          </edit-autocomplete>
-        </li>
-      </ul>
-      <ui-button class="mt-4" variant="accent" @click="addFile">
-        Add file
-      </ui-button>
+    <div v-if="!store.integrations.googleDrive">
+      <p>
+        You haven't
+        <a
+          href="https://docs.automa.site/integrations/google-drive.html"
+          target="_blank"
+          class="underline"
+          >connected Automa to Google Drive</a
+        >.
+      </p>
     </div>
+    <template v-else>
+      <ui-textarea
+        :model-value="data.description"
+        class="w-full"
+        :placeholder="t('common.description')"
+        @change="updateData({ description: $event })"
+      />
+      <ui-select
+        :model-value="data.action"
+        class="w-full mt-4"
+        @change="updateData({ action: $event })"
+      >
+        <option v-for="action in actions" :key="action" :value="action">
+          {{ t(`workflow.blocks.google-drive.actions.${action}`) }}
+        </option>
+      </ui-select>
+      <div class="mt-4">
+        <ul class="space-y-2">
+          <li
+            v-for="(item, index) in filePaths"
+            :key="item.id"
+            class="p-2 border rounded-lg"
+          >
+            <div class="flex items-center">
+              <ui-select
+                v-model="item.type"
+                class="grow mr-2"
+                placeholder="File location"
+              >
+                <option value="url">URL</option>
+                <option value="local" :disabled="!hasFileAccess">
+                  Local computer
+                </option>
+                <option
+                  value="downloadId"
+                  :disabled="!permissions.has.downloads"
+                >
+                  Download id
+                </option>
+              </ui-select>
+              <ui-button icon @click="filePaths.splice(index, 1)">
+                <v-remixicon name="riDeleteBin7Line" />
+              </ui-button>
+            </div>
+            <edit-autocomplete>
+              <ui-input
+                v-model="item.name"
+                placeholder="Filename (optional)"
+                class="w-full mt-2"
+              />
+            </edit-autocomplete>
+            <edit-autocomplete>
+              <ui-input
+                v-model="item.path"
+                :placeholder="placeholders[item.type]"
+                title="File location"
+                class="w-full mt-2"
+              />
+            </edit-autocomplete>
+          </li>
+        </ul>
+        <ui-button class="mt-4" variant="accent" @click="addFile">
+          Add file
+        </ui-button>
+      </div>
+    </template>
   </div>
 </template>
 <script setup>
@@ -69,6 +85,7 @@ import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid/non-secure';
 import cloneDeep from 'lodash.clonedeep';
 import browser from 'webextension-polyfill';
+import { useStore } from '@/stores/main';
 import { useHasPermissions } from '@/composable/hasPermissions';
 import EditAutocomplete from './EditAutocomplete.vue';
 
@@ -85,6 +102,8 @@ const props = defineProps({
 const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
+const store = useStore();
+store.checkGDriveIntegration();
 
 const actions = ['upload'];
 const placeholders = {

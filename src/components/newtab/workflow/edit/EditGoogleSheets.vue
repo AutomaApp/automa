@@ -17,7 +17,10 @@
     </ui-select>
     <slot />
     <edit-autocomplete
-      v-if="!googleDrive || data.inputSpreadsheetId === 'manually'"
+      v-if="
+        !googleDrive ||
+        (data.inputSpreadsheetId === 'manually' && data.type !== 'create')
+      "
     >
       <ui-input
         :model-value="data.spreadsheetId"

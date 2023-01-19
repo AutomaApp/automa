@@ -226,6 +226,9 @@ window.addEventListener('app-mounted', async () => {
           refresh: session.provider_refresh_token,
         };
       }
+      if (!isGoogleProvider) {
+        browser.storage.local.remove('sessionToken');
+      }
 
       await browser.storage.local.set(saveToStorage);
     };
