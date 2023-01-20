@@ -1,4 +1,4 @@
-import { googleSheets } from '@/utils/api';
+import googleSheetsApi from '@/utils/googleSheetsApi';
 import {
   convert2DArrayToArrayObj,
   convertArrObjTo2DArr,
@@ -6,11 +6,19 @@ import {
   parseJSON,
 } from '@/utils/helper';
 
-async function getSpreadsheetValues({ spreadsheetId, range, firstRowAsKey }) {
-  const response = await googleSheets.getValues({ spreadsheetId, range });
-  const result = await response.json();
+async function getSpreadsheetValues({
+  spreadsheetId,
+  range,
+  firstRowAsKey,
+  isDriveSheet,
+}) {
+  const response = await googleSheetsApi(isDriveSheet).getValues({
+    spreadsheetId,
+    range,
+  });
 
-  if (!response.ok) {
+  const result = isDriveSheet ? response : await response.json();
+  if (!isDriveSheet && !response.ok) {
     throw new Error(result.message);
   }
 
@@ -20,11 +28,14 @@ async function getSpreadsheetValues({ spreadsheetId, range, firstRowAsKey }) {
 
   return sheetsData;
 }
-async function getSpreadsheetRange({ spreadsheetId, range }) {
-  const response = await googleSheets.getRange({ spreadsheetId, range });
-  const result = await response.json();
+async function getSpreadsheetRange({ spreadsheetId, range, isDriveSheet }) {
+  const response = await googleSheetsApi(isDriveSheet).getRange({
+    spreadsheetId,
+    range,
+  });
 
-  if (!response.ok) {
+  const result = isDriveSheet ? response : await response.json();
+  if (!isDriveSheet && !response.ok) {
     throw new Error(result.message);
   }
 
@@ -35,11 +46,14 @@ async function getSpreadsheetRange({ spreadsheetId, range }) {
 
   return data;
 }
-async function clearSpreadsheetValues({ spreadsheetId, range }) {
-  const response = await googleSheets.clearValues({ spreadsheetId, range });
-  const result = await response.json();
+async function clearSpreadsheetValues({ spreadsheetId, range, isDriveSheet }) {
+  const response = await googleSheetsApi(isDriveSheet).clearValues({
+    spreadsheetId,
+    range,
+  });
 
-  if (!response.ok) {
+  const result = isDriveSheet ? response : await response.json();
+  if (!isDriveSheet && !response.ok) {
     throw new Error(result.message);
   }
 
@@ -51,6 +65,7 @@ async function updateSpreadsheetValues(
     append,
     dataFrom,
     customData,
+    isDriveSheet,
     spreadsheetId,
     keysAsFirstRow,
     insertDataOption,
@@ -91,7 +106,7 @@ async function updateSpreadsheetValues(
     });
   }
 
-  const response = await googleSheets.updateValues({
+  const response = await googleSheetsApi(isDriveSheet).updateValues({
     range,
     append,
     spreadsheetId,
@@ -101,46 +116,70 @@ async function updateSpreadsheetValues(
     },
   });
 
-  if (!response.ok) {
-    const error = await response.json();
-
-    throw new Error(error.message);
+  const result = isDriveSheet ? response : await response.json();
+  if (!isDriveSheet && !response.ok) {
+    throw new Error(result.message);
   }
 }
 
 export default async function ({ data, id }, { refData }) {
-  if (isWhitespace(data.spreadsheetId)) throw new Error('empty-spreadsheet-id');
-  if (isWhitespace(data.range)) throw new Error('empty-spreadsheet-range');
+  const isNotCreateAction = data.type !== 'create';
+
+  if (isWhitespace(data.spreadsheetId) && isNotCreateAction)
+    throw new Error('empty-spreadsheet-id');
+  if (isWhitespace(data.range) && isNotCreateAction)
+    throw new Error('empty-spreadsheet-range');
 
   let result = [];
-  if (data.type === 'get') {
-    const spreadsheetValues = await getSpreadsheetValues(data);
-
-    result = spreadsheetValues;
-
-    if (data.refKey && !isWhitespace(data.refKey)) {
-      refData.googleSheets[data.refKey] = spreadsheetValues;
-    }
-  } else if (data.type === 'getRange') {
-    result = await getSpreadsheetRange(data);
-
-    if (data.assignVariable) {
-      this.setVariable(data.variableName, result);
-    }
-    if (data.saveData) {
-      this.addDataToColumn(data.dataColumn, result);
-    }
-  } else if (['update', 'append'].includes(data.type)) {
+  const handleUpdate = async (append = false) => {
     result = await updateSpreadsheetValues(
       {
         ...data,
-        append: data.type === 'append',
+        append,
       },
       refData.table
     );
-  } else if (data.type === 'clear') {
-    result = await clearSpreadsheetValues(data);
-  }
+  };
+  const actionHandlers = {
+    get: async () => {
+      const spreadsheetValues = await getSpreadsheetValues(data);
+
+      result = spreadsheetValues;
+
+      if (data.refKey && !isWhitespace(data.refKey)) {
+        refData.googleSheets[data.refKey] = spreadsheetValues;
+      }
+    },
+    getRange: async () => {
+      result = await getSpreadsheetRange(data);
+
+      if (data.assignVariable) {
+        this.setVariable(data.variableName, result);
+      }
+      if (data.saveData) {
+        this.addDataToColumn(data.dataColumn, result);
+      }
+    },
+    update: () => handleUpdate(),
+    append: () => handleUpdate(true),
+    clear: async () => {
+      result = await clearSpreadsheetValues(data);
+    },
+    create: async () => {
+      const { spreadsheetId } = await googleSheetsApi(true).create(
+        data.sheetName
+      );
+      result = spreadsheetId;
+
+      if (data.assignVariable) {
+        this.setVariable(data.variableName, result);
+      }
+      if (data.saveData) {
+        this.addDataToColumn(data.dataColumn, result);
+      }
+    },
+  };
+  await actionHandlers[data.type]();
 
   return {
     data: result,

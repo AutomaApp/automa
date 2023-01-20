@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import defu from 'defu';
 import browser from 'webextension-polyfill';
 import deepmerge from 'lodash.merge';
+import { fetchGapi } from '@/utils/api';
 
 export const useStore = defineStore('main', {
   storageMap: {
@@ -27,7 +28,15 @@ export const useStore = defineStore('main', {
         snapGrid: { 0: 15, 1: 15 },
       },
     },
+    integrations: {
+      googleDrive: false,
+    },
+    integrationsRetrieved: {
+      googleDrive: false,
+    },
     retrieved: true,
+    connectedSheets: [],
+    connectedSheetsRetrieved: false,
   }),
   actions: {
     loadSettings() {
@@ -39,6 +48,44 @@ export const useStore = defineStore('main', {
     async updateSettings(settings = {}) {
       this.settings = deepmerge(this.settings, settings);
       await this.saveToStorage('settings');
+    },
+    async checkGDriveIntegration(force = false) {
+      try {
+        if (this.integrationsRetrieved.googleDrive && !force) return;
+
+        const result = await fetchGapi(
+          `https://www.googleapis.com/oauth2/v1/tokeninfo`
+        );
+        if (!result) return;
+
+        this.integrations.googleDrive =
+          result.scope.includes('auth/drive.file');
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async getConnectedSheets() {
+      try {
+        if (this.connectedSheetsRetrieved) return;
+
+        const result = await fetchGapi(
+          'https://www.googleapis.com/drive/v3/files'
+        );
+
+        this.integrations.googleDrive = true;
+        this.connectedSheets = result.files.filter(
+          (file) => file.mimeType === 'application/vnd.google-apps.spreadsheet'
+        );
+      } catch (error) {
+        if (
+          error.message === 'no-scope' ||
+          error.message.includes('insufficient authentication')
+        ) {
+          this.integrations.googleDrive = false;
+        }
+
+        console.error(error);
+      }
     },
   },
 });

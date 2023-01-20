@@ -49,7 +49,7 @@
         </div>
         <span
           title="Block id"
-          class="text-overflow bg-box-transparent w-16 rounded-md p-1 text-xs text-gray-600 dark:text-gray-300"
+          class="text-overflow text-center bg-box-transparent w-16 rounded-md p-1 text-xs text-gray-600 dark:text-gray-300"
         >
           {{ item.id }}
         </span>

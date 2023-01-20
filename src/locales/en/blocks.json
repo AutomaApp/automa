@@ -395,6 +395,20 @@
         "insertVars": "Insert current workflow variables",
         "useCommas": "Use commas to separate the variable name"
       },
+      "google-sheets-drive": {
+        "name": "@:workflow.blocks.google-sheets.name (GDrive)",
+        "description": "@:workflow.blocks.google-sheets.description",
+        "connected": "Connected sheets",
+        "select": "Select sheet",
+        "connect": "Connect sheet"
+      },
+      "google-drive": {
+        "name": "Google Drive",
+        "description": "Upload files to Google Drive",
+        "actions": {
+          "upload": "Upload files"
+        }
+      },
       "google-sheets": {
         "name": "Google Sheets",
         "description": "Read or update Google Sheets data",
@@ -429,7 +443,8 @@
           "getRange": "Get spreadsheet range",
           "update": "Update spreadsheet cell values",
           "append": "Append spreadsheet cell values",
-          "clear": "Clear spreadsheet cell values"
+          "clear": "Clear spreadsheet cell values",
+          "create": "Create a spreadsheet"
         }
       },
       "active-tab": {

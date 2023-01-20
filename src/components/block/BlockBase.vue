@@ -4,10 +4,10 @@
       class="block-menu-container absolute top-0 hidden w-full"
       style="transform: translateY(-100%)"
     >
-      <div>
+      <div class="pointer-events-none">
         <p
           title="Block id (click to copy)"
-          class="block-menu text-overflow inline-block px-1 dark:text-gray-300"
+          class="block-menu pointer-events-auto text-overflow inline-block px-1 dark:text-gray-300"
           style="max-width: 96px; margin-bottom: 0"
           @click="insertToClipboard"
         >
