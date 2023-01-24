@@ -444,7 +444,8 @@
           "update": "Update spreadsheet cell values",
           "append": "Append spreadsheet cell values",
           "clear": "Clear spreadsheet cell values",
-          "create": "Create a spreadsheet"
+          "create": "Create a spreadsheet",
+          "add-sheet": "Add sheet"
         }
       },
       "active-tab": {

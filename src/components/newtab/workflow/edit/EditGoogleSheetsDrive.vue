@@ -14,7 +14,7 @@
     v-else
     google-drive
     :data="data"
-    :additional-actions="['create']"
+    :additional-actions="['create', 'add-sheet']"
     @update:data="updateData"
   >
     <ui-tabs
@@ -58,7 +58,7 @@
       </ui-button>
     </div>
     <ui-input
-      v-if="data.type === 'create'"
+      v-if="['create', 'add-sheet'].includes(data.type)"
       :model-value="data.sheetName"
       label="Sheet name"
       placeholder="A Spreadsheet"

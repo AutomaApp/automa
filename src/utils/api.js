@@ -10,7 +10,7 @@ export async function fetchApi(path, options) {
   };
 
   const { session } = await browser.storage.local.get('session');
-  if (session && options.auth) {
+  if (session && options?.auth) {
     delete options.auth;
 
     let token = session.access_token;
