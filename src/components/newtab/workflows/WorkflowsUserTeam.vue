@@ -169,7 +169,7 @@ function onMenuSelected({ id, data }) {
         try {
           const response = await fetchApi(
             `/teams/${props.teamId}/workflows/${data.id}`,
-            { method: 'DELETE' }
+            { method: 'DELETE', auth: true }
           );
           const result = await response.json();
 

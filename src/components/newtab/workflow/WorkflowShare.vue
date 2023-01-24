@@ -132,6 +132,7 @@ async function publishWorkflow() {
     delete workflow.extVersion;
 
     const response = await fetchApi('/me/workflows/shared', {
+      auth: true,
       method: 'POST',
       body: JSON.stringify({ workflow }),
     });

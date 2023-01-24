@@ -60,6 +60,7 @@ export const useHostedWorkflowStore = defineStore('hosted-workflows', {
       if (!ids || ids.length === 0) return null;
 
       const response = await fetchApi('/workflows/hosted', {
+        auth: true,
         method: 'POST',
         body: JSON.stringify({ hosts: ids }),
       });

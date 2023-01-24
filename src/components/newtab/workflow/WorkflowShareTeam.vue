@@ -187,6 +187,7 @@ async function publishWorkflow() {
     delete workflow.extVersion;
 
     const response = await fetchApi(`/teams/${state.activeTeam}/workflows`, {
+      auth: true,
       method: 'POST',
       body: JSON.stringify({ workflow }),
     });

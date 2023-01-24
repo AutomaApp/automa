@@ -475,6 +475,7 @@ async function setAsHostWorkflow(isHost) {
 
       url += `/host`;
       payload = {
+        auth: true,
         method: 'POST',
         body: JSON.stringify({
           workflow: workflowPaylod,
@@ -544,7 +545,7 @@ function deleteFromTeam() {
       try {
         const response = await fetchApi(
           `/teams/${teamId}/workflows/${props.workflow.id}`,
-          { method: 'DELETE' }
+          { method: 'DELETE', auth: true }
         );
         const result = await response.json();
 
@@ -592,6 +593,7 @@ async function publishWorkflow() {
     const response = await fetchApi(
       `/teams/${teamId}/workflows/${props.workflow.id}`,
       {
+        auth: true,
         method: 'PATCH',
         body: JSON.stringify({ workflow: workflowPaylod }),
       }
@@ -700,7 +702,8 @@ async function retrieveTriggerText() {
 async function fetchSyncWorkflow() {
   try {
     const response = await fetchApi(
-      `/teams/${teamId}/workflows/${props.workflow.id}`
+      `/teams/${teamId}/workflows/${props.workflow.id}`,
+      { auth: true }
     );
     const result = await response.json();
 

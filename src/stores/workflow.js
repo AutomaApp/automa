@@ -239,6 +239,7 @@ export const useWorkflowStore = defineStore('workflow', {
 
       if (hostedWorkflow || backupIndex !== -1) {
         const response = await fetchApi(`/me/workflows?id=${id}`, {
+          auth: true,
           method: 'DELETE',
         });
         const result = await response.json();

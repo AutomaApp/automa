@@ -42,7 +42,9 @@ export const useSharedWorkflowStore = defineStore('shared-workflows', {
         'shared-workflows',
         async () => {
           try {
-            const response = await fetchApi('/me/workflows/shared?data=all');
+            const response = await fetchApi('/me/workflows/shared?data=all', {
+              auth: true,
+            });
 
             if (response.status !== 200) throw new Error(response.statusText);
 

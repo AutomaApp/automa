@@ -617,6 +617,7 @@ const updateHostedWorkflow = throttle(async () => {
     }
 
     const response = await fetchApi(`/me/workflows/${route.params.id}`, {
+      auth: true,
       method: 'PUT',
       keepalive: true,
       body: JSON.stringify({
@@ -1548,7 +1549,8 @@ function checkWorkflowPermission() {
 function checkWorkflowUpdate() {
   const updatedAt = encodeURIComponent(workflow.value.updatedAt);
   fetchApi(
-    `/teams/${teamId}/workflows/${workflowId}/check-update?updatedAt=${updatedAt}`
+    `/teams/${teamId}/workflows/${workflowId}/check-update?updatedAt=${updatedAt}`,
+    { auth: true }
   )
     .then((response) => response.json())
     .then((result) => {

@@ -502,6 +502,7 @@ function addHostedWorkflow() {
         if (isTheUserHost) throw new Error('exist');
 
         const response = await fetchApi('/workflows/hosted', {
+          auth: true,
           method: 'POST',
           body: JSON.stringify({ hostId }),
         });
