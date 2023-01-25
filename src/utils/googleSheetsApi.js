@@ -68,6 +68,21 @@ export const googleSheetNative = {
       }),
     });
   },
+  addSheet({ sheetName, spreadsheetId }) {
+    const url = googleSheetNative.getUrl(`/${spreadsheetId}:batchUpdate`);
+    return fetchGapi(url, {
+      method: 'POST',
+      body: JSON.stringify({
+        requests: [
+          {
+            addSheet: {
+              properties: { title: sheetName },
+            },
+          },
+        ],
+      }),
+    });
+  },
 };
 
 export const googleSheets = {

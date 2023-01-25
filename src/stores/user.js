@@ -30,7 +30,7 @@ export const useUserStore = defineStore('user', {
           'user-profile',
           async () => {
             try {
-              const response = await fetchApi('/me');
+              const response = await fetchApi('/me', { auth: true });
               const result = await response.json();
 
               if (!response.ok) throw new Error(response.message);

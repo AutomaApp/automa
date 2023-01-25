@@ -166,7 +166,6 @@
             tabindex="0"
             @init="onEditorInit"
             @edit="initEditBlock"
-            @click="onClickEditor"
             @update:node="state.dataChanged = true"
             @delete:node="state.dataChanged = true"
             @update:settings="onUpdateBlockSettings"
@@ -617,6 +616,7 @@ const updateHostedWorkflow = throttle(async () => {
     }
 
     const response = await fetchApi(`/me/workflows/${route.params.id}`, {
+      auth: true,
       method: 'PUT',
       keepalive: true,
       body: JSON.stringify({
@@ -720,52 +720,6 @@ function startRecording({ nodeId, handleId }) {
     state.dataChanged = false;
     router.replace('/recording');
   });
-}
-let nodeTargetHandle = null;
-function onClickEditor({ target }) {
-  const targetClass = target.classList;
-  const isHandle = targetClass.contains('vue-flow__handle');
-  const clearActiveTarget = () => {
-    if (nodeTargetHandle) {
-      const targetEl = document.querySelector(
-        `.vue-flow__handle[data-handleid="${nodeTargetHandle.handleId}"]`
-      );
-      if (targetEl) targetEl.classList.remove('ring-2');
-    }
-  };
-
-  if (!isHandle) {
-    clearActiveTarget();
-    nodeTargetHandle = null;
-    return;
-  }
-
-  if (nodeTargetHandle && targetClass.contains('target')) {
-    const { handleid, nodeid } = target.dataset;
-
-    const connectionExist = document.querySelector(
-      `.vue-flow__edge.target-${handleid}.source-${nodeTargetHandle.handleId}`
-    );
-    if (!connectionExist) {
-      editor.value.addEdges([
-        {
-          target: nodeid,
-          targetHandle: handleid,
-          source: nodeTargetHandle.nodeId,
-          sourceHandle: nodeTargetHandle.handleId,
-        },
-      ]);
-    }
-
-    clearActiveTarget();
-    nodeTargetHandle = null;
-  } else {
-    clearActiveTarget();
-    target.classList.add('ring-2');
-
-    const { handleid, nodeid } = target.dataset;
-    nodeTargetHandle = { nodeId: nodeid, handleId: handleid };
-  }
 }
 function goToBlock(blockId) {
   if (!editor.value) return;
@@ -1548,7 +1502,8 @@ function checkWorkflowPermission() {
 function checkWorkflowUpdate() {
   const updatedAt = encodeURIComponent(workflow.value.updatedAt);
   fetchApi(
-    `/teams/${teamId}/workflows/${workflowId}/check-update?updatedAt=${updatedAt}`
+    `/teams/${teamId}/workflows/${workflowId}/check-update?updatedAt=${updatedAt}`,
+    { auth: true }
   )
     .then((response) => response.json())
     .then((result) => {

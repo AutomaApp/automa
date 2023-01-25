@@ -51,7 +51,7 @@
       Automa doesn't have access to the spreadsheet
       <v-remixicon name="riInformationLine" size="18" class="inline" />
     </a>
-    <edit-autocomplete v-if="data.type !== 'create'">
+    <edit-autocomplete v-if="!['create', 'add-sheet'].includes(data.type)">
       <ui-input
         :model-value="data.range"
         class="mt-1 w-full"

@@ -255,6 +255,7 @@ function unpublishSharedWorkflow() {
         state.isUnpublishing = true;
 
         const response = await fetchApi(`/me/workflows/shared/${workflowId}`, {
+          auth: true,
           method: 'DELETE',
         });
 
@@ -295,6 +296,7 @@ async function saveUpdatedSharedWorkflow() {
 
     const url = `/me/workflows/shared/${workflowId}`;
     const response = await fetchApi(url, {
+      auth: true,
       method: 'PUT',
       body: JSON.stringify(payload),
     });

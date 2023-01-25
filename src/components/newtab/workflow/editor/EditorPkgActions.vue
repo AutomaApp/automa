@@ -200,6 +200,7 @@ async function toggleSharePackage() {
       });
 
       const response = await fetchApi('/packages', {
+        auth: true,
         method: 'POST',
         body: JSON.stringify({
           package: payload,
@@ -212,6 +213,7 @@ async function toggleSharePackage() {
       packageStore.insertShared(props.data.id);
     } else {
       const response = await fetchApi(`/packages/${props.data.id}`, {
+        auth: true,
         method: 'DELETE',
       });
       const result = await response.json();
@@ -248,6 +250,7 @@ async function updateSharedPackage() {
     });
 
     const response = await fetchApi(`/packages/${props.data.id}`, {
+      auth: true,
       method: 'PATCH',
       body: JSON.stringify({ package: payload }),
     });

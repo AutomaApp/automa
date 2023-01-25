@@ -220,7 +220,9 @@ async function syncCloudToLocal(workflow) {
     backupState.uploading = true;
     backupState.workflowId = workflow.id;
 
-    const response = await fetchApi(`/me/workflows/${workflow.id}`);
+    const response = await fetchApi(`/me/workflows/${workflow.id}`, {
+      auth: true,
+    });
     const data = await response.json();
     if (!response.ok) throw new Error(data.message);
 
@@ -278,6 +280,7 @@ async function deleteBackup(workflowId) {
     const response = await fetchApi(
       `/me/workflows?id=${ids.join(',')}&type=backup`,
       {
+        auth: true,
         method: 'DELETE',
       }
     );
@@ -313,7 +316,9 @@ async function fetchCloudWorkflows() {
 
   try {
     const data = await cacheApi('backup-workflows', async () => {
-      const response = await fetchApi('/me/workflows?type=backup');
+      const response = await fetchApi('/me/workflows?type=backup', {
+        auth: true,
+      });
 
       if (!response.ok) throw new Error(response.statusText);
 
@@ -355,6 +360,7 @@ async function updateCloudBackup(workflow) {
     });
 
     const response = await fetchApi(`/me/workflows/${workflow.id}`, {
+      auth: true,
       method: 'PUT',
       body: JSON.stringify({ workflow: payload }),
     });
@@ -404,6 +410,7 @@ async function backupWorkflowsToCloud(workflowId) {
     }, []);
 
     const response = await fetchApi('/me/workflows/backup', {
+      auth: true,
       method: 'POST',
       body: JSON.stringify({ workflows: workflowsPayload }),
     });

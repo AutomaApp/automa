@@ -10,7 +10,9 @@ export async function fetchApi(path, options) {
   };
 
   const { session } = await browser.storage.local.get('session');
-  if (session) {
+  if (session && options?.auth) {
+    delete options.auth;
+
     let token = session.access_token;
 
     if (Date.now() > (session.expires_at - 2000) * 1000) {

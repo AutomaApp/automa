@@ -123,7 +123,7 @@ async function updateSpreadsheetValues(
 }
 
 export default async function ({ data, id }, { refData }) {
-  const isNotCreateAction = data.type !== 'create';
+  const isNotCreateAction = !['create', 'add-sheet'].includes(data.type);
 
   if (isWhitespace(data.spreadsheetId) && isNotCreateAction)
     throw new Error('empty-spreadsheet-id');
@@ -177,6 +177,10 @@ export default async function ({ data, id }, { refData }) {
       if (data.saveData) {
         this.addDataToColumn(data.dataColumn, result);
       }
+    },
+    'add-sheet': async () => {
+      result = await googleSheetsApi(true).addSheet(data);
+      result = result.replies[0].addSheet.properties;
     },
   };
   await actionHandlers[data.type]();

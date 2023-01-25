@@ -116,6 +116,7 @@ export function startWorkflowExec(workflowData, options, isPopup = true) {
         }
 
         fetchApi(`/teams/${clonedWorkflowData.teamId}/workflows/logs`, {
+          auth: true,
           method: 'POST',
           body: JSON.stringify(payload),
         }).catch((error) => {
