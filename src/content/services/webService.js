@@ -201,6 +201,7 @@ window.addEventListener('user-logout', () => {
 });
 
 window.addEventListener('app-mounted', async () => {
+  console.log('haha');
   try {
     const STORAGE_KEY = 'supabase.auth.token';
     const session = parseJSON(localStorage.getItem(STORAGE_KEY), null);
