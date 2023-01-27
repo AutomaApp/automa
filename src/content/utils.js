@@ -9,6 +9,8 @@ export function simulateClickElement(element) {
   } else {
     element.dispatchEvent(new PointerEvent('click', { bubbles: true }));
   }
+
+  element.focus?.();
 }
 
 export function generateLoopSelectors(

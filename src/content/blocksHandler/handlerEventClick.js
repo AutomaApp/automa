@@ -33,7 +33,7 @@ function eventClick(block) {
           return;
         }
 
-        simulateClickElement(element, () => element.click());
+        simulateClickElement(element);
       },
       onError(error) {
         reject(error);
