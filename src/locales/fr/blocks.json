@@ -10,8 +10,62 @@
   "workflow": {
     "blocks": {
       "base": {
+        "title": "Blocs",
         "moveToGroup": "Déplacer le bloc vers le groupe de blocs",
         "selector": "Sélecteur d'éléments",
+        "selectorOptions": "Options du Sélecteur",
+        "timeout": "Délai d'attente (millisecondes)",
+        "noPermission": "Automa n'a pas les droits nécessaires pour effectuer cette action",
+        "grantPermission": "Accorder les droits",
+        "action": "Action",
+        "element": {
+          "select": "Choisir un element",
+          "verify": "Vérifier le sélecteur"
+        },
+        "settings": {
+          "title": "Paramètres du Bloc",
+          "blockTimeout": {
+            "title": "Délai d'éxécution du bloc (millisecond)",
+            "description": "Durée maximale d'attente pour l'éxécution du Bloc (0 pour désactiver)"
+          },
+          "line": {
+            "title": "Lignes",
+            "label": "Label",
+            "animated": "Animé",
+            "select": "Choisir une ligne",
+            "to": "N° ligne en {name} block",
+            "lineColor": "Couleur"
+          }
+        },
+        "toggle": {
+          "enable": "Activer le bloc",
+          "disable": "Désactiver le bloc"
+        },
+        "onError": {
+          "info": "Ces règles seront appliquées en cas d'erreur dans le bloc",
+          "button": "Si Erreur",
+          "title": "Quand une errur survient",
+          "retry": "Retenter l'action",
+          "fallbackTitle": "Exécuté en cas d'erreur",
+          "times": {
+            "name": "Essais",
+            "description": "Nombre d'essais pour éxécuter l'action"
+          },
+          "interval": {
+            "name": "Intervalle",
+            "description": "Durée de l'intervalle entre chaque essai",
+            "second": "secondes"
+          },
+          "toDo": {
+            "error": "en cas d'erreur",
+            "continue": "Continuer le processus",
+            "fallback": "Fonction de substitution",
+            "restart": "Redémarrer le processus"
+          },
+          "insertData": {
+            "name": "Entrer des données"
+          }
+        },
         "table": {
           "checkbox": "Insérer dans le tableau",
           "select": "Selectionner une colonne",
@@ -39,7 +93,150 @@
         "waitSelector": {
           "title": "Attendre le sélecteur",
           "timeout": "Délai d'attente du sélecteur (ms)"
+        },
+        "downloads": {
+          "onConflict": {
+            "uniquify": "Rendre unique",
+            "overwrite": "Ecraser",
+            "prompt": "Demander"
+          }
         }
+      },
+      "wait-connections": {
+        "name": "Attendre les connexions",
+        "description": "Attendre que les connexions soient établies avant de continuer",
+        "specificFlow": "Continuer un processus spécifique",
+        "selectFlow": "Choisir un processus"
+      },
+      "cookie": {
+        "name": "Cookie",
+        "description": "Lire, définir, ou supprimer des cookies",
+        "types": {
+          "get": "Lire un cookie",
+          "set": "Définir un cookie",
+          "remove": "Supprimer des cookies",
+          "getAll": "Lire tous les cookies"
+        },
+        "useJson": "Utiliser le format JSON"
+      },
+      "note": {
+        "name": "Note"
+      },
+      "slice-variable": {
+        "name": "Extraction (Slice)",
+        "description": "Extraire une section de la chaine d'une variable",
+        "start": "Indice de début",
+        "end": "Indice de fin"
+      },
+      "workflow-state": {
+        "name": "Etats du Workflow",
+        "description": "Contrôler les états du workflow",
+        "actions": {
+          "stop": "Arrêter le workflow"
+        }
+      },
+      "regex-variable": {
+        "name": "formule RegEx",
+        "description": "Utiliser une formule RegEx sur la valeur d'une variable"
+      },
+      "data-mapping": {
+        "source": "Source",
+        "destination": "Destination",
+        "name": "Affectation des données",
+        "edit": "Editer l'affectation des données",
+        "dataSource": "Source des données",
+        "description": "Affecter les données d'une variable ou d'un tableau",
+        "addSource": "Ajouter une source",
+        "addDestination": "Ajouter une destination"
+      },
+      "sort-data": {
+        "name": "Classer les données",
+        "description": "Ordonner les éléments des données",
+        "property": "Classer en fonction des propriétés de l'élément",
+        "addProperty": "Ajouter une propriété"
+      },
+      "increase-variable": {
+        "name": "Augmenter une variable",
+        "description": "Augmenter la valeur d'une variable d'un montant donné",
+        "increase": "Augmenter de"
+      },
+      "notification": {
+        "name": "notification",
+        "description": "Afficher une notification",
+        "title": "Titre",
+        "message": "Message",
+        "imageUrl": "Adresse de l'image (optionnel)",
+        "iconUrl": "Adresse de l'icone (optionnel)"
+      },
+      "delete-data": {
+        "name": "Supprimer les données",
+        "description": "Supprimer le contenu d'un tableau ou d'une variable",
+        "from": "Données provenant de",
+        "allColumns": "[Toutes les colonnes]"
+      },
+      "log-data": {
+        "name": "Voir le log",
+        "description": "Visualiser les données de log récentes relatives au workflow",
+        "data": "Données du log"
+      },
+      "tab-url": {
+        "name": "Obtenir l'URL de l'onglet",
+        "description": "Obtenir l'URL de l'onglet",
+        "select": "Sélectionner l'onglet",
+        "types": {
+          "active-tab": "Activer l'onglet",
+          "all": "Tous les onglets"
+        },
+        "query": {
+          "title": "Requête",
+          "matchPatterns": "@:workflow.blocks.switch-tab.matchPattern (optionnel)",
+          "tabTitle": "Intitulé de l'onglet (optionnel)"
+        }
+      },
+      "reload-tab": {
+        "name": "Recharger l'onglet",
+        "description": "Recharger l'onglet actif"
+      },
+      "press-key": {
+        "name": "Appuyer sur une touche",
+        "description": "Appuyer sur une touche ou une combinaison",
+        "target": "Element cible (optionnel)",
+        "key": "Touche",
+        "detect": "Detecter les touches",
+        "actions": {
+          "press-key": "Appuyer sur une touche",
+          "multiple-keys": "Appuyer sur plusieurs touches"
+        }
+      },
+      "save-assets": {
+        "name": "Sauvegarder les assets",
+        "description": "Sauvegarder les assets (image, video, audio, ou fichier) d'un élément ou d'une URL",
+        "filename": "Fichier (optionnel)",
+        "saveDownloadIds": "Sauvegarder les éléments' récupérer les IDs",
+        "contentTypes": {
+          "title": "Type",
+          "element": "Media (image, audio, ou video)",
+          "url": "URL"
+        }
+      },
+      "handle-dialog": {
+        "name": "Boites de dialogue",
+        "description": "Valider ou ignorer les boites de dialogue Javascript (alerte, confirmation, demande, ou onbeforeunload",
+        "accept": "Valider",
+        "promptText": {
+          "label": "Texte à insérer (optionnel)",
+          "description": "Le texte à insérer dans la boite de dialogue avant de valider"
+        }
+      },
+      "handle-download": {
+        "name": "Téléchargement",
+        "description": "Options de téléchargement des fichiers",
+        "timeout": "Délai d'attente (millisecondes)",
+        "noPermission": "Vous n'êtes pas autorisé à accéder au répertoire de téléchargement",
+        "onConflict": "Si collision",
+        "waitFile": "Attendre la fin du téLéchargement de fichier",
+        "downloadId": "ID du fichier téléchargé (optionnel)",
+        "filePath": "Chemin du fichier"
       },
       "insert-data": {
         "name": "Insérer des données",
@@ -56,12 +253,28 @@
         "name": "Survoler un élément",
         "description": "Survolez un élément"
       },
+      "create-element": {
+        "name": "Créer un élément",
+        "description": "Créer un élément et l'injecter dans la page",
+        "edit": "Modifier un élément",
+        "wrap": "Insérer un élément entre",
+        "insertEl": {
+          "title": "Insérer un élément",
+          "items": {
+            "before": "comme 'first child' (premier enfant",
+            "after": "comme 'last child' (dernier enfant)",
+            "next-sibling": "en tant que prochain voisin",
+            "prev-sibling": "en tant que précédent voisin",
+            "replace": "Remplace l'élément cible"
+          }
+        }
+      },
       "upload-file": {
         "name": "Envoyer un fichier",
         "description": "Envoyer le fichier dans l'élément <input type=\"file\">",
         "filePath": "URL ou chemin d'accès au fichier",
         "addFile": "Ajouter un fichier",
-        "requirement": "Voir les exigences avant d'utiliser ce bloc",
+        "requirement": "Voir les conditions requises avant d'utiliser ce bloc",
         "noFileAccess": "Automa n'a pas accès aux fichiers"
       },
       "browser-event": {
@@ -71,7 +284,7 @@
         "timeout": "Délai d'attente (millisecondes)",
         "activeTabLoaded": "Onglet actif",
         "setAsActiveTab": "Définir comme onglet actif"
-      },
+      },    
       "blocks-group": {
         "name": "Groupe de blocs",
         "groupName": "Nom du groupe",
@@ -86,6 +299,12 @@
         "selectDay": "Sélectionnez un jour",
         "timeExist": "Vous avez déjà ajouté {time} le {day}",
         "fixedDelay": "Délai fixe",
+        "contextMenus": {
+          "noPermission": "Ce déclencheur requiert les autorisations \"contextMenus\" pour fonctionner",
+          "grantPermission": "Autoriser",
+          "appearIn": "figurera dans",
+          "contextName": "Nom du workflow dans le menu contextuel"
+        },
         "days": [
           "Dimanche",
           "Lundi",
@@ -112,10 +331,43 @@
           "url": "URL ou Regex",
           "shortcut": "Rccourci"
         },
+        "element-change": {
+          "target": "Choisir l'élément à observer",
+          "optionsInfo": "Quelle mutation déclenchera le workflow",
+          "targetWebsite": "La modèle correspondant du site où se trouve l'élément ciblé (cliquer pour voir plus d'exemples de Modèles)",
+          "baseEl": {
+            "title": "Elément de base (optionnel)",
+            "description": "Automa redémarrera l'observation de l'élément ciblé quand cet élément sera modifié"
+          },
+          "subtree": {
+            "title": "Inclure 'Subtree'",
+            "description": "Etendre l'observation à toute la hiérarchie descendante de l'élément ciblé"
+          },
+          "childList": {
+            "title": "'Child list'",
+            "description": "Observer l'ajout de nouveaux éléments-enfants ou la suppression d'éléments-enfants existants"
+          },
+          "attributes": {
+            "title": "'Attributes'",
+            "description": "Observer les mutations sur les valeurs des attributs de l'élément ciblé"
+          },
+          "attributeFilter": {
+            "title": "'Attrobute Filter' (Filtre des attributs)",
+            "separate": "Utiliser des virgules (,) entre chaque nom d'attribut",
+            "description": "Observer uniquement certains attributs (laisser vide pour tout observer)"
+          },
+          "characterData": {
+            "title": "'Character data' (caractères)",
+            "description": "Observe les mutations de caractères/texte au sein de l'élément ciblé"
+          }
+        },
         "items": {
           "manual": "Manuellement",
           "interval": "Intervalle",
+          "cron-job": "Tache programmée (Cron job)",
           "date": "À une date précise",
+          "context-menu": "Menu contextuel",
+          "element-change": "Quand un élément est modifié",
           "specific-day": "À un jour précis",
           "visit-web": "Lorsque vous visitez un site Web",
           "on-startup": "Au démarrage du navigateur",
@@ -127,7 +379,24 @@
         "overwriteNote": "Cela écrasera les données globales du workflow sélectionné",
         "select": "Selectionner le workflow",
         "executeId": "Executer l'id",
-        "description": ""
+        "description": "",
+        "insertAllVars": "Utiliser toutes les variables du workflow actuel",
+        "insertVars": "Insérer les variables du workflow actuel",
+        "useCommas": "Utiliser des virgules pour séparer les noms de variable"
+      },
+      "google-sheets-drive": {
+        "name": "@:workflow.blocks.google-sheets.name (GDrive)",
+        "description": "@:workflow.blocks.google-sheets.description",
+        "connected": "Feuilles de calcul connectées",
+        "select": "Choisir une feuille de calcul",
+        "connect": "Connecter une feuille de calcul"
+      },
+      "google-drive": {
+        "name": "Google Drive",
+        "description": "Téléverser des fichiers vers Google Drive",
+        "actions": {
+          "upload": "Téléverser des fichiers"
+        }
       },
       "google-sheets": {
         "name": "Google sheets",
@@ -158,7 +427,12 @@
         },
         "select": {
           "get": "Obtenir les valeurs des cellules de la feuille de calcul",
-          "update": "Mettre à jour les valeurs des cellules de la feuille de calcul"
+          "getRange": "Obtenir la plage de valeurs de la feuille de calcul",
+          "update": "Mettre à jour les valeurs des cellules de la feuille de calcul",
+          "append": "Ajouter les valeurs des cellules à la feuille de calcul",
+          "clear": "Effacer les valeurs des cellules",
+          "create": "Créer une feuille de calcul",
+          "add-sheet": "Ajouter une feuille de calcul"
         }
       },
       "active-tab": {
@@ -249,7 +523,8 @@
           "placeholder": "Données à exporter",
           "options": {
             "data-columns": "Table",
-            "google-sheets": "Google sheets"
+            "google-sheets": "Google sheets",
+            "variable": "Variable"
           }
         }
       },
@@ -277,6 +552,7 @@
         "customUserAgent": "Utiliser un User-Agent personnalisé",
         "activeTab": "Définir comme onglet actif",
         "tabToGroup": "Ajouter l'onglet au groupe",
+        "waitTabLoaded": "Attendre la fin du chargement de l'onglet",
         "updatePrevTab": {
           "title": "Utilise le nouvel onglet précédemment ouvert au lieu d'en créer un nouveau",
           "text": "Mettre à jour l'onglet précédemment ouvert"
@@ -284,7 +560,8 @@
       },
       "link": {
         "name": "Lien",
-        "description": "Ouvre le lien d'un élément"
+        "description": "Ouvre le lien d'un élément",
+        "openInNewTab": "Ouvrir dans un nouvel onglet"
       },
       "attribute-value": {
         "name": "Valeur de l'attribut",
@@ -336,6 +613,14 @@
         "description": "Exécutez votre code javascript dans la page web",
         "availabeFuncs": "Méthodes disponibles:",
         "removeAfterExec": "Supprimer après l'exécution du bloc",
+        "everyNewTab": "Executer dans chaque nouvel onglet",
+        "context": {
+          "name": "Contexte d'éxécution",
+          "items": {
+            "website": "Onglet actif",
+            "background": "Tâche de fond"
+          }
+        },
         "modal": {
           "tabs": {
             "code": "Code JavaScript",
@@ -355,7 +640,9 @@
       "conditions": {
         "name": "Conditions",
         "add": "Ajouter une condition",
+        "retryConditions": "Réessayer si aucune condition n'est remplie",
         "description": "Bloc conditionnel",
+        "refresh": "Rafraichir les connections des conditions",
         "fallbackTitle": "Exécuté lorsque toutes les comparaisons ne répondent pas aux exigences",
         "equals": "Égale à",
         "gt": "Plus grand que",
@@ -398,6 +685,26 @@
           "headers": "En-têtes",
           "body": "Corps",
           "response": "Réponse"
+        }
+      },
+      "while-loop": {
+        "name": "Boucle Tant que",
+        "description": "Exécute les blocs tant que la condition est remplie",
+        "editCondition": "Modifier les conditions",
+        "fallback": "S'éxécute quand la condition n'est pas remplie"
+      },
+      "loop-elements": {
+        "name": "Boucle d'éléments",
+        "description": "Itérer entre chaque éléMent",
+        "loadMore": "Charger d'autres éléments",
+        "scrollToBottom": "Scroller jusqu'en bas de page",
+        "scrollToTop": "Scroller jusqu'en haut de page",
+        "actions": {
+          "none": "Aucune",
+          "click-element": "Cliquer sur un élément",
+          "scroll": "Scroller vers la bas",
+          "click-link": "Cliquer sur un lien",
+          "scroll-up": "Scroller vers le haut"
         }
       },
       "loop-data": {
@@ -448,7 +755,13 @@
         "description": "Prend une capture d'écran de l'onglet actif",
         "imageQuality": "Qualité de l'image",
         "saveToColumn": "Insérer une capture d'écran dans la Table",
-        "saveToComputer": "Enregistrer la capture d'écran sur l'ordinateur"
+        "saveToComputer": "Enregistrer la capture d'écran sur l'ordinateur",
+        "types": {
+          "title": "Prende une capture d'écran",
+          "page": "D'une page",
+          "fullpage": "D'une page entière",
+          "element": "D'un élément"
+        },
       },
       "switch-to": {
         "name": "Basculer de cadre",
