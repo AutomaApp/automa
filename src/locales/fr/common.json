@@ -5,6 +5,9 @@
     "collection": "Collection | Collections",
     "log": "Log | Logs",
     "block": "Bloc | Blocs",
+    "schedule": "Planificateur",
+    "folder": "Dossier | Dossiers",
+    "new": "Nouveau",
     "docs": "Documentation",
     "search": "Rechercher",
     "example": "Example | Examples",
@@ -27,6 +30,10 @@
     "running": "En cours",
     "globalData": "Données générales",
     "fileName": "Nom du fichier",
+    "editor": "Editeur",
+    "running": "En cours",
+    "globalData": "Donnée Globale",
+    "fileName": "Nom de fichier",
     "description": "Description",
     "disable": "Désactiver",
     "disabled": "Désactivé",
@@ -35,7 +42,10 @@
     "update": "Mettre à jour",
     "duplicate": "Dupliquer",
     "password": "Mot de passe",
-    "category": "Catégorie"
+    "category": "Catégorie",
+    "category": "Catégorie",
+    "optional": "Optionnel",
+    "0disable": "0 pour désactiver"
   },
   "message": {
     "noBlock": "Pas de bloc",
