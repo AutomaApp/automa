@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import defu from 'defu';
 import browser from 'webextension-polyfill';
 import deepmerge from 'lodash.merge';
-import { fetchGapi } from '@/utils/api';
+import { fetchGapi, fetchApi } from '@/utils/api';
 
 export const useStore = defineStore('main', {
   storageMap: {
@@ -49,7 +49,7 @@ export const useStore = defineStore('main', {
       this.settings = deepmerge(this.settings, settings);
       await this.saveToStorage('settings');
     },
-    async checkGDriveIntegration(force = false) {
+    async checkGDriveIntegration(force = false, retryCount = 0) {
       try {
         if (this.integrationsRetrieved.googleDrive && !force) return;
 
@@ -58,8 +58,31 @@ export const useStore = defineStore('main', {
         );
         if (!result) return;
 
-        this.integrations.googleDrive =
-          result.scope.includes('auth/drive.file');
+        const isIntegrated = result.scope.includes('auth/drive.file');
+        const { sessionToken } = await browser.storage.local.get(
+          'sessionToken'
+        );
+
+        if (!isIntegrated && sessionToken?.refresh && retryCount < 3) {
+          const response = await fetchApi(
+            `/me/refresh-session?token=${sessionToken.refresh}`,
+            { auth: true }
+          );
+          const refreshResult = await response.json();
+          if (!response.ok) throw new Error(refreshResult.message);
+
+          await browser.storage.local.set({
+            sessionToken: {
+              ...sessionToken,
+              access: refreshResult.token,
+            },
+          });
+          await this.checkGDriveIntegration(force, retryCount + 1);
+
+          return;
+        }
+
+        this.integrations.googleDrive = isIntegrated;
       } catch (error) {
         console.error(error);
       }

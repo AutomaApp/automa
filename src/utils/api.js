@@ -2,7 +2,7 @@ import secrets from 'secrets';
 import browser from 'webextension-polyfill';
 import { parseJSON, isObject } from './helper';
 
-export async function fetchApi(path, options) {
+export async function fetchApi(path, options = {}) {
   const urlPath = path.startsWith('/') ? path : `/${path}`;
   const headers = {
     'Content-Type': 'application/json',
@@ -161,7 +161,8 @@ export function validateOauthToken() {
       );
       if (response.status === 400 && sessionToken.refresh && retryCount <= 3) {
         const refreshResponse = await fetchApi(
-          `/me/refresh-session?token=${sessionToken.refresh}`
+          `/me/refresh-session?token=${sessionToken.refresh}`,
+          { auth: true }
         );
         const refreshResult = await refreshResponse.json();
 
@@ -211,11 +212,12 @@ export async function fetchGapi(url, resource = {}, options = {}) {
       response.status === 403 &&
       result?.error?.message.includes('insufficient authentication scopes');
     if (
-      (response.status === 401 || insufficientScope) &&
+      (!sessionToken.access || response.status === 401 || insufficientScope) &&
       sessionToken.refresh
     ) {
       const refreshResponse = await fetchApi(
-        `/me/refresh-session?token=${sessionToken.refresh}`
+        `/me/refresh-session?token=${sessionToken.refresh}`,
+        { auth: true }
       );
       const refreshResult = await refreshResponse.json();
 

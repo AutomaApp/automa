@@ -287,7 +287,9 @@ function onKeydown(event) {
     'selected'
   );
 }
-function onClick(event) {
+function onMousedown(event) {
+  event.preventDefault();
+  event.stopPropagation();
   retrieveElementsRect(event, 'selected');
 }
 function onMessage({ data }) {
@@ -309,17 +311,17 @@ function onMessage({ data }) {
 }
 function attachListeners() {
   window.addEventListener('scroll', onScroll);
-  document.addEventListener('click', onClick);
   window.addEventListener('message', onMessage);
   document.addEventListener('keydown', onKeydown);
   window.addEventListener('mousemove', onMousemove);
+  document.addEventListener('mousedown', onMousedown);
 }
 function detachListeners() {
   window.removeEventListener('scroll', onScroll);
-  document.removeEventListener('click', onClick);
   window.removeEventListener('message', onMessage);
   document.removeEventListener('keydown', onKeydown);
   window.removeEventListener('mousemove', onMousemove);
+  document.removeEventListener('mousedown', onMousedown);
 }
 
 watch(
