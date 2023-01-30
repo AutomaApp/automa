@@ -1812,12 +1812,12 @@
   resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-9.11.0.tgz#07133eb3d78cbea376b6ad216950b4bbfafd041c"
   integrity sha512-HhtG2SWkcfZBLbamHdvLn7jKOCFpw/ifXjVTd5ilFkj98WVUk/3UTQ03wF1XIkuhSO4+b45hD2lfG9/GdKCF7w==
 
-"@vueuse/rxjs@^9.11.1":
-  version "9.11.1"
-  resolved "https://registry.yarnpkg.com/@vueuse/rxjs/-/rxjs-9.11.1.tgz#8c024ddb1bf1b4ae7f6d68d7e37c520c0151cb3a"
-  integrity sha512-QlrN81HfOEmiiVDUyySuVtPHrDX/iqXLpIQe+a8ArenCsfG9lIrn/kK3xorzD56In6bprrjw3QRk1MUIpftfAg==
+"@vueuse/rxjs@^9.12.0":
+  version "9.12.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/rxjs/-/rxjs-9.12.0.tgz#d718a359078ff182cf16e4a30b92941b92cc5b5c"
+  integrity sha512-slzucPMzFhVkurXiLZ8YusyfHrkmwB3MFm3vKo1qrStpho3jof0mwDAJJE5xsucBxrVBSBbLeiPxCehMBj1tIQ==
   dependencies:
-    "@vueuse/shared" "9.11.1"
+    "@vueuse/shared" "9.12.0"
     vue-demi "*"
 
 "@vueuse/shared@9.11.0":
@@ -1827,10 +1827,10 @@
   dependencies:
     vue-demi "*"
 
-"@vueuse/shared@9.11.1":
-  version "9.11.1"
-  resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-9.11.1.tgz#c76805c9d86da109b132529b4745d7d706106e7f"
-  integrity sha512-UTZYGAjT96hWn4buf4wstZbeheBVNcKPQuej6qpoSkjF1atdaeCD6kqm9uGL2waHfisSgH9mq0qCRiBOk5C/2w==
+"@vueuse/shared@9.12.0":
+  version "9.12.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-9.12.0.tgz#e6597da80084cba8fc3d6545f4c2fa9817b80428"
+  integrity sha512-TWuJLACQ0BVithVTRbex4Wf1a1VaRuSpVeyEd4vMUWl54PzlE0ciFUshKCXnlLuD0lxIaLK4Ypj3NXYzZh4+SQ==
   dependencies:
     vue-demi "*"
 
