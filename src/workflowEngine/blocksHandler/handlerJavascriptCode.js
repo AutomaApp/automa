@@ -167,7 +167,7 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
   const inSandbox =
     BROWSER_TYPE !== 'firefox' &&
     data.context === 'background' &&
-    this.engine.isPopup;
+    (this.engine.isMV2 || this.engine.isPopup);
   const result = await (inSandbox
     ? messageSandbox('javascriptBlock', {
         instanceId,
