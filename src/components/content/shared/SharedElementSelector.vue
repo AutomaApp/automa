@@ -288,8 +288,10 @@ function onKeydown(event) {
   );
 }
 function onMousedown(event) {
-  event.preventDefault();
-  event.stopPropagation();
+  if (event.target.id === 'automa-selector-overlay') {
+    event.preventDefault();
+    event.stopPropagation();
+  }
   retrieveElementsRect(event, 'selected');
 }
 function onMessage({ data }) {
