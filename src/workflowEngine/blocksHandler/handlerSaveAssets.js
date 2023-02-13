@@ -29,7 +29,7 @@ export default async function ({ data, id, label }) {
   let index = 0;
   const downloadFile = (url) => {
     const options = { url, conflictAction: data.onConflict };
-    let filename = data.filename || getFilename(url);
+    let filename = decodeURIComponent(data.filename || getFilename(url));
 
     if (filename) {
       if (data.onConflict === 'overwrite' && index !== 0) {
