@@ -555,7 +555,11 @@ class WorkflowEngine {
       tabIds: [],
       currentBlock: [],
       name: this.workflow.name,
-      logs: this.history.slice(-5),
+      logs: this.history,
+      ctxData: {
+        ctxData: this.historyCtxData,
+        dataSnapshot: this.refDataSnapshots,
+      },
       startedTimestamp: this.startedTimestamp,
     };
 

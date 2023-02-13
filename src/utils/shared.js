@@ -1736,3 +1736,11 @@ export const conditionBuilder = {
     },
   },
 };
+
+export const messageHasReferences = [
+  'no-tab',
+  'invalid-active-tab',
+  'no-match-tab',
+  'invalid-body',
+  'element-not-found',
+];

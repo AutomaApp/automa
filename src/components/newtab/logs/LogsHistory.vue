@@ -296,7 +296,7 @@ import Papa from 'papaparse';
 import objectPath from 'object-path';
 import { countDuration, fileSaver } from '@/utils/helper';
 import { getBlocks } from '@/utils/getSharedData';
-import { dataExportTypes } from '@/utils/shared';
+import { dataExportTypes, messageHasReferences } from '@/utils/shared';
 import dayjs from '@/lib/dayjs';
 
 const SharedCodemirror = defineAsyncComponent(() =>
@@ -362,13 +362,6 @@ const tabs = [
   { id: 'referenceData.variables', name: 'Variables' },
   { id: 'referenceData.prevBlockData', name: 'Previous block data' },
   { id: 'replacedValue', name: 'Replaced value' },
-];
-const messageHasReferences = [
-  'no-tab',
-  'invalid-active-tab',
-  'no-match-tab',
-  'invalid-body',
-  'element-not-found',
 ];
 
 const { t, te } = useI18n();
