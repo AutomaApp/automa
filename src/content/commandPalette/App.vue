@@ -290,8 +290,13 @@ function executeWorkflow(workflow) {
       keys.add(param.name);
     });
 
+    const parameters = cloneDeep(triggerData.parameters).map((item) => ({
+      ...item,
+      value: item.defaultValue,
+    }));
+
     paramsState.workflow = workflow;
-    paramsState.items = cloneDeep(triggerData.parameters);
+    paramsState.items = parameters;
 
     paramsState.active = true;
   } else {
