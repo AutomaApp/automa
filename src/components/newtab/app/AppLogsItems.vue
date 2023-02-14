@@ -290,7 +290,10 @@ function clearLogs() {
     okVariant: 'danger',
     body: t('log.clearLogs.description'),
     onConfirm: () => {
-      dbLogs.delete();
+      dbLogs.items.clear();
+      dbLogs.ctxData.clear();
+      dbLogs.logsData.clear();
+      dbLogs.histories.clear();
     },
   });
 }
