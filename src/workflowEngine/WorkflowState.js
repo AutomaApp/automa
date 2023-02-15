@@ -81,8 +81,28 @@ class WorkflowState {
     return id;
   }
 
+  async resume(id, nextBlock) {
+    const state = this.states.get(id);
+    if (!state) return;
+
+    this.states.set(id, {
+      ...state,
+      status: 'running',
+    });
+    await this._saveToStorage();
+
+    this.dispatchEvent('resume', { id, nextBlock });
+  }
+
   async update(id, data = {}) {
     const state = this.states.get(id);
+    if (!state) return;
+
+    if (data?.state?.status) {
+      state.status = data.state.status;
+      delete data.state.status;
+    }
+
     this.states.set(id, { ...state, ...data });
     this.dispatchEvent('update', { id, data });
     await this._saveToStorage();

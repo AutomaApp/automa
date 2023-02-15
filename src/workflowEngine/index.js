@@ -2,7 +2,6 @@
 import { toRaw } from 'vue';
 import browser from 'webextension-polyfill';
 import dayjs from '@/lib/dayjs';
-import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
 import { parseJSON } from '@/utils/helper';
 import { fetchApi } from '@/utils/api';
 import { sendMessage } from '@/utils/message';
@@ -45,13 +44,9 @@ export function startWorkflowExec(workflowData, options, isPopup = true) {
     self.localStorage.setItem('runCounts', JSON.stringify(runCounts));
   }
 
-  if (workflowData.isProtected) {
-    const flow = parseJSON(workflowData.drawflow, null);
-
-    if (!flow) {
-      const pass = getWorkflowPass(workflowData.pass);
-
-      workflowData.drawflow = decryptFlow(workflowData, pass);
+  if (workflowData.testingMode) {
+    for (const value of workflowState.states.values()) {
+      if (value.workflowId === workflowData.id) return null;
     }
   }
 

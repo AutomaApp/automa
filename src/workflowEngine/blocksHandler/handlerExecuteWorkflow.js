@@ -72,6 +72,8 @@ async function executeWorkflow({ id: blockId, data }) {
   workflow = convertWorkflowData(workflow);
   const optionsParams = { variables: {} };
 
+  if (workflow.testingMode) workflow.testingMode = false;
+
   if (!isWhitespace(data.globalData))
     optionsParams.globalData = data.globalData;
 

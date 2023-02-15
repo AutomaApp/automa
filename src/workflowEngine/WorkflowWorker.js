@@ -46,6 +46,7 @@ class WorkflowWorker {
     this.loopList = {};
     this.repeatedTasks = {};
     this.preloadScripts = [];
+    this.breakpointState = null;
 
     this.windowId = null;
     this.currentBlock = null;
@@ -135,13 +136,22 @@ class WorkflowWorker {
     return [...connections.values()];
   }
 
-  executeNextBlocks(connections, prevBlockData) {
+  executeNextBlocks(
+    connections,
+    prevBlockData,
+    nextBlockBreakpointCount = null
+  ) {
     connections.forEach((connection, index) => {
       const { id, targetHandle, sourceHandle } =
         typeof connection === 'string'
           ? { id: connection, targetHandle: '', sourceHandle: '' }
           : connection;
-      const execParam = { prevBlockData, targetHandle, sourceHandle };
+      const execParam = {
+        prevBlockData,
+        targetHandle,
+        sourceHandle,
+        nextBlockBreakpointCount,
+      };
 
       if (index === 0) {
         this.executeBlock(this.engine.blocks[id], {
@@ -167,6 +177,19 @@ class WorkflowWorker {
     });
   }
 
+  resume(nextBlock) {
+    if (!this.breakpointState) return;
+
+    const { block, execParam, isRetry } = this.breakpointState;
+    const payload = { ...execParam, resume: true };
+
+    payload.nextBlockBreakpointCount = nextBlock ? 1 : null;
+
+    this.executeBlock(block, payload, isRetry);
+
+    this.breakpointState = null;
+  }
+
   async executeBlock(block, execParam = {}, isRetry = false) {
     const currentState = await this.engine.states.get(this.engine.id);
 
@@ -181,11 +204,32 @@ class WorkflowWorker {
     const prevBlock = this.currentBlock;
     this.currentBlock = { ...block, startedAt: startExecuteTime };
 
+    const isInBreakpoint =
+      this.engine.isTestingMode &&
+      ((block.data?.$breakpoint && !execParam.resume) ||
+        execParam.nextBlockBreakpointCount === 0);
+
     if (!isRetry) {
-      await this.engine.updateState({
+      const payload = {
         activeTabUrl: this.activeTab.url,
         childWorkflowId: this.childWorkflowId,
-      });
+        nextBlockBreakpoint: Boolean(execParam.nextBlockBreakpointCount),
+      };
+      if (isInBreakpoint && currentState.status !== 'breakpoint')
+        payload.status = 'breakpoint';
+
+      await this.engine.updateState(payload);
+    }
+
+    if (execParam.nextBlockBreakpointCount) {
+      execParam.nextBlockBreakpointCount -= 1;
+    }
+
+    if (isInBreakpoint || currentState.status === 'breakpoint') {
+      this.engine.isInBreakpoint = true;
+      this.breakpointState = { block, execParam, isRetry };
+
+      return;
     }
 
     const blockHandler = this.engine.blocksHandler[toCamelCase(block.label)];
@@ -238,6 +282,14 @@ class WorkflowWorker {
       });
     };
 
+    const executeBlocks = (blocks, data) => {
+      return this.executeNextBlocks(
+        blocks,
+        data,
+        execParam.nextBlockBreakpointCount
+      );
+    };
+
     try {
       let result;
 
@@ -253,11 +305,6 @@ class WorkflowWorker {
           ...(execParam || {}),
         });
         result = await blockExecutionWrapper(bindedHandler, block.data);
-        // result = await handler.call(this, replacedBlock, {
-        //   refData,
-        //   prevBlock,
-        //   ...(execParam || {}),
-        // });
 
         if (this.engine.isDestroyed) return;
 
@@ -273,7 +320,7 @@ class WorkflowWorker {
 
       if (result.nextBlockId && !result.destroyWorker) {
         setTimeout(() => {
-          this.executeNextBlocks(result.nextBlockId, result.data);
+          executeBlocks(result.nextBlockId, result.data);
         }, blockDelay);
       } else {
         this.engine.destroyWorker(this.id);
@@ -319,7 +366,7 @@ class WorkflowWorker {
         if (blockOnError.toDo !== 'error' && nextBlocks) {
           addBlockLog('error', errorLogData);
 
-          this.executeNextBlocks(nextBlocks, prevBlockData);
+          executeBlocks(nextBlocks, prevBlockData);
 
           return;
         }
@@ -335,7 +382,7 @@ class WorkflowWorker {
 
       if (onError === 'keep-running' && nodeConnections) {
         setTimeout(() => {
-          this.executeNextBlocks(nodeConnections, error.data || '');
+          executeBlocks(nodeConnections, error.data || '');
         }, blockDelay);
       } else if (onError === 'restart-workflow' && !this.parentWorkflow) {
         const restartCount = this.engine.restartWorkersCount[this.id] || 0;

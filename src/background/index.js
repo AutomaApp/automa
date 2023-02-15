@@ -191,6 +191,14 @@ message.on('recording:stop', async () => {
     console.error(error);
   }
 });
+message.on('workflow:resume', ({ id, nextBlock }) => {
+  if (!id) return;
+  workflowState.resume(id, nextBlock);
+});
+message.on('workflow:breakpoint', (id) => {
+  if (!id) return;
+  workflowState.update(id, { status: 'breakpoint' });
+});
 
 automa('background', message);
 

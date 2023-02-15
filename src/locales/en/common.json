@@ -27,6 +27,8 @@
     "data": "data",
     "stop": "Stop",
     "sheet": "Sheet",
+    "pause": "Pause",
+    "resume": "Resume",
     "action": "Action | Actions",
     "packages": "Packages",
     "storage": "Storage",

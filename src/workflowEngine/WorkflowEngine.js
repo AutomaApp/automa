@@ -16,6 +16,7 @@ class WorkflowEngine {
     this.workflow = workflow;
     this.isPopup = isPopup ?? true;
     this.blocksHandler = blocksHandler;
+    this.isTestingMode = workflow.testingMode;
     this.parentWorkflow = options?.parentWorkflow;
     this.saveLog = workflow.settings?.saveLog ?? true;
     this.isMV2 = browser.runtime.getManifest().manifest_version === 2;
@@ -30,6 +31,7 @@ class WorkflowEngine {
 
     this.isDestroyed = false;
     this.isUsingProxy = false;
+    this.isInBreakpoint = false;
 
     this.triggerBlockId = null;
 
@@ -102,6 +104,13 @@ class WorkflowEngine {
     this.onWorkflowStopped = (id) => {
       if (this.id !== id || this.isDestroyed) return;
       this.stop();
+    };
+    this.onResumeExecution = ({ id, nextBlock }) => {
+      if (this.id !== id || this.isDestroyed) return;
+
+      this.workers.forEach((worker) => {
+        worker.resume(nextBlock);
+      });
     };
   }
 
@@ -269,6 +278,7 @@ class WorkflowEngine {
       this.startedTimestamp = Date.now();
 
       this.states.on('stop', this.onWorkflowStopped);
+      this.states.on('resume', this.onResumeExecution);
 
       const credentials = await dbStorage.credentials.toArray();
       credentials.forEach(({ name, value }) => {
@@ -284,6 +294,7 @@ class WorkflowEngine {
 
       await this.states.add(this.id, {
         id: this.id,
+        status: 'running',
         state: this.state,
         workflowId: this.workflow.id,
         parentState: this.parentWorkflow,

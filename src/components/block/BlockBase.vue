@@ -65,6 +65,15 @@
     </div>
     <slot name="prepend" />
     <ui-card :class="contentClass" class="block-base__content relative z-10">
+      <v-remixicon
+        v-if="workflow?.data?.value.testingMode"
+        :class="{ 'text-red-500 dark:text-red-400': data.$breakpoint }"
+        class="absolute left-0 top-0"
+        name="riRecordCircleFill"
+        title="Set as breakpoint"
+        size="20"
+        @click="$emit('update', { $breakpoint: !data.$breakpoint })"
+      />
       <slot></slot>
     </ui-card>
     <slot name="append" />
@@ -95,6 +104,7 @@ const props = defineProps({
 defineEmits(['delete', 'edit', 'update', 'settings']);
 
 const isCopied = ref(false);
+const workflow = inject('workflow', null);
 const workflowUtils = inject('workflow-utils', null);
 
 function insertToClipboard() {
