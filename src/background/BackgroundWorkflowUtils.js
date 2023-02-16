@@ -42,7 +42,13 @@ class BackgroundWorkflowUtils {
   static async executeWorkflow(workflowData, options) {
     if (workflowData.isDisabled) return;
 
-    startWorkflowExec(workflowData, options, false);
+    /**
+     * Under v2, the background runtime environment is a real browser window. It has DOM, URL...
+      But these don't exist under v3. v3 uses service_worker (https://developer.mozilla.org/zh-CN/docs/Web/API/Service_Worker_API), so a dashboard page is created to run the workflow
+      So v2 and isPopup are actually the same
+     */
+    const isMV2 = browser.runtime.getManifest().manifest_version === 2;
+    startWorkflowExec(workflowData, options, isMV2);
   }
 }
 

@@ -11,7 +11,7 @@ export class MessageListener {
   }
 
   on(name, listener) {
-    if (objectHasKey(this.listeners, 'name')) {
+    if (objectHasKey(this.listeners, name)) {
       console.error(`You already added ${name}`);
       return this.on;
     }

@@ -122,18 +122,35 @@
         </ui-list-item>
       </ui-list>
     </ui-popover>
-    <button
-      v-if="!workflow.isDisabled"
-      v-tooltip.group="
-        `${t('common.execute')} (${
-          shortcuts['editor:execute-workflow'].readable
-        })`
-      "
-      class="hoverable rounded-lg p-2"
-      @click="executeCurrWorkflow"
-    >
-      <v-remixicon name="riPlayLine" />
-    </button>
+    <template v-if="!workflow.isDisabled">
+      <button
+        v-if="canEdit"
+        v-tooltip.group="
+          t(`workflow.testing.${isDataChanged ? 'disabled' : 'title'}`)
+        "
+        :class="[
+          { 'cursor-default': isDataChanged },
+          workflow.testingMode
+            ? 'bg-primary bg-primary bg-opacity-20 text-primary'
+            : 'hoverable',
+        ]"
+        class="rounded-lg p-2"
+        @click="toggleTestingMode"
+      >
+        <v-remixicon name="riBug2Line" />
+      </button>
+      <button
+        v-tooltip.group="
+          `${t('common.execute')} (${
+            shortcuts['editor:execute-workflow'].readable
+          })`
+        "
+        class="hoverable rounded-lg p-2"
+        @click="executeCurrWorkflow"
+      >
+        <v-remixicon name="riPlayLine" />
+      </button>
+    </template>
     <button
       v-else
       v-tooltip="t('workflow.clickToEnable')"
@@ -401,17 +418,6 @@ const userDontHaveTeamsAccess = computed(() => {
   );
 });
 
-function copyWorkflowId() {
-  navigator.clipboard.writeText(props.workflow.id).catch((error) => {
-    console.error(error);
-
-    const textarea = document.createElement('textarea');
-    textarea.value = props.workflow.id;
-    textarea.select();
-    document.execCommand('copy');
-    textarea.blur();
-  });
-}
 function updateWorkflow(data = {}, changedIndicator = false) {
   let store = null;
 
@@ -432,6 +438,22 @@ function updateWorkflow(data = {}, changedIndicator = false) {
     emit('update', { data, changedIndicator });
 
     return result;
+  });
+}
+function toggleTestingMode() {
+  if (props.isDataChanged) return;
+
+  updateWorkflow({ testingMode: !props.workflow.testingMode });
+}
+function copyWorkflowId() {
+  navigator.clipboard.writeText(props.workflow.id).catch((error) => {
+    console.error(error);
+
+    const textarea = document.createElement('textarea');
+    textarea.value = props.workflow.id;
+    textarea.select();
+    document.execCommand('copy');
+    textarea.blur();
   });
 }
 function updateWorkflowDescription(value) {

@@ -264,7 +264,6 @@ browser.runtime.onMessage.addListener(({ type, data }) => {
 
 browser.storage.local.onChanged.addListener(({ workflowStates }) => {
   if (!workflowStates) return;
-
   const states = Object.values(workflowStates.newValue);
   workflowStore.states = states;
 });

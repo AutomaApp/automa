@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"],
+      "@business": ["business/dev/*"]
+    }
+  },
+  "include": ["src/**/*", "utils/**/*"]
+}

@@ -54,6 +54,15 @@ export default function (
     const extractObj = (obj) => {
       if (typeof obj !== 'object') return [obj];
 
+      // 需要处理深层对象 不然会返回:[object Object]
+      const kes = Object.keys(obj);
+      kes.forEach((key) => {
+        const itemValue = obj[key];
+        if (typeof itemValue === 'object') {
+          obj[key] = JSON.stringify(itemValue);
+        }
+      });
+
       return Object.values(obj);
     };
 

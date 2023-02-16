@@ -4,7 +4,18 @@ import {
   querySelectorDeep,
 } from '@/lib/query-selector-shadow-dom';
 
-const specialSelectors = [':contains', ':header', ':parent'];
+// Add a custom "Sizzle" pseudo-class selector
+// ":contains": element content will be selected as long as it contains text
+// ":equal" : element content must be exactly the same as text to be selected
+// Example: p.description:equal("cat")
+Sizzle.selectors.pseudos.equal = Sizzle.selectors.createPseudo(function (text) {
+  return function (elem) {
+    const elemText = elem.textContent || elem.innerText || '';
+    return elemText.trim() === text;
+  };
+});
+
+const specialSelectors = [':contains', ':header', ':parent', ':equal'];
 const specialSelectorsRegex = new RegExp(specialSelectors.join('|'));
 
 class FindElement {

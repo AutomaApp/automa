@@ -1,5 +1,7 @@
 function deleteData({ data, id }) {
   return new Promise((resolve) => {
+    let variableDeleted = false;
+
     data.deleteList.forEach((item) => {
       if (item.type === 'table') {
         if (item.columnId === '[all]') {
@@ -24,8 +26,11 @@ function deleteData({ data, id }) {
         }
       } else if (item.variableName) {
         delete this.engine.referenceData.variables[item.variableName];
+        variableDeleted = true;
       }
     });
+
+    if (variableDeleted) this.engine.addRefDataSnapshot('variables');
 
     resolve({
       data: '',

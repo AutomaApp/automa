@@ -156,6 +156,11 @@
           </ui-tab-panel>
         </template>
         <ui-tab-panel cache value="editor" class="w-full" @keydown="onKeydown">
+          <editor-debugging
+            v-if="workflow.testingMode && workflowStates.length > 0"
+            :states="workflowStates"
+            @goToBlock="goToBlock"
+          />
           <workflow-editor
             v-if="state.workflowConverted"
             :id="route.params.id"
@@ -337,6 +342,7 @@ import WorkflowGlobalData from '@/components/newtab/workflow/WorkflowGlobalData.
 import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
 import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
 import EditorAddPackage from '@/components/newtab/workflow/editor/EditorAddPackage.vue';
+import EditorDebugging from '@/components/newtab/workflow/editor/EditorDebugging.vue';
 import EditorPkgActions from '@/components/newtab/workflow/editor/EditorPkgActions.vue';
 import EditorLocalCtxMenu from '@/components/newtab/workflow/editor/EditorLocalCtxMenu.vue';
 import EditorLocalActions from '@/components/newtab/workflow/editor/EditorLocalActions.vue';

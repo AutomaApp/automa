@@ -35,12 +35,12 @@ async function exportData({ data, id }, { refData }) {
       delimiter: data.csvDelimiter || ',',
     },
     returnUrl: hasDownloadAccess,
-    returnBlob: !this.engine.isPopup,
+    returnBlob: !this.engine.isPopup && !this.engine.isMV2,
   });
 
   if (!this.engine.isPopup && !hasDownloadAccess) {
     throw new Error("Don't have download permission");
-  } else if (!this.engine.isPopup) {
+  } else if (!this.engine.isPopup && !this.engine.isMV2) {
     blobUrl = await blobToBase64(blobUrl);
   }
 

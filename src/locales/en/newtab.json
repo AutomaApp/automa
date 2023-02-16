@@ -196,6 +196,12 @@
       "preferInTab": "Prefer input parameters in the tab"
     },
     "my": "My workflows",
+    "testing": {
+      "title": "Testing mode",
+      "nextBlock": "Next block",
+      "startRun": "Start run at",
+      "disabled": "Save changes first"
+    },
     "import": "Import workflow",
     "new": "New workflow",
     "delete": "Delete workflow",
