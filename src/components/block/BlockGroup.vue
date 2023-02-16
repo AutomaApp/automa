@@ -50,6 +50,7 @@
         <div
           class="bg-input group flex items-center space-x-2 rounded-lg p-2"
           style="cursor: grab"
+          :data-block-id="element.id"
           @dragstart="onDragStart(element, $event)"
           @dragend="onDragEnd(element.itemId)"
         >
@@ -75,6 +76,17 @@
             </p>
           </div>
           <div class="invisible group-hover:visible">
+            <v-remixicon
+              v-if="workflow?.data?.value.testingMode"
+              :class="{
+                'text-red-500 dark:text-red-400': element.data.$breakpoint,
+              }"
+              title="Set as breakpoint"
+              name="riRecordCircleLine"
+              size="18"
+              class="mr-2 inline-block cursor-pointer"
+              @click="toggleBreakpoint(element, index)"
+            />
             <v-remixicon
               name="riPencilLine"
               size="18"
@@ -231,6 +243,15 @@ function handleDrop(event) {
     ...props.data.blocks,
     shallowReactive({ id, data, itemId: nanoid(5) }),
   ];
+  emit('update', { blocks: copyBlocks });
+}
+function toggleBreakpoint(item, index) {
+  const copyBlocks = [...props.data.blocks];
+  copyBlocks[index].data = {
+    ...copyBlocks[index].data,
+    $breakpoint: !item.data.$breakpoint,
+  };
+
   emit('update', { blocks: copyBlocks });
 }
 </script>
