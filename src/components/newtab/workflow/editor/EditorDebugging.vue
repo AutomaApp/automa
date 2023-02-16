@@ -89,10 +89,11 @@
   </ui-card>
 </template>
 <script setup>
-import { defineAsyncComponent, computed } from 'vue';
+import { defineAsyncComponent, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import dayjs from '@/lib/dayjs';
 import { tasks } from '@/utils/shared';
+import { debounce } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
 
 const SharedCodemirror = defineAsyncComponent(() =>
@@ -110,6 +111,8 @@ const props = defineProps({
   },
 });
 defineEmits(['goToBlock']);
+
+let currentRunningEls = [];
 
 const { t, te } = useI18n();
 
@@ -160,10 +163,36 @@ function nextBlock() {
     'background'
   );
 }
+
+watch(
+  workflowState,
+  debounce(() => {
+    currentRunningEls.forEach((element) => {
+      element.classList.remove('current-running');
+    });
+
+    if (!workflowState.value?.state?.currentBlock) return;
+
+    const selectors = workflowState.value.state.currentBlock
+      .map((block) => `.vue-flow [data-block-id="${block.id}"]`)
+      .join(',');
+    const elements = document.querySelectorAll(selectors);
+
+    currentRunningEls = elements;
+    elements.forEach((el) => {
+      el.classList.add('current-running');
+    });
+  }, 200),
+  { immediate: true }
+);
 </script>
 <style>
 .breakpoint-data .cm-editor {
   font-size: 13px;
   padding-bottom: 0;
+}
+
+.current-running {
+  @apply ring;
 }
 </style>

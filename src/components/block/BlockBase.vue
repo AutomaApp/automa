@@ -1,5 +1,9 @@
 <template>
-  <div class="block-base relative w-48" @dblclick.stop="$emit('edit')">
+  <div
+    class="block-base relative w-48"
+    :data-block-id="blockId"
+    @dblclick.stop="$emit('edit')"
+  >
     <div
       class="block-menu-container absolute top-0 hidden w-full"
       style="transform: translateY(-100%)"
