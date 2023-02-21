@@ -1,3 +1,8 @@
+import { customAlphabet } from 'nanoid/non-secure';
+import { messageSandbox } from '../helper';
+
+const nanoid = customAlphabet('1234567890abcdef', 5);
+
 export function automaFetchClient(id, { type, resource }) {
   return new Promise((resolve, reject) => {
     const validType = ['text', 'json', 'base64'];
@@ -184,5 +189,43 @@ export function jsContentHandler($blockData, $preloadScripts, $automaScript) {
     } catch (error) {
       console.error(error);
     }
+  });
+}
+
+// 执行自定义的工作流状态事件监听JavaScriptCode
+export function execStatusListenerCallback({
+  status,
+  variables,
+  globalData,
+  logsTxt,
+  blockErrorMessage,
+  statusListenerCallbackCode,
+}) {
+  const instanceId = `automa${nanoid()}`;
+
+  // 发送消息给后台进行执行
+  return messageSandbox('javascriptBlock', {
+    instanceId,
+    preloadScripts: [],
+    refData: {
+      variables,
+      globalData,
+      workflowStatueData: {
+        workflowStatus: status,
+        logsTxt,
+        blockErrorMessage,
+        activeTabUrl: '',
+      },
+    },
+    blockData: {
+      code: statusListenerCallbackCode,
+      context: 'background',
+      description: 'Workflow Status Listening Code',
+      disableBlock: false,
+      everyNewTab: false,
+      preloadScripts: [],
+      runBeforeLoad: false,
+      timeout: 20000,
+    },
   });
 }

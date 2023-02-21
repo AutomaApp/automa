@@ -7,10 +7,12 @@ import { fetchApi } from '@/utils/api';
 import { sendMessage } from '@/utils/message';
 import getBlockMessage from '@/utils/getBlockMessage';
 import convertWorkflowData from '@/utils/convertWorkflowData';
+import getTranslateLog from '@/utils/getTranslateLog';
 import WorkflowState from './WorkflowState';
 import WorkflowLogger from './WorkflowLogger';
 import WorkflowEngine from './WorkflowEngine';
 import blocksHandler from './blocksHandler';
+import { execStatusListenerCallback } from './utils/javascriptBlockUtil';
 
 const workflowStateStorage = {
   get() {
@@ -67,10 +69,13 @@ export function startWorkflowExec(workflowData, options, isPopup = true) {
   engine.init();
   engine.on(
     'destroyed',
-    ({
+    async ({
       id,
       status,
       history,
+      ctxData,
+      variables,
+      globalData,
       startedTimestamp,
       endedTimestamp,
       blockDetail,
@@ -120,6 +125,31 @@ export function startWorkflowExec(workflowData, options, isPopup = true) {
       }
 
       if (status !== 'stopped') {
+        // 自定义的全局状态回调代码
+        const { statusListenerCallbackCode } = clonedWorkflowData.settings;
+        // 存在自定义的全局状态（于后台运行，需要版本是v2或者是仪表盘运行）
+        if (statusListenerCallbackCode && isPopup) {
+          // 日志文本
+          const logsTxt = getTranslateLog({ logs: history, ctxData });
+
+          // 执行全局的成功失败事件
+          const result = await execStatusListenerCallback({
+            status,
+            variables,
+            globalData,
+            logsTxt,
+            blockErrorMessage: blockDetail ? getBlockMessage(blockDetail) : '',
+            statusListenerCallbackCode,
+          });
+
+          if (result) {
+            // 全局事件JavaScript执行错误
+            if (result.columns.data?.$error) {
+              console.error(result.columns.data?.$error);
+            }
+          }
+        }
+
         browser.permissions
           .contains({ permissions: ['notifications'] })
           .then((hasPermission) => {

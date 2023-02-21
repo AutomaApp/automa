@@ -451,6 +451,9 @@ class WorkflowEngine {
       this.states.off('stop', this.onWorkflowStopped);
       await this.states.delete(this.id);
 
+      const { table, variables, globalData } = this.referenceData;
+      const tableId = this.workflow.connectedTable;
+
       this.dispatchEvent('destroyed', {
         status,
         message,
@@ -458,7 +461,13 @@ class WorkflowEngine {
         id: this.id,
         endedTimestamp,
         history: this.history,
+        ctxData: {
+          ctxData: this.historyCtxData,
+          dataSnapshot: this.refDataSnapshots,
+        },
         startedTimestamp: this.startedTimestamp,
+        variables,
+        globalData,
       });
 
       if (this.workflow.settings.reuseLastState) {
@@ -476,9 +485,6 @@ class WorkflowEngine {
       } else if (status === 'success') {
         clearCache(this.workflow);
       }
-
-      const { table, variables } = this.referenceData;
-      const tableId = this.workflow.connectedTable;
 
       await dbStorage.transaction(
         'rw',

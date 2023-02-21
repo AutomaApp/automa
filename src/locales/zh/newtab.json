@@ -181,7 +181,7 @@
     }
   },
   "workflow": {
-      "previewMode": {
+    "previewMode": {
       "title": "预览模式",
       "description": "正处于预览模式，你所做的修改不会被保存下来"
     },
@@ -364,6 +364,13 @@
       "tabLoadTimeout": {
         "title": "标签页载入超时",
         "description": "加载标签的最大时间，以毫秒为单位，通过0来禁用超时。"
+      },
+      "tab": {
+        "statusListener": "监听工作流状态"
+      },
+      "statusListener": {
+        "title": "监听工作流运行状态",
+        "description": "自定义javaScript监听工作流成功和失败状态（会在在后台运行）"
       }
     }
   },

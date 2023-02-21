@@ -40,6 +40,7 @@ import { debounce } from '@/utils/helper';
 import SettingsTable from './settings/SettingsTable.vue';
 import SettingsBlocks from './settings/SettingsBlocks.vue';
 import SettingsGeneral from './settings/SettingsGeneral.vue';
+import SettingsStatusListener from './settings/SettingsStatusListener.vue';
 
 const props = defineProps({
   workflow: {
@@ -67,6 +68,11 @@ const tabs = [
     component: SettingsBlocks,
     name: t('workflow.blocks.base.title'),
   },
+  {
+    value: 'statusListener',
+    component: SettingsStatusListener,
+    name: t('workflow.settings.tab.statusListener'),
+  },
 ];
 
 const activeTab = ref('general');
@@ -78,6 +84,7 @@ const settings = reactive({
   inputAutocomplete: true,
   insertDefaultColumn: true,
   defaultColumnName: 'column',
+  statusListenerCallbackCode: '',
 });
 
 watch(

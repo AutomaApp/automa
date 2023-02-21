@@ -41,7 +41,8 @@ export default function (data) {
   script.textContent = `
     (() => {
       function automaRefData(keyword, path = '') {
-        return window.$getNestedProperties(${propertyName}.refData, keyword + '.' + path);
+        let valuePath = path ? keyword + '.' + path : keyword
+        return window.$getNestedProperties(${propertyName}.refData, valuePath);
       }
       function automaSetVariable(name, value) {
         ${propertyName}.refData.variables[name] = value;

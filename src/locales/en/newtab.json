@@ -29,7 +29,7 @@
     "nextRun": "Next run",
     "active": "Active",
     "refresh": "Refresh",
-    "schedule":{
+    "schedule": {
       "title": "Schedule",
       "types": {
         "everyDay": "Every day",
@@ -371,6 +371,13 @@
       "tabLoadTimeout": {
         "title": "Tab load timeout",
         "description": "Maximum time to load a tab in milliseconds, input 0 to disable the timeout"
+      },
+      "tab": {
+        "statusListener": "Listening Status"
+      },
+      "statusListener": {
+        "title": "Listening to workflow running status",
+        "description": "Custom javaScript listening for workflow success and failure status (will run in the background)"
       }
     }
   },
