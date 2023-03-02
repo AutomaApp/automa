@@ -25,7 +25,8 @@ class FindElement {
       : data.selector;
 
     if (specialSelectorsRegex.test(selector)) {
-      const elements = Sizzle.matches(selector);
+      // Fix Sizzle incorrect context in iframe, passed as context of iframe
+      const elements = Sizzle(selector, documentCtx);
       if (!elements) return null;
 
       return data.multiple ? elements : elements[0];
