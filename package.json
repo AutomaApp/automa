@@ -48,7 +48,7 @@
     "@viselect/vanilla": "^3.2.5",
     "@vue-flow/additional-components": "^1.3.3",
     "@vue-flow/core": "^1.12.7",
-    "@vueuse/head": "^1.0.23",
+    "@vueuse/head": "^1.1.19",
     "@vueuse/rxjs": "^9.12.0",
     "@vuex-orm/core": "^0.36.4",
     "codemirror": "^6.0.1",
