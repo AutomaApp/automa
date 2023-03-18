@@ -132,9 +132,7 @@ export function startWorkflowExec(workflowData, options, isPopup = true) {
               type: 'basic',
               iconUrl: browser.runtime.getURL('icon-128.png'),
               title: status === 'success' ? 'Success' : 'Error',
-              message: `${
-                status === 'success' ? 'Successfully' : 'Failed'
-              } to run the "${name}" workflow`,
+              message:  status === "success" ?  `The '${name}' workflow was successfully executed.` : `Failed to run the "${name}" workflow.`,
             });
           });
       }
