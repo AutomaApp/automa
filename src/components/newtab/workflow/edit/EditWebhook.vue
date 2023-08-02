@@ -174,7 +174,7 @@ const emit = defineEmits(['update:data']);
 const { t } = useI18n();
 
 const methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
-const notHaveBody = ['GET', 'DELETE'];
+const notHaveBody = ['GET'];
 const copyHeaders = JSON.parse(JSON.stringify(props.data.headers));
 
 const activeTab = ref('headers');
