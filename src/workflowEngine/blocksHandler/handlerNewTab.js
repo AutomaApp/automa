@@ -7,6 +7,16 @@ import {
   injectPreloadScript,
 } from '../helper';
 
+function isValidURL(url) {
+  try {
+    // eslint-disable-next-line
+    new URL(url);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 async function newTab({ id, data }) {
   if (this.windowId) {
     try {
@@ -16,9 +26,7 @@ async function newTab({ id, data }) {
     }
   }
 
-  const isInvalidUrl = !/^https?/.test(data.url);
-
-  if (isInvalidUrl) {
+  if (!isValidURL(data.url)) {
     const error = new Error(
       isWhitespace(data.url) ? 'url-empty' : 'invalid-active-tab'
     );

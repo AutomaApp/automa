@@ -5,7 +5,6 @@ import dayjs from '@/lib/dayjs';
 import { parseJSON } from '@/utils/helper';
 import { fetchApi } from '@/utils/api';
 import { sendMessage } from '@/utils/message';
-import getBlockMessage from '@/utils/getBlockMessage';
 import convertWorkflowData from '@/utils/convertWorkflowData';
 import WorkflowState from './WorkflowState';
 import WorkflowLogger from './WorkflowLogger';
@@ -65,81 +64,27 @@ export function startWorkflowExec(workflowData, options, isPopup = true) {
   });
 
   engine.init();
-  engine.on(
-    'destroyed',
-    ({
-      id,
-      status,
-      history,
-      startedTimestamp,
-      endedTimestamp,
-      blockDetail,
-    }) => {
-      if (
-        clonedWorkflowData.id.startsWith('team') &&
-        clonedWorkflowData.teamId
-      ) {
-        const payload = {
-          status,
-          workflowId: clonedWorkflowData.id,
-          workflowLog: {
-            status,
-            endedTimestamp,
-            startedTimestamp,
-          },
-        };
+  engine.on('destroyed', ({ id, status }) => {
+    if (status !== 'stopped') {
+      browser.permissions
+        .contains({ permissions: ['notifications'] })
+        .then((hasPermission) => {
+          if (!hasPermission || !clonedWorkflowData.settings.notification)
+            return;
 
-        if (status === 'error') {
-          const message = getBlockMessage(blockDetail);
-          const workflowHistory = history.map((item) => {
-            delete item.logId;
-            delete item.prevBlockData;
-            delete item.workerId;
+          const name = clonedWorkflowData.name.slice(0, 32);
 
-            item.description = item.description || '';
-
-            return item;
+          browser.notifications.create(`logs:${id}`, {
+            type: 'basic',
+            iconUrl: browser.runtime.getURL('icon-128.png'),
+            title: status === 'success' ? 'Success' : 'Error',
+            message: `${
+              status === 'success' ? 'Successfully' : 'Failed'
+            } to run the "${name}" workflow`,
           });
-          payload.workflowLog = {
-            status,
-            message,
-            endedTimestamp,
-            startedTimestamp,
-            history: workflowHistory,
-            blockId: blockDetail.blockId,
-          };
-        }
-
-        fetchApi(`/teams/${clonedWorkflowData.teamId}/workflows/logs`, {
-          auth: true,
-          method: 'POST',
-          body: JSON.stringify(payload),
-        }).catch((error) => {
-          console.error(error);
         });
-      }
-
-      if (status !== 'stopped') {
-        browser.permissions
-          .contains({ permissions: ['notifications'] })
-          .then((hasPermission) => {
-            if (!hasPermission || !clonedWorkflowData.settings.notification)
-              return;
-
-            const name = clonedWorkflowData.name.slice(0, 32);
-
-            browser.notifications.create(`logs:${id}`, {
-              type: 'basic',
-              iconUrl: browser.runtime.getURL('icon-128.png'),
-              title: status === 'success' ? 'Success' : 'Error',
-              message: `${
-                status === 'success' ? 'Successfully' : 'Failed'
-              } to run the "${name}" workflow`,
-            });
-          });
-      }
     }
-  );
+  });
 
   browser.storage.local.get('checkStatus').then(({ checkStatus }) => {
     const isSameDay = dayjs().isSame(checkStatus, 'day');

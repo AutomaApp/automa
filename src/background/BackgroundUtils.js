@@ -26,13 +26,15 @@ class BackgroundUtils {
         }
       } else {
         const windowOptions = {
+          top: 0,
+          left: 0,
+          width: 715,
+          height: 715,
           url: tabUrl,
           type: 'popup',
         };
 
         if (updateTab) {
-          windowOptions.height = 715;
-          windowOptions.width = 715;
           windowOptions.focused = true;
         } else {
           windowOptions.state = 'minimized';

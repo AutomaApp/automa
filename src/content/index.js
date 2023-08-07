@@ -43,6 +43,15 @@ function messageToFrame(frameElement, blockData) {
   });
 }
 async function executeBlock(data) {
+  if ((data.name || data.label) === 'javascript-code') {
+    const { workflowStates } = await browser.storage.local.get(
+      'workflowStates'
+    );
+    if (workflowStates && workflowStates.length === 0) {
+      throw new Error('Invalid execution');
+    }
+  }
+
   const removeExecutedBlock = showExecutedBlock(data, data.executedBlockOnWeb);
   if (data.data?.selector?.includes('|>')) {
     const [frameSelector, selector] = data.data.selector.split(/\|>(.+)/);
