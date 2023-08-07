@@ -23,6 +23,13 @@ function formEvent(element, data) {
       code: `Key${currentKey}`,
     };
 
+    simulateEvent(element, 'input', {
+      inputType: 'insertText',
+      data: data.value,
+      bubbles: true,
+      cancelable: true,
+    });
+
     simulateEvent(element, 'keydown', {
       key,
       code,
