@@ -91,7 +91,11 @@ function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }
 function connectSheet() {
-  openGDriveFilePicker().then(({ name, id, mimeType }) => {
+  openGDriveFilePicker().then((result) => {
+    if (!result) return;
+
+    const { name, id, mimeType } = result;
+
     if (mimeType !== 'application/vnd.google-apps.spreadsheet') {
       toast.error('File is not a google spreadsheet');
       return;
