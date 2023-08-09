@@ -8,6 +8,8 @@ class WorkflowState {
 
     this.states = new Map();
     this.eventListeners = {};
+
+    this.storageTimeout = null;
   }
 
   _updateBadge() {
@@ -16,8 +18,14 @@ class WorkflowState {
   }
 
   _saveToStorage() {
-    const states = Object.fromEntries(this.states);
-    return this.storage.set(this.key, states);
+    if (this.storageTimeout) return;
+
+    this.storageTimeout = setTimeout(() => {
+      this.storageTimeout = null;
+
+      const states = Object.fromEntries(this.states);
+      this.storage.set(this.key, states);
+    }, 1000);
   }
 
   dispatchEvent(name, params) {
@@ -65,7 +73,7 @@ class WorkflowState {
   async add(id, data = {}) {
     this.states.set(id, data);
     this._updateBadge();
-    await this._saveToStorage(this.key);
+    this._saveToStorage(this.key);
   }
 
   async stop(id) {
@@ -89,7 +97,7 @@ class WorkflowState {
       ...state,
       status: 'running',
     });
-    await this._saveToStorage();
+    this._saveToStorage();
 
     this.dispatchEvent('resume', { id, nextBlock });
   }
@@ -105,14 +113,14 @@ class WorkflowState {
 
     this.states.set(id, { ...state, ...data });
     this.dispatchEvent('update', { id, data });
-    await this._saveToStorage();
+    this._saveToStorage();
   }
 
   async delete(id) {
     this.states.delete(id);
     this.dispatchEvent('delete', id);
     this._updateBadge();
-    await this._saveToStorage();
+    this._saveToStorage();
   }
 }
 

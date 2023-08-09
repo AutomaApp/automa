@@ -33,25 +33,20 @@ function messageToFrame(frameElement, blockData) {
     }
     window.addEventListener('message', onMessage);
 
-    frameElement.contentWindow.postMessage(
-      {
-        type: 'automa:execute-block',
-        blockData: { ...blockData, frameSelector: '' },
-      },
-      '*'
-    );
+    const messageId = `message:${nanoid(4)}`;
+    browser.storage.local.set({ [messageId]: true }).then(() => {
+      frameElement.contentWindow.postMessage(
+        {
+          messageId,
+          type: 'automa:execute-block',
+          blockData: { ...blockData, frameSelector: '' },
+        },
+        '*'
+      );
+    });
   });
 }
 async function executeBlock(data) {
-  if ((data.name || data.label) === 'javascript-code') {
-    const { workflowStates } = await browser.storage.local.get(
-      'workflowStates'
-    );
-    if (workflowStates && workflowStates.length === 0) {
-      throw new Error('Invalid execution');
-    }
-  }
-
   const removeExecutedBlock = showExecutedBlock(data, data.executedBlockOnWeb);
   if (data.data?.selector?.includes('|>')) {
     const [frameSelector, selector] = data.data.selector.split(/\|>(.+)/);
@@ -112,52 +107,74 @@ async function executeBlock(data) {
 
   throw error;
 }
-function messageListener({ data, source }) {
-  if (data.type === 'automa:get-frame' && isMainFrame) {
-    let frameRect = { x: 0, y: 0 };
+async function messageListener({ data, source }) {
+  try {
+    if (data.type === 'automa:get-frame' && isMainFrame) {
+      let frameRect = { x: 0, y: 0 };
 
-    document.querySelectorAll('iframe').forEach((iframe) => {
-      if (iframe.contentWindow !== source) return;
+      document.querySelectorAll('iframe').forEach((iframe) => {
+        if (iframe.contentWindow !== source) return;
 
-      frameRect = iframe.getBoundingClientRect();
-    });
+        frameRect = iframe.getBoundingClientRect();
+      });
 
-    source.postMessage(
-      {
-        frameRect,
-        type: 'automa:the-frame-rect',
-      },
-      '*'
-    );
+      source.postMessage(
+        {
+          frameRect,
+          type: 'automa:the-frame-rect',
+        },
+        '*'
+      );
 
-    return;
-  }
+      return;
+    }
 
-  if (data.type === 'automa:execute-block') {
-    executeBlock(data.blockData)
-      .then((result) => {
-        window.top.postMessage(
-          {
-            result,
-            type: 'automa:block-execute-result',
-          },
-          '*'
-        );
-      })
-      .catch((error) => {
-        console.error(error);
+    if (data.type === 'automa:execute-block') {
+      const messageToken = await browser.storage.local.get(data.messageId);
+      if (!data.messageId || !messageToken[data.messageId]) {
         window.top.postMessage(
           {
             result: {
               $isError: true,
-              message: error.message,
-              data: error.data || {},
+              message: 'Block id is empty',
+              data: {},
             },
             type: 'automa:block-execute-result',
           },
           '*'
         );
-      });
+        return;
+      }
+
+      await browser.storage.local.remove(data.messageId);
+
+      executeBlock(data.blockData)
+        .then((result) => {
+          window.top.postMessage(
+            {
+              result,
+              type: 'automa:block-execute-result',
+            },
+            '*'
+          );
+        })
+        .catch((error) => {
+          console.error(error);
+          window.top.postMessage(
+            {
+              result: {
+                $isError: true,
+                message: error.message,
+                data: error.data || {},
+              },
+              type: 'automa:block-execute-result',
+            },
+            '*'
+          );
+        });
+    }
+  } catch (error) {
+    console.error(error);
   }
 }
 
