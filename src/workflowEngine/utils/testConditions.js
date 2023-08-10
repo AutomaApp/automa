@@ -88,20 +88,27 @@ export default async function (conditionsArr, workflowData) {
     if (type.startsWith('code')) {
       let conditionValue;
 
+      const newRefData = {};
+      Object.keys(workflowData.refData).forEach((keyword) => {
+        if (!copyData.code.includes(keyword)) return;
+
+        newRefData[keyword] = workflowData.refData[keyword];
+      });
+
       if (workflowData.isMV2) {
         conditionValue = await workflowData.sendMessage({
           type: 'condition-builder',
           data: {
             type,
             data: copyData,
-            refData: workflowData.refData,
+            refData: newRefData,
           },
         });
       } else {
         conditionValue = await workflowData.checkCodeCondition({
           data: copyData,
+          refData: newRefData,
           isPopup: workflowData.isPopup,
-          refData: workflowData.refData,
         });
       }
 
