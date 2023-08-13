@@ -44,6 +44,9 @@ export default function (data) {
         return window.$getNestedProperties(${propertyName}.refData, keyword + '.' + path);
       }
       function automaSetVariable(name, value) {
+        const variables = ${propertyName}.refData.variables;
+        if (!variables) ${propertyName}.refData.variables = {}
+
         ${propertyName}.refData.variables[name] = value;
       }
       function automaNextBlock(data = {}, insert = true) {
