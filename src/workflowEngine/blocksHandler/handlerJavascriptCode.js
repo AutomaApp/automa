@@ -21,6 +21,9 @@ function getAutomaScript({ varName, refData, everyNewTab, isEval = false }) {
 const ${varName} = ${JSON.stringify(refData)};
 ${automaRefDataStr(varName)}
 function automaSetVariable(name, value) {
+  const variables = ${varName}.variables;
+  if (!variables) ${varName}.variables = {}
+
   ${varName}.variables[name] = value;
 }
 function automaNextBlock(data, insert = true) {
