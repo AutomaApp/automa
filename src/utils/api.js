@@ -110,7 +110,8 @@ export async function getUserWorkflows(useCache = true) {
       try {
         const { lastBackup } = await browser.storage.local.get('lastBackup');
         const response = await fetchApi(
-          `/me/workflows?lastBackup=${(useCache && lastBackup) || null}`
+          `/me/workflows?lastBackup=${(useCache && lastBackup) || null}`,
+          { auth: true }
         );
 
         if (!response.ok) throw new Error(response.statusText);

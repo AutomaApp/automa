@@ -30,7 +30,7 @@ function blockExecutionWrapper(blockHandler, blockData) {
         reject(error);
       })
       .finally(() => {
-        clearTimeout(timeout);
+        if (timeout) clearTimeout(timeout);
       });
   });
 }
@@ -319,9 +319,13 @@ class WorkflowWorker {
       }
 
       if (result.nextBlockId && !result.destroyWorker) {
-        setTimeout(() => {
+        if (blockDelay > 0) {
+          setTimeout(() => {
+            executeBlocks(result.nextBlockId, result.data);
+          }, blockDelay);
+        } else {
           executeBlocks(result.nextBlockId, result.data);
-        }, blockDelay);
+        }
       } else {
         this.engine.destroyWorker(this.id);
       }

@@ -210,7 +210,6 @@ window.addEventListener('app-mounted', async () => {
     ]);
 
     const setUserSession = async () => {
-      console.log(session);
       const saveToStorage = { session };
 
       const isGoogleProvider =

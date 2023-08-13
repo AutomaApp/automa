@@ -36,7 +36,7 @@ export function queryElements(data, documentCtx = document) {
       if (isElNotFound && data.waitForSelector) {
         setTimeout(findSelector, 200);
       } else {
-        clearTimeout(timeout);
+        if (timeout) clearTimeout(timeout);
         resolve(elements);
       }
     };

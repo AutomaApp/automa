@@ -16,11 +16,14 @@ import {
 
 const nanoid = customAlphabet('1234567890abcdef', 5);
 
-function getAutomaScript(varName, refData, everyNewTab, isEval = false) {
+function getAutomaScript({ varName, refData, everyNewTab, isEval = false }) {
   let str = `
 const ${varName} = ${JSON.stringify(refData)};
 ${automaRefDataStr(varName)}
 function automaSetVariable(name, value) {
+  const variables = ${varName}.variables;
+  if (!variables) ${varName}.variables = {}
+
   ${varName}.variables[name] = value;
 }
 function automaNextBlock(data, insert = true) {
@@ -74,12 +77,12 @@ async function executeInWebpage(args, target, worker) {
   const { debugMode } = worker.engine.workflow.settings;
   const cspResult = await checkCSPAndInject({ target, debugMode }, () => {
     const { 0: blockData, 1: preloadScripts, 3: varName } = args;
-    const automaScript = getAutomaScript(
+    const automaScript = getAutomaScript({
       varName,
-      blockData.refData,
-      blockData.data.everyNewTab,
-      true
-    );
+      isEval: true,
+      refData: blockData.refData,
+      everyNewTab: blockData.data.everyNewTab,
+    });
     const jsCode = jsContentHandlerEval({
       blockData,
       automaScript,
@@ -124,7 +127,14 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
     frameSelector: this.frameSelector,
   };
   if (data.code.includes('automaRefData')) {
-    payload.refData = { ...refData, secrets: {} };
+    const newRefData = {};
+    Object.keys(refData).forEach((keyword) => {
+      if (!data.code.includes(keyword)) return;
+
+      newRefData[keyword] = refData[keyword];
+    });
+
+    payload.refData = { ...newRefData, secrets: {} };
   }
 
   const preloadScriptsPromise = await Promise.allSettled(
@@ -155,7 +165,11 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
   const automaScript =
     data.everyNewTab && (!data.context || data.context !== 'background')
       ? ''
-      : getAutomaScript(instanceId, payload.refData, data.everyNewTab);
+      : getAutomaScript({
+          varName: instanceId,
+          refData: payload.refData,
+          everyNewTab: data.everyNewTab,
+        });
 
   if (data.context !== 'background') {
     await waitTabLoaded({

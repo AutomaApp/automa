@@ -86,7 +86,7 @@ export default async function () {
   if (!sessionToken || !sessionToken.access) return null;
 
   const isGoogleProvider =
-    session?.user?.user_metadata?.iss.includes('googleapis.com');
+    session?.user?.user_metadata?.iss.includes('google.com');
   if (!isGoogleProvider) return null;
 
   const result = await selectFile(sessionToken.access);
