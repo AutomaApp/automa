@@ -25,8 +25,8 @@ async function forms(block) {
   async function typeText(element) {
     if (block.debugMode && data.type === 'text-field') {
       const commands = data.value.split('').map((char) => ({
-        text: char,
         type: 'keyDown',
+        text: char === '\n' ? '\r' : char,
       }));
       const typeDelay = +block.data.delay;
       await sendMessage(
