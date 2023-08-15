@@ -54,46 +54,15 @@
     <ui-table
       v-show="state.activeTab === 'table'"
       :headers="tableData.header"
-      :items="rows"
+      :items="tableData.body"
       :search="state.query"
       item-key="id"
       class="w-full"
     />
-    <div
-      v-if="
-        state.activeTab === 'table' &&
-        tableData.body &&
-        tableData.body.length >= 10
-      "
-      class="mt-4 flex items-center justify-between"
-    >
-      <div>
-        {{ t('components.pagination.text1') }}
-        <select v-model="pagination.perPage" class="bg-input rounded-md p-1">
-          <option
-            v-for="num in [10, 15, 25, 50, 100, 150]"
-            :key="num"
-            :value="num"
-          >
-            {{ num }}
-          </option>
-        </select>
-        {{
-          t('components.pagination.text2', {
-            count: tableData.body.length,
-          })
-        }}
-      </div>
-      <ui-pagination
-        v-model="pagination.currentPage"
-        :per-page="pagination.perPage"
-        :records="tableData.body.length"
-      />
-    </div>
   </template>
 </template>
 <script setup>
-import { computed, shallowReactive, defineAsyncComponent } from 'vue';
+import { shallowReactive, defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { dataExportTypes } from '@/utils/shared';
 import dataExporter from '@/utils/dataExporter';
@@ -119,16 +88,6 @@ const state = shallowReactive({
   query: '',
   activeTab: 'table',
 });
-const pagination = shallowReactive({
-  perPage: 10,
-  currentPage: 1,
-});
-const rows = computed(() =>
-  props.tableData.body.slice(
-    (pagination.currentPage - 1) * pagination.perPage,
-    pagination.currentPage * pagination.perPage
-  )
-);
 
 function exportData(type) {
   dataExporter(

@@ -88,7 +88,6 @@ message.on('debugger:type', ({ tabId, commands, delay }) => {
         resolve();
         return;
       }
-      console.log(command);
 
       chrome.debugger.sendCommand(
         { tabId },
