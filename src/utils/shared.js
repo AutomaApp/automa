@@ -241,7 +241,7 @@ export const tasks = {
     outputs: 1,
     maxConnection: 1,
     allowedInputs: true,
-    refDataKeys: ['fileName', 'selector'],
+    refDataKeys: ['fileName', 'selector', 'variableName'],
     autocomplete: ['variableName'],
     data: {
       description: '',
@@ -332,7 +332,13 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['selector', 'prefixText', 'suffixText', 'extraRowValue'],
+    refDataKeys: [
+      'selector',
+      'variableName',
+      'prefixText',
+      'suffixText',
+      'extraRowValue',
+    ],
     autocomplete: ['variableName'],
     data: {
       disableBlock: false,
@@ -368,7 +374,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['name'],
+    refDataKeys: ['name', 'variableName'],
     data: {
       disableBlock: false,
       name: '',
@@ -445,7 +451,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['selector', 'attributeName', 'extraRowValue'],
+    refDataKeys: ['selector', 'variableName', 'attributeName', 'extraRowValue'],
     autocomplete: ['variableName'],
     data: {
       disableBlock: false,
@@ -477,7 +483,13 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['selector', 'value', 'optionPosition', 'delay'],
+    refDataKeys: [
+      'selector',
+      'variableName',
+      'value',
+      'optionPosition',
+      'delay',
+    ],
     autocomplete: ['variableName'],
     data: {
       disableBlock: false,
@@ -577,7 +589,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['customData', 'range', 'spreadsheetId'],
+    refDataKeys: ['customData', 'range', 'spreadsheetId', 'variableName'],
     autocomplete: ['refKey'],
     data: {
       disableBlock: false,
@@ -609,7 +621,13 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['customData', 'range', 'spreadsheetId', 'sheetName'],
+    refDataKeys: [
+      'customData',
+      'range',
+      'spreadsheetId',
+      'sheetName',
+      'variableName',
+    ],
     autocomplete: ['refKey'],
     data: {
       disableBlock: false,
@@ -705,7 +723,7 @@ export const tasks = {
     outputs: 2,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['body', 'url'],
+    refDataKeys: ['body', 'url', 'variableName'],
     autocomplete: ['variableName'],
     data: {
       disableBlock: false,
@@ -879,7 +897,7 @@ export const tasks = {
     allowedInputs: true,
     maxConnection: 1,
     autocomplete: ['variableName'],
-    refDataKeys: ['dataToCopy'],
+    refDataKeys: ['dataToCopy', 'variableName'],
     data: {
       disableBlock: false,
       description: '',
@@ -984,7 +1002,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['selector', 'url', 'filename'],
+    refDataKeys: ['selector', 'url', 'filename', 'variableName'],
     data: {
       disableBlock: false,
       description: '',
@@ -1058,7 +1076,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
-    refDataKeys: ['filename', 'downloadId'],
+    refDataKeys: ['filename', 'downloadId', 'variableName'],
     autocomplete: ['variableName'],
     data: {
       disableBlock: false,
@@ -1178,6 +1196,7 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['variableName'],
     data: {
       disableBlock: false,
       description: '',
@@ -1344,6 +1363,7 @@ export const tasks = {
       'url',
       'value',
       'jsonCode',
+      'variableName',
     ],
     data: {
       disableBlock: false,
