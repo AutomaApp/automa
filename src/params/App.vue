@@ -278,7 +278,7 @@ function continueWorkflow(index, { data, params }) {
   const isParamsValid = isValidParams(params);
   if (!isParamsValid) return;
 
-  const timeout = Date.now() > data.timeout;
+  const timeout = data.timeoutMs > 0 ? Date.now() > data.timeout : false;
 
   browser.storage.local
     .set({
