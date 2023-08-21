@@ -586,6 +586,11 @@
           "name": "Attribute name",
           "checkbox": "Insert to table",
           "column": "Select column",
+          "value": "Attribute value",
+          "action": {
+            "get": "Get attribute value",
+            "set": "Set attribute value"
+          },
           "extraRow": {
             "checkbox": "Add extra row",
             "placeholder": "Value",
