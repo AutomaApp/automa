@@ -1,9 +1,9 @@
 import handleSelector from '../handleSelector';
 
-function attributeValue(block) {
+function handleAttributeValue(block) {
   return new Promise((resolve, reject) => {
     let result = [];
-    const { attributeName, multiple } = block.data;
+    const { attributeName, multiple, attributeValue, action } = block.data;
     const isCheckboxOrRadio = (element) => {
       if (element.tagName !== 'INPUT') return false;
 
@@ -12,6 +12,11 @@ function attributeValue(block) {
 
     handleSelector(block, {
       onSelected(element) {
+        if (action === 'set') {
+          element.setAttribute(attributeName, attributeValue);
+          return;
+        }
+
         let value = element.getAttribute(attributeName);
 
         if (attributeName === 'checked' && isCheckboxOrRadio(element)) {
@@ -33,4 +38,4 @@ function attributeValue(block) {
   });
 }
 
-export default attributeValue;
+export default handleAttributeValue;

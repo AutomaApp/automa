@@ -95,7 +95,7 @@ export default async function (conditionsArr, workflowData) {
         newRefData[keyword] = workflowData.refData[keyword];
       });
 
-      if (workflowData.isMV2) {
+      if (workflowData.isMV2 && data.context !== 'background') {
         conditionValue = await workflowData.sendMessage({
           type: 'condition-builder',
           data: {

@@ -1,7 +1,17 @@
 <template>
   <edit-interaction-base v-bind="{ data }" @change="updateData">
     <hr />
-    <edit-autocomplete>
+    <ui-select
+      :label="t('common.action')"
+      :model-value="data.action || 'get'"
+      class="mt-2 w-full"
+      @change="updateData({ action: $event })"
+    >
+      <option v-for="action in ['get', 'set']" :key="action" :value="action">
+        {{ t(`workflow.blocks.attribute-value.forms.action.${action}`) }}
+      </option>
+    </ui-select>
+    <edit-autocomplete class="mt-2">
       <ui-input
         :model-value="data.attributeName"
         :label="t('workflow.blocks.attribute-value.forms.name')"
@@ -11,7 +21,18 @@
         @change="updateData({ attributeName: $event })"
       />
     </edit-autocomplete>
+    <edit-autocomplete v-if="data.action === 'set'" class="mt-2">
+      <ui-input
+        :model-value="data.attributeValue"
+        :label="t('workflow.blocks.attribute-value.forms.value')"
+        autocomplete="off"
+        placeholder="value"
+        class="w-full"
+        @change="updateData({ attributeValue: $event })"
+      />
+    </edit-autocomplete>
     <insert-workflow-data
+      v-else
       :data="data"
       extra-row
       variables
