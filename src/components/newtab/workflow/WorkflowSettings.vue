@@ -39,6 +39,7 @@ import cloneDeep from 'lodash.clonedeep';
 import { debounce } from '@/utils/helper';
 import SettingsTable from './settings/SettingsTable.vue';
 import SettingsBlocks from './settings/SettingsBlocks.vue';
+import SettingsEvents from './settings/SettingsEvents.vue';
 import SettingsGeneral from './settings/SettingsGeneral.vue';
 
 const props = defineProps({
@@ -66,6 +67,11 @@ const tabs = [
     value: 'blocks',
     component: SettingsBlocks,
     name: t('workflow.blocks.base.title'),
+  },
+  {
+    value: 'events',
+    component: SettingsEvents,
+    name: t('workflow.events.title'),
   },
 ];
 

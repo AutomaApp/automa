@@ -43,6 +43,12 @@ module.exports = {
     'import/no-named-default': 'off',
     'no-restricted-syntax': 'off',
     'vue/multi-word-component-names': 'off',
+    'prettier/prettier': [
+      'error',
+      {
+        endOfLine: 'auto',
+      },
+    ],
     'import/extensions': [
       'error',
       'always',

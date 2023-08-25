@@ -6,10 +6,12 @@ import { parseJSON } from '@/utils/helper';
 import { fetchApi } from '@/utils/api';
 import { sendMessage } from '@/utils/message';
 import convertWorkflowData from '@/utils/convertWorkflowData';
+import getBlockMessage from '@/utils/getBlockMessage';
 import WorkflowState from './WorkflowState';
 import WorkflowLogger from './WorkflowLogger';
 import WorkflowEngine from './WorkflowEngine';
 import blocksHandler from './blocksHandler';
+import { workflowEventHandler } from './workflowEvent';
 
 const workflowStateStorage = {
   get() {
@@ -64,7 +66,7 @@ export function startWorkflowExec(workflowData, options, isPopup = true) {
   });
 
   engine.init();
-  engine.on('destroyed', ({ id, status }) => {
+  engine.on('destroyed', ({ id, status, history, blockDetail, ...rest }) => {
     if (status !== 'stopped') {
       browser.permissions
         .contains({ permissions: ['notifications'] })
@@ -83,6 +85,36 @@ export function startWorkflowExec(workflowData, options, isPopup = true) {
             } to run the "${name}" workflow`,
           });
         });
+    }
+
+    if (convertedWorkflow.settings?.events) {
+      const workflowHistory = history.map((item) => {
+        delete item.logId;
+        delete item.prevBlockData;
+        delete item.workerId;
+
+        item.description = item.description || '';
+
+        return item;
+      });
+      const workflowRefData = {
+        status,
+        startedAt: rest.startedTimestamp,
+        endedAt: rest.endedTimestamp
+          ? rest.endedTimestamp - rest.startedTimestamp
+          : null,
+        logs: workflowHistory,
+        errorMessage: status === 'error' ? getBlockMessage(blockDetail) : null,
+      };
+
+      convertedWorkflow.settings.events.forEach((event) => {
+        if (status === 'success' && !event.events.includes('finish:success'))
+          return;
+        if (status === 'error' && !event.events.includes('finish:failed'))
+          return;
+
+        workflowEventHandler(event.action, { workflow: workflowRefData });
+      });
     }
   });
 
