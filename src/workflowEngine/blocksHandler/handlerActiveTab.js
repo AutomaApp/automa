@@ -19,6 +19,7 @@ async function activeTab(block) {
       active: true,
       url: '*://*/*',
     };
+    let dashboardWindowId = null;
 
     if (BROWSER_TYPE === 'firefox') {
       tabsQuery.currentWindow = true;
@@ -36,6 +37,7 @@ async function activeTab(block) {
             focused: false,
             state: 'minimized',
           });
+          dashboardWindowId = browserWindow.id;
         } else if (browserWindow.focused) {
           windowId = browserWindow.id;
         }
@@ -57,6 +59,10 @@ async function activeTab(block) {
       );
 
       tabsQuery.currentWindow = true;
+    }
+
+    if (dashboardWindowId) {
+      await browser.windows.update(dashboardWindowId, { state: 'normal' });
     }
 
     const [tab] = await browser.tabs.query(tabsQuery);
