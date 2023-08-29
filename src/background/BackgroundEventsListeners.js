@@ -44,6 +44,8 @@ class BackgroundEventsListeners {
   }
 
   static onRuntimeStartup() {
+    browser.storage.local.remove('workflowStates');
+    (browser.action || browser.browserAction).setBadgeText({ text: '' });
     BackgroundWorkflowTriggers.reRegisterTriggers(true);
   }
 
