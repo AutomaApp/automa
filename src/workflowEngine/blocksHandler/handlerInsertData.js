@@ -76,7 +76,10 @@ async function insertData({ id, data }, { refData }) {
     }
 
     if (item.type === 'table') {
-      this.addDataToColumn(item.name, value);
+      const values = value.split('||');
+      values.forEach((tableValue) => {
+        this.addDataToColumn(item.name, tableValue);
+      });
     } else {
       this.setVariable(item.name, value);
     }

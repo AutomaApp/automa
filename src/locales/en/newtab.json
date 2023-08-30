@@ -182,6 +182,31 @@
     }
   },
   "workflow": {
+    "events": {
+      "title": "Workflow Events",
+      "add-action": "Add action",
+      "description": "Perform actions when the event occurs.",
+      "event": "Event | Events",
+      "action": "Action",
+      "actions": {
+        "js-code": {
+          "title": "Execute JS Code"
+        },
+        "http-request": {
+          "title": "HTTP Request"
+        }
+      },
+      "types": {
+        "finish:success": {
+          "name": "Finish (success)",
+          "description": "Workflow execution finished with success"
+        },
+        "finish:failed": {
+          "name": "Finish (failed)",
+          "description": "Workflow execution finished with error"
+        }
+      }
+    },
     "previewMode": {
       "title": "Preview mode",
       "description": "You're in preview mode, changes you've made won't be saved"
