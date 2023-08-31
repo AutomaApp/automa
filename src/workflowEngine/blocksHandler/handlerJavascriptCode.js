@@ -29,11 +29,11 @@ function automaSetVariable(name, value) {
 function automaNextBlock(data, insert = true) {
   if (${isEval}) {
     $automaResolve({
-      columns: { 
-        data, 
+      columns: {
+        data,
         insert,
-      }, 
-      variables: ${varName}.variables, 
+      },
+      variables: ${varName}.variables,
     });
   } else{
     document.body.dispatchEvent(new CustomEvent('__automa-next-block__', { detail: { data, insert, refData: ${varName} } }));
@@ -210,11 +210,16 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
     }
 
     let insert = true;
+    let replaceTable = false;
     if (isObject(result.columns.insert)) {
-      const { insert: insertData, nextBlockId: inputNextBlockId } =
-        result.columns.insert;
+      const {
+        insert: insertData,
+        nextBlockId: inputNextBlockId,
+        replaceTable: replaceTableParam,
+      } = result.columns.insert;
 
-      insert = Boolean(insertData);
+      replaceTable = Boolean(replaceTableParam);
+      insert = typeof insertData === 'boolean' ? insertData : true;
 
       if (inputNextBlockId) {
         const customNextBlockId = this.getBlockConnections(inputNextBlockId);
@@ -237,6 +242,9 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
         const params = Array.isArray(columnDataObj)
           ? columnDataObj
           : [columnDataObj];
+
+        if (replaceTable) this.engine.referenceData.table = [];
+
         this.addDataToColumn(params);
       }
     }
