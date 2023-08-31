@@ -35,7 +35,7 @@
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/language": "^6.9.0",
     "@codemirror/theme-one-dark": "^6.1.2",
-    "@medv/finder": "^2.1.0",
+    "@medv/finder": "^3.1.0",
     "@n8n_io/riot-tmpl": "^2.0.0",
     "@tiptap/core": "^2.0.4",
     "@tiptap/extension-character-count": "^2.0.4",
