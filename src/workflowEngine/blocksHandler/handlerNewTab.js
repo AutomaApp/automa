@@ -66,6 +66,11 @@ async function newTab({ id, data }) {
       }
     }
 
+    if (data.tabZoom && data.tabZoom !== 1) {
+      await sleep(1000);
+      await browser.tabs.setZoom(tab.id, data.tabZoom);
+    }
+
     this.activeTab.id = tab.id;
     this.windowId = tab.windowId;
   }

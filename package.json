@@ -90,6 +90,7 @@
     "vue-i18n": "9",
     "vue-imask": "^6.4.2",
     "vue-router": "^4.2.4",
+    "vue-slider-component": "^4.1.0-beta.7",
     "vue-toastification": "^2.0.0-rc.5",
     "vuedraggable": "^4.1.0",
     "vuex": "^4.0.2",

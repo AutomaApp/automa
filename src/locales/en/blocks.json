@@ -565,6 +565,7 @@
         "name": "New tab",
         "description": "",
         "url": "New tab URL",
+        "tab-zoom": "Tab zoom",
         "customUserAgent": "Use custom User-Agent",
         "activeTab": "Set as active tab",
         "tabToGroup": "Add tab to a group",
