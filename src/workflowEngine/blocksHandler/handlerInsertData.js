@@ -76,7 +76,7 @@ async function insertData({ id, data }, { refData }) {
     }
 
     if (item.type === 'table') {
-      const values = value.split('||');
+      const values = typeof value === 'string' ? value.split('||') : [value];
       values.forEach((tableValue) => {
         this.addDataToColumn(item.name, tableValue);
       });
