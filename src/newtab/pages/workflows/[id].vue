@@ -4,7 +4,7 @@
       v-if="state.showSidebar && haveEditAccess"
       :class="
         editState.editing
-          ? 'absolute h-full w-full md:relative z-50'
+          ? 'absolute h-full md:relative z-50'
           : 'hidden md:flex'
       "
       class="w-80 flex-col border-l border-gray-100 bg-white py-6 dark:border-gray-700 dark:border-opacity-50 dark:bg-gray-800"
@@ -1453,8 +1453,6 @@ async function pasteCopiedElements(position) {
       editor.value.addEdges(edges);
 
       state.dataChanged = true;
-
-      return;
     }
   } catch (error) {
     console.error(error);

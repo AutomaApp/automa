@@ -66,11 +66,23 @@
       class="mt-1 w-full"
       @change="updateData({ userAgent: $event })"
     />
+    <div class="mt-4">
+      <p>{{ t('workflow.blocks.new-tab.tab-zoom') }}</p>
+      <vue-slider
+        :min="0.25"
+        :max="4.5"
+        :interval="0.25"
+        :model-value="data.tabZoom || 1"
+        @change="updateData({ tabZoom: $event })"
+      />
+    </div>
   </div>
 </template>
 <script setup>
 import { useI18n } from 'vue-i18n';
+import VueSlider from 'vue-slider-component';
 import EditAutocomplete from './EditAutocomplete.vue';
+import 'vue-slider-component/theme/default.css';
 
 const props = defineProps({
   data: {

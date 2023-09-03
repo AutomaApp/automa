@@ -103,6 +103,7 @@ export const tasks = {
       url: '',
       userAgent: '',
       active: true,
+      tabZoom: 1,
       inGroup: false,
       waitTabLoaded: false,
       updatePrevTab: false,
