@@ -152,13 +152,21 @@ export function jsContentHandler($blockData, $preloadScripts, $automaScript) {
         }
 
         onNextBlock = ({ detail }) => {
-          cleanUp(detail || {});
+          cleanUp();
+          if (!detail) {
+            resolve({ columns: {}, variables: {} });
+            return;
+          }
+
+          const payload = {
+            insert: detail.insert,
+            data: detail.data?.$error
+              ? detail.data
+              : JSON.stringify(detail?.data ?? {}),
+          };
           resolve({
-            columns: {
-              insert: detail?.insert,
-              data: JSON.stringify(detail?.data ?? {}),
-            },
-            variables: detail?.refData?.variables,
+            columns: payload,
+            variables: detail.refData?.variables,
           });
         };
         onResetTimeout = () => {
