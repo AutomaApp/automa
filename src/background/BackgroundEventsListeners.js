@@ -1,7 +1,64 @@
 import browser from 'webextension-polyfill';
 import { initElementSelector } from '@/newtab/utils/elementSelector';
+import dayjs from 'dayjs';
+import cronParser from 'cron-parser';
 import BackgroundUtils from './BackgroundUtils';
 import BackgroundWorkflowTriggers from './BackgroundWorkflowTriggers';
+
+async function handleScheduleBackup() {
+  try {
+    const { scheduleLocalBackup, workflows } = await browser.storage.local.get([
+      'scheduleLocalBackup',
+      'workflows',
+    ]);
+    if (!scheduleLocalBackup) return;
+
+    const workflowsData = Object.values(workflows || []).reduce(
+      (acc, workflow) => {
+        if (workflow.isProtected) return acc;
+
+        delete workflow.$id;
+        delete workflow.createdAt;
+        delete workflow.data;
+        delete workflow.isDisabled;
+        delete workflow.isProtected;
+
+        acc.push(workflow);
+
+        return acc;
+      },
+      []
+    );
+    const base64 = btoa(JSON.stringify(workflowsData));
+    const filename = `${
+      scheduleLocalBackup.folderName ? `${scheduleLocalBackup.folderName}/` : ''
+    }${dayjs().format('DD-MMM-YYYY--HH-mm')}.json`;
+
+    await browser.downloads.download({
+      filename,
+      url: `data:application/json;base64,${base64}`,
+    });
+    await browser.storage.local.set({
+      scheduleLocalBackup: {
+        ...scheduleLocalBackup,
+        lastBackup: Date.now(),
+      },
+    });
+
+    const expression =
+      scheduleLocalBackup.schedule === 'custom'
+        ? scheduleLocalBackup.customSchedule
+        : scheduleLocalBackup.schedule;
+    const parsedExpression = cronParser.parseExpression(expression).next();
+    if (!parsedExpression) return;
+
+    await browser.alarms.create('schedule-local-backup', {
+      when: parsedExpression.getTime(),
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 class BackgroundEventsListeners {
   static onActionClicked() {
@@ -17,6 +74,11 @@ class BackgroundEventsListeners {
   }
 
   static onAlarms(event) {
+    if (event.name === 'schedule-local-backup') {
+      handleScheduleBackup();
+      return;
+    }
+
     BackgroundWorkflowTriggers.scheduleWorkflow(event);
   }
 

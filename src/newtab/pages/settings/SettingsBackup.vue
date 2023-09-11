@@ -80,9 +80,80 @@
         <ui-checkbox v-model="state.encrypt" class="mt-12 mb-4">
           {{ t('settings.backupWorkflows.backup.encrypt') }}
         </ui-checkbox>
-        <ui-button class="w-full" @click="backupWorkflows">
-          {{ t('settings.backupWorkflows.backup.button') }}
-        </ui-button>
+        <div class="flex items-center gap-2">
+          <ui-button class="flex-1" @click="backupWorkflows">
+            {{ t('settings.backupWorkflows.backup.button') }}
+          </ui-button>
+          <ui-popover @close="registerScheduleBackup">
+            <template #trigger>
+              <ui-button
+                v-tooltip="t('settings.backupWorkflows.backup.schedule')"
+                icon
+                :class="{ 'text-primary': localBackupSchedule.schedule }"
+              >
+                <v-remixicon name="riCalendarLine" />
+              </ui-button>
+            </template>
+            <div class="min-w-[14rem]">
+              <p class="mb-2">
+                {{ t('settings.backupWorkflows.backup.schedule') }}
+              </p>
+              <template v-if="!downloadPermission.has.downloads">
+                <p class="text-gray-600 dark:text-gray-300">
+                  Automa requires the "Downloads" permission for this feature to
+                  work
+                </p>
+                <ui-button
+                  class="mt-4 w-full"
+                  @click="downloadPermission.request()"
+                >
+                  Allow "Downloads" permission
+                </ui-button>
+              </template>
+              <template v-else>
+                <ui-select
+                  v-model="localBackupSchedule.schedule"
+                  label="Schedule"
+                  class="w-full"
+                >
+                  <option value="">Never</option>
+                  <option
+                    v-for="(value, key) in BACKUP_SCHEDULES"
+                    :key="key"
+                    :value="key"
+                  >
+                    {{ value }}
+                  </option>
+                  <option value="custom">Custom</option>
+                </ui-select>
+                <template v-if="localBackupSchedule.schedule === 'custom'">
+                  <ui-input
+                    v-model="localBackupSchedule.customSchedule"
+                    label="Cron Expression"
+                    class="w-full mt-2"
+                    placeholder="0 8 * * *"
+                  />
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    {{ getBackupScheduleCron() }}
+                  </p>
+                </template>
+                <ui-input
+                  v-model="localBackupSchedule.folderName"
+                  label="Folder name"
+                  class="w-full mt-2"
+                  placeholder="backup-folder"
+                />
+                <p
+                  v-if="localBackupSchedule.lastBackup"
+                  class="text-gray-600 dark:text-gray-300 text-sm mt-4"
+                >
+                  Last backup:
+                  {{ dayjs(localBackupSchedule.lastBackup).fromNow() }}
+                </p>
+              </template>
+            </div>
+          </ui-popover>
+        </div>
       </div>
       <div class="w-6/12 rounded-lg border p-4 dark:border-gray-700">
         <div class="text-center">
@@ -111,26 +182,35 @@
   </ui-modal>
 </template>
 <script setup>
-import { reactive, onMounted } from 'vue';
+import { reactive, toRaw, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 import dayjs from 'dayjs';
 import AES from 'crypto-js/aes';
+import cronParser from 'cron-parser';
 import encUtf8 from 'crypto-js/enc-utf8';
 import browser from 'webextension-polyfill';
 import hmacSHA256 from 'crypto-js/hmac-sha256';
 import { useDialog } from '@/composable/dialog';
+import { readableCron } from '@/lib/cronstrue';
 import { useUserStore } from '@/stores/user';
 import { getUserWorkflows } from '@/utils/api';
 import { useWorkflowStore } from '@/stores/workflow';
+import { useHasPermissions } from '@/composable/hasPermissions';
 import { fileSaver, openFilePicker, parseJSON } from '@/utils/helper';
 import SettingsCloudBackup from '@/components/newtab/settings/SettingsCloudBackup.vue';
+
+const BACKUP_SCHEDULES = {
+  '0 8 * * *': 'Every day',
+  '0 8 * * 0': 'Every week',
+};
 
 const { t } = useI18n();
 const toast = useToast();
 const dialog = useDialog();
 const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
+const downloadPermission = useHasPermissions(['downloads']);
 
 const state = reactive({
   lastSync: null,
@@ -144,7 +224,46 @@ const backupState = reactive({
   modal: false,
   loading: false,
 });
+const localBackupSchedule = reactive({
+  schedule: '',
+  lastBackup: null,
+  customSchedule: '',
+  folderName: 'automa-backup',
+});
 
+async function registerScheduleBackup() {
+  try {
+    if (!localBackupSchedule.schedule.trim()) {
+      await browser.alarms.clear('schedule-local-backup');
+    } else {
+      const expression =
+        localBackupSchedule.schedule === 'custom'
+          ? localBackupSchedule.customSchedule
+          : localBackupSchedule.schedule;
+      const parsedExpression = cronParser.parseExpression(expression).next();
+      if (!parsedExpression) return;
+
+      await browser.alarms.create('schedule-local-backup', {
+        when: parsedExpression.getTime(),
+      });
+    }
+
+    browser.storage.local.set({
+      scheduleLocalBackup: toRaw(localBackupSchedule),
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+function getBackupScheduleCron() {
+  try {
+    const expression = localBackupSchedule.customSchedule;
+
+    return `${readableCron(expression)}`;
+  } catch (error) {
+    return error.message;
+  }
+}
 function formatDate(date) {
   if (!date) return 'null';
 
@@ -301,10 +420,14 @@ async function restoreWorkflows() {
 }
 
 onMounted(async () => {
-  const { lastBackup, lastSync } = await browser.storage.local.get([
-    'lastBackup',
-    'lastSync',
-  ]);
+  const { lastBackup, lastSync, scheduleLocalBackup } =
+    await browser.storage.local.get([
+      'lastSync',
+      'lastBackup',
+      'scheduleLocalBackup',
+    ]);
+
+  Object.assign(localBackupSchedule, scheduleLocalBackup || {});
 
   state.lastSync = lastSync;
   state.lastBackup = lastBackup;
