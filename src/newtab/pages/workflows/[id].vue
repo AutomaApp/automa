@@ -1483,7 +1483,7 @@ function onKeydown({ ctrlKey, metaKey, shiftKey, key, target, repeat }) {
   } else if (command('v')) {
     pasteCopiedElements();
   } else if (command('z')) {
-    undoRedoCommand(shiftKey ? 'redo' : 'undo');
+    undoRedoCommand(shiftKey ? 'redo' : 'undo', { target });
   }
 }
 async function fetchConnectedTable() {
