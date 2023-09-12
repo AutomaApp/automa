@@ -81,30 +81,50 @@
           {{ t('settings.backupWorkflows.backup.encrypt') }}
         </ui-checkbox>
         <div class="flex items-center gap-2">
-          <ui-button class="flex-1" @click="backupWorkflows">
-            {{ t('settings.backupWorkflows.backup.button') }}
-          </ui-button>
           <ui-popover @close="registerScheduleBackup">
             <template #trigger>
               <ui-button
-                v-tooltip="t('settings.backupWorkflows.backup.schedule')"
+                v-tooltip="t('settings.backupWorkflows.backup.settings')"
                 icon
                 :class="{ 'text-primary': localBackupSchedule.schedule }"
               >
-                <v-remixicon name="riCalendarLine" />
+                <v-remixicon name="riSettings3Line" />
               </ui-button>
             </template>
-            <div class="min-w-[14rem]">
-              <p class="mb-2">
+            <div class="w-64">
+              <p class="mb-2 font-semibold">
+                {{ t('settings.backupWorkflows.backup.settings') }}
+              </p>
+              <p>Also backup</p>
+              <div class="flex mt-1 flex-col gap-2">
+                <ui-checkbox
+                  v-for="item in BACKUP_ITEMS_INCLUDES"
+                  :key="item.id"
+                  :model-value="
+                    localBackupSchedule.includedItems.includes(item.id)
+                  "
+                  @change="
+                    $event
+                      ? localBackupSchedule.includedItems.push(item.id)
+                      : localBackupSchedule.includedItems.splice(
+                          localBackupSchedule.includedItems.indexOf(item.id),
+                          1
+                        )
+                  "
+                >
+                  {{ item.name }}
+                </ui-checkbox>
+              </div>
+              <p class="mt-4">
                 {{ t('settings.backupWorkflows.backup.schedule') }}
               </p>
               <template v-if="!downloadPermission.has.downloads">
-                <p class="text-gray-600 dark:text-gray-300">
-                  Automa requires the "Downloads" permission for this feature to
-                  work
+                <p class="text-gray-600 dark:text-gray-300 mt-1">
+                  Automa requires the "Downloads" permission for the schedule
+                  backup to work
                 </p>
                 <ui-button
-                  class="mt-4 w-full"
+                  class="mt-2 w-full"
                   @click="downloadPermission.request()"
                 >
                   Allow "Downloads" permission
@@ -113,8 +133,7 @@
               <template v-else>
                 <ui-select
                   v-model="localBackupSchedule.schedule"
-                  label="Schedule"
-                  class="w-full"
+                  class="w-full mt-2"
                 >
                   <option value="">Never</option>
                   <option
@@ -138,6 +157,7 @@
                   </p>
                 </template>
                 <ui-input
+                  v-if="localBackupSchedule.schedule !== ''"
                   v-model="localBackupSchedule.folderName"
                   label="Folder name"
                   class="w-full mt-2"
@@ -153,6 +173,9 @@
               </template>
             </div>
           </ui-popover>
+          <ui-button class="flex-1" @click="backupWorkflows">
+            {{ t('settings.backupWorkflows.backup.button') }}
+          </ui-button>
         </div>
       </div>
       <div class="w-6/12 rounded-lg border p-4 dark:border-gray-700">
@@ -188,6 +211,7 @@ import { useToast } from 'vue-toastification';
 import dayjs from 'dayjs';
 import AES from 'crypto-js/aes';
 import cronParser from 'cron-parser';
+import dbStorage from '@/db/storage';
 import encUtf8 from 'crypto-js/enc-utf8';
 import browser from 'webextension-polyfill';
 import hmacSHA256 from 'crypto-js/hmac-sha256';
@@ -204,6 +228,10 @@ const BACKUP_SCHEDULES = {
   '0 8 * * *': 'Every day',
   '0 8 * * 0': 'Every week',
 };
+const BACKUP_ITEMS_INCLUDES = [
+  { id: 'storage:table', name: 'Storage tables' },
+  { id: 'storage:variables', name: 'Storage variables' },
+];
 
 const { t } = useI18n();
 const toast = useToast();
@@ -227,6 +255,7 @@ const backupState = reactive({
 const localBackupSchedule = reactive({
   schedule: '',
   lastBackup: null,
+  includedItems: [],
   customSchedule: '',
   folderName: 'automa-backup',
 });
@@ -249,7 +278,7 @@ async function registerScheduleBackup() {
     }
 
     browser.storage.local.set({
-      scheduleLocalBackup: toRaw(localBackupSchedule),
+      localBackupSettings: toRaw(localBackupSchedule),
     });
   } catch (error) {
     console.error(error);
@@ -292,56 +321,70 @@ async function syncBackupWorkflows() {
     state.loadingSync = false;
   }
 }
-function backupWorkflows() {
-  const workflows = workflowStore.getWorkflows.reduce((acc, workflow) => {
-    if (workflow.isProtected) return acc;
+async function backupWorkflows() {
+  try {
+    const workflows = workflowStore.getWorkflows.reduce((acc, workflow) => {
+      if (workflow.isProtected) return acc;
 
-    delete workflow.$id;
-    delete workflow.createdAt;
-    delete workflow.data;
-    delete workflow.isDisabled;
-    delete workflow.isProtected;
+      delete workflow.$id;
+      delete workflow.createdAt;
+      delete workflow.data;
+      delete workflow.isDisabled;
+      delete workflow.isProtected;
 
-    acc.push(workflow);
+      acc.push(workflow);
 
-    return acc;
-  }, []);
-  const payload = {
-    isProtected: state.encrypt,
-    workflows: JSON.stringify(workflows),
-  };
-  const downloadFile = (data) => {
-    const fileName = `automa-${dayjs().format('DD-MM-YYYY')}.json`;
-    const blob = new Blob([JSON.stringify(data)], {
-      type: 'application/json',
-    });
-    const objectUrl = URL.createObjectURL(blob);
+      return acc;
+    }, []);
+    const payload = {
+      isProtected: state.encrypt,
+      workflows: JSON.stringify(workflows),
+    };
 
-    fileSaver(fileName, objectUrl);
+    if (localBackupSchedule.includedItems.includes('storage:table')) {
+      const tables = await dbStorage.tablesItems.toArray();
+      payload.storageTables = JSON.stringify(tables);
+    }
+    if (localBackupSchedule.includedItems.includes('storage:variables')) {
+      const variables = await dbStorage.variables.toArray();
+      payload.storageVariables = JSON.stringify(variables);
+    }
 
-    URL.revokeObjectURL(objectUrl);
-  };
+    const downloadFile = (data) => {
+      const fileName = `automa-${dayjs().format('DD-MM-YYYY')}.json`;
+      const blob = new Blob([JSON.stringify(data)], {
+        type: 'application/json',
+      });
+      const objectUrl = URL.createObjectURL(blob);
 
-  if (state.encrypt) {
-    dialog.prompt({
-      placeholder: t('common.password'),
-      title: t('settings.backupWorkflows.title'),
-      okText: t('settings.backupWorkflows.backup.button'),
-      inputType: 'password',
-      onConfirm: (password) => {
-        const encryptedWorkflows = AES.encrypt(
-          payload.workflows,
-          password
-        ).toString();
-        const hmac = hmacSHA256(encryptedWorkflows, password).toString();
+      fileSaver(fileName, objectUrl);
 
-        payload.workflows = hmac + encryptedWorkflows;
+      URL.revokeObjectURL(objectUrl);
+    };
 
-        downloadFile(payload);
-      },
-    });
-  } else {
-    downloadFile(payload);
+    if (state.encrypt) {
+      dialog.prompt({
+        placeholder: t('common.password'),
+        title: t('settings.backupWorkflows.title'),
+        okText: t('settings.backupWorkflows.backup.button'),
+        inputType: 'password',
+        onConfirm: (password) => {
+          const encryptedWorkflows = AES.encrypt(
+            payload.workflows,
+            password
+          ).toString();
+          const hmac = hmacSHA256(encryptedWorkflows, password).toString();
+
+          payload.workflows = hmac + encryptedWorkflows;
+
+          downloadFile(payload);
+        },
+      });
+    } else {
+      downloadFile(payload);
+    }
+  } catch (error) {
+    console.error(error);
   }
 }
 async function restoreWorkflows() {
@@ -360,7 +403,7 @@ async function restoreWorkflows() {
       const showMessage = (event) => {
         toast(
           t('settings.backupWorkflows.workflowsAdded', {
-            count: event.workflows.length,
+            count: Object.values(event).length,
           })
         );
       };
@@ -374,8 +417,17 @@ async function restoreWorkflows() {
 
     reader.onload = ({ target }) => {
       const payload = parseJSON(target.result, null);
-
       if (!payload) return;
+
+      const storageTables = parseJSON(payload.storageTables, null);
+      if (Array.isArray(storageTables)) {
+        dbStorage.tablesItems.bulkPut(storageTables);
+      }
+
+      const storageVariables = parseJSON(payload.storageVariables, null);
+      if (Array.isArray(storageVariables)) {
+        dbStorage.variables.bulkPut(storageVariables);
+      }
 
       if (payload.isProtected) {
         dialog.prompt({
@@ -420,14 +472,14 @@ async function restoreWorkflows() {
 }
 
 onMounted(async () => {
-  const { lastBackup, lastSync, scheduleLocalBackup } =
+  const { lastBackup, lastSync, localBackupSettings } =
     await browser.storage.local.get([
       'lastSync',
       'lastBackup',
-      'scheduleLocalBackup',
+      'localBackupSettings',
     ]);
 
-  Object.assign(localBackupSchedule, scheduleLocalBackup || {});
+  Object.assign(localBackupSchedule, localBackupSettings || {});
 
   state.lastSync = lastSync;
   state.lastBackup = lastBackup;

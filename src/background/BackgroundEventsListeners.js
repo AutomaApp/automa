@@ -1,17 +1,18 @@
 import browser from 'webextension-polyfill';
 import { initElementSelector } from '@/newtab/utils/elementSelector';
 import dayjs from 'dayjs';
+import dbStorage from '@/db/storage';
 import cronParser from 'cron-parser';
 import BackgroundUtils from './BackgroundUtils';
 import BackgroundWorkflowTriggers from './BackgroundWorkflowTriggers';
 
 async function handleScheduleBackup() {
   try {
-    const { scheduleLocalBackup, workflows } = await browser.storage.local.get([
-      'scheduleLocalBackup',
+    const { localBackupSettings, workflows } = await browser.storage.local.get([
+      'localBackupSettings',
       'workflows',
     ]);
-    if (!scheduleLocalBackup) return;
+    if (!localBackupSettings) return;
 
     const workflowsData = Object.values(workflows || []).reduce(
       (acc, workflow) => {
@@ -29,9 +30,23 @@ async function handleScheduleBackup() {
       },
       []
     );
-    const base64 = btoa(JSON.stringify(workflowsData));
+
+    const payload = {
+      workflows: JSON.stringify(workflowsData),
+    };
+
+    if (localBackupSettings.includedItems.includes('storage:table')) {
+      const tables = await dbStorage.tablesItems.toArray();
+      payload.storageTables = JSON.stringify(tables);
+    }
+    if (localBackupSettings.includedItems.includes('storage:variables')) {
+      const variables = await dbStorage.variables.toArray();
+      payload.storageVariables = JSON.stringify(variables);
+    }
+
+    const base64 = btoa(JSON.stringify(payload));
     const filename = `${
-      scheduleLocalBackup.folderName ? `${scheduleLocalBackup.folderName}/` : ''
+      localBackupSettings.folderName ? `${localBackupSettings.folderName}/` : ''
     }${dayjs().format('DD-MMM-YYYY--HH-mm')}.json`;
 
     await browser.downloads.download({
@@ -39,16 +54,16 @@ async function handleScheduleBackup() {
       url: `data:application/json;base64,${base64}`,
     });
     await browser.storage.local.set({
-      scheduleLocalBackup: {
-        ...scheduleLocalBackup,
+      localBackupSettings: {
+        ...localBackupSettings,
         lastBackup: Date.now(),
       },
     });
 
     const expression =
-      scheduleLocalBackup.schedule === 'custom'
-        ? scheduleLocalBackup.customSchedule
-        : scheduleLocalBackup.schedule;
+      localBackupSettings.schedule === 'custom'
+        ? localBackupSettings.customSchedule
+        : localBackupSettings.schedule;
     const parsedExpression = cronParser.parseExpression(expression).next();
     if (!parsedExpression) return;
 
