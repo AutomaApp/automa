@@ -9,7 +9,7 @@
         {{ label }}
       </slot>
     </label>
-    <div class="ui-select__content relative block flex w-full items-center">
+    <div class="ui-select__content relative flex w-full items-center">
       <v-remixicon
         v-if="prependIcon"
         size="20"

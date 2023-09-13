@@ -153,7 +153,9 @@
       "needSignin": "You need to sign in first",
       "backup": {
         "button": "Backup",
-        "encrypt": "Encrypt with password"
+        "settings": "Backup settings",
+        "encrypt": "Encrypt with password",
+        "schedule": "Schedule local backup"
       },
       "restore": {
         "title": "Restore workflows",

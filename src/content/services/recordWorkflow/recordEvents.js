@@ -10,8 +10,7 @@ let isMainFrame = true;
 const isAutomaInstance = (target) =>
   target.id === 'automa-recording' ||
   document.body.hasAttribute('automa-selecting');
-const textFieldEl = (el) =>
-  ['INPUT', 'TEXTAREA'].includes(el.tagName) || el.isContentEditable;
+const isTextFieldEl = (el) => ['INPUT', 'TEXTAREA'].includes(el.tagName);
 
 async function addBlock(detail) {
   try {
@@ -65,23 +64,17 @@ function onChange({ target }) {
         filePaths: [target.value],
       },
     };
-  } else if (textFieldEl(target) || isSelectEl) {
-    let description = '';
-
-    if (elementName && elementName.length < 12) {
-      description = `${isSelectEl ? 'Select' : 'Text field'} (${elementName})`;
-    }
-
+  } else if (isSelectEl) {
     block = {
       id: 'forms',
       data: {
         selector,
         delay: 100,
-        description,
+        type: 'select',
         clearValue: true,
         value: target.value,
         waitForSelector: true,
-        type: isSelectEl ? 'select' : 'text-field',
+        description: `Element Name (${elementName})`,
       },
     };
   } else {
@@ -121,13 +114,12 @@ function onChange({ target }) {
 async function onKeydown(event) {
   if (isAutomaInstance(event.target) || event.repeat) return;
 
-  const isTextField = textFieldEl(event.target);
+  const isTextField = isTextFieldEl(event.target);
   const enterKey = event.key === 'Enter';
   let isSubmitting = false;
 
   if (isTextField) {
     const inputInForm = event.target.form && event.target.tagName === 'INPUT';
-
     if (enterKey && inputInForm) {
       event.preventDefault();
 
@@ -183,7 +175,6 @@ async function onKeydown(event) {
 }
 function onClick(event) {
   const { target } = event;
-
   if (isAutomaInstance(target)) return;
 
   const isTextField =
@@ -294,6 +285,49 @@ const onScroll = debounce(({ target }) => {
   });
 }, 500);
 
+const onInputTextField = debounce(({ target }) => {
+  const selector = target.dataset.automaElSelector;
+  if (!selector) return;
+
+  addBlock((recording) => {
+    const lastFlow = recording.flows[recording.flows.length - 1];
+    if (
+      lastFlow &&
+      lastFlow.id === 'forms' &&
+      lastFlow.data.selector === selector
+    ) {
+      lastFlow.data.value = target.value;
+      return;
+    }
+
+    const elementName = (target.ariaLabel || target.name || '').slice(0, 12);
+    recording.flows.push({
+      id: 'forms',
+      data: {
+        selector,
+        delay: 100,
+        clearValue: true,
+        type: 'text-field',
+        value: target.value,
+        waitForSelector: true,
+        description: `Text field (${elementName})`,
+      },
+    });
+  });
+}, 300);
+
+function onFocusIn({ target }) {
+  if (!isTextFieldEl(target)) return;
+
+  target.setAttribute('data-automa-el-selector', findSelector(target));
+  target.addEventListener('input', onInputTextField);
+}
+function onFocusOut({ target }) {
+  if (!isTextFieldEl(target)) return;
+
+  target.removeEventListener('input', onInputTextField);
+}
+
 export function cleanUp() {
   if (isMainFrame) {
     window.removeEventListener('message', onMessage);
@@ -302,7 +336,9 @@ export function cleanUp() {
 
   document.removeEventListener('click', onClick, true);
   document.removeEventListener('change', onChange, true);
+  document.removeEventListener('focusin', onFocusIn, true);
   document.removeEventListener('keydown', onKeydown, true);
+  document.removeEventListener('focusout', onFocusOut, true);
 }
 
 export default async function (mainFrame) {
@@ -316,9 +352,15 @@ export default async function (mainFrame) {
       document.addEventListener('scroll', onScroll, true);
     }
 
+    if (isTextFieldEl(document.activeElement)) {
+      onFocusIn({ target: document.activeElement });
+    }
+
     document.addEventListener('click', onClick, true);
     document.addEventListener('change', onChange, true);
+    document.addEventListener('focusin', onFocusIn, true);
     document.addEventListener('keydown', onKeydown, true);
+    document.addEventListener('focusout', onFocusOut, true);
   }
 
   return cleanUp;
