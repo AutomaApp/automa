@@ -25,11 +25,12 @@ class BackgroundUtils {
           });
         }
       } else {
+        const curWin = await browser.windows.getCurrent();
         const windowOptions = {
           top: 0,
           left: 0,
-          width: 715,
-          height: 715,
+          width: Math.min(curWin.width, 715),
+          height: Math.min(curWin.height, 715),
           url: tabUrl,
           type: 'popup',
         };
