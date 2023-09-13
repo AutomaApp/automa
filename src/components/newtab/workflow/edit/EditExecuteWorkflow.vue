@@ -43,6 +43,13 @@
     <p class="mt-4 ml-1 mb-1 text-sm text-gray-600 dark:text-gray-200">
       {{ t('common.globalData') }}
     </p>
+    <ui-checkbox
+      :model-value="data.insertAllGlobalData"
+      class="mb-4 leading-tight text-sm"
+      @change="updateData({ insertAllGlobalData: $event })"
+    >
+      {{ t('workflow.blocks.execute-workflow.insertAllGlobalData') }}
+    </ui-checkbox>
     <pre
       v-if="!state.showGlobalData"
       class="max-h-80 overflow-auto rounded-lg bg-gray-900 p-4 text-gray-200"
