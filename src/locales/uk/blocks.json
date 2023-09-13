@@ -774,6 +774,9 @@
             "iframe": "Iframe"
           }
         }
+      },
+      "execute-workflow": {
+        "insertAllGlobalData": "Використовувати весь поточний робочий процес globalData"
       }
     }
   }

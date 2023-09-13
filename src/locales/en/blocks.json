@@ -393,7 +393,8 @@
         "description": "",
         "insertAllVars": "Use all current workflow variables",
         "insertVars": "Insert current workflow variables",
-        "useCommas": "Use commas to separate the variable name"
+        "useCommas": "Use commas to separate the variable name",
+        "insertAllGlobalData": "Use all current workflow globalData"
       },
       "google-sheets-drive": {
         "name": "@:workflow.blocks.google-sheets.name (GDrive)",
