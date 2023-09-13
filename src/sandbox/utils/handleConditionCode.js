@@ -5,6 +5,9 @@ export default function (data) {
   script.textContent = `
     (async () => {
       function automaRefData(keyword, path = '') {
+        if (!keyword) return null;
+        if (!path) return ${propertyName}.refData[keyword];
+
         return window.$getNestedProperties(${propertyName}.refData, keyword + '.' + path);
       }
 
