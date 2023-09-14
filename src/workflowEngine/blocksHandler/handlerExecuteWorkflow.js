@@ -44,7 +44,7 @@ function findWorkflow(workflows, workflowId) {
   return workflow;
 }
 
-async function executeWorkflow({ id: blockId, data }) {
+async function executeWorkflow({ id: blockId, data }, { refData }) {
   if (data.workflowId === '') throw new Error('empty-workflow');
 
   const { workflows, teamWorkflows } = await browser.storage.local.get([
@@ -74,8 +74,17 @@ async function executeWorkflow({ id: blockId, data }) {
 
   if (workflow.testingMode) workflow.testingMode = false;
 
-  if (!isWhitespace(data.globalData))
-    optionsParams.globalData = data.globalData;
+  if (data.insertAllGlobalData) {
+    optionsParams.globalData = refData.globalData;
+  }
+
+  if (!isWhitespace(data.globalData)) {
+    // shallow copy
+    optionsParams.globalData = {
+      ...optionsParams.globalData,
+      ...JSON.parse(data.globalData),
+    };
+  }
 
   if (data.insertAllVars) {
     optionsParams.variables = JSON.parse(

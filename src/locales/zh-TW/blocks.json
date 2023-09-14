@@ -163,9 +163,15 @@
             "label": "設定執行文字輸入前的等待時間; 單位： ms（0為停用）"
           }
         },
-        "select": { "name": "下拉式選單" },
-        "radio": { "name": "單選框" },
-        "checkbox": { "name": "複選框" }
+        "select": {
+          "name": "下拉式選單"
+        },
+        "radio": {
+          "name": "單選框"
+        },
+        "checkbox": {
+          "name": "複選框"
+        }
       },
       "repeat-task": {
         "name": "重新執行任務",
@@ -279,6 +285,9 @@
           "main": "主視窗",
           "iframe": "iframe"
         }
+      },
+      "execute-workflow": {
+        "insertAllGlobalData": "插入當前工作流的 GlobalData"
       }
     }
   }

@@ -17,7 +17,7 @@
         "timeout": "超时 (毫秒)",
         "noPermission": "Automa 没有足够的权限执行此操作",
         "grantPermission": "授予权限",
-	      "action": "操作",
+        "action": "操作",
         "element": {
           "select": "选择一个元素",
           "verify": "验证选择器"
@@ -393,7 +393,8 @@
         "description": "",
         "insertAllVars": "插入所有当前工作流变量",
         "insertVars": "插入当前工作流变量",
-        "useCommas": "使用逗号分隔变量名"
+        "useCommas": "使用逗号分隔变量名",
+        "insertAllGlobalData": "插入当前工作流的 GlobalData"
       },
       "google-sheets": {
         "name": "Google sheets",

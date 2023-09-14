@@ -393,7 +393,8 @@
         "description": "",
         "insertAllVars": "Usa tutte le variabili del workflow corrente",
         "insertVars": "Inserisci le variabili del workflow corrente",
-        "useCommas": "Usa le virgole per separare i nomi delle variabili"
+        "useCommas": "Usa le virgole per separare i nomi delle variabili",
+        "insertAllGlobalData": "Utilizza tutto il flusso di lavoro corrente globalData"
       },
       "google-sheets": {
         "name": "Google Sheets",

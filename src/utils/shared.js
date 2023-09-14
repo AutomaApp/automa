@@ -68,6 +68,7 @@ export const tasks = {
       globalData: '',
       description: '',
       insertAllVars: false,
+      insertAllGlobalData: false,
     },
   },
   'active-tab': {
