@@ -73,8 +73,8 @@ export default function (data, enable) {
         background-color: white;
         font-size: 16px;
         font-family: sans-serif;
-        box-shadow: box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-        z-index: 99999
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        z-index: 99999;
       }
       .automa-executed-block #spinner {
         color: currentColor;
