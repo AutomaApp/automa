@@ -1287,10 +1287,10 @@
   dependencies:
     "@lezer/common" "^1.0.0"
 
-"@medv/finder@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@medv/finder/-/finder-2.1.0.tgz#5c53cdaac3b87057b9e5579ca1282b2397624016"
-  integrity sha512-Egrg5XO4kLol24b1Kv50HDfi5hW0yQ6aWSsO0Hea1eJ4rogKElIN0M86FdVnGF4XIGYyA7QWx0MgbOzVPA0qkA==
+"@medv/finder@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@medv/finder/-/finder-3.1.0.tgz#e157c68f166ade9f113a1314603365bf81dd8b8c"
+  integrity sha512-ojkXjR3K0Zz3jnCR80tqPL+0yvbZk/lEodb6RIVjLz7W8RVA2wrw8ym/CzCpXO9SYVUIKHFUpc7jvf8UKfIM3w==
 
 "@n8n_io/riot-tmpl@^2.0.0":
   version "2.0.0"
@@ -1824,7 +1824,7 @@
     d3-selection "^3.0.0"
     d3-zoom "^3.0.0"
 
-"@vue-flow/core@^1.12.7":
+"@vue-flow/core@^1.22.3":
   version "1.22.3"
   resolved "https://registry.yarnpkg.com/@vue-flow/core/-/core-1.22.3.tgz#2f98bb5185df64ac33e9eaa47093a624ef291698"
   integrity sha512-1Hz7cnomzbUuBYOghtb+ZUunUAD8UXJC/PrUUjjQQa2HEcaRK9KK3c4sE1QMBbhQh5umcuwjRH/XVJhOVDoIOQ==
