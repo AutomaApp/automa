@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "1.28.9",
+  "version": "1.28.10",
   "description": "An extension for automating your browser by connecting blocks",
   "repository": {
     "type": "git",
@@ -35,7 +35,7 @@
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/language": "^6.9.0",
     "@codemirror/theme-one-dark": "^6.1.2",
-    "@medv/finder": "^2.1.0",
+    "@medv/finder": "^3.1.0",
     "@n8n_io/riot-tmpl": "^2.0.0",
     "@tiptap/core": "^2.0.4",
     "@tiptap/extension-character-count": "^2.0.4",
@@ -48,7 +48,7 @@
     "@tiptap/vue-3": "^2.0.4",
     "@viselect/vanilla": "^3.2.5",
     "@vue-flow/additional-components": "^1.3.3",
-    "@vue-flow/core": "^1.12.7",
+    "@vue-flow/core": "^1.22.3",
     "@vueuse/head": "^1.3.1",
     "@vueuse/rxjs": "^9.12.0",
     "@vuex-orm/core": "^0.36.4",
