@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "1.28.9",
+  "version": "v1.28.10",
   "description": "An extension for automating your browser by connecting blocks",
   "repository": {
     "type": "git",
