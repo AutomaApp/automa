@@ -1770,46 +1770,46 @@
   dependencies:
     "@types/node" "*"
 
-"@unhead/dom@1.3.9", "@unhead/dom@^1.3.1":
-  version "1.3.9"
-  resolved "https://registry.yarnpkg.com/@unhead/dom/-/dom-1.3.9.tgz#a2d713bd8a0a411ce26e6756d4095e26231f97b6"
-  integrity sha512-bTbPFjXjmk8MC0cBC+7Bgf0Mcw62gsE2XqOhMH/qQo6NP4vR2XGxqy054Y7MGurznR1JVAqxUiU3cR/oxWFk3g==
+"@unhead/dom@1.7.3", "@unhead/dom@^1.7.0":
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/@unhead/dom/-/dom-1.7.3.tgz#b8b8a90e83428e7ac19fa525769d7108de79ae8a"
+  integrity sha512-igJ2ZxU5x4CQQQ3iM+CPOPHdjpam/Q89xIvDSE0crK11TU00WOl0bWl1yQp/EI0pyza1G3ZQ1JyDmi7OcCM9eQ==
   dependencies:
-    "@unhead/schema" "1.3.9"
-    "@unhead/shared" "1.3.9"
+    "@unhead/schema" "1.7.3"
+    "@unhead/shared" "1.7.3"
 
-"@unhead/schema@1.3.9", "@unhead/schema@^1.3.1":
-  version "1.3.9"
-  resolved "https://registry.yarnpkg.com/@unhead/schema/-/schema-1.3.9.tgz#9312a2ecaf554f7c9d1f14ba7d05906182fbaffa"
-  integrity sha512-iIa0dczd2qTOxwYZbVR+iAKdlELnLTlKSFsN/YuJ/33sRi5VFa9D8TDBEPLec9gpcjB/bH0FhERfR4bb4UbRuA==
+"@unhead/schema@1.7.3", "@unhead/schema@^1.7.0":
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/@unhead/schema/-/schema-1.7.3.tgz#9783ef542609e583e4454d00fa2e4f215c147ab6"
+  integrity sha512-w2Yvt1++bAnSmsYc7bwLTMalSbff6HFnNmlpFIjNUTSkquOg+oavm62TrgxAwq753dedDOzCXr5cUvzCswc2Yg==
   dependencies:
     hookable "^5.5.3"
-    zhead "^2.0.10"
+    zhead "^2.1.1"
 
-"@unhead/shared@1.3.9":
-  version "1.3.9"
-  resolved "https://registry.yarnpkg.com/@unhead/shared/-/shared-1.3.9.tgz#2e9815be59a97e02f302921e9c2bd3ae79f9fa4a"
-  integrity sha512-lBXK1gzsg3XOnsOgYUVTT2RKOvM+AB0myDXkwQb0jsJB3Tc1qVOSz9JAOR+ZGrosSr7+Iv91+Fu/0E+knxaj2Q==
+"@unhead/shared@1.7.3":
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/@unhead/shared/-/shared-1.7.3.tgz#30dfe09d6fbb974b61d04cdcba541ce1eccdb6c8"
+  integrity sha512-eqAn3n+T6WMecDUzdqGyedpZwT0u04pZwHEvD0bxmVen1FU6VHiL49azyv1W7MCiCHNFNAcR1py2Eolsr6+E7g==
   dependencies:
-    "@unhead/schema" "1.3.9"
+    "@unhead/schema" "1.7.3"
 
-"@unhead/ssr@^1.3.1":
-  version "1.3.9"
-  resolved "https://registry.yarnpkg.com/@unhead/ssr/-/ssr-1.3.9.tgz#6a3e332fcc347f05c0f4982a98a060626758a474"
-  integrity sha512-FTt4IQOAxHiSfRM7IoJJiFnUEBH8CG5zkJOQ/LydG19QpYa9/AGOi4xvngeCr++1as51p2hWoRO6gPxSRhV8cA==
+"@unhead/ssr@^1.7.0":
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/@unhead/ssr/-/ssr-1.7.3.tgz#1132b5f2dc5a5eff90b412a71c4c235ace650ab8"
+  integrity sha512-icN3OmrbuXd0NbqarGRa3ixeqdpQzhldTzcN3LPHpmfgN+CFVS7kI9oo5znoIjW7nZaxAUH95knyAi1+Mt6ThQ==
   dependencies:
-    "@unhead/schema" "1.3.9"
-    "@unhead/shared" "1.3.9"
+    "@unhead/schema" "1.7.3"
+    "@unhead/shared" "1.7.3"
 
-"@unhead/vue@^1.3.1":
-  version "1.3.9"
-  resolved "https://registry.yarnpkg.com/@unhead/vue/-/vue-1.3.9.tgz#20adeecaf0feb7823be3a91f7f98d0f9ac54f6b9"
-  integrity sha512-rVAsRLBc+3Y//NRmr7vmRs5yhIf65jYSvcj0V5DtDfDwql7BbGgc3VIIEvY0+EjLQuNsS5kxwm78LSPCIl/3Xw==
+"@unhead/vue@^1.7.0":
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/@unhead/vue/-/vue-1.7.3.tgz#5d0e4da4915d2fd28254aaa459bb125f74c6b698"
+  integrity sha512-QSy2Qsc4IurrRrvpnnNzBWL/g4ecz3eblSVJ41QwqBnaUIRdPaSY8EdobA/NR0rtWzHicV6Fy3nEYXSXSRDELQ==
   dependencies:
-    "@unhead/schema" "1.3.9"
-    "@unhead/shared" "1.3.9"
+    "@unhead/schema" "1.7.3"
+    "@unhead/shared" "1.7.3"
     hookable "^5.5.3"
-    unhead "1.3.9"
+    unhead "1.7.3"
 
 "@viselect/vanilla@^3.2.5":
   version "3.3.1"
@@ -1939,15 +1939,15 @@
     "@vueuse/shared" "10.4.1"
     vue-demi ">=0.14.5"
 
-"@vueuse/head@^1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@vueuse/head/-/head-1.3.1.tgz#2baa11a8fd4f3f763474792c4ff91c818bf83051"
-  integrity sha512-XCcHGfDzkGlHS7KIPJVYN//L7jpfASLsN7MUE19ndHVQLnPIDxqFLDl7IROsY81PKzawVAUe4OYVWcGixseWxA==
+"@vueuse/head@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/head/-/head-2.0.0.tgz#a4570c0933368a436796c2f737d56e169a8f0864"
+  integrity sha512-ykdOxTGs95xjD4WXE4na/umxZea2Itl0GWBILas+O4oqS7eXIods38INvk3XkJKjqMdWPcpCyLX/DioLQxU1KA==
   dependencies:
-    "@unhead/dom" "^1.3.1"
-    "@unhead/schema" "^1.3.1"
-    "@unhead/ssr" "^1.3.1"
-    "@unhead/vue" "^1.3.1"
+    "@unhead/dom" "^1.7.0"
+    "@unhead/schema" "^1.7.0"
+    "@unhead/ssr" "^1.7.0"
+    "@unhead/vue" "^1.7.0"
 
 "@vueuse/metadata@10.4.1":
   version "10.4.1"
@@ -6919,14 +6919,14 @@ underscore@1.12.1:
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.12.1.tgz#7bb8cc9b3d397e201cf8553336d262544ead829e"
   integrity sha512-hEQt0+ZLDVUMhebKxL4x1BTtDY7bavVofhZ9KZ4aI26X9SRaE+Y3m83XUL1UP2jn8ynjndwCCpEHdUG+9pP1Tw==
 
-unhead@1.3.9:
-  version "1.3.9"
-  resolved "https://registry.yarnpkg.com/unhead/-/unhead-1.3.9.tgz#62176866cd852e9b289fcf2534fdfdf3c585fc2a"
-  integrity sha512-vzWZJW8l6dlNM5egJs3c7NMHWZ+iw2x7jCZtU2rrhwFINlKCaA3J42fvOeDxx6t5QR9dfZ96HF2AeNlCcPT+bQ==
+unhead@1.7.3:
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/unhead/-/unhead-1.7.3.tgz#9f0f07beeca0a361cdbfceef33fac2333f7b4df7"
+  integrity sha512-6LbBOVgsr+JCmeWH9okxlBtMtFHGIECX93ySWBnposnOqzSUtnUsEgB0nVB8Qa7uozfHlmJfSBJMUeTztzPfSQ==
   dependencies:
-    "@unhead/dom" "1.3.9"
-    "@unhead/schema" "1.3.9"
-    "@unhead/shared" "1.3.9"
+    "@unhead/dom" "1.7.3"
+    "@unhead/schema" "1.7.3"
+    "@unhead/shared" "1.7.3"
     hookable "^5.5.3"
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
@@ -7370,10 +7370,10 @@ yocto-queue@^1.0.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-1.0.0.tgz#7f816433fb2cbc511ec8bf7d263c3b58a1a3c251"
   integrity sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==
 
-zhead@^2.0.10:
-  version "2.0.10"
-  resolved "https://registry.yarnpkg.com/zhead/-/zhead-2.0.10.tgz#dc89c420081fae78a6f3d10687428ae676bc6291"
-  integrity sha512-irug8fXNKjqazkA27cFQs7C6/ZD3qNiEzLC56kDyzQART/Z9GMGfg8h2i6fb9c8ZWnIx/QgOgFJxK3A/CYHG0g==
+zhead@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/zhead/-/zhead-2.1.1.tgz#42950fbd5468268a07dc5b042a6c0261d340535d"
+  integrity sha512-FRmjAFioi07R+bmL+fqbkXF/pCbC9PwcKQ8RDluC5xTaVbNBgYRQ4eKuS1C8c7Sil//UIxet/AGp7D6royoHhA==
 
 zip-stream@^4.1.0:
   version "4.1.0"
