@@ -1,4 +1,5 @@
 import { sendMessage } from '@/utils/message';
+import { sleep } from '@/utils/helper';
 import { getElementPosition, simulateClickElement } from '../utils';
 import handleSelector from '../handleSelector';
 
@@ -27,7 +28,11 @@ function eventClick(block) {
             return sendMessage('debugger:send-command', payload, 'background');
           };
 
+          // bypass the bot detection.
+          await executeCommand('mouseMoved');
+          await sleep(100);
           await executeCommand('mousePressed');
+          await sleep(100);
           await executeCommand('mouseReleased');
 
           return;
