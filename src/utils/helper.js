@@ -17,7 +17,6 @@ export async function getActiveTab() {
       if (isDashboard) {
         await browser.windows.update(browserWindow.id, {
           focused: false,
-          state: 'minimized',
         });
       } else if (browserWindow.focused) {
         windowId = browserWindow.id;
