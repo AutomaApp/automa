@@ -31,24 +31,26 @@
   <ui-tab-panels v-model="activeTab">
     <ui-tab-panel value="headers">
       <div class="mt-4 grid grid-cols-7 justify-items-center gap-2">
-        <template v-for="(items, index) in data.headers" :key="index">
+        <template v-for="(header, index) in data.headers" :key="index">
           <ui-input
-            v-model="items.name"
-            :title="items.name"
+            v-model="header.name"
+            :title="header.name"
             :placeholder="`Header ${index + 1}`"
             type="text"
             class="col-span-3"
           />
           <ui-input
-            v-model="items.value"
-            :title="items.value"
+            v-model="header.value"
+            :title="header.value"
             placeholder="Value"
             type="text"
             class="col-span-3"
           />
           <button
             @click="
-              emitData({ headers: data.filter((_, idx) => idx !== index) })
+              emitData({
+                headers: data.headers.filter((_, idx) => idx !== index),
+              })
             "
           >
             <v-remixicon name="riCloseCircleLine" size="20" />
