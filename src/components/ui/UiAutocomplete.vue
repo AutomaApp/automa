@@ -134,8 +134,19 @@ function getLastKeyBeforeCaret(caretIndex) {
 }
 function getSearchText(caretIndex, charIndex) {
   if (charIndex !== -1) {
+    const closeTrigger = (props.triggerChar ?? [])[1];
+    const searchRgxp = new RegExp(
+      `\\s${closeTrigger ? `|${closeTrigger}` : ''}`
+    );
+
+    const inputValue = input.value;
+    const afterCaretTxt = inputValue.substring(caretIndex);
+    const lastClosingIdx = afterCaretTxt.search(searchRgxp);
+
     const charsLength = props.triggerChar.length;
-    const text = input.value.substring(charIndex + charsLength, caretIndex);
+    const text =
+      input.value.substring(charIndex + charsLength, caretIndex) +
+      afterCaretTxt.substring(0, lastClosingIdx);
 
     if (!/\s/.test(text)) {
       return text;
@@ -199,7 +210,6 @@ function updateValue(value) {
 }
 function selectItem(itemIndex, selected) {
   let selectedItem = filteredItems.value[itemIndex];
-
   if (!selectedItem) return;
 
   selectedItem = getItem(selectedItem);
