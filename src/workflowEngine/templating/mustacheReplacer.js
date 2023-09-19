@@ -17,7 +17,7 @@ export function extractStrFunction(str) {
   if (!extractedStr) return null;
   const { 1: name, 2: funcParams } = extractedStr;
   const params = funcParams
-    .split(/,(?=(?:[^'"]*['"][^'"]*['"])*[^'"]*$)/)
+    .split(/,(?=(?:[^'"\\"\\']*['"][^'"]*['"\\"\\'])*[^'"]*$)/)
     .map((param) => param.trim().replace(/^['"]|['"]$/g, '') || '');
 
   return {
