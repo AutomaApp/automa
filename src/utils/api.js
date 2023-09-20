@@ -205,10 +205,7 @@ export async function fetchGapi(url, resource = {}, options = {}) {
       resource
     );
 
-    const isResJson = response.headers
-      .get('content-type')
-      ?.includes('application/json');
-    const result = isResJson && (await response.json());
+    const result = parseJSON(await response.text(), null);
     const insufficientScope =
       response.status === 403 &&
       result?.error?.message.includes('insufficient authentication scopes');
