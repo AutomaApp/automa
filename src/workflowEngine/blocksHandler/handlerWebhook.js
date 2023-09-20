@@ -13,6 +13,8 @@ function fileReader(blob) {
   });
 }
 
+const ALL_HTTP_RESPONSE_KEYWORD = '$response';
+
 export async function webhook({ data, id }, { refData }) {
   const nextBlockId = this.getBlockConnections(id);
   const fallbackOutput = this.getBlockConnections(id, 'fallback');
@@ -68,11 +70,17 @@ export async function webhook({ data, id }, { refData }) {
       };
     }
 
+    const includeResponse = data.dataPath.includes(ALL_HTTP_RESPONSE_KEYWORD);
     let returnData = '';
 
     if (data.responseType === 'json') {
       const jsonRes = await response.json();
-      returnData = objectPath.get(jsonRes, data.dataPath);
+
+      if (!includeResponse) {
+        returnData = objectPath.get(jsonRes, data.dataPath);
+      } else {
+        returnData = jsonRes;
+      }
     } else if (data.responseType === 'base64') {
       const blob = await response.blob();
       const base64 = await fileReader(blob);
@@ -80,6 +88,20 @@ export async function webhook({ data, id }, { refData }) {
       returnData = base64;
     } else {
       returnData = await response.text();
+    }
+
+    if (includeResponse) {
+      const { status, statusText, url, redirected, ok } = response;
+      const responseData = {
+        ok,
+        url,
+        status,
+        statusText,
+        redirected,
+        data: returnData,
+      };
+
+      returnData = objectPath.get({ $response: responseData }, data.dataPath);
     }
 
     if (data.assignVariable) {

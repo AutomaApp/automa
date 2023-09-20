@@ -37,8 +37,6 @@ class BackgroundUtils {
 
         if (updateTab) {
           windowOptions.focused = true;
-        } else {
-          windowOptions.state = 'minimized';
         }
 
         await browser.windows.create(windowOptions);
