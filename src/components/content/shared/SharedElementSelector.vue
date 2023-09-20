@@ -41,7 +41,7 @@
   </teleport>
 </template>
 <script setup>
-import { reactive, watch, onMounted, onBeforeUnmount, toRaw } from 'vue';
+import { reactive, watch, onBeforeUnmount, toRaw } from 'vue';
 import { finder } from '@medv/finder';
 import { debounce } from '@/utils/helper';
 import getSelectorOptions from '@/content/elementSelector/getSelectorOptions';
@@ -339,7 +339,14 @@ watch(
     elementsState.selected = props.selectedEls;
   }
 );
+watch(
+  () => props.hide,
+  () => {
+    if (!props.hide) attachListeners();
+    else detachListeners();
+  },
+  { immediate: true }
+);
 
-onMounted(attachListeners);
 onBeforeUnmount(detachListeners);
 </script>
