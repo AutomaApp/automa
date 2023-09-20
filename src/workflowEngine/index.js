@@ -113,7 +113,10 @@ export function startWorkflowExec(workflowData, options, isPopup = true) {
         if (status === 'error' && !event.events.includes('finish:failed'))
           return;
 
-        workflowEventHandler(event.action, { workflow: workflowRefData });
+        workflowEventHandler(event.action, {
+          workflow: workflowRefData,
+          variables: { ...engine.referenceData.variables },
+        });
       });
     }
   });
