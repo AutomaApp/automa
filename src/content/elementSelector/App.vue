@@ -184,6 +184,7 @@ const cardEl = ref('cardEl');
 const state = reactive({
   hide: false,
   elSelector: '',
+  destroyed: false,
   isDragging: false,
   selectList: false,
   isExecuting: false,
