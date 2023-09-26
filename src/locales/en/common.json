@@ -65,6 +65,7 @@
     "sortBy": "Sort by",
     "name": "Name",
     "createdAt": "Created date",
+    "updatedAt": "Last update",
     "mostUsed": "Most used"
   },
   "logStatus": {

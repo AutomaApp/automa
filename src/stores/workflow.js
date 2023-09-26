@@ -166,14 +166,16 @@ export const useWorkflowStore = defineStore('workflow', {
       if (!isFunction && !this.workflows[id]) return null;
 
       const updatedWorkflows = {};
+      const updateData = { ...data, updatedAt: Date.now() };
+
       const workflowUpdater = (workflowId) => {
         if (deep) {
           this.workflows[workflowId] = deepmerge(
             this.workflows[workflowId],
-            data
+            updateData
           );
         } else {
-          Object.assign(this.workflows[workflowId], data);
+          Object.assign(this.workflows[workflowId], updateData);
         }
 
         this.workflows[workflowId].updatedAt = Date.now();
