@@ -103,7 +103,8 @@ function replacer(str, { regex, tagLen, modifyPath, data }) {
         dataKey = dataKey.slice(1);
       }
 
-      result = objectPath.get(data[dataKey], path) ?? match;
+      result = objectPath.get(data[dataKey], path);
+      if (typeof result === 'undefined') result = match;
 
       if (dataKey === 'secrets') {
         result =
