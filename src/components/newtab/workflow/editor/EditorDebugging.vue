@@ -78,18 +78,59 @@
         </ui-list-item>
       </ui-list>
     </div>
-    <shared-codemirror
-      :model-value="JSON.stringify(workflowData, null, 2)"
-      :line-numbers="false"
-      hide-lang
-      readonly
-      lang="json"
-      class="h-40 w-64 scroll breakpoint-data"
-    />
+    <div class="w-64">
+      <ui-tabs v-model="activeTab" class="-mt-1">
+        <ui-tab class="!py-2" value="workflow-data">Data</ui-tab>
+        <ui-tab class="!py-2" value="workflow-logs">Logs</ui-tab>
+      </ui-tabs>
+      <ui-tab-panels v-model="activeTab">
+        <ui-tab-panel value="workflow-data">
+          <shared-codemirror
+            :model-value="JSON.stringify(workflowData, null, 2)"
+            :line-numbers="false"
+            hide-lang
+            readonly
+            lang="json"
+            class="h-40 scroll breakpoint-data"
+          />
+        </ui-tab-panel>
+        <ui-tab-panel
+          ref="workflowLogsContainer"
+          value="workflow-logs"
+          class="h-40 scroll text-sm overflow-auto"
+        >
+          <ui-list class="mt-2">
+            <ui-list-item
+              v-for="item in (workflowState?.state?.logs ?? [])
+                .slice(-100)
+                .reverse()"
+              :key="item.id"
+              small
+              class="!block"
+            >
+              <div class="flex items-center gap-2 overflow-hidden w-full">
+                <p class="flex-1 text-overflow leading-tight">
+                  {{ getBlockName(item.name) }}
+                </p>
+                <p
+                  class="text-gray-600 leading-tight dark:text-gray-300 tabular-nums"
+                  :title="t('log.duration')"
+                >
+                  {{ item.duration }}s
+                </p>
+              </div>
+              <p class="flex-1 text-gray-600 leading-tight dark:text-gray-300">
+                {{ item.description }}
+              </p>
+            </ui-list-item>
+          </ui-list>
+        </ui-tab-panel>
+      </ui-tab-panels>
+    </div>
   </ui-card>
 </template>
 <script setup>
-import { defineAsyncComponent, computed, watch } from 'vue';
+import { defineAsyncComponent, computed, watch, shallowRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import dayjs from '@/lib/dayjs';
 import { tasks } from '@/utils/shared';
@@ -115,6 +156,8 @@ defineEmits(['goToBlock']);
 let currentRunningEls = [];
 
 const { t, te } = useI18n();
+
+const activeTab = shallowRef('workflow-data');
 
 const workflowState = computed(() => props.states[0]);
 const workflowData = computed(() => {
