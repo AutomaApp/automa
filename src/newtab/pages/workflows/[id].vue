@@ -295,6 +295,8 @@ import {
   computed,
   onMounted,
   shallowRef,
+  onActivated,
+  onDeactivated,
   onBeforeUnmount,
 } from 'vue';
 import cloneDeep from 'lodash.clonedeep';
@@ -1525,6 +1527,7 @@ function checkWorkflowUpdate() {
 }
 /* eslint-disable consistent-return */
 function onBeforeLeave() {
+  document.documentElement.classList.remove('scroll');
   updateHostedWorkflow();
 
   const dataNotChanged = !state.dataChanged || !haveEditAccess.value;
@@ -1571,11 +1574,19 @@ watch(
 );
 
 onBeforeRouteLeave(onBeforeLeave);
+onActivated(() => {
+  document.documentElement.classList.add('scroll');
+});
+onDeactivated(() => {
+  document.documentElement.classList.remove('scroll');
+});
 onMounted(() => {
   if (!workflow.value) {
     router.replace(isPackage ? '/packages' : '/');
     return null;
   }
+
+  document.documentElement.classList.add('scroll');
 
   const sidebarState =
     JSON.parse(localStorage.getItem('workflow:sidebar')) ?? true;
@@ -1605,6 +1616,8 @@ onMounted(() => {
   initAutocomplete();
 });
 onBeforeUnmount(() => {
+  document.documentElement.classList.remove('scroll');
+
   if (isPackage && workflow.value.isExternal) return;
   updateHostedWorkflow();
 });
