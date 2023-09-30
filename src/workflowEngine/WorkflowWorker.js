@@ -260,6 +260,7 @@ class WorkflowWorker {
           ? null
           : this.blocksDetail[block.label].refDataKeys,
     });
+
     const blockDelay = this.settings?.blockDelay || 0;
     const addBlockLog = (status, obj = {}) => {
       let { description } = block.data;

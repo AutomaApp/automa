@@ -71,7 +71,7 @@ export default async function (conditionsArr, workflowData) {
         workflowData.isPopup
       );
 
-      copyData[key] = value ?? '';
+      copyData[key] = parseJSON(value, value);
       Object.assign(result.replacedValue, list);
     }
 

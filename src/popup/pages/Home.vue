@@ -211,7 +211,7 @@ const hostedWorkflowStore = useHostedWorkflowStore();
 
 useGroupTooltip();
 
-const sorts = ['name', 'createdAt', 'mostUsed'];
+const sorts = ['name', 'createdAt', 'updatedAt', 'mostUsed'];
 const savedSorts =
   parseJSON(localStorage.getItem('popup-workflow-sort'), {}) || {};
 
