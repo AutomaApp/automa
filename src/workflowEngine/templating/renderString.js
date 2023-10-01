@@ -5,7 +5,7 @@ import mustacheReplacer from './mustacheReplacer';
 const isFirefox = BROWSER_TYPE === 'firefox';
 const isMV2 = browser.runtime.getManifest().manifest_version === 2;
 
-export default async function (str, data, isPopup = true) {
+export default async function (str, data, isPopup = true, options = {}) {
   if (!str || typeof str !== 'string') return '';
 
   const hasMustacheTag = /\{\{(.*?)\}\}/.test(str);
@@ -32,7 +32,7 @@ export default async function (str, data, isPopup = true) {
     let copyStr = `${str}`;
     if (evaluateJS) copyStr = copyStr.slice(2);
 
-    renderedValue = mustacheReplacer(copyStr, data);
+    renderedValue = mustacheReplacer(copyStr, data, options);
   }
 
   return renderedValue;

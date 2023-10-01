@@ -61,7 +61,10 @@ export function keyParser(key, data) {
   return { dataKey: 'table', path };
 }
 
-function replacer(str, { regex, tagLen, modifyPath, data }) {
+function replacer(
+  str,
+  { regex, tagLen, modifyPath, data, disableStringify = false }
+) {
   const replaceResult = {
     list: {},
     value: str,
@@ -113,7 +116,7 @@ function replacer(str, { regex, tagLen, modifyPath, data }) {
     }
 
     const finalResult =
-      typeof result === 'string' && !stringify
+      disableStringify || (typeof result === 'string' && !stringify)
         ? result
         : JSON.stringify(result);
 
@@ -125,7 +128,7 @@ function replacer(str, { regex, tagLen, modifyPath, data }) {
   return replaceResult;
 }
 
-export default function (str, refData) {
+export default function (str, refData, options = {}) {
   if (!str || typeof str !== 'string') return '';
 
   const data = { ...refData, functions: templatingFunctions };
@@ -140,11 +143,13 @@ export default function (str, refData) {
         data,
         tagLen: 1,
         regex: /\[(.*?)\]/g,
+        ...options,
       });
       Object.assign(replacedList, list);
 
       return value;
     },
+    ...options,
   });
 
   Object.assign(replacedStr.list, replacedList);
