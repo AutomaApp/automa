@@ -457,12 +457,17 @@ function updateActiveTab(data = {}) {
   Object.assign(state, data);
 }
 function addWorkflow() {
-  workflowStore.insert({
-    name: addWorkflowModal.name,
-    folderId: state.activeFolder,
-    description: addWorkflowModal.description,
-  });
-  clearAddWorkflowModal();
+  workflowStore
+    .insert({
+      name: addWorkflowModal.name,
+      folderId: state.activeFolder,
+      description: addWorkflowModal.description,
+    })
+    .then((workflows) => {
+      const workflowId = Object.keys(workflows)[0];
+      router.push(`/workflows/${workflowId}`);
+    })
+    .finally(clearAddWorkflowModal);
 }
 async function checkWorkflowPermissions(workflows) {
   let requiredPermissions = [];

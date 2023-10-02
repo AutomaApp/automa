@@ -1,5 +1,5 @@
 <template>
-  <div v-if="workflow" class="flex h-screen">
+  <div v-if="workflow" class="flex" style="height: calc(100vh - 40px)">
     <div
       v-if="state.showSidebar && haveEditAccess"
       :class="
@@ -167,7 +167,8 @@
             :data="editorData"
             :disabled="isTeamWorkflow && !haveEditAccess"
             :class="{ 'animate-blocks': state.animateBlocks }"
-            class="workflow-editor h-screen focus:outline-none"
+            class="workflow-editor focus:outline-none"
+            style="height: calc(100vh - 40px)"
             tabindex="0"
             @init="onEditorInit"
             @edit="initEditBlock"
@@ -295,8 +296,6 @@ import {
   computed,
   onMounted,
   shallowRef,
-  onActivated,
-  onDeactivated,
   onBeforeUnmount,
 } from 'vue';
 import cloneDeep from 'lodash.clonedeep';
@@ -1527,7 +1526,6 @@ function checkWorkflowUpdate() {
 }
 /* eslint-disable consistent-return */
 function onBeforeLeave() {
-  document.documentElement.classList.remove('scroll');
   updateHostedWorkflow();
 
   const dataNotChanged = !state.dataChanged || !haveEditAccess.value;
@@ -1574,19 +1572,11 @@ watch(
 );
 
 onBeforeRouteLeave(onBeforeLeave);
-onActivated(() => {
-  document.documentElement.classList.add('scroll');
-});
-onDeactivated(() => {
-  document.documentElement.classList.remove('scroll');
-});
 onMounted(() => {
   if (!workflow.value) {
     router.replace(isPackage ? '/packages' : '/');
     return null;
   }
-
-  document.documentElement.classList.add('scroll');
 
   const sidebarState =
     JSON.parse(localStorage.getItem('workflow:sidebar')) ?? true;
@@ -1616,8 +1606,6 @@ onMounted(() => {
   initAutocomplete();
 });
 onBeforeUnmount(() => {
-  document.documentElement.classList.remove('scroll');
-
   if (isPackage && workflow.value.isExternal) return;
   updateHostedWorkflow();
 });
