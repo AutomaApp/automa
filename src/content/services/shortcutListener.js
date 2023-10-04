@@ -7,23 +7,22 @@ Mousetrap.prototype.stopCallback = function () {
 };
 
 function automaCustomEventListener(findWorkflow) {
-  window.addEventListener(
-    'automa:execute-workflow',
-    ({ detail }) => {
-      if (!detail || (!detail.id && !detail.publicId)) return;
+  function customEventListener({ detail }) {
+    if (!detail || (!detail.id && !detail.publicId)) return;
 
-      const workflowId = detail.id || detail.publicId;
-      const workflow = findWorkflow(workflowId, Boolean(detail.publicId));
+    const workflowId = detail.id || detail.publicId;
+    const workflow = findWorkflow(workflowId, Boolean(detail.publicId));
 
-      if (!workflow) return;
+    if (!workflow) return;
 
-      workflow.options = {
-        data: detail.data || {},
-      };
-      sendMessage('workflow:execute', workflow, 'background');
-    },
-    true
-  );
+    workflow.options = {
+      data: detail.data || {},
+    };
+    sendMessage('workflow:execute', workflow, 'background');
+  }
+
+  window.addEventListener('__automaExecuteWorkflow', customEventListener);
+  window.addEventListener('automa:execute-workflow', customEventListener);
 }
 function workflowShortcutsListener(findWorkflow, shortcutsObj) {
   const shortcuts = Object.entries(shortcutsObj);
