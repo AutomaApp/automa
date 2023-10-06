@@ -24,6 +24,8 @@ async function forms(block) {
 
   async function typeText(element) {
     if (block.debugMode && data.type === 'text-field') {
+      element.focus?.();
+
       const commands = data.value.split('').map((char) => ({
         type: 'keyDown',
         text: char === '\n' ? '\r' : char,
