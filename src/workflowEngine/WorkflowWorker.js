@@ -166,6 +166,7 @@ class WorkflowWorker {
           currentBlock: this.currentBlock,
           repeatedTasks: this.repeatedTasks,
           preloadScripts: this.preloadScripts,
+          debugAttached: this.debugAttached,
         });
 
         this.engine.addWorker({
