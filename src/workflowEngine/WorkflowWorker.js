@@ -141,6 +141,29 @@ class WorkflowWorker {
     prevBlockData,
     nextBlockBreakpointCount = null
   ) {
+    // pre check
+    for (const connection of connections) {
+      const id = typeof connection === 'string' ? connection : connection.id;
+
+      const block = this.engine.blocks[id];
+
+      if (!block) {
+        console.error(`Block ${id} doesn't exist`);
+        this.engine.destroy('stopped');
+        return;
+      }
+
+      // pass disabled block
+      // eslint-disable-next-line no-continue
+      if (!block.data.disableBlock) continue;
+
+      // check if the next block is breakpoint
+      if (block.data?.$breakpoint) {
+        // set breakpoint state
+        nextBlockBreakpointCount = 0;
+      }
+    }
+
     connections.forEach((connection, index) => {
       const { id, targetHandle, sourceHandle } =
         typeof connection === 'string'
