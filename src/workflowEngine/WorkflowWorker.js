@@ -155,7 +155,7 @@ class WorkflowWorker {
 
       // pass disabled block
       // eslint-disable-next-line no-continue
-      if (!block.data.disableBlock) continue;
+      if (block.data.disableBlock) continue;
 
       // check if the next block is breakpoint
       if (block.data?.$breakpoint) {
