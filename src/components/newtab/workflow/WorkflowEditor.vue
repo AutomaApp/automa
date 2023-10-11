@@ -86,7 +86,8 @@ import {
   MarkerType,
   getConnectedEdges,
 } from '@vue-flow/core';
-import { Background, MiniMap } from '@vue-flow/additional-components';
+import { Background } from '@vue-flow/background';
+import { MiniMap } from '@vue-flow/minimap';
 import cloneDeep from 'lodash.clonedeep';
 import { useStore } from '@/stores/main';
 import { getBlocks } from '@/utils/getSharedData';
@@ -94,6 +95,7 @@ import { categories } from '@/utils/shared';
 import EditBlockSettings from './edit/EditBlockSettings.vue';
 import EditorCustomEdge from './editor/EditorCustomEdge.vue';
 import EditorSearchBlocks from './editor/EditorSearchBlocks.vue';
+import '@vue-flow/minimap/dist/style.css';
 
 const props = defineProps({
   id: {
@@ -220,7 +222,7 @@ function minimapNodeClassName({ label }) {
 function updateBlockData(nodeId, data = {}) {
   if (isDisabled.value) return;
 
-  const node = editor.getNode.value(nodeId);
+  const node = editor.findNode(nodeId);
   node.data = { ...node.data, ...data };
 
   emit('update:node', node);
@@ -229,7 +231,7 @@ function updateBlockSettingsData(newSettings) {
   if (isDisabled.value) return;
 
   const nodeId = blockSettingsState.data.blockId;
-  const node = editor.getNode.value(nodeId);
+  const node = editor.findNode(nodeId);
 
   if (blockSettingsState.data.itemId) {
     const index = node.data.blocks.findIndex(
@@ -283,7 +285,7 @@ function applyFlowData() {
     props.data?.nodes?.map((node) => ({ ...node, events: {} })) || []
   );
   editor.setEdges(props.data?.edges || []);
-  editor.setTransform({
+  editor.setViewport({
     x: props.data?.x || 0,
     y: props.data?.y || 0,
     zoom: props.data?.zoom || 1,

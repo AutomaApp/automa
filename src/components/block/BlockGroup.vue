@@ -5,7 +5,7 @@
     :block-id="id"
     :block-data="block"
     class="w-64"
-    content-class="p-0"
+    content-class="!p-0"
     @edit="$emit('edit')"
     @delete="$emit('delete', id)"
     @update="$emit('update', $event)"
