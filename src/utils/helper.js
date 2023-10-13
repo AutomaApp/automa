@@ -67,7 +67,7 @@ export function findTriggerBlock(drawflow = {}) {
   if (!drawflow) return null;
 
   if (drawflow.drawflow) {
-    const blocks = Object.values(drawflow.drawflow?.Home?.data);
+    const blocks = Object.values(drawflow.drawflow?.Home?.data ?? {});
     if (!blocks) return null;
 
     return blocks.find(({ name }) => name === 'trigger');
