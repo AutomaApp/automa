@@ -26,6 +26,21 @@ async function forms(block) {
     if (block.debugMode && data.type === 'text-field') {
       element.focus?.();
 
+      if (data.clearValue) {
+        const backspaceCommands = new Array(element.value?.length ?? 0).fill({
+          type: 'rawKeyDown',
+          unmodifiedText: 'Delete',
+          text: 'Delete',
+          windowsVirtualKeyCode: 46,
+        });
+
+        await sendMessage(
+          'debugger:type',
+          { commands: backspaceCommands, tabId: block.activeTabId, delay: 0 },
+          'background'
+        );
+      }
+
       const commands = data.value.split('').map((char) => ({
         type: 'keyDown',
         text: char === '\n' ? '\r' : char,
