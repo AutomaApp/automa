@@ -61,6 +61,7 @@
         :search="state.query"
         item-key="id"
         class="w-full"
+        :with-pagination="false"
       >
         <template #item-action="{ item }">
           <v-remixicon
