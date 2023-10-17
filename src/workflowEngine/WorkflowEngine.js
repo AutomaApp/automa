@@ -480,6 +480,12 @@ class WorkflowEngine {
       const { table, variables } = this.referenceData;
       const tableId = this.workflow.connectedTable;
 
+      // Merge all table and variables from all workflows
+      Object.values(this.referenceData.workflow).forEach((data) => {
+        Object.assign(table, data.table);
+        Object.assign(variables, data.variables);
+      });
+
       await dbStorage.transaction(
         'rw',
         dbStorage.tablesItems,

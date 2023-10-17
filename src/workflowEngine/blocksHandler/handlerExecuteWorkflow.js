@@ -2,6 +2,7 @@ import browser from 'webextension-polyfill';
 import { isWhitespace, parseJSON } from '@/utils/helper';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
 import convertWorkflowData from '@/utils/convertWorkflowData';
+import { nanoid } from 'nanoid';
 import WorkflowEngine from '../WorkflowEngine';
 
 function workflowListener(workflow, options) {
@@ -115,14 +116,14 @@ async function executeWorkflow({ id: blockId, data }, { refData }) {
         this.childWorkflowId = engine.id;
       },
       onDestroyed: (engine) => {
-        if (data.executeId) {
-          const { variables, table } = engine.referenceData;
+        const { variables, table } = engine.referenceData;
 
-          this.engine.referenceData.workflow[data.executeId] = {
-            table,
-            variables,
-          };
-        }
+        this.engine.referenceData.workflow[
+          data.executeId || `${engine.id}-${nanoid(8)}`
+        ] = {
+          table,
+          variables,
+        };
       },
     },
     states: this.engine.states,
