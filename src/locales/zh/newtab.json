@@ -154,7 +154,7 @@
       "backup": {
         "button": "备份",
         "settings": "备份设置",
-        "encrypt": "用密码加密"
+        "encrypt": "用密码加密",
         "schedule": "本地备份计划"
       },
       "restore": {
