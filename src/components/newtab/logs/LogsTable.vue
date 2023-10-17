@@ -53,6 +53,7 @@
     />
     <ui-table
       v-show="state.activeTab === 'table'"
+      with-pagination
       :headers="tableData.header"
       :items="tableData.body"
       :search="state.query"
