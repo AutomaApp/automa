@@ -396,6 +396,20 @@
         "useCommas": "使用逗号分隔变量名",
         "insertAllGlobalData": "插入当前工作流的 GlobalData"
       },
+      "google-sheets-drive": {
+        "name": "@:workflow.blocks.google-sheets.name (GDrive)",
+        "description": "@:workflow.blocks.google-sheets.description",
+        "connected": "已连接工作簿",
+        "select": "选择工作簿",
+        "connect": "连接工作簿"
+      },
+      "google-drive": {
+        "name": "Google Drive",
+        "description": "上传文件到 Google Drive",
+        "actions": {
+          "upload": "上传文件"
+        }
+      },
       "google-sheets": {
         "name": "Google sheets",
         "description": "读取或更新 Google sheets 数据",
@@ -431,6 +445,8 @@
           "update": "更新电子表格单元格值",
           "append": "追加电子表格单元格值",
           "clear": "清除电子表格单元格值"
+          "create": "创建电子表格",
+          "add-sheet": "添加工作簿"
         }
       },
       "active-tab": {
