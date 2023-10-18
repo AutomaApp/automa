@@ -392,17 +392,18 @@ class WorkflowEngine {
     await browser.storage.local.set({ workflowQueue });
   }
 
-  destroyWorker(workerId) {
-    this.workers.delete(workerId);
-
-    if (this.workers.size === 0) {
+  async destroyWorker(workerId) {
+    // is last worker
+    if (this.workers.size === 1 && this.workers.has(workerId)) {
       this.addLogHistory({
         type: 'finish',
         name: 'finish',
       });
       this.dispatchEvent('finish');
-      this.destroy('success');
+      await this.destroy('success');
     }
+    // wait detach debugger
+    this.workers.delete(workerId);
   }
 
   async destroy(status, message, blockDetail) {

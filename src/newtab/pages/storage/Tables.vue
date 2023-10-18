@@ -56,8 +56,9 @@
     </div>
     <div class="scroll w-full overflow-x-auto">
       <ui-table
+        with-pagination
         :headers="table.header"
-        :items="rows"
+        :items="table.body"
         :search="state.query"
         item-key="id"
         class="w-full"
@@ -72,33 +73,6 @@
         </template>
       </ui-table>
     </div>
-    <div
-      v-if="table.body && table.body.length >= 10"
-      class="mt-4 flex flex-col md:flex-row md:items-center md:justify-between"
-    >
-      <div class="mb-4 md:mb-0">
-        {{ t('components.pagination.text1') }}
-        <select v-model="pagination.perPage" class="bg-input rounded-md p-1">
-          <option
-            v-for="num in [10, 15, 25, 50, 100, 150]"
-            :key="num"
-            :value="num"
-          >
-            {{ num }}
-          </option>
-        </select>
-        {{
-          t('components.pagination.text2', {
-            count: table.body.length,
-          })
-        }}
-      </div>
-      <ui-pagination
-        v-model="pagination.currentPage"
-        :per-page="pagination.perPage"
-        :records="table.body.length"
-      />
-    </div>
     <storage-edit-table
       v-model="editState.show"
       :name="editState.name"
@@ -108,14 +82,7 @@
   </div>
 </template>
 <script setup>
-import {
-  watch,
-  shallowRef,
-  shallowReactive,
-  computed,
-  toRaw,
-  triggerRef,
-} from 'vue';
+import { watch, shallowRef, shallowReactive, toRaw, triggerRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useWorkflowStore } from '@/stores/workflow';
@@ -154,17 +121,6 @@ const editState = shallowReactive({
   columns: [],
   show: false,
 });
-const pagination = shallowReactive({
-  perPage: 10,
-  currentPage: 1,
-});
-
-const rows = computed(() =>
-  table.value.body.slice(
-    (pagination.currentPage - 1) * pagination.perPage,
-    pagination.currentPage * pagination.perPage
-  )
-);
 
 function editTable() {
   editState.name = tableDetail.value.name;

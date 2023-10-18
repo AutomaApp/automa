@@ -26,6 +26,9 @@
     "save": "保存",
     "data": "数据",
     "stop": "停止",
+    "sheet": "工作簿",
+    "pause": "暂停",
+    "resume": "恢复",
     "action": "操作 | 操作",
     "packages": "包",
     "storage": "存储",
@@ -43,7 +46,8 @@
     "duplicate": "副本",
     "password": "密码",
     "category": "分类",
-    "optional": "可选"
+    "optional": "可选",
+    "0disable": "0 到禁用"
   },
   "message": {
     "noBlock": "没有模块",
@@ -61,6 +65,7 @@
     "sortBy": "排序方式",
     "name": "名称",
     "createdAt": "创建日期",
+    "updatedAt": "上次更新",
     "mostUsed": "最常用"
   },
   "logStatus": {

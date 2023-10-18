@@ -110,7 +110,7 @@ const props = defineProps({
   },
   withPagination: {
     type: Boolean,
-    default: true,
+    default: false,
   },
 });
 

@@ -14,6 +14,7 @@
     "icon": "包图标",
     "open": "打开包",
     "new": "新建包",
+    "import": "导入包",
     "set": "设置为包",
     "settings": {
       "asBlock": "把包设为模块"
@@ -152,7 +153,9 @@
       "needSignin": "首先你需要登录账户",
       "backup": {
         "button": "备份",
-        "encrypt": "用密码加密"
+        "settings": "备份设置",
+        "encrypt": "用密码加密",
+        "schedule": "本地备份计划"
       },
       "restore": {
         "title": "恢复工作流",
@@ -181,6 +184,31 @@
     }
   },
   "workflow": {
+    "events": {
+      "title": "工作流事件",
+      "add-action": "添加操作",
+      "description": "事件发生时执行操作。",
+      "event": "事件 | 事件",
+      "action": "操作",
+      "actions": {
+        "js-code": {
+          "title": "执行 JS 代码"
+        },
+        "http-request": {
+          "title": "HTTP Request"
+        }
+      },
+      "types": {
+        "finish:success": {
+          "name": "完成 (成功)",
+          "description": "工作流执行已成功完成"
+        },
+        "finish:failed": {
+          "name": "完成 (失败)",
+          "description": "工作流执行已完成，但出现错误。"
+        }
+      }
+    },
       "previewMode": {
       "title": "预览模式",
       "description": "正处于预览模式，你所做的修改不会被保存下来"
@@ -195,6 +223,12 @@
       "preferInTab": "在标签页中输入参数"
     },
     "my": "我的工作流",
+    "testing": {
+      "title": "测试模式",
+      "nextBlock": "下一模块",
+      "startRun": "开始运行于",
+      "disabled": "首先保存更改"
+    },
     "import": "导入工作流",
     "new": "新建工作流",
     "delete": "删除工作流",

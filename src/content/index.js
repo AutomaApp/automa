@@ -240,86 +240,95 @@ async function messageListener({ data, source }) {
 
   automa('content');
 
-  browser.runtime.onMessage.addListener((data) => {
-    return new Promise((resolve, reject) => {
-      if (data.isBlock) {
-        executeBlock(data)
-          .then(resolve)
-          .catch((error) => {
-            console.error(error);
-            const elNotFound = error.message === 'element-not-found';
-            const isLoopItem = data.data?.selector?.includes('automa-loop');
-            if (elNotFound && isLoopItem) {
-              const findLoopEl = data.loopEls.find(({ url }) =>
-                window.location.href.includes(url)
-              );
+  let locked = false;
+  const queue = [];
 
-              const blockData = { ...data.data, ...findLoopEl, multiple: true };
-              const loopBlock = {
-                ...data,
-                onlyGenerate: true,
-                data: blockData,
-              };
-
-              blocksHandler()
-                .loopData(loopBlock)
-                .then(() => {
-                  executeBlock(data).then(resolve).catch(reject);
-                })
-                .catch((blockError) => {
-                  reject(blockError);
-                });
-              return;
-            }
-
-            reject(error);
-          });
-      } else {
-        switch (data.type) {
-          case 'input-workflow-params':
-            window.initPaletteParams?.(data.data);
-            resolve(Boolean(window.initPaletteParams));
-            break;
-          case 'content-script-exists':
-            resolve(true);
-            break;
-          case 'automa-element-selector': {
-            const selectorInstance = elementSelectorInstance();
-
-            resolve(selectorInstance);
-            break;
-          }
-          case 'context-element': {
-            let $ctxElSelector = '';
-
-            if (contextElement) {
-              $ctxElSelector = findSelector(contextElement);
-              contextElement = null;
-            }
-            if (!$ctxTextSelection) {
-              $ctxTextSelection = window.getSelection().toString();
-            }
-
-            const cloneContextData = cloneDeep({
-              $ctxLink,
-              $ctxMediaUrl,
-              $ctxElSelector,
-              $ctxTextSelection,
-            });
-
-            $ctxLink = '';
-            $ctxMediaUrl = '';
-            $ctxElSelector = '';
-            $ctxTextSelection = '';
-
-            resolve(cloneContextData);
-            break;
-          }
-          default:
-            resolve(null);
-        }
+  browser.runtime.onMessage.addListener(async (data) => {
+    const asyncExecuteBlock = async (block) => {
+      if (locked) {
+        return new Promise((resolve, reject) => {
+          queue.push([block, resolve, reject]);
+        });
       }
-    });
+
+      try {
+        locked = true;
+        const res = await executeBlock(block);
+        return res;
+      } catch (error) {
+        console.error(error);
+        const elNotFound = error.message === 'element-not-found';
+        const isLoopItem = data.data?.selector?.includes('automa-loop');
+
+        if (!elNotFound || !isLoopItem) return Promise.reject(error);
+
+        const findLoopEl = data.loopEls.find(({ url }) =>
+          window.location.href.includes(url)
+        );
+
+        const blockData = { ...data.data, ...findLoopEl, multiple: true };
+        const loopBlock = {
+          ...data,
+          onlyGenerate: true,
+          data: blockData,
+        };
+
+        await blocksHandler().loopData(loopBlock);
+        return executeBlock(block);
+      } finally {
+        locked = false;
+      }
+    };
+
+    if (data.isBlock) {
+      const res = await asyncExecuteBlock(data);
+      while (queue.length) {
+        const [block, resolve, reject] = queue.shift();
+        requestAnimationFrame(() => {
+          asyncExecuteBlock(block).then(resolve).catch(reject);
+        });
+      }
+
+      return res;
+    }
+
+    switch (data.type) {
+      case 'input-workflow-params':
+        window.initPaletteParams?.(data.data);
+        return Boolean(window.initPaletteParams);
+      case 'content-script-exists':
+        return true;
+      case 'automa-element-selector': {
+        return elementSelectorInstance();
+      }
+      case 'context-element': {
+        let $ctxElSelector = '';
+
+        if (contextElement) {
+          $ctxElSelector = findSelector(contextElement);
+          contextElement = null;
+        }
+        if (!$ctxTextSelection) {
+          $ctxTextSelection = window.getSelection().toString();
+        }
+
+        const cloneContextData = cloneDeep({
+          $ctxLink,
+          $ctxMediaUrl,
+          $ctxElSelector,
+          $ctxTextSelection,
+        });
+
+        $ctxLink = '';
+        $ctxMediaUrl = '';
+        $ctxElSelector = '';
+        $ctxTextSelection = '';
+
+        return cloneContextData;
+      }
+      default:
+        return null;
+    }
   });
 })();
 

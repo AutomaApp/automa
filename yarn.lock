@@ -1816,21 +1816,26 @@
   resolved "https://registry.yarnpkg.com/@viselect/vanilla/-/vanilla-3.3.1.tgz#ec4276b0814157b7ffe8ac1f28fdd70df36e1d76"
   integrity sha512-QqkPGV+uyteX/HqzhHp5ZRfpVYiA0A3umh8HT/nfoBKccoA/kiTdI+5B/8ZPijtanBj9NNymMMPCn0W+/BeEyg==
 
-"@vue-flow/additional-components@^1.3.3":
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/@vue-flow/additional-components/-/additional-components-1.3.3.tgz#383fe2f79534a7d3a3fecc51006be790c321ca87"
-  integrity sha512-AZhz0diM7VIN7MGKODiuqiu+xiujFQSs2UdiThgNI5vGSwwizd0g9dGzB+LK0Dt4FCRJ1g64xzxqbrAFFfzuFw==
-  dependencies:
-    d3-selection "^3.0.0"
-    d3-zoom "^3.0.0"
+"@vue-flow/background@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@vue-flow/background/-/background-1.2.0.tgz#6b7c283fd679838df90dda8dd98f322c368b7e59"
+  integrity sha512-ZqmYhOM/0aRmA5dA3KSHJNYpHnhmG2e6tzjmttoibo4JBI3KNbdyOX+OTlqt7Ic0LYUC6NWzRLAwv4gjJuc6Mg==
 
-"@vue-flow/core@^1.22.3":
-  version "1.22.3"
-  resolved "https://registry.yarnpkg.com/@vue-flow/core/-/core-1.22.3.tgz#2f98bb5185df64ac33e9eaa47093a624ef291698"
-  integrity sha512-1Hz7cnomzbUuBYOghtb+ZUunUAD8UXJC/PrUUjjQQa2HEcaRK9KK3c4sE1QMBbhQh5umcuwjRH/XVJhOVDoIOQ==
+"@vue-flow/core@^1.23.0":
+  version "1.23.0"
+  resolved "https://registry.yarnpkg.com/@vue-flow/core/-/core-1.23.0.tgz#f6171f70451d7a4e9804736bd4156659393cee2a"
+  integrity sha512-jfzQNWy5+JVgAmopJciK1acKQcDtPDwu7UM5FUlVXyzNaJgsAJR/8C5guOq7NPzfACz5TodDrBzbDePF40NQZg==
   dependencies:
     "@vueuse/core" "^10.1.2"
     d3-drag "^3.0.0"
+    d3-selection "^3.0.0"
+    d3-zoom "^3.0.0"
+
+"@vue-flow/minimap@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@vue-flow/minimap/-/minimap-1.2.0.tgz#95770b380dbb55b951bd13339e27429cf171010f"
+  integrity sha512-0Nk7iWjRC9hgyVGEVELKULXZsJtYmzic4CEAM6mIhB/lDVUsQsae9NXB6gYFN0OlBXx71pZHBnqqUYvLxUE0jg==
+  dependencies:
     d3-selection "^3.0.0"
     d3-zoom "^3.0.0"
 
