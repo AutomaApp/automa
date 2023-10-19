@@ -7,7 +7,10 @@ import dayjs from 'dayjs';
 import { fetchApi } from '@/utils/api';
 import { tasks } from '@/utils/shared';
 import firstWorkflows from '@/utils/firstWorkflows';
-import { cleanWorkflowTriggers } from '@/utils/workflowTrigger';
+import {
+  cleanWorkflowTriggers,
+  registerWorkflowTrigger,
+} from '@/utils/workflowTrigger';
 import { useUserStore } from './user';
 
 const defaultWorkflow = (data = null, options = {}) => {
@@ -180,6 +183,19 @@ export const useWorkflowStore = defineStore('workflow', {
 
         this.workflows[workflowId].updatedAt = Date.now();
         updatedWorkflows[workflowId] = this.workflows[workflowId];
+
+        if (!('isDisabled' in data)) return;
+
+        if (data.isDisabled) {
+          cleanWorkflowTriggers(workflowId);
+        } else {
+          const triggerBlock = this.workflows[workflowId].drawflow.nodes?.find(
+            (node) => node.label === 'trigger'
+          );
+          if (triggerBlock) {
+            registerWorkflowTrigger(id, triggerBlock);
+          }
+        }
       };
 
       if (isFunction) {
