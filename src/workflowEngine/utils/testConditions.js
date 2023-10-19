@@ -3,6 +3,7 @@ import objectPath from 'object-path';
 import { parseJSON } from '@/utils/helper';
 import { conditionBuilder } from '@/utils/shared';
 import renderString from '../templating/renderString';
+import { keyParser } from '../templating/mustacheReplacer';
 
 const isBoolStr = (str) => {
   if (str === 'true') return true;
@@ -58,6 +59,9 @@ export default async function (conditionsArr, workflowData) {
       if (isInsideBrackets) {
         dataPath = dataPath.slice(2, -2).trim();
       }
+
+      const parsedPath = keyParser(dataPath, workflowData.refData);
+      dataPath = `${parsedPath.dataKey}.${parsedPath.path}`;
 
       return objectPath.has(workflowData.refData, dataPath);
     }
