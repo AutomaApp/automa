@@ -240,19 +240,9 @@ async function messageListener({ data, source }) {
 
   automa('content');
 
-  let locked = false;
-  const queue = [];
-
   browser.runtime.onMessage.addListener(async (data) => {
     const asyncExecuteBlock = async (block) => {
-      if (locked) {
-        return new Promise((resolve, reject) => {
-          queue.push([block, resolve, reject]);
-        });
-      }
-
       try {
-        locked = true;
         const res = await executeBlock(block);
         return res;
       } catch (error) {
@@ -275,20 +265,11 @@ async function messageListener({ data, source }) {
 
         await blocksHandler().loopData(loopBlock);
         return executeBlock(block);
-      } finally {
-        locked = false;
       }
     };
 
     if (data.isBlock) {
       const res = await asyncExecuteBlock(data);
-      while (queue.length) {
-        const [block, resolve, reject] = queue.shift();
-        requestAnimationFrame(() => {
-          asyncExecuteBlock(block).then(resolve).catch(reject);
-        });
-      }
-
       return res;
     }
 
