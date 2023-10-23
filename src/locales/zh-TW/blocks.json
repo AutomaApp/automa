@@ -288,6 +288,9 @@
       },
       "execute-workflow": {
         "insertAllGlobalData": "插入當前工作流的 GlobalData"
+      },
+      "debugMode": {
+        "description": "使用 Chrome DevTools 協定執行目前模組"
       }
     }
   }

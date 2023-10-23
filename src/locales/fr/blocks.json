@@ -284,7 +284,7 @@
         "timeout": "Délai d'attente (millisecondes)",
         "activeTabLoaded": "Onglet actif",
         "setAsActiveTab": "Définir comme onglet actif"
-      },    
+      },
       "blocks-group": {
         "name": "Groupe de blocs",
         "groupName": "Nom du groupe",
@@ -771,6 +771,10 @@
           "main": "Fenêtre principale",
           "iframe": "Iframe"
         }
+      },
+      "debugMode": {
+        "title": "Modalità di debug",
+        "description": "Esegui il block usando il protocollo di Chrome DevTools"
       }
     }
   }
