@@ -1,6 +1,7 @@
-import { sendMessage } from '@/utils/message';
 import handleFormElement from '@/utils/handleFormElement';
+import { sendMessage } from '@/utils/message';
 import handleSelector, { markElement } from '../handleSelector';
+import synchronizedLock from '../synchronizedLock';
 
 async function forms(block) {
   const { data } = block;
@@ -24,38 +25,43 @@ async function forms(block) {
 
   async function typeText(element) {
     if (block.debugMode && data.type === 'text-field') {
+      // get lock
+      await synchronizedLock.getLock();
       element.focus?.();
 
-      if (data.clearValue) {
-        const backspaceCommands = new Array(element.value?.length ?? 0).fill({
-          type: 'rawKeyDown',
-          unmodifiedText: 'Delete',
-          text: 'Delete',
-          windowsVirtualKeyCode: 46,
-        });
+      try {
+        if (data.clearValue) {
+          const backspaceCommands = new Array(element.value?.length ?? 0).fill({
+            type: 'rawKeyDown',
+            unmodifiedText: 'Delete',
+            text: 'Delete',
+            windowsVirtualKeyCode: 46,
+          });
 
+          await sendMessage(
+            'debugger:type',
+            { commands: backspaceCommands, tabId: block.activeTabId, delay: 0 },
+            'background'
+          );
+        }
+
+        const commands = data.value.split('').map((char) => ({
+          type: 'keyDown',
+          text: char === '\n' ? '\r' : char,
+        }));
+        const typeDelay = +block.data.delay;
         await sendMessage(
           'debugger:type',
-          { commands: backspaceCommands, tabId: block.activeTabId, delay: 0 },
+          {
+            commands,
+            tabId: block.activeTabId,
+            delay: Number.isNaN(typeDelay) ? 0 : typeDelay,
+          },
           'background'
         );
+      } finally {
+        synchronizedLock.releaseLock();
       }
-
-      const commands = data.value.split('').map((char) => ({
-        type: 'keyDown',
-        text: char === '\n' ? '\r' : char,
-      }));
-      const typeDelay = +block.data.delay;
-      await sendMessage(
-        'debugger:type',
-        {
-          commands,
-          tabId: block.activeTabId,
-          delay: Number.isNaN(typeDelay) ? 0 : typeDelay,
-        },
-        'background'
-      );
-
       return;
     }
 
