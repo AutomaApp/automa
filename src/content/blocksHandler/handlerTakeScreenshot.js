@@ -1,6 +1,6 @@
-/* eslint-disable no-await-in-loop */
-import { sendMessage } from '@/utils/message';
 import { sleep } from '@/utils/helper';
+import { sendMessage } from '@/utils/message';
+import handleSelector from '../handleSelector';
 
 function findScrollableElement(
   element = document.documentElement,
@@ -63,7 +63,11 @@ async function takeScreenshot(tabId, options) {
   return imageUrl;
 }
 async function captureElement({ selector, tabId, options, $frameRect }) {
-  const element = document.querySelector(selector);
+  const element = await handleSelector(
+    // ? not support frameSelector ?
+    { data: { selector }, tabId },
+    { returnElement: true }
+  );
 
   if (!element) {
     const error = new Error('element-not-found');
