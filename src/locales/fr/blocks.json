@@ -761,7 +761,7 @@
           "page": "D'une page",
           "fullpage": "D'une page entière",
           "element": "D'un élément"
-        },
+        }
       },
       "switch-to": {
         "name": "Basculer de cadre",
