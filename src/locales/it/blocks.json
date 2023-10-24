@@ -773,6 +773,9 @@
           "main": "Finestra principale",
           "iframe": "Iframe"
         }
+      },
+      "debugMode": {
+        "description": "Esegui il modulo corrente utilizzando il protocollo Chrome DevTools"
       }
     }
   }

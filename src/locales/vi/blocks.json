@@ -750,6 +750,10 @@
           "main": "Cửa sổ chính",
           "iframe": "Iframe"
         }
+      },
+      "debugMode": {
+        "title": "Chế độ kiểm tra sửa lỗi",
+        "description": "Sử dụng giao thức Chrome Devtools để chạy khối"
       }
     }
   }

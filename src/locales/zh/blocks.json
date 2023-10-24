@@ -789,6 +789,10 @@
           "main": "主窗口",
           "iframe": "Iframe"
         }
+      },
+      "debugMode": {
+        "title": "调试模式",
+        "description": "使用 Chrome DevTools 协议执行当前模块"
       }
     }
   }
