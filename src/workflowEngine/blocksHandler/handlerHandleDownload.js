@@ -144,15 +144,16 @@ async function handleDownload({ data, id: blockId }) {
         return;
       }
 
-      if (downloadId !== id) return;
+      if (downloadId !== id || !state) return;
 
       if (filename) currentFilename = filename.current;
 
-      if (state && state.current === 'complete') {
+      const DOWNLOAD_STATE = ['complete', 'interrupted'];
+      if (DOWNLOAD_STATE.includes(state.current)) {
         resolvePromise(id);
       } else {
-        browser.downloads.search({ id }).then(([download]) => {
-          if (!download || !download.endTime) return;
+        browser.downloads.search({ id: downloadId }).then(([download]) => {
+          if (!download || !DOWNLOAD_STATE.includes(download.state)) return;
 
           resolvePromise(id);
         });
