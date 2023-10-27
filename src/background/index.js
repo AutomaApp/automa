@@ -253,4 +253,39 @@ if (!isMV2) {
   sandboxIframe.id = 'sandbox';
 
   document.body.appendChild(sandboxIframe);
+
+  window.addEventListener('message', async ({ data }) => {
+    if (data?.type !== 'automa-fetch') return;
+
+    const sendResponse = (result) => {
+      sandboxIframe.contentWindow.postMessage(
+        {
+          type: 'fetchResponse',
+          data: result,
+          id: data.data.id,
+        },
+        '*'
+      );
+    };
+
+    const { type, resource } = data.data;
+    try {
+      const response = await fetch(resource.url, resource);
+      if (!response.ok) throw new Error(response.statusText);
+
+      let result = null;
+
+      if (type === 'base64') {
+        const blob = await response.blob();
+        const base64 = await readFileAsBase64(blob);
+
+        result = base64;
+      } else {
+        result = await response[type]();
+      }
+      sendResponse({ isError: false, result });
+    } catch (error) {
+      sendResponse({ isError: true, result: error.message });
+    }
+  });
 }
