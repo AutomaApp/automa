@@ -61,7 +61,7 @@
         Run before page loaded
       </ui-checkbox>
     </template>
-    <ui-modal v-model="state.showCodeModal" content-class="max-w-4xl">
+    <ui-modal v-model="state.showCodeModal" content-class="w-11\/12">
       <template #header>
         <ui-tabs v-model="state.activeTab" class="border-none">
           <ui-tab value="code">

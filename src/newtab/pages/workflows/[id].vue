@@ -1239,12 +1239,15 @@ function onDragoverEditor({ target }) {
 }
 function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
   const savedBlocks = parseJSON(dataTransfer.getData('savedBlocks'), null);
+
+  const editorRect = editor.value.viewportRef.value.getBoundingClientRect();
+  const position = editor.value.project({
+    y: clientY - editorRect.top,
+    x: clientX - editorRect.left,
+  });
+
   if (savedBlocks && !isPackage) {
     if (savedBlocks.settings.asBlock) {
-      const position = editor.value.project({
-        x: clientX - 360,
-        y: clientY - 18,
-      });
       editor.value.addNodes([
         {
           position,
@@ -1285,7 +1288,6 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
     return;
   }
 
-  const position = editor.value.project({ x: clientX - 360, y: clientY - 18 });
   const nodeId = nanoid();
   const newNode = {
     position,

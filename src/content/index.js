@@ -5,7 +5,10 @@ import findSelector from '@/lib/findSelector';
 import { sendMessage } from '@/utils/message';
 import automa from '@business';
 import { toCamelCase, isXPath } from '@/utils/helper';
-import handleSelector, { queryElements } from './handleSelector';
+import handleSelector, {
+  queryElements,
+  getDocumentCtx,
+} from './handleSelector';
 import blocksHandler from './blocksHandler';
 import showExecutedBlock from './showExecutedBlock';
 import shortcutListener from './services/shortcutListener';
@@ -49,19 +52,27 @@ function messageToFrame(frameElement, blockData) {
 async function executeBlock(data) {
   const removeExecutedBlock = showExecutedBlock(data, data.executedBlockOnWeb);
   if (data.data?.selector?.includes('|>')) {
-    const [frameSelector, selector] = data.data.selector.split(/\|>(.+)/);
+    const selectorsArr = data.data.selector.split('|>');
+    const selector = selectorsArr.pop();
+    const frameSelector = selectorsArr.join('|>');
+
+    const framElSelector = selectorsArr.pop();
 
     let findBy = data?.data?.findBy;
     if (!findBy) {
       findBy = isXPath(frameSelector) ? 'xpath' : 'cssSelector';
     }
 
-    const frameElement = await queryElements({
-      findBy,
-      multiple: false,
-      waitForSelector: 5000,
-      selector: frameSelector,
-    });
+    const documentCtx = getDocumentCtx(selectorsArr.join('|>'));
+    const frameElement = await queryElements(
+      {
+        findBy,
+        multiple: false,
+        waitForSelector: 5000,
+        selector: framElSelector,
+      },
+      documentCtx
+    );
     const frameError = (message) => {
       const error = new Error(message);
       error.data = { selector: frameSelector };

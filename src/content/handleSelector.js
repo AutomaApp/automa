@@ -10,13 +10,18 @@ export function markElement(el, { id, data }) {
 }
 
 export function getDocumentCtx(frameSelector) {
+  if (!frameSelector) return document;
+
   let documentCtx = document;
 
-  if (frameSelector) {
-    const type = isXPath(frameSelector) ? 'xpath' : 'cssSelector';
-    const element = FindElement[type]({ selector: frameSelector });
+  const iframeSelectors = frameSelector.split('|>');
+  const type = isXPath(frameSelector) ? 'xpath' : 'cssSelector';
+  iframeSelectors.forEach((selector) => {
+    if (!documentCtx) return;
+
+    const element = FindElement[type]({ selector }, documentCtx);
     documentCtx = element?.contentDocument;
-  }
+  });
 
   return documentCtx;
 }
@@ -62,6 +67,7 @@ export default async function (
   }
 
   const documentCtx = getDocumentCtx(frameSelector);
+
   if (!documentCtx) {
     if (onError) onError(new Error('iframe-not-found'));
 
