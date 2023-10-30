@@ -145,6 +145,7 @@ import Draggable from 'vuedraggable';
 import ParameterInputValue from './Parameter/ParameterInputValue.vue';
 import ParameterJsonValue from './Parameter/ParameterJsonValue.vue';
 import ParameterInputOptions from './Parameter/ParameterInputOptions.vue';
+import ParameterCheckboxValue from './Parameter/ParameterCheckboxValue.vue';
 
 const props = defineProps({
   data: {
@@ -182,6 +183,14 @@ const paramTypes = {
     id: 'json',
     name: 'Input (JSON)',
     valueComp: ParameterJsonValue,
+    data: {
+      required: false,
+    },
+  },
+  checkbox: {
+    id: 'checkbox',
+    name: 'Checkbox',
+    valueComp: ParameterCheckboxValue,
     data: {
       required: false,
     },
