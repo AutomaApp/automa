@@ -58,13 +58,20 @@ export async function googleDrive({ id, data }, { refData }) {
     );
     const locationUri = sessionResponse.headers.get('location');
 
-    const formData = new FormData();
-
-    formData.append('file', blob);
+    const buffer = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        resolve(reader.result);
+      };
+      reader.readAsArrayBuffer(blob);
+    });
 
     const result = await fetchGapi(locationUri, {
       method: 'PUT',
-      body: formData,
+      headers: {
+        'Content-Length': blob.size,
+      },
+      body: buffer,
     });
 
     return result;
