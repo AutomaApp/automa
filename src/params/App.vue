@@ -127,6 +127,7 @@ import dayjs from '@/lib/dayjs';
 import { parseJSON } from '@/utils/helper';
 import ParameterInputValue from '@/components/newtab/workflow/edit/Parameter/ParameterInputValue.vue';
 import ParameterJsonValue from '@/components/newtab/workflow/edit/Parameter/ParameterJsonValue.vue';
+import ParameterCheckboxValue from '@/components/newtab/workflow/edit/Parameter/ParameterCheckboxValue.vue';
 
 const paramsList = {
   string: {
@@ -138,6 +139,14 @@ const paramsList = {
     id: 'json',
     name: 'Input (JSON)',
     valueComp: ParameterJsonValue,
+  },
+  checkbox: {
+    id: 'checkbox',
+    name: 'Checkbox',
+    valueComp: ParameterCheckboxValue,
+    data: {
+      required: false,
+    },
   },
 };
 
