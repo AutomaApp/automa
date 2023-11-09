@@ -7,6 +7,7 @@ import {
   parseJSON,
   isObject,
 } from '@/utils/helper';
+import dbStorage from '@/db/storage';
 import templating from './templating';
 import renderString from './templating/renderString';
 import { convertData, waitTabLoaded } from './helper';
@@ -110,6 +111,7 @@ class WorkflowWorker {
   }
 
   setVariable(name, value) {
+    let variableName = name;
     const vars = this.engine.referenceData.variables;
 
     if (name.startsWith('$push:')) {
@@ -119,9 +121,18 @@ class WorkflowWorker {
       else if (!Array.isArray(vars[varName])) vars[varName] = [vars[varName]];
 
       vars[varName].push(value);
+      variableName = varName;
+    } else {
+      vars[name] = value;
     }
 
-    vars[name] = value;
+    if (variableName.startsWith('$$')) {
+      dbStorage.variables.put({
+        value,
+        name: variableName,
+      });
+    }
+
     this.engine.addRefDataSnapshot('variables');
   }
 
