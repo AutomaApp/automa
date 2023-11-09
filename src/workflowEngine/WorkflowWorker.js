@@ -129,7 +129,7 @@ class WorkflowWorker {
     if (variableName.startsWith('$$')) {
       dbStorage.variables.put({
         value,
-        name: variableName,
+        name: variableName.slice(2),
       });
     }
 
