@@ -1,3 +1,5 @@
+import { getDocumentCtx } from '@/content/handleSelector';
+
 export function automaFetchClient(id, { type, resource }) {
   return new Promise((resolve, reject) => {
     const validType = ['text', 'json', 'base64'];
@@ -71,10 +73,7 @@ export function jsContentHandler($blockData, $preloadScripts, $automaScript) {
       let $documentCtx = document;
 
       if ($blockData.frameSelector) {
-        const iframeCtx = document.querySelector(
-          $blockData.frameSelector
-        )?.contentDocument;
-
+        const iframeCtx = getDocumentCtx($blockData.frameSelector);
         if (!iframeCtx) {
           reject(new Error('iframe-not-found'));
           return;

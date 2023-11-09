@@ -1,4 +1,5 @@
 import { jsContentHandler } from '@/workflowEngine/utils/javascriptBlockUtil';
+import { getDocumentCtx } from '../handleSelector';
 
 function javascriptCode({ data, isPreloadScripts, frameSelector }) {
   if (!isPreloadScripts && Array.isArray(data))
@@ -8,7 +9,7 @@ function javascriptCode({ data, isPreloadScripts, frameSelector }) {
   let $documentCtx = document;
 
   if (frameSelector) {
-    const iframeCtx = document.querySelector(frameSelector)?.contentDocument;
+    const iframeCtx = getDocumentCtx(frameSelector);
     if (!iframeCtx) return Promise.resolve({ success: false });
 
     $documentCtx = iframeCtx;
