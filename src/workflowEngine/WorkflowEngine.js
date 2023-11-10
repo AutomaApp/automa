@@ -491,35 +491,17 @@ class WorkflowEngine {
         'rw',
         dbStorage.tablesItems,
         dbStorage.tablesData,
-        dbStorage.variables,
         async () => {
-          if (tableId) {
-            await dbStorage.tablesItems.update(tableId, {
-              modifiedAt: Date.now(),
-              rowsCount: table.length,
-            });
-            await dbStorage.tablesData.where('tableId').equals(tableId).modify({
-              items: table,
-              columnsIndex: this.columns,
-            });
-          }
+          if (!tableId) return;
 
-          for (const key in variables) {
-            if (key.startsWith('$$')) {
-              const varName = key.slice(2);
-              const varValue = variables[key];
-
-              const variable =
-                (await dbStorage.variables
-                  .where('name')
-                  .equals(varName)
-                  .first()) || {};
-              variable.name = varName;
-              variable.value = varValue;
-
-              await dbStorage.variables.put(variable);
-            }
-          }
+          await dbStorage.tablesItems.update(tableId, {
+            modifiedAt: Date.now(),
+            rowsCount: table.length,
+          });
+          await dbStorage.tablesData.where('tableId').equals(tableId).modify({
+            items: table,
+            columnsIndex: this.columns,
+          });
         }
       );
 
