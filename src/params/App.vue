@@ -48,7 +48,11 @@
         </p>
         <div class="px-4 pb-4">
           <ul class="space-y-4 divide-y">
-            <li v-for="(param, paramIdx) in workflow.params" :key="paramIdx">
+            <li
+              v-for="(param, paramIdx) in workflow.params"
+              :key="paramIdx"
+              class="flex flex-col gap-3"
+            >
               <component
                 :is="paramsList[param.type].valueComp"
                 v-if="paramsList[param.type]"
