@@ -74,7 +74,7 @@
               <p
                 v-if="param.description"
                 title="Description"
-                class="ml-1 whitespace-pre text-sm leading-tight"
+                class="ml-1 text-sm leading-tight"
               >
                 {{ param.description }}
               </p>
