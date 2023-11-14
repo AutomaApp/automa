@@ -48,7 +48,11 @@
         </p>
         <div class="px-4 pb-4">
           <ul class="space-y-4 divide-y">
-            <li v-for="(param, paramIdx) in workflow.params" :key="paramIdx">
+            <li
+              v-for="(param, paramIdx) in workflow.params"
+              :key="paramIdx"
+              class="flex flex-col gap-3"
+            >
               <component
                 :is="paramsList[param.type].valueComp"
                 v-if="paramsList[param.type]"
@@ -74,7 +78,7 @@
               <p
                 v-if="param.description"
                 title="Description"
-                class="ml-1 whitespace-pre text-sm leading-tight"
+                class="ml-1 text-sm leading-tight"
               >
                 {{ param.description }}
               </p>

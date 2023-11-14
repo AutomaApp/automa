@@ -19,12 +19,12 @@
       <ui-list-item v-if="isDebugSupported" small class="mt-4">
         <div class="flex-1 overflow-hidden">
           <p class="text-overflow">
-            {{ t('workflow.settings.debugMode.title') }}
+            {{ t('workflow.blocks.debugMode.title') }}
           </p>
           <p
             class="text-overflow leading-tight text-gray-600 dark:text-gray-300"
           >
-            Execute block using the Chrome DevTools Protocol
+            {{ t('workflow.blocks.debugMode.description') }}
           </p>
         </div>
         <ui-switch v-model="state.debugMode" class="mr-4" />

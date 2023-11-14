@@ -777,6 +777,10 @@
       },
       "execute-workflow": {
         "insertAllGlobalData": "Використовувати весь поточний робочий процес globalData"
+      },
+      "debugMode": {
+        "title": "Режим налагодження",
+        "description": "Виконати поточний Блоки за допомогою протоколу Chrome DevTools"
       }
     }
   }

@@ -6,7 +6,7 @@ import 'cronstrue/locales/zh_CN';
 const supportedLocales = ['en', 'zh', 'zh-tw', 'fr'];
 const altLocaleId = {
   zh: 'zh_CN',
-  'zh-tw': 'zh_TW',
+  'zh-TW': 'zh_TW',
 };
 
 export function readableCron(expression) {

@@ -1580,7 +1580,7 @@ export const supportLocales = [
   { id: 'uk', name: 'Україньська' },
   { id: 'vi', name: 'Tiếng Việt' },
   { id: 'zh', name: '简体中文' },
-  { id: 'zh-tw', name: '繁體中文' },
+  { id: 'zh-TW', name: '繁體中文' },
 ];
 
 export const communities = [

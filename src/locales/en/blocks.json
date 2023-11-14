@@ -795,6 +795,10 @@
           "main": "Main window",
           "iframe": "Iframe"
         }
+      },
+      "debugMode": {
+        "title": "Debug mode",
+        "description": "Execute block using the Chrome DevTools Protocol"
       }
     }
   }
