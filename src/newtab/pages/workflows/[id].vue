@@ -1528,6 +1528,12 @@ function checkWorkflowUpdate() {
 }
 /* eslint-disable consistent-return */
 function onBeforeLeave() {
+  // disselect node before leave
+  const selectedNodes = editor.value.getSelectedNodes.value;
+  selectedNodes?.forEach((node) => {
+    node.selected = false;
+  });
+
   updateHostedWorkflow();
 
   const dataNotChanged = !state.dataChanged || !haveEditAccess.value;
