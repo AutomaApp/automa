@@ -46,7 +46,7 @@ export default async function ({ data, id, label }) {
     valueToReturn = copiedText;
 
     if (data.assignVariable) {
-      this.setVariable(data.variableName, copiedText);
+      await this.setVariable(data.variableName, copiedText);
     }
     if (data.saveData) {
       this.addDataToColumn(data.dataColumn, copiedText);

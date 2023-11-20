@@ -54,7 +54,7 @@ export async function sliceData({ id, data }) {
   });
 
   if (data.assignVariable) {
-    this.setVariable(data.variableName, sortedArray);
+    await this.setVariable(data.variableName, sortedArray);
   }
   if (data.saveData) {
     this.addDataToColumn(data.dataColumn, sortedArray);

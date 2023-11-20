@@ -23,7 +23,7 @@ export async function logData({ id, data }) {
   }
 
   if (data.assignVariable) {
-    this.setVariable(data.variableName, urls);
+    await this.setVariable(data.variableName, urls);
   }
   if (data.saveData) {
     this.addDataToColumn(data.dataColumn, urls);

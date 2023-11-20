@@ -75,7 +75,7 @@ async function cookie({ data, id }) {
 
   if (data.type === 'get') {
     if (data.assignVariable) {
-      this.setVariable(data.variableName, result);
+      await this.setVariable(data.variableName, result);
     }
     if (data.saveData) {
       this.addDataToColumn(data.dataColumn, result);

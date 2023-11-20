@@ -46,7 +46,7 @@ export async function dataMapping({ id, data }) {
   }
 
   if (data.assignVariable) {
-    this.setVariable(data.variableName, dataToMap);
+    await this.setVariable(data.variableName, dataToMap);
   }
   if (data.saveData) {
     this.addDataToColumn(data.dataColumn, dataToMap);

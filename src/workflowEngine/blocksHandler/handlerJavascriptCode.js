@@ -204,9 +204,11 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
     }
 
     if (result.variables) {
-      Object.keys(result.variables).forEach((varName) => {
-        this.setVariable(varName, result.variables[varName]);
-      });
+      await Promise.allSettled(
+        Object.keys(result.variables).map(async (varName) => {
+          await this.setVariable(varName, result.variables[varName]);
+        })
+      );
     }
 
     let insert = true;

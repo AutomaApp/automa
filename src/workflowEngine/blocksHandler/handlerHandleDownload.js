@@ -48,7 +48,7 @@ async function handleDownload({ data, id: blockId }) {
         this.addDataToColumn(data.dataColumn, downloadItem.filename);
       }
       if (data.assignVariable) {
-        this.setVariable(data.variableName, downloadItem.filename);
+        await this.setVariable(data.variableName, downloadItem.filename);
       }
 
       return {

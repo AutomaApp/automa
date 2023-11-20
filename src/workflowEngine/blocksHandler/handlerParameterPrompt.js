@@ -75,9 +75,11 @@ export default async function ({ data, id }) {
 
   const result = await getInputtedParams(promptId, timeout);
 
-  Object.entries(result).forEach(([varName, varValue]) => {
-    this.setVariable(varName, varValue);
-  });
+  await Promise.allSettled(
+    Object.entries(result).map(async ([varName, varValue]) =>
+      this.setVariable(varName, varValue)
+    )
+  );
 
   return {
     data: '',
