@@ -222,9 +222,20 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
       insert = typeof insertData === 'boolean' ? insertData : true;
 
       if (inputNextBlockId) {
-        const customNextBlockId = this.getBlockConnections(inputNextBlockId);
+        let customNextBlockId = this.getBlockConnections(inputNextBlockId);
         if (!customNextBlockId)
           throw new Error(`Can't find block with "${inputNextBlockId}" id`);
+
+        const nextBlock = this.engine.blocks[inputNextBlockId];
+        if (!customNextBlockId && nextBlock) {
+          customNextBlockId = [
+            {
+              id: inputNextBlockId,
+              blockId: inputNextBlockId,
+              connections: new Map([]),
+            },
+          ];
+        }
 
         nextBlockId = customNextBlockId;
       }
