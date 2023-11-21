@@ -81,7 +81,7 @@ async function insertData({ id, data }, { refData }) {
         this.addDataToColumn(item.name, tableValue);
       });
     } else {
-      this.setVariable(item.name, value);
+      await this.setVariable(item.name, value);
     }
   }
 

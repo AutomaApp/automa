@@ -60,7 +60,7 @@ export default async function ({ data, id, label }) {
 
   if (data.saveDownloadIds) {
     if (data.assignVariable) {
-      this.setVariable(data.variableName, downloadIds);
+      await this.setVariable(data.variableName, downloadIds);
     }
     if (data.saveData) {
       this.addDataToColumn(data.dataColumn, downloadIds);

@@ -51,7 +51,8 @@ async function takeScreenshot({ data, id, label }) {
           uri: dataUrl,
           ext: data.ext,
         });
-      if (data.assignVariable) this.setVariable(data.variableName, dataUrl);
+      if (data.assignVariable)
+        await this.setVariable(data.variableName, dataUrl);
     };
 
     if (data.captureActiveTab) {

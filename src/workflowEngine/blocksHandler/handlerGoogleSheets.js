@@ -154,7 +154,7 @@ export default async function ({ data, id }, { refData }) {
       result = await getSpreadsheetRange(data);
 
       if (data.assignVariable) {
-        this.setVariable(data.variableName, result);
+        await this.setVariable(data.variableName, result);
       }
       if (data.saveData) {
         this.addDataToColumn(data.dataColumn, result);
@@ -172,7 +172,7 @@ export default async function ({ data, id }, { refData }) {
       result = spreadsheetId;
 
       if (data.assignVariable) {
-        this.setVariable(data.variableName, result);
+        await this.setVariable(data.variableName, result);
       }
       if (data.saveData) {
         this.addDataToColumn(data.dataColumn, result);

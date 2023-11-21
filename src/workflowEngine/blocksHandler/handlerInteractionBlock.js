@@ -69,7 +69,7 @@ async function interactionHandler(block) {
     }
 
     if (block.data.assignVariable) {
-      this.setVariable(block.data.variableName, data);
+      await this.setVariable(block.data.variableName, data);
     }
 
     if (debugMode && isChrome) {

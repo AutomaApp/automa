@@ -22,7 +22,7 @@ export async function logData({ id, data }) {
       logs = getTranslateLog(curWorkflowState, 'json');
 
       if (data.assignVariable) {
-        this.setVariable(data.variableName, logs);
+        await this.setVariable(data.variableName, logs);
       }
       if (data.saveData) {
         this.addDataToColumn(data.dataColumn, logs);

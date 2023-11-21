@@ -204,9 +204,11 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
     }
 
     if (result.variables) {
-      Object.keys(result.variables).forEach((varName) => {
-        this.setVariable(varName, result.variables[varName]);
-      });
+      await Promise.allSettled(
+        Object.keys(result.variables).map(async (varName) => {
+          await this.setVariable(varName, result.variables[varName]);
+        })
+      );
     }
 
     let insert = true;
@@ -222,9 +224,20 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
       insert = typeof insertData === 'boolean' ? insertData : true;
 
       if (inputNextBlockId) {
-        const customNextBlockId = this.getBlockConnections(inputNextBlockId);
+        let customNextBlockId = this.getBlockConnections(inputNextBlockId);
         if (!customNextBlockId)
           throw new Error(`Can't find block with "${inputNextBlockId}" id`);
+
+        const nextBlock = this.engine.blocks[inputNextBlockId];
+        if (!customNextBlockId && nextBlock) {
+          customNextBlockId = [
+            {
+              id: inputNextBlockId,
+              blockId: inputNextBlockId,
+              connections: new Map([]),
+            },
+          ];
+        }
 
         nextBlockId = customNextBlockId;
       }

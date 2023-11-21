@@ -110,7 +110,7 @@ class WorkflowWorker {
     currentColumn.index += 1;
   }
 
-  setVariable(name, value) {
+  async setVariable(name, value) {
     let variableName = name;
     const vars = this.engine.referenceData.variables;
 
@@ -127,10 +127,15 @@ class WorkflowWorker {
     }
 
     if (variableName.startsWith('$$')) {
-      dbStorage.variables.put({
-        value,
-        name: variableName.slice(2),
+      variableName = variableName.slice(2);
+
+      const findStorageVar = await dbStorage.variables.get({
+        name: variableName,
       });
+
+      if (findStorageVar)
+        await dbStorage.variables.update(findStorageVar.id, { value });
+      else await dbStorage.variables.add({ name: variableName, value });
     }
 
     this.engine.addRefDataSnapshot('variables');
@@ -392,7 +397,7 @@ class WorkflowWorker {
             value = parseJSON(value, value);
 
             if (item.type === 'variable') {
-              this.setVariable(item.name, value);
+              await this.setVariable(item.name, value);
             } else {
               this.addDataToColumn(item.name, value);
             }

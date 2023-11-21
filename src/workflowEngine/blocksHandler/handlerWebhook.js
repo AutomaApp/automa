@@ -105,7 +105,7 @@ export async function webhook({ data, id }, { refData }) {
     }
 
     if (data.assignVariable) {
-      this.setVariable(data.variableName, returnData);
+      await this.setVariable(data.variableName, returnData);
     }
     if (data.saveData) {
       if (data.dataColumn === '$assignColumns' && Array.isArray(returnData)) {
