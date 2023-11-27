@@ -1052,6 +1052,7 @@ export const tasks = {
       disableBlock: false,
       keys: '',
       selector: '',
+      pressTime: 0,
       description: '',
       keysToPress: '',
       action: 'press-key',

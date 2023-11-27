@@ -47,7 +47,8 @@
     "password": "Password",
     "category": "Category",
     "optional": "Optional",
-    "0disable": "0 to disable"
+    "0disable": "0 to disable",
+    "millisecond": "millisecond | milliseconds"
   },
   "message": {
     "noBlock": "No block",

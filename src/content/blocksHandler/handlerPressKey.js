@@ -1,4 +1,4 @@
-import { isXPath, objectHasKey } from '@/utils/helper';
+import { isXPath, objectHasKey, sleep } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
 import { keyDefinitions } from '@/utils/USKeyboardLayout';
 import { queryElements } from '../handleSelector';
@@ -11,7 +11,7 @@ const modifierKeys = [
   { name: 'Control', id: 2 },
 ];
 
-function pressKeyWithJs(element, keys) {
+async function pressKeyWithJs({ element, keys, pressTime }) {
   const details = {
     key: '',
     code: '',
@@ -24,8 +24,8 @@ function pressKeyWithJs(element, keys) {
     cancelable: true,
   };
 
-  ['keydown', 'keyup'].forEach((event) => {
-    keys.forEach((key) => {
+  for (const event of ['keydown', 'keyup']) {
+    for (const key of keys) {
       const isLetter = /^[a-zA-Z]$/.test(key);
 
       const isModKey = modifierKeys.some(({ name }) => name === key);
@@ -84,10 +84,17 @@ function pressKeyWithJs(element, keys) {
           element[contentKey] += '\r\n';
         }
       }
-    });
-  });
+
+      if (event === 'keyDown' && pressTime > 0) await sleep(pressTime);
+    }
+  }
 }
-async function pressKeyWithCommand(_, keys, activeTabId, actionType) {
+async function pressKeyWithCommand({
+  keys,
+  pressTime,
+  actionType,
+  activeTabId,
+}) {
   const commands = [];
   const events =
     actionType === 'multiple-keys' ? ['keyDown'] : ['keyDown', 'keyUp'];
@@ -130,6 +137,8 @@ async function pressKeyWithCommand(_, keys, activeTabId, actionType) {
 
         commands.push(command.params, secondEvent);
       }
+
+      if (event === 'keyDown' && pressTime > 0) await sleep(pressTime);
     }
   }
 
@@ -160,7 +169,13 @@ async function pressKey({ data, debugMode, activeTabId }) {
       : data.keysToPress.split('');
   const pressKeyFunction = debugMode ? pressKeyWithCommand : pressKeyWithJs;
 
-  await pressKeyFunction(element, keys, activeTabId, data.action);
+  await pressKeyFunction({
+    keys,
+    element,
+    activeTabId,
+    actionType: data.action,
+    pressTime: Number.isNaN(+data.pressTime) ? 0 : +data.pressTime,
+  });
 
   return '';
 }
