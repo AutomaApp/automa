@@ -44,7 +44,7 @@ async function handleScheduleBackup() {
       payload.storageVariables = JSON.stringify(variables);
     }
 
-    const base64 = btoa(JSON.stringify(payload));
+    const base64 = btoa(encodeURIComponent(JSON.stringify(payload)));
     const filename = `${
       localBackupSettings.folderName ? `${localBackupSettings.folderName}/` : ''
     }${dayjs().format('DD-MMM-YYYY--HH-mm')}.json`;
