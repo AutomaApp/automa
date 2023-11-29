@@ -225,8 +225,6 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
 
       if (inputNextBlockId) {
         let customNextBlockId = this.getBlockConnections(inputNextBlockId);
-        if (!customNextBlockId)
-          throw new Error(`Can't find block with "${inputNextBlockId}" id`);
 
         const nextBlock = this.engine.blocks[inputNextBlockId];
         if (!customNextBlockId && nextBlock) {
@@ -238,6 +236,9 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
             },
           ];
         }
+
+        if (!customNextBlockId)
+          throw new Error(`Can't find block with "${inputNextBlockId}" id`);
 
         nextBlockId = customNextBlockId;
       }
