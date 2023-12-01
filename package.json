@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "1.28.22",
+  "version": "1.28.23",
   "description": "An extension for automating your browser by connecting blocks",
   "repository": {
     "type": "git",
@@ -65,6 +65,7 @@
     "dexie": "^3.2.3",
     "html2canvas": "^1.4.1",
     "idb": "^7.0.2",
+    "js-base64": "^3.7.5",
     "json5": "^2.2.3",
     "jsonpath": "^1.1.1",
     "jspdf": "^2.5.1",

@@ -308,9 +308,7 @@ class WorkflowEngine {
 
   addRefDataSnapshot(key) {
     this.refDataSnapshotsKeys[key].index += 1;
-    this.refDataSnapshotsKeys[
-      key
-    ].key = `##${key}${this.refDataSnapshotsKeys[key].index}`;
+    this.refDataSnapshotsKeys[key].key = key;
 
     const keyName = this.refDataSnapshotsKeys[key].key;
     this.refDataSnapshots[keyName] = cloneDeep(this.referenceData[key]);

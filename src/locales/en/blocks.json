@@ -206,7 +206,8 @@
         "actions": {
           "press-key": "Press a key",
           "multiple-keys": "Press multiple keys"
-        }
+        },
+        "press-time": "Press time (milliseconds)"
       },
       "save-assets": {
         "name": "Save assets",

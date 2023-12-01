@@ -416,7 +416,7 @@ async function restoreWorkflows() {
     };
 
     reader.onload = ({ target }) => {
-      const payload = parseJSON(target.result, null);
+      const payload = parseJSON(window.decodeURIComponent(target.result), null);
       if (!payload) return;
 
       const storageTables = parseJSON(payload.storageTables, null);
