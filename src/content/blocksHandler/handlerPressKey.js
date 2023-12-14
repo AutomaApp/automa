@@ -176,7 +176,7 @@ async function pressKey({ data, debugMode, activeTabId }) {
     element,
     activeTabId,
     actionType: data.action,
-    pressTime: Number.isNaN(+data.pressTime) ? 0 : +data.pressTime,
+    pressTime: Number.isNaN(+data.pressTime) ? 0 : Math.abs(+data.pressTime),
   });
 
   return '';
