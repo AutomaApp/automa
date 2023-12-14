@@ -296,6 +296,7 @@ import {
   computed,
   onMounted,
   shallowRef,
+  onDeactivated,
   onBeforeUnmount,
 } from 'vue';
 import cloneDeep from 'lodash.clonedeep';
@@ -1529,7 +1530,7 @@ function checkWorkflowUpdate() {
 /* eslint-disable consistent-return */
 function onBeforeLeave() {
   // disselect node before leave
-  const selectedNodes = editor.value.getSelectedNodes.value;
+  const selectedNodes = editor.value?.getSelectedNodes?.value;
   selectedNodes?.forEach((node) => {
     node.selected = false;
   });
@@ -1579,6 +1580,12 @@ watch(
   }
 );
 
+onDeactivated(() => {
+  const selectedNodes = editor.value?.getSelectedNodes?.value;
+  selectedNodes?.forEach((node) => {
+    node.selected = false;
+  });
+});
 onBeforeRouteLeave(onBeforeLeave);
 onMounted(() => {
   if (!workflow.value) {
