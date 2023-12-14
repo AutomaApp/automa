@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid/non-secure';
 import browser from 'webextension-polyfill';
 import { sleep } from '@/utils/helper';
+import renderString from '../templating/renderString';
 
 function getInputtedParams(promptId, ms = 10000) {
   return new Promise((resolve, reject) => {
@@ -33,7 +34,23 @@ function getInputtedParams(promptId, ms = 10000) {
   });
 }
 
-export default async function ({ data, id }) {
+async function renderParamValue(param, refData, isPopup) {
+  const renderedVals = {};
+
+  const keys = ['defaultValue', 'description', 'placeholder'];
+  await Promise.allSettled(
+    keys.map(async (key) => {
+      if (!param[key]) return;
+      renderedVals[key] = (
+        await renderString(param[key], refData, isPopup)
+      ).value;
+    })
+  );
+
+  return { ...param, ...renderedVals };
+}
+
+export default async function ({ data, id }, { refData }) {
   const paramURL = browser.runtime.getURL('/params.html');
   let tab = (await browser.tabs.query({})).find((item) =>
     item.url.includes(paramURL)
@@ -58,14 +75,20 @@ export default async function ({ data, id }) {
   const promptId = `params-prompt:${nanoid(4)}__${id}`;
   const { timeout } = data;
 
+  const params = await Promise.all(
+    data.parameters.map((item) =>
+      renderParamValue(item, refData, this.engine.isPopup)
+    )
+  );
+
   await browser.tabs.sendMessage(tab.id, {
     name: 'workflow:params-block',
     data: {
+      params,
       promptId,
       blockId: id,
       timeoutMs: timeout,
       execId: this.engine.id,
-      params: data.parameters,
       timeout: Date.now() + timeout,
       name: this.engine.workflow.name,
       icon: this.engine.workflow.icon,
