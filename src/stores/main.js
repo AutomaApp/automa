@@ -25,6 +25,7 @@ export const useStore = defineStore('main', {
         arrow: true,
         snapToGrid: false,
         lineType: 'default',
+        saveWhenExecute: false,
         snapGrid: { 0: 15, 1: 15 },
       },
     },

@@ -54,6 +54,17 @@
           />
         </div>
       </transition-expand>
+      <ui-list-item small>
+        <ui-switch v-model="settings.saveWhenExecute" />
+        <div class="ml-4 flex-1">
+          <p class="leading-tight">
+            {{ t('settings.editor.saveWhenExecute.title') }}
+          </p>
+          <p class="text-sm leading-tight text-gray-600 dark:text-gray-200">
+            {{ t('settings.editor.saveWhenExecute.description') }}
+          </p>
+        </div>
+      </ui-list-item>
     </ui-list>
   </div>
 </template>

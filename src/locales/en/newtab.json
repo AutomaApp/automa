@@ -123,6 +123,10 @@
       "snapGrid": {
         "title": "Snap to the grid",
         "description": "Snap to the grid when moving a block"
+      },
+      "saveWhenExecute": {
+        "title": "Auto-save when execute workflow",
+        "description": "Workflow changes will be saved when executing the workflow"
       }
     },
     "deleteLog": {
