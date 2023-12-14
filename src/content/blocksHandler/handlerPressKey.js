@@ -60,11 +60,13 @@ async function pressKeyWithJs({ element, keys, pressTime }) {
       const isTextField = textFieldTags.includes(element.tagName);
 
       if (isEditable || isTextField) {
-        const isDigit = /^[0-9]$/.test(key);
         const contentKey = isEditable ? 'textContent' : 'value';
-
-        if (isLetter || isDigit) {
-          element[contentKey] += key;
+        if (isLetter || (keyDefinitions[key] && key.length === 1)) {
+          if (isEditable && document.execCommand) {
+            document.execCommand('insertText', false, key);
+          } else {
+            element[contentKey] += key;
+          }
 
           return;
         }
