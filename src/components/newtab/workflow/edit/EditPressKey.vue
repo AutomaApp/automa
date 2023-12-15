@@ -76,12 +76,11 @@
       @change="updateData({ keysToPress: $event })"
     />
     <ui-input
-      :model-value="Math.min(data.pressTime || 0, 0)"
+      :model-value="data.pressTime || 0"
       :label="t('workflow.blocks.press-key.press-time')"
-      type="number"
       class="w-full mt-2"
       :placeholder="t('common.millisecond')"
-      @change="updateData({ pressTime: +$event })"
+      @change="updateData({ pressTime: $event })"
     />
   </div>
 </template>

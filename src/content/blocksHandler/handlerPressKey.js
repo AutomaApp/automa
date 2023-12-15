@@ -60,11 +60,13 @@ async function pressKeyWithJs({ element, keys, pressTime }) {
       const isTextField = textFieldTags.includes(element.tagName);
 
       if (isEditable || isTextField) {
-        const isDigit = /^[0-9]$/.test(key);
         const contentKey = isEditable ? 'textContent' : 'value';
-
-        if (isLetter || isDigit) {
-          element[contentKey] += key;
+        if (isLetter || (keyDefinitions[key] && key.length === 1)) {
+          if (isEditable && document.execCommand) {
+            document.execCommand('insertText', false, key);
+          } else {
+            element[contentKey] += key;
+          }
 
           return;
         }
@@ -174,7 +176,7 @@ async function pressKey({ data, debugMode, activeTabId }) {
     element,
     activeTabId,
     actionType: data.action,
-    pressTime: Number.isNaN(+data.pressTime) ? 0 : +data.pressTime,
+    pressTime: Number.isNaN(+data.pressTime) ? 0 : Math.abs(+data.pressTime),
   });
 
   return '';

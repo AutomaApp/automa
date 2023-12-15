@@ -131,7 +131,7 @@
         :class="[
           { 'cursor-default': isDataChanged },
           workflow.testingMode
-            ? 'bg-primary bg-primary bg-opacity-20 text-primary'
+            ? 'bg-primary bg-opacity-20 text-primary'
             : 'hoverable',
         ]"
         class="rounded-lg p-2"
@@ -333,6 +333,7 @@ import { useToast } from 'vue-toastification';
 import browser from 'webextension-polyfill';
 import { fetchApi } from '@/utils/api';
 import { useUserStore } from '@/stores/user';
+import { useStore } from '@/stores/main';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
@@ -381,6 +382,7 @@ const { t } = useI18n();
 const toast = useToast();
 const router = useRouter();
 const dialog = useDialog();
+const mainStore = useStore();
 const userStore = useUserStore();
 const packageStore = usePackageStore();
 const workflowStore = useWorkflowStore();
@@ -468,6 +470,11 @@ function updateWorkflowDescription(value) {
   state.showEditDescription = false;
 }
 function executeCurrWorkflow() {
+  if (mainStore.settings.editor.saveWhenExecute && props.isDataChanged) {
+    // eslint-disable-next-line no-use-before-define
+    saveWorkflow();
+  }
+
   executeWorkflow({
     ...props.workflow,
     isTesting: props.isDataChanged,

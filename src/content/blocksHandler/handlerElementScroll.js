@@ -2,15 +2,13 @@ import handleSelector from '../handleSelector';
 
 function isElScrollable(element) {
   const excludedTags = ['SCRIPT', 'STYLE', 'SVG', 'HEAD'];
-
-  const isOverflow = /scroll|auto/.test(getComputedStyle(element).overflow);
   const isScrollable =
     element.scrollHeight > element.clientHeight ||
     element.scrollWidth > element.clientWidth;
   const isExcluded =
     element.tagName.includes('-') || excludedTags.includes(element.tagName);
 
-  return isOverflow && isScrollable && !isExcluded;
+  return isScrollable && !isExcluded;
 }
 
 function findScrollableElement(
