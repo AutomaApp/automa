@@ -81,7 +81,12 @@ async function insertData({ id, data }, { refData }) {
         this.addDataToColumn(item.name, tableValue);
       });
     } else {
-      await this.setVariable(item.name, value);
+      const variableName = await renderString(
+        item.name,
+        refData,
+        this.engine.isPopup
+      );
+      await this.setVariable(variableName.value, value);
     }
   }
 
