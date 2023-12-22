@@ -257,7 +257,12 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
           ? columnDataObj
           : [columnDataObj];
 
-        if (replaceTable) this.engine.referenceData.table = [];
+        if (replaceTable) {
+          this.engine.referenceData.table = [];
+          Object.keys(this.engine.columns).forEach((key) => {
+            this.engine.columns[key].index = 0;
+          });
+        }
 
         this.addDataToColumn(params);
       }
