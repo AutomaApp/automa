@@ -79,7 +79,7 @@ const contentTypes = {
   'form-data': 'multipart/form-data',
   form: 'application/x-www-form-urlencoded',
 };
-const notHaveBody = ['GET', 'DELETE'];
+const notHaveBody = ['GET', 'HEAD'];
 
 export async function executeWebhook({
   url,

@@ -1,9 +1,7 @@
 import cloneDeep from 'lodash.clonedeep';
-import objectPath from 'object-path';
 import { parseJSON } from '@/utils/helper';
 import { conditionBuilder } from '@/utils/shared';
 import renderString from '../templating/renderString';
-import { keyParser } from '../templating/mustacheReplacer';
 
 const isBoolStr = (str) => {
   if (str === 'true') return true;
@@ -56,14 +54,22 @@ export default async function (conditionsArr, workflowData) {
       const isInsideBrackets =
         dataPath.startsWith('{{') && dataPath.endsWith('}}');
 
-      if (isInsideBrackets) {
-        dataPath = dataPath.slice(2, -2).trim();
+      if (!isInsideBrackets) {
+        dataPath = `{{${dataPath}}}`;
       }
 
-      const parsedPath = keyParser(dataPath, workflowData.refData);
-      dataPath = `${parsedPath.dataKey}.${parsedPath.path}`;
+      let dataExists = await renderString(
+        dataPath,
+        workflowData.refData,
+        workflowData.isPopup,
+        {
+          checkExistence: true,
+        }
+      );
+      // It return string for some reason
+      dataExists = Boolean(parseJSON(dataExists.value, false));
 
-      return objectPath.has(workflowData.refData, dataPath);
+      return dataExists;
     }
 
     const copyData = cloneDeep(data);

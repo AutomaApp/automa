@@ -63,7 +63,14 @@ export function keyParser(key, data) {
 
 function replacer(
   str,
-  { regex, tagLen, modifyPath, data, disableStringify = false }
+  {
+    data,
+    regex,
+    tagLen,
+    modifyPath,
+    checkExistence = false,
+    disableStringify = false,
+  }
 ) {
   const replaceResult = {
     list: {},
@@ -106,6 +113,8 @@ function replacer(
         dataKey = dataKey.slice(1);
       }
 
+      if (checkExistence) return objectPath.has(data[dataKey], path);
+
       result = objectPath.get(data[dataKey], path);
       if (typeof result === 'undefined') result = match;
 
@@ -144,6 +153,7 @@ export default function (str, refData, options = {}) {
         tagLen: 1,
         regex: /\[(.*?)\]/g,
         ...options,
+        checkExistence: false,
       });
       Object.assign(replacedList, list);
 

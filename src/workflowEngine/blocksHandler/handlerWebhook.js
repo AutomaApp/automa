@@ -3,16 +3,6 @@ import { isWhitespace } from '@/utils/helper';
 import { executeWebhook } from '../utils/webhookUtil';
 import renderString from '../templating/renderString';
 
-function fileReader(blob) {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      resolve(reader.result);
-    };
-    reader.readAsDataURL(blob);
-  });
-}
-
 const ALL_HTTP_RESPONSE_KEYWORD = '$response';
 
 export async function webhook({ data, id }, { refData }) {
@@ -83,7 +73,13 @@ export async function webhook({ data, id }, { refData }) {
       }
     } else if (data.responseType === 'base64') {
       const blob = await response.blob();
-      const base64 = await fileReader(blob);
+      const base64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          resolve(reader.result);
+        };
+        reader.readAsDataURL(blob);
+      });
 
       returnData = base64;
     } else {
