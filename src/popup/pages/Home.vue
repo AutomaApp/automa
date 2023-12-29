@@ -352,7 +352,7 @@ function renameWorkflow({ id, name }) {
     },
   });
 }
-function deleteWorkflow({ id, name }) {
+function deleteWorkflow({ id, hostId, name }) {
   dialog.confirm({
     title: t('home.workflow.delete'),
     okVariant: 'danger',
@@ -361,7 +361,7 @@ function deleteWorkflow({ id, name }) {
       if (state.activeTab === 'local') {
         workflowStore.delete(id);
       } else {
-        hostedWorkflowStore.delete(id);
+        hostedWorkflowStore.delete(hostId);
       }
     },
   });
@@ -419,7 +419,7 @@ onMounted(async () => {
   await automa('app');
 
   if (activeTab === 'team' && !userStore.user?.teams) activeTab = 'local';
-  else if (activeTab === 'host' && hostedWorkflowStore.toArray.length < 0)
+  else if (activeTab === 'host' && hostedWorkflowStore.toArray.length < 1)
     activeTab = 'local';
 
   state.retrieved = true;

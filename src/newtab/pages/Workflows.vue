@@ -169,7 +169,31 @@ onMounted(() => {
     state.activeTab = activeTab || tabs[0].id;
   }
 
-  if (state.tabs.length !== 0) return;
+  if (state.tabs.length !== 0) {
+    if (/\/workflows\/.+/.test(route.path)) {
+      const routeTab = state.tabs.find((tab) => tab.path === route.path);
+      if (routeTab) {
+        if (routeTab.id !== state.activeTab) {
+          state.activeTab = routeTab.id;
+        }
+      } else {
+        const index = state.tabs.findIndex((tab) => tab.id === state.activeTab);
+        if (index !== -1) {
+          Object.assign(state.tabs[index], {
+            path: route.path,
+            name: getTabTitle(),
+          });
+
+          setTimeout(() => {
+            Object.assign(state.tabs[index], {
+              name: getTabTitle(),
+            });
+          }, 1000);
+        }
+      }
+    }
+    return;
+  }
 
   addTab({
     path: route.path,
