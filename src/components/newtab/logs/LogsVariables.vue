@@ -29,7 +29,9 @@
             readonly
           />
           <ui-input
-            :model-value="JSON.stringify(varValue)"
+            :model-value="
+              typeof varValue === 'string' ? varValue : JSON.stringify(varValue)
+            "
             label="Value"
             class="w-full"
             placeholder="EMPTY"

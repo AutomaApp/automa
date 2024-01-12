@@ -336,6 +336,7 @@ async function backupWorkflows() {
 
       return acc;
     }, []);
+
     const payload = {
       isProtected: state.encrypt,
       workflows: JSON.stringify(workflows),

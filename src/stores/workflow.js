@@ -47,7 +47,7 @@ const defaultWorkflow = (data = null, options = {}) => {
     settings: {
       publicId: '',
       blockDelay: 0,
-      saveLog: false,
+      saveLog: true,
       debugMode: false,
       restartTimes: 3,
       notification: true,
