@@ -1,3 +1,4 @@
+import { parseJSON } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
 import Browser from 'webextension-polyfill';
 
@@ -11,7 +12,10 @@ function getWorkflowDetail() {
   const { 1: workflowId } = pathname.split('/');
 
   searchParams.forEach((key, value) => {
-    variables[key] = decodeURIComponent(value);
+    const varValue = parseJSON(decodeURIComponent(value), '##_empty');
+    if (varValue === '##_empty') return;
+
+    variables[key] = varValue;
   });
 
   return { workflowId: workflowId ?? '', variables };
