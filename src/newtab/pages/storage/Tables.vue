@@ -75,6 +75,7 @@
     </div>
     <storage-edit-table
       v-model="editState.show"
+      :title="t('storage.table.edit')"
       :name="editState.name"
       :columns="editState.columns"
       @save="saveEditedTable"
