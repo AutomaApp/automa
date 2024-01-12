@@ -410,7 +410,9 @@ async function restoreWorkflows() {
       };
 
       if (state.updateIfExists) {
-        return workflowStore.insertOrUpdate(newWorkflows).then(showMessage);
+        return workflowStore
+          .insertOrUpdate(newWorkflows, { duplicateId: true })
+          .then(showMessage);
       }
 
       return workflowStore.insert(newWorkflows).then(showMessage);
