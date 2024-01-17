@@ -6,7 +6,7 @@
       style="height: 600px"
     >
       <p class="p-4 font-semibold">
-        {{ t('storage.table.add') }}
+        {{ title || t('storage.table.add') }}
       </p>
       <div class="scroll flex-1 overflow-auto px-4 pb-4">
         <ui-input
@@ -27,32 +27,43 @@
         >
           {{ t('message.noData') }}
         </p>
-        <ul class="mt-4 space-y-2">
-          <li
-            v-for="(column, index) in state.columns"
-            :key="column.id"
-            class="flex items-center space-x-2"
-          >
-            <ui-input
-              :model-value="column.name"
-              :placeholder="t('workflow.table.column.name')"
-              class="flex-1"
-              @blur="updateColumnName(index, $event.target)"
-            />
-            <ui-select
-              v-model="column.type"
-              class="flex-1"
-              :placeholder="t('workflow.table.column.type')"
-            >
-              <option v-for="type in dataTypes" :key="type.id" :value="type.id">
-                {{ type.name }}
-              </option>
-            </ui-select>
-            <button @click="deleteColumn(index)">
-              <v-remixicon name="riDeleteBin7Line" />
-            </button>
-          </li>
-        </ul>
+        <draggable
+          v-model="state.columns"
+          tag="ul"
+          handle=".handle"
+          item-key="id"
+          class="mt-4 space-y-2"
+        >
+          <template #item="{ element: column, index }">
+            <li class="flex items-center space-x-2">
+              <span class="handle cursor-move">
+                <v-remixicon name="mdiDrag" />
+              </span>
+              <ui-input
+                :model-value="column.name"
+                :placeholder="t('workflow.table.column.name')"
+                class="flex-1"
+                @blur="updateColumnName(index, $event.target)"
+              />
+              <ui-select
+                v-model="column.type"
+                class="flex-1"
+                :placeholder="t('workflow.table.column.type')"
+              >
+                <option
+                  v-for="type in dataTypes"
+                  :key="type.id"
+                  :value="type.id"
+                >
+                  {{ type.name }}
+                </option>
+              </ui-select>
+              <button @click="deleteColumn(index)">
+                <v-remixicon name="riDeleteBin7Line" />
+              </button>
+            </li>
+          </template>
+        </draggable>
       </div>
       <div class="p-4 text-right">
         <ui-button class="mr-4" @click="clearTempTables(true)">
@@ -73,6 +84,7 @@
 import { reactive, toRaw, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { nanoid } from 'nanoid';
+import draggable from 'vuedraggable';
 import cloneDeep from 'lodash.clonedeep';
 import { dataTypes } from '@/utils/constants/table';
 
@@ -82,6 +94,10 @@ const props = defineProps({
     default: false,
   },
   name: {
+    type: String,
+    default: '',
+  },
+  title: {
     type: String,
     default: '',
   },
@@ -122,7 +138,10 @@ function updateColumnName(index, target) {
   state.columns[index].name = columnName;
 }
 function saveTable() {
-  const rawState = toRaw(state);
+  const rawState = {
+    ...toRaw(state),
+    columns: state.columns.map(toRaw),
+  };
 
   emit('save', { ...rawState, changes });
 }

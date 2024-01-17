@@ -30,21 +30,23 @@ export default async function (
     const outputsMap = new Set();
 
     data.inputs.forEach((item) => {
-      connections[addBlockPrefix(item.id)] = [
-        {
-          id: addBlockPrefix(item.blockId),
-          targetId: `${addBlockPrefix(block.id)}-input-1`,
-        },
-      ];
+      connections[addBlockPrefix(item.id)] = new Map([
+        [
+          item.id,
+          {
+            id: addBlockPrefix(item.blockId),
+            targetId: `${addBlockPrefix(block.id)}-input-1`,
+          },
+        ],
+      ]);
     });
     data.outputs.forEach((output) => {
-      outputsMap.add(output.handleId);
-
       const connection =
         this.engine.connectionsMap[`${id}-output-${output.id}`];
       if (!connection) return;
 
-      connections[addBlockPrefix(output.handleId)] = [...connection.values()];
+      connections[addBlockPrefix(output.handleId)] = new Map(connection);
+      outputsMap.add(output.handleId);
     });
 
     data.data.nodes.forEach((node) => {

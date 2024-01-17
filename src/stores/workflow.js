@@ -47,7 +47,7 @@ const defaultWorkflow = (data = null, options = {}) => {
     settings: {
       publicId: '',
       blockDelay: 0,
-      saveLog: false,
+      saveLog: true,
       debugMode: false,
       restartTimes: 3,
       notification: true,
@@ -211,11 +211,15 @@ export const useWorkflowStore = defineStore('workflow', {
 
       return updatedWorkflows;
     },
-    async insertOrUpdate(data = [], { checkUpdateDate = false } = {}) {
+    async insertOrUpdate(
+      data = [],
+      { checkUpdateDate = false, duplicateId = false } = {}
+    ) {
       const insertedData = {};
 
       data.forEach((item) => {
         const currentWorkflow = this.workflows[item.id];
+
         if (currentWorkflow) {
           let insert = true;
           if (checkUpdateDate && currentWorkflow.createdAt && item.updatedAt) {
@@ -229,7 +233,7 @@ export const useWorkflowStore = defineStore('workflow', {
             insertedData[item.id] = mergedData;
           }
         } else {
-          const workflow = defaultWorkflow(item);
+          const workflow = defaultWorkflow(item, { duplicateId });
           this.workflows[workflow.id] = workflow;
           insertedData[workflow.id] = workflow;
         }

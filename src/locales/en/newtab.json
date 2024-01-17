@@ -42,6 +42,7 @@
     "title": "Storage",
     "table": {
       "add": "Add table",
+      "edit": "Edit table",
       "createdAt": "Created at",
       "modifiedAt": "Modified at",
       "rowsCount": "Rows count",
