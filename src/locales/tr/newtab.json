@@ -1,0 +1,517 @@
+{
+  "home": {
+    "viewAll": "Hepsini Görüntüle",
+    "communities": "Topluluklar"
+  },
+  "welcome": {
+    "title": "Automa'ya Hoş Geldiniz! 🎉",
+    "text": "Belgelendirmeyi okuyarak veya Automa Marketplace'deki iş akışlarını göz atarak başlayın.",
+    "marketplace": "Marketplace"
+  },
+  "packages": {
+    "name": "Paket | Paketler",
+    "add": "Paket Ekle",
+    "icon": "Paket simgesi",
+    "open": "Paketleri Aç",
+    "new": "Yeni Paket",
+    "import": "Paket İçe Aktar",
+    "set": "Paket Olarak Ayarla",
+    "settings": {
+      "asBlock": "Paketi blok olarak ayarla"
+    },
+    "categories": {
+      "my": "Paketlerim",
+      "installed": "Yüklenmiş Paketler"
+    }
+  },
+  "scheduledWorkflow": {
+    "title": "Zamanlanmış iş akışları",
+    "nextRun": "Sonraki çalıştırma",
+    "active": "Aktif",
+    "refresh": "Yenile",
+    "schedule":{
+      "title": "Zamanlama",
+      "types": {
+        "everyDay": "Her gün",
+        "general": "Her {time}",
+        "interval": "{time} dakikada bir"
+      }
+    }
+  },
+  "storage": {
+    "title": "Depolama",
+    "table": {
+      "add": "Tablo Ekle",
+      "createdAt": "Oluşturulma Tarihi",
+      "modifiedAt": "Değiştirilme Tarihi",
+      "rowsCount": "Satır Sayısı",
+      "delete": "Tabloyu Sil"
+    }
+  },
+  "credential": {
+    "title": "Kimlik Bilgisi | Kimlik Bilgileri",
+    "add": "Kimlik Bilgisi Ekle",
+    "use": {
+      "title": "Kullanılan Kimlik Bilgileri",
+      "description": "Bu iş akışı bu kimlik bilgilerini kullanıyor"
+    }
+  },
+  "workflowPermissions": {
+    "title": "İş Akışı İzinleri",
+    "description": "Bu iş akışının düzgün çalışması için bu izinlere ihtiyaç duyar",
+    "contextMenus": {
+      "title": "Bağlam Menüsü",
+      "description": "İş akışını bağlam menüsü aracılığıyla yürütmek için"
+    },
+    "clipboardRead": {
+      "title": "Pano",
+      "description": "Panodaki verilere erişim sağlamak için"
+    },
+    "notifications": {
+      "title": "Bildirim",
+      "description": "Bir bildirim göstermek için"
+    },
+    "downloads": {
+      "title": "İndir",
+      "description": "Sayfa varlıklarını kaydetme ve indirilen dosyayı yeniden adlandırma için"
+    },
+    "cookies": {
+      "title": "Çerezler",
+      "description": "Çerezleri okuma, ayarlama veya kaldırmak için"
+    }
+  },
+  "updateMessage": {
+    "text1": "Automa v{version} sürümüne güncellendi,",
+    "text2": "yeniliklere göz atın."
+  },
+  "workflows": {
+    "folder": {
+      "new": "Yeni Klasör",
+      "name": "Klasör Adı",
+      "delete": "Klasörü Sil",
+      "rename": "Klasörü Yeniden Adlandır"
+    }
+  },
+  "auth": {
+    "title": "Kimlik Doğrulama",
+    "signIn": "Oturum aç",
+    "username": "Önce kullanıcı adınızı ayarlamanız gerekiyor",
+    "clickHere": "Buraya tıklayın",
+    "text": "Bunu yapmadan önce oturum açmanız gerekiyor"
+  },
+  "running": {
+    "start": "Başlangıç tarihi: {date}",
+    "message": "Bu yalnızca son 5 günlüğü gösterir"
+  },
+  "settings": {
+    "theme": "Tema",
+    "shortcuts": {
+      "duplicate": "\"{name}\" tarafından zaten kullanılan kısayol"
+    },
+    "editor": {
+      "title": "Başlık",
+      "curvature": {
+        "title": "Çizgi Kıvrımı",
+        "line": "Çizgi",
+        "reroute": "Yeniden Yönlendirme",
+        "rerouteFirstLast": "İlk ve son noktayı yeniden yönlendir"
+      },
+      "arrow": {
+        "title": "Çizgi oku",
+        "description": "Çizginin sonuna bir ok ekleyin"
+      },
+      "snapGrid": {
+        "title": "Izgaraya tutun",
+        "description": "Bir bloğu taşıdığınızda ızgaraya tutunur"
+      },
+      "saveWhenExecute": {
+        "title": "İş akışını yürütürken otomatik olarak kaydet",
+        "description": "İş akışı yürütüldüğünde iş akışı değişiklikleri kaydedilecektir"
+      }
+    },
+    "deleteLog": {
+      "title": "İş akışı günlüklerini otomatik sil",
+      "after": "Şu tarihten sonra sil",
+      "deleteAfter": {
+        "never": "Hiçbir Zaman",
+        "days": "{day} gün"
+      }
+    },
+    "language": {
+      "label": "Dil",
+      "helpTranslate": "Dilinizi bulamıyor musunuz? Çeviriye yardımcı olun.",
+      "reloadPage": "Değişikliğin etkili olması için sayfayı yenileyin"
+    },
+    "menu": {
+      "backup": "İş Akışlarını Yedekle",
+      "editor": "Düzenleyici",
+      "general": "Genel",
+      "shortcuts": "Kısayollar",
+      "about": "Hakkında"
+    },
+    "backupWorkflows": {
+      "title": "Yerel Yedek",
+      "invalidPassword": "Geçersiz şifre",
+      "workflowsAdded": "{count} iş akışı eklenmiştir",
+      "name": "İş akışları Yedekle",
+      "needSignin": "İlk önce oturum açmanız gerekiyor",
+      "backup": {
+        "button": "Yedekle",
+        "settings": "Yedekleme ayarları",
+        "encrypt": "Şifre ile koru",
+        "schedule": "Yerel yedeklemeyi zamanla"
+      },
+      "restore": {
+        "title": "İş akışlarını geri yükle",
+        "button": "Geri Yükle",
+        "update": "Eğer iş akışı mevcutsa güncelle"
+      },
+      "cloud": {
+        "buttons": {
+          "local": "Yerel",
+          "cloud": "Bulut"
+        },
+        "location": "Konum",
+        "delete": "Yedeklemeyi Sil",
+        "title": "Bulut Yedekleme",
+        "sync": "Senkronize et",
+        "lastSync": "Son senkronizasyon",
+        "lastBackup": "Son yedekleme",
+        "select": "İş akışlarını seçin",
+        "storedWorkflows": "Bulutta depolanan iş akışları",
+        "selected": "Seçilen",
+        "selectText": "Yedeklemek istediğiniz iş akışlarını seçin",
+        "selectAll": "Hepsini Seç",
+        "deselectAll": "Hepsinin Seçimini Kaldır",
+        "needSelectWorkflow": "Yedeklemek istediğiniz iş akışlarını seçmelisiniz"
+      }
+    }
+  },
+  "workflow": {
+    "events": {
+      "title": "İş Akışı Etkinlikleri",
+      "add-action": "Eylem Ekle",
+      "description": "Etkinlik gerçekleştiğinde eylemleri gerçekleştirin.",
+      "event": "Etkinlik | Etkinlikler",
+      "action": "Eylem",
+      "actions": {
+        "js-code": {
+          "title": "JS Kodu Çalıştır"
+        },
+        "http-request": {
+          "title": "HTTP İsteği"
+        }
+      },
+      "types": {
+        "finish:success": {
+          "name": "Tamamlanma (başarılı)",
+          "description": "İş akışı yürütmesi başarıyla tamamlandı"
+        },
+        "finish:failed": {
+          "name": "Tamamlanma (hata)",
+          "description": "İş akışı yürütmesi hata ile tamamlandı"
+        }
+      }
+    },
+    "previewMode": {
+      "title": "Önizleme modu",
+      "description": "Önizleme modundasınız, yaptığınız değişiklikler kaydedilmeyecek"
+    },
+    "pinWorkflow": {
+      "pin": "İş Akışını Sabitle",
+      "unpin": "İş Akışının Sabitlemesini Kaldır",
+      "pinned": "Sabitlemiş İş Akışları"
+    },
+    "parameters": {
+      "add": "Parametre Ekle",
+      "preferInTab": "Giriş parametrelerini sekmede tercih edin"
+    },
+    "my": "İş akışlarım",
+    "testing": {
+      "title": "Test Modu",
+      "nextBlock": "Sonraki Blok",
+      "startRun": "Çalıştırmayı Başlat",
+      "disabled": "Önce değişiklikleri kaydedin"
+    },
+    "import": "İş Akışını İçe Aktar",
+    "new": "Yeni İş Akışı",
+    "delete": "İş Akışını Sil",
+    "browse": "İş Akışlarına Göz At",
+    "name": "İş Akışı Adı",
+    "rename": "İş Akışını Yeniden Adlandır",
+    "backupCloud": "İş Akışını Buluta Yedekle",
+    "add": "İş Akışı Ekle",
+    "clickToEnable": "Etkinleştirmek için tıklayın",
+    "toggleSidebar": "Kenar Çubuğunu Aç/Kapat",
+    "cantEdit": "Paylaşılan iş akışını düzenleyemezsiniz",
+    "undo": "Geri Al",
+    "redo": "Yinele",
+    "autoAlign": {
+      "title": "Otomatik hizala"
+    },
+    "blocksFolder": {
+      "title": "Blok Klasörü",
+      "add": "Klasöre Blok Ekle",
+      "save": "Klasöre Kaydet"
+    },
+    "searchBlocks": {
+      "title": "Düzenleyicide Blokları Ara"
+    },
+    "conditionBuilder": {
+      "title": "Koşul Oluşturucu",
+      "add": "Koşul Ekle",
+      "and": "VE",
+      "or": "VEYA",
+      "topAwait": "Üst düzey bekleme ve \"automaRefData\" fonksiyonunu destekle"
+    },
+    "host": {
+      "title": "İş Akışını Barındır",
+      "set": "Ana İş Akışı olarak ayarla",
+      "id": "Ana Bilgisayar Kimliği",
+      "add": "Barındırılan İş Akışı Ekle",
+      "sync": {
+        "title": "Senkronize Et",
+        "description": "Ana iş akışı ile senkronize et"
+      },
+      "messages": {
+        "hostExist": "Bu ana bilgisayarı zaten eklediniz",
+        "notFound": "Kimliği \"{id}\" olan barındırılan bir iş akışı bulunamıyor"
+      }
+    },
+    "type": {
+      "local": "Yerel",
+      "shared": "Paylaşılan",
+      "host": "Ana Bilgisayar"
+    },
+    "unpublish": {
+      "title": "İş Akışını Yayından Kaldır",
+      "button": "Yayından Kaldır",
+      "body": "İş akışını \"{name}\" yayından kaldırmak istediğinizden emin misiniz?"
+    },
+    "share": {
+      "url": "Paylaş URL",
+      "publish": "Yayınla",
+      "sharedAs": "Şu şekilde paylaşıldı: \"{name}\"",
+      "title": "İş Akışını Paylaş",
+      "download": "İş akışını yerel olarak kaydet",
+      "edit": "Açıklamayı düzenle",
+      "fetchLocal": "Yerel iş akışını getir",
+      "update": "Güncelle",
+      "unpublish": "Yayından kaldır"
+    },
+    "variables": {
+      "title": "Değişken | Değişkenler",
+      "name": "Değişken adı",
+      "assign": "Değişken ata"
+    },
+    "protect": {
+      "title": "İş akışını koru",
+      "remove": "Korumayı kaldır",
+      "button": "Koruma",
+      "note": "Not: Bu şifre, iş akışını daha sonra düzenlemek veya silmek için gereklidir."
+    },
+    "locked": {
+      "title": "Bu İş Akışı Korunuyor",
+      "body": "Kilidini açmak için şifreyi girin",
+      "unlock": "Kilidi aç",
+      "messages": {
+        "incorrect-password": "Yanlış şifre"
+      }
+    },
+    "state": {
+      "executeBy": "\"{name}\" tarafından yürütülen"
+    },
+    "table": {
+      "title": "Tablo | Tablolar",
+      "placeholder": "Arama veya sütun ekle",
+      "select": "Sütun seç",
+      "column": {
+        "name": "Sütun adı",
+        "type": "Veri türü"
+      }
+    },
+    "sidebar": {
+      "workflowIcon": "İş akışı simgesi"
+    },
+    "editor": {
+      "zoomIn": "Yaklaştır",
+      "zoomOut": "Uzaklaştır",
+      "resetZoom": "Yakınlaştırmayı sıfırla",
+      "duplicate": "Çoğalt",
+      "copy": "Kopyala",
+      "paste": "Yapıştır",
+      "group": "Blokları grupla",
+      "ungroup": "Blokları gruplamayı kaldır"
+    },
+    "settings": {
+      "saveLog": "İş akışı günlüğünü kaydet",
+      "executedBlockOnWeb": "Web sayfasında yürütülen blokları göster",
+      "notification": {
+        "title": "İş akışı bildirimi",
+        "description": "İş akışı durumunu (başarılı veya başarısız) yürütüldükten sonra göster",
+        "noPermission": "Bu seçenek, çalışması için \"bildirimler\" iznine ihtiyaç duyar"
+      },
+      "publicId": {
+        "title": "İş akışı genel kimliği",
+        "description": "İş akışını bir JavaScript özel etkinlik aracılığıyla yürütmek için genel bir kimlik belirleyin"
+      },
+      "defaultColumn": {
+        "title": "Varsayılan sütuna ekle",
+        "description": "Bloktaki sütun seçilmediyse veriyi varsayılan sütuna ekleyin",
+        "name": "Varsayılan sütun adı"
+      },
+      "autocomplete": {
+        "title": "Otomatik tamamlama",
+        "description": "Giriş bloğunda otomatik tamamlamayı etkinleştirin (Automa'nın kararsız hale gelirse devre dışı bırakın)"
+      },
+      "clearCache": {
+        "title": "Önbelleği temizle",
+        "description": "İş akışının önbelleğini (durum ve döngü indeksi) temizleme",
+        "info": "İş akışı önbelleği başarıyla temizlendi",
+        "btn": "Temizle"
+      },
+      "reuseLastState": {
+        "title": "Son iş akışının durumunu yeniden kullan",
+        "description": "En son yürütülen iş akışındaki durum verilerini (tablo, değişkenler ve genel veri) kullanma"
+      },
+      "debugMode": {
+        "title": "Hata ayıklama modu",
+        "description": "İş akışını Chrome DevTools Protokolü kullanarak yürütme"
+      },
+      "restartWorkflow": {
+        "for": "Yeniden başlatma süresi",
+        "times": "Zamanlar",
+        "description": "İş akışının kaç kez yeniden başlatılacağının maksimum sayısı"
+      },
+      "onError": {
+        "title": "İş akışında hata durumunda",
+        "description": "İş akışında bir hata oluştuğunda alınacak aksiyonu ayarlayın",
+        "items": {
+          "keepRunning": "Çalışmaya devam et",
+          "stopWorkflow": "İş akışını durdur",
+          "restartWorkflow": "İş akışını yeniden başlat"
+        }
+      },
+      "timeout": {
+        "title": "İş akışı zaman aşımı (milisaniye)"
+      },
+      "blockDelay": {
+        "title": "Bloklar arası gecikme (milisaniye)",
+        "description": "Her bloğu yürütmeden önce gecikme ekle"
+      },
+      "tabLoadTimeout": {
+        "title": "Sekme yükleme zaman aşımı",
+        "description": "Bir sekmenin yüklenme süresi için maksimum süre milisaniye cinsinden, zaman aşımını devre dışı bırakmak için 0 girin"
+        }
+    }
+  },
+  "collection": {
+    "description": "İş akışlarınızı sırayla yürütün",
+    "new": "Yeni koleksiyon",
+    "delete": "Koleksiyonu sil",
+    "add": "Koleksiyon ekle",
+    "rename": "Koleksiyonu yeniden adlandır",
+    "flow": "Akış",
+    "dragDropText": "Bir iş akışını veya bloğu buraya bırakın",
+    "options": {
+      "atOnce": {
+        "title": "Koleksiyondaki tüm iş akışlarını aynı anda yürüt",
+        "description": "Bu seçenek kullanıldığında bloklar çalışmaz"
+      }
+    },
+    "globalData": {
+      "note": "Bu, iş akışının genel verisini üzerine yazar"
+    }
+  },
+  "log": {
+    "flowId": "Akış Kimliği",
+    "goBack": "\"{name}\"'in günlüklerine geri dön",
+    "goWorkflow": "İş akışına git",
+    "startedDate": "Başlangıç tarihi",
+    "duration": "Süre",
+    "selectAll": "Tümünü seç",
+    "deselectAll": "Tümünü iptal et",
+    "deleteSelected": "Seçilen günlükleri sil",
+    "clearLogs": {
+      "title": "Günlükleri temizle",
+      "description": "Tüm günlükleri silmek istediğinizden emin misiniz?"
+    },
+    "types": {
+      "stop": "İş akışı durduruldu",
+      "finish": "Tamamlandı"
+    },
+    "messages": {
+      "url-empty": "URL boş",
+      "invalid-url": "URL geçerli değil",
+      "conditions-empty": "Koşullar boş",
+      "invalid-proxy-host": "Geçersiz proxy ana bilgisayar",
+      "workflow-disabled": "İş akışı devre dışı",
+      "selector-empty": "Eleman seçici boş",
+      "invalid-body": "İçerik gövdesi geçerli bir JSON değil",
+      "invalid-active-tab": "\"{url}\" geçerli bir URL değil",
+      "empty-spreadsheet-id": "Tablo Kimliği boş",
+      "invalid-loop-data": "Döngü için geçersiz veri",
+      "empty-workflow": "İlk önce bir iş akışı seçmelisiniz",
+      "active-tab-removed": "İş akışı etkin sekmesi kaldırıldı",
+      "empty-spreadsheet-range": "Tablo aralığı boş",
+      "stop-timeout": "İş akışı zaman aşımı nedeniyle durduruldu",
+      "no-file-access": "Automa'nın dosyaya erişimi yok",
+      "no-workflow": "ID \"{workflowId}\" ile bir iş akışı bulunamıyor",
+      "no-match-tab": "\"{pattern}\" deseniyle eşleşen bir sekme bulunamıyor",
+      "no-clipboard-acces": "Pano erişim izni yok",
+      "browser-not-supported": "Bu özellik {browser} tarayıcısında desteklenmiyor",
+      "element-not-found": "\"{selector}\" seçici ile bir öğe bulunamıyor",
+      "no-permission": "\"{permission}\" iznine sahip değil, bu işlemi gerçekleştirmek için iznin yok",
+      "not-iframe": "\"{selector}\" seçiciye sahip öğe bir iframe öğesi değil",
+      "iframe-not-found": "\"{selector}\" seçici ile bir iframe öğesi bulunamıyor",
+      "workflow-infinite-loop": "Sonsuz döngüyü önlemek için iş akışı yürütülemedi",
+      "not-debug-mode": "Bu bloğun düzgün çalışması için iş akışının hata ayıklama modunda çalışması gerekir",
+      "no-iframe-id": "\"{selector}\" seçiciye sahip iframe öğesi için Çerçeve ID bulunamıyor",
+      "no-tab": "Bir sekme ile bağlantı kurulamıyor, \"{name}\" bloğunu kullanmadan önce \"Yeni sekme\" veya \"Etkin sekme\" bloğunu kullanın"
+    },
+    "description": {
+      "text": "{status} tarihinde {date} süresince {duration}",
+      "status": {
+        "success": "Başarılı",
+        "error": "Başarısız",
+        "stopped": "Durduruldu"
+      }
+    },
+    "delete": {
+      "title": "Günlüğü sil",
+      "description": "Tüm seçilen günlükleri silmek istediğinizden emin misiniz?"
+    },
+    "exportData": {
+      "title": "Veriyi dışa aktar",
+      "types": {
+        "json": "JSON",
+        "csv": "CSV",
+        "plain-text": "Düz metin"
+      }
+    },
+    "filter": {
+      "title": "Filtrele",
+      "byStatus": "Duruma göre",
+      "byDate": {
+        "title": "Tarihe göre",
+        "items": {
+          "lastDay": "Son gün",
+          "last7Days": "Son yedi gün",
+          "last30Days": "Son otuz gün"
+        }
+      }
+    }
+  },
+  "components": {
+    "pagination": {
+      "text1": "Gösteriliyor",
+      "text2": "{count} öğe dışında",
+      "nextPage": "Sonraki sayfa",
+      "currentPage": "Geçerli sayfa",
+      "prevPage": "Önceki sayfa",
+      "of": "toplam {page}"
+    }
+  }
+  
+
+}
