@@ -1,4 +1,4 @@
-import { objectHasKey, sleep } from '@/utils/helper';
+import { sleep } from '@/utils/helper';
 import { getFrames } from '../helper';
 
 async function switchTo(block) {
@@ -31,14 +31,29 @@ async function switchTo(block) {
 
     const frames = await getFrames(this.activeTab.id);
 
-    if (objectHasKey(frames, url)) {
-      this.activeTab.frameId = frames[url];
+    let frameId = frames[url] ?? null;
+    if (frameId === null) {
+      // Incase the iframe is redirect
+      frameId = Object.entries(frames).find(([frameURL]) => {
+        try {
+          const currFramePathName = new URL(url).pathname;
+          const framePathName = new URL(frameURL).pathname;
+
+          return currFramePathName === framePathName;
+        } catch (error) {
+          return false;
+        }
+      })?.[1];
+    }
+
+    if (frameId !== null) {
+      this.activeTab.frameId = frameId;
 
       await sleep(1000);
 
       return {
-        data: this.activeTab.frameId,
         nextBlockId,
+        data: this.activeTab.frameId,
       };
     }
 
