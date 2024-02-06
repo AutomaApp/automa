@@ -46,7 +46,7 @@
     "@tiptap/pm": "^2.0.4",
     "@tiptap/starter-kit": "^2.0.4",
     "@tiptap/vue-3": "^2.0.4",
-    "@viselect/vanilla": "^3.2.5",
+    "@viselect/vanilla": "^3.5.0",
     "@vue-flow/background": "^1.2.0",
     "@vue-flow/core": "^1.23.0",
     "@vue-flow/minimap": "^1.2.0",

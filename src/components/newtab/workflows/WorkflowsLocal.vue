@@ -174,6 +174,9 @@ const selection = new SelectionArea({
   startareas: ['.workflows-list'],
   boundaries: ['.workflows-list'],
   selectables: ['.local-workflow'],
+  behaviour: {
+    overlap: 'invert',
+  },
 });
 selection
   .on('beforestart', ({ event }) => {
@@ -184,7 +187,8 @@ selection
   })
   .on('start', () => {
     /* eslint-disable-next-line */
-  clearSelectedWorkflows();
+    clearSelectedWorkflows();
+    document.body.style.userSelect = 'none';
   })
   .on('move', (event) => {
     event.store.changed.added.forEach((el) => {
@@ -198,6 +202,7 @@ selection
     state.selectedWorkflows = event.store.selected.map(
       (el) => el.dataset?.workflow
     );
+    document.body.style.userSelect = '';
   });
 
 const filteredWorkflows = computed(() => {
@@ -422,3 +427,10 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', deleteSelectedWorkflows);
 });
 </script>
+<style>
+.selection-area {
+  background: rgba(46, 115, 252, 0.11);
+  border: 2px solid rgba(98, 155, 255, 0.81);
+  border-radius: 0.1em;
+}
+</style>
