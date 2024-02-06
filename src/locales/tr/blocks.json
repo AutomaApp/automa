@@ -1,0 +1,806 @@
+{
+  "collection": {
+    "blocks": {
+      "export-result": {
+        "name": "Sonucu Dışa Aktar",
+        "description": "Koleksiyon sonucunu JSON olarak dışa aktar"
+      }
+    }
+  },
+  "workflow": {
+    "blocks": {
+      "base": {
+        "title": "Bloklar",
+        "moveToGroup": "Bloğu bloklar grubuna taşı",
+        "selector": "Öğe seçici",
+        "selectorOptions": "Seçici seçenekleri",
+        "timeout": "Zaman aşımı (milisaniye)",
+        "noPermission": "Automa, bu işlemi gerçekleştirmek için yeterli izne sahip değil",
+        "grantPermission": "İzni ver",
+        "action": "Eylem",
+        "element": {
+          "select": "Bir Öğe seç",
+          "verify": "Seçiciyi doğrula"
+        },
+        "settings": {
+          "title": "Bloğun Ayarları",
+          "blockTimeout": {
+            "title": "Bloğun yürütme zaman aşımı (milisaniye)",
+            "description": "Bloğun maksimum yürütme süresi (0 devre dışı bırakmak için)"
+          },
+          "line": {
+            "title": "Satırlar",
+            "label": "Etiket",
+            "animated": "Animasyonlu",
+            "select": "Satırı seç",
+            "to": "{name} bloğuna giden satır",
+            "lineColor": "Renk"
+          }
+        },
+        "toggle": {
+          "enable": "Bloğu etkinleştir",
+          "disable": "Bloğu devre dışı bırak"
+        },
+        "onError": {
+          "info": "Bu kurallar, blokta bir hata oluştuğunda uygulanacaktır",
+          "button": "Hata durumunda",
+          "title": "Hata oluştuğunda",
+          "retry": "Eylemi tekrar dene",
+          "fallbackTitle": "Blokte hata oluştuğunda çalıştırılacak",
+          "times": {
+            "name": "Kez",
+            "description": "Eylemi tekrar denemek için kaç kez"
+          },
+          "interval": {
+            "name": "Aralık",
+            "description": "Her deneme arasında beklenen süre",
+            "second": "saniye"
+          },
+          "toDo": {
+            "error": "Hata fırlat",
+            "continue": "Akışa devam et",
+            "fallback": "Alternatif çalıştır",
+            "restart": "Akışı yeniden başlat"
+          },
+          "insertData": {
+            "name": "Veri ekle"
+          }
+        },
+        "table": {
+          "checkbox": "Tabloya ekle",
+          "select": "Sütunu seç",
+          "extraRow": {
+            "checkbox": "Ek satır ekle",
+            "placeholder": "Değer",
+            "title": "Ek satırın değeri"
+          }
+        },
+        "findElement": {
+          "placeholder": "Öğeyi şunun ile bul",
+          "options": {
+            "cssSelector": "CSS Seçici",
+            "xpath": "XPath"
+          }
+        },
+        "markElement": {
+          "title": "Daha önce seçilmişse bir Öğe seçilmeyecek",
+          "text": "Öğe işaretle"
+        },
+        "multiple": {
+          "title": "Birden çok öğe seç",
+          "text": "Çoklu"
+        },
+        "waitSelector": {
+          "title": "Seçiciyi bekle",
+          "timeout": "Seçici zaman aşımı (ms)"
+        },
+        "downloads": {
+          "onConflict": {
+            "uniquify": "Benzersiz hale getir",
+            "overwrite": "Üzerine yaz",
+            "prompt": "Sorma"
+          }
+        }
+      },
+      "wait-connections": {
+        "name": "Bağlantıları Bekle",
+        "description": "Devam etmeden önce tüm bağlantıları bekleyin",
+        "specificFlow": "Yalnızca belirli bir akışa devam et",
+        "selectFlow": "Akışı seç"
+      },
+      "cookie": {
+        "name": "Çerez",
+        "description": "Çerezleri al, ayarla veya kaldır",
+        "types": {
+          "get": "Çerezleri al",
+          "set": "Çerez ayarla",
+          "remove": "Çerezleri kaldır",
+          "getAll": "Tüm çerezleri al"
+        },
+        "useJson": "JSON formatını kullan"
+      },
+      "note": {
+        "name": "Not"
+      },
+      "slice-variable": {
+        "name": "Değişkeni Dilimle",
+        "description": "Bir değişken değerinin bir bölümünü çıkarır",
+        "start": "Başlangıç dizini",
+        "end": "Bitiş dizini"
+      },
+      "workflow-state": {
+        "name": "İş Akışı Durumu",
+        "description": "İş akışı durumlarını yönet",
+        "actions": {
+          "stop": "İş akışlarını durdur"
+        }
+      },
+      "regex-variable": {
+        "name": "RegEx Değişkeni",
+        "description": "Bir değişken değerini bir düzenli ifadeye karşı eşle"
+      },
+      "data-mapping": {
+        "source": "Kaynak",
+        "destination": "Hedef",
+        "name": "Veri Eşleme",
+        "edit": "Veri haritasını düzenle",
+        "dataSource": "Veri kaynağı",
+        "description": "Bir değişkenin veya tablonun verisini eşle",
+        "addSource": "Kaynak ekle",
+        "addDestination": "Hedef ekle"
+      },
+      "sort-data": {
+          "name": "Veriyi Sırala",
+          "description": "Veri öğelerini sırala",
+          "property": "Öğenin özelliğine göre sırala",
+          "addProperty": "Özellik ekle"
+        },
+        "increase-variable": {
+          "name": "Değişkeni Artır",
+          "description": "Bir değişkenin değerini belirli bir miktar artır",
+          "increase": "Artış miktarı"
+        },
+        "notification": {
+          "name": "Bildirim",
+          "description": "Bir bildirim görüntüle",
+          "title": "Başlık",
+          "message": "Mesaj",
+          "imageUrl": "Resim URL'si (isteğe bağlı)",
+          "iconUrl": "Simge URL'si (isteğe bağlı)"
+        },
+        "delete-data": {
+          "name": "Veriyi Sil",
+          "description": "Tablo veya değişken verisini sil",
+          "from": "Şu veriden",
+          "allColumns": "[Tüm sütunlar]"
+        },
+        "log-data": {
+          "name": "Günlük Veriyi Al",
+          "description": "Bir iş akışının en son günlük verisini al",
+          "data": "Günlük veri"
+        },
+        "tab-url": {
+          "name": "Sekme URL'sini Al",
+          "description": "Sekmenin URL'sini al",
+          "select": "Sekme seç",
+          "types": {
+            "active-tab": "Aktif sekme",
+            "all": "Tüm sekmeler"
+          },
+          "query": {
+            "title": "Sorgu",
+            "matchPatterns": "@:workflow.blocks.switch-tab.matchPattern (isteğe bağlı)",
+            "tabTitle": "Sekme başlığı (isteğe bağlı)"
+          }
+        },
+        "reload-tab": {
+          "name": "Sekmeyi Yeniden Yükle",
+          "description": "Aktif sekme üzerindeki yeniden yükle"
+        },
+        "press-key": {
+          "name": "Tuşa Bas",
+          "description": "Bir tuşa veya kombinasyona bas",
+          "target": "Hedef element (isteğe bağlı)",
+          "key": "Tuş",
+          "detect": "Tuşu Algıla",
+          "actions": {
+            "press-key": "Tuşa bas",
+            "multiple-keys": "Birden çok tuşa bas"
+          },
+          "press-time": "Basma süresi (milisaniye)"
+        },
+        "save-assets": {
+          "name": "Varlıkları Kaydet",
+          "description": "Bir öğeden veya URL'den varlıkları (resim, video, ses veya dosya) kaydet",
+          "filename": "Dosya adı (isteğe bağlı)",
+          "saveDownloadIds": "Öğelerin indirme kimliklerini kaydet",
+          "contentTypes": {
+            "title": "Tür",
+            "element": "Medya öğesi (resim, ses veya video)",
+            "url": "URL"
+          }
+        },
+        "handle-dialog": {
+          "name": "Diyalogu İşle",
+          "description": "JavaScript başlatılmış bir iletişim kutusunu (uyarı, onay, prompt veya onbeforeunload) kabul eder veya reddeder",
+          "accept": "Diyalogu Kabul Et",
+          "promptText": {
+            "label": "Prompt metni (isteğe bağlı)",
+            "description": "Kabul etmeden önce prompt ile gireceğiniz metin"
+          }
+        },
+        "handle-download": {
+          "name": "İndirmeyi İşle",
+          "description": "İndirilen dosyayı işle",
+          "timeout": "Zaman aşımı (milisaniye)",
+          "noPermission": "İndirmelere erişim izni yok",
+          "onConflict": "Çakışma durumunda",
+          "waitFile": "Dosyanın indirilmesini bekle",
+          "downloadId": "Dosya indirme kimliği (isteğe bağlı)",
+          "filePath": "Dosya yolu"
+        },
+        "insert-data": {
+          "name": "Veri Ekleyin",
+          "description": "Veriyi tabloya veya değişkene ekleyin"
+        },
+        "clipboard": {
+          "name": "Pano",
+          "description": "Panodan kopyalanan metni al",
+          "data": "Pano verisi",
+          "noPermission": "Panoya erişim izni yok",
+          "grantPermission": "İzni ver",
+          "copySelection": "Sayfadaki seçilen metni kopyala",
+          "types": {
+            "get": "Panodan veri al",
+            "insert": "Metni panoya ekle"
+          }
+        },
+        "hover-element": {
+          "name": "Öğenin Üzerine Gel",
+          "description": "Bir öğenin üzerine gel"
+        },
+        "create-element": {
+          "name": "Öğe Oluştur",
+          "description": "Bir öğe oluşturun ve sayfaya ekleyin",
+          "edit": "Öğeyi Düzenle",
+          "wrap": "Öğeyi içine al",
+          "insertEl": {
+            "title": "Öğe Ekle",
+            "items": {
+              "before": "İlk çocuk olarak",
+              "after": "Son çocuk olarak",
+              "next-sibling": "Sonraki kardeş olarak",
+              "prev-sibling": "Önceki kardeş olarak",
+              "replace": "Hedef Öğeyi değiştir"
+            }
+          }
+        },
+        "upload-file": {
+          "name": "Dosya Yükle",
+          "description": "<input type=\"file\"> Öğesine dosya yükle",
+          "filePath": "URL veya Dosya yolu",
+          "addFile": "Dosya ekle",
+          "onlyURL": "Firefox tarayıcısında yalnızca URL'den dosya yükleme desteklenir",
+          "requirement": "Bu bloku kullanmadan önce gereksinimleri okuyun",
+          "noFileAccess": "Automa dosyalara erişim izni bulunmamaktadır"
+      },
+      "browser-event": {
+        "name": "Tarayıcı Olayı",
+        "description": "Belirtilen olay tetiklendiğinde bir sonraki bloğu yürütür",
+        "events": "Olaylar",
+        "timeout": "Zaman aşımı (milisaniye)",
+        "activeTabLoaded": "Aktif sekme",
+        "setAsActiveTab": "Aktif sekme olarak ayarla"
+      },
+      "blocks-group-2": {
+        "name": "@:workflow.blocks.blocks-group.name 2",
+        "description": "@:workflow.blocks.blocks-group.description"
+      },
+      "blocks-group": {
+        "name": "Bloklar Grubu",
+        "groupName": "Grup adı",
+        "description": "Blokları gruplama",
+        "dropText": "Bir bloğu buraya sürükleyin",
+        "cantAdd": "\"{blockName}\" bloğu gruba eklenemiyor"
+      },
+      "trigger": {
+        "name": "Tetikleyici",
+        "description": "İş akışının yürütmesine başlayacağı blok",
+        "addTime": "Zaman ekle",
+        "selectDay": "Gün seç",
+        "timeExist": "{day} günü saat {time}'de zaten bir tetikleyici eklediniz",
+        "fixedDelay": "Sabit gecikme",
+        "contextMenus": {
+          "noPermission": "Bu tetikleyici çalışması için \"contextMenus\" iznine ihtiyaç duyar",
+          "grantPermission": "İzni ver",
+          "appearIn": "Şurada görünecek",
+          "contextName": "Bağlam menüsündeki iş akışı adı"
+        },
+        "days": [
+          "Pazar",
+          "Pazartesi",
+          "Salı",
+          "Çarşamba",
+          "Perşembe",
+          "Cuma",
+          "Cumartesi"
+        ],
+        "useRegex": "Regex kullan",
+        "shortcut": {
+          "tooltip": "Kısayol kaydı",
+          "stopRecord": "Kaydı durdur",
+          "checkboxTitle": "Giriş öğesindeyken kısayolu çalıştır",
+          "checkbox": "Girişteyken etkin",
+          "note": "Not: Klavye kısayolu sadece bir web sayfasında olduğunuzda çalışır"
+        },
+        "forms": {
+          "triggerWorkflow": "İş akışını tetikle",
+          "interval": "Aralık (dakika)",
+          "delay": "Gecikme (dakika)",
+          "date": "Tarih",
+          "time": "Saat",
+          "url": "URL veya Regex",
+          "shortcut": "Kısayol",
+          "cron-expression": "Cron ifadesi"
+        },
+        "element-change": {
+          "target": "İzlenecek hedef öğe",
+          "optionsInfo": "İş akışını tetikleyecek öğe mutasyonu",
+          "targetWebsite": "Hedef öğenin bulunduğu web sitesinin Eşleşme Deseni (Daha fazla Eşleşme Deseni örneğini görmek için tıklayın)",
+          "baseEl": {
+            "title": "Temel öğe (isteğe bağlı)",
+            "description": "Bu öğe değiştiğinde Automa hedef öğeyi izlemeyi yeniden başlatır"
+          },
+          "subtree": {
+            "title": "Alt ağacı dahil et",
+            "description": "İzlemeyi hedef öğenin tüm alt ağacına genişlet"
+          },
+          "childList": {
+            "title": "Çocuk listesi",
+            "description": "Yeni çocuk öğelerin eklenmesini veya mevcut olanların kaldırılmasını izle"
+          },
+          "attributes": {
+            "title": "Özellikler",
+            "description": "Hedef öğenin özellik değerlerindeki değişiklikleri izle"
+          },
+          "attributeFilter": {
+            "title": "Özellik filtresi",
+            "separate": "Özellik adlarını ayırmak için virgül (,) kullanın",
+            "description": "Yalnızca belirli özellikleri izle (tümünü izlemek için boş bırakın)"
+          },
+          "characterData": {
+            "title": "Karakter verisi",
+            "description": "Hedef öğe içindeki karakter verisinin değişikliklerini izle"
+          }
+        },
+        "items": {
+          "manual": "Manuel olarak",
+          "interval": "Aralık",
+          "cron-job": "Cron işi",
+          "date": "Belirli bir tarihte",
+          "context-menu": "Bağlam menüsü",
+          "element-change": "öğe değişikliğinde",
+          "specific-day": "Belirli bir günde",
+          "visit-web": "Bir web sitesini ziyaret ederken",
+          "on-startup": "Tarayıcı başlatıldığında",
+          "keyboard-shortcut": "Klavye kısayolu"
+        }
+      },
+      "execute-workflow": {
+        "name": "İş Akışını Yürüt",
+        "overwriteNote": "Bu, seçilen iş akışının genel verilerini üzerine yazar",
+        "select": "İş akışını seç",
+        "executeId": "Yürütme Kimliği (isteğe bağlı)",
+        "description": "",
+        "insertAllVars": "Tüm mevcut iş akışı değişkenlerini kullan",
+        "insertVars": "Mevcut iş akışı değişkenlerini ekle",
+        "useCommas": "Değişken adını ayırmak için virgül kullan",
+        "insertAllGlobalData": "Tüm mevcut iş akışı genel verilerini kullan"
+      },
+      "google-sheets-drive": {
+        "name": "@:workflow.blocks.google-sheets.name (GDrive)",
+        "description": "@:workflow.blocks.google-sheets.description",
+        "connected": "Bağlı tablolar",
+        "select": "Tabloyu seç",
+        "connect": "Tabloyu bağla"
+      },
+      "google-drive": {
+        "name": "Google Drive",
+        "description": "Dosyaları Google Drive'a yükle",
+        "actions": {
+          "upload": "Dosyaları yükle"
+        }
+      },
+      "google-sheets": {
+        "name": "Google Sheets",
+        "description": "Google Sheets verilerini oku veya güncelle",
+        "previewData": "Verileri önizle",
+        "firstRow": "İlk satırı anahtar olarak kullan",
+        "keysAsFirstRow": "Anahtarları ilk satır olarak kullan",
+        "insertData": "Veri ekle",
+        "valueInputOption": "Değer giriş seçeneği",
+        "insertDataOption": "Veri ekleme seçeneği",
+        "rangeToSearch": "Aramaya başlamak için aralık",
+        "dataFrom": {
+          "label": "Veri kaynağı",
+          "options": {
+            "data-columns": "Tablo",
+            "custom": "Özel"
+          }
+        },
+        "refKey": {
+          "label": "Referans anahtarı (isteğe bağlı)",
+          "placeholder": "Anahtar adı"
+        },
+        "spreadsheetId": {
+          "label": "Tablo Kimliği",
+          "link": "Tablo Kimliği nasıl alınır"
+        },
+        "range": {
+          "label": "Aralık",
+          "link": "Daha fazla örnek görmek için tıklayın"
+        },
+        "select": {
+          "get": "Tablo hücre değerlerini al",
+          "getRange": "Tablo aralığını al",
+          "update": "Tablo hücre değerlerini güncelle",
+          "append": "Tablo hücre değerlerini ekleyin",
+          "clear": "Tablo hücre değerlerini temizle",
+          "create": "Tablo oluştur",
+          "add-sheet": "Sayfa ekle"
+        }
+      },
+      "active-tab": {
+        "name": "Aktif sekme",
+        "description": "Şu anda bulunduğunuz sekme olarak ayarla"
+      },
+      "proxy": {
+        "name": "Proxy",
+        "description": "Tarayıcının proxy'sini ayarla",
+        "clear": "Tüm proxy'leri temizle",
+        "bypass": {
+          "label": "Atlatma listesi",
+          "note": "URL'leri ayırmak için virgül (,) kullanın"
+        }
+      },
+      "new-window": {
+        "name": "Yeni pencere",
+        "description": "Yeni bir pencere oluştur",
+        "top": "Üst",
+        "left": "Sol",
+        "height": "Yükseklik",
+        "width": "Genişlik",
+        "note": "Not: Devre dışı bırakmak için 0 kullanın",
+        "position": "Pencere konumu",
+        "size": "Pencere boyutu",
+        "windowState": {
+          "placeholder": "Pencere durumu",
+          "options": {
+            "normal": "Normal",
+            "küçültülmüş": "Küçültülmüş",
+            "büyütülmüş": "Büyütülmüş",
+            "tam ekran": "Tam Ekran"
+          }
+        },
+        "incognito": {
+          "text": "Gizli pencere olarak ayarla",
+          "note": "Bu uzantı için önce 'Gizli modda izin ver' seçeneğini etkinleştirmelisiniz"
+        }
+      },
+      "go-back": {
+        "name": "Geri git",
+        "description": "Önceki sayfaya geri git"
+      },
+      "forward-page": {
+        "name": "İleri git",
+        "description": "Sonraki sayfaya ilerle"
+      },
+      "close-tab": {
+        "name": "Sekmeyi/pencereyi kapat",
+        "description": "",
+        "url": "Eşleşme Desenleri",
+        "activeTab": "Aktif sekmeyi kapat",
+        "allWindows": "Tüm pencereleri kapat"
+      },
+      "event-click": {
+        "name": "Öğeye tıkla",
+        "description": ""
+      },
+      "delay": {
+        "name": "Gecikme",
+        "description": "Bir sonraki bloğu yürütmeye geçmeden önce bir gecikme ekler",
+        "input": {
+          "title": "Milisaniye cinsinden gecikme",
+          "placeholder": "(milisaniye)"
+        }
+      },
+      "parameter-prompt": {
+        "name": "Parametre İstemi"
+      },
+      "get-text": {
+        "name": "Metin Al",
+        "description": "Bir öğeden metin al",
+        "checkbox": "Tabloya ekle",
+        "includeTags": "HTML etiketlerini içer",
+        "prefixText": {
+          "placeholder": "Metin öneki",
+          "title": "Metine önek ekle"
+        },
+        "suffixText": {
+          "placeholder": "Metin son eki",
+          "title": "Metine son ek ekle"
+        }
+      },
+      "export-data": {
+        "name": "Veriyi Dışa Aktar",
+        "description": "İş akışı verisini dışa aktar",
+        "exportAs": "Olarak dışa aktar",
+        "refKey": "Referans anahtarı",
+        "bomHeader": "UTF-8 BOM ekle",
+        "dataToExport": {
+          "placeholder": "Dışa aktarılacak veri",
+          "options": {
+            "data-columns": "Tablo",
+            "google-sheets": "Google Sheets",
+            "variable": "Değişken"
+          }
+        }
+      },
+      "element-scroll": {
+        "name": "Öğe Kaydır",
+        "description": "",
+        "scrollY": "Dikey kaydır",
+        "scrollX": "Yatay kaydır",
+        "intoView": "Görünüme kaydır",
+        "smooth": "Yumuşak kaydırma",
+        "incScrollX": "Yatay kaydırmayı artır",
+        "incScrollY": "Dikey kaydırmayı artır"
+      },
+      "switch-tab": {
+        "name": "Sekme Değiştir",
+        "description": "Sekmeler arasında geçiş yap",
+        "matchPattern": "Eşleşme Desenleri",
+        "url": "Yeni sekme URL'si",
+        "createIfNoMatch": "Eşleşme yoksa oluştur"
+      },
+      "new-tab": {
+        "name": "Yeni Sekme",
+        "description": "",
+        "url": "Yeni sekme URL'si",
+        "tab-zoom": "Sekme yakınlaştırma",
+        "customUserAgent": "Özel Kullanıcı Aracısı kullan",
+        "activeTab": "Aktif sekme olarak ayarla",
+        "tabToGroup": "Sekmeyi bir gruba ekle",
+        "waitTabLoaded": "Sekme yüklenene kadar bekle",
+        "updatePrevTab": {
+          "title": "Yeni sekme oluşturmak yerine önceki açılan yeni sekme kullanılsın",
+          "text": "Daha önce açılan sekme güncelle"
+        }
+      },
+      "link": {
+        "name": "Bağlantı",
+        "description": "Bağlantı öğesini aç",
+        "openInNewTab": "Yeni sekmede aç"
+      },
+      "attribute-value": {
+        "name": "Özellik Değeri",
+        "description": "Bir öğe özelliğinin değerini al",
+        "forms": {
+          "name": "Özellik adı",
+          "checkbox": "Tabloya ekle",
+          "column": "Sütun seç",
+          "value": "Özellik değeri",
+          "action": {
+            "get": "Özellik değerini al",
+            "set": "Özellik değerini ayarla"
+          },
+          "extraRow": {
+            "checkbox": "Ek satır ekle",
+            "placeholder": "Değer",
+            "title": "Ek satırın değeri"
+          }
+        }
+      },
+      "forms": {
+        "name": "Formlar",
+        "description": "",
+        "selected": "Seçilen",
+        "type": "Form türü",
+        "getValue": "Form değerini al",
+        "text-field": {
+          "name": "Metin alanı",
+          "value": "Değer",
+          "clearValue": "Form değerini temizle",
+          "delay": {
+            "placeholder": "Gecikme",
+            "label": "Yazma gecikmesi (milisaniye)(Devre dışı bırakmak için 0)"
+          }
+        },
+        "select": {
+          "name": "Seçim"
+        },
+        "radio": {
+          "name": "Radyo"
+        },
+        "checkbox": {
+          "name": "Onay kutusu"
+        }
+      },
+      "repeat-task": {
+        "name": "Görevi Yinele",
+        "description": "",
+        "times": "kez",
+        "repeatFrom": "Şuradan tekrarla"
+      },
+      "javascript-code": {
+        "name": "JavaScript Kodu",
+        "description": "Web sayfasında JavaScript kodunuzu yürütün",
+        "availabeFuncs": "Kullanılabilir fonksiyonlar:",
+        "removeAfterExec": "Bloğu yürütme sonrasında kaldır",
+        "everyNewTab": "Her yeni sekmede yürüt",
+        "context": {
+          "name": "Yürütme bağlamı",
+          "items": {
+            "website": "Aktif sekme",
+            "background": "Arka plan"
+          }
+        },
+        "modal": {
+          "tabs": {
+            "code": "JavaScript kodu",
+            "preloadScript": "Ön yükleme script'i"
+          }
+        },
+        "timeout": {
+          "placeholder": "Zaman aşımı (milisaniye)",
+          "title": "JavaScript kodu yürütme zaman aşımı"
+        }
+      },
+      "trigger-event": {
+        "name": "Olay Tetikleyici",
+        "description": "",
+        "selectEvent": "Olayı seç"
+      },
+      "conditions": {
+        "name": "Koşullar",
+        "add": "Yol ekle",
+        "retryConditions": "Koşullar karşılanmazsa tekrar dene",
+        "description": "Koşullu blok",
+        "refresh": "Koşul bağlantılarını yenile",
+        "fallbackTitle": "Tüm karşılaştırmalar gereksinimi karşılamadığında yürütülür",
+        "equals": "Eşittir",
+        "gt": "Büyüktür",
+        "gte": "Büyük veya eşittir",
+        "lt": "Küçüktür",
+        "lte": "Küçük veya eşittir",
+        "ne": "Eşit değildir",
+        "contains": "İçerir"
+      },
+      "element-exists": {
+        "name": "Öğe Var Mı?",
+        "description": "Bir öğenin var olup olmadığını kontrol et",
+        "selector": "Öğe seçici",
+        "fallbackTitle": "Öğe var olmadığında yürütülür",
+        "throwError": "Var olmadığında hata fırlat",
+        "tryFor": {
+          "title": "Öğenin var olup olmadığını kontrol etmek için kaç kez deneneceği",
+          "label": "Deneme süresi"
+        },
+        "timeout": {
+          "label": "Zaman aşımı (milisaniye)",
+          "title": "Her deneme için zaman aşımı"
+        }
+      },
+      "webhook": {
+        "name": "HTTP İsteği",
+        "description": "Bir HTTP İsteği yap",
+        "contentType": "İçerik türü",
+        "method": "İstek yöntemi",
+        "url": "İstek URL'si",
+        "fallback": "HTTP isteği başarısız olduğunda yürütülür",
+        "buttons": {
+          "header": "Başlık ekle"
+        },
+        "timeout": {
+          "placeholder": "Zaman aşımı",
+          "title": "HTTP isteği yürütme zaman aşımı (ms)"
+        },
+        "tabs": {
+          "headers": "Başlıklar",
+          "body": "Gövde",
+          "response": "Yanıt"
+        }
+      },
+      "while-loop": {
+        "name": "While Döngüsü",
+        "description": "Koşul karşılanırken blokları yürütür, aksi takdirde yürütme",
+        "editCondition": "Koşulu düzenle",
+        "fallback": "Koşul yanlış olduğunda yürütülür"
+      },
+      "loop-elements": {
+        "name": "Öğeleri Döngüle",
+        "description": "Öğeler arasında yinele",
+        "loadMore": "Daha fazla öğe yükle",
+        "scrollToBottom": "En alta kaydır",
+        "scrollToTop": "En üste kaydır",
+        "actions": {
+          "none": "Hiçbiri",
+          "click-element": "Bir öğeye tıkla",
+          "scroll": "Aşağı kaydır",
+          "click-link": "Bir bağlantıya tıkla",
+          "scroll-up": "Yukarı kaydır"
+        }
+      },
+      "loop-data": {
+        "name": "Verileri Döngüle",
+        "description": "Bir tablo veya özel veri kümesi üzerinde yinele",
+        "loopId": "Döngü Kimliği",
+        "refKey": "Referans anahtarı",
+        "startIndex": "İndexten başla",
+        "resumeLastWorkflow": "Son iş akışını devam ettir",
+        "reverse": "Döngü sırasını tersine çevir",
+        "modal": {
+          "fileTooLarge": "Dosya düzenlemek için çok büyük",
+          "maxFile": "Maksimum dosya boyutu 1 MB",
+          "options": {
+            "firstRow": "İlk satırı anahtar olarak kullan"
+          }
+        },
+        "buttons": {
+          "clear": "Veriyi temizle",
+          "insert": "Veriyi ekle",
+          "import": "Dosyayı içe aktar"
+        },
+        "maxLoop": {
+          "title": "Yinelemek için maksimum veri sayısı",
+          "label": "Yinelemek için maksimum veri (Devre dışı bırakmak için 0)"
+        },
+        "loopThrough": {
+          "placeholder": "Şunun üzerinden döngüle",
+          "fromNumber": "Numaradan",
+          "toNumber": "Numaraya",
+          "options": {
+            "numbers": "Sayılar",
+            "variable": "Değişken",
+            "data-columns": "Tablo",
+            "table": "Tablo",
+            "custom-data": "Özel veri",
+            "google-sheets": "Google Sheets",
+            "elements": "Öğeler"
+          }
+        }
+      },
+      "loop-breakpoint": {
+        "name": "Döngü Kırılma Noktası",
+        "description": "Döngü Veri bloğunun nerede durması gerektiğini belirtmek için"
+      },
+      "take-screenshot": {
+        "name": "Ekran Görüntüsü Al",
+        "fullPage": "Tam sayfa ekran görüntüsü al",
+        "description": "Şu anda aktif olan sekmenin ekran görüntüsünü al",
+        "imageQuality": "Resim kalitesi",
+        "saveToColumn": "Ekran görüntüsünü tabloya ekle",
+        "saveToComputer": "Ekran görüntüsünü bilgisayara kaydet",
+        "types": {
+          "title": "Şunun ekran görüntüsünü al",
+          "page": "Bir sayfa",
+          "fullpage": "Tam sayfa",
+          "element": "Bir öğe"
+        }
+      },
+      "switch-to": {
+        "name": "Çerçeve Değiştir",
+        "description": "Ana pencere ile bir iframe arasında geçiş yap",
+        "iframeSelector": "Öğe seçici",
+        "windowTypes": {
+          "main": "Ana pencere",
+          "iframe": "Iframe"
+        }
+      },
+      "debugMode": {
+        "title": "Hata Ayıklama Modu",
+        "description": "Bloğu Chrome DevTools Protokolü kullanarak yürüt"
+      }
+    }
+  }
+}
