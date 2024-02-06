@@ -57,7 +57,7 @@
     "compare-versions": "^6.0.0-rc.1",
     "cron-parser": "^4.6.0",
     "cronstrue": "^2.21.0",
-    "crypto-js": "^4.1.1",
+    "crypto-js": "^4.2.0",
     "css-selector-generator": "^3.6.4",
     "dagre": "^0.8.5",
     "dayjs": "^1.11.6",
