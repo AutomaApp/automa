@@ -1578,7 +1578,7 @@ export const supportLocales = [
   { id: 'en', name: 'English' },
   { id: 'fr', name: 'Français' },
   { id: 'it', name: 'Italiano' },
-  { id: 'uk', name: 'Україньська' },
+  { id: 'uk', name: 'Українська' },
   { id: 'vi', name: 'Tiếng Việt' },
   { id: 'zh', name: '简体中文' },
   { id: 'zh-TW', name: '繁體中文' },
