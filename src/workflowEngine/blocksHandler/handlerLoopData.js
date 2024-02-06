@@ -29,14 +29,29 @@ async function loopData({ data, id }, { refData }) {
         'data-columns': () => refData.table,
         'google-sheets': () => refData.googleSheets[data.referenceKey],
         variable: () => {
-          const variableVal = objectPath.get(
+          let variableVal = objectPath.get(
             refData.variables,
             data.variableName
           );
 
           if (Array.isArray(variableVal)) return variableVal;
 
-          return parseJSON(variableVal, variableVal);
+          variableVal = parseJSON(variableVal, variableVal);
+
+          switch (typeof variableVal) {
+            case 'string':
+              variableVal = variableVal.split('');
+              break;
+            case 'number':
+              variableVal = Array.from(
+                { length: variableVal },
+                (_, index) => index + 1
+              );
+              break;
+            default:
+          }
+
+          return variableVal;
         },
         elements: async () => {
           const findBy = isXPath(data.elementSelector)

@@ -186,6 +186,9 @@ class BackgroundWorkflowTriggers {
     }
 
     for (const currWorkflow of workflowsArr) {
+      // eslint-disable-next-line no-continue
+      if (currWorkflow.isDisabled) continue;
+
       let triggerBlock = currWorkflow.trigger;
 
       if (!triggerBlock) {

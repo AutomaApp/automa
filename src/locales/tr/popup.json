@@ -1,0 +1,32 @@
+{
+  "recording": {
+    "stop": "Kaydı Durdur",
+    "title": "Kayıt"
+  },
+  "home": {
+    "record": {
+      "title": "İş Akışı Kaydı",
+      "button": "Kayıt",
+      "name": "İş Akışı Adı",
+      "selectBlock": "Başlamak için bir blok seçin",
+      "anotherBlock": "Bu bloktan başlatılamaz",
+      "tabs": {
+        "new": "Yeni İş Akışı",
+        "existing": "Mevcut İş Akışı"
+      }
+    },
+    "elementSelector": {
+      "name": "EÖğe Seçici",
+      "noAccess": "Bu siteye erişim izniniz yok"
+    },
+    "workflow": {
+      "new": "Yeni İş Akışı",
+      "rename": "İş Akışını Yeniden Adlandır",
+      "delete": "İş Akışını Sil",
+      "type": {
+        "host": "Ana Bilgisayar",
+        "local": "Yerel"
+      }
+    }
+  }
+}

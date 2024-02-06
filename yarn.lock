@@ -1811,10 +1811,10 @@
     hookable "^5.5.3"
     unhead "1.3.9"
 
-"@viselect/vanilla@^3.2.5":
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/@viselect/vanilla/-/vanilla-3.3.1.tgz#ec4276b0814157b7ffe8ac1f28fdd70df36e1d76"
-  integrity sha512-QqkPGV+uyteX/HqzhHp5ZRfpVYiA0A3umh8HT/nfoBKccoA/kiTdI+5B/8ZPijtanBj9NNymMMPCn0W+/BeEyg==
+"@viselect/vanilla@^3.5.0":
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/@viselect/vanilla/-/vanilla-3.5.0.tgz#3be43b7f335712bc4ee5fcd5d2b68a525d1b6c4a"
+  integrity sha512-drPkEQ/0CZl/c7D0gx5lWkY6iCdbyJm6KWFJpY2oQEKEnCrW9LUdQOsbNP/RG2L8BNUaiDBmwyTTW2RYIroZhA==
 
 "@vue-flow/background@^1.2.0":
   version "1.2.0"
