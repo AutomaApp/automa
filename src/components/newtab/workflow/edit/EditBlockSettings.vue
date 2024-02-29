@@ -75,6 +75,7 @@ const defaultSettings = {
     retryTimes: 1,
     retryInterval: 2,
     toDo: 'error',
+    errorMessage: '',
     insertData: false,
     dataToInsert: [],
   },

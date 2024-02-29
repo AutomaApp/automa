@@ -415,6 +415,12 @@ class WorkflowWorker {
 
           return;
         }
+
+        // 抛出错误并且存在自定义的错误信息
+        if (blockOnError.toDo === 'error' && blockOnError.errorMessage.trim()) {
+          errorLogData.message = blockOnError.errorMessage;
+          error.message = blockOnError.errorMessage;
+        }
       }
 
       const errorLogItem = errorLogData;

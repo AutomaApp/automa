@@ -133,6 +133,10 @@
         "description": "管理工作流状态",
         "actions": {
           "stop": "停止工作流"
+        },
+        "error": {
+          "throwError": "抛出错误",
+          "message": "错误消息"
         }
       },
       "regex-variable": {
