@@ -116,6 +116,7 @@ export function startWorkflowExec(workflowData, options, isPopup = true) {
         workflowEventHandler(event.action, {
           workflow: workflowRefData,
           variables: { ...engine.referenceData.variables },
+          globalData: { ...engine.referenceData.globalData },
         });
       });
     }
