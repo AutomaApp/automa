@@ -30,6 +30,25 @@
     >
       Execpt for the current workflow
     </ui-checkbox>
+    <!-- 停止当前工作流 是否抛出错误及自定义错误信息 -->
+    <template v-if="data.type === 'stop-current'">
+      <ui-checkbox
+        :model-value="data.throwError"
+        block
+        class="block-variable mt-4"
+        @change="updateData({ throwError: $event })"
+      >
+        {{ t(`workflow.blocks.workflow-state.error.throwError`) }}
+      </ui-checkbox>
+      <ui-input
+        v-if="data.throwError"
+        :model-value="data.errorMessage"
+        :placeholder="t(`workflow.blocks.workflow-state.error.message`)"
+        :title="t(`workflow.blocks.workflow-state.error.message`)"
+        class="mt-2 w-full"
+        @change="updateData({ errorMessage: $event })"
+      />
+    </template>
     <div
       v-if="data.type === 'stop-specific'"
       class="bg-input focus-within:bg-box-transparent-2 mt-4 rounded-lg transition"
