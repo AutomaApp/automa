@@ -79,6 +79,13 @@
             {{ t(`workflow.blocks.base.onError.toDo.${type}`) }}
           </option>
         </ui-select>
+        <ui-input
+          v-if="state.toDo === 'error'"
+          v-model="state.errorMessage"
+          :placeholder="t(`workflow.blocks.workflow-state.error.message`)"
+          :title="t(`workflow.blocks.workflow-state.error.message`)"
+          class="mt-1 ml-2 w-56"
+        />
         <div class="mt-4 flex items-center justify-between">
           <label class="inline-flex">
             <ui-switch v-model="state.insertData" />
