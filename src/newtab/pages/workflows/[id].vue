@@ -7,8 +7,13 @@
           ? 'absolute h-full md:relative z-50'
           : 'hidden md:flex'
       "
-      class="w-80 flex-col border-l border-gray-100 bg-white py-6 dark:border-gray-700 dark:border-opacity-50 dark:bg-gray-800"
-    >
+      class="sidebar w-80 flex-col border-l border-gray-100 bg-white py-6 dark:border-gray-700 dark:border-opacity-50 dark:bg-gray-800"
+      :style="{
+        width: `${sidebarCss.width}px`,
+        padding: sidebarCss.padding,
+        position: 'relative',
+      }"
+      >
       <workflow-edit-block
         v-if="editState.editing"
         :data="editState.blockData"
@@ -22,6 +27,8 @@
         :workflow="workflow"
         @update="updateWorkflow"
       />
+      <!-- drag-element -->
+      <div ref="sidebarRef" class="custom-drag" @mousedown="startDrag"></div>
     </div>
     <div class="relative flex-1 overflow-auto">
       <div
@@ -298,6 +305,7 @@ import {
   shallowRef,
   onDeactivated,
   onBeforeUnmount,
+  ref,
 } from 'vue';
 import cloneDeep from 'lodash.clonedeep';
 import { useI18n } from 'vue-i18n';
@@ -382,6 +390,34 @@ const funcsAutocomplete = Object.keys(functions).reduce((acc, name) => {
 
 const editor = shallowRef(null);
 const connectedTable = shallowRef(null);
+
+const sidebarRef = ref(null);
+const sidebarCss = reactive({
+  width: 320,
+  padding: '20px',
+  isDragging: false,
+  startX: 0,
+  startWidth: 0,
+});
+const drag = (event) => {
+  if (sidebarCss.isDragging) {
+    const diffX = event.clientX - sidebarCss.startX;
+    sidebarCss.width = Math.max(320, sidebarCss.startWidth + diffX); // min-width : 320px,max-width: 30%
+  }
+};
+const stopDrag = () => {
+  sidebarCss.isDragging = false;
+  document.removeEventListener('mousemove', drag);
+  document.removeEventListener('mouseup', stopDrag);
+};
+
+const startDrag = (event) => {
+  sidebarCss.isDragging = true;
+  sidebarCss.startX = event.clientX;
+  sidebarCss.startWidth = sidebarCss.width;
+  document.addEventListener('mousemove', drag);
+  document.addEventListener('mouseup', stopDrag);
+};
 
 const state = reactive({
   showSidebar: true,
@@ -1651,5 +1687,24 @@ onBeforeUnmount(() => {
   button:disabled {
     @apply text-gray-500 dark:text-gray-400;
   }
+}
+.sidebar {
+  max-width: 30%;
+}
+.sidebar:hover .custom-drag {
+    opacity: 0.5;
+}
+.custom-drag {
+  position: absolute;
+  width: 10px;
+  height: 40px;
+  background: white;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 30px;
+  opacity: 0;
+  cursor: col-resize;
+  transition: opacity 0.5s;
 }
 </style>
