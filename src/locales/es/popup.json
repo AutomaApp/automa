@@ -1,0 +1,32 @@
+{
+  "recording": {
+    "stop": "Detener la grabación",
+    "title": "Grabación"
+  },
+  "home": {
+    "record": {
+      "title": "Registro del flujo de trabajo",
+      "button": "Registro",
+      "name": "Nombre del flujo de trabajo",
+      "selectBlock": "Seleccione un bloque para empezar",
+      "anotherBlock": "No se puede empezar desde este bloque",
+      "tabs": {
+        "new": "Nuevo flujo de trabajo",
+        "existing": "Flujo de trabajo existente"
+      }
+    },
+    "elementSelector": {
+      "name": "Selector de elementos",
+      "noAccess": "No tiene acceso a este sitio"
+    },
+    "workflow": {
+      "new": "Nuevo flujo de trabajo",
+      "rename": "Renombrar flujo de trabajo",
+      "delete": "Eliminar flujo de trabajo",
+      "type": {
+        "host": "Host",
+        "local": "Local"
+      }
+    }
+  }
+}
