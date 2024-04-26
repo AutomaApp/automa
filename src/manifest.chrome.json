@@ -55,6 +55,7 @@
   ],
   "permissions": [
     "tabs",
+    "activeTab",
     "proxy",
     "alarms",
     "storage",

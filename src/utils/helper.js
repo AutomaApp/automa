@@ -2,29 +2,19 @@ import browser from 'webextension-polyfill';
 
 export async function getActiveTab() {
   try {
-    let windowId = null;
     const tabsQuery = {
       active: true,
       url: '*://*/*',
     };
-    const extURL = browser.runtime.getURL('');
-    const windows = await browser.windows.getAll({ populate: true });
-    for (const browserWindow of windows) {
-      const [tab] = browserWindow.tabs;
-      const isDashboard =
-        browserWindow.tabs.length === 1 && tab.url?.includes(extURL);
 
-      if (isDashboard) {
-        await browser.windows.update(browserWindow.id, {
-          focused: false,
-        });
-      } else if (browserWindow.focused) {
-        windowId = browserWindow.id;
-      }
-    }
+    const window = await browser.windows.getLastFocused({
+      populate: true,
+      windowTypes: ['normal'],
+    });
+    const windowId = window.id;
 
     if (windowId) tabsQuery.windowId = windowId;
-    else if (windows.length > 2) tabsQuery.lastFocusedWindow = true;
+    else tabsQuery.lastFocusedWindow = true;
 
     const [tab] = await browser.tabs.query(tabsQuery);
 
