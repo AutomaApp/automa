@@ -1,12 +1,13 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Automa",
-  "browser_action": {
+  "action": {
     "default_popup": "popup.html",
     "default_icon": "icon-128.png"
   },
   "background": {
-    "scripts": ["background.bundle.js"]
+    "service_worker": "background.bundle.js",
+    "type": "module"
   },
   "icons": {
     "128": "icon-128.png"
@@ -27,6 +28,7 @@
       "description": "Open element picker"
     }
   },
+  "host_permissions": ["<all_urls>"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -47,32 +49,38 @@
     }
   ],
   "optional_permissions": [
-    "clipboardRead",
+    "cookies",
     "downloads",
     "contextMenus",
-    "notifications",
-    "cookies"
+    "clipboardRead",
+    "notifications"
   ],
   "permissions": [
     "tabs",
-    "activeTab",
     "proxy",
     "alarms",
     "storage",
     "debugger",
-    "<all_urls>",
+    "activeTab",
+    "offscreen",
     "webNavigation",
     "unlimitedStorage"
   ],
   "web_accessible_resources": [
-    "/elementSelector.css",
-    "/Inter-roman-latin.var.woff2",
-    "/icon-128.png",
-    "/locales/*",
-    "elementSelector.bundle.js"
+    {
+      "resources": [
+        "/locales/*",
+        "/icon-128.png",
+        "/elementSelector.css",
+        "elementSelector.bundle.js",
+        "/Inter-roman-latin.var.woff2"
+      ],
+      "matches": [
+        "*://*/*"
+      ]
+    }
   ],
   "sandbox": {
     "pages": ["/sandbox.html"]
-  },
-  "content_security_policy": "script-src 'self' https://apis.google.com/ https://accounts.google.com/ https://www.googleapis.com https://ajax.googleapis.com; object-src 'self'"
+  }
 }

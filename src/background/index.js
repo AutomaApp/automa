@@ -204,50 +204,7 @@ automa('background', message);
 
 browser.runtime.onMessage.addListener(message.listener());
 
-/* eslint-disable no-use-before-define */
-
-const isMV2 = browser.runtime.getManifest().manifest_version === 2;
-let lifeline;
-async function keepAlive() {
-  if (lifeline) return;
-  for (const tab of await browser.tabs.query({ url: '*://*/*' })) {
-    try {
-      await browser.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: () => chrome.runtime.connect({ name: 'keepAlive' }),
-      });
-      browser.tabs.onUpdated.removeListener(retryOnTabUpdate);
-      return;
-    } catch (e) {
-      // Do nothing
-    }
-  }
-  browser.tabs.onUpdated.addListener(retryOnTabUpdate);
-}
-async function retryOnTabUpdate(tabId, info) {
-  if (info.url && /^(file|https?):/.test(info.url)) {
-    keepAlive();
-  }
-}
-function keepAliveForced() {
-  lifeline?.disconnect();
-  lifeline = null;
-  keepAlive();
-}
-
-if (!isMV2) {
-  browser.runtime.onConnect.addListener((port) => {
-    if (port.name === 'keepAlive') {
-      lifeline = port;
-      /* eslint-disable-next-line */
-      console.log('Stayin alive: ', new Date());
-      setTimeout(keepAliveForced, 295e3);
-      port.onDisconnect.addListener(keepAliveForced);
-    }
-  });
-
-  keepAlive();
-} else if (!isFirefox) {
+if (!isFirefox) {
   const sandboxIframe = document.createElement('iframe');
   sandboxIframe.src = '/sandbox.html';
   sandboxIframe.id = 'sandbox';
