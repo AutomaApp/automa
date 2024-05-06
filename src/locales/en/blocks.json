@@ -133,6 +133,10 @@
         "description": "Manage workflows states",
         "actions": {
           "stop": "Stop workflows"
+        },
+        "error": {
+          "throwError": "Throw error",
+          "message": "Error message"
         }
       },
       "regex-variable": {
