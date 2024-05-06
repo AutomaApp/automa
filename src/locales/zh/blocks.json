@@ -135,8 +135,8 @@
           "stop": "停止工作流"
         },
         "error": {
-          "throwError": "Throw error",
-          "message": "Error message"
+          "throwError": "抛出错误",
+          "message": "错误消息"
         }
       },
       "regex-variable": {
