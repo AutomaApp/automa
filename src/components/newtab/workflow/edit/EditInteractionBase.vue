@@ -29,11 +29,11 @@
         />
       </div>
       <edit-autocomplete v-if="!hideSelector" class="mb-1">
-        <ui-input
+        <ui-textarea
           v-if="!hideSelector"
           :model-value="data.selector"
           :placeholder="t('workflow.blocks.base.selector')"
-          autocomplete="off"
+          autoresize
           class="w-full"
           @change="updateData({ selector: $event })"
         />
