@@ -1,9 +1,10 @@
+import BrowserAPIEventHandler from '@/service/browser-api/BrowserAPIEventHandler';
 import { MessageListener } from '@/utils/message';
 import WorkflowManager from '@/workflowEngine/WorkflowManager';
-import { runtime } from 'webextension-polyfill';
+import Browser from 'webextension-polyfill';
 
 const messageListener = new MessageListener('offscreen');
-runtime.onMessage.addListener(messageListener.listener);
+Browser.runtime.onMessage.addListener(messageListener.listener);
 
 messageListener.on('workflow:execute', (data) => {
   WorkflowManager.instance.execute(data);
@@ -20,3 +21,7 @@ messageListener.on('workflow:resume', ({ id, nextBlock }) => {
 messageListener.on('workflow:update', ({ id, data }) => {
   WorkflowManager.instance.updateExecution(id, data);
 });
+
+messageListener.on(BrowserAPIEventHandler.RuntimeEvents.ON_EVENT, (event) =>
+  BrowserAPIEventHandler.instance.onBrowserEventListener(event)
+);

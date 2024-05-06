@@ -1,5 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { IS_FIREFOX } from '@/common/utils/constant';
+import { sleep } from '@/utils/helper';
 import { MessageListener } from '@/utils/message';
 import Browser from 'webextension-polyfill';
 
@@ -49,6 +50,8 @@ class BackgroundOffscreen {
       ],
       justification: 'For running the workflow',
     });
+
+    await sleep(500);
   }
 
   /**

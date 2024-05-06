@@ -3,6 +3,8 @@ import { MessageListener } from '@/utils/message';
 import { sleep } from '@/utils/helper';
 import getFile, { readFileAsBase64 } from '@/utils/getFile';
 import automa from '@business';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
+import BrowserAPIEventHandler from '@/service/browser-api/BrowserAPIEventHandler';
 import { registerWorkflowTrigger } from '../utils/workflowTrigger';
 import BackgroundUtils from './BackgroundUtils';
 import BackgroundWorkflowUtils from './BackgroundWorkflowUtils';
@@ -46,6 +48,13 @@ if (browser.notifications && browser.notifications.onClicked) {
 }
 
 const message = new MessageListener('background');
+
+message.on('browser-api', (payload) => {
+  return BrowserAPIService.runtimeMessageHandler(payload);
+});
+message.on(BrowserAPIEventHandler.RuntimeEvents.TOGGLE, (data) =>
+  BrowserAPIEventHandler.instance.onToggleBrowserEventListener(data)
+);
 
 message.on('fetch', async ({ type, resource }) => {
   const response = await fetch(resource.url, resource);

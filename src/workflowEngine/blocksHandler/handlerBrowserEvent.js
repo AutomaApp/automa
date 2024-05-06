@@ -1,5 +1,5 @@
-import browser from 'webextension-polyfill';
 import { isWhitespace } from '@/utils/helper';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 
 function handleEventListener(target, validate) {
   return (data, activeTab) => {
@@ -35,7 +35,7 @@ function onTabLoaded({ tabLoadedUrl, activeTabLoaded, timeout }, { id }) {
         return;
       }
 
-      browser.tabs
+      BrowserAPIService.tabs
         .get(id)
         .then((tab) => {
           if (tab.status === 'complete') {
@@ -52,7 +52,7 @@ function onTabLoaded({ tabLoadedUrl, activeTabLoaded, timeout }, { id }) {
       ? '<all_urls>'
       : tabLoadedUrl.replace(/\s/g, '').split(',');
     const checkTabsStatus = () => {
-      browser.tabs
+      BrowserAPIService.tabs
         .query({
           url,
           status: 'loading',
@@ -90,16 +90,16 @@ const validateCreatedTab = ({ url }, { data }) => {
 };
 const events = {
   'tab:loaded': onTabLoaded,
-  'tab:close': handleEventListener(browser.tabs.onRemoved),
+  'tab:close': handleEventListener(BrowserAPIService.tabs.onRemoved),
   'tab:create': handleEventListener(
-    browser.webNavigation.onCreatedNavigationTarget,
+    BrowserAPIService.webNavigation.onCreatedNavigationTarget,
     validateCreatedTab
   ),
   'window:create': handleEventListener(
-    browser.webNavigation.onCreatedNavigationTarget,
+    BrowserAPIService.webNavigation.onCreatedNavigationTarget,
     validateCreatedTab
   ),
-  'window:close': handleEventListener(browser.windows.onRemoved),
+  'window:close': handleEventListener(BrowserAPIService.windows.onRemoved),
 };
 
 export default async function ({ data, id }) {

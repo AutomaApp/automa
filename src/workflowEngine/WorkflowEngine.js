@@ -1,9 +1,9 @@
 import { nanoid } from 'nanoid';
-import browser from 'webextension-polyfill';
 import cloneDeep from 'lodash.clonedeep';
 import { getBlocks } from '@/utils/getSharedData';
 import { clearCache, sleep, parseJSON, isObject } from '@/utils/helper';
 import dbStorage from '@/db/storage';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import WorkflowWorker from './WorkflowWorker';
 
 let blocks = getBlocks();
@@ -19,7 +19,6 @@ class WorkflowEngine {
     this.isTestingMode = workflow.testingMode;
     this.parentWorkflow = options?.parentWorkflow;
     this.saveLog = workflow.settings?.saveLog ?? true;
-    this.isMV2 = browser.runtime.getManifest().manifest_version === 2;
 
     this.workerId = 0;
     this.workers = new Map();
@@ -153,41 +152,45 @@ class WorkflowEngine {
         this.eventListeners = {};
 
         if (triggerBlock.data.preferParamsInTab) {
-          const [activeTab] = await browser.tabs.query({
+          const [activeTab] = await BrowserAPIService.tabs.query({
             active: true,
             url: '*://*/*',
             lastFocusedWindow: true,
           });
           if (activeTab) {
-            const result = await browser.tabs.sendMessage(activeTab.id, {
-              type: 'input-workflow-params',
-              data: {
-                workflow: this.workflow,
-                params: triggerBlock.data.parameters,
-              },
-            });
+            const result = await BrowserAPIService.tabs.sendMessage(
+              activeTab.id,
+              {
+                type: 'input-workflow-params',
+                data: {
+                  workflow: this.workflow,
+                  params: triggerBlock.data.parameters,
+                },
+              }
+            );
 
             if (result) return;
           }
         }
 
-        const paramUrl = browser.runtime.getURL('params.html');
-        const tabs = await browser.tabs.query({});
+        const paramUrl = BrowserAPIService.runtime.getURL('params.html');
+        const tabs = await BrowserAPIService.tabs.query({});
         const paramTab = tabs.find((tab) => tab.url?.includes(paramUrl));
 
         if (paramTab) {
-          browser.tabs.sendMessage(paramTab.id, {
+          await BrowserAPIService.tabs.sendMessage(paramTab.id, {
             name: 'workflow:params',
             data: this.workflow,
           });
-
-          browser.windows.update(paramTab.windowId, { focused: true });
+          await BrowserAPIService.windows.update(paramTab.windowId, {
+            focused: true,
+          });
         } else {
-          browser.windows.create({
+          BrowserAPIService.windows.create({
             type: 'popup',
             width: 480,
             height: 700,
-            url: browser.runtime.getURL(
+            url: BrowserAPIService.runtime.getURL(
               `/params.html?workflowId=${this.workflow.id}`
             ),
           });
@@ -253,14 +256,14 @@ class WorkflowEngine {
       if (BROWSER_TYPE !== 'chrome') {
         this.workflow.settings.debugMode = false;
       } else if (this.workflow.settings.debugMode) {
-        chrome.debugger.onEvent.addListener(this.onDebugEvent);
+        BrowserAPIService.debugger.onEvent.addListener(this.onDebugEvent);
       }
       if (
         this.workflow.settings.reuseLastState &&
         !this.workflow.connectedTable
       ) {
         const lastStateKey = `state:${this.workflow.id}`;
-        const value = await browser.storage.local.get(lastStateKey);
+        const value = await BrowserAPIService.storage.localGet(lastStateKey);
         const lastState = value[lastStateKey];
 
         if (lastState) {
@@ -269,9 +272,8 @@ class WorkflowEngine {
         }
       }
 
-      const { settings: userSettings } = await browser.storage.local.get(
-        'settings'
-      );
+      const { settings: userSettings } =
+        await BrowserAPIService.storage.localGet('settings');
       this.logsLimit = userSettings?.logsLimit || 1001;
 
       this.workflow.table = columns;
@@ -373,7 +375,9 @@ class WorkflowEngine {
   }
 
   async executeQueue() {
-    const { workflowQueue } = await browser.storage.local.get('workflowQueue');
+    const { workflowQueue } = await BrowserAPIService.storage.localGet(
+      'workflowQueue'
+    );
     const queueIndex = (workflowQueue || []).indexOf(this.workflow?.id);
 
     if (!workflowQueue || queueIndex === -1) return;
@@ -387,7 +391,7 @@ class WorkflowEngine {
 
     workflowQueue.splice(queueIndex, 1);
 
-    await browser.storage.local.set({ workflowQueue });
+    await BrowserAPIService.storage.localSet({ workflowQueue });
   }
 
   async destroyWorker(workerId) {
@@ -430,9 +434,9 @@ class WorkflowEngine {
 
     try {
       if (this.isDestroyed) return;
-      if (this.isUsingProxy) browser.proxy.settings.clear({});
+      if (this.isUsingProxy) BrowserAPIService.proxy.clearSettings({});
       if (this.workflow.settings.debugMode && BROWSER_TYPE === 'chrome') {
-        chrome.debugger.onEvent.removeListener(this.onDebugEvent);
+        BrowserAPIService.debugger.onEvent.removeListener(this.onDebugEvent);
 
         await sleep(1000);
 
@@ -471,7 +475,7 @@ class WorkflowEngine {
           },
         };
 
-        browser.storage.local.set(workflowState);
+        BrowserAPIService.storage.localSet(workflowState);
       } else if (status === 'success') {
         clearCache(this.workflow);
       }
