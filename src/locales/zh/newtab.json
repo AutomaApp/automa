@@ -42,6 +42,7 @@
     "title": "存储",
     "table": {
       "add": "添加表格",
+      "edit": "编辑表格",
       "createdAt": "创建于",
       "modifiedAt": "修改于",
       "rowsCount": "行数",
@@ -123,6 +124,10 @@
       "snapGrid": {
         "title": "对齐网格",
         "description": "移动模块时对齐网格"
+      },
+      "saveWhenExecute": {
+        "title": "执行工作流程时自动保存",
+        "description": "执行工作流程时将自动保存更改的工作流程"
       }
     },
     "deleteLog": {
