@@ -105,6 +105,7 @@
     "@babel/preset-env": "^7.20.2",
     "@intlify/vue-i18n-loader": "^4.2.0",
     "@tailwindcss/typography": "^0.5.1",
+    "@types/chrome": "^0.0.267",
     "@vue/compiler-sfc": "^3.3.4",
     "archiver": "^5.3.1",
     "autoprefixer": "^10.4.12",

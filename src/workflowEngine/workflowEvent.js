@@ -2,48 +2,51 @@ import { nanoid } from 'nanoid';
 import { messageSandbox } from './helper';
 import renderString from './templating/renderString';
 
-async function javascriptCode(event, refData) {
-  const instanceId = `automa${nanoid()}`;
+class WorkflowEvent {
+  static async #httpRequest({ url, method, headers, body }, refData) {
+    if (!url.trim()) return;
 
-  await messageSandbox('javascriptBlock', {
-    refData,
-    instanceId,
-    preloadScripts: [],
-    blockData: {
-      code: event.code,
-    },
-  });
-}
+    const reqHeaders = {
+      'Content-Type': 'application/json',
+    };
+    headers.forEach((header) => {
+      reqHeaders[header.name] = header.value;
+    });
 
-async function httpRequest({ url, method, headers, body }, refData) {
-  if (!url.trim()) return;
+    const renderedBody =
+      method !== 'GET' ? (await renderString(body, refData)).value : undefined;
 
-  const reqHeaders = {
-    'Content-Type': 'application/json',
-  };
-  headers.forEach((header) => {
-    reqHeaders[header.name] = header.value;
-  });
+    await fetch(url, {
+      method,
+      body: renderedBody,
+      headers: reqHeaders,
+    });
+  }
 
-  const renderedBody =
-    method !== 'GET' ? (await renderString(body, refData)).value : undefined;
+  static async #javascriptCode(event, refData) {
+    const instanceId = `automa${nanoid()}`;
 
-  await fetch(url, {
-    method,
-    body: renderedBody,
-    headers: reqHeaders,
-  });
-}
+    await messageSandbox('javascriptBlock', {
+      refData,
+      instanceId,
+      preloadScripts: [],
+      blockData: {
+        code: event.code,
+      },
+    });
+  }
 
-const eventHandlerMap = {
-  'js-code': javascriptCode,
-  'http-request': httpRequest,
-};
-
-export async function workflowEventHandler(event, refData) {
-  try {
-    await eventHandlerMap[event.type](event, refData);
-  } catch (error) {
-    console.error(error);
+  static async handle(event, refData) {
+    switch (event.type) {
+      case 'http-request':
+        await this.#httpRequest(event, refData);
+        break;
+      case 'js-code':
+        await this.#javascriptCode(event, refData);
+        break;
+      default:
+    }
   }
 }
+
+export default WorkflowEvent;

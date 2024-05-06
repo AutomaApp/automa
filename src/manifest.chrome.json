@@ -1,6 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Automa",
+  "minimum_chrome_version": "116",
   "action": {
     "default_popup": "popup.html",
     "default_icon": "icon-128.png"

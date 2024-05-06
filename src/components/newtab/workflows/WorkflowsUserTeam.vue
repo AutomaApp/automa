@@ -35,9 +35,9 @@
       :data="workflow"
       :menu="workflowMenus"
       :disabled="isUnknownTeam"
-      @menuSelected="onMenuSelected"
-      @execute="executeWorkflow(workflow)"
       @click="openWorkflowPage"
+      @menuSelected="onMenuSelected"
+      @execute="RendererWorkflowService.executeWorkflow(workflow)"
     >
       <template #footer-content>
         <span
@@ -61,7 +61,7 @@ import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
 import { arraySorter } from '@/utils/helper';
 import { useDialog } from '@/composable/dialog';
 import { tagColors } from '@/utils/shared';
-import { executeWorkflow } from '@/workflowEngine';
+import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 
 const props = defineProps({

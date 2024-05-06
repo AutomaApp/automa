@@ -89,8 +89,7 @@ import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
 import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
 import { getUserWorkflows } from '@/utils/api';
 import { getWorkflowPermissions } from '@/utils/workflowData';
-import { sendMessage } from '@/utils/message';
-import { workflowState, startWorkflowExec } from '@/workflowEngine';
+import { MessageListener } from '@/utils/message';
 import emitter from '@/lib/mitt';
 import automa from '@business';
 import dbLogs from '@/db/logs';
@@ -249,9 +248,6 @@ const messageEvents = {
         });
     }
   },
-  'workflow:execute': function ({ data, options }) {
-    startWorkflowExec(data, options ?? data?.options ?? {});
-  },
   'recording:stop': stopRecording,
   'background--recording:stop': stopRecording,
 };
@@ -302,7 +298,7 @@ window.addEventListener('message', ({ data }) => {
     );
   };
 
-  sendMessage('fetch', data.data, 'background')
+  MessageListener.sendMessage('fetch', data.data, 'background')
     .then((result) => {
       sendResponse({ isError: false, result });
     })
@@ -327,15 +323,6 @@ watch(
 
 (async () => {
   try {
-    workflowState.storage = {
-      get() {
-        return workflowStore.popupStates;
-      },
-      set(key, value) {
-        workflowStore.popupStates = Object.values(value);
-      },
-    };
-
     const { workflowStates } = await browser.storage.local.get(
       'workflowStates'
     );

@@ -115,7 +115,7 @@ import { useGroupTooltip } from '@/composable/groupTooltip';
 import { findTriggerBlock } from '@/utils/helper';
 import convertWorkflowData from '@/utils/convertWorkflowData';
 import { useWorkflowStore } from '@/stores/workflow';
-import { executeWorkflow } from '@/workflowEngine';
+import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
 import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
 import getTriggerText from '@/utils/triggerText';
 import WorkflowEditor from '@/components/newtab/workflow/WorkflowEditor.vue';
@@ -213,7 +213,7 @@ function executeCurrWorkflow() {
     id: workflowId,
   };
 
-  executeWorkflow(payload);
+  RendererWorkflowService.executeWorkflow(payload);
 }
 async function retrieveTriggerText() {
   const triggerBlock = findTriggerBlock(workflow.value.drawflow);

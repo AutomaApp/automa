@@ -1,7 +1,28 @@
+import { IS_FIREFOX } from '@/common/utils/constant';
 import browser from 'webextension-polyfill';
-import { startWorkflowExec } from '@/workflowEngine';
+import BackgroundOffscreen from './BackgroundOffscreen';
 
 class BackgroundWorkflowUtils {
+  /** @type {BackgroundWorkflowUtils} */
+  static #_instance;
+
+  /**
+   * BackgroundWorkflowUtils singleton
+   * @type {BackgroundWorkflowUtils}
+   */
+  static get instance() {
+    if (!this.#_instance) this.#_instance = new BackgroundWorkflowUtils();
+
+    return this.#_instance;
+  }
+
+  /** @type {import('@/workflowEngine/WorkflowManager').default} */
+  #workflowManager;
+
+  constructor() {
+    this.#workflowManager = null;
+  }
+
   static flattenTeamWorkflows(workflows) {
     return Object.values(Object.values(workflows || {})[0] || {});
   }
@@ -39,16 +60,80 @@ class BackgroundWorkflowUtils {
     return findWorkflow;
   }
 
-  static async executeWorkflow(workflowData, options) {
+  async #ensureWorkflowManager() {
+    if (!IS_FIREFOX) return;
+
+    this.#workflowManager = (
+      await import('@/workflowEngine/WorkflowManager')
+    ).default.instance;
+  }
+
+  /**
+   * Stop workflow execution
+   * @param {string} stateId
+   * @returns {Promise<void>}
+   */
+  async stopExecution(stateId) {
+    if (IS_FIREFOX) {
+      await this.#ensureWorkflowManager();
+      this.#workflowManager.stopExecution(stateId);
+      return;
+    }
+
+    await BackgroundOffscreen.instance.sendMessage('workflow:stop', stateId);
+  }
+
+  /**
+   * Resume workflow execution
+   * @param {string} stateId
+   * @param {object} nextBlock
+   * @returns {Promise<void>}
+   */
+  async resumeExecution(stateId, nextBlock) {
+    if (IS_FIREFOX) {
+      await this.#ensureWorkflowManager();
+      this.#workflowManager.resumeExecution(stateId, nextBlock);
+      return;
+    }
+
+    await BackgroundOffscreen.instance.sendMessage('workflow:resume', {
+      id: stateId,
+      nextBlock,
+    });
+  }
+
+  /**
+   * Update workflow execution state
+   * @param {string} stateId
+   * @param {object} data
+   * @returns {Promise<void>}
+   */
+  async updateExecutionState(stateId, data) {
+    if (IS_FIREFOX) {
+      await this.#ensureWorkflowManager();
+      this.#workflowManager.updateExecution(stateId, data);
+      return;
+    }
+
+    await BackgroundOffscreen.instance.sendMessage('workflow:update', {
+      data,
+      id: stateId,
+    });
+  }
+
+  async executeWorkflow(workflowData, options) {
     if (workflowData.isDisabled) return;
 
-    /**
-     * Under v2, the background runtime environment is a real browser window. It has DOM, URL...
-      But these don't exist under v3. v3 uses service_worker (https://developer.mozilla.org/zh-CN/docs/Web/API/Service_Worker_API), so a dashboard page is created to run the workflow
-      So v2 and isPopup are actually the same
-     */
-    const isMV2 = browser.runtime.getManifest().manifest_version === 2;
-    startWorkflowExec(workflowData, options, isMV2);
+    if (IS_FIREFOX) {
+      await this.#ensureWorkflowManager();
+      this.#workflowManager.execute(workflowData, options);
+      return;
+    }
+
+    await BackgroundOffscreen.instance.sendMessage(
+      'workflow:execute',
+      workflowData
+    );
   }
 }
 

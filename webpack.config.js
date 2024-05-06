@@ -47,6 +47,7 @@ const options = {
     params: path.join(__dirname, 'src', 'params', 'index.js'),
     background: path.join(__dirname, 'src', 'background', 'index.js'),
     contentScript: path.join(__dirname, 'src', 'content', 'index.js'),
+    offscreen: path.join(__dirname, 'src', 'offscreen', 'index.js'),
     recordWorkflow: path.join(
       __dirname,
       'src',
@@ -217,6 +218,12 @@ const options = {
       template: path.join(__dirname, 'src', 'params', 'index.html'),
       filename: 'params.html',
       chunks: ['params'],
+      cache: false,
+    }),
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, 'src', 'offscreen', 'index.html'),
+      filename: 'offscreen.html',
+      chunks: ['offscreen'],
       cache: false,
     }),
     new webpack.DefinePlugin({

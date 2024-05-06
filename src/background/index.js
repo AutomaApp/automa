@@ -3,7 +3,6 @@ import { MessageListener } from '@/utils/message';
 import { sleep } from '@/utils/helper';
 import getFile, { readFileAsBase64 } from '@/utils/getFile';
 import automa from '@business';
-import { workflowState } from '@/workflowEngine';
 import { registerWorkflowTrigger } from '../utils/workflowTrigger';
 import BackgroundUtils from './BackgroundUtils';
 import BackgroundWorkflowUtils from './BackgroundWorkflowUtils';
@@ -123,26 +122,17 @@ message.on('dashboard:refresh-packages', async () => {
   });
 });
 
-message.on('workflow:stop', (stateId) => workflowState.stop(stateId));
+message.on('workflow:stop', (stateId) =>
+  BackgroundWorkflowUtils.instance.stopExecution(stateId)
+);
 message.on('workflow:execute', async (workflowData, sender) => {
-  const context = workflowData.settings.execContext;
-  const isMV2 = browser.runtime.getManifest().manifest_version === 2;
-  if (!isMV2 && (!context || context === 'popup')) {
-    await BackgroundUtils.openDashboard('?fromBackground=true', false);
-    await BackgroundUtils.sendMessageToDashboard('workflow:execute', {
-      data: workflowData,
-      options: workflowData.option,
-    });
-    return;
-  }
-
   if (workflowData.includeTabId) {
     if (!workflowData.options) workflowData.options = {};
 
     workflowData.options.tabId = sender.tab.id;
   }
 
-  BackgroundWorkflowUtils.executeWorkflow(
+  BackgroundWorkflowUtils.instance.executeWorkflow(
     workflowData,
     workflowData?.options || {}
   );
@@ -193,56 +183,58 @@ message.on('recording:stop', async () => {
 });
 message.on('workflow:resume', ({ id, nextBlock }) => {
   if (!id) return;
-  workflowState.resume(id, nextBlock);
+  BackgroundWorkflowUtils.instance.resumeExecution(id, nextBlock);
 });
 message.on('workflow:breakpoint', (id) => {
   if (!id) return;
-  workflowState.update(id, { status: 'breakpoint' });
+  BackgroundWorkflowUtils.instance.updateExecutionState(id, {
+    status: 'breakpoint',
+  });
 });
 
 automa('background', message);
 
-browser.runtime.onMessage.addListener(message.listener());
+browser.runtime.onMessage.addListener(message.listener);
 
-if (!isFirefox) {
-  const sandboxIframe = document.createElement('iframe');
-  sandboxIframe.src = '/sandbox.html';
-  sandboxIframe.id = 'sandbox';
+// if (!isFirefox) {
+//   const sandboxIframe = document.createElement('iframe');
+//   sandboxIframe.src = '/sandbox.html';
+//   sandboxIframe.id = 'sandbox';
 
-  document.body.appendChild(sandboxIframe);
+//   document.body.appendChild(sandboxIframe);
 
-  window.addEventListener('message', async ({ data }) => {
-    if (data?.type !== 'automa-fetch') return;
+//   window.addEventListener('message', async ({ data }) => {
+//     if (data?.type !== 'automa-fetch') return;
 
-    const sendResponse = (result) => {
-      sandboxIframe.contentWindow.postMessage(
-        {
-          type: 'fetchResponse',
-          data: result,
-          id: data.data.id,
-        },
-        '*'
-      );
-    };
+//     const sendResponse = (result) => {
+//       sandboxIframe.contentWindow.postMessage(
+//         {
+//           type: 'fetchResponse',
+//           data: result,
+//           id: data.data.id,
+//         },
+//         '*'
+//       );
+//     };
 
-    const { type, resource } = data.data;
-    try {
-      const response = await fetch(resource.url, resource);
-      if (!response.ok) throw new Error(response.statusText);
+//     const { type, resource } = data.data;
+//     try {
+//       const response = await fetch(resource.url, resource);
+//       if (!response.ok) throw new Error(response.statusText);
 
-      let result = null;
+//       let result = null;
 
-      if (type === 'base64') {
-        const blob = await response.blob();
-        const base64 = await readFileAsBase64(blob);
+//       if (type === 'base64') {
+//         const blob = await response.blob();
+//         const base64 = await readFileAsBase64(blob);
 
-        result = base64;
-      } else {
-        result = await response[type]();
-      }
-      sendResponse({ isError: false, result });
-    } catch (error) {
-      sendResponse({ isError: true, result: error.message });
-    }
-  });
-}
+//         result = base64;
+//       } else {
+//         result = await response[type]();
+//       }
+//       sendResponse({ isError: false, result });
+//     } catch (error) {
+//       sendResponse({ isError: true, result: error.message });
+//     }
+//   });
+// }

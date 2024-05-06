@@ -345,7 +345,7 @@ import { tagColors } from '@/utils/shared';
 import { parseJSON, findTriggerBlock } from '@/utils/helper';
 import { exportWorkflow, convertWorkflow } from '@/utils/workflowData';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
-import { executeWorkflow } from '@/workflowEngine';
+import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
 import getTriggerText from '@/utils/triggerText';
 import convertWorkflowData from '@/utils/convertWorkflowData';
 import WorkflowShareTeam from '@/components/newtab/workflow/WorkflowShareTeam.vue';
@@ -475,7 +475,7 @@ function executeCurrWorkflow() {
     saveWorkflow();
   }
 
-  executeWorkflow({
+  RendererWorkflowService.executeWorkflow({
     ...props.workflow,
     isTesting: props.isDataChanged,
   });

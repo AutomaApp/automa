@@ -4,10 +4,35 @@ import { objectHasKey } from './helper';
 const nameBuilder = (prefix, name) => (prefix ? `${prefix}--${name}` : name);
 const isFirefox = BROWSER_TYPE === 'firefox';
 
+/**
+ *
+ * @param {string=} name
+ * @param {*=} data
+ * @param {string=} prefix
+ *
+ * @returns {Promise<*>}
+ */
+export function sendMessage(name = '', data = {}, prefix = '') {
+  let payload = {
+    name: nameBuilder(prefix, name),
+    data,
+  };
+
+  if (isFirefox) {
+    payload = JSON.stringify(payload);
+  }
+
+  return browser.runtime.sendMessage(payload);
+}
+
 export class MessageListener {
+  static sendMessage = sendMessage;
+
   constructor(prefix = '') {
     this.listeners = {};
     this.prefix = prefix;
+
+    this.listener = this.listener.bind(this);
   }
 
   on(name, listener) {
@@ -21,11 +46,7 @@ export class MessageListener {
     return this.on;
   }
 
-  listener() {
-    return this.listen.bind(this);
-  }
-
-  listen(message, sender) {
+  listener(message, sender) {
     try {
       if (isFirefox) message = JSON.parse(message);
 
@@ -39,6 +60,7 @@ export class MessageListener {
       if (!(response instanceof Promise)) {
         return Promise.resolve(response);
       }
+
       return response;
     } catch (err) {
       return Promise.reject(
@@ -46,17 +68,15 @@ export class MessageListener {
       );
     }
   }
-}
 
-export function sendMessage(name = '', data = {}, prefix = '') {
-  let payload = {
-    name: nameBuilder(prefix, name),
-    data,
-  };
-
-  if (isFirefox) {
-    payload = JSON.stringify(payload);
+  /**
+   *
+   * @param {string} name
+   * @param {*} data
+   *
+   * @returns {Promise<*>}
+   */
+  sendMessage(name, data) {
+    return sendMessage(name, data, this.prefix);
   }
-
-  return browser.runtime.sendMessage(payload);
 }
