@@ -86,7 +86,9 @@ class BrowserAPIEventHandler {
           type: 'add',
         },
         'background'
-      );
+      ).then(() => {
+        this.#isEventAdded.add(name);
+      });
     };
 
     /**
@@ -111,8 +113,21 @@ class BrowserAPIEventHandler {
       delete this.#eventsHandler[name];
     };
 
+    const hasListeners = () => {
+      return this.#events[name].length > 0;
+    };
+
+    /**
+     * @param {eventListenerCallback} callback
+     */
+    const hasListener = (callback) => {
+      return this.#events[name].includes(callback);
+    };
+
     this.#eventsHandler[name] = {
       addListener,
+      hasListener,
+      hasListeners,
       removeListener,
     };
 

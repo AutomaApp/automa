@@ -157,6 +157,21 @@ class BrowserAPIService {
   /** @type {typeof Browser.webNavigation} */
   static webNavigation;
 
+  /** @type {typeof Browser.permissions} */
+  static permissions;
+
+  /** @type {typeof Browser.downloads} */
+  static downloads;
+
+  /** @type {typeof Browser.notifications} */
+  static notifications;
+
+  /** @type {typeof Browser.browserAction} */
+  static browserAction;
+
+  /** @type {typeof Browser.extension} */
+  static extension;
+
   static contentScript = BrowserConentScript;
 }
 

@@ -263,7 +263,7 @@ class WorkflowEngine {
         !this.workflow.connectedTable
       ) {
         const lastStateKey = `state:${this.workflow.id}`;
-        const value = await BrowserAPIService.storage.localGet(lastStateKey);
+        const value = await BrowserAPIService.storage.local.get(lastStateKey);
         const lastState = value[lastStateKey];
 
         if (lastState) {
@@ -273,7 +273,7 @@ class WorkflowEngine {
       }
 
       const { settings: userSettings } =
-        await BrowserAPIService.storage.localGet('settings');
+        await BrowserAPIService.storage.local.get('settings');
       this.logsLimit = userSettings?.logsLimit || 1001;
 
       this.workflow.table = columns;
@@ -375,7 +375,7 @@ class WorkflowEngine {
   }
 
   async executeQueue() {
-    const { workflowQueue } = await BrowserAPIService.storage.localGet(
+    const { workflowQueue } = await BrowserAPIService.storage.local.get(
       'workflowQueue'
     );
     const queueIndex = (workflowQueue || []).indexOf(this.workflow?.id);

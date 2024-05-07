@@ -1,4 +1,4 @@
-import browser from 'webextension-polyfill';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 
 function getFilename(url) {
   try {
@@ -14,7 +14,7 @@ function getFilename(url) {
 }
 
 export default async function ({ data, id, label }) {
-  const hasPermission = await browser.permissions.contains({
+  const hasPermission = await BrowserAPIService.permissions.contains({
     permissions: ['downloads'],
   });
 
@@ -40,7 +40,7 @@ export default async function ({ data, id, label }) {
       index += 1;
     }
 
-    return browser.downloads.download(options);
+    return BrowserAPIService.downloads.download(options);
   };
 
   let downloadIds = null;

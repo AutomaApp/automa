@@ -5,12 +5,14 @@ import getFile, { readFileAsBase64 } from '@/utils/getFile';
 import automa from '@business';
 import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import BrowserAPIEventHandler from '@/service/browser-api/BrowserAPIEventHandler';
+import { IS_FIREFOX } from '@/common/utils/constant';
 import { registerWorkflowTrigger } from '../utils/workflowTrigger';
 import BackgroundUtils from './BackgroundUtils';
 import BackgroundWorkflowUtils from './BackgroundWorkflowUtils';
 import BackgroundEventsListeners from './BackgroundEventsListeners';
+import BackgroundOffscreen from './BackgroundOffscreen';
 
-const isFirefox = BROWSER_TYPE === 'firefox';
+BackgroundOffscreen.instance.sendMessage('halo');
 
 browser.alarms.onAlarm.addListener(BackgroundEventsListeners.onAlarms);
 
@@ -34,7 +36,7 @@ browser.webNavigation.onHistoryStateUpdated.addListener(
   BackgroundEventsListeners.onHistoryStateUpdated
 );
 
-const contextMenu = isFirefox ? browser.menus : browser.contextMenus;
+const contextMenu = IS_FIREFOX ? browser.menus : browser.contextMenus;
 if (contextMenu && contextMenu.onClicked) {
   contextMenu.onClicked.addListener(
     BackgroundEventsListeners.onContextMenuClicked
@@ -204,46 +206,3 @@ message.on('workflow:breakpoint', (id) => {
 automa('background', message);
 
 browser.runtime.onMessage.addListener(message.listener);
-
-// if (!isFirefox) {
-//   const sandboxIframe = document.createElement('iframe');
-//   sandboxIframe.src = '/sandbox.html';
-//   sandboxIframe.id = 'sandbox';
-
-//   document.body.appendChild(sandboxIframe);
-
-//   window.addEventListener('message', async ({ data }) => {
-//     if (data?.type !== 'automa-fetch') return;
-
-//     const sendResponse = (result) => {
-//       sandboxIframe.contentWindow.postMessage(
-//         {
-//           type: 'fetchResponse',
-//           data: result,
-//           id: data.data.id,
-//         },
-//         '*'
-//       );
-//     };
-
-//     const { type, resource } = data.data;
-//     try {
-//       const response = await fetch(resource.url, resource);
-//       if (!response.ok) throw new Error(response.statusText);
-
-//       let result = null;
-
-//       if (type === 'base64') {
-//         const blob = await response.blob();
-//         const base64 = await readFileAsBase64(blob);
-
-//         result = base64;
-//       } else {
-//         result = await response[type]();
-//       }
-//       sendResponse({ isError: false, result });
-//     } catch (error) {
-//       sendResponse({ isError: true, result: error.message });
-//     }
-//   });
-// }

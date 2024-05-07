@@ -187,7 +187,6 @@ import browser from 'webextension-polyfill';
 import { useUserStore } from '@/stores/user';
 import { useFolderStore } from '@/stores/folder';
 import { useDialog } from '@/composable/dialog';
-import { sendMessage } from '@/utils/message';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
@@ -198,6 +197,7 @@ import automa from '@business';
 import HomeWorkflowCard from '@/components/popup/home/HomeWorkflowCard.vue';
 import HomeTeamWorkflows from '@/components/popup/home/HomeTeamWorkflows.vue';
 import BackgroundUtils from '@/background/BackgroundUtils';
+import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
 
 const isMV2 = browser.runtime.getManifest().manifest_version === 2;
 
@@ -315,21 +315,7 @@ function togglePinWorkflow(workflow) {
 }
 async function executeWorkflow(workflow) {
   try {
-    const [tab] = await browser.tabs.query({
-      url: browser.runtime.getURL('/newtab.html'),
-    });
-    if (tab && !isMV2) {
-      await browser.tabs.sendMessage(tab.id, {
-        type: 'workflow:execute',
-        data: {
-          data: workflow,
-          options: workflow?.options,
-        },
-      });
-    } else {
-      await sendMessage('workflow:execute', workflow, 'background');
-    }
-
+    await RendererWorkflowService.executeWorkflow(workflow, workflow.options);
     window.close();
   } catch (error) {
     console.error(error);

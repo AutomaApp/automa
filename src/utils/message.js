@@ -1,5 +1,4 @@
 import browser from 'webextension-polyfill';
-import { objectHasKey } from './helper';
 
 const nameBuilder = (prefix, name) => (prefix ? `${prefix}--${name}` : name);
 const isFirefox = BROWSER_TYPE === 'firefox';
@@ -36,7 +35,7 @@ export class MessageListener {
   }
 
   on(name, listener) {
-    if (objectHasKey(this.listeners, name)) {
+    if (Object.hasOwn(this.listeners, name)) {
       console.error(`You already added ${name}`);
       return this.on;
     }

@@ -1,8 +1,8 @@
-import browser from 'webextension-polyfill';
 import { fetchApi } from '@/utils/api';
 import getBlockMessage from '@/utils/getBlockMessage';
 import convertWorkflowData from '@/utils/convertWorkflowData';
 import dayjs from '@/lib/dayjs';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import WorkflowEvent from './WorkflowEvent';
 import WorkflowState from './WorkflowState';
 import WorkflowLogger from './WorkflowLogger';
@@ -11,14 +11,14 @@ import blocksHandler from './blocksHandler';
 
 const workflowStateStorage = {
   get() {
-    return browser.storage.local
+    return BrowserAPIService.storage.local
       .get('workflowStates')
       .then(({ workflowStates }) => workflowStates || []);
   },
   set(key, value) {
     const states = Object.values(value);
 
-    return browser.storage.local.set({ workflowStates: states });
+    return BrowserAPIService.storage.local.set({ workflowStates: states });
   },
 };
 
@@ -65,16 +65,16 @@ class WorkflowManager {
     engine.init();
     engine.on('destroyed', ({ id, status, history, blockDetail, ...rest }) => {
       if (status !== 'stopped') {
-        browser.permissions
+        BrowserAPIService.permissions
           .contains({ permissions: ['notifications'] })
           .then((hasPermission) => {
             if (!hasPermission || !workflowData.settings.notification) return;
 
             const name = workflowData.name.slice(0, 32);
 
-            browser.notifications.create(`logs:${id}`, {
+            BrowserAPIService.notifications.create(`logs:${id}`, {
               type: 'basic',
-              iconUrl: browser.runtime.getURL('icon-128.png'),
+              iconUrl: BrowserAPIService.runtime.getURL('icon-128.png'),
               title: status === 'success' ? 'Success' : 'Error',
               message: `${
                 status === 'success' ? 'Successfully' : 'Failed'
@@ -119,16 +119,20 @@ class WorkflowManager {
       }
     });
 
-    browser.storage.local.get('checkStatus').then(({ checkStatus }) => {
-      const isSameDay = dayjs().isSame(checkStatus, 'day');
-      if (!isSameDay || !checkStatus) {
-        fetchApi('/status')
-          .then((response) => response.json())
-          .then(() => {
-            browser.storage.local.set({ checkStatus: new Date().toString() });
-          });
-      }
-    });
+    BrowserAPIService.storage.local
+      .get('checkStatus')
+      .then(({ checkStatus }) => {
+        const isSameDay = dayjs().isSame(checkStatus, 'day');
+        if (!isSameDay || !checkStatus) {
+          fetchApi('/status')
+            .then((response) => response.json())
+            .then(() => {
+              BrowserAPIService.storage.local.set({
+                checkStatus: new Date().toString(),
+              });
+            });
+        }
+      });
 
     return engine;
   }

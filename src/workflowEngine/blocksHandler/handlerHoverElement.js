@@ -1,3 +1,4 @@
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import { attachDebugger } from '../helper';
 
 export async function hoverElement(block) {
@@ -24,7 +25,7 @@ export async function hoverElement(block) {
   });
 
   if (!debugMode) {
-    chrome.debugger.detach({ tabId: this.activeTab.id });
+    BrowserAPIService.debugger.detach({ tabId: this.activeTab.id });
   }
 
   return {

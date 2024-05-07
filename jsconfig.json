@@ -5,6 +5,7 @@
       "@/*": ["src/*"],
       "@business": ["business/dev/*"]
     },
+    "lib": ["ESNext", "DOM"],
     "module": "ESNext",
     "target": "ES2020"
   },

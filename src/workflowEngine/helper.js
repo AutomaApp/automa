@@ -1,5 +1,6 @@
 import browser from 'webextension-polyfill';
 import { customAlphabet } from 'nanoid/non-secure';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 
 export function escapeElementPolicy(script) {
   if (window?.trustedTypes?.createPolicy) {
@@ -38,7 +39,9 @@ export function messageSandbox(type, data = {}) {
 
 export async function getFrames(tabId) {
   try {
-    const frames = await browser.webNavigation.getAllFrames({ tabId });
+    const frames = await BrowserAPIService.webNavigation.getAllFrames({
+      tabId,
+    });
     const framesObj = frames.reduce((acc, { frameId, url }) => {
       const key = url === 'about:blank' ? '' : url;
 
@@ -85,21 +88,27 @@ export function waitTabLoaded({ tabId, listenError = false, ms = 10000 }) {
         return;
 
       clearTimeout(timeout);
-      browser.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
+      BrowserAPIService.webNavigation.onErrorOccurred.removeListener(
+        onErrorOccurred
+      );
       reject(new Error(details.error));
     };
 
     if (ms > 0) {
       timeout = setTimeout(() => {
-        browser.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
+        BrowserAPIService.webNavigation.onErrorOccurred.removeListener(
+          onErrorOccurred
+        );
         reject(new Error('Timeout'));
       }, ms);
     }
     if (listenError && BROWSER_TYPE === 'chrome')
-      browser.webNavigation.onErrorOccurred.addListener(onErrorOccurred);
+      BrowserAPIService.webNavigation.onErrorOccurred.addListener(
+        onErrorOccurred
+      );
 
     const activeTabStatus = () => {
-      browser.tabs.get(tabId).then((tab) => {
+      BrowserAPIService.tabs.get(tabId).then((tab) => {
         if (!tab) {
           reject(new Error('no-tab'));
           return;
@@ -114,7 +123,9 @@ export function waitTabLoaded({ tabId, listenError = false, ms = 10000 }) {
 
         clearTimeout(timeout);
 
-        browser.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
+        BrowserAPIService.webNavigation.onErrorOccurred.removeListener(
+          onErrorOccurred
+        );
         resolve();
       });
     };

@@ -190,6 +190,7 @@ import { sendMessage } from '@/utils/message';
 import { debounce, parseJSON } from '@/utils/helper';
 import ParameterInputValue from '@/components/newtab/workflow/edit/Parameter/ParameterInputValue.vue';
 import ParameterJsonValue from '@/components/newtab/workflow/edit/Parameter/ParameterJsonValue.vue';
+import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
 
 const paramsList = {
   string: {
@@ -265,8 +266,8 @@ function sendExecuteCommand(workflow, options = {}) {
     includeTabId: true,
     options: { ...options, checkParams: false },
   };
+  RendererWorkflowService.executeWorkflow(workflowData);
 
-  sendMessage('workflow:execute', workflowData, 'background');
   state.active = false;
 }
 function executeWorkflow(workflow) {

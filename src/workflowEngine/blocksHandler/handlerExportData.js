@@ -1,5 +1,5 @@
-import browser from 'webextension-polyfill';
 import { default as dataExporter, files } from '@/utils/dataExporter';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 
 function blobToBase64(blob) {
   return new Promise((resolve) => {
@@ -26,32 +26,30 @@ async function exportData({ data, id }, { refData }) {
     }
   }
 
-  const hasDownloadAccess = await browser.permissions.contains({
-    permissions: ['downloads'],
-  });
+  const isDOMAvailable = typeof document !== 'undefined';
   let blobUrl = dataExporter(payload, {
     ...data,
     csvOptions: {
       delimiter: data.csvDelimiter || ',',
     },
-    returnUrl: hasDownloadAccess,
-    returnBlob: !this.engine.isPopup && !this.engine.isMV2,
+    returnUrl: !isDOMAvailable,
   });
 
-  if (!this.engine.isPopup && !hasDownloadAccess) {
-    throw new Error("Don't have download permission");
-  } else if (!this.engine.isPopup && !this.engine.isMV2) {
-    blobUrl = await blobToBase64(blobUrl);
-  }
-
+  const hasDownloadAccess =
+    !isDOMAvailable &&
+    (await BrowserAPIService.permissions.contains({
+      permissions: ['downloads'],
+    }));
   if (hasDownloadAccess) {
+    blobUrl = await blobToBase64(blobUrl);
+
     const filename = `${data.name || 'unnamed'}${files[data.type].ext}`;
     const options = {
       filename,
       conflictAction: data.onConflict || 'uniquify',
     };
 
-    await browser.downloads.download({
+    await BrowserAPIService.downloads.download({
       ...options,
       url: blobUrl,
     });

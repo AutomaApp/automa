@@ -1,16 +1,17 @@
-import browser from 'webextension-polyfill';
 import { objectHasKey } from '@/utils/helper';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import { attachDebugger } from '../helper';
 
 async function checkAccess(blockName) {
   if (blockName === 'upload-file') {
-    const hasFileAccess = await browser.extension.isAllowedFileSchemeAccess();
+    const hasFileAccess =
+      await BrowserAPIService.extension.isAllowedFileSchemeAccess();
 
     if (hasFileAccess) return true;
 
     throw new Error('no-file-access');
   } else if (blockName === 'clipboard') {
-    const hasPermission = await browser.permissions.contains({
+    const hasPermission = await BrowserAPIService.permissions.contains({
       permissions: ['clipboardRead'],
     });
 
@@ -73,7 +74,7 @@ async function interactionHandler(block) {
     }
 
     if (debugMode && isChrome) {
-      chrome.debugger.detach({ tabId: this.activeTab.id });
+      BrowserAPIService.debugger.detach({ tabId: this.activeTab.id });
     }
 
     return {
@@ -82,7 +83,7 @@ async function interactionHandler(block) {
     };
   } catch (error) {
     if (debugMode && isChrome) {
-      chrome.debugger.detach({ tabId: this.activeTab.id });
+      BrowserAPIService.debugger.detach({ tabId: this.activeTab.id });
     }
 
     error.data = {

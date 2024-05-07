@@ -1,10 +1,10 @@
-import browser from 'webextension-polyfill';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 
 async function closeWindow(data, windowId) {
   const windowIds = [];
 
   if (data.allWindows) {
-    const windows = await browser.windows.getAll();
+    const windows = await BrowserAPIService.windows.getAll();
 
     windows.forEach(({ id }) => {
       windowIds.push(id);
@@ -15,13 +15,15 @@ async function closeWindow(data, windowId) {
     if (windowId && typeof windowId === 'number') {
       currentWindowId = windowId;
     } else {
-      currentWindowId = (await browser.windows.getCurrent()).id;
+      currentWindowId = (await BrowserAPIService.windows.getCurrent()).id;
     }
 
     windowIds.push(currentWindowId);
   }
 
-  await Promise.allSettled(windowIds.map((id) => browser.windows.remove(id)));
+  await Promise.allSettled(
+    windowIds.map((id) => BrowserAPIService.windows.remove(id))
+  );
 }
 
 async function closeTab(data, tabId) {
@@ -30,10 +32,12 @@ async function closeTab(data, tabId) {
   if (data.activeTab && tabId) {
     tabIds = tabId;
   } else if (data.url) {
-    tabIds = (await browser.tabs.query({ url: data.url })).map((tab) => tab.id);
+    tabIds = (await BrowserAPIService.tabs.query({ url: data.url })).map(
+      (tab) => tab.id
+    );
   }
 
-  if (tabIds) await browser.tabs.remove(tabIds);
+  if (tabIds) await BrowserAPIService.tabs.remove(tabIds);
 }
 
 export default async function ({ data, id }) {

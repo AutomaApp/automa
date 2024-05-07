@@ -1,28 +1,92 @@
 import Browser from 'webextension-polyfill';
 
-/** @type {{api: unknown, path: string; isEvent?: true}[]} */
+/** @type {{api: () => unknown, path: string; isEvent?: true}[]} */
 export const browserAPIMap = [
   { api: () => Browser.tabs.get, path: 'tabs.get' },
+  { api: () => chrome.tabs.group, path: 'tabs.group' },
   { api: () => Browser.tabs.query, path: 'tabs.query' },
+  { api: () => Browser.tabs.update, path: 'tabs.update' },
+  { api: () => Browser.tabs.create, path: 'tabs.create' },
+  { api: () => Browser.tabs.remove, path: 'tabs.remove' },
+  { api: () => Browser.tabs.reload, path: 'tabs.reload' },
+  { api: () => Browser.tabs.goBack, path: 'tabs.goBack' },
+  { api: () => Browser.tabs.setZoom, path: 'tabs.setZoom' },
+  { api: () => Browser.tabs.goForward, path: 'tabs.goForward' },
+  { api: () => Browser.tabs.captureTab, path: 'tabs.captureTab' },
+  { api: () => Browser.tabs.captureVisibleTab, path: 'tabs.captureVisibleTab' },
   { isEvent: true, api: () => Browser.tabs.onRemoved, path: 'tabs.onRemoved' },
   {
     isEvent: true,
     path: 'webNavigation.onCreatedNavigationTarget',
     api: () => Browser.webNavigation.onCreatedNavigationTarget,
   },
+  {
+    isEvent: true,
+    path: 'webNavigation.onErrorOccurred',
+    api: () => Browser.webNavigation.onErrorOccurred,
+  },
+  {
+    path: 'webNavigation.getAllFrames',
+    api: () => Browser.webNavigation.getAllFrames,
+  },
+  { api: () => Browser.windows.get, path: 'windows.get' },
   { api: () => Browser.windows.update, path: 'windows.update' },
   { api: () => Browser.windows.create, path: 'windows.create' },
+  { api: () => Browser.windows.getAll, path: 'windows.getAll' },
+  { api: () => Browser.windows.remove, path: 'windows.remove' },
+  { api: () => Browser.windows.getCurrent, path: 'windows.getCurrent' },
   {
     isEvent: true,
     path: 'windows.onRemoved',
     api: () => Browser.windows.onRemoved,
   },
+  {
+    isEvent: true,
+    path: 'storage.onChanged',
+    api: () => Browser.storage.onChanged,
+  },
   { api: () => Browser.storage.local.get, path: 'storage.local.get' },
   { api: () => Browser.storage.local.set, path: 'storage.local.set' },
   { api: () => Browser.storage.local.remove, path: 'storage.local.remove' },
   { api: () => Browser.proxy.settings.clear, path: 'proxy.settings.clear' },
+  { api: () => Browser.proxy.settings.set, path: 'proxy.settings.set' },
   {
-    api: () => chrome.debugger.onEvent.addListener,
-    path: 'debugger.onEvent.addListener',
+    isEvent: true,
+    path: 'debugger.onEvent',
+    api: () => chrome.debugger.onEvent,
+  },
+  { path: 'debugger.detach', api: () => chrome.debugger.detach },
+  { path: 'permissions.contains', api: () => Browser.permissions.contains },
+  { path: 'cookies.get', api: () => Browser.cookies?.get },
+  { path: 'cookies.getAll', api: () => Browser.cookies?.getAll },
+  { path: 'cookies.remove', api: () => Browser.cookies?.remove },
+  { path: 'downloads.search', api: () => Browser.downloads?.search },
+  { path: 'downloads.download', api: () => Browser.downloads?.download },
+  {
+    isEvent: true,
+    path: 'downloads.onCreated',
+    api: () => Browser.downloads?.onCreated,
+  },
+  {
+    isEvent: true,
+    path: 'downloads.onDeterminingFilename',
+    api: () => chrome.downloads?.onDeterminingFilename,
+  },
+  {
+    isEvent: true,
+    path: 'downloads.onChanged',
+    api: () => Browser.downloads?.onChanged,
+  },
+  {
+    path: 'browserAction.setBadgeText',
+    api: () => (Browser.action || Browser.browserAction).setBadgeText,
+  },
+  {
+    path: 'notifications.create',
+    api: () => Browser.notifications?.create,
+  },
+  {
+    path: 'extension.isAllowedFileSchemeAccess',
+    api: () => Browser.extension.isAllowedFileSchemeAccess,
   },
 ];

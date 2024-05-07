@@ -1,6 +1,6 @@
-import browser from 'webextension-polyfill';
 import { fetchGapi, validateOauthToken } from '@/utils/api';
 import getFile from '@/utils/getFile';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import renderString from '../templating/renderString';
 
 function getFilename(url) {
@@ -17,7 +17,9 @@ function getFilename(url) {
 }
 
 export async function googleDrive({ id, data }, { refData }) {
-  const { sessionToken } = await browser.storage.local.get('sessionToken');
+  const { sessionToken } = await BrowserAPIService.storage.local.get(
+    'sessionToken'
+  );
   if (!sessionToken) throw new Error("You haven't connect Google Drive");
 
   await validateOauthToken();
@@ -26,7 +28,7 @@ export async function googleDrive({ id, data }, { refData }) {
     let path = (await renderString(item.path, refData, this.engine.isPopup))
       .value;
     if (item.type === 'downloadId') {
-      const [downloadItem] = await browser.downloads.search({
+      const [downloadItem] = await BrowserAPIService.downloads.search({
         id: +path,
         exists: true,
         state: 'complete',
