@@ -185,6 +185,7 @@ import {
 } from 'vue';
 import browser from 'webextension-polyfill';
 import cloneDeep from 'lodash.clonedeep';
+import { filter } from 'fuzzaldrin-plus';
 import workflowParameters from '@business/parameters';
 import { sendMessage } from '@/utils/message';
 import { debounce, parseJSON } from '@/utils/helper';
@@ -226,11 +227,11 @@ const paramsState = reactive({
 
 const rootElement = inject('rootElement');
 
-const workflows = computed(() =>
-  state.workflows.filter((workflow) =>
-    workflow.name.toLocaleLowerCase().includes(state.query.toLocaleLowerCase())
-  )
-);
+const workflows = computed(() => {
+  if (!state.query) return state.workflows;
+
+  return filter(state.workflows, state.query, { key: 'name' });
+});
 
 function getReadableShortcut(str) {
   const list = {
