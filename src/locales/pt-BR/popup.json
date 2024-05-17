@@ -1,0 +1,32 @@
+{
+  "recording": {
+    "stop": "Parar gravação",
+    "title": "Gravação"
+  },
+  "home": {
+    "record": {
+      "title": "Gravar workflow",
+      "button": "Gravar",
+      "name": "Nome do workflow",
+      "selectBlock": "Selecione um bloco para iniciar",
+      "anotherBlock": "Não é possível iniciar a partir deste bloco",
+      "tabs": {
+        "new": "Novo workflow",
+        "existing": "Workflow existente"
+      }
+    },
+    "elementSelector": {
+      "name": "Seletor de elemento",
+      "noAccess": "Não tem acesso a este site"
+    },
+    "workflow": {
+      "new": "Novo workflow",
+      "rename": "Renomear workflow",
+      "delete": "Excluir workflow",
+      "type": {
+        "host": "Host",
+        "local": "Local"
+      }
+    }
+  }
+}
