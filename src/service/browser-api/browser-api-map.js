@@ -14,6 +14,7 @@ export const browserAPIMap = [
   { api: () => Browser.tabs.goForward, path: 'tabs.goForward' },
   { api: () => Browser.tabs.captureTab, path: 'tabs.captureTab' },
   { api: () => Browser.tabs.captureVisibleTab, path: 'tabs.captureVisibleTab' },
+  { api: () => Browser.tabs.sendMessage, path: 'tabs.sendMessage' },
   { isEvent: true, api: () => Browser.tabs.onRemoved, path: 'tabs.onRemoved' },
   {
     isEvent: true,
