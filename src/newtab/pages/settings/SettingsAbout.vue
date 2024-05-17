@@ -6,9 +6,7 @@
     <p class="text-2xl font-semibold">Automa</p>
     <p class="mb-2 mt-1">Version: {{ extensionVersion }}</p>
     <p class="text-gray-600 dark:text-gray-200">
-      Automa is a chrome extension for browser automation. From auto-fill forms,
-      doing a repetitive task, taking a screenshot, to scraping data of the
-      website, it's up to you what you want to do with this extension.
+      {{ t('about.description') }}
     </p>
     <div class="mt-4 space-x-2">
       <a
@@ -23,10 +21,9 @@
       </a>
     </div>
     <div class="my-8 border-b dark:border-gray-700"></div>
-    <h2 class="text-xl font-semibold">Contributors</h2>
+    <h2 class="text-xl font-semibold">{{ t('about.contributors') }}</h2>
     <p class="mt-1 text-gray-600 dark:text-gray-200">
-      Thanks to everyone who has submitted issues, made suggestions, and
-      generally helped make this a better project.
+      {{ t('about.thanks') }}
     </p>
     <div class="mt-4 mb-12 grid grid-cols-7 gap-2">
       <a
@@ -50,6 +47,7 @@
 <script setup>
 /* eslint-disable camelcase */
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import browser from 'webextension-polyfill';
 import { useStore } from '@/stores/main';
 import { useGroupTooltip } from '@/composable/groupTooltip';
@@ -57,6 +55,7 @@ import { communities } from '@/utils/shared';
 
 useGroupTooltip();
 const store = useStore();
+const { t } = useI18n();
 
 const extensionVersion = browser.runtime.getManifest().version;
 const links = [

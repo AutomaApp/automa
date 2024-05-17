@@ -28,5 +28,10 @@
         "local": "Local"
       }
     }
+  },
+  "about": {
+    "description": "Automa é uma extensão do Chrome para automação do navegador. Nos formulários de preenchimento automático, fazendo uma tarefa repetitiva, tirando uma captura de tela, até raspar dos website, cabe a você decidir o que deseja fazer com esta extensão.",
+    "contributors": "Contribuidores",
+    "thanks": "Obrigado a todos que enviaram issues, fizeram sugestões e em geral ajudaram a tornar este projeto melhor."
   }
 }
