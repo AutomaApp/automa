@@ -109,7 +109,6 @@ export function waitTabLoaded({ tabId, listenError = false, ms = 10000 }) {
 
     const activeTabStatus = async () => {
       const tab = await BrowserAPIService.tabs.get(tabId);
-      // then((tab) => {
       if (!tab) {
         reject(new Error('no-tab'));
         return;
@@ -128,7 +127,6 @@ export function waitTabLoaded({ tabId, listenError = false, ms = 10000 }) {
         onErrorOccurred
       );
       resolve();
-      // });
     };
 
     activeTabStatus();
