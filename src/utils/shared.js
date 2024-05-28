@@ -1583,6 +1583,7 @@ export const supportLocales = [
   { id: 'zh', name: '简体中文' },
   { id: 'zh-TW', name: '繁體中文' },
   { id: 'tr', name: 'Türkçe' },
+  { id: 'ru', name: 'Русский' },
 ];
 
 export const communities = [
