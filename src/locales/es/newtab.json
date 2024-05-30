@@ -1,0 +1,516 @@
+{
+  "home": {
+    "viewAll": "Ver todo",
+    "communities": "Comunidades"
+  },
+  "welcome": {
+    "title": "Bienvenido a Automa! 🎉",
+    "text": "Para empezar, lea la documentación o consulte los flujos de trabajo en Automa Marketplace.",
+    "marketplace": "Marketplace"
+  },
+  "packages": {
+    "name": "Package | Packages",
+    "add": "Añadir paquete",
+    "icon": "Icono del paquete",
+    "open": "Abrir paquetes",
+    "new": "Nuevo paquete",
+    "import": "Importar paquete",
+    "set": "Establecer como un paquete",
+    "settings": {
+      "asBlock": "Establecer paquete como bloque"
+    },
+    "categories": {
+      "my": "Mis Paquetes",
+      "installed": "Instalar Paquetes"
+    }
+  },
+  "scheduledWorkflow": {
+    "title": "Flujos de trabajo programados",
+    "nextRun": "Próxima ejecución",
+    "active": "Activar",
+    "refresh": "Refrescar",
+    "schedule":{
+      "title": "Horario",
+      "types": {
+        "everyDay": "Todos los días",
+        "general": "Cada {time}",
+        "interval": "Cada {time} minutos"
+      }
+    }
+  },
+  "storage": {
+    "title": "Almacenamiento",
+    "table": {
+      "add": "Añadir tabla",
+      "edit": "Editar Tabla",
+      "createdAt": "Creado en",
+      "modifiedAt": "Modificado en",
+      "rowsCount": "Recuento de filas",
+      "delete": "Borrar tabla"
+    }
+  },
+  "credential": {
+    "title": "Credencial | Credenciales",
+    "add": "Añadir credencial",
+    "use": {
+      "title": "Credenciales usadas",
+      "description": "Este flujo de trabajo utiliza estas credenciales"
+    }
+  },
+  "workflowPermissions": {
+    "title": "Permisos de flujo de trabajo",
+    "description": "Este flujo de trabajo requiere estos permisos para ejecutarse correctamente",
+    "contextMenus": {
+      "title": "Menú contextual",
+      "description": "Para ejecutar el flujo de trabajo a través del menú contextual"
+    },
+    "clipboardRead": {
+      "title": "Portapapeles",
+      "description": "Para acceder a los datos del portapapeles"
+    },
+    "notifications": {
+      "title": "Notificación",
+      "description": "Para mostrar una notificación"
+    },
+    "downloads": {
+      "title": "Descargar",
+      "description": "Guardar los activos de la página y cambiar el nombre del archivo descargado"
+    },
+    "cookies": {
+      "title": "Cookies",
+      "description": "Leer, establecer, o quitar cookies"
+    }
+  },
+  "updateMessage": {
+    "text1": "Automa ha sido actualizado a v{version},",
+    "text2": "ver las novedades."
+  },
+  "workflows": {
+    "folder": {
+      "new": "Nueva carpeta",
+      "name": "Nombre de la carpeta",
+      "delete": "Eliminar carpeta",
+      "rename": "Cambiar nombre de carpeta"
+    }
+  },
+  "auth": {
+    "title": "Auth",
+    "signIn": "Iniciar sesión",
+    "username": "Primero tienes que configurar tu nombre de usuario",
+    "clickHere": "Pulse aquí",
+    "text": "Tienes que iniciar sesión antes de poder hacerlo."
+  },
+  "running": {
+    "start": "Comenzó el {date}",
+    "message": "Esto sólo muestra los últimos 5 registros"
+  },
+  "settings": {
+    "theme": "Tema",
+    "shortcuts": {
+      "duplicate": "Acceso directo ya utilizado por \"{name}\""
+    },
+    "editor": {
+      "title": "Titulo",
+      "curvature": {
+        "title": "Curvatura de la línea",
+        "line": "Línea",
+        "reroute": "Redirigir",
+        "rerouteFirstLast": "Redirigir primer y último punto"
+      },
+      "arrow": {
+        "title": "Fecha",
+        "description": "Añadir una flecha al final de la línea"
+      },
+      "snapGrid": {
+        "title": "Ajustar a la cuadrícula",
+        "description": "Ajustarse a la cuadrícula al mover un bloque"
+      },
+      "saveWhenExecute": {
+        "title": "Guardado automático al ejecutar el flujo de trabajo",
+        "description": "Los cambios en el flujo de trabajo se guardarán al ejecutarlo"
+      }
+    },
+    "deleteLog": {
+      "title": "Borrado automático de registros de flujo de trabajo",
+      "after": "Borrar después de",
+      "deleteAfter": {
+        "never": "Nunca",
+        "days": "{day} dias"
+      }
+    },
+    "language": {
+      "label": "Idioma",
+      "helpTranslate": "¿No encuentra su idioma? Puedes ayuda a traducir.",
+      "reloadPage": "Recargar la página para que el cambio surta efecto"
+    },
+    "menu": {
+      "backup": "Flujos de trabajo de copia de seguridad",
+      "editor": "Editor",
+      "general": "General",
+      "shortcuts": "Atajos",
+      "about": "Acerca de"
+    },
+    "backupWorkflows": {
+      "title": "Copia de seguridad local",
+      "invalidPassword": "Contraseña no válida",
+      "workflowsAdded": "{count} se han añadido flujos de trabajo",
+      "name": "Flujos de trabajo de copia de seguridad",
+      "needSignin": "Primero tienes que registrarte",
+      "backup": {
+        "button": "Copia de seguridad",
+        "settings": "Configuración de la copia de seguridad",
+        "encrypt": "Cifrar con contraseña",
+        "schedule": "Programar copia de seguridad local"
+      },
+      "restore": {
+        "title": "Restaurar flujos de trabajo",
+        "button": "Restaurar",
+        "update": "Actualizar si el flujo de trabajo existe"
+      },
+      "cloud": {
+        "buttons": {
+          "local": "Local",
+          "cloud": "Nube"
+        },
+        "location": "Ubicación",
+        "delete": "Eliminar copia de seguridad",
+        "title": "Respaldo en la Nube",
+        "sync": "Sincronizar",
+        "lastSync": "Ultima Sincronización",
+        "lastBackup": "Ultimo Respaldo",
+        "select": "Seleccionar flujos de trabajo",
+        "storedWorkflows": "Flujos de trabajo almacenados en la nube",
+        "selected": "Selección",
+        "selectText": "Seleccione los flujos de trabajo de los que desea hacer una copia de seguridad",
+        "selectAll": "Seleccionar todo",
+        "deselectAll": "Deseleccionar todo",
+        "needSelectWorkflow": "Debe seleccionar los flujos de trabajo de los que desea hacer una copia de seguridad"
+      }
+    }
+  },
+  "workflow": {
+    "events": {
+      "title": "Eventos de flujo de trabajo",
+      "add-action": "Añadir acción",
+      "description": "Realizar acciones cuando se produzca el evento.",
+      "event": "Evento | Eventos",
+      "action": "Acción",
+      "actions": {
+        "js-code": {
+          "title": "Ejecutar código JS"
+        },
+        "http-request": {
+          "title": "Solicitud HTTP"
+        }
+      },
+      "types": {
+        "finish:success": {
+          "name": "Finalizar (éxito)",
+          "description": "La ejecución del flujo de trabajo finaliza con éxito"
+        },
+        "finish:failed": {
+          "name": "Finalizar (fallido)",
+          "description": "La ejecución del flujo de trabajo ha finalizado con error"
+        }
+      }
+    },
+    "previewMode": {
+      "title": "Modo de vista previa",
+      "description": "Estás en el modo de vista previa, los cambios realizados no se guardarán."
+    },
+    "pinWorkflow": {
+      "pin": "Fijar flujo de trabajo",
+      "unpin": "Quitar flujo de trabajo",
+      "pinned": "Flujos de trabajo anclados"
+    },
+    "parameters": {
+      "add": "Añadir parámetro",
+      "preferInTab": "Preferir parámetros de entrada en la pestaña"
+    },
+    "my": "Mis flujos de trabajo",
+    "testing": {
+      "title": "Modo de Prueba",
+      "nextBlock": "Siguiente bloque",
+      "startRun": "Comience a ejecutar en",
+      "disabled": "Guarde primero los cambios"
+    },
+    "import": "Importar flujo de trabajo",
+    "new": "Nuevo Flujo",
+    "delete": "Eliminar Flujo",
+    "browse": "Explorar flujos",
+    "name": "Nombre del flujo",
+    "rename": "Renombrar flujo",
+    "backupCloud": "Copia de seguridad en la nube del flujo",
+    "add": "Añadir flujo de trabajo",
+    "clickToEnable": "Haga clic para activar",
+    "toggleSidebar": "Alternar barra lateral",
+    "cantEdit": "No se puede editar el flujo de trabajo compartido",
+    "undo": "Deshacer",
+    "redo": "Rehacer",
+    "autoAlign": {
+      "title": "Auto-alear"
+    },
+    "blocksFolder": {
+      "title": "Bloque de carpetas",
+      "add": "Añadir bloques a la carpeta",
+      "save": "Guardar en carpeta"
+    },
+    "searchBlocks": {
+      "title": "Buscar bloques en el editor"
+    },
+    "conditionBuilder": {
+      "title": "Condición de constructor",
+      "add": "Añadir condición",
+      "and": "AND",
+      "or": "OR",
+      "topAwait": "Apoyar la espera de alto nivel y \"automaRefData\" función"
+    },
+    "host": {
+      "title": "Flujo de trabajo del host",
+      "set": "Establecer como flujo de trabajo anfitrión",
+      "id": "ID de host",
+      "add": "Añadir flujo de trabajo alojado",
+      "sync": {
+        "title": "Sincronización",
+        "description": "Sincronización con el flujo de trabajo del host"
+      },
+      "messages": {
+        "hostExist": "Ya ha añadido este host",
+        "notFound": "No se puede encontrar un flujo de trabajo alojado con el ID \"{id}\""
+      }
+    },
+    "type": {
+      "local": "Local",
+      "shared": "Compartido",
+      "host": "Host"
+    },
+    "unpublish": {
+      "title": "Flujo de trabajo de despublicación",
+      "button": "Anular la publicación",
+      "body": "¿Está seguro de que desea anular la publicación del flujo de trabajo \"{name}\"?"
+    },
+    "share": {
+      "url": "Compartir URL",
+      "publish": "Publique",
+      "sharedAs": "Compartido como \"{name}\"",
+      "title": "Compartir flujo de trabajo",
+      "download": "Guardar flujo de trabajo en local",
+      "edit": "Editar descripción",
+      "fetchLocal": "Obtener flujo de trabajo local",
+      "update": "Actualización",
+      "unpublish": "Anule la publicación"
+    },
+    "variables": {
+      "title": "Variable | Variables",
+      "name": "Nombre de la variable",
+      "assign": "Asignar a variable"
+    },
+    "protect": {
+      "title": "Proteger el flujo de trabajo",
+      "remove": "Quitar la protección",
+      "button": "Proteja",
+      "note": "Nota: esta contraseña será necesaria más adelante para editar o eliminar el flujo de trabajo."
+    },
+    "locked": {
+      "title": "Este flujo de trabajo está protegido",
+      "body": "Introduce la contraseña para desbloquearlo",
+      "unlock": "Desbloquear",
+      "messages": {
+        "incorrect-password": "Contraseña incorrecta"
+      }
+    },
+    "state": {
+      "executeBy": "Ejecutado por: \"{name}\""
+    },
+    "table": {
+      "title": "Tabla | Tablas",
+      "placeholder": "Buscar o añadir una columna",
+      "select": "Seleccionar columna",
+      "column": {
+        "name": "Nombre de columna",
+        "type": "Tipo de datos"
+      }
+    },
+    "sidebar": {
+      "workflowIcon": "Icono de flujo de trabajo"
+    },
+    "editor": {
+      "zoomIn": "Ampliar",
+      "zoomOut": "Alejar",
+      "resetZoom": "Restablecer zoom",
+      "duplicate": "Duplicar",
+      "copy": "Copiar",
+      "paste": "Pegar",
+      "group": "Agrupar bloques",
+      "ungroup": "Desagrupar bloques"
+    },
+    "settings": {
+      "saveLog": "Guardar registro de flujo de trabajo",
+      "executedBlockOnWeb": "Mostrar el bloque ejecutado en la página web",
+      "notification": {
+        "title": "Notificación de flujo de trabajo",
+        "description": "Mostrar el estado del flujo de trabajo (success or failed) después de ejecutar",
+        "noPermission": "Esta opción requiere \"notifications\" permiso para trabajar"
+      },
+      "publicId": {
+        "title": "ID público del flujo de trabajo",
+        "description": "Establezca un ID público para ejecutar el flujo de trabajo a través de un evento personalizado de JavaScript"
+      },
+      "defaultColumn": {
+        "title": "Insertar en la columna por defecto",
+        "description": "Insertar datos en la columna por defecto si no hay ninguna columna seleccionada en el bloque",
+        "name": "Nombre de columna por defecto"
+      },
+      "autocomplete": {
+        "title": "Autocompletar",
+        "description": "Activar autocompletar en el bloque de entrada (desactivar si hace inestable Automa)"
+      },
+      "clearCache": {
+        "title": "Limpiar cache",
+        "description": "Limpiar cache (state and loop index) del flujo de trabajo",
+        "info": "Se ha borrado correctamente la caché del flujo de trabajo",
+        "btn": "Limpiar"
+      },
+      "reuseLastState": {
+        "title": "Reutilizar el estado del último flujo de trabajo",
+        "description": "Utilizar los datos estatales (tabla, variables y datos globales) del último flujo de trabajo ejecutado"
+      },
+      "debugMode": {
+        "title": "Modo depuración",
+        "description": "Ejecutar el flujo de trabajo mediante el protocolo DevTools de Chrome"
+      },
+      "restartWorkflow": {
+        "for": "Reiniciar",
+        "times": "Veces",
+        "description": "Número máximo de veces que se reiniciará el flujo de trabajo"
+      },
+      "onError": {
+        "title": "Error en el flujo de trabajo",
+        "description": "Establecer la acción a tomar si se produce un error en el flujo de trabajo",
+        "items": {
+          "keepRunning": "Seguir Ejecutando",
+          "stopWorkflow": "Detener el flujo de trabajo",
+          "restartWorkflow": "Reiniciar el flujo de trabajo"
+        }
+      },
+      "timeout": {
+        "title": "Tiempo de espera del flujo de trabajo (milisegundos)"
+      },
+      "blockDelay": {
+        "title": "Retraso en bloque (milisegundos)",
+        "description": "Añadir retardo antes de ejecutar cada uno de los bloques"
+      },
+      "tabLoadTimeout": {
+        "title": "Tiempo de espera de carga de la pestaña",
+        "description": "Tiempo máximo para cargar una pestaña en milisegundos, introduzca 0 para desactivar el tiempo de espera"
+      }
+    }
+  },
+  "collection": {
+    "description": "Ejecute sus flujos de trabajo en secuencia",
+    "new": "Nueva colección",
+    "delete": "Borrar colección",
+    "add": "Añadir colección",
+    "rename": "Renombrar colección",
+    "flow": "Flujo",
+    "dragDropText": "Introduzca aquí un flujo de trabajo o un bloque",
+    "options": {
+      "atOnce": {
+        "title": "Ejecutar todos los flujos de trabajo de la colección a la vez",
+        "description": "Los bloques no se ejecutarán cuando se utilice esta opción"
+      }
+    },
+    "globalData": {
+      "note": "Esto sobrescribirá los datos globales del flujo de trabajo"
+    }
+  },
+  "log": {
+    "flowId": "ID de flujo",
+    "goBack": "Volver a \"{name}\" Registros",
+    "goWorkflow": "Ir al flujo de trabajo",
+    "startedDate": "Fecha de inicio",
+    "duration": "Duración",
+    "selectAll": "Seleccionar todo",
+    "deselectAll": "Deseleccionar todo",
+    "deleteSelected": "Borrar los registros seleccionados",
+    "clearLogs": {
+      "title": "Borrar registros",
+      "description": "¿Estás seguro de que quieres borrar todos los registros?"
+    },
+    "types": {
+      "stop": "El flujo de trabajo se detiene",
+      "finish": "Acabado"
+    },
+    "messages": {
+      "url-empty": "La URL está vacía",
+      "invalid-url": "La URL no es válida",
+      "conditions-empty": "Las condiciones están vacías",
+      "invalid-proxy-host": "Proxy host no válido",
+      "workflow-disabled": "Flujo de trabajo desactivado",
+      "selector-empty": "El selector de elementos está vacío",
+      "invalid-body": "El cuerpo del contenido no es un JSON válido",
+      "invalid-active-tab": "\"{url}\" es una URL no válida",
+      "empty-spreadsheet-id": "El ID de la hoja de cálculo está vacío",
+      "invalid-loop-data": "Datos no válidos para el bucle",
+      "empty-workflow": "Primero debe seleccionar un flujo de trabajo",
+      "active-tab-removed": "Se ha eliminado la pestaña de flujo de trabajo activo",
+      "empty-spreadsheet-range": "El rango de la hoja de cálculo está vacío",
+      "stop-timeout": "El flujo de trabajo se detuvo debido a un tiempo de espera",
+      "no-file-access": "Automa no tiene acceso al fichero",
+      "no-workflow": "No se puede encontrar un flujo de trabajo con el ID \"{workflowId}\"",
+      "no-match-tab": "No se puede encontrar una pestaña que coincida con el patrón \"{pattern}\"",
+      "no-clipboard-acces": "No tiene permiso para acceder al portapapeles",
+      "browser-not-supported": "Esta función no está disponible en {browser} navegador",
+      "element-not-found": "No se puede encontrar un elemento con el selector \"{selector}\"",
+      "no-permission": "No tiene \"{permission}\" permiso para realizar esta acción",
+      "not-iframe": "Elemento con \"{selector}\" el selector no es un elemento iframe",
+      "iframe-not-found": "No se puede encontrar un elemento iframe con el selector \"{selector}\"",
+      "workflow-infinite-loop": "No se puede ejecutar el flujo de trabajo para evitar un bucle infinito",
+      "not-debug-mode": "El flujo de trabajo debe ejecutarse en modo de depuración para que este bloque funcione correctamente",
+      "no-iframe-id": "No se puede encontrar el Frame ID para el elemento iframe con el selector \"{selector}\"",
+      "no-tab": "No se puede conectar a una ficha, utilice \"New tab\" o \"Active tab\" antes de utilizar el bloque \"{name}\" bloque"
+    },
+    "description": {
+      "text": "{status} on {date} in {duration}",
+      "status": {
+        "success": "Con éxito",
+        "error": "Fallido",
+        "stopped": "Detenido"
+      }
+    },
+    "delete": {
+      "title": "Eliminar Registro",
+      "description": "¿Estás seguro de que quieres borrar todos los registros seleccionados?"
+    },
+    "exportData": {
+      "title": "Exportar datos",
+      "types": {
+        "json": "JSON",
+        "csv": "CSV",
+        "plain-text": "Texto sin formato"
+      }
+    },
+    "filter": {
+      "title": "Filtros",
+      "byStatus": "Por estado",
+      "byDate": {
+        "title": "Por fecha",
+        "items": {
+          "lastDay": "Último día",
+          "last7Days": "Últimos siete días",
+          "last30Days": "Últimos treinta días"
+        }
+      }
+    }
+  },
+  "components": {
+    "pagination": {
+      "text1": "Mostrar",
+      "text2": "Elementos de {count}",
+      "nextPage": "Siguiente página",
+      "currentPage": "Página actual",
+      "prevPage": "Página anterior",
+      "of": "de {page}"
+    }
+  }
+}

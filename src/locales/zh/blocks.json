@@ -133,6 +133,10 @@
         "description": "管理工作流状态",
         "actions": {
           "stop": "停止工作流"
+        },
+        "error": {
+          "throwError": "抛出错误",
+          "message": "错误消息"
         }
       },
       "regex-variable": {
@@ -207,6 +211,7 @@
           "press-key": "按下一个按键",
           "multiple-keys": "按下多个按键"
         }
+        "press-time": "按下时间 (毫秒)"
       },
       "save-assets": {
         "name": "保存资源",
@@ -566,6 +571,7 @@
         "name": "新建标签页",
         "description": "",
         "url": "新建标签页 URL",
+        "tab-zoom": "标签页缩放",
         "customUserAgent": "使用自定义 User-Agent",
         "activeTab": "设为活动标签页",
         "tabToGroup": "标签页分组",
@@ -587,6 +593,11 @@
           "name": "属性名称",
           "checkbox": "插入到表格",
           "column": "选择列",
+          "value": "属性值",
+          "action": {
+            "get": "获取属性值",
+            "set": "设置属性值"
+          },
           "extraRow": {
             "checkbox": "添加额外的行",
             "placeholder": "值",

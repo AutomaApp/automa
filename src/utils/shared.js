@@ -1446,12 +1446,15 @@ export const tasks = {
     outputs: 1,
     allowedInputs: true,
     maxConnection: 1,
+    refDataKeys: ['errorMessage'],
     data: {
       disableBlock: false,
       description: '',
       type: 'stop-current',
       exceptCurrent: false,
       workflowsToStop: [],
+      throwError: false,
+      errorMessage: '',
     },
   },
   'parameter-prompt': {
@@ -1583,6 +1586,7 @@ export const supportLocales = [
   { id: 'zh', name: '简体中文' },
   { id: 'zh-TW', name: '繁體中文' },
   { id: 'tr', name: 'Türkçe' },
+  { id: 'es', name: 'Spanish' },
   { id: 'ru', name: 'Русский' },
 ];
 

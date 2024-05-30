@@ -48,6 +48,7 @@
     "category": "分类",
     "optional": "可选",
     "0disable": "0 到禁用"
+    "millisecond": "毫秒 | 毫秒"
   },
   "message": {
     "noBlock": "没有模块",
