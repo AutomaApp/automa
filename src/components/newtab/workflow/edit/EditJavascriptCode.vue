@@ -154,12 +154,12 @@
   </div>
 </template>
 <script setup>
-import { watch, reactive, defineAsyncComponent, inject } from 'vue';
+import { defineAsyncComponent, inject, reactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { autocompletion } from '@codemirror/autocomplete';
 import {
-  automaFuncsSnippets,
   automaFuncsCompletion,
+  automaFuncsSnippets,
   completeFromGlobalScope,
 } from '@/utils/codeEditorAutocomplete';
 import beautify from 'js-beautify';
@@ -219,10 +219,11 @@ function addScript() {
   state.preloadScripts.push({ src: '', removeAfterExec: true });
 }
 function formatCode() {
-  const newValue = beautify.js(props.data.code, {
-    indent_size: 2,
-  });
-  state.code = newValue;
+  try {
+    state.code = beautify.js(state.code, { indent_size: 2 });
+  } catch (error) {
+    console.error('Error formatting code:', error);
+  }
 }
 
 const codemirrorExts = [
