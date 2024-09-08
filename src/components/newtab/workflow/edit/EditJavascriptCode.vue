@@ -183,7 +183,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
-const emit = defineEmits(['update:data', 'change', 'update:modelValue']);
+const emit = defineEmits(['update:data']);
 
 const { t } = useI18n();
 
