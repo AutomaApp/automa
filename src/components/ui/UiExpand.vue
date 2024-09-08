@@ -31,7 +31,7 @@ import { watch, ref } from 'vue';
 const props = defineProps({
   modelValue: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   panelClass: {
     type: String,
