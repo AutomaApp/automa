@@ -85,11 +85,16 @@
             class="overflow-auto"
           />
           <template v-if="!data.everyNewTab">
-            <p class="mt-1 flex justify-between text-sm">
+            <p class="mt-1 flex justify-between text-sm py-3">
               <span>{{
                 t('workflow.blocks.javascript-code.availabeFuncs')
               }}</span>
               <span>
+                <span
+                  class="cursor-pointer select-none underline pr-10"
+                  @click="formatCode"
+                  >format code</span
+                >
                 <span
                   class="cursor-pointer select-none underline"
                   @click="modifyWhiteSpace"
@@ -157,6 +162,7 @@ import {
   automaFuncsCompletion,
   completeFromGlobalScope,
 } from '@/utils/codeEditorAutocomplete';
+import beautify from 'js-beautify';
 import { store } from '../../settings/jsBlockWrap';
 
 function modifyWhiteSpace() {
@@ -211,6 +217,12 @@ function updateData(value) {
 }
 function addScript() {
   state.preloadScripts.push({ src: '', removeAfterExec: true });
+}
+function formatCode() {
+  const newValue = beautify.js(props.data.code, {
+    indent_size: 2,
+  });
+  state.code = newValue;
 }
 
 const codemirrorExts = [
