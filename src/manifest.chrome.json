@@ -65,7 +65,8 @@
     "activeTab",
     "offscreen",
     "webNavigation",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "scripting"
   ],
   "web_accessible_resources": [
     {
