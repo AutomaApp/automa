@@ -1,13 +1,13 @@
-import { fetchApi } from '@/utils/api';
-import getBlockMessage from '@/utils/getBlockMessage';
-import convertWorkflowData from '@/utils/convertWorkflowData';
 import dayjs from '@/lib/dayjs';
 import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
-import WorkflowEvent from './WorkflowEvent';
-import WorkflowState from './WorkflowState';
-import WorkflowLogger from './WorkflowLogger';
-import WorkflowEngine from './WorkflowEngine';
+import { fetchApi } from '@/utils/api';
+import convertWorkflowData from '@/utils/convertWorkflowData';
+import getBlockMessage from '@/utils/getBlockMessage';
 import blocksHandler from './blocksHandler';
+import WorkflowEngine from './WorkflowEngine';
+import WorkflowEvent from './workflowEvent';
+import WorkflowLogger from './WorkflowLogger';
+import WorkflowState from './WorkflowState';
 
 const workflowStateStorage = {
   get() {
@@ -55,6 +55,10 @@ class WorkflowManager {
     }
 
     const convertedWorkflow = convertWorkflowData(workflowData);
+    console.log(
+      '🚀 ~ WorkflowManager ~ execute ~ convertedWorkflow:',
+      convertedWorkflow
+    );
     const engine = new WorkflowEngine(convertedWorkflow, {
       options,
       states: this.#state,
@@ -78,7 +82,7 @@ class WorkflowManager {
               title: status === 'success' ? 'Success' : 'Error',
               message: `${
                 status === 'success' ? 'Successfully' : 'Failed'
-              } to run the "${name}" workflow`,
+              } ran the "${name}" workflow`,
             });
           });
       }
