@@ -4,7 +4,6 @@ export default [
   {
     id: nanoid(),
     name: 'Twitter Trends to Google Sheets',
-    icon: 'https://upload.wikimedia.org/wikipedia/commons/4/4f/Twitter-logo.svg',
     table: [
       { id: '6QbkU', name: 'text', type: 'string' },
       { id: 'Q-zII', name: 'tweets_count', type: 'integer' },
@@ -1386,7 +1385,6 @@ export default [
     id: nanoid(),
     name: 'Search in ProductHunt',
     createdAt: Date.now(),
-    icon: 'https://res.cloudinary.com/chat-story/image/upload/v1648549611/61f54ef11c566274507d4070_Product_Hunt_j4hpfe.svg',
     drawflow: {
       nodes: [
         {
@@ -1535,7 +1533,6 @@ export default [
     id: nanoid(),
     createdAt: Date.now(),
     name: 'Google Keyword Research',
-    icon: 'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg',
     table: [
       {
         id: '25D2q',
