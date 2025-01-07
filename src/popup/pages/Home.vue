@@ -158,7 +158,7 @@
     />
     <div
       v-if="state.showSettingsPopup"
-      class="fixed bottom-5 left-0 m-4 rounded-lg bg-accent p-4 text-white shadow-md dark:text-black"
+      class="fixed bottom-5 left-0 m-4 rounded-lg bg-accent p-4 text-white shadow-md dark:text-black z-10"
     >
       <p class="text-sm leading-tight">
         If the workflow runs for less than 5 minutes, set it to run in the
@@ -181,23 +181,23 @@
   </div>
 </template>
 <script setup>
+import BackgroundUtils from '@/background/BackgroundUtils';
+import HomeTeamWorkflows from '@/components/popup/home/HomeTeamWorkflows.vue';
+import HomeWorkflowCard from '@/components/popup/home/HomeWorkflowCard.vue';
+import { useDialog } from '@/composable/dialog';
+import { useGroupTooltip } from '@/composable/groupTooltip';
+import { initElementSelector as initElementSelectorFunc } from '@/newtab/utils/elementSelector';
+import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
+import { useFolderStore } from '@/stores/folder';
+import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
+import { useUserStore } from '@/stores/user';
+import { useWorkflowStore } from '@/stores/workflow';
+import { arraySorter, parseJSON } from '@/utils/helper';
+import automa from '@business';
 import { computed, onMounted, shallowReactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import browser from 'webextension-polyfill';
-import { useUserStore } from '@/stores/user';
-import { useFolderStore } from '@/stores/folder';
-import { useDialog } from '@/composable/dialog';
-import { useWorkflowStore } from '@/stores/workflow';
-import { useGroupTooltip } from '@/composable/groupTooltip';
-import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
-import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
-import { parseJSON, arraySorter } from '@/utils/helper';
-import { initElementSelector as initElementSelectorFunc } from '@/newtab/utils/elementSelector';
-import automa from '@business';
-import HomeWorkflowCard from '@/components/popup/home/HomeWorkflowCard.vue';
-import HomeTeamWorkflows from '@/components/popup/home/HomeTeamWorkflows.vue';
-import BackgroundUtils from '@/background/BackgroundUtils';
-import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
 
 const isMV2 = browser.runtime.getManifest().manifest_version === 2;
 
