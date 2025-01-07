@@ -1,6 +1,6 @@
+import { cacheApi, fetchApi } from '@/utils/api';
 import { defineStore } from 'pinia';
 import browser from 'webextension-polyfill';
-import { fetchApi, cacheApi } from '@/utils/api';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -69,6 +69,12 @@ export const useUserStore = defineStore('user', {
 
         this.user = user;
         this.retrieved = true;
+
+        if (user) {
+          await browser.storage.local.set({ user });
+        } else {
+          await browser.storage.local.remove('user');
+        }
       } catch (error) {
         this.retrieved = true;
         console.error(error);

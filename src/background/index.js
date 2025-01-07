@@ -1,16 +1,17 @@
-import browser from 'webextension-polyfill';
-import { MessageListener } from '@/utils/message';
-import { sleep } from '@/utils/helper';
-import getFile, { readFileAsBase64 } from '@/utils/getFile';
-import automa from '@business';
-import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
-import BrowserAPIEventHandler from '@/service/browser-api/BrowserAPIEventHandler';
 import { IS_FIREFOX } from '@/common/utils/constant';
+import BrowserAPIEventHandler from '@/service/browser-api/BrowserAPIEventHandler';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
+import { useUserStore } from '@/stores/user';
+import getFile, { readFileAsBase64 } from '@/utils/getFile';
+import { sleep } from '@/utils/helper';
+import { MessageListener } from '@/utils/message';
+import automa from '@business';
+import browser from 'webextension-polyfill';
 import { registerWorkflowTrigger } from '../utils/workflowTrigger';
-import BackgroundUtils from './BackgroundUtils';
-import BackgroundWorkflowUtils from './BackgroundWorkflowUtils';
 import BackgroundEventsListeners from './BackgroundEventsListeners';
 import BackgroundOffscreen from './BackgroundOffscreen';
+import BackgroundUtils from './BackgroundUtils';
+import BackgroundWorkflowUtils from './BackgroundWorkflowUtils';
 
 BackgroundOffscreen.instance.sendMessage('halo');
 
@@ -139,7 +140,6 @@ message.on('workflow:stop', (stateId) =>
 message.on('workflow:execute', async (workflowData, sender) => {
   if (workflowData.includeTabId) {
     if (!workflowData.options) workflowData.options = {};
-
     workflowData.options.tabId = sender.tab.id;
   }
 
@@ -201,6 +201,11 @@ message.on('workflow:breakpoint', (id) => {
   BackgroundWorkflowUtils.instance.updateExecutionState(id, {
     status: 'breakpoint',
   });
+});
+
+message.on('get:user-id', async () => {
+  const userStore = useUserStore();
+  return { userId: userStore.user?.id };
 });
 
 automa('background', message);

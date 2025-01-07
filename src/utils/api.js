@@ -1,6 +1,6 @@
-import secrets from 'secrets';
 import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
-import { parseJSON, isObject } from './helper';
+import secrets from 'secrets';
+import { isObject, parseJSON } from './helper';
 
 export async function fetchApi(path, options = {}) {
   const urlPath = path.startsWith('/') ? path : `/${path}`;
@@ -31,7 +31,9 @@ export async function fetchApi(path, options = {}) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  return fetch(`${secrets.baseApiUrl}${urlPath}`, {
+  const url = `${secrets.baseApiUrl}${urlPath}`;
+
+  return fetch(url, {
     ...options,
     headers,
   });
