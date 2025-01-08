@@ -9,7 +9,9 @@ export async function fetchApi(path, options = {}) {
     ...(options?.headers || {}),
   };
 
-  const { session } = await BrowserAPIService.storage.local.get('session');
+  const { session } = (await BrowserAPIService.storage.local.get(
+    'session'
+  )) || { session: null };
   if (session && options?.auth) {
     delete options.auth;
 

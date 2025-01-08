@@ -1,9 +1,10 @@
-import { nanoid } from 'nanoid';
-import cloneDeep from 'lodash.clonedeep';
-import { getBlocks } from '@/utils/getSharedData';
-import { clearCache, sleep, parseJSON, isObject } from '@/utils/helper';
 import dbStorage from '@/db/storage';
 import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
+import { fetchApi } from '@/utils/api';
+import { getBlocks } from '@/utils/getSharedData';
+import { clearCache, isObject, parseJSON, sleep } from '@/utils/helper';
+import cloneDeep from 'lodash.clonedeep';
+import { nanoid } from 'nanoid';
 import WorkflowWorker from './WorkflowWorker';
 
 let blocks = getBlocks();
@@ -15,6 +16,7 @@ class WorkflowEngine {
     this.logger = logger;
     this.workflow = workflow;
     this.isPopup = isPopup ?? true;
+    // this.isMV2 = IS_MV2;
     this.blocksHandler = blocksHandler;
     this.isTestingMode = workflow.testingMode;
     this.parentWorkflow = options?.parentWorkflow;
@@ -111,6 +113,8 @@ class WorkflowEngine {
         worker.resume(nextBlock);
       });
     };
+
+    // this.messageListener = new MessageListener('workflow-engine');
   }
 
   async init() {
@@ -272,8 +276,8 @@ class WorkflowEngine {
         }
       }
 
-      const { settings: userSettings } =
-        await BrowserAPIService.storage.local.get('settings');
+      const { settings: userSettings = {} } =
+        (await BrowserAPIService.storage.local.get('settings')) || {};
       this.logsLimit = userSettings?.logsLimit || 1001;
 
       this.workflow.table = columns;
@@ -304,7 +308,7 @@ class WorkflowEngine {
       });
       this.addWorker({ blockId: triggerBlock.id });
     } catch (error) {
-      console.error(error);
+      console.error('WorkflowEngine init error:', error);
     }
   }
 
@@ -375,9 +379,9 @@ class WorkflowEngine {
   }
 
   async executeQueue() {
-    const { workflowQueue } = await BrowserAPIService.storage.local.get(
+    const { workflowQueue } = (await BrowserAPIService.storage.local.get(
       'workflowQueue'
-    );
+    )) || { workflowQueue: [] };
     const queueIndex = (workflowQueue || []).indexOf(this.workflow?.id);
 
     if (!workflowQueue || queueIndex === -1) return;
@@ -406,6 +410,11 @@ class WorkflowEngine {
     }
     // wait detach debugger
     this.workers.delete(workerId);
+
+    // No active workers, destroying workflow
+    if (this.workers.size === 0) {
+      this.destroy('success');
+    }
   }
 
   async destroy(status, message, blockDetail) {
@@ -453,6 +462,36 @@ class WorkflowEngine {
 
       this.states.off('stop', this.onWorkflowStopped);
       await this.states.delete(this.id);
+
+      if (!this.workflow.settings?.debugMode) {
+        const { user } = (await BrowserAPIService.storage.local.get(
+          'user'
+        )) || { user: null };
+
+        const logDto = {
+          workflowId: this.workflow.id,
+          status,
+          message: message || '',
+          startedAt: new Date(this.startedTimestamp).toISOString(),
+          endedAt: new Date(endedTimestamp).toISOString(),
+          userId: user?.id,
+        };
+
+        try {
+          const response = await fetchApi('/workflows/logs/report', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(logDto),
+            auth: true,
+          });
+
+          if (!response.ok) {
+            throw new Error(`API request failed: ${response.status}`);
+          }
+        } catch (err) {
+          console.error('Failed to report workflow execution:', err);
+        }
+      }
 
       this.dispatchEvent('destroyed', {
         status,
@@ -546,7 +585,7 @@ class WorkflowEngine {
 
       cleanUp();
     } catch (error) {
-      console.error(error);
+      console.error('workflowEngine error', error);
       cleanUp();
     }
   }
