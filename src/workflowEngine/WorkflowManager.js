@@ -125,8 +125,11 @@ class WorkflowManager {
 
     BrowserAPIService.storage.local
       .get('checkStatus')
-      .then(({ checkStatus }) => {
-        const isSameDay = dayjs().isSame(checkStatus, 'day');
+      .then((res) => {
+        const { checkStatus } = res || { checkStatus: null };
+        const isSameDay = checkStatus
+          ? dayjs().isSame(checkStatus, 'day')
+          : false;
         if (!isSameDay || !checkStatus) {
           fetchApi('/status')
             .then((response) => response.json())
@@ -134,8 +137,14 @@ class WorkflowManager {
               BrowserAPIService.storage.local.set({
                 checkStatus: new Date().toString(),
               });
+            })
+            .catch((error) => {
+              console.error('Failed to check status:', error);
             });
         }
+      })
+      .catch((error) => {
+        console.error('Failed to get checkStatus:', error);
       });
 
     return engine;

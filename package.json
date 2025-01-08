@@ -1,6 +1,6 @@
 {
   "name": "automa",
-  "version": "1.28.27",
+  "version": "1.29.1",
   "description": "An extension for automating your browser by connecting blocks",
   "repository": {
     "type": "git",
@@ -8,13 +8,13 @@
   },
   "scripts": {
     "build": "node utils/build.js",
-    "build:firefox": "cross-env BROWSER=firefox yarn build",
+    "build:firefox": "cross-env BROWSER=firefox npm run build",
     "build:zip": "node utils/build-zip.js",
     "build:prod": "yarn build:prod-chrome && yarn build:prod-firefox",
     "build:prod-chrome": "yarn build && yarn build:zip",
-    "build:prod-firefox": "yarn build:firefox && cross-env BROWSER=firefox yarn build:zip",
+    "build:prod-firefox": "npm run build:firefox && cross-env BROWSER=firefox npm run build:zip",
     "dev": "node utils/webserver.js",
-    "dev:firefox": "cross-env BROWSER=firefox yarn dev",
+    "dev:firefox": "cross-env BROWSER=firefox npm run dev",
     "prettier": "prettier --write '**/*.{js,jsx,css,html}'",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
   },
@@ -29,12 +29,15 @@
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.9.0",
+    "@codemirror/commands": "^6.6.1",
     "@codemirror/lang-css": "^6.2.1",
     "@codemirror/lang-html": "^6.4.6",
     "@codemirror/lang-javascript": "^6.2.1",
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/language": "^6.9.0",
+    "@codemirror/state": "^6.4.1",
     "@codemirror/theme-one-dark": "^6.1.2",
+    "@codemirror/view": "^6.33.0",
     "@medv/finder": "^3.1.0",
     "@n8n_io/riot-tmpl": "^2.0.0",
     "@tiptap/core": "^2.0.4",
@@ -96,7 +99,7 @@
     "vue-toastification": "^2.0.0-rc.5",
     "vuedraggable": "^4.1.0",
     "vuex": "^4.0.2",
-    "webextension-polyfill": "^0.10.0",
+    "webextension-polyfill": "^0.12.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.1/xlsx-0.19.1.tgz"
   },
   "devDependencies": {
