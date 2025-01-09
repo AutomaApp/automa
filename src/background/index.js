@@ -209,100 +209,105 @@ message.on('get:user-id', async () => {
   return { userId: userStore.user?.id };
 });
 
-message.on('check-csp-and-inject', async ({ target, debugMode, callback }) => {
-  try {
-    const [isBlockedByCSP] = await browser.scripting.executeScript({
-      target,
-      // eslint-disable-next-line object-shorthand
-      func: function () {
-        return new Promise((resolve) => {
-          const escapePolicy = (script) => {
-            if (window?.trustedTypes?.createPolicy) {
-              const escapeElPolicy = window.trustedTypes.createPolicy(
-                'forceInner',
-                {
-                  createHTML: (to_escape) => to_escape,
-                  createScript: (to_escape) => to_escape,
-                }
+message.on(
+  'check-csp-and-inject',
+  async ({ target, debugMode, callback, options, injectOptions }) => {
+    try {
+      const [isBlockedByCSP] = await browser.scripting.executeScript({
+        target,
+        // eslint-disable-next-line object-shorthand
+        func: function () {
+          return new Promise((resolve) => {
+            const escapePolicy = (script) => {
+              if (window?.trustedTypes?.createPolicy) {
+                const escapeElPolicy = window.trustedTypes.createPolicy(
+                  'forceInner',
+                  {
+                    createHTML: (to_escape) => to_escape,
+                    createScript: (to_escape) => to_escape,
+                  }
+                );
+                return escapeElPolicy.createScript(script);
+              }
+              return script;
+            };
+
+            const eventListener = ({ srcElement }) => {
+              if (!srcElement || srcElement.id !== 'automa-csp') return;
+              srcElement.remove();
+              resolve(true);
+            };
+
+            document.addEventListener('securitypolicyviolation', eventListener);
+            const script = document.createElement('script');
+            script.id = 'automa-csp';
+            script.innerText = escapePolicy('console.log("...")');
+
+            setTimeout(() => {
+              document.removeEventListener(
+                'securitypolicyviolation',
+                eventListener
               );
-              return escapeElPolicy.createScript(script);
-            }
-            return script;
-          };
+              resolve(false);
+            }, 500);
 
-          const eventListener = ({ srcElement }) => {
-            if (!srcElement || srcElement.id !== 'automa-csp') return;
-            srcElement.remove();
-            resolve(true);
-          };
-
-          document.addEventListener('securitypolicyviolation', eventListener);
-          const script = document.createElement('script');
-          script.id = 'automa-csp';
-          script.innerText = escapePolicy('console.log("...")');
-
-          setTimeout(() => {
-            document.removeEventListener(
-              'securitypolicyviolation',
-              eventListener
-            );
-            resolve(false);
-          }, 500);
-
-          document.body.appendChild(script);
-        });
-      },
-      world: 'MAIN',
-    });
-
-    if (!isBlockedByCSP || isBlockedByCSP.result === null) {
-      return { isBlocked: false, value: null };
-    }
-
-    // CSP blocked
-    if (isBlockedByCSP.result) {
-      await new Promise((resolve) => {
-        chrome.debugger.attach({ tabId: target.tabId }, '1.3', resolve);
+            document.body.appendChild(script);
+          });
+        },
+        world: 'MAIN',
+        ...injectOptions,
       });
 
-      // eslint-disable-next-line no-new-func
-      const callbackFn = new Function(`return ${callback}`)();
-      const jsCode = await callbackFn();
-      const execResult = await chrome.debugger.sendCommand(
-        { tabId: target.tabId },
-        'Runtime.evaluate',
-        {
-          expression: jsCode,
-          userGesture: true,
-          awaitPromise: true,
-          returnByValue: true,
+      if (!isBlockedByCSP || isBlockedByCSP.result === null) {
+        return { isBlocked: false, value: null };
+      }
+
+      // CSP blocked
+      if (isBlockedByCSP.result) {
+        await new Promise((resolve) => {
+          chrome.debugger.attach({ tabId: target.tabId }, '1.3', resolve);
+        });
+
+        // eslint-disable-next-line no-new-func
+        const callbackFn = new Function(`return ${callback}`)();
+        const jsCode = await callbackFn();
+        const execResult = await chrome.debugger.sendCommand(
+          { tabId: target.tabId },
+          'Runtime.evaluate',
+          {
+            expression: jsCode,
+            userGesture: true,
+            awaitPromise: true,
+            returnByValue: true,
+            ...(options || {}),
+          }
+        );
+
+        if (!debugMode) {
+          await chrome.debugger.detach({ tabId: target.tabId });
         }
-      );
 
-      if (!debugMode) {
-        await chrome.debugger.detach({ tabId: target.tabId });
+        if (!execResult || !execResult.result) {
+          throw new Error('Unable execute code');
+        }
+
+        if (execResult.result.subtype === 'error') {
+          throw new Error(execResult.result.description);
+        }
+
+        return {
+          isBlocked: true,
+          value: execResult.result.value || null,
+        };
       }
 
-      if (!execResult || !execResult.result) {
-        throw new Error('Unable execute code');
-      }
-
-      if (execResult.result.subtype === 'error') {
-        throw new Error(execResult.result.description);
-      }
-
-      return {
-        isBlocked: true,
-        value: execResult.result.value || null,
-      };
+      return { isBlocked: false, value: null };
+    } catch (err) {
+      console.error('CSP check error:', err);
+      return { isBlocked: false, value: null };
     }
-
-    return { isBlocked: false, value: null };
-  } catch (err) {
-    console.error('CSP check error:', err);
-    return { isBlocked: false, value: null };
   }
-});
+);
 
 automa('background', message);
 
