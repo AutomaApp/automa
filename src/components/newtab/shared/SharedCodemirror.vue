@@ -2,7 +2,7 @@
   <div
     ref="containerEl"
     :class="{ 'hide-gutters': !lineNumbers }"
-    class="codemirror relative overflow-auto rounded-lg"
+    class="codemirror relative rounded-lg"
   >
     <div
       v-if="!hideLang"
@@ -16,17 +16,19 @@
   </div>
 </template>
 <script setup>
-import { onMounted, ref, onBeforeUnmount, watch } from 'vue';
-import { keymap } from '@codemirror/view';
-import { css } from '@codemirror/lang-css';
-import { json } from '@codemirror/lang-json';
-import { html } from '@codemirror/lang-html';
-import { EditorState } from '@codemirror/state';
-import { EditorView, basicSetup } from 'codemirror';
 import { indentWithTab } from '@codemirror/commands';
-import { oneDark } from '@codemirror/theme-one-dark';
+import { css } from '@codemirror/lang-css';
+import { html } from '@codemirror/lang-html';
 import { javascript } from '@codemirror/lang-javascript';
+import { json } from '@codemirror/lang-json';
+import { EditorState } from '@codemirror/state';
+import { oneDark } from '@codemirror/theme-one-dark';
+import { keymap } from '@codemirror/view';
+import { EditorView, basicSetup } from 'codemirror';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { store } from '../settings/jsBlockWrap';
+
+console.log('🚀 ~ store:', store);
 
 const props = defineProps({
   lang: {
@@ -133,7 +135,12 @@ onBeforeUnmount(() => {
 }
 
 .cm-tooltip-autocomplete {
-  margin-left: -385px;
-  margin-top: -22px;
+  margin-left: 0px;
+  margin-top: 16px;
+}
+
+.cm-tooltip-autocomplete li[aria-selected] {
+  background-color: #095fff !important;
+  color: #ffffff !important;
 }
 </style>
