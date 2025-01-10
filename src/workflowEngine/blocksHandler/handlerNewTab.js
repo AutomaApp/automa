@@ -1,10 +1,11 @@
-import { isWhitespace, sleep } from '@/utils/helper';
 import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
+import { isWhitespace, sleep } from '@/utils/helper';
+import Browser from 'webextension-polyfill';
 import {
-  waitTabLoaded,
   attachDebugger,
-  sendDebugCommand,
   injectPreloadScript,
+  sendDebugCommand,
+  waitTabLoaded,
 } from '../helper';
 
 function isValidURL(url) {
@@ -20,10 +21,23 @@ function isValidURL(url) {
 async function newTab({ id, data }) {
   if (this.windowId) {
     try {
+      // FIXME: ??? query info but do not use it
       await BrowserAPIService.windows.get(this.windowId);
     } catch (error) {
       this.windowId = null;
     }
+  } else {
+    await Browser.runtime
+      .sendMessage({
+        name: 'background--browser-api',
+        data: {
+          name: 'windows.getCurrent',
+        },
+      })
+      .then((window) => {
+        this.windowId = window.id;
+        return Promise.resolve(window);
+      });
   }
 
   if (!isValidURL(data.url)) {
