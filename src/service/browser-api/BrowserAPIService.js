@@ -1,8 +1,12 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable prefer-rest-params */
+import { MessageListener } from '@/utils/message';
+import {
+  deserializeFunctions,
+  serializeFunctions,
+} from '@/utils/serialization';
 import objectPath from 'object-path';
 import Browser from 'webextension-polyfill';
-import { MessageListener } from '@/utils/message';
 import BrowserAPIEventHandler from './BrowserAPIEventHandler';
 import { browserAPIMap } from './browser-api-map';
 
@@ -17,11 +21,13 @@ import { browserAPIMap } from './browser-api-map';
 export const IS_BROWSER_API_AVAILABLE = 'tabs' in Browser;
 
 function sendBrowserApiMessage(name, ...args) {
+  const serializedArgs = serializeFunctions(args);
+
   return MessageListener.sendMessage(
     'browser-api',
     {
       name,
-      args,
+      args: serializedArgs,
     },
     'background'
   );
@@ -131,10 +137,11 @@ class BrowserAPIService {
    * @param {{ name: string; args: any[] }} payload;
    */
   static runtimeMessageHandler({ args, name }) {
+    const deserializedArgs = deserializeFunctions(args);
     const apiHandler = objectPath.get(this, name);
     if (!apiHandler) throw new Error(`"${name}" is invalid method`);
 
-    return apiHandler(...args);
+    return deserializedArgs ? apiHandler(...deserializedArgs) : apiHandler();
   }
 
   static runtime = Browser.runtime;

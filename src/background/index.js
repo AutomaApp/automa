@@ -5,7 +5,10 @@ import { useUserStore } from '@/stores/user';
 import getFile, { readFileAsBase64 } from '@/utils/getFile';
 import { sleep } from '@/utils/helper';
 import { MessageListener } from '@/utils/message';
-// import { jsContentHandler } from '@/workflowEngine/utils/javascriptBlockUtil';
+
+import { getDocumentCtx } from '@/content/handleSelector';
+import { automaRefDataStr } from '@/workflowEngine/helper';
+
 import automa from '@business';
 import browser from 'webextension-polyfill';
 import { registerWorkflowTrigger } from '../utils/workflowTrigger';
@@ -258,10 +261,6 @@ message.on(
         ...injectOptions,
       });
 
-      if (!isBlockedByCSP || isBlockedByCSP.result === null) {
-        return { isBlocked: false, value: null };
-      }
-
       // CSP blocked
       if (isBlockedByCSP.result) {
         await new Promise((resolve) => {
@@ -270,6 +269,7 @@ message.on(
 
         // eslint-disable-next-line no-new-func
         const callbackFn = new Function(`return ${callback}`)();
+
         const jsCode = await callbackFn();
         const execResult = await chrome.debugger.sendCommand(
           { tabId: target.tabId },
@@ -305,6 +305,242 @@ message.on(
     } catch (err) {
       console.error('CSP check error:', err);
       return { isBlocked: false, value: null };
+    }
+  }
+);
+
+const getAutomaScript = ({ varName, refData, everyNewTab, isEval = false }) => {
+  let str = `
+const ${varName} = ${JSON.stringify(refData)};
+${automaRefDataStr(varName)}
+function automaSetVariable(name, value) {
+  const variables = ${varName}.variables;
+  if (!variables) ${varName}.variables = {}
+
+  ${varName}.variables[name] = value;
+}
+function automaNextBlock(data, insert = true) {
+  if (${isEval}) {
+    Promise.resolve({
+      columns: {
+        data,
+        insert,
+      },
+      variables: ${varName}.variables,
+    });
+  } else{
+    document.body.dispatchEvent(new CustomEvent('__automa-next-block__', { detail: { data, insert, refData: ${varName} } }));
+  }
+}
+function automaResetTimeout() {
+  if (${isEval}) {
+    clearTimeout($automaTimeout);
+    $automaTimeout = setTimeout(() => {
+      resolve();
+    }, $automaTimeoutMs);
+  } else {
+    document.body.dispatchEvent(new CustomEvent('__automa-reset-timeout__'));
+  }
+}
+
+function automaFetchClient(id, { type, resource }) {
+  return new Promise((resolve, reject) => {
+    const validType = ['text', 'json', 'base64'];
+    if (!type || !validType.includes(type)) {
+      reject(new Error('The "type" must be "text" or "json"'));
+      return;
+    }
+
+    const eventName = '__automa-fetch-response-' + id +__;
+    const eventListener = ({ detail }) => {
+      if (detail.id !== id) return;
+
+      window.removeEventListener(eventName, eventListener);
+
+      if (detail.isError) {
+        reject(new Error(detail.result));
+      } else {
+        resolve(detail.result);
+      }
+    };
+
+    window.addEventListener(eventName, eventListener);
+    window.dispatchEvent(
+      new CustomEvent('__automa-fetch__', {
+        detail: {
+          id,
+          type,
+          resource,
+        },
+      })
+    );
+  });
+}
+
+
+function automaFetch(type, resource) {
+  return automaFetchClient.toString()('${varName}', { type, resource });
+}
+  `;
+
+  if (everyNewTab) str = automaRefDataStr(varName);
+
+  return str;
+};
+
+message.on(
+  'script:execute',
+  async ({ target, blockData, varName, preloadScripts }) => {
+    try {
+      const automaScript = getAutomaScript({
+        varName,
+        isEval: false,
+        refData: blockData.refData,
+        everyNewTab: blockData.data.everyNewTab,
+      });
+
+      const result = await browser.scripting.executeScript({
+        target,
+        func: ($blockData, $preloadScripts, $automaScript) => {
+          return new Promise((resolve, reject) => {
+            try {
+              let $documentCtx = document;
+
+              if ($blockData.frameSelector) {
+                const iframeCtx = getDocumentCtx($blockData.frameSelector);
+                if (!iframeCtx) {
+                  reject(new Error('iframe-not-found'));
+                  return;
+                }
+                $documentCtx = iframeCtx;
+              }
+
+              const scriptAttr = `block--${$blockData.id}`;
+              const isScriptExists = $documentCtx.querySelector(
+                `.automa-custom-js[${scriptAttr}]`
+              );
+              if (isScriptExists) {
+                resolve('');
+                return;
+              }
+
+              const script = $documentCtx.createElement('script');
+              script.setAttribute(scriptAttr, '');
+              script.classList.add('automa-custom-js');
+              script.textContent = `
+                (() => {
+
+                  // Setup context
+                  ${$automaScript}
+
+                  // Execute user code
+                  try {
+                    ${$blockData.data.code}
+                    ${
+                      $blockData.data.everyNewTab ||
+                      $blockData.data.code.includes('automaNextBlock')
+                        ? ''
+                        : 'automaNextBlock()'
+                    }
+                  } catch (error) {
+                    console.error(error);
+                    ${
+                      $blockData.data.everyNewTab
+                        ? ''
+                        : 'automaNextBlock({ $error: true, message: error.message })'
+                    }
+                  }
+                })();
+              `;
+
+              const preloadScriptsEl = $preloadScripts.map((item) => {
+                const scriptEl = $documentCtx.createElement('script');
+                scriptEl.id = item.id;
+                scriptEl.textContent = item.script;
+                return {
+                  element: scriptEl,
+                  removeAfterExec: item.removeAfterExec,
+                };
+              });
+
+              if (!$blockData.data.everyNewTab) {
+                let timeout;
+                let onNextBlock;
+                let onResetTimeout;
+
+                const cleanUp = () => {
+                  script.remove();
+                  preloadScriptsEl.forEach((item) => {
+                    if (item.removeAfterExec) item.element.remove();
+                  });
+
+                  clearTimeout(timeout);
+
+                  $documentCtx.body.removeEventListener(
+                    '__automa-reset-timeout__',
+                    onResetTimeout
+                  );
+                  $documentCtx.body.removeEventListener(
+                    '__automa-next-block__',
+                    onNextBlock
+                  );
+                };
+
+                onNextBlock = ({ detail }) => {
+                  cleanUp();
+                  if (!detail) {
+                    resolve({ columns: {}, variables: {} });
+                    return;
+                  }
+
+                  const payload = {
+                    insert: detail.insert,
+                    data: detail.data?.$error
+                      ? detail.data
+                      : JSON.stringify(detail?.data ?? {}),
+                  };
+                  resolve({
+                    columns: payload,
+                    variables: detail.refData?.variables,
+                  });
+                };
+                onResetTimeout = () => {
+                  clearTimeout(timeout);
+                  timeout = setTimeout(cleanUp, $blockData.data.timeout);
+                };
+
+                $documentCtx.body.addEventListener(
+                  '__automa-next-block__',
+                  onNextBlock
+                );
+                $documentCtx.body.addEventListener(
+                  '__automa-reset-timeout__',
+                  onResetTimeout
+                );
+
+                timeout = setTimeout(cleanUp, $blockData.data.timeout);
+              } else {
+                resolve();
+              }
+
+              // Inject scripts in the correct order
+              preloadScriptsEl.forEach((item) => {
+                $documentCtx.head.appendChild(item.element);
+              });
+              $documentCtx.head.appendChild(script);
+            } catch (error) {
+              console.error('javascriptBlockUtil error', error);
+              reject(error);
+            }
+          });
+        },
+        world: 'MAIN',
+        args: [blockData, preloadScripts, automaScript],
+      });
+
+      return [{ result: result[0].result }];
+    } catch (err) {
+      return { result: null, msg: err.message, error: err };
     }
   }
 );

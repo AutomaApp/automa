@@ -1,18 +1,17 @@
-import { customAlphabet } from 'nanoid/non-secure';
-import browser from 'webextension-polyfill';
+import { isObject, parseJSON } from '@/utils/helper';
+import { MessageListener } from '@/utils/message';
 import cloneDeep from 'lodash.clonedeep';
-import { parseJSON, isObject } from '@/utils/helper';
+import { customAlphabet } from 'nanoid/non-secure';
 import {
-  jsContentHandler,
+  automaRefDataStr,
+  checkCSPAndInject,
+  messageSandbox,
+  waitTabLoaded,
+} from '../helper';
+import {
   automaFetchClient,
   jsContentHandlerEval,
 } from '../utils/javascriptBlockUtil';
-import {
-  waitTabLoaded,
-  messageSandbox,
-  automaRefDataStr,
-  checkCSPAndInject,
-} from '../helper';
 
 const nanoid = customAlphabet('1234567890abcdef', 5);
 
@@ -93,12 +92,18 @@ async function executeInWebpage(args, target, worker) {
   });
   if (cspResult.isBlocked) return cspResult.value;
 
-  const [{ result }] = await browser.scripting.executeScript({
-    args,
-    target,
-    world: 'MAIN',
-    func: jsContentHandler,
-  });
+  const { 0: blockData, 1: preloadScripts, 3: varName } = args;
+
+  const [{ result }] = await MessageListener.sendMessage(
+    'script:execute',
+    {
+      target,
+      blockData,
+      preloadScripts,
+      varName,
+    },
+    'background'
+  );
 
   if (typeof result?.columns?.data === 'string') {
     result.columns.data = parseJSON(result.columns.data, {});
