@@ -1,5 +1,5 @@
+import { MessageListener } from '@/utils/message';
 import { customAlphabet } from 'nanoid/non-secure';
-import browser from 'webextension-polyfill';
 import { automaRefDataStr, checkCSPAndInject } from '../helper';
 
 const nanoid = customAlphabet('1234567890abcdef', 5);
@@ -21,6 +21,34 @@ function automaExecWorkflow(options = {}) {
 }
   `;
 
+  return str;
+}
+
+function createElementScript(code, blockId, $automaScript, $preloadScripts) {
+  // fixme: 这里是有问题的，如果按现在方案会至少创建两个script标签，
+  // 一个是preloadScripts，一个是automaScript
+  // 那么在现在的方案中 VM 可能导致不共享 window 变量
+  const str = `
+    const baseId = 'automa-${blockId}';
+
+      ${JSON.stringify($preloadScripts)}.forEach((item) => {
+        if (item.type === 'style') return;
+
+        const script = document.createElement(item.type);
+        script.id = \`\${baseId}-script\`;
+        script.textContent = item.script;
+
+        document.body.appendChild(script);
+      });
+
+
+
+    const script = document.createElement('script');
+    script.id = \`\${baseId}-javascript\`;
+    script.textContent = \`(() => { ${$automaScript}\n${code} })()\`;
+
+    document.body.appendChild(script);
+  `;
   return str;
 }
 
@@ -48,8 +76,8 @@ async function handleCreateElement(block, { refData }) {
 
   data.preloadScripts = preloadScripts;
 
-  const isMV3 =
-    (data.javascript || data.preloadScripts.length > 0) && !this.engine.isMV2;
+  // (data.javascript || data.preloadScripts.length > 0) &&
+  const isMV3 = !this.engine.isMV2;
   const payload = {
     ...block,
     data: {
@@ -63,7 +91,7 @@ async function handleCreateElement(block, { refData }) {
     payload.data.dontInjectJS = true;
   }
 
-  await this._sendMessageToTab(payload, {}, data.runBeforeLoad ?? false);
+  // await this._sendMessageToTab(payload, {}, data.runBeforeLoad ?? false);
 
   if (isMV3) {
     const target = {
@@ -80,51 +108,36 @@ async function handleCreateElement(block, { refData }) {
           awaitPromise: false,
           returnByValue: false,
         },
-      },
-      () => {
-        let jsPreload = '';
-        preloadScripts.forEach((item) => {
-          if (item.type === 'style') return;
-
-          jsPreload += `${item.script}\n`;
-        });
-
-        const automaScript = payload.data?.automaScript || '';
-
-        return `(() => { ${jsPreload} \n ${automaScript}\n${data.javascript} })()`;
       }
+      // () => {
+      //   let jsPreload = '';
+      //   preloadScripts.forEach((item) => {
+      //     if (item.type === 'style') return;
+
+      //     jsPreload += `${item.script}\n`;
+      //   });
+
+      //   const automaScript = payload.data?.automaScript || '';
+
+      //   return `(() => { ${jsPreload} \n ${automaScript}\n${data.javascript} })()`;
+      // }
     );
 
     if (!result.isBlocked) {
-      await browser.scripting.executeScript({
-        world: 'MAIN',
-        target,
-        args: [
-          data.javascript,
-          block.id,
-          payload.data?.automaScript || '',
-          preloadScripts,
-        ],
-        func: (code, blockId, $automaScript, $preloadScripts) => {
-          const baseId = `automa-${blockId}`;
-
-          $preloadScripts.forEach((item) => {
-            if (item.type === 'style') return;
-
-            const script = document.createElement(item.type);
-            script.id = `${baseId}-script`;
-            script.textContent = item.script;
-
-            document.body.appendChild(script);
-          });
-
-          const script = document.createElement('script');
-          script.id = `${baseId}-javascript`;
-          script.textContent = `(() => { ${$automaScript}\n${code} })()`;
-
-          document.body.appendChild(script);
+      const jsCode = createElementScript(
+        data.javascript,
+        block.id,
+        payload.data?.automaScript || '',
+        preloadScripts || []
+      );
+      MessageListener.sendMessage(
+        'script:execute-callback',
+        {
+          target,
+          callback: jsCode,
         },
-      });
+        'background'
+      );
     }
   }
 
