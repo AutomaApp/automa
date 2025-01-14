@@ -6,7 +6,7 @@ import getFile, { readFileAsBase64 } from '@/utils/getFile';
 import { sleep } from '@/utils/helper';
 import { MessageListener } from '@/utils/message';
 
-import { getDocumentCtx } from '@/content/handleSelector';
+// import { getDocumentCtx } from '@/content/handleSelector';
 import { automaRefDataStr } from '@/workflowEngine/helper';
 
 import automa from '@business';
@@ -300,6 +300,7 @@ message.on(
           value: execResult.result.value || null,
         };
       }
+      // todo: 这里没有实现callback的调用逻辑
 
       return { isBlocked: false, value: null };
     } catch (err) {
@@ -404,16 +405,17 @@ message.on(
         func: ($blockData, $preloadScripts, $automaScript) => {
           return new Promise((resolve, reject) => {
             try {
-              let $documentCtx = document;
+              const $documentCtx = document;
 
-              if ($blockData.frameSelector) {
-                const iframeCtx = getDocumentCtx($blockData.frameSelector);
-                if (!iframeCtx) {
-                  reject(new Error('iframe-not-found'));
-                  return;
-                }
-                $documentCtx = iframeCtx;
-              }
+              // fixme: 需要处理iframe的情况
+              // if ($blockData.frameSelector) {
+              //   const iframeCtx = getDocumentCtx($blockData.frameSelector);
+              //   if (!iframeCtx) {
+              //     reject(new Error('iframe-not-found'));
+              //     return;
+              //   }
+              //   $documentCtx = iframeCtx;
+              // }
 
               const scriptAttr = `block--${$blockData.id}`;
               const isScriptExists = $documentCtx.querySelector(
@@ -544,6 +546,24 @@ message.on(
     }
   }
 );
+
+message.on('script:execute-callback', async ({ target, callback }) => {
+  await browser.scripting.executeScript({
+    target,
+    func: ($callbackFn) => {
+      const script = document.createElement('script');
+      script.textContent = `
+      (() => {
+        ${$callbackFn}
+      })()
+      `;
+      document.body.appendChild(script);
+    },
+    world: 'MAIN',
+    args: [callback],
+  });
+  return true;
+});
 
 automa('background', message);
 
