@@ -33,7 +33,7 @@ function sendBrowserApiMessage(name, ...args) {
   );
 }
 
-class BrowserConentScript {
+class BrowserContentScript {
   /**
    * Inject content script into targeted tab
    * @param {Object} script
@@ -53,6 +53,7 @@ class BrowserConentScript {
         ? target.frameId
         : undefined;
 
+    // MV2 or firefox
     if (Browser.tabs.injectContentScript) {
       await Browser.tabs.executeScript(target.tabId, {
         file,
@@ -60,6 +61,7 @@ class BrowserConentScript {
         allFrames: target.allFrames,
       });
     } else {
+      // MV3 chrome
       await Browser.scripting.executeScript({
         target: {
           tabId: target.tabId,
@@ -87,7 +89,7 @@ class BrowserConentScript {
           }
 
           tryCount += 1;
-
+          // isContentScriptInJected is not found
           const isInjected = await this.isContentScriptInjected(
             target,
             waitUntilInjected.messageId
@@ -179,7 +181,7 @@ class BrowserAPIService {
   /** @type {typeof Browser.extension} */
   static extension;
 
-  static contentScript = BrowserConentScript;
+  static contentScript = BrowserContentScript;
 }
 
 (() => {
