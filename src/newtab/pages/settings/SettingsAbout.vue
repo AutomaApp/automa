@@ -49,11 +49,11 @@
 </template>
 <script setup>
 /* eslint-disable camelcase */
+import { useGroupTooltip } from '@/composable/groupTooltip';
+import { useStore } from '@/stores/main';
+import { communities } from '@/utils/shared';
 import { onMounted } from 'vue';
 import browser from 'webextension-polyfill';
-import { useStore } from '@/stores/main';
-import { useGroupTooltip } from '@/composable/groupTooltip';
-import { communities } from '@/utils/shared';
 
 useGroupTooltip();
 const store = useStore();
@@ -72,11 +72,6 @@ const links = [
     icon: 'riArticleLine',
     url: 'https://blog.automa.site',
   },
-  {
-    name: 'Donate',
-    icon: 'riHandHeartLine',
-    url: 'https://paypal.me/akholid060',
-  },
 ];
 
 onMounted(async () => {
@@ -84,7 +79,7 @@ onMounted(async () => {
 
   try {
     const response = await fetch(
-      'https://api.github.com/repos/Kholid060/automa/contributors'
+      'https://api.github.com/repositories/412741449/contributors'
     );
     const contributors = (await response.json()).reduce(
       (acc, { type, avatar_url, login, html_url }) => {

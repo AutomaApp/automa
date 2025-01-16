@@ -1593,7 +1593,7 @@ export const communities = [
   {
     name: 'GitHub',
     icon: 'riGithubFill',
-    url: 'https://github.com/kholid060/automa',
+    url: 'https://github.com/AutomaApp/automa',
   },
   {
     name: 'Twitter',
