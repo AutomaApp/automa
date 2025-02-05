@@ -67,9 +67,9 @@
           <ui-tab value="code">
             {{ t('workflow.blocks.javascript-code.modal.tabs.code') }}
           </ui-tab>
-          <ui-tab value="preloadScript">
+          <!-- <ui-tab value="preloadScript">
             {{ t('workflow.blocks.javascript-code.modal.tabs.preloadScript') }}
-          </ui-tab>
+          </ui-tab> -->
         </ui-tabs>
       </template>
       <ui-tab-panels
@@ -149,14 +149,14 @@
   </div>
 </template>
 <script setup>
-import { watch, reactive, defineAsyncComponent, inject } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { autocompletion } from '@codemirror/autocomplete';
 import {
-  automaFuncsSnippets,
   automaFuncsCompletion,
+  automaFuncsSnippets,
   completeFromGlobalScope,
 } from '@/utils/codeEditorAutocomplete';
+import { autocompletion } from '@codemirror/autocomplete';
+import { defineAsyncComponent, inject, reactive, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { store } from '../../settings/jsBlockWrap';
 
 function modifyWhiteSpace() {

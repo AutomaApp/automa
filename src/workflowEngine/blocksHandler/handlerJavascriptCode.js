@@ -142,29 +142,29 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
     payload.refData = { ...newRefData, secrets: {} };
   }
 
-  const preloadScriptsPromise = await Promise.allSettled(
-    data.preloadScripts.map(async (script) => {
-      const { protocol } = new URL(script.src);
-      const isValidUrl = /https?/.test(protocol);
-      if (!isValidUrl) return null;
+  // const preloadScriptsPromise = await Promise.allSettled(
+  //   data.preloadScripts.map(async (script) => {
+  //     const { protocol } = new URL(script.src);
+  //     const isValidUrl = /https?/.test(protocol);
+  //     if (!isValidUrl) return null;
 
-      const response = await fetch(script.src);
-      if (!response.ok) throw new Error(response.statusText);
+  //     const response = await fetch(script.src);
+  //     if (!response.ok) throw new Error(response.statusText);
 
-      const result = await response.text();
+  //     const result = await response.text();
 
-      return {
-        script: result,
-        id: `automa-script-${nanoid()}`,
-        removeAfterExec: script.removeAfterExec,
-      };
-    })
-  );
-  const preloadScripts = preloadScriptsPromise.reduce((acc, item) => {
-    if (item.status === 'fulfilled') acc.push(item.value);
+  //     return {
+  //       script: result,
+  //       id: `automa-script-${nanoid()}`,
+  //       removeAfterExec: script.removeAfterExec,
+  //     };
+  //   })
+  // );
+  // const preloadScripts = preloadScriptsPromise.reduce((acc, item) => {
+  //   if (item.status === 'fulfilled') acc.push(item.value);
 
-    return acc;
-  }, []);
+  //   return acc;
+  // }, []);
 
   const instanceId = `automa${nanoid()}`;
   const automaScript =
@@ -190,12 +190,12 @@ export async function javascriptCode({ outputs, data, ...block }, { refData }) {
   const result = await (inSandbox
     ? messageSandbox('javascriptBlock', {
         instanceId,
-        preloadScripts,
+        preloadScripts: [],
         refData: payload.refData,
         blockData: cloneDeep(payload.data),
       })
     : executeInWebpage(
-        [payload, preloadScripts, automaScript, instanceId],
+        [payload, [], automaScript, instanceId],
         {
           tabId: this.activeTab.id,
           frameIds: [this.activeTab.frameId || 0],
