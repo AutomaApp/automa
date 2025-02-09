@@ -89,9 +89,43 @@ yarn lint
 ## Contributors
 Thanks to everyone who has submitted issues, made suggestions, and generally helped make this a better project.
 
-<a href="https://github.com/kholid060/automa/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=kholid060/automa" />
-</a>
+## Examples after corrections in the current brach:
+
+example script call external:
+
+window.dispatchEvent(new CustomEvent('__automaExecuteWorkflow', {
+    detail: { 
+        publicId: 'testWork',// Use Workflow public ID
+        data: { 
+            variables: {
+                name: 'John Doe',
+                search: 'Hello world'
+            }
+        } 
+    }
+}));
+
+Event Get Browser:
+moz-extension://754b905a-b14c-44a3-9a3f-443c5d687421/execute.html#/2h-pQ_wB3Eu1uEoIR1RFt?name=value&search=teste
+
+chrome-extension://infppggnoaenmfagbfknfkancpbljcca/execute.html#/0uN3j9AhAEBAL3lkV4JEP?name=John%20Doe&search=Hello%20world
+
+chrome-extension://infppggnoaenmfagbfknfkancpbljcca/execute.html#/0uN3j9AhAEBAL3lkV4JEP?data={"id": "12345","nome": "Test Workflow","desc": "example workflow test."}
+
+moz-extension://330bb592-fb5d-4c58-b452-f950bb6ec936/execute.html#/0Uo31709nrB2qaO8ye6t0?name=maria&search=teste
+
+moz-extension://330bb592-fb5d-4c58-b452-f950bb6ec936/execute.html#/0Uo31709nrB2qaO8ye6t0?data={"id": "12345","nome": "Test Workflow","desc": "example workflow test."}
+
+After execute project: yarn build:firefox  
+http://localhost:3001/webhook.html?extension=moz-extension://15d65b92-a555-43d0-a348-8054f891bd29&workflow=20Whme8bZ6xDtWLVCjDC2&search=teste&name=maria
+
+http://localhost:3001/webhook.html?extension=chrome-extension://fkpamfbcldbfodllcnnihjjkgjmekkfh&workflow=c7jL39YT_9zMPQbqbNk0-&search=teste&name=maria
+
+After execute project to Go live Server vscode:
+
+http://127.0.0.1:5500/src/webhook/index.html?extension=chrome-extension://fkpamfbcldbfodllcnnidddfegjmekkfh&workflow=kfg25KNnKddT1_Tf3jnq&produtos=test
+
+http://127.0.0.1:5500/src/webhook/index.html?extension=moz-extension://fdfdfd-a555-43d0-a348-8054f891bd29&workflow=kfg25KNnKdd1_Tf3jnq&produtos=test
 
 ## License
 Source code in this repository is variously licensed under the GNU Affero General Public License (AGPL), or the [Automa Commercial License](https://www.automa.site/license/commercial/).
