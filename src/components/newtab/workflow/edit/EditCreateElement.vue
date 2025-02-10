@@ -38,9 +38,9 @@
           <ui-tab v-for="tab in tabs" :key="tab.id" :value="tab.id">
             {{ tab.name }}
           </ui-tab>
-          <!-- <ui-tab value="preloadScript">
+          <ui-tab value="preloadScript">
             {{ $t('workflow.blocks.javascript-code.modal.tabs.preloadScript') }}
-          </ui-tab> -->
+          </ui-tab>
         </ui-tabs>
       </template>
       <ui-tab-panels

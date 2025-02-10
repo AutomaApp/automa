@@ -67,9 +67,9 @@
           <ui-tab value="code">
             {{ t('workflow.blocks.javascript-code.modal.tabs.code') }}
           </ui-tab>
-          <!-- <ui-tab value="preloadScript">
+          <ui-tab value="preloadScript">
             {{ t('workflow.blocks.javascript-code.modal.tabs.preloadScript') }}
-          </ui-tab> -->
+          </ui-tab>
         </ui-tabs>
       </template>
       <ui-tab-panels
