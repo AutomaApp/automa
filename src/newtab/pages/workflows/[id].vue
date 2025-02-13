@@ -704,6 +704,8 @@ async function executeFromBlock(blockId) {
     if (tab) {
       workflowOptions.tabId = tab.id;
     }
+    await browser.tabs.update(tab.id, { active: true });
+    await browser.windows.update(tab.windowId, { focused: true });
 
     RendererWorkflowService.executeWorkflow(workflow.value, workflowOptions);
   } catch (error) {

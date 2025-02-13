@@ -116,27 +116,26 @@ export function waitTabLoaded({ tabId, listenError = false, ms = 10000 }) {
         onErrorOccurred
       );
 
-    const activeTabStatus = () => {
-      BrowserAPIService.tabs.get(tabId).then((tab) => {
-        if (!tab) {
-          reject(new Error('no-tab'));
-          return;
-        }
+    const activeTabStatus = async () => {
+      const tab = await BrowserAPIService.tabs.get(tabId);
+      if (!tab) {
+        reject(new Error('no-tab'));
+        return;
+      }
 
-        if (tab.status === 'loading') {
-          setTimeout(() => {
-            activeTabStatus();
-          }, 1000);
-          return;
-        }
+      if (tab.status === 'loading') {
+        setTimeout(() => {
+          activeTabStatus();
+        }, 1000);
+        return;
+      }
 
-        clearTimeout(timeout);
+      clearTimeout(timeout);
 
-        BrowserAPIService.webNavigation.onErrorOccurred.removeListener(
-          onErrorOccurred
-        );
-        resolve();
-      });
+      BrowserAPIService.webNavigation.onErrorOccurred.removeListener(
+        onErrorOccurred
+      );
+      resolve();
     };
 
     activeTabStatus();

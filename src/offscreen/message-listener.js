@@ -7,7 +7,7 @@ const messageListener = new MessageListener('offscreen');
 Browser.runtime.onMessage.addListener(messageListener.listener);
 
 messageListener.on('workflow:execute', (data) => {
-  WorkflowManager.instance.execute(data);
+  WorkflowManager.instance.execute(data.workflowData, data.options);
 });
 
 messageListener.on('workflow:stop', (stateId) => {
