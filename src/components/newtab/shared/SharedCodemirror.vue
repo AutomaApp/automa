@@ -26,9 +26,8 @@ import { oneDark } from '@codemirror/theme-one-dark';
 import { keymap } from '@codemirror/view';
 import { EditorView, basicSetup } from 'codemirror';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+// don't remove this unused import, the css is used in dynamic style
 import { store } from '../settings/jsBlockWrap';
-
-console.log('🚀 ~ store:', store);
 
 const props = defineProps({
   lang: {

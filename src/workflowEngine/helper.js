@@ -60,19 +60,27 @@ export async function getFrames(tabId) {
 
 export function sendDebugCommand(tabId, method, params = {}) {
   return new Promise((resolve) => {
-    chrome.debugger.sendCommand({ tabId }, method, params, resolve);
+    BrowserAPIService.debugger.sendCommand({ tabId }, method, params, resolve);
   });
 }
 
-export function attachDebugger(tabId, prevTab) {
-  return new Promise((resolve) => {
-    if (prevTab && tabId !== prevTab)
-      chrome.debugger.detach({ tabId: prevTab });
+export async function attachDebugger(tabId, prevTab) {
+  try {
+    if (prevTab && tabId !== prevTab) {
+      await BrowserAPIService.debugger.detach({ tabId: prevTab });
+    }
 
-    chrome.debugger.attach({ tabId }, '1.3', () => {
-      chrome.debugger.sendCommand({ tabId }, 'Page.enable', resolve);
-    });
-  });
+    // first attach
+    await BrowserAPIService.debugger.attach({ tabId }, '1.3');
+
+    // and then Page.enable
+    await BrowserAPIService.debugger.sendCommand({ tabId }, 'Page.enable');
+
+    return true;
+  } catch (error) {
+    console.error('Failed to attach debugger:', error);
+    return false;
+  }
 }
 
 export function waitTabLoaded({ tabId, listenError = false, ms = 10000 }) {

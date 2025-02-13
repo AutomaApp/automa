@@ -189,8 +189,6 @@ const settingItems = [
     notSupport: ['firefox'],
     name: t('workflow.settings.debugMode.title'),
     description: t('workflow.settings.debugMode.description'),
-    // FIXME: temporarily disable this function
-    disabled: true,
   },
   {
     id: 'inputAutocomplete',

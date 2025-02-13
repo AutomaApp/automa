@@ -55,10 +55,6 @@ class WorkflowManager {
     }
 
     const convertedWorkflow = convertWorkflowData(workflowData);
-    console.log(
-      '🚀 ~ WorkflowManager ~ execute ~ convertedWorkflow:',
-      convertedWorkflow
-    );
     const engine = new WorkflowEngine(convertedWorkflow, {
       options,
       states: this.#state,

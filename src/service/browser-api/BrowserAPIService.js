@@ -35,6 +35,35 @@ function sendBrowserApiMessage(name, ...args) {
 
 class BrowserContentScript {
   /**
+   * Check if content script injected
+   * @param {ScriptInjectTarget} target
+   * @param {string=} messageId
+   */
+  static async isContentScriptInjected(target, messageId) {
+    if (!IS_BROWSER_API_AVAILABLE) {
+      return sendBrowserApiMessage(
+        'contentScript.isContentScriptInjected',
+        ...arguments
+      );
+    }
+
+    try {
+      // 发送测试消息到目标标签页
+      await Browser.tabs.sendMessage(
+        target.tabId,
+        { type: messageId || 'content-script-exists' },
+        {
+          frameId: target.allFrames ? undefined : target.frameId,
+        }
+      );
+
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
    * Inject content script into targeted tab
    * @param {Object} script
    * @param {ScriptInjectTarget} script.target
@@ -89,8 +118,8 @@ class BrowserContentScript {
           }
 
           tryCount += 1;
-          // isContentScriptInJected is not found
-          const isInjected = await this.isContentScriptInjected(
+
+          const isInjected = await BrowserContentScript.isContentScriptInjected(
             target,
             waitUntilInjected.messageId
           );
@@ -187,6 +216,7 @@ class BrowserAPIService {
 (() => {
   browserAPIMap.forEach((item) => {
     let value;
+    console.log('IS_BROWSER_API_AVAILABLE', IS_BROWSER_API_AVAILABLE);
     if (IS_BROWSER_API_AVAILABLE) {
       value = item.api();
     } else {
