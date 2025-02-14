@@ -130,10 +130,10 @@ class BackgroundWorkflowUtils {
       return;
     }
 
-    await BackgroundOffscreen.instance.sendMessage(
-      'workflow:execute',
-      workflowData
-    );
+    await BackgroundOffscreen.instance.sendMessage('workflow:execute', {
+      workflow: workflowData,
+      options,
+    });
   }
 }
 

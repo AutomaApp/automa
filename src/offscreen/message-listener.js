@@ -6,8 +6,8 @@ import Browser from 'webextension-polyfill';
 const messageListener = new MessageListener('offscreen');
 Browser.runtime.onMessage.addListener(messageListener.listener);
 
-messageListener.on('workflow:execute', (data) => {
-  WorkflowManager.instance.execute(data);
+messageListener.on('workflow:execute', ({ workflow, options }) => {
+  WorkflowManager.instance.execute(workflow, options);
 });
 
 messageListener.on('workflow:stop', (stateId) => {
