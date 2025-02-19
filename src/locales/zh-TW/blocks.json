@@ -711,4 +711,96 @@
           "response": "回應"
         }
       }
-      
+      "while-loop": {
+        "name": "While 迴圈",
+        "description": "當條件符合時執行區塊",
+        "editCondition": "編輯條件",
+        "fallback": "當條件為假時執行"
+      },
+      "loop-elements": {
+        "name": "迴圈元素",
+        "description": "遍歷元素",
+        "loadMore": "載入更多元素",
+        "scrollToBottom": "滾動至底部",
+        "scrollToTop": "滾動至頂部",
+        "actions": {
+          "none": "無",
+          "click-element": "點擊元素",
+          "scroll": "向下滾動",
+          "click-link": "點擊連結",
+          "scroll-up": "向上滾動"
+        }
+      },
+      "loop-data": {
+        "name": "迴圈資料",
+        "description": "遍歷表格或自訂資料",
+        "loopId": "迴圈 ID",
+        "refKey": "參考鍵值",
+        "startIndex": "從索引開始",
+        "resumeLastWorkflow": "恢復上一個工作流程",
+        "reverse": "反轉迴圈順序",
+        "modal": {
+          "fileTooLarge": "檔案過大無法編輯",
+          "maxFile": "最大檔案大小為 1MB",
+          "options": {
+            "firstRow": "使用第一行作為鍵值"
+          }
+        },
+        "buttons": {
+          "clear": "清除資料",
+          "insert": "插入資料",
+          "import": "匯入檔案"
+        },
+        "maxLoop": {
+          "title": "最大迴圈資料數量",
+          "label": "最大迴圈資料數量（0 表示停用）"
+        },
+        "loopThrough": {
+          "placeholder": "遍歷",
+          "fromNumber": "從數字",
+          "toNumber": "到數字",
+          "options": {
+            "numbers": "數字",
+            "variable": "變數",
+            "data-columns": "表格",
+            "table": "表格",
+            "custom-data": "自訂資料",
+            "google-sheets": "Google Sheets",
+            "elements": "元素"
+          }
+        }
+      },
+      "loop-breakpoint": {
+        "name": "迴圈中斷點",
+        "description": "標示 Loop Data 區塊必須停止的位置"
+      },
+      "take-screenshot": {
+        "name": "擷取螢幕截圖",
+        "fullPage": "擷取完整頁面截圖",
+        "description": "擷取目前分頁的螢幕截圖",
+        "imageQuality": "圖片品質",
+        "saveToColumn": "將截圖插入表格",
+        "saveToComputer": "將截圖儲存至電腦",
+        "types": {
+          "title": "擷取以下內容的截圖",
+          "page": "頁面",
+          "fullpage": "完整頁面",
+          "element": "元素"
+        }
+      },
+      "switch-to": {
+        "name": "切換框架",
+        "description": "在主視窗與 iframe 之間切換",
+        "iframeSelector": "元素選擇器",
+        "windowTypes": {
+          "main": "主視窗",
+          "iframe": "Iframe"
+        }
+      },
+      "debugMode": {
+        "title": "除錯模式",
+        "description": "使用 Chrome DevTools Protocol 執行區塊"
+      }
+    }
+  }
+}
