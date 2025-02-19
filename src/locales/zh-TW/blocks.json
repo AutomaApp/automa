@@ -601,3 +601,114 @@
           }
         }
       }
+      "forms": {
+        "name": "表單",
+        "description": "",
+        "selected": "已選取",
+        "type": "表單類型",
+        "getValue": "取得表單值",
+        "text-field": {
+          "name": "文字欄位",
+          "value": "值",
+          "clearValue": "清除表單值",
+          "delay": {
+            "placeholder": "延遲",
+            "label": "輸入延遲（毫秒）（0 表示停用）"
+          }
+        },
+        "select": {
+          "name": "選取"
+        },
+        "radio": {
+          "name": "單選按鈕"
+        },
+        "checkbox": {
+          "name": "核取方塊"
+        }
+      },
+      "repeat-task": {
+        "name": "重複任務",
+        "description": "",
+        "times": "次",
+        "repeatFrom": "從此處重複"
+      },
+      "javascript-code": {
+        "name": "JavaScript 程式碼",
+        "description": "在網頁中執行您的 JavaScript 程式碼",
+        "availabeFuncs": "可用函式：",
+        "removeAfterExec": "區塊執行後移除",
+        "everyNewTab": "在每個新分頁中執行",
+        "context": {
+          "name": "執行環境",
+          "items": {
+            "website": "目前分頁",
+            "background": "背景"
+          }
+        },
+        "modal": {
+          "tabs": {
+            "code": "JavaScript 程式碼",
+            "preloadScript": "預載腳本"
+          }
+        },
+        "timeout": {
+          "placeholder": "逾時（毫秒）",
+          "title": "JavaScript 程式碼執行逾時"
+        }
+      },
+      "trigger-event": {
+        "name": "觸發事件",
+        "description": "",
+        "selectEvent": "選取事件"
+      },
+      "conditions": {
+        "name": "條件",
+        "add": "新增路徑",
+        "retryConditions": "若無條件符合則重試",
+        "description": "條件區塊",
+        "refresh": "重新整理條件連接",
+        "fallbackTitle": "當所有比較都不符合要求時執行",
+        "equals": "等於",
+        "gt": "大於",
+        "gte": "大於或等於",
+        "lt": "小於",
+        "lte": "小於或等於",
+        "ne": "不等於",
+        "contains": "包含"
+      },
+      "element-exists": {
+        "name": "元素存在",
+        "description": "檢查元素是否存在",
+        "selector": "元素選擇器",
+        "fallbackTitle": "當元素不存在時執行",
+        "throwError": "若不存在則拋出錯誤",
+        "tryFor": {
+          "title": "嘗試檢查元素存在的次數",
+          "label": "嘗試次數"
+        },
+        "timeout": {
+          "label": "逾時（毫秒）",
+          "title": "每次嘗試的逾時時間"
+        }
+      },
+      "webhook": {
+        "name": "HTTP 請求",
+        "description": "發送 HTTP 請求",
+        "contentType": "內容類型",
+        "method": "請求方法",
+        "url": "請求 URL",
+        "fallback": "當 HTTP 請求失敗時執行",
+        "buttons": {
+          "header": "新增標頭"
+        },
+        "timeout": {
+          "placeholder": "逾時",
+          "title": "HTTP 請求執行逾時（毫秒）"
+        },
+        "tabs": {
+          "headers": "標頭",
+          "body": "主體",
+          "response": "回應"
+        }
+      }
+      
