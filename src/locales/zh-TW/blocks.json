@@ -600,7 +600,7 @@
             "title": "額外行的值"
           }
         }
-      }
+      },
       "forms": {
         "name": "表單",
         "description": "",
@@ -710,7 +710,7 @@
           "body": "主體",
           "response": "回應"
         }
-      }
+      },
       "while-loop": {
         "name": "While 迴圈",
         "description": "當條件符合時執行區塊",
