@@ -1,0 +1,210 @@
+你是一位精通英文與繁體中文語台灣用語習慣的翻譯家，請依照以下規則幫我翻譯成繁體中文，
+翻譯 JSON 的屬性，不要幫我修改格式，只要翻譯就好
+例如:
+而且不要翻譯大括號內的單字，例如 {name}; {count}; etc
+請翻譯以下
+
+
+      "forms": {
+        "name": "Forms",
+        "description": "",
+        "selected": "Selected",
+        "type": "Form type",
+        "getValue": "Get form value",
+        "text-field": {
+          "name": "Text field",
+          "value": "Value",
+          "clearValue": "Clear form value",
+          "delay": {
+            "placeholder": "Delay",
+            "label": "Typing delay (millisecond)(0 to disable)"
+          }
+        },
+        "select": {
+          "name": "Select"
+        },
+        "radio": {
+          "name": "Radio"
+        },
+        "checkbox": {
+          "name": "Checkbox"
+        }
+      },
+      "repeat-task": {
+        "name": "Repeat task",
+        "description": "",
+        "times": "times",
+        "repeatFrom": "Repeat from"
+      },
+      "javascript-code": {
+        "name": "JavaScript code",
+        "description": "Execute your JavaScript code in the web page",
+        "availabeFuncs": "Available functions:",
+        "removeAfterExec": "Remove after block execution",
+        "everyNewTab": "Execute in every new tab",
+        "context": {
+          "name": "Execution context",
+          "items": {
+            "website": "Active tab",
+            "background": "Background"
+          }
+        },
+        "modal": {
+          "tabs": {
+            "code": "JavaScript code",
+            "preloadScript": "Preload script"
+          }
+        },
+        "timeout": {
+          "placeholder": "Timeout (milliseconds)",
+          "title": "JavaScript code execution timeout"
+        }
+      },
+      "trigger-event": {
+        "name": "Trigger event",
+        "description": "",
+        "selectEvent": "Select event"
+      },
+      "conditions": {
+        "name": "Conditions",
+        "add": "Add path",
+        "retryConditions": "Retry if no conditions are met",
+        "description": "Conditional block",
+        "refresh": "Refresh condition connections",
+        "fallbackTitle": "Executes when all comparisons don't meet the requirement",
+        "equals": "Equals",
+        "gt": "Greater than",
+        "gte": "Greater than or equal",
+        "lt": "Less than",
+        "lte": "Less than or equal",
+        "ne": "Not equals",
+        "contains": "Contains"
+      },
+      "element-exists": {
+        "name": "Element exists",
+        "description": "Check if an element exists",
+        "selector": "Element selector",
+        "fallbackTitle": "Executes when the element doesn't exist",
+        "throwError": "Throw an error if doesn't exist",
+        "tryFor": {
+          "title": "How many times to try to check if the element exists",
+          "label": "Try for"
+        },
+        "timeout": {
+          "label": "Timeout (milliseconds)",
+          "title": "Timeout for each try"
+        }
+      },
+      "webhook": {
+        "name": "HTTP request",
+        "description": "Make an HTTP Request",
+        "contentType": "Content type",
+        "method": "Request method",
+        "url": "Request URL",
+        "fallback": "Executes when the HTTP request fails",
+        "buttons": {
+          "header": "Add header"
+        },
+        "timeout": {
+          "placeholder": "Timeout",
+          "title": "HTTP request execution timeout (ms)"
+        },
+        "tabs": {
+          "headers": "Headers",
+          "body": "Body",
+          "response": "Response"
+        }
+      },
+      "while-loop": {
+        "name": "While loop",
+        "description": "Executes blocks while the condition is met",
+        "editCondition": "Edit condition",
+        "fallback": "Executes when the condition is false"
+      },
+      "loop-elements": {
+        "name": "Loop elements",
+        "description": "Iterate through elements",
+        "loadMore": "Load more elements",
+        "scrollToBottom": "Scroll to bottom",
+        "scrollToTop": "Scroll to top",
+        "actions": {
+          "none": "None",
+          "click-element": "Click an element",
+          "scroll": "Scroll down",
+          "click-link": "Click a link",
+          "scroll-up": "Scroll up"
+        }
+      },
+      "loop-data": {
+        "name": "Loop data",
+        "description": "Iterate through a table or your custom data",
+        "loopId": "Loop ID",
+        "refKey": "Reference key",
+        "startIndex": "Start from index",
+        "resumeLastWorkflow": "Resume last workflow",
+        "reverse": "Reverse loop order",
+        "modal": {
+          "fileTooLarge": "File too large to edit",
+          "maxFile": "Max file size is 1MB",
+          "options": {
+            "firstRow": "Use the first row as keys"
+          }
+        },
+        "buttons": {
+          "clear": "Clear data",
+          "insert": "Insert data",
+          "import": "Import file"
+        },
+        "maxLoop": {
+          "title": "Max number of data to loop",
+          "label": "Max data to loop (0 to disable)"
+        },
+        "loopThrough": {
+          "placeholder": "Loop through",
+          "fromNumber": "From number",
+          "toNumber": "To number",
+          "options": {
+            "numbers": "Numbers",
+            "variable": "Variable",
+            "data-columns": "Table",
+            "table": "Table",
+            "custom-data": "Custom data",
+            "google-sheets": "Google Sheets",
+            "elements": "Elements"
+          }
+        }
+      },
+      "loop-breakpoint": {
+        "name": "Loop breakpoint",
+        "description": "To indicate where the Loop Data block must stop"
+      },
+      "take-screenshot": {
+        "name": "Take screenshot",
+        "fullPage": "Take full page screenshot",
+        "description": "Take a screenshot of current active tab",
+        "imageQuality": "Image quality",
+        "saveToColumn": "Insert screenshot to table",
+        "saveToComputer": "Save screenshot to computer",
+        "types": {
+          "title": "Take a screenshot of",
+          "page": "A page",
+          "fullpage": "A full page",
+          "element": "An element"
+        }
+      },
+      "switch-to": {
+        "name": "Switch frame",
+        "description": "Switch between the main window and an iframe",
+        "iframeSelector": "Element selector",
+        "windowTypes": {
+          "main": "Main window",
+          "iframe": "Iframe"
+        }
+      },
+      "debugMode": {
+        "title": "Debug mode",
+        "description": "Execute block using the Chrome DevTools Protocol"
+      }
+    }
+  }
+}
