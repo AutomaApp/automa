@@ -63,6 +63,7 @@ export const browserAPIMap = [
   { path: 'cookies.get', api: () => Browser.cookies?.get },
   { path: 'cookies.getAll', api: () => Browser.cookies?.getAll },
   { path: 'cookies.remove', api: () => Browser.cookies?.remove },
+  { path: 'cookies.set', api: () => Browser.cookies?.set },
   { path: 'downloads.search', api: () => Browser.downloads?.search },
   { path: 'downloads.download', api: () => Browser.downloads?.download },
   {
