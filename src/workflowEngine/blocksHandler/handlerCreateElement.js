@@ -91,7 +91,7 @@ async function handleCreateElement(block, { refData }) {
     payload.data.dontInjectJS = true;
   }
 
-  // await this._sendMessageToTab(payload, {}, data.runBeforeLoad ?? false);
+  await this._sendMessageToTab(payload, {}, data.runBeforeLoad ?? false);
 
   if (isMV3) {
     const target = {
