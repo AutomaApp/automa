@@ -248,7 +248,7 @@ export async function checkCSPAndInject(
       {
         target,
         debugMode,
-        callback: callback.toString(),
+        callback: callback?.toString(),
         options,
         injectOptions,
       },
