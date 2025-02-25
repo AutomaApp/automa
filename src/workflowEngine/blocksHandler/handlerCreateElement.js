@@ -100,6 +100,49 @@ async function handleCreateElement(block, { refData }) {
     };
 
     const { debugMode } = this.engine.workflow?.settings || {};
+
+    // 创建一个回调函数字符串，用于在CSP限制的环境中执行
+    const callbackFunction = `
+      function() {
+        try {
+
+          const preloadScripts = ${JSON.stringify(preloadScripts)};
+          const blockId = "${block.id}";
+          const automaScript = \`${payload.data?.automaScript || ''}\`;
+          const javascript = \`${data.javascript || ''}\`;
+
+
+
+
+          const baseId = 'automa-' + blockId;
+
+
+          preloadScripts.forEach(function(item) {
+            if (item.type === 'style') return;
+
+            try {
+
+              eval(item.script);
+            } catch (error) {
+              console.error('执行预加载脚本时出错:', error);
+            }
+          });
+
+          try {
+            eval("(function() { " + automaScript + "\\n" + javascript + " })()");
+          } catch (error) {
+            console.error('执行JavaScript代码时出错:', error);
+          }
+
+          return true;
+        } catch (error) {
+          console.error('CreateElement回调函数内部错误:', error);
+          throw error;
+        }
+      }
+    `;
+
+    // 使用checkCSPAndInject函数处理CSP限制
     const result = await checkCSPAndInject(
       {
         target,
@@ -108,19 +151,8 @@ async function handleCreateElement(block, { refData }) {
           awaitPromise: false,
           returnByValue: false,
         },
-      }
-      // () => {
-      //   let jsPreload = '';
-      //   preloadScripts.forEach((item) => {
-      //     if (item.type === 'style') return;
-
-      //     jsPreload += `${item.script}\n`;
-      //   });
-
-      //   const automaScript = payload.data?.automaScript || '';
-
-      //   return `(() => { ${jsPreload} \n ${automaScript}\n${data.javascript} })()`;
-      // }
+      },
+      callbackFunction
     );
 
     if (!result.isBlocked) {
@@ -130,7 +162,7 @@ async function handleCreateElement(block, { refData }) {
         payload.data?.automaScript || '',
         preloadScripts || []
       );
-      MessageListener.sendMessage(
+      await MessageListener.sendMessage(
         'script:execute-callback',
         {
           target,
@@ -138,6 +170,8 @@ async function handleCreateElement(block, { refData }) {
         },
         'background'
       );
+    } else {
+      console.log('CreateElement: 使用CSP绕过方法执行代码');
     }
   }
 

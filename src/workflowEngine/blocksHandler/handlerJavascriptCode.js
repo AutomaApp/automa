@@ -8,10 +8,7 @@ import {
   messageSandbox,
   waitTabLoaded,
 } from '../helper';
-import {
-  automaFetchClient,
-  jsContentHandlerEval,
-} from '../utils/javascriptBlockUtil';
+import { automaFetchClient } from '../utils/javascriptBlockUtil';
 
 const nanoid = customAlphabet('1234567890abcdef', 5);
 
@@ -48,8 +45,10 @@ function automaResetTimeout() {
     document.body.dispatchEvent(new CustomEvent('__automa-reset-timeout__'));
   }
 }
+${automaFetchClient.toString()}
+
 function automaFetch(type, resource) {
-  return (${automaFetchClient.toString()})('${varName}', { type, resource });
+  return automaFetchClient('${varName}', { type, resource });
 }
   `;
 
@@ -74,23 +73,169 @@ async function executeInWebpage(args, target, worker) {
   }
 
   const { debugMode } = worker.engine.workflow.settings;
-  const cspResult = await checkCSPAndInject({ target, debugMode }, () => {
-    const { 0: blockData, 1: preloadScripts, 3: varName } = args;
-    const automaScript = getAutomaScript({
-      varName,
-      isEval: true,
-      refData: blockData.refData,
-      everyNewTab: blockData.data.everyNewTab,
-    });
-    const jsCode = jsContentHandlerEval({
-      blockData,
-      automaScript,
-      preloadScripts,
-    });
 
-    return jsCode;
-  });
-  if (cspResult.isBlocked) return cspResult.value;
+  // 提取需要的数据并序列化
+  const serializedBlockData = JSON.stringify(args[0]);
+  const serializedPreloadScripts = JSON.stringify(args[1]);
+  const serializedVarName = JSON.stringify(args[3]);
+
+  // 创建一个简单的回调函数字符串
+  const callbackFunction = `
+    function() {
+      try {
+        // 解析序列化的数据
+        const _blockData = ${serializedBlockData};
+        const _preloadScripts = ${serializedPreloadScripts};
+        const _varName = ${serializedVarName};
+
+        // 获取自动化脚本
+        const _automaScript = (function(_varName, _refData, _everyNewTab, _isEval) {
+          // 这里是getAutomaScript的简化版本
+          const _automaRefDataStr = function(_varName) {
+            return \`
+              function findData(obj, path) {
+                const paths = path.split('.');
+                const isWhitespace = paths.length === 1 && !/\\\\S/.test(paths[0]);
+                if (path.startsWith('$last') && Array.isArray(obj)) {
+                  paths[0] = obj.length - 1;
+                }
+                if (paths.length === 0 || isWhitespace) return obj;
+                else if (paths.length === 1) return obj[paths[0]];
+                let result = obj;
+                for (let i = 0; i < paths.length; i++) {
+                  if (result[paths[i]] == undefined) {
+                    return undefined;
+                  } else {
+                    result = result[paths[i]];
+                  }
+                }
+                return result;
+              }
+              function automaRefData(keyword, path = '') {
+                const data = \${_varName}[keyword];
+                if (!data) return;
+                return findData(data, path);
+              }
+            \`;
+          };
+
+          let _str = \`
+            const \${_varName} = \${JSON.stringify(_refData)};
+            \${_automaRefDataStr(_varName)}
+            function automaSetVariable(name, value) {
+              const variables = \${_varName}.variables;
+              if (!variables) \${_varName}.variables = {}
+              \${_varName}.variables[name] = value;
+            }
+            function automaNextBlock(data, insert = true) {
+              if (\${_isEval}) {
+                $automaResolve({
+                  columns: {
+                    data,
+                    insert,
+                  },
+                  variables: \${_varName}.variables,
+                });
+              } else{
+                document.body.dispatchEvent(new CustomEvent('__automa-next-block__', { detail: { data, insert, refData: \${_varName} } }));
+              }
+            }
+            function automaResetTimeout() {
+              if (\${_isEval}) {
+                clearTimeout($automaTimeout);
+                $automaTimeout = setTimeout(() => {
+                  resolve();
+                }, $automaTimeoutMs);
+              } else{
+                document.body.dispatchEvent(new CustomEvent('__automa-reset-timeout__'));
+              }
+            }
+            function automaFetchClient(id, { type, resource }) {
+              return new Promise((resolve, reject) => {
+                const validType = ['text', 'json', 'base64'];
+                if (!type || !validType.includes(type)) {
+                  reject(new Error('The "type" must be "text" or "json"'));
+                  return;
+                }
+                const eventName = \\\`__automa-fetch-response-\\\${id}__\\\`;
+                const eventListener = ({ detail }) => {
+                  if (detail.id !== id) return;
+                  window.removeEventListener(eventName, eventListener);
+                  if (detail.isError) {
+                    reject(new Error(detail.result));
+                  } else {
+                    resolve(detail.result);
+                  }
+                };
+                window.addEventListener(eventName, eventListener);
+                window.dispatchEvent(
+                  new CustomEvent(\\\`__automa-fetch__\\\`, {
+                    detail: {
+                      id,
+                      type,
+                      resource,
+                    },
+                  })
+                );
+              });
+            }
+            function automaFetch(type, resource) {
+              return automaFetchClient('\${_varName}', { type, resource });
+            }
+          \`;
+
+          if (_everyNewTab) _str = _automaRefDataStr(_varName);
+
+          return _str;
+        })(_varName, _blockData.refData, _blockData.data.everyNewTab, true);
+
+        // 生成JavaScript代码
+        const _jsCode = (function(_blockData, _automaScript, _preloadScripts) {
+          // 这里是jsContentHandlerEval的简化版本
+          const _preloadScriptsStr = _preloadScripts
+            .map(function(item) { return item.script; })
+            .join('\\n');
+
+          return \`(() => {
+            \${_preloadScriptsStr}
+            return new Promise(($automaResolve) => {
+              const $automaTimeoutMs = \${_blockData.data.timeout};
+              let $automaTimeout = setTimeout(() => {
+                $automaResolve();
+              }, $automaTimeoutMs);
+              \${_automaScript}
+              try {
+                \${_blockData.data.code}
+                \${
+                  _blockData.data.code.includes('automaNextBlock')
+                    ? ''
+                    : 'automaNextBlock()'
+                }
+              } catch (error) {
+                return { columns: { data: { $error: true, message: error.message } } };
+              }
+            }).catch((error) => {
+              return { columns: { data: { $error: true, message: error.message } } };
+            });
+          })();\`;
+        })(_blockData, _automaScript, _preloadScripts);
+
+        return _jsCode;
+      } catch (error) {
+        console.error('回调函数内部错误:', error);
+        throw error;
+      }
+    }
+  `;
+
+  const cspResult = await checkCSPAndInject(
+    { target, debugMode },
+    callbackFunction
+  );
+
+  if (cspResult.isBlocked) {
+    return cspResult.value;
+  }
 
   const { 0: blockData, 1: preloadScripts, 3: varName } = args;
 

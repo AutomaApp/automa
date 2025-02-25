@@ -242,21 +242,30 @@ export async function checkCSPAndInject(
   { target, debugMode, options = {}, injectOptions = {} },
   callback
 ) {
+  let _callback = '';
+  if (typeof callback === 'function') {
+    _callback = callback.toString();
+  } else if (typeof callback === 'string') {
+    _callback = callback;
+  }
+
   try {
     const result = await MessageListener.sendMessage(
       'check-csp-and-inject',
       {
         target,
         debugMode,
-        callback: callback?.toString(),
+        callback: _callback,
         options,
         injectOptions,
       },
       'background'
     );
+
     return result;
-  } catch (err) {
-    return { isBlocked: true, value: null };
+  } catch (error) {
+    console.error('CSP check error:', error);
+    return { isBlocked: false, value: null };
   }
 }
 
