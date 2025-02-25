@@ -313,10 +313,15 @@ message.on(
           );
         }
 
+        // 确保我们获取到的是字符串类型的JavaScript代码
+        if (typeof jsCodeResult.result.value !== 'string') {
+          console.error('回调函数返回的不是JavaScript代码字符串');
+          throw new Error('Callback did not return JavaScript code string');
+        }
+
         const jsCode = jsCodeResult.result.value;
 
         // 执行生成的JavaScript代码
-
         const execResult = await chrome.debugger.sendCommand(
           { tabId: target.tabId },
           'Runtime.evaluate',

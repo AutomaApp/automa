@@ -31,17 +31,15 @@ function createElementScript(code, blockId, $automaScript, $preloadScripts) {
   const str = `
     const baseId = 'automa-${blockId}';
 
-      ${JSON.stringify($preloadScripts)}.forEach((item) => {
-        if (item.type === 'style') return;
+    ${JSON.stringify($preloadScripts)}.forEach((item) => {
+      if (item.type === 'style') return;
 
-        const script = document.createElement(item.type);
-        script.id = \`\${baseId}-script\`;
-        script.textContent = item.script;
+      const script = document.createElement(item.type);
+      script.id = \`\${baseId}-script\`;
+      script.textContent = item.script;
 
-        document.body.appendChild(script);
-      });
-
-
+      document.body.appendChild(script);
+    });
 
     const script = document.createElement('script');
     script.id = \`\${baseId}-javascript\`;
@@ -99,46 +97,40 @@ async function handleCreateElement(block, { refData }) {
       frameIds: [this.activeTab.frameId || 0],
     };
 
-    const { debugMode } = this.engine.workflow?.settings || {};
+    const { debugMode = false } = this.engine.workflow?.settings || {};
 
-    // 创建一个回调函数字符串，用于在CSP限制的环境中执行
+    // 创建一个简单的回调函数，直接返回要执行的代码
     const callbackFunction = `
       function() {
-        try {
+        // 创建一个包含所有预加载脚本的代码块
+        const preloadScripts = ${JSON.stringify(preloadScripts)};
+        const blockId = "${block.id}";
+        const automaScript = ${JSON.stringify(
+          payload.data?.automaScript || ''
+        )};
+        const javascript = ${JSON.stringify(data.javascript || '')};
 
-          const preloadScripts = ${JSON.stringify(preloadScripts)};
-          const blockId = "${block.id}";
-          const automaScript = \`${payload.data?.automaScript || ''}\`;
-          const javascript = \`${data.javascript || ''}\`;
+        // 返回一个完整的、可执行的JavaScript代码字符串
+        return \`
+          // 执行预加载脚本
+          \${preloadScripts.map(item => {
+            if (item.type === 'style') return '';
+            return \`try { eval(\${JSON.stringify(item.script)}); } catch(e) { console.error('预加载脚本执行错误:', e); }\`;
+          }).join('\\n')}
 
-
-
-
-          const baseId = 'automa-' + blockId;
-
-
-          preloadScripts.forEach(function(item) {
-            if (item.type === 'style') return;
-
-            try {
-
-              eval(item.script);
-            } catch (error) {
-              console.error('执行预加载脚本时出错:', error);
-            }
-          });
-
+          // 执行主要JavaScript代码
           try {
-            eval("(function() { " + automaScript + "\\n" + javascript + " })()");
-          } catch (error) {
+            (function() {
+              \${automaScript}
+              \${javascript}
+            })();
+          } catch(error) {
             console.error('执行JavaScript代码时出错:', error);
           }
 
-          return true;
-        } catch (error) {
-          console.error('CreateElement回调函数内部错误:', error);
-          throw error;
-        }
+          // 返回一个值，确保不是undefined
+          true;
+        \`;
       }
     `;
 
@@ -149,7 +141,7 @@ async function handleCreateElement(block, { refData }) {
         debugMode,
         options: {
           awaitPromise: false,
-          returnByValue: false,
+          returnByValue: true, // 确保返回值是JavaScript代码字符串
         },
       },
       callbackFunction
