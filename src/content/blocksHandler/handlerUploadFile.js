@@ -29,7 +29,7 @@ export default async function (block) {
       fileObject = new File([arrayBuffer], filename, { type: mime });
     } else {
       const file = await sendMessage('get:file', path, 'background');
-      const name = file.path?.replace(/^.*[\\/]/, '') || '';
+      const name = file?.path?.replace(/^.*[\\/]/, '') || '';
       const blob = await fetch(file.objUrl).then((response) => response.blob());
 
       if (file.objUrl.startsWith('blob')) URL.revokeObjectURL(file.objUrl);
