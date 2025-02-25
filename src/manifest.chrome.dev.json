@@ -1,0 +1,88 @@
+{
+  "manifest_version": 3,
+  "name": "Automa-Dev",
+  "minimum_chrome_version": "116",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon-dev-128.png"
+  },
+  "background": {
+    "service_worker": "background.bundle.js",
+    "type": "module"
+  },
+  "icons": {
+    "128": "icon-dev-128.png"
+  },
+  "commands": {
+    "open-dashboard": {
+      "suggested_key": {
+        "default": "Alt+A",
+        "mac": "Alt+A"
+      },
+      "description": "Open the dashboard"
+    },
+    "element-picker": {
+      "suggested_key": {
+        "default": "Alt+P",
+        "mac": "Alt+P"
+      },
+      "description": "Open element picker"
+    }
+  },
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.bundle.js"],
+      "run_at": "document_start",
+      "match_about_blank": true,
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "http://localhost/*",
+        "*://*.automa.site/*",
+        "*://automa.vercel.app/*"
+      ],
+      "js": ["webService.bundle.js"],
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ],
+  "optional_permissions": [
+    "cookies",
+    "downloads",
+    "contextMenus",
+    "clipboardRead",
+    "notifications"
+  ],
+  "permissions": [
+    "tabs",
+    "proxy",
+    "alarms",
+    "storage",
+    "debugger",
+    "activeTab",
+    "offscreen",
+    "webNavigation",
+    "unlimitedStorage",
+    "scripting"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "/locales/*",
+        "/icon-dev-128.png",
+        "/elementSelector.css",
+        "elementSelector.bundle.js",
+        "/Inter-roman-latin.var.woff2"
+      ],
+      "matches": [
+        "*://*/*"
+      ]
+    }
+  ],
+  "sandbox": {
+    "pages": ["/sandbox.html"]
+  }
+}
