@@ -77,20 +77,20 @@ yarn lint
 2. Enable the "Developer mode".
 3. Click "Load unpacked extension" button, browse the `automa/build` directory and select it.
 
-![Install in chrome](https://res.cloudinary.com/chat-story/image/upload/v1665128418/automa/chrome_QWxClxFcio_d9pqp8.png)
+![Install in chrome](https://user-images.githubusercontent.com/22908993/166417152-f870bfbd-1770-4c28-b69d-a7303aebc9a6.png)
 
 ### Firefox
 1. Open firefox and navigate to `about:debugging#/runtime/this-firefox`.
 2. Click the "Load Temporary Add-on" button.
 3. Browse the `automa/build` directory and select the `manifest.json` file.
 
-![Install in firefox](https://res.cloudinary.com/chat-story/image/upload/v1665128974/automa/firefox_30wkpfGM7N_lihajj.png)
+![Install in firefox](https://user-images.githubusercontent.com/22908993/166417727-3481fef4-00e5-4cf0-bb03-27fb880d993c.png)
 
 ## Contributors
 Thanks to everyone who has submitted issues, made suggestions, and generally helped make this a better project.
 
-<a href="https://github.com/kholid060/automa/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=kholid060/automa" />
+<a href="https://github.com/AutomaApp/automa/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=AutomaApp/automa" />
 </a>
 
 ## License
