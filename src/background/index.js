@@ -223,14 +223,50 @@ message.on(
           return new Promise((resolve) => {
             const escapePolicy = (script) => {
               if (window?.trustedTypes?.createPolicy) {
-                const escapeElPolicy = window.trustedTypes.createPolicy(
-                  'forceInner',
-                  {
-                    createHTML: (to_escape) => to_escape,
-                    createScript: (to_escape) => to_escape,
+                try {
+                  // 尝试使用可能在CSP白名单中的名称
+                  const policyNames = [
+                    'default',
+                    'dompurify',
+                    'jSecure',
+                    'forceInner',
+                  ];
+                  let escapeElPolicy = null;
+
+                  // 尝试创建策略，如果一个名称失败，尝试下一个
+                  for (const policyName of policyNames) {
+                    try {
+                      escapeElPolicy = window.trustedTypes.createPolicy(
+                        policyName,
+                        {
+                          createHTML: (to_escape) => to_escape,
+                          createScript: (to_escape) => to_escape,
+                        }
+                      );
+                      // 如果成功创建，跳出循环
+                      break;
+                    } catch (e) {
+                      // 该名称失败，继续尝试下一个
+                      console.debug(
+                        `Policy name ${policyName} failed, trying next one`
+                      );
+                    }
                   }
-                );
-                return escapeElPolicy.createScript(script);
+
+                  // 如果成功创建了策略，使用它
+                  if (escapeElPolicy) {
+                    return escapeElPolicy.createScript(script);
+                  }
+                  // 如果所有策略名称都失败，返回原始脚本
+                  console.debug(
+                    'All trusted policy creation attempts failed, falling back to raw script'
+                  );
+                  return script;
+                } catch (e) {
+                  // 捕获任何其他错误并降级
+                  console.debug('Error creating trusted policy:', e);
+                  return script;
+                }
               }
               return script;
             };

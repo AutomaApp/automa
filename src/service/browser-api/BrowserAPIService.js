@@ -216,7 +216,6 @@ class BrowserAPIService {
 (() => {
   browserAPIMap.forEach((item) => {
     let value;
-    console.log('IS_BROWSER_API_AVAILABLE', IS_BROWSER_API_AVAILABLE);
     if (IS_BROWSER_API_AVAILABLE) {
       value = item.api();
     } else {
