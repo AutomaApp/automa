@@ -114,6 +114,7 @@ export function generateXPath(element, root = document.body) {
   return null;
 }
 
+// no used
 export function automaRefDataStr(varName) {
   return `
 function findData(obj, path) {
