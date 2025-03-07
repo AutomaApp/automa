@@ -1,128 +1,517 @@
 {
   "home": {
-    "viewAll": "檢視全部"
+    "viewAll": "查看全部",
+    "communities": "社群"
   },
-  "settings": {
-    "language": {
-      "label": "語言",
-      "helpTranslate": "找不到你的語言嗎? 請協助我們翻譯。",
-      "reloadPage": "重整頁面使其生效"
-    }
+  "welcome": {
+    "title": "歡迎使用 Automa！🎉",
+    "text": "開始使用前，請閱讀文件或瀏覽 Automa 市集中的工作流程。",
+    "marketplace": "市集"
   },
-  "workflow": {
-    "import": "匯入工作流",
-    "new": "新增工作流",
-    "delete": "刪除工作流",
-    "name": "工作流名稱",
-    "rename": "重新命名工作流",
-    "add": "建立工作流",
-    "clickToEnable": "點擊啟用",
-    "dataColumns": {
-      "title": "資料欄位",
-      "placeholder": "搜尋或建立欄位",
-      "column": {
-        "name": "欄位名稱",
-        "type": "資料型別"
-      }
-    },
-    "sidebar": {
-      "workflowIcon": "工作流圖示"
-    },
-    "editor": {
-      "zoomIn": "放大",
-      "zoomOut": "縮小",
-      "resetZoom": "重設縮放",
-      "duplicate": "複製"
-    },
+  "packages": {
+    "name": "套件 | 套件",
+    "add": "新增套件",
+    "icon": "套件圖示",
+    "open": "開啟套件",
+    "new": "新增套件",
+    "import": "匯入套件",
+    "set": "設為套件",
     "settings": {
-      "onError": {
-        "title": "工作流發生錯誤",
-        "items": {
-          "keepRunning": "繼續執行",
-          "stopWorkflow": "停止工作流"
-        }
-      },
-      "timeout": {
-        "title": "工作流超時 (毫秒)"
-      }
+      "asBlock": "將套件設為區塊"
+    },
+    "categories": {
+      "my": "我的套件",
+      "installed": "已安裝套件"
     }
   },
-  "collection": {
-    "description": "依序執行工作流",
-    "new": "新增集合",
-    "delete": "刪除集合",
-    "add": "建立集合",
-    "rename": "重新命名集合",
-    "flow": "工作流",
-    "dragDropText": "拖曳工作流或區塊至此",
-    "options": {
-      "atOnce": {
-        "title": "立即執行集合中的所有工作流",
-        "description": "使用此選項不會執行區塊"
-      }
-    },
-    "globalData": {
-      "note": "這將覆蓋工作流的全域資料"
-    }
-  },
-  "log": {
-    "goBack": "返回 \"{name}\" 紀錄",
-    "startedDate": "開始日期",
-    "duration": "期間",
-    "selectAll": "全選",
-    "deselectAll": "取消全選",
-    "deleteSelected": "刪除選取的紀錄",
-    "types": {
-      "stop": "工作流停止",
-      "finish": "工作流完成"
-    },
-    "messages": {
-      "workflow-disabled": "工作流已禁用",
-      "stop-timeout": "工作流因逾時而停止",
-      "no-iframe-id": "Can't find Frame ID for the iframe element with \"{selector}\" selector",
-      "no-tab": "Can't connect to a tab, use \"New tab\" or \"Active tab\" block before using the \"{name}\" block."
-    },
-    "description": {
-      "text": "{status} on {date} in {duration}",
-      "status": {
-        "success": "成功",
-        "error": "失敗",
-        "stopped": "停止"
-      }
-    },
-    "delete": {
-      "title": "刪除紀錄",
-      "description": "確定要刪除所有選取的紀錄嗎?"
-    },
-    "exportData": {
-      "title": "匯出資料",
+  "scheduledWorkflow": {
+    "title": "排程工作流程",
+    "nextRun": "下次執行",
+    "active": "啟用中",
+    "refresh": "重新整理",
+    "schedule": {
+      "title": "排程",
       "types": {
-        "json": "JSON",
-        "csv": "CSV",
-        "plain-text": "純文字"
-      }
-    },
-    "filter": {
-      "title": "篩選",
-      "byStatus": "依 status",
-      "byDate": {
-        "title": "依 date",
-        "items": {
-          "lastDay": "最後1天",
-          "last7Days": "最後7天",
-          "last30Days": "最後30天"
-        }
+        "everyDay": "每天",
+        "general": "每 {time}",
+        "interval": "每 {time} 分鐘"
       }
     }
   },
-  "components": {
-    "pagination": {
-      "text1": "顯示",
-      "text2": "項， 總共 {count} 項",
-      "nextPage": "下一頁",
-      "currentPage": "目前頁數",
-      "prevPage": "上一頁",
-      "of": "of {page}"
-    }
-  }
-}
+    "storage": {
+      "title": "儲存空間",
+      "table": {
+        "add": "新增表格",
+        "edit": "編輯表格",
+        "createdAt": "建立於",
+        "modifiedAt": "修改於",
+        "rowsCount": "列數",
+        "delete": "刪除表格"
+      }
+    },
+    "credential": {
+      "title": "憑證 | 憑證",
+      "add": "新增憑證",
+      "use": {
+        "title": "已使用憑證",
+        "description": "此工作流程使用這些憑證"
+      }
+    },
+    "workflowPermissions": {
+      "title": "工作流程權限",
+      "description": "此工作流程需要這些權限才能正常執行",
+      "contextMenus": {
+        "title": "右鍵選單",
+        "description": "透過右鍵選單執行工作流程"
+      },
+      "clipboardRead": {
+        "title": "剪貼簿",
+        "description": "用於存取剪貼簿資料"
+      },
+      "notifications": {
+        "title": "通知",
+        "description": "用於顯示通知"
+      },
+      "downloads": {
+        "title": "下載",
+        "description": "儲存頁面資源並重新命名下載的檔案"
+      },
+      "cookies": {
+        "title": "Cookie",
+        "description": "讀取、設定或移除 Cookie"
+      }
+    },
+    "updateMessage": {
+      "text1": "Automa 已更新至 v{version},",
+      "text2": "查看新功能。"
+    },
+    "workflows": {
+      "folder": {
+        "new": "新增資料夾",
+        "name": "資料夾名稱",
+        "delete": "刪除資料夾",
+        "rename": "重新命名資料夾"
+      }
+    },
+      "auth": {
+        "title": "驗證",
+        "signIn": "登入",
+        "username": "您需要先設定您的使用者名稱",
+        "clickHere": "點擊這裡",
+        "text": "您需要先登入才能執行此操作"
+      },
+      "running": {
+        "start": "於 {date} 開始",
+        "message": "這僅顯示最近 5 筆日誌"
+      },
+      "settings": {
+        "theme": "主題",
+        "shortcuts": {
+          "duplicate": "快捷鍵已被 \"{name}\" 使用"
+        },
+        "editor": {
+          "title": "標題",
+          "curvature": {
+            "title": "線條曲度",
+            "line": "線條",
+            "reroute": "重新導向",
+            "rerouteFirstLast": "重新導向第一個和最後一個點"
+          },
+          "arrow": {
+            "title": "線條箭頭",
+            "description": "在線條末端添加箭頭"
+          },
+          "snapGrid": {
+            "title": "貼齊格線",
+            "description": "移動區塊時貼齊格線"
+          },
+          "saveWhenExecute": {
+            "title": "執行工作流程時自動儲存",
+            "description": "執行工作流程時將儲存工作流程變更"
+          }
+        },
+        "deleteLog": {
+          "title": "自動刪除工作流程日誌",
+          "after": "刪除於",
+          "deleteAfter": {
+            "never": "永不",
+            "days": "{day} 天"
+          }
+        },
+          "language": {
+            "label": "語言",
+            "helpTranslate": "找不到您的語言？協助翻譯。",
+            "reloadPage": "重新載入頁面以使變更生效"
+          },
+          "menu": {
+            "backup": "備份工作流程",
+            "editor": "編輯器",
+            "general": "一般",
+            "shortcuts": "快捷鍵",
+            "about": "關於"
+          },
+          "backupWorkflows": {
+            "title": "本機備份",
+            "invalidPassword": "密碼無效",
+            "workflowsAdded": "已新增 {count} 個工作流程",
+            "name": "備份工作流程",
+            "needSignin": "您需要先登入",
+            "backup": {
+              "button": "備份",
+              "settings": "備份設定",
+              "encrypt": "使用密碼加密",
+              "schedule": "排程本機備份"
+            },
+            "restore": {
+              "title": "還原工作流程",
+              "button": "還原",
+              "update": "如果工作流程存在則更新"
+            },
+            "cloud": {
+              "buttons": {
+                "local": "本機",
+                "cloud": "雲端"
+              },
+              "location": "位置",
+              "delete": "刪除備份",
+              "title": "雲端備份",
+              "sync": "同步",
+              "lastSync": "上次同步",
+              "lastBackup": "上次備份",
+              "select": "選擇工作流程",
+              "storedWorkflows": "儲存在雲端的工作流程",
+              "selected": "已選擇",
+              "selectText": "選擇您要備份的工作流程",
+              "selectAll": "全選",
+              "deselectAll": "取消全選",
+              "needSelectWorkflow": "您需要選擇您要備份的工作流程"
+            }
+          }
+        },
+          "workflow": {
+            "events": {
+              "title": "工作流程事件",
+              "add-action": "新增動作",
+              "description": "當事件發生時執行動作。",
+              "event": "事件 | 事件",
+              "action": "動作",
+              "actions": {
+                "js-code": {
+                  "title": "執行 JS 程式碼"
+                },
+                "http-request": {
+                  "title": "HTTP 請求"
+                }
+              },
+              "types": {
+                "finish:success": {
+                  "name": "完成 (成功)",
+                  "description": "工作流程執行完成且成功"
+                },
+                "finish:failed": {
+                  "name": "完成 (失敗)",
+                  "description": "工作流程執行完成但發生錯誤"
+                }
+              }
+            },
+            "previewMode": {
+              "title": "預覽模式",
+              "description": "您目前處於預覽模式，您所做的變更將不會被儲存"
+            },
+            "pinWorkflow": {
+              "pin": "釘選工作流程",
+              "unpin": "取消釘選工作流程",
+              "pinned": "已釘選的工作流程"
+            },
+            "parameters": {
+              "add": "新增參數",
+              "preferInTab": "優先在分頁中顯示輸入參數"
+            },
+            "my": "我的工作流程",
+            "testing": {
+              "title": "測試模式",
+              "nextBlock": "下一個區塊",
+              "startRun": "開始執行於",
+              "disabled": "請先儲存變更"
+            },
+            "import": "匯入工作流程",
+            "new": "新增工作流程",
+            "delete": "刪除工作流程",
+            "browse": "瀏覽工作流程",
+            "name": "工作流程名稱",
+            "rename": "重新命名工作流程",
+            "backupCloud": "將工作流程備份到雲端",
+            "add": "新增工作流程",
+            "clickToEnable": "點擊以啟用",
+            "toggleSidebar": "切換側邊欄",
+            "cantEdit": "無法編輯共享的工作流程",
+            "undo": "復原",
+            "redo": "重做",
+            "autoAlign": {
+              "title": "自動對齊"
+            },
+            "blocksFolder": {
+              "title": "區塊資料夾",
+              "add": "將區塊新增至資料夾",
+              "save": "儲存至資料夾"
+            },
+            "searchBlocks": {
+              "title": "在編輯器中搜尋區塊"
+            },
+            "conditionBuilder": {
+              "title": "條件建構器",
+              "add": "新增條件",
+              "and": "AND",
+              "or": "OR",
+              "topAwait": "支援頂層 await 和 \"automaRefData\" 函數"
+            },
+            "host": {
+              "title": "託管工作流程",
+              "set": "設定為託管工作流程",
+              "id": "主機 ID",
+              "add": "新增託管工作流程",
+              "sync": {
+                "title": "同步",
+                "description": "與託管工作流程同步"
+              },
+              "messages": {
+                "hostExist": "您已經新增過此主機",
+                "notFound": "找不到 ID 為 \"{id}\" 的託管工作流程"
+              }
+            },
+              "type": {
+                "local": "本機",
+                "shared": "共享",
+                "host": "主機"
+              },
+              "unpublish": {
+                "title": "取消發布工作流程",
+                "button": "取消發布",
+                "body": "您確定要取消發布工作流程 \"{name}\" 嗎？"
+              },
+              "share": {
+                "url": "分享網址",
+                "publish": "發布",
+                "sharedAs": "共享為 \"{name}\"",
+                "title": "分享工作流程",
+                "download": "將工作流程儲存到本機",
+                "edit": "編輯描述",
+                "fetchLocal": "提取本機工作流程",
+                "update": "更新",
+                "unpublish": "取消發布"
+              },
+              "variables": {
+                "title": "變數 | 變數們",
+                "name": "變數名稱",
+                "assign": "賦予給變數"
+              },
+              "protect": {
+                "title": "保護工作流程",
+                "remove": "移除保護",
+                "button": "保護",
+                "note": "注意：稍後編輯或刪除工作流程時，將需要此密碼。"
+              },
+              "locked": {
+                "title": "此工作流程已受保護",
+                "body": "輸入密碼以解鎖",
+                "unlock": "解鎖",
+                "messages": {
+                  "incorrect-password": "密碼不正確"
+                }
+              },
+              "state": {
+                "executeBy": "由 \"{name}\" 執行"
+              },
+              "table": {
+                "title": "表格 | 表格們",
+                "placeholder": "搜尋或新增欄位",
+                "select": "選擇欄位",
+                "column": {
+                  "name": "欄位名稱",
+                  "type": "資料類型"
+                }
+              },
+              "sidebar": {
+                "workflowIcon": "工作流程圖示"
+              },
+              "editor": {
+                "zoomIn": "放大",
+                "zoomOut": "縮小",
+                "resetZoom": "重設縮放",
+                "duplicate": "複製",
+                "copy": "複製",
+                "paste": "貼上",
+                "group": "群組區塊",
+                "ungroup": "取消群組區塊"
+              },
+              "settings": {
+                "saveLog": "儲存工作流程日誌",
+                "executedBlockOnWeb": "在網頁上顯示已執行的區塊",
+                "notification": {
+                  "title": "工作流程通知",
+                  "description": "在工作流程執行後顯示工作流程狀態 (成功或失敗)",
+                  "noPermission": "此選項需要 \"notifications\" 權限才能運作"
+                },
+                "publicId": {
+                  "title": "工作流程公開 ID",
+                  "description": "設定公開 ID 以透過 JavaScript 自訂事件執行工作流程"
+                },
+                "defaultColumn": {
+                  "title": "插入到預設欄位",
+                  "description": "如果區塊中未選擇欄位，則將資料插入到預設欄位",
+                  "name": "預設欄位名稱"
+                },
+                "autocomplete": {
+                  "title": "自動完成",
+                  "description": "在輸入區塊中啟用自動完成 (如果它使 Automa 不穩定，請停用)"
+                },
+                "clearCache": {
+                  "title": "清除快取",
+                  "description": "清除工作流程的快取 (狀態和迴圈索引)",
+                  "info": "已成功清除工作流程快取",
+                  "btn": "清除"
+                },
+                "reuseLastState": {
+                  "title": "重複使用上次工作流程的狀態",
+                  "description": "使用上次執行的工作流程的狀態資料 (表格、變數和全域資料)"
+                },
+                "debugMode": {
+                  "title": "偵錯模式",
+                  "description": "使用 Chrome DevTools Protocol 執行工作流程"
+                },
+                "restartWorkflow": {
+                  "for": "重新啟動",
+                  "times": "次",
+                  "description": "工作流程將重新啟動的最大次數"
+                },
+                "onError": {
+                  "title": "在工作流程發生錯誤時",
+                  "description": "設定工作流程發生錯誤時要採取的動作",
+                  "items": {
+                    "keepRunning": "繼續執行",
+                    "stopWorkflow": "停止工作流程",
+                    "restartWorkflow": "重新啟動工作流程"
+                  }
+                },
+                  "timeout": {
+                    "title": "工作流程逾時 (毫秒)"
+                  },
+                  "blockDelay": {
+                    "title": "區塊延遲 (毫秒)",
+                    "description": "在執行每個區塊之前新增延遲"
+                  },
+                  "tabLoadTimeout": {
+                    "title": "分頁載入逾時",
+                    "description": "分頁載入的最大時間 (毫秒)，輸入 0 以停用逾時"
+                  }
+                }
+              },
+              "collection": {
+                "description": "依序執行您的工作流程",
+                "new": "新增集合",
+                "delete": "刪除集合",
+                "add": "新增集合",
+                "rename": "重新命名集合",
+                "flow": "流程",
+                "dragDropText": "將工作流程或區塊拖放到此處",
+                "options": {
+                  "atOnce": {
+                    "title": "一次執行集合中的所有工作流程",
+                    "description": "使用此選項時，區塊將不會執行"
+                  }
+                },
+                "globalData": {
+                  "note": "這將覆寫工作流程的全域資料"
+                }
+              },
+              "log": {
+                "flowId": "流程 ID",
+                "goBack": "返回 \"{name}\" 的日誌",
+                "goWorkflow": "前往工作流程",
+                "startedDate": "開始日期",
+                "duration": "持續時間",
+                "selectAll": "全選",
+                "deselectAll": "取消全選",
+                "deleteSelected": "刪除選取的日誌",
+                "clearLogs": {
+                  "title": "清除日誌",
+                  "description": "您確定要清除所有日誌嗎？"
+                },
+                "types": {
+                  "stop": "工作流程已停止",
+                  "finish": "完成"
+                },
+                "messages": {
+                  "url-empty": "網址為空",
+                  "invalid-url": "網址無效",
+                  "conditions-empty": "條件為空",
+                  "invalid-proxy-host": "Proxy 主機無效",
+                  "workflow-disabled": "工作流程已停用",
+                  "selector-empty": "元素選擇器為空",
+                  "invalid-body": "內容主體不是有效的 JSON",
+                  "invalid-active-tab": "\"{url}\" 是無效的網址",
+                  "empty-spreadsheet-id": "試算表 ID 為空",
+                  "invalid-loop-data": "要迴圈的資料無效",
+                  "empty-workflow": "您必須先選擇一個工作流程",
+                  "active-tab-removed": "工作流程的活動分頁已移除",
+                  "empty-spreadsheet-range": "試算表範圍為空",
+                  "stop-timeout": "工作流程因逾時而停止",
+                  "no-file-access": "Automa 無法存取該檔案",
+                  "no-workflow": "找不到 ID 為 \"{workflowId}\" 的工作流程",
+                  "no-match-tab": "找不到符合模式 \"{pattern}\" 的分頁",
+                  "no-clipboard-acces": "沒有權限存取剪貼簿",
+                  "browser-not-supported": "此功能在 {browser} 瀏覽器中不受支援",
+                  "element-not-found": "找不到具有選擇器 \"{selector}\" 的元素",
+                  "no-permission": "沒有 \"{permission}\" 權限執行此動作",
+                  "not-iframe": "具有 \"{selector}\" 選擇器的元素不是 iframe 元素",
+                  "iframe-not-found": "找不到具有選擇器 \"{selector}\" 的 iframe 元素",
+                  "workflow-infinite-loop": "無法執行工作流程以防止無限迴圈",
+                  "not-debug-mode": "工作流程必須在偵錯模式下執行，此區塊才能正常運作",
+                  "no-iframe-id": "找不到具有選擇器 \"{selector}\" 的 iframe 元素的 Frame ID",
+                  "no-tab": "無法連線到分頁，在使用 \"{name}\" 區塊之前，請先使用 \"新增分頁\" 或 \"活動分頁\" 區塊"
+                },
+                "description": {
+                  "text": "{status} 於 {date}，歷時 {duration}",
+                  "status": {
+                    "success": "成功",
+                    "error": "失敗",
+                    "stopped": "已停止"
+                  }
+                },
+                "delete": {
+                  "title": "刪除日誌",
+                  "description": "您確定要刪除所有選取的日誌嗎？"
+                },
+                "exportData": {
+                  "title": "匯出資料",
+                  "types": {
+                    "json": "JSON",
+                    "csv": "CSV",
+                    "plain-text": "純文字"
+                  }
+                },
+                "filter": {
+                  "title": "篩選",
+                  "byStatus": "依狀態",
+                  "byDate": {
+                    "title": "依日期",
+                    "items": {
+                      "lastDay": "最近一天",
+                      "last7Days": "最近七天",
+                      "last30Days": "最近三十天"
+                    }
+                  }
+                }
+              },
+              "components": {
+                "pagination": {
+                  "text1": "顯示",
+                  "text2": "個項目，共 {count} 個",
+                  "nextPage": "下一頁",
+                  "currentPage": "目前頁面",
+                  "prevPage": "上一頁",
+                  "of": "共 {page} 頁"
+                }
+              }
+            }
+           
