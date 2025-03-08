@@ -25,8 +25,13 @@
       "delete": "Xóa quy trình",
       "type": {
         "host": "Máy chủ",
-        "local": "Cục bộ",
+        "local": "Cục bộ"
       }
     }
+  },
+  "about": {
+    "description": "Automa is a chrome extension for browser automation. From auto-fill forms, doing a repetitive task, taking a screenshot, to scraping data of the website, it's up to you what you nt to do with this extension.",
+    "contributors": "Contribuidores",
+    "thanks": "Thanks to everyone who has submitted issues, made suggestions, and generally helped make this a better project."
   }
 }

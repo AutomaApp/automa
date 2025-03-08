@@ -1,0 +1,516 @@
+{
+  "home": {
+    "viewAll": "Ver tudo",
+    "communities": "Comunidades"
+  },
+  "welcome": {
+    "title": "Bem-vindo ao Automa! 🎉",
+    "text": "Comece lendo a documentação ou navegando pelos workflows no Automa Marketplace.",
+    "marketplace": "Marketplace"
+  },
+  "packages": {
+    "name": "Pacote | Pacotes",
+    "add": "Adicionar pacote",
+    "icon": "Ícone do pacote",
+    "open": "Abrir pacotes",
+    "new": "Novo pacote",
+    "import": "Importar pacote",
+    "set": "Definir como um pacote",
+    "settings": {
+      "asBlock": "Definir pacote como bloco"
+    },
+    "categories": {
+      "my": "Meus pacotes",
+      "installed": "Pacotes instalados"
+    }
+  },
+  "scheduledWorkflow": {
+    "title": "Workflows agendados",
+    "nextRun": "Próxima execução",
+    "active": "Ativo",
+    "refresh": "Atualizar",
+    "schedule":{
+      "title": "Agendamento",
+      "types": {
+        "everyDay": "Todos os dias",
+        "general": "A cada {time}",
+        "interval": "A cada {time} minutos"
+      }
+    }
+  },
+  "storage": {
+    "title": "Armazenamento",
+    "table": {
+      "add": "Adicionar tabela",
+      "edit": "Editar tabela",
+      "createdAt": "Criado em",
+      "modifiedAt": "Modificado em",
+      "rowsCount": "Número de linhas",
+      "delete": "Excluir tabela"
+    }
+  },
+  "credential": {
+    "title": "Credencial | Credenciais",
+    "add": "Adicionar credencial",
+    "use": {
+      "title": "Credenciais usadas",
+      "description": "Este workflow usa estas credenciais"
+    }
+  },
+  "workflowPermissions": {
+    "title": "Permissões do workflow",
+    "description": "Este workflow precisa destas permissões para funcionar corretamente",
+    "contextMenus": {
+      "title": "Menu de contexto",
+      "description": "Para executar o workflow via menu de contexto"
+    },
+    "clipboardRead": {
+      "title": "Área de transferência",
+      "description": "Para acessar os dados da área de transferência"
+    },
+    "notifications": {
+      "title": "Notificação",
+      "description": "Para exibir uma notificação"
+    },
+    "downloads": {
+      "title": "Download",
+      "description": "Salvando os ativos da página e renomeando o arquivo baixado"
+    },
+    "cookies": {
+      "title": "Cookies",
+      "description": "Ler, definir ou remover cookies"
+    }
+  },
+  "updateMessage": {
+    "text1": "Automa foi atualizado para a versão v{version},",
+    "text2": "veja o que há de novo."
+  },
+  "workflows": {
+    "folder": {
+      "new": "Nova pasta",
+      "name": "Nome da pasta",
+      "delete": "Excluir pasta",
+      "rename": "Renomear pasta"
+    }
+  },
+  "auth": {
+    "title": "Autenticação",
+    "signIn": "Entrar",
+    "username": "Você precisa definir seu nome de usuário primeiro",
+    "clickHere": "Clique aqui",
+    "text": "Você precisa estar conectado para fazer isso"
+  },
+  "running": {
+    "start": "Iniciado em {date}",
+    "message": "Isso exibe apenas os 5 últimos logs"
+  },
+  "settings": {
+    "theme": "Tema",
+    "shortcuts": {
+      "duplicate": "Atalho já usado por \"{name}\""
+    },
+    "editor": {
+      "title": "Título",
+      "curvature": {
+        "title": "Curvatura da linha",
+        "line": "Linha",
+        "reroute": "Redirecionar",
+        "rerouteFirstLast": "Redirecionar primeiro e último ponto"
+      },
+      "arrow": {
+        "title": "Seta da linha",
+        "description": "Adicione uma seta no final da linha"
+      },
+      "snapGrid": {
+        "title": "Ajustar à grade",
+        "description": "Ajustar à grade ao mover um bloco"
+      },
+      "saveWhenExecute": {
+        "title": "Salvar automaticamente ao executar o workflow",
+        "description": "As alterações do workflow serão salvas ao executar o workflow"
+      }
+    },
+    "deleteLog": {
+      "title": "Excluir logs do workflow automaticamente",
+      "after": "Excluir após",
+      "deleteAfter": {
+        "never": "Nunca",
+        "days": "{day} dias"
+      }
+    },
+    "language": {
+      "label": "Idioma",
+      "helpTranslate": "Não encontrou seu idioma? Ajude a traduzir.",
+      "reloadPage": "Recarregue a página para que a alteração tenha efeito"
+    },
+    "menu": {
+      "backup": "Fazer backup de workflows",
+      "editor": "Editor",
+      "general": "Geral",
+      "shortcuts": "Atalhos",
+      "about": "Sobre"
+    },
+    "backupWorkflows": {
+      "title": "Backup local",
+      "invalidPassword": "Senha inválida",
+      "workflowsAdded": "{count} workflows foram adicionados",
+      "name": "Fazer backup de workflows",
+      "needSignin": "Você precisa fazer login primeiro",
+      "backup": {
+        "button": "Fazer backup",
+        "settings": "Configurações de backup",
+        "encrypt": "Criptografar com senha",
+        "schedule": "Agendar backup local"
+      },
+      "restore": {
+        "title": "Restaurar workflows",
+        "button": "Restaurar",
+        "update": "Atualizar se o workflow existir"
+      },
+      "cloud": {
+        "buttons": {
+          "local": "Local",
+          "cloud": "Cloud"
+        },
+        "location": "Local",
+        "delete": "Excluir backup",
+        "title": "Backup na nuvem",
+        "sync": "Sincronizar",
+        "lastSync": "Última sincronização",
+        "lastBackup": "Último backup",
+        "select": "Selecionar workflows",
+        "storedWorkflows": "Workflows que estão armazenados na nuvem",
+        "selected": "Selecionados",
+        "selectText": "Selecione os workflows que você deseja fazer backup",
+        "selectAll": "Selecionar tudo",
+        "deselectAll": "Desmarcar tudo",
+        "needSelectWorkflow": "Você precisa selecionar os workflows que deseja fazer backup"
+      }
+    }
+  },
+  "workflow": {
+    "events": {
+      "title": "Eventos do workflow",
+      "add-action": "Adicionar ação",
+      "description": "Realizar ações quando o evento ocorrer.",
+      "event": "Evento | Eventos",
+      "action": "Ação",
+      "actions": {
+        "js-code": {
+          "title": "Executar código JS"
+        },
+        "http-request": {
+          "title": "Solicitação HTTP"
+        }
+      },
+      "types": {
+        "finish:success": {
+          "name": "Finalizar (sucesso)",
+          "description": "Execução do workflow finalizada com sucesso"
+        },
+        "finish:failed": {
+          "name": "Finalizar (erro)",
+          "description": "Execução do workflow finalizada com erro"
+        }
+      }
+    },
+    "previewMode": {
+      "title": "Modo de visualização",
+      "description": "Você está no modo de visualização, as alterações que você fez não serão salvas"
+    },
+    "pinWorkflow": {
+      "pin": "Fixar workflow",
+      "unpin": "Desfixar workflow",
+      "pinned": "Workflows fixados"
+    },
+    "parameters": {
+      "add": "Adicionar parâmetro",
+      "preferInTab": "Preferir parâmetros de entrada na guia"
+    },
+    "my": "Meus workflows",
+    "testing": {
+      "title": "Modo de teste",
+      "nextBlock": "Próximo bloco",
+      "startRun": "Iniciar execução em",
+      "disabled": "Salve as alterações primeiro"
+    },
+    "import": "Importar workflow",
+    "new": "Novo workflow",
+    "delete": "Excluir workflow",
+    "browse": "Navegar por workflows",
+    "name": "Nome do workflow",
+    "rename": "Renomear workflow",
+    "backupCloud": "Fazer backup do workflow na nuvem",
+    "add": "Adicionar workflow",
+    "clickToEnable": "Clique para habilitar",
+    "toggleSidebar": "Alternar barra lateral",
+    "cantEdit": "Não é possível editar workflow compartilhado",
+    "undo": "Desfazer",
+    "redo": "Refazer",
+    "autoAlign": {
+      "title": "Alinhamento automático"
+    },
+    "blocksFolder": {
+      "title": "Pasta de blocos",
+      "add": "Adicionar blocos à pasta",
+      "save": "Salvar na pasta"
+    },
+    "searchBlocks": {
+      "title": "Pesquisar blocos no editor"
+    },
+    "conditionBuilder": {
+      "title": "Construtor de condições",
+      "add": "Adicionar condição",
+      "and": "E",
+      "or": "Ou",
+      "topAwait": "Suporta aguardar no nível superior e a função \"automaRefData\""
+    },
+    "host": {
+      "title": "Hospedar workflow",
+      "set": "Definir como workflow host",
+      "id": "ID do host",
+      "add": "Adicionar workflow hospedado",
+      "sync": {
+        "title": "Sincronizar",
+        "description": "Sincronizar com o workflow host"
+      },
+      "messages": {
+        "hostExist": "Você já adicionou este host",
+        "notFound": "Não foi possível encontrar um workflow hospedado com o ID \"{id}\""
+      }
+    },
+    "type": {
+      "local": "Local",
+      "shared": "Compartilhado",
+      "host": "Host"
+    },
+    "unpublish": {
+      "title": "Despublicar workflow",
+      "button": "Despublicar",
+      "body": "Tem certeza de que deseja despublicar o workflow \"{name}\"?"
+    },
+    "share": {
+      "url": "URL de compartilhamento",
+      "publish": "Publicar",
+      "sharedAs": "Compartilhado como \"{name}\"",
+      "title": "Compartilhar workflow",
+      "download": "Salvar workflow localmente",
+      "edit": "Editar descrição",
+      "fetchLocal": "Obter workflow local",
+      "update": "Atualizar",
+      "unpublish": "Despublicar"
+    },
+    "variables": {
+      "title": "Variável | Variáveis",
+      "name": "Nome da variável",
+      "assign": "Atribuir à variável"
+    },
+    "protect": {
+      "title": "Proteger workflow",
+      "remove": "Remover proteção",
+      "button": "Proteger",
+      "note": "Nota: esta senha será necessária posteriormente para editar ou excluir o workflow."
+    },
+    "locked": {
+      "title": "Este workflow está protegido",
+      "body": "Insira a senha para desbloqueá-lo",
+      "unlock": "Desbloquear",
+      "messages": {
+        "incorrect-password": "Senha incorreta"
+      }
+    },
+    "state": {
+      "executeBy": "Executado por: \"{name}\""
+    },
+    "table": {
+      "title": "Tabela | Tabelas",
+      "placeholder": "Pesquisar ou adicionar uma coluna",
+      "select": "Selecionar coluna",
+      "column": {
+        "name": "Nome da coluna",
+        "type": "Tipo de dado"
+      }
+    },
+    "sidebar": {
+      "workflowIcon": "Ícone do workflow"
+    },
+    "editor": {
+      "zoomIn": "Aumentar zoom",
+      "zoomOut": "Diminuir zoom",
+      "resetZoom": "Redefinir zoom",
+      "duplicate": "Duplicar",
+      "copy": "Copiar",
+      "paste": "Colar",
+      "group": "Agrupar blocos",
+      "ungroup": "Desagrupar blocos"
+    },
+    "settings": {
+      "saveLog": "Salvar log do workflow",
+      "executedBlockOnWeb": "Mostrar bloco executado na página da web",
+      "notification": {
+        "title": "Notificação do workflow",
+        "description": "Mostrar o status do workflow (sucesso ou falha) após sua execução",
+        "noPermission": "Esta opção exige a permissão \"notificações\" para funcionar"
+      },
+      "publicId": {
+        "title": "ID público do workflow",
+        "description": "Definir um ID público para executar o workflow via um evento personalizado JavaScript"
+      },
+      "defaultColumn": {
+        "title": "Inserir na coluna padrão",
+        "description": "Inserir dados na coluna padrão se não houver nenhuma coluna selecionada no bloco",
+        "name": "Nome da coluna padrão"
+      },
+      "autocomplete": {
+        "title": "Preenchimento automático",
+        "description": "Habilitar o preenchimento automático no bloco de entrada (desabilitar se isso tornar o Automa instável)"
+      },
+      "clearCache": {
+        "title": "Limpar cache",
+        "description": "Limpar cache (estado e índice do loop) do workflow",
+        "info": "Cache do workflow limpado com sucesso",
+        "btn": "Limpar"
+      },
+      "reuseLastState": {
+        "title": "Reutilizar o estado do último workflow",
+        "description": "Usar os dados do estado (tabela, variáveis e dados globais) do último workflow executado"
+      },
+      "debugMode": {
+        "title": "Modo de depuração",
+        "description": "Executar o workflow usando o Protocolo Chrome DevTools"
+      },
+      "restartWorkflow": {
+        "for": "Reiniciar por",
+        "times": "Vezes",
+        "description": "Número máximo de vezes que o workflow será reiniciado"
+      },
+      "onError": {
+        "title": "Em caso de erro no workflow",
+        "description": "Definir a ação a ser tomada se um erro ocorrer no workflow",
+        "items": {
+          "keepRunning": "Continuar em execução",
+          "stopWorkflow": "Parar workflow",
+          "restartWorkflow": "Reiniciar workflow"
+        }
+      },
+      "timeout": {
+        "title": "Tempo limite do workflow (milissegundos)"
+      },
+      "blockDelay": {
+        "title": "Atraso do bloco (milissegundos)",
+        "description": "Adicionar atraso antes de executar cada um dos blocos"
+      },
+      "tabLoadTimeout": {
+        "title": "Tempo limite de carregamento da guia",
+        "description": "Tempo máximo para carregar uma guia em milissegundos, insira 0 para desabilitar o tempo limite"
+      }
+    }
+  },
+  "collection": {
+    "description": "Execute seus workflows em sequência",
+    "new": "Nova coleção",
+    "delete": "Excluir coleção",
+    "add": "Adicionar coleção",
+    "rename": "Renomear coleção",
+    "flow": "Fluxo",
+    "dragDropText": "Solte um workflow ou bloco aqui",
+    "options": {
+      "atOnce": {
+        "title": "Executar todos os workflows da coleção de uma vez",
+        "description": "Os blocos não serão executados quando esta opção for usada"
+      }
+    },
+    "globalData": {
+      "note": "Isso irá sobrescrever os dados globais do workflow"
+    }
+  },
+  "log": {
+    "flowId": "ID do fluxo",
+    "goBack": "Voltar aos logs de \"{name}\"",
+    "goWorkflow": "Ir para o workflow",
+    "startedDate": "Data de início",
+    "duration": "Duração",
+    "selectAll": "Selecionar tudo",
+    "deselectAll": "Desmarcar tudo",
+    "deleteSelected": "Excluir logs selecionados",
+    "clearLogs": {
+      "title": "Limpar logs",
+      "description": "Tem certeza de que deseja limpar todos os logs?"
+    },
+    "types": {
+      "stop": "Workflow está parado",
+      "finish": "Finalizar"
+    },
+    "messages": {
+      "url-empty": "URL está vazia",
+      "invalid-url": "URL não é válida",
+      "conditions-empty": "As condições estão vazias",
+      "invalid-proxy-host": "Host de proxy inválido",
+      "workflow-disabled": "Workflow está desabilitado",
+      "selector-empty": "Seletor de elemento está vazio",
+      "invalid-body": "O corpo do conteúdo não é um JSON válido",
+      "invalid-active-tab": "\"{url}\" é uma URL inválida",
+      "empty-spreadsheet-id": "O ID da planilha está vazio",
+      "invalid-loop-data": "Dados inválidos para iterar",
+      "empty-workflow": "Você deve selecionar um workflow primeiro",
+      "active-tab-removed": "A guia ativa do workflow foi removida",
+      "empty-spreadsheet-range": "Intervalo da planilha está vazio",
+      "stop-timeout": "O workflow foi parado devido ao tempo limite",
+      "no-file-access": "Automa não tem acesso ao arquivo",
+      "no-workflow": "Não foi possível encontrar um workflow com o ID \"{workflowId}\"",
+      "no-match-tab": "Não foi possível encontrar uma guia correspondente ao padrão \"{pattern}\"",
+      "no-clipboard-acces": "Não tem permissão para acessar a área de transferência",
+      "browser-not-supported": "Este recurso não é suportado no navegador {browser}",
+      "element-not-found": "Não foi possível encontrar um elemento com o seletor \"{selector}\"",
+      "no-permission": "Não tem permissão \"{permission}\" para executar esta ação",
+      "not-iframe": "O elemento com o seletor \"{selector}\" não é um elemento iframe",
+      "iframe-not-found": "Não foi possível encontrar um elemento iframe com o seletor \"{selector}\"",
+      "workflow-infinite-loop": "Não é possível executar o workflow para evitar um loop infinito",
+      "not-debug-mode": "O workflow deve ser executado no modo de depuração para que este bloco funcione corretamente",
+      "no-iframe-id": "Não foi possível encontrar o ID do quadro para o elemento iframe com o seletor \"{selector}\"",
+      "no-tab": "Não é possível conectar a uma guia, use o bloco \"Nova guia\" ou \"Guia ativa\" antes de usar o bloco \"{name}\""
+    },
+    "description": {
+      "text": "{status} em {date} em {duration}",
+      "status": {
+        "success": "Concluído com sucesso",
+        "error": "Falhou",
+        "stopped": "Parado"
+      }
+    },
+    "delete": {
+      "title": "Excluir log",
+      "description": "Tem certeza de que deseja excluir todos os logs selecionados?"
+    },
+    "exportData": {
+      "title": "Exportar dados",
+      "types": {
+        "json": "JSON",
+        "csv": "CSV",
+        "plain-text": "Texto simples"
+      }
+    },
+    "filter": {
+      "title": "Filtrar",
+      "byStatus": "Por status",
+      "byDate": {
+        "title": "Por data",
+        "items": {
+          "lastDay": "Último dia",
+          "last7Days": "Últimos sete dias",
+          "last30Days": "Últimos trinta dias"
+        }
+      }
+    }
+  },
+  "components": {
+    "pagination": {
+      "text1": "Mostrando",
+      "text2": "itens de {count}",
+      "nextPage": "Próxima página",
+      "currentPage": "Página atual",
+      "prevPage": "Página anterior",
+      "of": "de {page}"
+    }
+  }
+}
