@@ -128,8 +128,8 @@
 import { reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { countDuration } from '@/utils/helper';
-import { stopWorkflowExec } from '@/workflowEngine';
 import dayjs from '@/lib/dayjs';
+import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
 
 defineProps({
   logs: {
@@ -160,7 +160,7 @@ function getTranslation(key, defText = '') {
   return te(key) ? t(key) : defText;
 }
 function stopWorkflow(stateId) {
-  stopWorkflowExec(stateId);
+  RendererWorkflowService.stopWorkflowExecution(stateId);
 }
 function toggleSelectedLog(selected, id) {
   if (selected) {

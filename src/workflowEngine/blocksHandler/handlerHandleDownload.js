@@ -1,4 +1,5 @@
-import browser from 'webextension-polyfill';
+import { IS_FIREFOX } from '@/common/utils/constant';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 
 const getFileExtension = (str) => /(?:\.([^.]+))?$/.exec(str)[1];
 function determineFilenameListener(item, suggest) {
@@ -37,7 +38,7 @@ async function handleDownload({ data, id: blockId }) {
     if (Number.isNaN(+data.downloadId))
       throw new Error('Download id is not a number');
 
-    const [downloadItem] = await browser.downloads.search({
+    const [downloadItem] = await BrowserAPIService.downloads.search({
       id: +data.downloadId,
     });
     if (!downloadItem)
@@ -64,10 +65,10 @@ async function handleDownload({ data, id: blockId }) {
     if (!this.activeTab.id) throw new Error('no-tab');
 
     const hasListener =
-      BROWSER_TYPE === 'chrome' &&
-      chrome.downloads.onDeterminingFilename.hasListeners(() => {});
+      !IS_FIREFOX &&
+      BrowserAPIService.downloads.onDeterminingFilename.hasListeners(() => {});
     if (!hasListener) {
-      chrome.downloads.onDeterminingFilename.addListener(
+      BrowserAPIService.downloads.onDeterminingFilename.addListener(
         determineFilenameListener
       );
     }
@@ -81,10 +82,10 @@ async function handleDownload({ data, id: blockId }) {
       names[id] = data;
       sessionStorage.setItem('rename-downloaded-files', JSON.stringify(names));
 
-      browser.downloads.onCreated.removeListener(handleCreated);
+      BrowserAPIService.downloads.onCreated.removeListener(handleCreated);
     };
     if (!downloadId) {
-      browser.downloads.onCreated.addListener(handleCreated);
+      BrowserAPIService.downloads.onCreated.addListener(handleCreated);
     }
 
     if (!data.waitForDownload) {
@@ -128,7 +129,7 @@ async function handleDownload({ data, id: blockId }) {
         JSON.stringify(filesname)
       );
 
-      chrome.downloads.onDeterminingFilename.removeListener(
+      BrowserAPIService.downloads.onDeterminingFilename.removeListener(
         determineFilenameListener
       );
 
@@ -140,7 +141,7 @@ async function handleDownload({ data, id: blockId }) {
 
     const handleChanged = ({ state, id, filename }) => {
       if (this.engine.isDestroyed || isResolved) {
-        browser.downloads.onChanged.removeListener(handleChanged);
+        BrowserAPIService.downloads.onChanged.removeListener(handleChanged);
         return;
       }
 
@@ -152,15 +153,17 @@ async function handleDownload({ data, id: blockId }) {
       if (DOWNLOAD_STATE.includes(state.current)) {
         resolvePromise(id);
       } else {
-        browser.downloads.search({ id: downloadId }).then(([download]) => {
-          if (!download || !DOWNLOAD_STATE.includes(download.state)) return;
+        BrowserAPIService.downloads
+          .search({ id: downloadId })
+          .then(([download]) => {
+            if (!download || !DOWNLOAD_STATE.includes(download.state)) return;
 
-          resolvePromise(id);
-        });
+            resolvePromise(id);
+          });
       }
     };
 
-    browser.downloads.onChanged.addListener(handleChanged);
+    BrowserAPIService.downloads.onChanged.addListener(handleChanged);
   });
 
   return result;

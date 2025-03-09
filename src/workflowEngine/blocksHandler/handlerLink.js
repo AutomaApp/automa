@@ -1,4 +1,4 @@
-import browser from 'webextension-polyfill';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 
 export default async function ({ data, id, label }) {
   const url = await this._sendMessageToTab({
@@ -8,7 +8,7 @@ export default async function ({ data, id, label }) {
   });
 
   if (data.openInNewTab) {
-    const tab = await browser.tabs.create({
+    const tab = await BrowserAPIService.tabs.create({
       url,
       windowId: this.activeTab.windowId,
     });

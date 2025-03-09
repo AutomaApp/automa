@@ -15,7 +15,7 @@
       <ui-tab value="raw"> Raw </ui-tab>
     </ui-tabs>
     <div v-if="state.activeTab === 'gui'" class="mt-4">
-      <ul class="grid grid-cols-1 gap-4 space-y-2 md:grid-cols-2">
+      <ul class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <li
           v-for="(varValue, varName) in variables"
           :key="varName"
@@ -50,7 +50,7 @@
   </template>
 </template>
 <script setup>
-import { defineAsyncComponent, shallowReactive, computed } from 'vue';
+import { computed, defineAsyncComponent, shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const SharedCodemirror = defineAsyncComponent(() =>

@@ -1,18 +1,18 @@
-import browser from 'webextension-polyfill';
-import { nanoid } from 'nanoid';
-import cloneDeep from 'lodash.clonedeep';
 import findSelector from '@/lib/findSelector';
+import { isXPath, toCamelCase } from '@/utils/helper';
 import { sendMessage } from '@/utils/message';
 import automa from '@business';
-import { toCamelCase, isXPath } from '@/utils/helper';
-import handleSelector, {
-  queryElements,
-  getDocumentCtx,
-} from './handleSelector';
+import cloneDeep from 'lodash.clonedeep';
+import { nanoid } from 'nanoid';
+import browser from 'webextension-polyfill';
 import blocksHandler from './blocksHandler';
-import showExecutedBlock from './showExecutedBlock';
-import shortcutListener from './services/shortcutListener';
 import initCommandPalette from './commandPalette';
+import handleSelector, {
+  getDocumentCtx,
+  queryElements,
+} from './handleSelector';
+import shortcutListener from './services/shortcutListener';
+import showExecutedBlock from './showExecutedBlock';
 // import elementObserver from './elementObserver';
 import { elementSelectorInstance } from './utils';
 
@@ -56,7 +56,7 @@ async function executeBlock(data) {
     const selector = selectorsArr.pop();
     const frameSelector = selectorsArr.join('|>');
 
-    const framElSelector = selectorsArr.pop();
+    const frameElSelector = selectorsArr.pop();
 
     let findBy = data?.data?.findBy;
     if (!findBy) {
@@ -69,7 +69,7 @@ async function executeBlock(data) {
         findBy,
         multiple: false,
         waitForSelector: 5000,
-        selector: framElSelector,
+        selector: frameElSelector,
       },
       documentCtx
     );
@@ -82,8 +82,8 @@ async function executeBlock(data) {
 
     if (!frameElement) throw frameError('iframe-not-found');
 
-    const isFrameEelement = ['IFRAME', 'FRAME'].includes(frameElement.tagName);
-    if (!isFrameEelement) throw frameError('not-iframe');
+    const isFrameElement = ['IFRAME', 'FRAME'].includes(frameElement.tagName);
+    if (!isFrameElement) throw frameError('not-iframe');
 
     const { x, y } = frameElement.getBoundingClientRect();
     const iframeDetails = { x, y };

@@ -1,3 +1,4 @@
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import browser from 'webextension-polyfill';
 
 export async function getActiveTab() {
@@ -249,7 +250,7 @@ export function debounce(callback, time = 200) {
 
 export async function clearCache(workflow) {
   try {
-    await browser.storage.local.remove(`state:${workflow.id}`);
+    await BrowserAPIService.storage.local.remove(`state:${workflow.id}`);
 
     const flows = parseJSON(workflow.drawflow, null);
     const blocks = flows && flows.drawflow.Home.data;

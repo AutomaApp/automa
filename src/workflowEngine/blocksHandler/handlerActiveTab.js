@@ -1,5 +1,5 @@
-import browser from 'webextension-polyfill';
 import { sleep } from '@/utils/helper';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import { attachDebugger, injectPreloadScript } from '../helper';
 
 async function activeTab(block) {
@@ -10,8 +10,7 @@ async function activeTab(block) {
     };
 
     if (this.activeTab.id) {
-      await browser.tabs.update(this.activeTab.id, { active: true });
-
+      await BrowserAPIService.tabs.update(this.activeTab.id, { active: true });
       return data;
     }
 
@@ -24,15 +23,17 @@ async function activeTab(block) {
       tabsQuery.currentWindow = true;
     } else if (this.engine.isPopup) {
       let windowId = null;
-      const extURL = browser.runtime.getURL('');
-      const windows = await browser.windows.getAll({ populate: true });
+      const extURL = BrowserAPIService.runtime.getURL('');
+      const windows = await BrowserAPIService.windows.getAll({
+        populate: true,
+      });
       for (const browserWindow of windows) {
         const [tab] = browserWindow.tabs;
         const isDashboard =
           browserWindow.tabs.length === 1 && tab.url?.includes(extURL);
 
         if (isDashboard) {
-          await browser.windows.update(browserWindow.id, {
+          await BrowserAPIService.windows.update(browserWindow.id, {
             focused: false,
           });
         } else if (browserWindow.focused) {
@@ -43,12 +44,12 @@ async function activeTab(block) {
       if (windowId) tabsQuery.windowId = windowId;
       else if (windows.length > 2) tabsQuery.lastFocusedWindow = true;
     } else {
-      const dashboardTabs = await browser.tabs.query({
-        url: browser.runtime.getURL('/newtab.html'),
+      const dashboardTabs = await BrowserAPIService.tabs.query({
+        url: BrowserAPIService.runtime.getURL('/newtab.html'),
       });
       await Promise.all(
         dashboardTabs.map((item) =>
-          browser.windows.update(item.windowId, {
+          BrowserAPIService.windows.update(item.windowId, {
             focused: false,
           })
         )
@@ -57,7 +58,7 @@ async function activeTab(block) {
       tabsQuery.currentWindow = true;
     }
 
-    const [tab] = await browser.tabs.query(tabsQuery);
+    const [tab] = await BrowserAPIService.tabs.query(tabsQuery);
     if (!tab) {
       throw new Error("Can't find active tab");
     }
@@ -100,8 +101,8 @@ async function activeTab(block) {
       }
     }
 
-    await browser.tabs.update(tab.id, { active: true });
-    await browser.windows.update(tab.windowId, { focused: true });
+    await BrowserAPIService.tabs.update(tab.id, { active: true });
+    await BrowserAPIService.windows.update(tab.windowId, { focused: true });
 
     await sleep(200);
 

@@ -12,6 +12,7 @@ function injectFilePicker() {
     let gisLoaded = false;
     let pickerLoaded = false;
 
+    // Create a blob URL for the Google API script
     const scriptApi = document.createElement('script');
     scriptApi.onload = () => {
       window.gapi.load('picker', () => {
@@ -19,13 +20,14 @@ function injectFilePicker() {
       });
     };
     scriptApi.id = 'google-api';
-    scriptApi.src = 'https://apis.google.com/js/api.js';
+    scriptApi.src = chrome.runtime.getURL('lib/google-apis.js');
 
+    // Create a blob URL for the GSI client script
     const scriptGis = document.createElement('script');
     scriptGis.onload = () => {
       gisLoaded = true;
     };
-    scriptGis.src = 'https://accounts.google.com/gsi/client';
+    scriptGis.src = chrome.runtime.getURL('lib/google-accounts.gsi.client.js');
 
     document.body.appendChild(scriptApi);
     document.body.appendChild(scriptGis);

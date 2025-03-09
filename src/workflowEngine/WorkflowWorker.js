@@ -1,4 +1,3 @@
-import browser from 'webextension-polyfill';
 import cloneDeep from 'lodash.clonedeep';
 import {
   toCamelCase,
@@ -8,10 +7,10 @@ import {
   isObject,
 } from '@/utils/helper';
 import dbStorage from '@/db/storage';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import templating from './templating';
 import renderString from './templating/renderString';
 import { convertData, waitTabLoaded } from './helper';
-import injectContentScript from './injectContentScript';
 
 function blockExecutionWrapper(blockHandler, blockData) {
   return new Promise((resolve, reject) => {
@@ -518,7 +517,7 @@ class WorkflowWorker {
         frameSelector: this.frameSelector,
         ...payload,
       };
-      const data = await browser.tabs.sendMessage(
+      const data = await BrowserAPIService.tabs.sendMessage(
         this.activeTab.id,
         messagePayload,
         { frameId: this.activeTab.frameId, ...options }
@@ -533,10 +532,14 @@ class WorkflowWorker {
       const channelClosed = error.message?.includes('message channel closed');
 
       if (noConnection || channelClosed) {
-        const isScriptInjected = await injectContentScript(
-          this.activeTab.id,
-          this.activeTab.frameId
-        );
+        const isScriptInjected = await BrowserAPIService.contentScript.inject({
+          file: './contentScript.bundle.js',
+          target: {
+            tabId: this.activeTab.id,
+            frameId: this.activeTab.frameId,
+          },
+          waitUntilInjected: true,
+        });
 
         if (isScriptInjected) {
           const result = await this._sendMessageToTab(

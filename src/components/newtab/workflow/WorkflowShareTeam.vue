@@ -137,19 +137,19 @@
   </ui-card>
 </template>
 <script setup>
-import { reactive, watch, onMounted } from 'vue';
+import SharedWysiwyg from '@/components/newtab/shared/SharedWysiwyg.vue';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
+import { useUserStore } from '@/stores/user';
+import { fetchApi } from '@/utils/api';
+import { debounce, parseJSON } from '@/utils/helper';
+import { workflowCategories } from '@/utils/shared';
+import { convertWorkflow } from '@/utils/workflowData';
+import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
+import cloneDeep from 'lodash.clonedeep';
+import { onMounted, reactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 import browser from 'webextension-polyfill';
-import cloneDeep from 'lodash.clonedeep';
-import { fetchApi } from '@/utils/api';
-import { useUserStore } from '@/stores/user';
-import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
-import { workflowCategories } from '@/utils/shared';
-import { parseJSON, debounce } from '@/utils/helper';
-import { convertWorkflow } from '@/utils/workflowData';
-import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
-import SharedWysiwyg from '@/components/newtab/shared/SharedWysiwyg.vue';
 
 const props = defineProps({
   workflow: {
@@ -215,7 +215,7 @@ async function publishWorkflow() {
       await registerWorkflowTrigger(workflow.id, triggerBlock);
     }
 
-    toast('Successfully share the workflow with your team');
+    toast('Share the workflow with your team successfully.');
 
     emit('publish');
   } catch (error) {

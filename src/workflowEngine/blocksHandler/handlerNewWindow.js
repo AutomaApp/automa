@@ -1,4 +1,4 @@
-import browser from 'webextension-polyfill';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import { attachDebugger } from '../helper';
 
 export async function newWindow({ data, id }) {
@@ -17,7 +17,9 @@ export async function newWindow({ data, id }) {
   }
   if (data.url) windowOptions.url = data.url;
 
-  const newWindowInstance = await browser.windows.create(windowOptions);
+  const newWindowInstance = await BrowserAPIService.windows.create(
+    windowOptions
+  );
   this.windowId = newWindowInstance.id;
 
   if (data.url) {

@@ -1,4 +1,4 @@
-import browser from 'webextension-polyfill';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 
 export async function logData({ id, data }) {
   let urls = [];
@@ -6,7 +6,7 @@ export async function logData({ id, data }) {
   if (data.type === 'active-tab') {
     if (!this.activeTab.id) throw new Error('no-tab');
 
-    const tab = await browser.tabs.get(this.activeTab.id);
+    const tab = await BrowserAPIService.tabs.get(this.activeTab.id);
     urls = tab.url || tab.pendingUrl || '';
   } else {
     const query = {};
@@ -18,7 +18,7 @@ export async function logData({ id, data }) {
       query.title = data.qTitle;
     }
 
-    const tabs = await browser.tabs.query(query);
+    const tabs = await BrowserAPIService.tabs.query(query);
     urls = tabs.map((tab) => tab.url);
   }
 

@@ -323,7 +323,7 @@ import { excludeGroupBlocks } from '@/utils/shared';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { useCommandManager } from '@/composable/commandManager';
 import { debounce, parseJSON, throttle, getActiveTab } from '@/utils/helper';
-import { executeWorkflow } from '@/workflowEngine';
+import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
 import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
 import emitter from '@/lib/mitt';
 import functions from '@/workflowEngine/templating/templatingFunctions';
@@ -705,7 +705,7 @@ async function executeFromBlock(blockId) {
       workflowOptions.tabId = tab.id;
     }
 
-    executeWorkflow(workflow.value, workflowOptions);
+    RendererWorkflowService.executeWorkflow(workflow.value, workflowOptions);
   } catch (error) {
     console.error(error);
   }

@@ -1,4 +1,5 @@
-import browser from 'webextension-polyfill';
+import { IS_FIREFOX } from '@/common/utils/constant';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import { copyTextToClipboard } from '../helper';
 
 function doCommand(command, value) {
@@ -22,16 +23,15 @@ function doCommand(command, value) {
 }
 
 export default async function ({ data, id, label }) {
-  const isFirefox = BROWSER_TYPE === 'firefox';
-  if (!isFirefox && !this.engine?.isPopup && !this.engine?.isMV2)
+  if (!IS_FIREFOX && !this.engine?.isPopup && !this.engine?.isMV2)
     throw new Error('Clipboard block is not supported in background execution');
 
   const permissions = ['clipboardRead'];
-  if (isFirefox) {
+  if (IS_FIREFOX) {
     permissions.push('clipboardWrite');
   }
 
-  const hasPermission = await browser.permissions.contains({
+  const hasPermission = await BrowserAPIService.permissions.contains({
     permissions,
   });
 
@@ -67,7 +67,7 @@ export default async function ({ data, id, label }) {
 
     valueToReturn = text;
 
-    if (isFirefox) {
+    if (IS_FIREFOX) {
       await copyTextToClipboard(text);
     } else {
       doCommand('copy', text);

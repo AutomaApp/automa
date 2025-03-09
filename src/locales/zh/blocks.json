@@ -210,7 +210,7 @@
         "actions": {
           "press-key": "按下一个按键",
           "multiple-keys": "按下多个按键"
-        }
+        },
         "press-time": "按下时间 (毫秒)"
       },
       "save-assets": {

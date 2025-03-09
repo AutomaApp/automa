@@ -104,6 +104,7 @@
     </div>
     <ui-switch
       v-if="!item.notSupport?.includes(browserType)"
+      :disabled="item.disabled"
       :model-value="settings[item.id]"
       @change="updateSetting(item.id, $event)"
     />
@@ -149,8 +150,8 @@
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 // import browser from 'webextension-polyfill';
-import { clearCache } from '@/utils/helper';
 import { useHasPermissions } from '@/composable/hasPermissions';
+import { clearCache } from '@/utils/helper';
 
 const props = defineProps({
   settings: {

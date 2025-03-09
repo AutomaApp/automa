@@ -1,28 +1,321 @@
 {
   "collection": {
-    "blocks": {
-      "export-result": {
-        "name": "匯出結果",
-        "description": "以JSON格式匯出"
-      }
-    }
+  "blocks": {
+  "export-result": {
+  "name": "匯出結果",
+  "description": "將集合結果匯出為 JSON"
+  }
+  }
   },
   "workflow": {
     "blocks": {
       "base": {
+        "title": "區塊",
+        "moveToGroup": "將區塊移動至區塊群組",
         "selector": "元素選擇器",
+        "selectorOptions": "選擇器選項",
+        "timeout": "超時時間（毫秒）",
+        "noPermission": "Automa 沒有足夠的權限執行此操作",
+        "grantPermission": "授予權限",
+        "action": "操作",
+        "element": {
+          "select": "選擇一個元素",
+          "verify": "驗證選擇器"
+        },
+        "settings": {
+          "title": "區塊設定",
+          "blockTimeout": {
+            "title": "區塊執行超時時間（毫秒）",
+            "description": "區塊的最大執行時間（0 表示停用）"
+          },
+          "line": {
+            "title": "線條",
+            "label": "標籤",
+            "animated": "動畫效果",
+            "select": "選擇線條",
+            "to": "連接到 {name} 區塊的線條",
+            "lineColor": "顏色"
+          }
+        },
+"toggle": {
+          "enable": "啟用區塊",
+          "disable": "停用區塊"
+        },
+        "onError": {
+          "info": "這些規則將在區塊發生錯誤時應用",
+          "button": "發生錯誤時",
+          "title": "當錯誤發生時",
+          "retry": "重試操作",
+          "fallbackTitle": "當區塊發生錯誤時將執行",
+          "times": {
+            "name": "次數",
+            "description": "重試操作的次數"
+          },
+          "interval": {
+            "name": "間隔",
+            "description": "每次重試之間的等待時間",
+            "second": "秒"
+          },
+          "toDo": {
+            "error": "拋出錯誤",
+            "continue": "繼續流程",
+            "fallback": "執行備用方案",
+            "restart": "重新啟動流程"
+          },
+          "insertData": {
+            "name": "插入資料"
+          }
+        },
+        "table": {
+          "checkbox": "插入到表格",
+          "select": "選擇欄位",
+          "extraRow": {
+            "checkbox": "新增額外行",
+            "placeholder": "值",
+            "title": "額外行的值"
+          }
+        },
+        "findElement": {
+          "placeholder": "透過以下方式尋找元素",
+          "options": {
+            "cssSelector": "CSS 選擇器",
+            "xpath": "XPath"
+          }
+        },
         "markElement": {
-          "title": "An element will not be selected if have been selected before",
-          "text": "標記 HTML 元素"
+          "title": "如果元素之前已被選擇過，則不會再次被選擇",
+          "text": "標記元素"
         },
         "multiple": {
-          "title": "複選 HTML 元素",
-          "text": "複選 HTML 元素"
+          "title": "選擇多個元素",
+          "text": "多選"
+        },
+        "waitSelector": {
+          "title": "等待選擇器",
+          "timeout": "選擇器超時時間（毫秒）"
+        },
+        "downloads": {
+          "onConflict": {
+            "uniquify": "唯一化",
+            "overwrite": "覆蓋",
+            "prompt": "提示"
+          }
         }
       },
+      "wait-connections": {
+        "name": "等待連線",
+        "description": "等待所有連線完成後再繼續到下一個區塊",
+        "specificFlow": "僅繼續特定流程",
+        "selectFlow": "選擇流程"
+      },
+      "cookie": {
+        "name": "Cookie",
+        "description": "取得、設定或移除 cookies",
+        "types": {
+          "get": "取得 cookies",
+          "set": "設定 cookie",
+          "remove": "移除 cookies",
+          "getAll": "取得所有 cookies"
+        },
+        "useJson": "使用 JSON 格式"
+      },
+      "note": {
+        "name": "備註"
+      },
+      "slice-variable": {
+        "name": "分割變數",
+        "description": "擷取變數值的一部分",
+        "start": "起始索引",
+        "end": "結束索引"
+      },
+      "workflow-state": {
+        "name": "流程狀態",
+        "description": "管理流程狀態",
+        "actions": {
+          "stop": "停止流程"
+        }
+      },
+      "regex-variable": {
+        "name": "正則表達式變數",
+        "description": "將變數值與正則表達式進行匹配"
+      },
+      "data-mapping": {
+        "source": "來源",
+        "destination": "目的地",
+        "name": "資料映射",
+        "edit": "編輯資料映射",
+        "dataSource": "資料來源",
+        "description": "映射變數或表格的資料",
+        "addSource": "新增來源",
+        "addDestination": "新增目的地"
+      },
+      "sort-data": {
+        "name": "排序資料",
+        "description": "對資料項目進行排序",
+        "property": "依項目屬性排序",
+        "addProperty": "新增屬性"
+      },
+      "increase-variable": {
+        "name": "增加變數",
+        "description": "將變數值增加特定數量",
+        "increase": "增加量"
+      },
+      "notification": {
+        "name": "通知",
+        "description": "顯示通知",
+        "title": "標題",
+        "message": "訊息",
+        "imageUrl": "圖片 URL（選填）",
+        "iconUrl": "圖示 URL（選填）"
+      },
+      "delete-data": {
+        "name": "刪除資料",
+        "description": "刪除表格或變數資料",
+        "from": "資料來源",
+        "allColumns": "[所有欄位]"
+      },
+      "log-data": {
+        "name": "取得日誌資料",
+        "description": "取得流程的最新日誌資料",
+        "data": "日誌資料"
+      },
+      "tab-url": {
+        "name": "取得分頁 URL",
+        "description": "取得分頁的 URL",
+        "select": "選擇分頁",
+        "types": {
+          "active-tab": "目前分頁",
+          "all": "所有分頁"
+        },
+        "query": {
+          "title": "查詢",
+          "matchPatterns": "@:workflow.blocks.switch-tab.matchPattern（選填）",
+          "tabTitle": "分頁標題（選填）"
+        }
+      },
+      "reload-tab": {
+        "name": "重新載入分頁",
+        "description": "重新載入目前的分頁"
+      },
+      "press-key": {
+        "name": "按下按鍵",
+        "description": "按下單一按鍵或組合鍵",
+        "target": "目標元素（選填）",
+        "key": "按鍵",
+        "detect": "偵測按鍵",
+        "actions": {
+          "press-key": "按下單一按鍵",
+          "multiple-keys": "按下多個按鍵"
+        },
+        "press-time": "按下時間（毫秒）"
+      },
+      "save-assets": {
+        "name": "儲存資源",
+        "description": "從元素或 URL 儲存資源（圖片、影片、音訊或檔案）",
+        "filename": "檔案名稱（選填）",
+        "saveDownloadIds": "儲存項目的下載 ID",
+        "contentTypes": {
+          "title": "類型",
+          "element": "媒體元素（圖片、音訊或影片）",
+          "url": "URL"
+        }
+      },
+      "handle-dialog": {
+        "name": "處理對話框",
+        "description": "接受或關閉由 JavaScript 觸發的對話框（警告、確認、提示或離開前確認）",
+        "accept": "接受對話框",
+        "promptText": {
+          "label": "提示文字（選填）",
+          "description": "在接受之前輸入到提示對話框中的文字"
+        }
+      },
+      "handle-download": {
+        "name": "處理下載",
+        "description": "處理下載的檔案",
+        "timeout": "超時時間（毫秒）",
+        "noPermission": "沒有權限存取下載項目",
+        "onConflict": "衝突處理",
+        "waitFile": "等待檔案下載完成",
+        "downloadId": "檔案下載 ID（選填）",
+        "filePath": "檔案路徑"
+      },
+      "insert-data": {
+        "name": "插入資料",
+        "description": "將資料插入表格或變數"
+      },
+      "clipboard": {
+        "name": "剪貼簿",
+        "description": "從剪貼簿取得複製的文字",
+        "data": "剪貼簿資料",
+        "noPermission": "沒有權限存取剪貼簿",
+        "grantPermission": "授予權限",
+        "copySelection": "複製頁面上選取的文字",
+        "types": {
+          "get": "取得剪貼簿資料",
+          "insert": "插入文字到剪貼簿"
+        }
+      },
+      "hover-element": {
+        "name": "懸停元素",
+        "description": "將滑鼠懸停在元素上"
+      },
+      "create-element": {
+        "name": "建立元素",
+        "description": "建立一個元素並插入到頁面中",
+        "edit": "編輯元素",
+        "wrap": "將元素包覆在內",
+        "insertEl": {
+          "title": "插入元素",
+          "items": {
+            "before": "作為第一個子元素",
+            "after": "作為最後一個子元素",
+            "next-sibling": "作為下一個兄弟元素",
+            "prev-sibling": "作為前一個兄弟元素",
+            "replace": "取代目標元素"
+          }
+        }
+      },
+      "upload-file": {
+        "name": "上傳檔案",
+        "description": "將檔案上傳至 <input type=\"file\"> 元素",
+        "filePath": "URL 或檔案路徑",
+        "addFile": "新增檔案",
+        "onlyURL": "Firefox 瀏覽器僅支援從 URL 上傳檔案",
+        "requirement": "使用此區塊前請閱讀需求",
+        "noFileAccess": "Automa 沒有存取檔案的權限"
+      },
+      "browser-event": {
+        "name": "瀏覽器事件",
+        "description": "當指定事件觸發時執行下一個區塊",
+        "events": "事件",
+        "timeout": "超時時間（毫秒）",
+        "activeTabLoaded": "目前分頁",
+        "setAsActiveTab": "設為目前分頁"
+      },
+      "blocks-group-2": {
+        "name": "@:workflow.blocks.blocks-group.name 2",
+        "description": "@:workflow.blocks.blocks-group.description"
+      },
+      "blocks-group": {
+        "name": "區塊群組",
+        "groupName": "群組名稱",
+        "description": "群組化區塊",
+        "dropText": "將區塊拖放到此處",
+        "cantAdd": "無法將「{blockName}」區塊加入群組"
+      },
       "trigger": {
-        "name": "觸發原點",
-        "description": "工作流程設置的起點",
+        "name": "觸發器",
+        "description": "工作流程開始執行的區塊",
+        "addTime": "新增時間",
+        "selectDay": "選擇日期",
+        "timeExist": "您已經在 {day} 的 {time} 新增了觸發器",
+        "fixedDelay": "固定延遲",
+        "contextMenus": {
+          "noPermission": "此觸發器需要「contextMenus」權限才能運作",
+          "grantPermission": "授予權限",
+          "appearIn": "將出現在",
+          "contextName": "上下文選單中的工作流程名稱"
+        },
         "days": [
           "星期日",
           "星期一",
@@ -34,263 +327,479 @@
         ],
         "useRegex": "使用正則表達式",
         "shortcut": {
-          "tooltip": "設定快捷鍵",
-          "checkboxTitle": "允許快捷鍵在文字輸入框內執行",
-          "checkbox": "啟用輸入框內執行快捷鍵",
-          "note": "Note: 鍵盤快捷鍵只在當前網頁有效"
+          "tooltip": "記錄快捷鍵",
+          "stopRecord": "停止錄製",
+          "checkboxTitle": "即使在輸入元素中也能執行快捷鍵",
+          "checkbox": "在輸入時啟用",
+          "note": "注意：快捷鍵僅在網頁上時有效"
         },
         "forms": {
-          "triggerWorkflow": "觸發工作流",
-          "interval": "間隔（分鐘）",
-          "delay": "延遲（分鐘）",
+          "triggerWorkflow": "觸發工作流程",
+          "interval": "間隔時間（分鐘）",
+          "delay": "延遲時間（分鐘）",
           "date": "日期",
           "time": "時間",
-          "url": "網址或正則表達式",
-          "shortcut": "快捷鍵"
+          "url": "URL 或正則表達式",
+          "shortcut": "快捷鍵",
+          "cron-expression": "Cron 表達式"
+        },
+        "element-change": {
+          "target": "要觀察的目標元素",
+          "optionsInfo": "哪些元素變更會觸發工作流程",
+          "targetWebsite": "目標元素所在網站的 Match Pattern（點擊查看更多 Match Pattern 範例）",
+          "baseEl": {
+            "title": "基礎元素（選填）",
+            "description": "當此元素變更時，Automa 會重新開始觀察目標元素"
+          },
+          "subtree": {
+            "title": "包含子樹",
+            "description": "將監控範圍擴展至目標元素的整個子樹"
+          },
+          "childList": {
+            "title": "子元素列表",
+            "description": "監控新增或移除子元素"
+          },
+          "attributes": {
+            "title": "屬性",
+            "description": "監控目標元素屬性值的變更"
+          },
+          "attributeFilter": {
+            "title": "屬性過濾器",
+            "separate": "使用逗號 (,) 分隔屬性名稱",
+            "description": "僅監控特定屬性（留空則監控所有屬性）"
+          },
+          "characterData": {
+            "title": "文字資料",
+            "description": "監控目標元素內文字資料的變更"
+          }
         },
         "items": {
           "manual": "手動",
-          "interval": "指定間隔",
-          "date": "指定日期",
-          "specific-day": "指定星期",
-          "visit-web": "指定網頁",
+          "interval": "間隔",
+          "cron-job": "Cron 任務",
+          "date": "特定日期",
+          "context-menu": "上下文選單",
+          "element-change": "元素變更時",
+          "specific-day": "特定日期",
+          "visit-web": "造訪網站時",
+          "on-startup": "瀏覽器啟動時",
           "keyboard-shortcut": "鍵盤快捷鍵"
         }
       },
+      "execute-workflow": {
+        "name": "執行工作流程",
+        "overwriteNote": "這將覆蓋所選工作流程的全域資料",
+        "select": "選擇工作流程",
+        "executeId": "執行 ID（選填）",
+        "description": "",
+        "insertAllVars": "使用所有目前工作流程的變數",
+        "insertVars": "插入目前工作流程的變數",
+        "useCommas": "使用逗號分隔變數名稱",
+        "insertAllGlobalData": "使用所有目前工作流程的全域資料"
+      },
+      "google-sheets-drive": {
+        "name": "@:workflow.blocks.google-sheets.name (GDrive)",
+        "description": "@:workflow.blocks.google-sheets.description",
+        "connected": "已連接的表格",
+        "select": "選擇表格",
+        "connect": "連接表格"
+      },
+      "google-drive": {
+        "name": "Google Drive",
+        "description": "將檔案上傳至 Google Drive",
+        "actions": {
+          "upload": "上傳檔案"
+        }
+      },
+      "google-sheets": {
+        "name": "Google Sheets",
+        "description": "讀取或更新 Google Sheets 資料",
+        "previewData": "預覽資料",
+        "firstRow": "使用第一行作為鍵值",
+        "keysAsFirstRow": "使用鍵值作為第一行",
+        "insertData": "插入資料",
+        "valueInputOption": "值輸入選項",
+        "insertDataOption": "插入資料選項",
+        "rangeToSearch": "開始搜尋的範圍",
+        "dataFrom": {
+          "label": "資料來源",
+          "options": {
+            "data-columns": "表格",
+            "custom": "自訂"
+          }
+        },
+        "refKey": {
+          "label": "參考鍵值（選填）",
+          "placeholder": "鍵值名稱"
+        },
+        "spreadsheetId": {
+          "label": "試算表 ID",
+          "link": "查看如何取得試算表 ID"
+        },
+        "range": {
+          "label": "範圍",
+          "link": "點擊查看更多範例"
+        },
+        "select": {
+          "get": "取得試算表儲存格值",
+          "getRange": "取得試算表範圍",
+          "update": "更新試算表儲存格值",
+          "append": "附加試算表儲存格值",
+          "clear": "清除試算表儲存格值",
+          "create": "建立試算表",
+          "add-sheet": "新增工作表"
+        }
+      },
       "active-tab": {
-        "name": "授權分頁操作",
-        "description": "授予 Chrome 瀏覽器對分頁動作操作的權限"
+        "name": "目前分頁",
+        "description": "將您所在的分頁設為目前分頁"
+      },
+      "proxy": {
+        "name": "代理",
+        "description": "設定瀏覽器的代理",
+        "clear": "清除所有代理",
+        "bypass": {
+          "label": "繞過清單",
+          "note": "使用逗號 (,) 分隔 URL"
+        }
       },
       "new-window": {
         "name": "新視窗",
-        "description": "開啟新的瀏覽器視窗",
+        "description": "建立新視窗",
+        "top": "頂部",
+        "left": "左側",
+        "height": "高度",
+        "width": "寬度",
+        "note": "注意：使用 0 來停用",
+        "position": "視窗位置",
+        "size": "視窗大小",
         "windowState": {
-          "placeholder": "視窗大小",
+          "placeholder": "視窗狀態",
           "options": {
-            "normal": "一般",
-            "minimized": "視窗最小化",
-            "maximized": "視窗最大化",
-            "fullscreen": "全視窗"
+            "normal": "正常",
+            "minimized": "最小化",
+            "maximized": "最大化",
+            "fullscreen": "全螢幕"
           }
         },
         "incognito": {
           "text": "設為無痕視窗",
-          "note": "您必須在套件設定內啟用“允許在無痕模式中執行”才能使用該選項"
+          "note": "您必須先為此擴充功能啟用「在無痕模式中允許」"
         }
       },
       "go-back": {
         "name": "返回",
-        "description": "回到上一個執行動作"
+        "description": "返回上一頁"
       },
       "forward-page": {
         "name": "前進",
-        "description": "前往下一個執行動作"
+        "description": "前進到下一頁"
       },
       "close-tab": {
-        "name": "關閉分頁",
-        "description": "關閉瀏覽器分頁",
-        "activeTab": "取消授權分頁操作",
-        "url": "URL or match pattern"
+        "name": "關閉分頁/視窗",
+        "description": "",
+        "url": "Match Patterns",
+        "activeTab": "關閉目前分頁",
+        "allWindows": "關閉所有視窗"
       },
       "event-click": {
-        "name": "點選 HTML元素",
+        "name": "點擊元素",
         "description": ""
       },
       "delay": {
-        "name": "等待時間",
-        "description": "設定執行下一個動作前的等待時間"
+        "name": "延遲",
+        "description": "在執行下一個區塊前加入延遲",
+        "input": {
+          "title": "延遲時間（毫秒）",
+          "placeholder": "（毫秒）"
+        }
+      },
+      "parameter-prompt": {
+        "name": "參數提示"
       },
       "get-text": {
-        "name": "擷取文字",
-        "description": "從HTML元素內擷取文字",
+        "name": "取得文字",
+        "description": "從元素中取得文字",
+        "checkbox": "插入到表格",
+        "includeTags": "包含 HTML 標籤",
         "prefixText": {
-          "placeholder": "文本前綴",
-          "title": "Add prefix to the text"
+          "placeholder": "文字前綴",
+          "title": "為文字加入前綴"
         },
         "suffixText": {
-          "placeholder": "文本後綴",
-          "title": "Add suffix to the text"
+          "placeholder": "文字後綴",
+          "title": "為文字加入後綴"
         }
       },
       "export-data": {
         "name": "匯出資料",
-        "description": "匯出工作流資料列表"
+        "description": "匯出工作流程資料",
+        "exportAs": "匯出為",
+        "refKey": "參考鍵值",
+        "bomHeader": "加入 UTF-8 BOM",
+        "dataToExport": {
+          "placeholder": "要匯出的資料",
+          "options": {
+            "data-columns": "表格",
+            "google-sheets": "Google Sheets",
+            "variable": "變數"
+          }
+        }
       },
       "element-scroll": {
-        "name": "捲軸(Scrollbar)",
+        "name": "滾動元素",
         "description": "",
-        "scrollY": "垂直捲動",
-        "scrollX": "水平捲動",
-        "intoView": "滚动到视图中",
-        "smooth": "平滑滚动",
-        "incScrollX": "遞增水平捲動",
-        "incScrollY": "遞增垂直捲動"
+        "scrollY": "垂直滾動",
+        "scrollX": "水平滾動",
+        "intoView": "滾動至可見範圍",
+        "smooth": "平滑滾動",
+        "incScrollX": "水平滾動增量",
+        "incScrollY": "垂直滾動增量"
+      },
+      "switch-tab": {
+        "name": "切換分頁",
+        "description": "在分頁之間切換",
+        "matchPattern": "Match Patterns",
+        "url": "新分頁 URL",
+        "createIfNoMatch": "若無匹配則建立"
       },
       "new-tab": {
-        "name": "開啟新分頁",
-        "description": "開啟一個新瀏覽器的分頁",
-        "activeTab": "授權分頁操作",
-        "tabToGroup": "新增分頁到群組",
+        "name": "新分頁",
+        "description": "",
+        "url": "新分頁 URL",
+        "tab-zoom": "分頁縮放",
+        "customUserAgent": "使用自訂 User-Agent",
+        "activeTab": "設為目前分頁",
+        "tabToGroup": "將分頁加入群組",
+        "waitTabLoaded": "等待分頁載入完成",
         "updatePrevTab": {
-          "title": "沿用上一個空白頁",
-          "text": ""
+          "title": "使用先前開啟的新分頁而非建立新分頁",
+          "text": "更新先前開啟的分頁"
         }
       },
       "link": {
         "name": "連結",
-        "description": "點開超連結元素"
+        "description": "開啟連結元素",
+        "openInNewTab": "在新分頁中開啟"
       },
       "attribute-value": {
-        "name": "參數",
-        "description": "選取一個HTML元素的值",
+        "name": "屬性值",
+        "description": "取得元素的屬性值",
         "forms": {
-          "name": "參數名稱",
-          "checkbox": "儲存參數",
-          "column": "選項列表"
+          "name": "屬性名稱",
+          "checkbox": "插入到表格",
+          "column": "選擇欄位",
+          "value": "屬性值",
+          "action": {
+            "get": "取得屬性值",
+            "set": "設定屬性值"
+          },
+          "extraRow": {
+            "checkbox": "新增額外行",
+            "placeholder": "值",
+            "title": "額外行的值"
+          }
         }
       },
       "forms": {
         "name": "表單",
         "description": "",
-        "selected": "已選擇",
+        "selected": "已選取",
         "type": "表單類型",
+        "getValue": "取得表單值",
         "text-field": {
-          "name": "文字框",
+          "name": "文字欄位",
           "value": "值",
-          "clearValue": "清空表單內的參數",
+          "clearValue": "清除表單值",
           "delay": {
-            "placeholder": "等待時間",
-            "label": "設定執行文字輸入前的等待時間; 單位： ms（0為停用）"
+            "placeholder": "延遲",
+            "label": "輸入延遲（毫秒）（0 表示停用）"
           }
         },
         "select": {
-          "name": "下拉式選單"
+          "name": "選取"
         },
         "radio": {
-          "name": "單選框"
+          "name": "單選按鈕"
         },
         "checkbox": {
-          "name": "複選框"
+          "name": "核取方塊"
         }
       },
       "repeat-task": {
-        "name": "重新執行任務",
+        "name": "重複任務",
         "description": "",
-        "times": "時間",
-        "repeatFrom": "重複自："
+        "times": "次",
+        "repeatFrom": "從此處重複"
       },
       "javascript-code": {
-        "name": "JavaScript Code",
-        "description": "在網頁中執行 JavaScript 程式",
-        "modal": {
-          "tabs": {
-            "code": "JavaScript Code",
-            "preloadScript": "預先載入 script"
+        "name": "JavaScript 程式碼",
+        "description": "在網頁中執行您的 JavaScript 程式碼",
+        "availabeFuncs": "可用函式：",
+        "removeAfterExec": "區塊執行後移除",
+        "everyNewTab": "在每個新分頁中執行",
+        "context": {
+          "name": "執行環境",
+          "items": {
+            "website": "目前分頁",
+            "background": "背景"
           }
         },
-        "availabeFuncs": "可用的函式:",
+        "modal": {
+          "tabs": {
+            "code": "JavaScript 程式碼",
+            "preloadScript": "預載腳本"
+          }
+        },
         "timeout": {
-          "placeholder": "逾時",
-          "title": "Javascript 執行逾時"
+          "placeholder": "逾時（毫秒）",
+          "title": "JavaScript 程式碼執行逾時"
         }
       },
       "trigger-event": {
         "name": "觸發事件",
         "description": "",
-        "selectEvent": "選擇事件"
+        "selectEvent": "選取事件"
       },
       "conditions": {
         "name": "條件",
-        "description": "設定執行條件",
-        "fallbackTitle": "當條件均不符合時執行",
+        "add": "新增路徑",
+        "retryConditions": "若無條件符合則重試",
+        "description": "條件區塊",
+        "refresh": "重新整理條件連接",
+        "fallbackTitle": "當所有比較都不符合要求時執行",
         "equals": "等於",
-        "gt": "大於 > ",
-        "gte": "大於或等於 >= ",
-        "lt": "小於 < ",
-        "lte": "小於或等於 >= ",
+        "gt": "大於",
+        "gte": "大於或等於",
+        "lt": "小於",
+        "lte": "小於或等於",
+        "ne": "不等於",
         "contains": "包含"
       },
       "element-exists": {
-        "name": "如果HTML元素存在",
-        "description": "檢查HTML元素是否存在",
-        "selector": "HTML元素選擇器",
+        "name": "元素存在",
+        "description": "檢查元素是否存在",
+        "selector": "元素選擇器",
+        "fallbackTitle": "當元素不存在時執行",
+        "throwError": "若不存在則拋出錯誤",
         "tryFor": {
-          "title": "檢查HTML元素是否存在",
-          "label": "檢查"
+          "title": "嘗試檢查元素存在的次數",
+          "label": "嘗試次數"
         },
         "timeout": {
-          "label": "逾時 (毫秒)",
-          "title": "每次嘗試HTML元素所逾時的時間"
+          "label": "逾時（毫秒）",
+          "title": "每次嘗試的逾時時間"
         }
       },
       "webhook": {
-        "name": "Webhook",
-        "description": "Webhook 允許外部服務通知",
-        "url": "接收POST請求的URL",
-        "contentType": "選擇 Content type",
+        "name": "HTTP 請求",
+        "description": "發送 HTTP 請求",
+        "contentType": "內容類型",
+        "method": "請求方法",
+        "url": "請求 URL",
+        "fallback": "當 HTTP 請求失敗時執行",
         "buttons": {
-          "header": "新增 Header"
+          "header": "新增標頭"
         },
         "timeout": {
           "placeholder": "逾時",
-          "title": "HTTP請求執行逾時 (ms)"
+          "title": "HTTP 請求執行逾時（毫秒）"
         },
         "tabs": {
-          "headers": "Headers",
-          "body": "Content body"
+          "headers": "標頭",
+          "body": "主體",
+          "response": "回應"
+        }
+      },
+      "while-loop": {
+        "name": "While 迴圈",
+        "description": "當條件符合時執行區塊",
+        "editCondition": "編輯條件",
+        "fallback": "當條件為假時執行"
+      },
+      "loop-elements": {
+        "name": "迴圈元素",
+        "description": "遍歷元素",
+        "loadMore": "載入更多元素",
+        "scrollToBottom": "滾動至底部",
+        "scrollToTop": "滾動至頂部",
+        "actions": {
+          "none": "無",
+          "click-element": "點擊元素",
+          "scroll": "向下滾動",
+          "click-link": "點擊連結",
+          "scroll-up": "向上滾動"
         }
       },
       "loop-data": {
         "name": "迴圈資料",
-        "description": "遍歷內部參數列表或自行定義的參數",
+        "description": "遍歷表格或自訂資料",
         "loopId": "迴圈 ID",
+        "refKey": "參考鍵值",
+        "startIndex": "從索引開始",
+        "resumeLastWorkflow": "恢復上一個工作流程",
+        "reverse": "反轉迴圈順序",
         "modal": {
-          "fileTooLarge": "檔案過大，無法編輯",
-          "maxFile": "檔案大小限制為 1MB",
+          "fileTooLarge": "檔案過大無法編輯",
+          "maxFile": "最大檔案大小為 1MB",
           "options": {
-            "firstRow": "使用第一個 row 作為 keys"
+            "firstRow": "使用第一行作為鍵值"
           }
         },
         "buttons": {
-          "clear": "清空資料",
+          "clear": "清除資料",
           "insert": "插入資料",
-          "import": "匯出檔案"
+          "import": "匯入檔案"
         },
         "maxLoop": {
-          "title": "迴圈數最大值",
-          "label": "迴圈數最大值 (0為停用)"
+          "title": "最大迴圈資料數量",
+          "label": "最大迴圈資料數量（0 表示停用）"
         },
         "loopThrough": {
-          "placeholder": "Loop through",
+          "placeholder": "遍歷",
+          "fromNumber": "從數字",
+          "toNumber": "到數字",
           "options": {
-            "data-columns": "參數列表",
-            "custom-data": "自定義參數"
+            "numbers": "數字",
+            "variable": "變數",
+            "data-columns": "表格",
+            "table": "表格",
+            "custom-data": "自訂資料",
+            "google-sheets": "Google Sheets",
+            "elements": "元素"
           }
         }
       },
       "loop-breakpoint": {
-        "name": "中斷點",
-        "description": "設定迴圈的暫停節點"
+        "name": "迴圈中斷點",
+        "description": "標示 Loop Data 區塊必須停止的位置"
       },
       "take-screenshot": {
-        "name": "截圖",
-        "description": "擷取當前分頁為圖片",
-        "imageQuality": "圖片品質"
-      },
-      "switch-to": {
-        "name": "切換到",
-        "description": "在主視窗和iframe切換",
-        "iframeSelector": "iframe元素選擇器",
-        "windowTypes": {
-          "main": "主視窗",
-          "iframe": "iframe"
+        "name": "擷取螢幕截圖",
+        "fullPage": "擷取完整頁面截圖",
+        "description": "擷取目前分頁的螢幕截圖",
+        "imageQuality": "圖片品質",
+        "saveToColumn": "將截圖插入表格",
+        "saveToComputer": "將截圖儲存至電腦",
+        "types": {
+          "title": "擷取以下內容的截圖",
+          "page": "頁面",
+          "fullpage": "完整頁面",
+          "element": "元素"
         }
       },
-      "execute-workflow": {
-        "insertAllGlobalData": "插入當前工作流的 GlobalData"
+      "switch-to": {
+        "name": "切換框架",
+        "description": "在主視窗與 iframe 之間切換",
+        "iframeSelector": "元素選擇器",
+        "windowTypes": {
+          "main": "主視窗",
+          "iframe": "Iframe"
+        }
       },
       "debugMode": {
-        "description": "使用 Chrome DevTools 協定執行目前模組"
+        "title": "除錯模式",
+        "description": "使用 Chrome DevTools Protocol 執行區塊"
       }
     }
   }

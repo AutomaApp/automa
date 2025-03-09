@@ -3,7 +3,7 @@ import browser from 'webextension-polyfill';
 import { automaRefDataStr, messageSandbox, checkCSPAndInject } from '../helper';
 
 const nanoid = customAlphabet('1234567890abcdef', 5);
-const isMV2 = browser.runtime.getManifest().manifest_version === 2;
+const isMV2 = false;
 
 export default async function (activeTab, payload) {
   const variableId = `automa${nanoid()}`;

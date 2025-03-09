@@ -26,7 +26,7 @@
           :is-pinned="true"
           :menu="menu"
           @dragstart="onDragStart"
-          @execute="executeWorkflow(workflow)"
+          @execute="RendererWorkflowService.executeWorkflow(workflow)"
           @toggle-pin="togglePinWorkflow(workflow)"
           @toggle-disable="toggleDisableWorkflow(workflow)"
         />
@@ -42,7 +42,7 @@
         :is-pinned="state.pinnedWorkflows.includes(workflow.id)"
         :menu="menu"
         @dragstart="onDragStart"
-        @execute="executeWorkflow(workflow)"
+        @execute="RendererWorkflowService.executeWorkflow(workflow)"
         @toggle-pin="togglePinWorkflow(workflow)"
         @toggle-disable="toggleDisableWorkflow(workflow)"
       />
@@ -122,7 +122,7 @@ import { useDialog } from '@/composable/dialog';
 import { useWorkflowStore } from '@/stores/workflow';
 import { exportWorkflow } from '@/utils/workflowData';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
-import { executeWorkflow } from '@/workflowEngine';
+import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
 import WorkflowsLocalCard from './WorkflowsLocalCard.vue';
 
 const props = defineProps({

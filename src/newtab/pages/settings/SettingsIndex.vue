@@ -43,7 +43,7 @@
       </ui-select>
       <a
         class="ml-1 block text-gray-600 dark:text-gray-200"
-        href="https://github.com/Kholid060/automa/wiki/Help-Translate"
+        href="https://github.com/AutomaApp/automa/wiki/Help-Translate"
         target="_blank"
         rel="noopener"
       >

@@ -1,5 +1,4 @@
 import getTranslateLog from '@/utils/getTranslateLog';
-import { workflowState } from '../index';
 
 export async function logData({ id, data }) {
   if (!data.workflowId) {
@@ -7,7 +6,8 @@ export async function logData({ id, data }) {
   }
 
   // 工作流状态数组
-  const { states } = workflowState;
+  // block handler is inside WorkflowWorker scope. See WorkflowWorker.js:343
+  const { states } = this.engine.states;
   let logs = [];
   if (states) {
     // 转换为数组

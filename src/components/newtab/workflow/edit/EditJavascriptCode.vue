@@ -149,14 +149,14 @@
   </div>
 </template>
 <script setup>
-import { watch, reactive, defineAsyncComponent, inject } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { autocompletion } from '@codemirror/autocomplete';
 import {
-  automaFuncsSnippets,
   automaFuncsCompletion,
+  automaFuncsSnippets,
   completeFromGlobalScope,
 } from '@/utils/codeEditorAutocomplete';
+import { autocompletion } from '@codemirror/autocomplete';
+import { defineAsyncComponent, inject, reactive, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { store } from '../../settings/jsBlockWrap';
 
 function modifyWhiteSpace() {

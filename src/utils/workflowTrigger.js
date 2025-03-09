@@ -1,6 +1,6 @@
-import browser from 'webextension-polyfill';
-import dayjs from 'dayjs';
 import cronParser from 'cron-parser';
+import dayjs from 'dayjs';
+import browser from 'webextension-polyfill';
 import { isObject } from './helper';
 
 export function registerContextMenu(triggerId, data) {
@@ -107,7 +107,7 @@ export async function cleanWorkflowTriggers(workflowId, triggers) {
     const startupTriggers = (onStartupTriggers || []).filter(
       (id) => !id.includes(workflowId)
     );
-    const filteredVisitWebTriggers = visitWebTriggers.filter(
+    const filteredVisitWebTriggers = visitWebTriggers?.filter(
       (item) => !item.id.includes(workflowId)
     );
 

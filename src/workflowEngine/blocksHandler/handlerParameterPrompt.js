@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid/non-secure';
-import browser from 'webextension-polyfill';
 import { sleep } from '@/utils/helper';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import renderString from '../templating/renderString';
 
 function getInputtedParams(promptId, ms = 10000) {
@@ -11,8 +11,8 @@ function getInputtedParams(promptId, ms = 10000) {
       if (!event[promptId]) return;
 
       clearTimeout(timeout);
-      browser.storage.onChanged.removeListener(storageListener);
-      browser.storage.local.remove(promptId);
+      BrowserAPIService.storage.onChanged.removeListener(storageListener);
+      BrowserAPIService.storage.local.remove(promptId);
 
       const { newValue } = event[promptId];
       if (newValue.$isError) {
@@ -25,12 +25,12 @@ function getInputtedParams(promptId, ms = 10000) {
 
     if (ms > 0) {
       setTimeout(() => {
-        browser.storage.onChanged.removeListener(storageListener);
+        BrowserAPIService.storage.onChanged.removeListener(storageListener);
         resolve({});
       }, ms);
     }
 
-    browser.storage.onChanged.addListener(storageListener);
+    BrowserAPIService.storage.onChanged.addListener(storageListener);
   });
 }
 
@@ -51,25 +51,25 @@ async function renderParamValue(param, refData, isPopup) {
 }
 
 export default async function ({ data, id }, { refData }) {
-  const paramURL = browser.runtime.getURL('/params.html');
-  let tab = (await browser.tabs.query({})).find((item) =>
+  const paramURL = BrowserAPIService.runtime.getURL('/params.html');
+  let tab = (await BrowserAPIService.tabs.query({})).find((item) =>
     item.url.includes(paramURL)
   );
 
   if (!tab) {
-    const { tabs } = await browser.windows.create({
+    const { tabs } = await BrowserAPIService.windows.create({
       type: 'popup',
       width: 480,
       height: 600,
-      url: browser.runtime.getURL('/params.html'),
+      url: BrowserAPIService.runtime.getURL('/params.html'),
     });
     [tab] = tabs;
     await sleep(1000);
   } else {
-    await browser.tabs.update(tab.id, {
+    await BrowserAPIService.tabs.update(tab.id, {
       active: true,
     });
-    await browser.windows.update(tab.windowId, { focused: true });
+    await BrowserAPIService.windows.update(tab.windowId, { focused: true });
   }
 
   const promptId = `params-prompt:${nanoid(4)}__${id}`;
@@ -81,7 +81,7 @@ export default async function ({ data, id }, { refData }) {
     )
   );
 
-  await browser.tabs.sendMessage(tab.id, {
+  await BrowserAPIService.tabs.sendMessage(tab.id, {
     name: 'workflow:params-block',
     data: {
       params,

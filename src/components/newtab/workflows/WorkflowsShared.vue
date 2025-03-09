@@ -4,7 +4,7 @@
     :key="workflow.id"
     :data="workflow"
     :show-details="false"
-    @execute="executeWorkflow(workflow)"
+    @execute="RendererWorkflowService.executeWorkflow(workflow)"
     @click="$router.push(`/workflows/${$event.id}/shared`)"
   />
 </template>
@@ -12,8 +12,8 @@
 import { computed } from 'vue';
 import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
 import { arraySorter } from '@/utils/helper';
-import { executeWorkflow } from '@/workflowEngine';
 import SharedCard from '@/components/newtab/shared/SharedCard.vue';
+import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
 
 const props = defineProps({
   search: {

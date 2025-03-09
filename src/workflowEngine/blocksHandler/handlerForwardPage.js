@@ -1,9 +1,9 @@
-import browser from 'webextension-polyfill';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 
 export async function goBack({ id }) {
   if (!this.activeTab.id) throw new Error('no-tab');
 
-  await browser.tabs.goForward(this.activeTab.id);
+  await BrowserAPIService.tabs.goForward(this.activeTab.id);
 
   return {
     data: '',

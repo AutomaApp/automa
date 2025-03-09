@@ -124,14 +124,14 @@
   </edit-interaction-base>
 </template>
 <script setup>
-import { reactive, watch, defineAsyncComponent } from 'vue';
-import { autocompletion } from '@codemirror/autocomplete';
-import cloneDeep from 'lodash.clonedeep';
 import {
-  automaFuncsSnippets,
   automaFuncsCompletion,
+  automaFuncsSnippets,
   completeFromGlobalScope,
 } from '@/utils/codeEditorAutocomplete';
+import { autocompletion } from '@codemirror/autocomplete';
+import cloneDeep from 'lodash.clonedeep';
+import { defineAsyncComponent, reactive, watch } from 'vue';
 import EditInteractionBase from './EditInteractionBase.vue';
 
 const SharedCodemirror = defineAsyncComponent(() =>

@@ -1587,13 +1587,14 @@ export const supportLocales = [
   { id: 'zh-TW', name: '繁體中文' },
   { id: 'tr', name: 'Türkçe' },
   { id: 'es', name: 'Spanish' },
+  { id: 'pt', name: 'Portuguese' },
 ];
 
 export const communities = [
   {
     name: 'GitHub',
     icon: 'riGithubFill',
-    url: 'https://github.com/kholid060/automa',
+    url: 'https://github.com/AutomaApp/automa',
   },
   {
     name: 'Twitter',
