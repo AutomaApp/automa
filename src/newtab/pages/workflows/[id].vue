@@ -219,6 +219,13 @@
               >
                 <v-remixicon name="riMagicLine" />
               </button>
+              <button
+                v-tooltip="t('workflow.snakeIt.title')"
+                class="control-button hoverable ml-2"
+                @click="snakeIt"
+              >
+                <v-remixicon name="riRoundedCorner" />
+              </button>
             </template>
           </workflow-editor>
           <editor-local-saved-blocks
@@ -1030,13 +1037,80 @@ function autoAlign() {
   });
 
   editor.value.applyNodeChanges(nodeChanges);
-  editor.value.fitView();
+  setTimeout(() => {
+    editor.value.fitView();
+  }, 0);
 
   setTimeout(() => {
     state.dataChanged = true;
     state.animateBlocks = false;
   }, 500);
 }
+async function snakeIt() {
+  state.animateBlocks = true;
+
+  const maxStepsPerRow = 4;
+  const stepWidth = 300;
+  const stepHeight = 150;
+  let currentRow = 0;
+  let currentCol = 0;
+
+  const graph = new dagre.graphlib.Graph();
+  graph.setGraph({
+    rankdir: 'LR',
+    ranksep: 100,
+    ranker: 'tight-tree',
+  });
+  graph.setDefaultEdgeLabel(() => ({}));
+
+  const nodes = editor.value.getNodes.value.filter(
+    ({ label, parentNode }) => label !== 'blocks-group-2' && !parentNode
+  );
+
+  nodes.forEach(({ id, dimensions }) => {
+    graph.setNode(id, {
+      width: dimensions.width,
+      height: dimensions.height,
+    });
+  });
+
+  editor.value.getEdges.value.forEach(({ source, target, id }) => {
+    graph.setEdge(source, target, { id });
+  });
+
+  const nodeChanges = nodes.map(({ id }) => {
+    const x = currentCol * stepWidth;
+    const y = currentRow * stepHeight;
+
+    if (editorCommands.state.nodes[id]) {
+      editorCommands.state.nodes[id].position = { x, y };
+    }
+
+    currentCol = (currentCol + 1) % maxStepsPerRow;
+    if (currentCol === 0) currentRow += 1;
+
+    return {
+      id,
+      type: 'position',
+      dragging: false,
+      position: { x, y },
+    };
+  });
+
+  editor.value.applyNodeChanges(nodeChanges);
+
+  await new Promise((resolve) => {
+    setTimeout(resolve, 0);
+  });
+  editor.value.fitView();
+
+  await new Promise((resolve) => {
+    setTimeout(resolve, 500);
+  });
+  state.dataChanged = true;
+  state.animateBlocks = false;
+}
+
 function toggleSidebar() {
   state.showSidebar = !state.showSidebar;
   localStorage.setItem('workflow:sidebar', state.showSidebar);
