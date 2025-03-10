@@ -266,6 +266,10 @@ function selectItem(itemIndex, selected) {
   }
 }
 function handleKeydown(event) {
+  if (!state.showPopover) {
+    return;
+  }
+
   const itemsLength = filteredItems.value.length - 1;
 
   if (event.key === 'ArrowUp') {
