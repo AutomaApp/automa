@@ -157,7 +157,10 @@ const options = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: `src/manifest.${env.BROWSER}.json`,
+          from:
+            env.NODE_ENV === 'development' && env.BROWSER === 'chrome'
+              ? `src/manifest.${env.BROWSER}.dev.json`
+              : `src/manifest.${env.BROWSER}.json`,
           to: path.join(__dirname, 'build', 'manifest.json'),
           force: true,
           toType: 'file',
@@ -185,6 +188,11 @@ const options = {
         },
         {
           from: 'src/assets/images/icon-128.png',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/images/icon-dev-128.png',
           to: path.join(__dirname, 'build'),
           force: true,
         },

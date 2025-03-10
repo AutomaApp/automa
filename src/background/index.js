@@ -223,14 +223,50 @@ message.on(
           return new Promise((resolve) => {
             const escapePolicy = (script) => {
               if (window?.trustedTypes?.createPolicy) {
-                const escapeElPolicy = window.trustedTypes.createPolicy(
-                  'forceInner',
-                  {
-                    createHTML: (to_escape) => to_escape,
-                    createScript: (to_escape) => to_escape,
+                try {
+                  // 尝试使用可能在CSP白名单中的名称
+                  const policyNames = [
+                    'default',
+                    'dompurify',
+                    'jSecure',
+                    'forceInner',
+                  ];
+                  let escapeElPolicy = null;
+
+                  // 尝试创建策略，如果一个名称失败，尝试下一个
+                  for (const policyName of policyNames) {
+                    try {
+                      escapeElPolicy = window.trustedTypes.createPolicy(
+                        policyName,
+                        {
+                          createHTML: (to_escape) => to_escape,
+                          createScript: (to_escape) => to_escape,
+                        }
+                      );
+                      // 如果成功创建，跳出循环
+                      break;
+                    } catch (e) {
+                      // 该名称失败，继续尝试下一个
+                      console.debug(
+                        `Policy name ${policyName} failed, trying next one`
+                      );
+                    }
                   }
-                );
-                return escapeElPolicy.createScript(script);
+
+                  // 如果成功创建了策略，使用它
+                  if (escapeElPolicy) {
+                    return escapeElPolicy.createScript(script);
+                  }
+                  // 如果所有策略名称都失败，返回原始脚本
+                  console.debug(
+                    'All trusted policy creation attempts failed, falling back to raw script'
+                  );
+                  return script;
+                } catch (e) {
+                  // 捕获任何其他错误并降级
+                  console.debug('Error creating trusted policy:', e);
+                  return script;
+                }
               }
               return script;
             };
@@ -267,10 +303,61 @@ message.on(
           chrome.debugger.attach({ tabId: target.tabId }, '1.3', resolve);
         });
 
-        // eslint-disable-next-line no-new-func
-        const callbackFn = new Function(`return ${callback}`)();
+        // 直接执行回调函数字符串
+        // 避免使用new Function构造函数，因为它会被CSP阻止
+        const callbackFn = callback;
 
-        const jsCode = await callbackFn();
+        // 检查回调函数字符串是否有效
+        if (!callbackFn) {
+          throw new Error('Callback function is missing or invalid');
+        }
+
+        // 创建一个包装函数，直接执行回调函数
+        const wrappedCallback = `
+          (function() {
+            return (${callbackFn})();
+          })()
+        `;
+
+        // 执行回调函数以获取JavaScript代码
+        const jsCodeResult = await chrome.debugger.sendCommand(
+          { tabId: target.tabId },
+          'Runtime.evaluate',
+          {
+            expression: wrappedCallback,
+            userGesture: true,
+            returnByValue: true,
+            ...options,
+          }
+        );
+
+        if (!jsCodeResult || !jsCodeResult.result) {
+          console.error('无法获取JavaScript代码，结果为空');
+          throw new Error('Unable to get JavaScript code');
+        }
+
+        if (
+          jsCodeResult.result.subtype === 'error' ||
+          jsCodeResult.exceptionDetails
+        ) {
+          console.error(
+            '执行回调函数时出错:',
+            jsCodeResult.result.description || jsCodeResult.exceptionDetails
+          );
+          throw new Error(
+            jsCodeResult.result.description || 'Error executing callback'
+          );
+        }
+
+        // 确保我们获取到的是字符串类型的JavaScript代码
+        if (typeof jsCodeResult.result.value !== 'string') {
+          console.error('回调函数返回的不是JavaScript代码字符串');
+          throw new Error('Callback did not return JavaScript code string');
+        }
+
+        const jsCode = jsCodeResult.result.value;
+
+        // 执行生成的JavaScript代码
         const execResult = await chrome.debugger.sendCommand(
           { tabId: target.tabId },
           'Runtime.evaluate',
@@ -279,7 +366,7 @@ message.on(
             userGesture: true,
             awaitPromise: true,
             returnByValue: true,
-            ...(options || {}),
+            ...options,
           }
         );
 
@@ -288,11 +375,21 @@ message.on(
         }
 
         if (!execResult || !execResult.result) {
+          console.error('无法执行代码，结果为空');
           throw new Error('Unable execute code');
         }
 
-        if (execResult.result.subtype === 'error') {
-          throw new Error(execResult.result.description);
+        if (
+          execResult.result.subtype === 'error' ||
+          execResult.exceptionDetails
+        ) {
+          console.error(
+            '执行JavaScript代码时出错:',
+            execResult.result.description || execResult.exceptionDetails
+          );
+          throw new Error(
+            execResult.result.description || 'Error executing JavaScript code'
+          );
         }
 
         return {
@@ -300,12 +397,11 @@ message.on(
           value: execResult.result.value || null,
         };
       }
-      // todo: 这里没有实现callback的调用逻辑
 
-      return { isBlocked: false, value: null };
-    } catch (err) {
-      console.error('CSP check error:', err);
-      return { isBlocked: false, value: null };
+      return { isBlocked: false };
+    } catch (error) {
+      console.error(error);
+      return { isBlocked: false, error: error.message };
     }
   }
 );
@@ -352,7 +448,7 @@ function automaFetchClient(id, { type, resource }) {
       return;
     }
 
-    const eventName = '__automa-fetch-response-' + id +__;
+    const eventName = \`__automa-fetch-response-\${id}__\`;
     const eventListener = ({ detail }) => {
       if (detail.id !== id) return;
 
@@ -367,7 +463,7 @@ function automaFetchClient(id, { type, resource }) {
 
     window.addEventListener(eventName, eventListener);
     window.dispatchEvent(
-      new CustomEvent('__automa-fetch__', {
+      new CustomEvent(\`__automa-fetch__\`, {
         detail: {
           id,
           type,
@@ -378,9 +474,8 @@ function automaFetchClient(id, { type, resource }) {
   });
 }
 
-
 function automaFetch(type, resource) {
-  return automaFetchClient.toString()('${varName}', { type, resource });
+  return automaFetchClient('${varName}', { type, resource });
 }
   `;
 
@@ -548,21 +643,65 @@ message.on(
 );
 
 message.on('script:execute-callback', async ({ target, callback }) => {
-  await browser.scripting.executeScript({
-    target,
-    func: ($callbackFn) => {
-      const script = document.createElement('script');
-      script.textContent = `
-      (() => {
-        ${$callbackFn}
-      })()
-      `;
-      document.body.appendChild(script);
-    },
-    world: 'MAIN',
-    args: [callback],
-  });
-  return true;
+  try {
+    // 首先尝试使用scripting API执行脚本
+    const result = await browser.scripting.executeScript({
+      target,
+      func: ($callbackFn) => {
+        try {
+          const script = document.createElement('script');
+          script.textContent = `
+          (() => {
+            ${$callbackFn}
+          })()
+          `;
+          document.body.appendChild(script);
+          return { success: true };
+        } catch (error) {
+          console.error('执行脚本时出错:', error);
+          return { success: false, error: error.message };
+        }
+      },
+      world: 'MAIN',
+      args: [callback],
+    });
+
+    // 检查执行结果
+    const executionResult = result[0]?.result;
+    if (executionResult && executionResult.success) {
+      return true;
+    }
+
+    // 如果常规方法失败，尝试使用debugger API
+    await new Promise((resolve) => {
+      chrome.debugger.attach({ tabId: target.tabId }, '1.3', resolve);
+    });
+
+    // 使用debugger API执行脚本
+    const execResult = await chrome.debugger.sendCommand(
+      { tabId: target.tabId },
+      'Runtime.evaluate',
+      {
+        expression: `(() => { ${callback} })()`,
+        userGesture: true,
+        awaitPromise: false,
+        returnByValue: true,
+      }
+    );
+
+    // 执行完成后分离debugger
+    await chrome.debugger.detach({ tabId: target.tabId });
+
+    if (!execResult || !execResult.result) {
+      console.error('使用debugger API执行脚本失败');
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('执行script:execute-callback时出错:', error);
+    return false;
+  }
 });
 
 automa('background', message);

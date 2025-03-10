@@ -114,11 +114,12 @@ export function generateXPath(element, root = document.body) {
   return null;
 }
 
+// no used
 export function automaRefDataStr(varName) {
   return `
 function findData(obj, path) {
   const paths = path.split('.');
-  const isWhitespace = paths.length === 1 && !/\\S/.test(paths[0]);
+  const isWhitespace = paths.length === 1 && !/\\\\S/.test(paths[0]);
 
   if (path.startsWith('$last') && Array.isArray(obj)) {
     paths[0] = obj.length - 1;
