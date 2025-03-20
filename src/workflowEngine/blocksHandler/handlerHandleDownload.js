@@ -111,7 +111,18 @@ async function handleDownload({ data, id: blockId }) {
       });
     }, data.timeout);
 
-    const resolvePromise = (id) => {
+    const resolvePromise = async (id) => {
+      if (!currentFilename || !currentFilename.trim()) {
+        try {
+          const [download] = await BrowserAPIService.downloads.search({ id });
+          if (download && download.filename) {
+            currentFilename = download.filename;
+          }
+        } catch (e) {
+          console.error('Failed to get filename for download:', e);
+        }
+      }
+
       if (data.saveData) {
         this.addDataToColumn(data.dataColumn, currentFilename);
       }
