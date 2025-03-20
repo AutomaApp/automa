@@ -303,19 +303,25 @@ message.on(
           chrome.debugger.attach({ tabId: target.tabId }, '1.3', resolve);
         });
 
-        // 直接执行回调函数字符串
-        // 避免使用new Function构造函数，因为它会被CSP阻止
-        const callbackFn = callback;
+        // 首先执行回调函数以获取JS代码字符串
+        // 这里的关键是回调函数本身就是一个字符串，直接在debugger中执行
+        const callbackString =
+          typeof callback === 'function' ? callback.toString() : callback;
 
-        // 检查回调函数字符串是否有效
-        if (!callbackFn) {
-          throw new Error('Callback function is missing or invalid');
+        if (!callbackString) {
+          throw new Error('Callback is missing or invalid');
         }
 
-        // 创建一个包装函数，直接执行回调函数
+        // 直接执行回调函数的字符串表示，不再通过额外的包装函数
         const wrappedCallback = `
           (function() {
-            return (${callbackFn})();
+            try {
+              const fn = ${callbackString};
+              return fn();
+            } catch (err) {
+              console.error("Error in callback execution:", err);
+              return JSON.stringify({ error: err.message });
+            }
           })()
         `;
 

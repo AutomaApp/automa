@@ -1,9 +1,7 @@
 import { customAlphabet } from 'nanoid/non-secure';
-import browser from 'webextension-polyfill';
-import { automaRefDataStr, messageSandbox, checkCSPAndInject } from '../helper';
+import { automaRefDataStr, checkCSPAndInject, messageSandbox } from '../helper';
 
 const nanoid = customAlphabet('1234567890abcdef', 5);
-const isMV2 = false;
 
 export default async function (activeTab, payload) {
   const variableId = `automa${nanoid()}`;
@@ -17,89 +15,40 @@ export default async function (activeTab, payload) {
 
     const refDataScriptStr = automaRefDataStr(variableId);
 
-    if (!isMV2) {
-      const result = await checkCSPAndInject(
-        {
-          target: { tabId: activeTab.id },
-          debugMode: payload.debugMode,
-        },
-        () => {
-          return `
-          (async () => {
-            const ${variableId} = ${JSON.stringify(payload.refData)};
-            ${refDataScriptStr}
-            try {
-              ${payload.data.code}
-            } catch (error) {
-              return {
-                $isError: true,
-                message: error.message,
-              }
+    // 构建一个完全自包含的函数字符串，其中所有变量都是硬编码的
+    // 这确保在跨环境执行时不依赖闭包变量
+    const callbackFunctionStr = `
+      function() {
+        // 直接返回一个自执行的异步函数字符串
+        // 所有变量值都已内联到字符串中
+        return \`
+        (async () => {
+          const automa${variableId} = ${JSON.stringify(payload.refData)};
+          ${refDataScriptStr}
+          try {
+            ${payload.data.code}
+          } catch (error) {
+            return {
+              $isError: true,
+              message: error.message,
             }
-          })();
-        `;
-        }
-      );
+          }
+        })();
+        \`;
+      }
+      `;
 
-      if (result.isBlocked) return result.value;
-    }
-
-    const [{ result }] = await browser.scripting.executeScript({
-      world: 'MAIN',
-      args: [payload, variableId, refDataScriptStr],
-      target: {
-        tabId: activeTab.id,
-        frameIds: [activeTab.frameId || 0],
+    const result = await checkCSPAndInject(
+      {
+        target: { tabId: activeTab.id },
+        debugMode: payload.debugMode,
       },
-      func: ({ data, refData }, varId, refDataScript) => {
-        return new Promise((resolve, reject) => {
-          const varName = varId;
+      callbackFunctionStr
+    );
 
-          const scriptEl = document.createElement('script');
-          scriptEl.textContent = `
-            (async () => {
-              const ${varName} = ${JSON.stringify(refData)};
-              ${refDataScript}
-              try {
-                ${data.code}
-              } catch (error) {
-                return {
-                  $isError: true,
-                  message: error.message,
-                }
-              }
-            })()
-              .then((detail) => {
-                window.dispatchEvent(new CustomEvent('__automa-condition-code__', { detail }));
-              });
-          `;
-
-          document.documentElement.appendChild(scriptEl);
-
-          const handleAutomaEvent = ({ detail }) => {
-            scriptEl.remove();
-            window.removeEventListener(
-              '__automa-condition-code__',
-              handleAutomaEvent
-            );
-
-            if (detail.$isError) {
-              reject(new Error(detail.message));
-              return;
-            }
-
-            resolve(detail);
-          };
-
-          window.addEventListener(
-            '__automa-condition-code__',
-            handleAutomaEvent
-          );
-        });
-      },
-    });
-    return result;
+    return result.value;
   }
+
   const result = await messageSandbox('conditionCode', payload);
   if (result && result.$isError) throw new Error(result.message);
 
