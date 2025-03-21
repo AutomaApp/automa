@@ -264,13 +264,12 @@ const localWorkflows = computed(() => {
 
   const filteredLocalWorkflows = workflowStore.getWorkflows.filter(
     ({ name, folderId }) => {
-      const isInFoloder =
-        !state.activeFolder || state.activeFolder === folderId;
+      const isInFolder = !state.activeFolder || state.activeFolder === folderId;
       const nameMatch = name
         .toLocaleLowerCase()
         .includes(state.query.toLocaleLowerCase());
 
-      return isInFoloder && nameMatch;
+      return isInFolder && nameMatch;
     }
   );
 
