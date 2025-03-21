@@ -91,7 +91,7 @@
     "sizzle": "^2.3.8",
     "tippy.js": "^6.3.1",
     "v-remixicon": "^0.1.1",
-    "vue": "^3.3.4",
+    "vue": "3.4.38",
     "vue-i18n": "9",
     "vue-imask": "^6.4.2",
     "vue-router": "^4.2.4",
@@ -144,5 +144,8 @@
     "webpack": "5.76.0",
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.11.1"
+  },
+  "volta": {
+    "node": "20.11.1"
   }
 }
