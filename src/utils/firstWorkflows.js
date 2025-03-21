@@ -105,7 +105,7 @@ export default [
           data: {
             disableBlock: false,
             description: '',
-            url: 'https://twitter.com/i/trends',
+            url: 'https://x.com/explore/tabs/trending',
             userAgent: '',
             active: true,
             inGroup: false,
