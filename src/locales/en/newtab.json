@@ -250,6 +250,9 @@
     "autoAlign": {
       "title": "Auto-align"
     },
+    "snakeIt": {
+      "title": "snake-it"
+    },
     "blocksFolder": {
       "title": "Blocks folder",
       "add": "Add blocks to folder",
