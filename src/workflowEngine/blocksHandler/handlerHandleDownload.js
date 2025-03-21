@@ -1,183 +1,297 @@
-import { IS_FIREFOX } from '@/common/utils/constant';
 import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
+import { MessageListener } from '@/utils/message';
+import browser from 'webextension-polyfill';
 
-const getFileExtension = (str) => /(?:\.([^.]+))?$/.exec(str)[1];
-function determineFilenameListener(item, suggest) {
-  const filesname =
-    JSON.parse(sessionStorage.getItem('rename-downloaded-files')) || {};
-  const suggestion = filesname[item.id];
+const DOWNLOADS_STORAGE_KEY = 'automa-rename-downloaded-files';
 
-  if (!suggestion) return true;
-
-  const hasFileExt = getFileExtension(suggestion.filename);
-
-  if (!hasFileExt) {
-    const filExtension = getFileExtension(item.filename);
-    suggestion.filename += `.${filExtension}`;
+/**
+ *
+ * @returns {Promise<Object>}
+ */
+async function getDownloadFilesFromStorage() {
+  try {
+    const result = await browser.storage.session.get(DOWNLOADS_STORAGE_KEY);
+    return result[DOWNLOADS_STORAGE_KEY] || {};
+  } catch (error) {
+    console.error('Failed to get downloads from storage:', error);
+    return {};
   }
+}
 
-  if (!suggestion.waitForDownload) delete filesname[item.id];
+/**
+ *
+ * @param {Object} filesData
+ */
+async function saveDownloadFilesToStorage(filesData) {
+  try {
+    await browser.storage.session.set({
+      [DOWNLOADS_STORAGE_KEY]: filesData,
+    });
+  } catch (error) {
+    console.error('Failed to save downloads to storage:', error);
+  }
+}
 
-  sessionStorage.setItem('rename-downloaded-files', JSON.stringify(filesname));
+/**
+ *
+ * @param {number} downloadId
+ */
+async function removeDownloadFromStorage(downloadId) {
+  try {
+    const filesData = await getDownloadFilesFromStorage();
+    delete filesData[downloadId];
+    await saveDownloadFilesToStorage(filesData);
+  } catch (error) {
+    console.error('Failed to remove download from storage:', error);
+  }
+}
 
-  suggest({
-    filename: suggestion.filename,
-    conflictAction: suggestion.onConflict,
-  });
+/**
+ * env: background
+ */
+async function registerDownloadListeners() {
+  try {
+    const hasPermission = await BrowserAPIService.permissions.contains({
+      permissions: ['downloads'],
+    });
 
-  return false;
+    if (!hasPermission) {
+      const granted = await BrowserAPIService.permissions.request({
+        permissions: ['downloads'],
+      });
+      if (!granted) {
+        throw new Error('Download feature requires download permission');
+      }
+    }
+
+    return MessageListener.sendMessage(
+      'downloads:register-listeners',
+      null,
+      'background'
+    );
+  } catch (error) {
+    console.error('Failed to register download listeners:', error);
+
+    throw error;
+  }
 }
 
 async function handleDownload({ data, id: blockId }) {
   const nextBlockId = this.getBlockConnections(blockId);
-  const getFilesname = () =>
-    JSON.parse(sessionStorage.getItem('rename-downloaded-files')) || {};
 
-  let downloadId = null;
-  if (data.downloadId?.trim()) {
-    if (Number.isNaN(+data.downloadId))
-      throw new Error('Download id is not a number');
-
-    const [downloadItem] = await BrowserAPIService.downloads.search({
-      id: +data.downloadId,
+  try {
+    const hasPermission = await BrowserAPIService.permissions.contains({
+      permissions: ['downloads'],
     });
-    if (!downloadItem)
-      throw new Error(`Can't find download item with ${data.downloadId} id`);
-
-    if (downloadItem.state === 'complete') {
-      if (data.saveData) {
-        this.addDataToColumn(data.dataColumn, downloadItem.filename);
+    if (!hasPermission) {
+      const granted = await BrowserAPIService.permissions.request({
+        permissions: ['downloads'],
+      });
+      if (!granted) {
+        throw new Error('Download feature requires download permission');
       }
-      if (data.assignVariable) {
-        await this.setVariable(data.variableName, downloadItem.filename);
-      }
-
-      return {
-        nextBlockId,
-        data: downloadItem.filename,
-      };
     }
 
-    downloadId = +data.downloadId;
-  }
-
-  const result = await new Promise((resolve) => {
-    if (!this.activeTab.id) throw new Error('no-tab');
-
-    const hasListener =
-      !IS_FIREFOX &&
-      BrowserAPIService.downloads.onDeterminingFilename.hasListeners(() => {});
-    if (!hasListener) {
-      BrowserAPIService.downloads.onDeterminingFilename.addListener(
-        determineFilenameListener
-      );
-    }
-
-    const handleCreated = ({ id }) => {
-      if (downloadId) return;
-
-      const names = getFilesname();
-
-      downloadId = id;
-      names[id] = data;
-      sessionStorage.setItem('rename-downloaded-files', JSON.stringify(names));
-
-      BrowserAPIService.downloads.onCreated.removeListener(handleCreated);
+    const processedData = {
+      ...data,
+      filename: data.filename?.trim() || '',
     };
-    if (!downloadId) {
-      BrowserAPIService.downloads.onCreated.addListener(handleCreated);
-    }
 
-    if (!data.waitForDownload) {
-      resolve({
-        nextBlockId,
-        data: data.filename,
+    let downloadId = null;
+    if (processedData.downloadId?.trim()) {
+      if (Number.isNaN(+processedData.downloadId))
+        throw new Error('Download id is not a number');
+
+      const [downloadItem] = await BrowserAPIService.downloads.search({
+        id: +processedData.downloadId,
       });
 
-      return;
-    }
+      if (!downloadItem)
+        throw new Error(
+          `Can't find download item with ${processedData.downloadId} id`
+        );
 
-    let isResolved = false;
-    let currentFilename = data.filename;
-
-    const timeout = setTimeout(() => {
-      if (isResolved) return;
-
-      isResolved = true;
-
-      resolve({
-        nextBlockId,
-        data: currentFilename,
-      });
-    }, data.timeout);
-
-    const resolvePromise = async (id) => {
-      if (!currentFilename || !currentFilename.trim()) {
-        try {
-          const [download] = await BrowserAPIService.downloads.search({ id });
-          if (download && download.filename) {
-            currentFilename = download.filename;
-          }
-        } catch (e) {
-          console.error('Failed to get filename for download:', e);
+      if (downloadItem.state === 'complete') {
+        if (processedData.saveData) {
+          this.addDataToColumn(processedData.dataColumn, downloadItem.filename);
         }
+        if (processedData.assignVariable) {
+          await this.setVariable(
+            processedData.variableName,
+            downloadItem.filename
+          );
+        }
+
+        return {
+          nextBlockId,
+          data: downloadItem.filename,
+        };
       }
 
-      if (data.saveData) {
-        this.addDataToColumn(data.dataColumn, currentFilename);
-      }
-      if (data.assignVariable) {
-        this.setVariable(data.variableName, currentFilename);
-      }
+      downloadId = +processedData.downloadId;
+    }
 
-      clearTimeout(timeout);
-      isResolved = true;
+    await registerDownloadListeners();
 
-      const filesname = getFilesname();
-      delete filesname[id];
-      sessionStorage.setItem(
-        'rename-downloaded-files',
-        JSON.stringify(filesname)
-      );
+    const result = await new Promise((resolve) => {
+      if (!this.activeTab.id) throw new Error('no-tab');
 
-      BrowserAPIService.downloads.onDeterminingFilename.removeListener(
-        determineFilenameListener
-      );
+      (async () => {
+        try {
+          if (!downloadId) {
+            const downloadCompletePromise = new Promise((completeResolve) => {
+              MessageListener.sendMessage(
+                'downloads:watch-created',
+                {
+                  downloadData: processedData,
+                  tabId: this.activeTab.id,
 
-      resolve({
-        nextBlockId,
-        data: currentFilename,
-      });
-    };
+                  onComplete: (response) => {
+                    completeResolve(response);
+                  },
+                },
+                'background'
+              ).catch((err) => {
+                completeResolve({ error: true, message: err.message });
+              });
+            });
 
-    const handleChanged = ({ state, id, filename }) => {
-      if (this.engine.isDestroyed || isResolved) {
-        BrowserAPIService.downloads.onChanged.removeListener(handleChanged);
-        return;
-      }
+            if (!processedData.waitForDownload) {
+              resolve({
+                nextBlockId,
+                data: processedData.filename,
+              });
+              return;
+            }
 
-      if (downloadId !== id || !state) return;
+            const timeoutPromise = new Promise((timeoutResolve) => {
+              setTimeout(() => {
+                timeoutResolve({
+                  timedOut: true,
+                  filename: processedData.filename,
+                });
+              }, processedData.timeout);
+            });
 
-      if (filename) currentFilename = filename.current;
+            const downloadResult = await Promise.race([
+              downloadCompletePromise,
+              timeoutPromise,
+            ]);
 
-      const DOWNLOAD_STATE = ['complete', 'interrupted'];
-      if (DOWNLOAD_STATE.includes(state.current)) {
-        resolvePromise(id);
-      } else {
-        BrowserAPIService.downloads
-          .search({ id: downloadId })
-          .then(([download]) => {
-            if (!download || !DOWNLOAD_STATE.includes(download.state)) return;
+            let finalFilename = processedData.filename;
+            if (downloadResult.filename) {
+              finalFilename = downloadResult.filename;
+            }
 
-            resolvePromise(id);
+            if (processedData.saveData) {
+              this.addDataToColumn(processedData.dataColumn, finalFilename);
+            }
+            if (processedData.assignVariable) {
+              await this.setVariable(processedData.variableName, finalFilename);
+            }
+
+            resolve({
+              nextBlockId,
+              data: finalFilename,
+            });
+          } else {
+            const filesData = await getDownloadFilesFromStorage();
+            filesData[downloadId] = processedData;
+            await saveDownloadFilesToStorage(filesData);
+
+            if (!processedData.waitForDownload) {
+              resolve({
+                nextBlockId,
+                data: processedData.filename,
+              });
+              return;
+            }
+
+            let isResolved = false;
+            let currentFilename = processedData.filename;
+
+            const timeout = setTimeout(() => {
+              if (isResolved) return;
+              isResolved = true;
+
+              resolve({
+                nextBlockId,
+                data: currentFilename,
+              });
+            }, processedData.timeout);
+
+            await MessageListener.sendMessage(
+              'downloads:watch-changed',
+              {
+                downloadId,
+                tabId: this.activeTab.id,
+                onComplete: async (response) => {
+                  try {
+                    if (isResolved) return;
+
+                    if (response.filename) {
+                      currentFilename = response.filename;
+                    }
+
+                    if (processedData.saveData) {
+                      this.addDataToColumn(
+                        processedData.dataColumn,
+                        currentFilename
+                      );
+                    }
+                    if (processedData.assignVariable) {
+                      await this.setVariable(
+                        processedData.variableName,
+                        currentFilename
+                      );
+                    }
+
+                    clearTimeout(timeout);
+                    isResolved = true;
+
+                    if (response.downloadId) {
+                      await removeDownloadFromStorage(response.downloadId);
+                    }
+
+                    resolve({
+                      nextBlockId,
+                      data: currentFilename,
+                    });
+                  } catch (err) {
+                    if (!isResolved) {
+                      isResolved = true;
+                      resolve({
+                        nextBlockId,
+                        data: { $error: true, message: err.message },
+                      });
+                    }
+                  }
+                },
+              },
+              'background'
+            );
+          }
+        } catch (err) {
+          resolve({
+            nextBlockId,
+            data: { $error: true, message: err.message },
           });
-      }
+        }
+      })().catch((err) => {
+        resolve({
+          nextBlockId,
+          data: { $error: true, message: err.message },
+        });
+      });
+    });
+
+    return result;
+  } catch (error) {
+    return {
+      nextBlockId,
+      data: { $error: true, message: error.message },
     };
-
-    BrowserAPIService.downloads.onChanged.addListener(handleChanged);
-  });
-
-  return result;
+  }
 }
 
 export default handleDownload;
