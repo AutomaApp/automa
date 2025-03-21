@@ -13,7 +13,7 @@
         padding: sidebarCss.padding,
         position: 'relative',
       }"
-      >
+    >
       <workflow-edit-block
         v-if="editState.editing"
         :data="editState.blockData"
@@ -295,71 +295,71 @@
   </ui-modal>
 </template>
 <script setup>
-import {
-  watch,
-  provide,
-  markRaw,
-  reactive,
-  computed,
-  onMounted,
-  shallowRef,
-  onDeactivated,
-  onBeforeUnmount,
-  ref,
-} from 'vue';
-import cloneDeep from 'lodash.clonedeep';
-import { useI18n } from 'vue-i18n';
-import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
-import { customAlphabet } from 'nanoid';
-import { useToast } from 'vue-toastification';
-import { useHead } from '@vueuse/head';
-import defu from 'defu';
-import dagre from 'dagre';
-import { useUserStore } from '@/stores/user';
-import { usePackageStore } from '@/stores/package';
-import { useWorkflowStore } from '@/stores/workflow';
-import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
-import {
-  useShortcut,
-  getShortcut,
-  getReadableShortcut,
-} from '@/composable/shortcut';
-import { getWorkflowPermissions } from '@/utils/workflowData';
-import { fetchApi } from '@/utils/api';
-import { getBlocks } from '@/utils/getSharedData';
-import { excludeGroupBlocks } from '@/utils/shared';
-import { useGroupTooltip } from '@/composable/groupTooltip';
-import { useCommandManager } from '@/composable/commandManager';
-import { debounce, parseJSON, throttle, getActiveTab } from '@/utils/helper';
-import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
-import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
-import emitter from '@/lib/mitt';
-import functions from '@/workflowEngine/templating/templatingFunctions';
-import browser from 'webextension-polyfill';
-import dbStorage from '@/db/storage';
-import DroppedNode from '@/utils/editor/DroppedNode';
-import EditorCommands from '@/utils/editor/EditorCommands';
-import convertWorkflowData from '@/utils/convertWorkflowData';
-import startRecordWorkflow from '@/newtab/utils/startRecordWorkflow';
-import extractAutocopmleteData from '@/utils/editor/editorAutocomplete';
-import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
-import WorkflowEditor from '@/components/newtab/workflow/WorkflowEditor.vue';
-import WorkflowSettings from '@/components/newtab/workflow/WorkflowSettings.vue';
-import WorkflowShareTeam from '@/components/newtab/workflow/WorkflowShareTeam.vue';
-import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
-import WorkflowDataTable from '@/components/newtab/workflow/WorkflowDataTable.vue';
-import WorkflowGlobalData from '@/components/newtab/workflow/WorkflowGlobalData.vue';
-import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
+import PackageDetails from '@/components/newtab/package/PackageDetails.vue';
+import PackageSettings from '@/components/newtab/package/PackageSettings.vue';
 import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
 import EditorAddPackage from '@/components/newtab/workflow/editor/EditorAddPackage.vue';
 import EditorDebugging from '@/components/newtab/workflow/editor/EditorDebugging.vue';
-import EditorPkgActions from '@/components/newtab/workflow/editor/EditorPkgActions.vue';
-import EditorLocalCtxMenu from '@/components/newtab/workflow/editor/EditorLocalCtxMenu.vue';
 import EditorLocalActions from '@/components/newtab/workflow/editor/EditorLocalActions.vue';
-import EditorUsedCredentials from '@/components/newtab/workflow/editor/EditorUsedCredentials.vue';
+import EditorLocalCtxMenu from '@/components/newtab/workflow/editor/EditorLocalCtxMenu.vue';
 import EditorLocalSavedBlocks from '@/components/newtab/workflow/editor/EditorLocalSavedBlocks.vue';
-import PackageDetails from '@/components/newtab/package/PackageDetails.vue';
-import PackageSettings from '@/components/newtab/package/PackageSettings.vue';
+import EditorPkgActions from '@/components/newtab/workflow/editor/EditorPkgActions.vue';
+import EditorUsedCredentials from '@/components/newtab/workflow/editor/EditorUsedCredentials.vue';
+import WorkflowDataTable from '@/components/newtab/workflow/WorkflowDataTable.vue';
+import WorkflowDetailsCard from '@/components/newtab/workflow/WorkflowDetailsCard.vue';
+import WorkflowEditBlock from '@/components/newtab/workflow/WorkflowEditBlock.vue';
+import WorkflowEditor from '@/components/newtab/workflow/WorkflowEditor.vue';
+import WorkflowGlobalData from '@/components/newtab/workflow/WorkflowGlobalData.vue';
+import WorkflowSettings from '@/components/newtab/workflow/WorkflowSettings.vue';
+import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
+import WorkflowShareTeam from '@/components/newtab/workflow/WorkflowShareTeam.vue';
+import { useCommandManager } from '@/composable/commandManager';
+import { useGroupTooltip } from '@/composable/groupTooltip';
+import {
+  getReadableShortcut,
+  getShortcut,
+  useShortcut,
+} from '@/composable/shortcut';
+import dbStorage from '@/db/storage';
+import emitter from '@/lib/mitt';
+import startRecordWorkflow from '@/newtab/utils/startRecordWorkflow';
+import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
+import { usePackageStore } from '@/stores/package';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
+import { useUserStore } from '@/stores/user';
+import { useWorkflowStore } from '@/stores/workflow';
+import { fetchApi } from '@/utils/api';
+import convertWorkflowData from '@/utils/convertWorkflowData';
+import DroppedNode from '@/utils/editor/DroppedNode';
+import extractAutocopmleteData from '@/utils/editor/editorAutocomplete';
+import EditorCommands from '@/utils/editor/EditorCommands';
+import { getBlocks } from '@/utils/getSharedData';
+import { debounce, getActiveTab, parseJSON, throttle } from '@/utils/helper';
+import { excludeGroupBlocks } from '@/utils/shared';
+import { getWorkflowPermissions } from '@/utils/workflowData';
+import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
+import functions from '@/workflowEngine/templating/templatingFunctions';
+import { useHead } from '@vueuse/head';
+import dagre from 'dagre';
+import defu from 'defu';
+import cloneDeep from 'lodash.clonedeep';
+import { customAlphabet } from 'nanoid';
+import {
+  computed,
+  markRaw,
+  onBeforeUnmount,
+  onDeactivated,
+  onMounted,
+  provide,
+  reactive,
+  ref,
+  shallowRef,
+  watch,
+} from 'vue';
+import { useI18n } from 'vue-i18n';
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router';
+import { useToast } from 'vue-toastification';
+import browser from 'webextension-polyfill';
 
 const blocks = getBlocks();
 
@@ -393,7 +393,7 @@ const connectedTable = shallowRef(null);
 
 const sidebarRef = ref(null);
 const sidebarCss = reactive({
-  width: 320,
+  width: 360,
   padding: '20px',
   isDragging: false,
   startX: 0,
@@ -402,7 +402,7 @@ const sidebarCss = reactive({
 const drag = (event) => {
   if (sidebarCss.isDragging) {
     const diffX = event.clientX - sidebarCss.startX;
-    sidebarCss.width = Math.max(320, sidebarCss.startWidth + diffX); // min-width : 320px,max-width: 30%
+    sidebarCss.width = Math.max(360, sidebarCss.startWidth + diffX); // min-width : 360px,max-width: 30%
   }
 };
 const stopDrag = () => {
@@ -1276,6 +1276,11 @@ function onDragoverEditor({ target }) {
 }
 function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
   const savedBlocks = parseJSON(dataTransfer.getData('savedBlocks'), null);
+  console.log(
+    '🚀 ~ onDropInEditor ~ savedBlocks:',
+    dataTransfer.getData('savedBlocks'),
+    typeof dataTransfer.getData('savedBlocks')
+  );
 
   const editorRect = editor.value.viewportRef.value.getBoundingClientRect();
   const position = editor.value.project({
@@ -1308,6 +1313,7 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
   }
 
   const block = parseJSON(dataTransfer.getData('block'), null);
+  console.log('🚀 ~ onDropInEditor ~ block:', block);
   if (!block || block.fromBlockBasic) return;
 
   if (block.id === 'trigger' && isPackage) return;
@@ -1691,20 +1697,23 @@ onBeforeUnmount(() => {
 .sidebar {
   max-width: 30%;
 }
-.sidebar:hover .custom-drag {
-    opacity: 0.5;
-}
+
 .custom-drag {
   position: absolute;
-  width: 10px;
-  height: 40px;
-  background: white;
-  right: 4px;
+  width: 8px;
+  height: 90%;
+  right: 0;
   top: 50%;
   transform: translateY(-50%);
-  border-radius: 30px;
+
+  border-radius: 4px;
   opacity: 0;
   cursor: col-resize;
   transition: opacity 0.5s;
+  background-color: #436dec;
+}
+.custom-drag:hover {
+  cursor: col-resize;
+  opacity: 1;
 }
 </style>
