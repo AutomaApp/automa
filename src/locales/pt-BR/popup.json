@@ -1,0 +1,37 @@
+{
+  "recording": {
+    "stop": "Parar gravação",
+    "title": "Gravação"
+  },
+  "home": {
+    "record": {
+      "title": "Gravar workflow",
+      "button": "Gravar",
+      "name": "Nome do workflow",
+      "selectBlock": "Selecione um bloco para iniciar",
+      "anotherBlock": "Não é possível iniciar a partir deste bloco",
+      "tabs": {
+        "new": "Novo workflow",
+        "existing": "Workflow existente"
+      }
+    },
+    "elementSelector": {
+      "name": "Seletor de elemento",
+      "noAccess": "Não tem acesso a este site"
+    },
+    "workflow": {
+      "new": "Novo workflow",
+      "rename": "Renomear workflow",
+      "delete": "Excluir workflow",
+      "type": {
+        "host": "Host",
+        "local": "Local"
+      }
+    }
+  },
+  "about": {
+    "description": "Automa é uma extensão do Chrome para automação do navegador. Nos formulários de preenchimento automático, fazendo uma tarefa repetitiva, tirando uma captura de tela, até raspar dos website, cabe a você decidir o que deseja fazer com esta extensão.",
+    "contributors": "Contribuidores",
+    "thanks": "Obrigado a todos que enviaram issues, fizeram sugestões e em geral ajudaram a tornar este projeto melhor."
+  }
+}
