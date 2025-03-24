@@ -2,7 +2,7 @@
 
 # Automa
 <p>
-  <img alt="Automa latest version" src="https://img.shields.io/github/package-json/v/kholid060/automa" />
+  <img alt="Automa latest version" src="https://img.shields.io/github/package-json/v/AutomaApp/automa" />
   <a href="https://twitter.com/AutomaApp">
     <img alt="Follow Us on Twitter" src="https://img.shields.io/twitter/follow/AutomaApp?style=social" />
   </a>
@@ -50,25 +50,25 @@ export default function() {
 
 ```bash
 # Install dependencies
-yarn install
+pnpm install
 
 # Compiles and hot-reloads for development for the chrome browser
-yarn dev
+pnpm dev
 
 # Compiles and minifies for production for the chrome browser
-yarn build
+pnpm build
 
 # Create a zip file from the build folder
-yarn build:zip
+pnpm build:zip
 
 # Compiles and hot-reloads for development for the firefox browser
-yarn dev:firefox
+pnpm dev:firefox
 
 # Compiles and minifies for production for the firefox browser
-yarn build:firefox
+pnpm build:firefox
 
 # Lints and fixes files
-yarn lint
+pnpm lint
 ```
 
 ### Install Locally

@@ -1,10 +1,10 @@
 {
   "name": "automa",
-  "version": "1.29.8",
+  "version": "1.29.9",
   "description": "An extension for automating your browser by connecting blocks",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kholid060/automa.git"
+    "url": "https://github.com/AutomaApp/automa.git"
   },
   "scripts": {
     "build": "node utils/build.js",
