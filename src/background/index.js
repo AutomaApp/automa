@@ -303,19 +303,25 @@ message.on(
           chrome.debugger.attach({ tabId: target.tabId }, '1.3', resolve);
         });
 
-        // 直接执行回调函数字符串
-        // 避免使用new Function构造函数，因为它会被CSP阻止
-        const callbackFn = callback;
+        // 首先执行回调函数以获取JS代码字符串
+        // 这里的关键是回调函数本身就是一个字符串，直接在debugger中执行
+        const callbackString =
+          typeof callback === 'function' ? callback.toString() : callback;
 
-        // 检查回调函数字符串是否有效
-        if (!callbackFn) {
-          throw new Error('Callback function is missing or invalid');
+        if (!callbackString) {
+          throw new Error('Callback is missing or invalid');
         }
 
-        // 创建一个包装函数，直接执行回调函数
+        // 直接执行回调函数的字符串表示，不再通过额外的包装函数
         const wrappedCallback = `
           (function() {
-            return (${callbackFn})();
+            try {
+              const fn = ${callbackString};
+              return fn();
+            } catch (err) {
+              console.error("Error in callback execution:", err);
+              return JSON.stringify({ error: err.message });
+            }
           })()
         `;
 
@@ -702,6 +708,340 @@ message.on('script:execute-callback', async ({ target, callback }) => {
     console.error('执行script:execute-callback时出错:', error);
     return false;
   }
+});
+
+const DOWNLOADS_STORAGE_KEY = 'automa-rename-downloaded-files';
+
+const getFileExtension = (str) => /(?:\.([^.]+))?$/.exec(str)[1];
+
+const downloadListeners = {
+  registered: false,
+  changedCallbacks: new Map(),
+  pendingRequests: [],
+  downloadDataCache: new Map(),
+  handledFilenameCallbacks: new Set(),
+  suggestCalled: new Set(),
+  downloadInfo: new Map(),
+};
+
+/**
+ * @param {Object} item
+ * @param {Function} suggest
+ * @returns {boolean}
+ */
+function determineFilenameListener(item, suggest) {
+  const downloadKey = `download-${item.id}`;
+
+  if (downloadListeners.suggestCalled.has(downloadKey)) {
+    return true;
+  }
+
+  downloadListeners.suggestCalled.add(downloadKey);
+
+  setTimeout(async () => {
+    try {
+      let suggestion = null;
+      if (downloadListeners.downloadDataCache.has(item.id)) {
+        suggestion = downloadListeners.downloadDataCache.get(item.id);
+      } else {
+        const result = await browser.storage.session.get(DOWNLOADS_STORAGE_KEY);
+        const filesData = result[DOWNLOADS_STORAGE_KEY] || {};
+
+        suggestion = filesData[item.id];
+      }
+
+      if (!suggestion) {
+        // we should not call suggest again, because Chrome expects us to handle it
+        return;
+      }
+
+      if (!suggestion.filename || suggestion.filename.trim() === '') {
+        return;
+      }
+
+      const hasFileExt = getFileExtension(suggestion.filename);
+
+      if (!hasFileExt) {
+        const fileExtension = getFileExtension(item.filename);
+        suggestion.filename += `.${fileExtension}`;
+      }
+
+      let conflictAction = 'uniquify';
+      const validActions = ['uniquify', 'overwrite', 'prompt'];
+
+      if (
+        suggestion.onConflict &&
+        validActions.includes(suggestion.onConflict)
+      ) {
+        conflictAction = suggestion.onConflict;
+      }
+
+      if (!suggestion.waitForDownload) {
+        downloadListeners.downloadDataCache.delete(item.id);
+
+        const result = await browser.storage.session.get(DOWNLOADS_STORAGE_KEY);
+        const filesData = result[DOWNLOADS_STORAGE_KEY] || {};
+        delete filesData[item.id];
+        await browser.storage.session.set({
+          [DOWNLOADS_STORAGE_KEY]: filesData,
+        });
+      }
+
+      downloadListeners.handledFilenameCallbacks.add(downloadKey);
+
+      try {
+        suggest({
+          filename: suggestion.filename,
+          conflictAction,
+        });
+      } catch (callbackError) {
+        console.error('❌ failed to call suggest callback:', callbackError);
+      }
+    } catch (error) {
+      console.error('❌ failed to handle download filename:', error);
+    }
+  }, 0);
+
+  // important: we use async processing, so we must return true
+  return true;
+}
+
+function handleDownloadChanged(downloadDelta) {
+  const { id, state, filename } = downloadDelta;
+
+  if (!id || !downloadListeners.changedCallbacks.has(id)) return;
+
+  if (!downloadListeners.downloadInfo.has(id)) {
+    downloadListeners.downloadInfo.set(id, {
+      downloadId: id,
+      state: null,
+      filename: null,
+    });
+  }
+
+  const downloadInfo = downloadListeners.downloadInfo.get(id);
+
+  if (state) {
+    downloadInfo.state = state.current;
+  }
+
+  if (filename) {
+    downloadInfo.filename = filename.current;
+  }
+
+  if (
+    downloadInfo.state &&
+    ['complete', 'interrupted'].includes(downloadInfo.state)
+  ) {
+    const callback = downloadListeners.changedCallbacks.get(id);
+
+    const completeInfo = {
+      ...downloadInfo,
+
+      filename:
+        downloadInfo.filename ||
+        (downloadListeners.downloadDataCache.has(id)
+          ? downloadListeners.downloadDataCache.get(id).filename
+          : null),
+    };
+
+    try {
+      callback(completeInfo);
+    } catch (callbackError) {
+      console.error(
+        '❌ failed to call download changed callback:',
+        callbackError
+      );
+    }
+
+    downloadListeners.changedCallbacks.delete(id);
+    downloadListeners.downloadDataCache.delete(id);
+    downloadListeners.downloadInfo.delete(id);
+
+    const downloadKey = `download-${id}`;
+    downloadListeners.handledFilenameCallbacks.delete(downloadKey);
+    downloadListeners.suggestCalled.delete(downloadKey);
+  }
+}
+
+async function handleDownloadCreated(downloadItem) {
+  try {
+    let isHandled = false;
+    const pendingDownloads = downloadListeners.pendingRequests || [];
+
+    if (pendingDownloads.length > 0) {
+      const pendingRequest = pendingDownloads.shift();
+      const { downloadData, callback } = pendingRequest;
+
+      // save to memory cache immediately to avoid race condition
+      downloadListeners.downloadDataCache.set(downloadItem.id, downloadData);
+
+      // save to storage
+      const result = await browser.storage.session.get(DOWNLOADS_STORAGE_KEY);
+      const filesData = result[DOWNLOADS_STORAGE_KEY] || {};
+      filesData[downloadItem.id] = downloadData;
+      await browser.storage.session.set({ [DOWNLOADS_STORAGE_KEY]: filesData });
+
+      if (downloadData.waitForDownload && callback) {
+        downloadListeners.changedCallbacks.set(downloadItem.id, callback);
+      }
+
+      isHandled = true;
+    }
+
+    if (!isHandled) {
+      const result = await browser.storage.session.get(DOWNLOADS_STORAGE_KEY);
+      const filesData = result[DOWNLOADS_STORAGE_KEY] || {};
+
+      if (filesData[downloadItem.id]) {
+        downloadListeners.downloadDataCache.set(
+          downloadItem.id,
+          filesData[downloadItem.id]
+        );
+      }
+    }
+  } catch (error) {
+    console.error('❌ failed to handle download created:', error);
+  }
+}
+
+function cleanupDownloadListeners() {
+  const MAX_AGE = 60 * 60 * 1000; // 1 hour
+  const now = Date.now();
+
+  if (downloadListeners.handledFilenameCallbacksTimestamp) {
+    if (now - downloadListeners.handledFilenameCallbacksTimestamp > MAX_AGE) {
+      downloadListeners.handledFilenameCallbacks.clear();
+    }
+  }
+
+  downloadListeners.handledFilenameCallbacksTimestamp = now;
+}
+
+setInterval(cleanupDownloadListeners, 60 * 60 * 1000);
+
+async function registerBackgroundDownloadListeners() {
+  try {
+    if (browser.downloads.onCreated.hasListener(handleDownloadCreated)) {
+      browser.downloads.onCreated.removeListener(handleDownloadCreated);
+    }
+
+    if (
+      !IS_FIREFOX &&
+      browser.downloads.onDeterminingFilename &&
+      browser.downloads.onDeterminingFilename.hasListener(
+        determineFilenameListener
+      )
+    ) {
+      browser.downloads.onDeterminingFilename.removeListener(
+        determineFilenameListener
+      );
+    }
+
+    if (browser.downloads.onChanged.hasListener(handleDownloadChanged)) {
+      browser.downloads.onChanged.removeListener(handleDownloadChanged);
+    }
+
+    downloadListeners.handledFilenameCallbacks.clear();
+    downloadListeners.suggestCalled.clear();
+    downloadListeners.downloadInfo.clear();
+
+    if (downloadListeners.registered) {
+      downloadListeners.registered = false;
+    }
+  } catch (cleanupError) {
+    console.warn('⚠️ failed to cleanup existing listeners:', cleanupError);
+  }
+
+  if (downloadListeners.registered) return;
+
+  try {
+    // 确保有下载权限
+    const hasPermission = await browser.permissions.contains({
+      permissions: ['downloads'],
+    });
+    if (!hasPermission) {
+      console.error('❌ no download permission, cannot register listeners');
+      return;
+    }
+
+    browser.downloads.onCreated.addListener(handleDownloadCreated);
+
+    if (!IS_FIREFOX && browser.downloads.onDeterminingFilename) {
+      browser.downloads.onDeterminingFilename.addListener(
+        determineFilenameListener
+      );
+    }
+
+    browser.downloads.onChanged.addListener(handleDownloadChanged);
+
+    downloadListeners.registered = true;
+    downloadListeners.pendingRequests = [];
+
+    downloadListeners.handledFilenameCallbacksTimestamp = Date.now();
+  } catch (error) {
+    console.error('❌ failed to register download listeners:', error);
+  }
+}
+
+message.on('downloads:register-listeners', async () => {
+  await registerBackgroundDownloadListeners();
+  return true;
+});
+
+message.on('downloads:watch-created', async (data) => {
+  console.log('👀 监听下载创建:', data);
+  await registerBackgroundDownloadListeners();
+
+  // 保存等待下载的请求
+  downloadListeners.pendingRequests = downloadListeners.pendingRequests || [];
+
+  // 安全地包装回调函数
+  let safeCallback = null;
+  if (typeof data.onComplete === 'function') {
+    safeCallback = (response) => {
+      try {
+        console.log('🔄 调用下载完成回调函数:', response);
+        data.onComplete(response);
+      } catch (callbackError) {
+        console.error('❌ 执行下载完成回调函数出错:', callbackError);
+      }
+    };
+  }
+
+  downloadListeners.pendingRequests.push({
+    downloadData: data.downloadData,
+    tabId: data.tabId,
+    callback: safeCallback,
+  });
+  console.log(
+    '📋 添加到待处理下载队列, 当前队列长度:',
+    downloadListeners.pendingRequests.length
+  );
+
+  return true;
+});
+
+message.on('downloads:watch-changed', async ({ downloadId, onComplete }) => {
+  console.log('👀 监听下载状态变化:', downloadId);
+  await registerBackgroundDownloadListeners();
+
+  if (downloadId && typeof onComplete === 'function') {
+    // 安全地包装回调函数
+    const safeCallback = (response) => {
+      try {
+        console.log('🔄 调用下载状态变更回调函数:', response);
+        onComplete(response);
+      } catch (callbackError) {
+        console.error('❌ 执行下载状态变更回调函数出错:', callbackError);
+      }
+    };
+
+    downloadListeners.changedCallbacks.set(downloadId, safeCallback);
+    console.log('📌 已设置下载完成回调:', downloadId);
+  }
+
+  return true;
 });
 
 automa('background', message);

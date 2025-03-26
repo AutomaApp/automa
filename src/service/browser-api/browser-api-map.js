@@ -60,6 +60,7 @@ export const browserAPIMap = [
   { path: 'debugger.attach', api: () => chrome.debugger.attach },
   { path: 'debugger.sendCommand', api: () => chrome.debugger.sendCommand },
   { path: 'permissions.contains', api: () => Browser.permissions.contains },
+  { path: 'permissions.request', api: () => Browser.permissions.request },
   { path: 'cookies.get', api: () => Browser.cookies?.get },
   { path: 'cookies.getAll', api: () => Browser.cookies?.getAll },
   { path: 'cookies.remove', api: () => Browser.cookies?.remove },

@@ -173,24 +173,24 @@
   </div>
 </template>
 <script setup>
-import {
-  onMounted,
-  reactive,
-  onBeforeUnmount,
-  shallowReactive,
-  watch,
-  ref,
-  computed,
-  inject,
-} from 'vue';
-import browser from 'webextension-polyfill';
-import cloneDeep from 'lodash.clonedeep';
-import workflowParameters from '@business/parameters';
-import { sendMessage } from '@/utils/message';
-import { debounce, parseJSON } from '@/utils/helper';
 import ParameterInputValue from '@/components/newtab/workflow/edit/Parameter/ParameterInputValue.vue';
 import ParameterJsonValue from '@/components/newtab/workflow/edit/Parameter/ParameterJsonValue.vue';
 import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
+import { debounce, parseJSON } from '@/utils/helper';
+import { sendMessage } from '@/utils/message';
+import workflowParameters from '@business/parameters';
+import cloneDeep from 'lodash.clonedeep';
+import {
+  computed,
+  inject,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  ref,
+  shallowReactive,
+  watch,
+} from 'vue';
+import browser from 'webextension-polyfill';
 
 const paramsList = {
   string: {
@@ -206,7 +206,10 @@ const paramsList = {
 };
 
 const os = navigator.appVersion.indexOf('Mac') !== -1 ? 'mac' : 'win';
-const logoUrl = browser.runtime.getURL('/icon-128.png');
+
+const logoUrl = browser.runtime.getURL(
+  process.env.NODE_ENV === 'development' ? '/icon-dev-128.png' : '/icon-128.png'
+);
 
 const inputRef = ref(null);
 const state = shallowReactive({

@@ -472,6 +472,8 @@ class WorkflowEngine {
 
         const logDto = {
           workflowId: this.workflow.id,
+          workflowName: this.workflow.name,
+          nodesCount: this.workflow.drawflow.nodes.length,
           status,
           message: message || '',
           startedAt: new Date(this.startedTimestamp).toISOString(),
