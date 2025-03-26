@@ -3,7 +3,7 @@
     <div
       class="sticky top-0 z-20 mb-2 flex items-center space-x-2 bg-white pb-4 dark:bg-gray-800"
     >
-      <button @click="$emit('close')">
+      <button @click="handleClose">
         <v-remixicon name="riArrowLeftLine" />
       </button>
       <p class="inline-block font-semibold capitalize">
@@ -35,9 +35,10 @@
   </div>
 </template>
 <script setup>
+import customEditComponents from '@business/blocks/editComponents';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import customEditComponents from '@business/blocks/editComponents';
+import { useToast } from 'vue-toastification';
 
 const editComponents = require.context(
   './edit',
@@ -78,6 +79,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'update', 'update:autocomplete']);
 
 const { t, te } = useI18n();
+const toast = useToast();
 
 const blockData = computed({
   get() {
@@ -87,6 +89,50 @@ const blockData = computed({
     emit('update', data);
   },
 });
+
+function isGoogleSheetsBlock() {
+  return ['google-sheets'].includes(props.data.id);
+}
+
+function validateBeforeClose() {
+  // 检查是否为Google Sheets相关区块
+  if (isGoogleSheetsBlock()) {
+    // 检查spreadsheetId是否为空，且不是create或add-sheet操作
+    const { spreadsheetId, type, range } = blockData.value;
+    const isNotCreateAction = !['create', 'add-sheet'].includes(type);
+
+    if (isNotCreateAction) {
+      const errors = [];
+
+      if (!spreadsheetId) {
+        errors.push(
+          t(
+            'workflow.blocks.google-sheets.spreadsheetId.required',
+            'Spreadsheet ID is required'
+          )
+        );
+      }
+
+      if (!range) {
+        errors.push(
+          t('workflow.blocks.google-sheets.range.required', 'Range is required')
+        );
+      }
+
+      if (errors.length > 0) {
+        errors.forEach((error) => toast.error(error));
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function handleClose() {
+  if (validateBeforeClose()) {
+    emit('close');
+  }
+}
 
 function getEditComponent() {
   const editComp = props.data.editComponent;

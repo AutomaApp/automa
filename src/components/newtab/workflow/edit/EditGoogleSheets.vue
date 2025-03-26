@@ -56,6 +56,10 @@
         :model-value="data.range"
         class="mt-1 w-full"
         placeholder="Sheet1!A1:B2"
+        :class="{
+          'border-red-500':
+            !data.range && !['create', 'add-sheet'].includes(data.type),
+        }"
         @change="updateData({ range: $event })"
       >
         <template #label>
@@ -68,6 +72,17 @@
           >
             <v-remixicon name="riInformationLine" size="18" class="inline" />
           </a>
+        </template>
+        <template
+          v-if="!data.range && !['create', 'add-sheet'].includes(data.type)"
+          #footer
+        >
+          <span class="text-red-500 text-sm">{{
+            t(
+              'workflow.blocks.google-sheets.range.required',
+              'Range is required'
+            )
+          }}</span>
         </template>
       </ui-input>
     </edit-autocomplete>
@@ -215,12 +230,12 @@
   </div>
 </template>
 <script setup>
-import { shallowReactive, defineAsyncComponent } from 'vue';
+import { fetchApi } from '@/utils/api';
+import googleSheetsApi from '@/utils/googleSheetsApi';
+import { convert2DArrayToArrayObj, debounce } from '@/utils/helper';
+import { defineAsyncComponent, shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
-import { fetchApi } from '@/utils/api';
-import { convert2DArrayToArrayObj, debounce } from '@/utils/helper';
-import googleSheetsApi from '@/utils/googleSheetsApi';
 import EditAutocomplete from './EditAutocomplete.vue';
 import InsertWorkflowData from './InsertWorkflowData.vue';
 
