@@ -287,6 +287,21 @@ const state = shallowReactive({
 
 const checkPermission = debounce(async (value) => {
   try {
+    if (!value.trim()) {
+      toast.error('Spreadsheet id is empty');
+      return;
+    }
+
+    if (
+      value.includes('://') ||
+      value.startsWith('http') ||
+      value.startsWith('www.') ||
+      value.includes('docs.google.com')
+    ) {
+      toast.error('Spreadsheet id is invalid');
+      return;
+    }
+
     if (state.lastSheetId === value) return;
 
     const response = await fetchApi(
@@ -313,7 +328,7 @@ async function previewData() {
       spreadsheetId: props.data.spreadsheetId,
     };
 
-    if (!props.data.spreadsheetId) {
+    if (!props.data.spreadsheetId.trim()) {
       toast.error(
         props.googleDrive
           ? 'No spreadsheet is selected'
