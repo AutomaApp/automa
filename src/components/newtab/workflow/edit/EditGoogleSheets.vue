@@ -322,6 +322,16 @@ async function previewData() {
       previewDataState.status = 'idle';
       return;
     }
+
+    if (
+      props.data.spreadsheetId.includes('http') ||
+      props.data.spreadsheetId.includes('spreadsheets')
+    ) {
+      toast.error('Spreadsheet Id is invalid, please check it');
+      previewDataState.status = 'idle';
+      return;
+    }
+
     if (!props.data.range) {
       toast.error('Spreadsheet range is empty');
       previewDataState.status = 'idle';
