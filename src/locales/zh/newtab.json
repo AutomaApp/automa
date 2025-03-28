@@ -1,7 +1,15 @@
 {
   "home": {
     "viewAll": "查看全部",
-    "communities": "社区"
+    "communities": "社区",
+    "user": "用户",
+    "userCenter": {
+      "register": "一键注册",
+      "modify": "修改信息",
+      "signIn": "登录",
+      "logout": "注销登录",
+      "resetPasswd": "密码重置"
+    }
   },
   "welcome": {
     "title": "欢迎使用 Automa! 🎉",

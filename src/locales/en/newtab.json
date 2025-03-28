@@ -1,7 +1,15 @@
 {
   "home": {
     "viewAll": "View all",
-    "communities": "Communities"
+    "communities": "Communities",
+    "user": "User",
+    "userCenter": {
+      "register": "Register",
+      "modify": "Modify",
+      "signIn": "SignIn",
+      "logout": "Logout",
+      "resetPasswd": "Reset Password"
+    }
   },
   "welcome": {
     "title": "Welcome to Automa! 🎉",

@@ -57,6 +57,7 @@
       <v-remixicon name="riFocus3Line" />
     </button>
     <div class="grow"></div>
+
     <ui-popover
       v-if="userStore.user"
       trigger="mouseenter click"
@@ -64,12 +65,23 @@
     >
       <template #trigger>
         <span class="bg-box-transparent inline-block rounded-full p-1">
-          <img
-            :src="userStore.user.avatar_url"
-            height="32"
-            width="32"
-            class="rounded-full"
-          />
+          <!--          <img-->
+          <!--            :src="userStore.user.avatar_url"-->
+          <!--            height="32"-->
+          <!--            width="32"-->
+          <!--            class="rounded-full"-->
+          <!--          />-->
+          <div
+            style="
+              width: 32px;
+              height: 32px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            "
+          >
+            匿
+          </div>
         </span>
       </template>
       <div class="w-44">
@@ -87,24 +99,32 @@
         </div>
       </div>
     </ui-popover>
+
     <ui-popover trigger="mouseenter" placement="right" class="my-4">
       <template #trigger>
         <v-remixicon name="riGroupLine" />
       </template>
-      <p class="mb-2">{{ t('home.communities') }}</p>
-      <ui-list class="w-40">
-        <ui-list-item
-          v-for="item in communities"
-          :key="item.name"
-          :href="item.url"
-          small
-          tag="a"
-          target="_blank"
-          rel="noopener"
-        >
-          <v-remixicon :name="item.icon" class="mr-2" />
-          {{ item.name }}
-        </ui-list-item>
+      <p class="mb-2">{{ t('home.user') }}</p>
+      <ui-list class="w-40 user-center">
+        <template v-if="userStore.user">
+          <!--          <ui-list-item small>-->
+          <!--            {{ t('home.userCenter.modify') }}-->
+          <!--          </ui-list-item>-->
+          <!--          <ui-list-item small>-->
+          <!--            {{ t('home.userCenter.resetPasswd') }}-->
+          <!--          </ui-list-item>-->
+          <ui-list-item small @click="onLogoutClick">
+            {{ t('home.userCenter.logout') }}
+          </ui-list-item>
+        </template>
+        <template v-else>
+          <ui-list-item small @click="onRegisterClick">
+            {{ t('home.userCenter.register') }}
+          </ui-list-item>
+          <!--          <ui-list-item small>-->
+          <!--            {{ t('home.userCenter.signIn') }}-->
+          <!--          </ui-list-item>-->
+        </template>
       </ui-list>
     </ui-popover>
     <router-link v-tooltip:right.group="t('settings.menu.about')" to="/about">
@@ -122,9 +142,9 @@ import { useUserStore } from '@/stores/user';
 import { useWorkflowStore } from '@/stores/workflow';
 import { useShortcut, getShortcut } from '@/composable/shortcut';
 import { useGroupTooltip } from '@/composable/groupTooltip';
-import { communities } from '@/utils/shared';
 import { initElementSelector } from '@/newtab/utils/elementSelector';
 import emitter from '@/lib/mitt';
+import { fetchApi } from '@/utils/api';
 
 useGroupTooltip();
 
@@ -228,6 +248,29 @@ async function injectElementSelector() {
     console.error(error);
   }
 }
+
+async function onRegisterClick() {
+  const response = await fetchApi('/user/register', { method: 'POST' });
+  const result = await response.json();
+  if (!response.ok) throw new Error(response.message);
+  if (result.code) throw new Error(result.msg);
+
+  let user = result.data;
+  user = {
+    ...user,
+    username: user.nick || user.name,
+  };
+  browser.storage.local.set({
+    user,
+  });
+  browser.storage.local.set({ access_token: user.access_token });
+  userStore.user = user;
+}
+
+async function onLogoutClick() {
+  browser.storage.local.remove(['user', 'access_token']);
+  userStore.user = null;
+}
 </script>
 <style scoped>
 .tab.is-active:after {
@@ -238,5 +281,10 @@ async function injectElementSelector() {
   height: 100%;
   width: 4px;
   @apply bg-accent dark:bg-gray-100;
+}
+.user-center {
+  > * {
+    cursor: pointer;
+  }
 }
 </style>

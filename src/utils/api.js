@@ -9,28 +9,12 @@ export async function fetchApi(path, options = {}) {
     ...(options?.headers || {}),
   };
 
-  const { session } = (await BrowserAPIService.storage.local.get(
-    'session'
-  )) || { session: null };
-  if (session && options?.auth) {
+  const { access_token } =
+    (await BrowserAPIService.storage.local.get('access_token')) || {};
+  if (access_token && options?.auth) {
     delete options.auth;
 
-    let token = session.access_token;
-
-    if (Date.now() > (session.expires_at - 2000) * 1000) {
-      const response = await fetch(
-        `${secrets.baseApiUrl}/me/refresh-auth-session?token=${session.refresh_token}`
-      );
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.message);
-      }
-
-      await BrowserAPIService.storage.local.set({ session: result });
-      token = result.access_token;
-    }
-
-    headers.Authorization = `Bearer ${token}`;
+    headers.Authorization = `Bearer ${access_token}`;
   }
 
   const url = `${secrets.baseApiUrl}${urlPath}`;

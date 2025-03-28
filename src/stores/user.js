@@ -34,8 +34,13 @@ export const useUserStore = defineStore('user', {
               const result = await response.json();
 
               if (!response.ok) throw new Error(response.message);
+              if (result.code) throw new Error(result.msg);
 
-              return result;
+              const raw_user = result.data;
+              return {
+                ...raw_user,
+                username: raw_user.nick || raw_user.name,
+              };
             } catch (error) {
               console.error(error);
               return null;
