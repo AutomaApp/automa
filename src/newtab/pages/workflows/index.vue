@@ -511,14 +511,16 @@ function addHostedWorkflow() {
           method: 'POST',
           body: JSON.stringify({ hostId }),
         });
-        const result = await response.json();
+        let result = await response.json();
 
         if (!response.ok) {
-          const error = new Error(result.message);
+          const error = new Error(result.msg);
           error.data = result.data;
 
           throw error;
         }
+
+        result = result.data;
 
         if (result === null) throw new Error('not-found');
 

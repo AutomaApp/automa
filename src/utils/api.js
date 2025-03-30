@@ -19,10 +19,18 @@ export async function fetchApi(path, options = {}) {
 
   const url = `${secrets.baseApiUrl}${urlPath}`;
 
-  return fetch(url, {
+  const ret = await fetch(url, {
     ...options,
     headers,
   });
+  if (ret.ok) {
+    const bodyStream = ret.clone();
+    const result = await bodyStream.json();
+    if (result.code) {
+      throw new Error(result.msg);
+    }
+  }
+  return ret;
 }
 
 export async function cacheApi(key, callback, useCache = true) {
@@ -107,7 +115,7 @@ export async function getUserWorkflows(useCache = true) {
         if (!response.ok) throw new Error(response.statusText);
 
         const result = await response.json();
-        const workflows = result.reduce(
+        const workflows = result.data.records.reduce(
           (acc, workflow) => {
             if (workflow.isHost) {
               acc.hosted[workflow.id] = {

@@ -528,7 +528,7 @@ async function setAsHostWorkflow(isHost) {
 
   try {
     let url = '/me/workflows';
-    let payload = {};
+    let config = {};
 
     if (isHost) {
       const workflowPaylod = convertWorkflow(props.workflow, ['id']);
@@ -539,7 +539,7 @@ async function setAsHostWorkflow(isHost) {
       delete workflowPaylod.extVersion;
 
       url += `/host`;
-      payload = {
+      config = {
         auth: true,
         method: 'POST',
         body: JSON.stringify({
@@ -548,21 +548,32 @@ async function setAsHostWorkflow(isHost) {
       };
     } else {
       url += `?id=${props.workflow.id}&type=host`;
-      payload.method = 'DELETE';
+      config = {
+        method: 'DELETE',
+        auth: true,
+      };
     }
 
-    const response = await fetchApi(url, payload);
+    const response = await fetchApi(url, config);
     const result = await response.json();
 
     if (!response.ok) {
-      const error = new Error(result.message);
+      const error = new Error(result.msg);
+      error.data = result.data;
+
+      throw error;
+    }
+    if (result.code) {
+      const error = new Error(result.msg);
       error.data = result.data;
 
       throw error;
     }
 
     if (isHost) {
-      userStore.hostedWorkflows[props.workflow.id] = result;
+      const v = result.data;
+      v.hostId = v.id;
+      userStore.hostedWorkflows[props.workflow.id] = v;
     } else {
       delete userStore.hostedWorkflows[props.workflow.id];
     }

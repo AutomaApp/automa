@@ -670,7 +670,7 @@ const updateHostedWorkflow = throttle(async () => {
 
     if (!response.ok) throw new Error(response.message);
     if (isBackup) {
-      const result = await response.json();
+      const result = (await response.json()).data;
 
       if (result.updatedAt) {
         await browser.storage.local.set({ lastBackup: result.updatedAt });

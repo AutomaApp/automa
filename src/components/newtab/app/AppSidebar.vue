@@ -58,6 +58,7 @@
     </button>
     <div class="grow"></div>
 
+    <!--  用户信息  -->
     <ui-popover
       v-if="userStore.user"
       trigger="mouseenter click"
@@ -104,7 +105,9 @@
       <template #trigger>
         <v-remixicon name="riGroupLine" />
       </template>
-      <p class="mb-2">{{ t('home.user') }}</p>
+      <p class="mb-2">
+        {{ t('home.user') }}
+      </p>
       <ui-list class="w-40 user-center">
         <template v-if="userStore.user">
           <!--          <ui-list-item small>-->
@@ -113,9 +116,9 @@
           <!--          <ui-list-item small>-->
           <!--            {{ t('home.userCenter.resetPasswd') }}-->
           <!--          </ui-list-item>-->
-          <ui-list-item small @click="onLogoutClick">
-            {{ t('home.userCenter.logout') }}
-          </ui-list-item>
+          <!--          <ui-list-item small @click="onLogoutClick">-->
+          <!--            {{ t('home.userCenter.logout') }}-->
+          <!--          </ui-list-item>-->
         </template>
         <template v-else>
           <ui-list-item small @click="onRegisterClick">
@@ -267,10 +270,10 @@ async function onRegisterClick() {
   userStore.user = user;
 }
 
-async function onLogoutClick() {
-  browser.storage.local.remove(['user', 'access_token']);
-  userStore.user = null;
-}
+// async function onLogoutClick() {
+//   browser.storage.local.remove(['user', 'access_token']);
+//   userStore.user = null;
+// }
 </script>
 <style scoped>
 .tab.is-active:after {

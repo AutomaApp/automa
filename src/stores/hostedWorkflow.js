@@ -64,11 +64,13 @@ export const useHostedWorkflowStore = defineStore('hosted-workflows', {
         method: 'POST',
         body: JSON.stringify({ hosts: ids }),
       });
-      const result = await response.json();
+      let result = await response.json();
 
-      if (!response.ok) throw new Error(result.message);
+      if (!response.ok) throw new Error(result.msg);
 
       const dataToReturn = [];
+
+      result = result.data;
 
       result.forEach(({ hostId, status, data }) => {
         if (status === 'deleted') {
