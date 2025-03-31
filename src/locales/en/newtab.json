@@ -276,7 +276,8 @@
       },
       "messages": {
         "hostExist": "You have already added this host",
-        "notFound": "Can't find a hosted workflow with the ID \"{id}\""
+        "notFound": "Can't find a hosted workflow with the ID \"{id}\"",
+        "successAdded": "Successfully added hosted workflow with the ID \"{id}\""
       }
     },
     "type": {
@@ -298,7 +299,8 @@
       "edit": "Edit description",
       "fetchLocal": "Fetch local workflow",
       "update": "Update",
-      "unpublish": "Unpublish"
+      "unpublish": "Unpublish",
+      "linkCopied": "Link copied to clipboard"
     },
     "variables": {
       "title": "Variable | Variables",

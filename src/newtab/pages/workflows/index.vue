@@ -256,7 +256,7 @@
               :sort="{ by: state.sortBy, order: state.sortOrder }"
             />
           </ui-tab-panel>
-          <ui-tab-panel value="shared" class="workflows-container">
+          <ui-tab-panel value="shared">
             <workflows-shared
               :search="state.query"
               :sort="{ by: state.sortBy, order: state.sortOrder }"
@@ -367,28 +367,28 @@
   </div>
 </template>
 <script setup>
-import { computed, shallowReactive, watch, onMounted } from 'vue';
+import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
+import WorkflowsFolder from '@/components/newtab/workflows/WorkflowsFolder.vue';
+import WorkflowsHosted from '@/components/newtab/workflows/WorkflowsHosted.vue';
+import WorkflowsLocal from '@/components/newtab/workflows/WorkflowsLocal.vue';
+import WorkflowsShared from '@/components/newtab/workflows/WorkflowsShared.vue';
+import WorkflowsUserTeam from '@/components/newtab/workflows/WorkflowsUserTeam.vue';
+import { useDialog } from '@/composable/dialog';
+import { useGroupTooltip } from '@/composable/groupTooltip';
+import { useShortcut } from '@/composable/shortcut';
+import recordWorkflow from '@/newtab/utils/startRecordWorkflow';
+import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
+import { useUserStore } from '@/stores/user';
+import { useWorkflowStore } from '@/stores/workflow';
+import { fetchApi } from '@/utils/api';
+import { findTriggerBlock, isWhitespace } from '@/utils/helper';
+import { getWorkflowPermissions, importWorkflow } from '@/utils/workflowData';
+import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
+import { computed, onMounted, shallowReactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
-import { useDialog } from '@/composable/dialog';
-import { useShortcut } from '@/composable/shortcut';
-import { useGroupTooltip } from '@/composable/groupTooltip';
-import { fetchApi } from '@/utils/api';
-import { useUserStore } from '@/stores/user';
-import { useWorkflowStore } from '@/stores/workflow';
-import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
-import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
-import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
-import { isWhitespace, findTriggerBlock } from '@/utils/helper';
-import { importWorkflow, getWorkflowPermissions } from '@/utils/workflowData';
-import recordWorkflow from '@/newtab/utils/startRecordWorkflow';
-import WorkflowsLocal from '@/components/newtab/workflows/WorkflowsLocal.vue';
-import WorkflowsShared from '@/components/newtab/workflows/WorkflowsShared.vue';
-import WorkflowsHosted from '@/components/newtab/workflows/WorkflowsHosted.vue';
-import WorkflowsFolder from '@/components/newtab/workflows/WorkflowsFolder.vue';
-import WorkflowsUserTeam from '@/components/newtab/workflows/WorkflowsUserTeam.vue';
-import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
 
 useGroupTooltip();
 
@@ -530,6 +530,8 @@ function addHostedWorkflow() {
 
         const triggerBlock = findTriggerBlock(result.drawflow);
         await registerWorkflowTrigger(hostId, triggerBlock);
+
+        toast.success(t('workflow.host.messages.successAdded', { id: hostId }));
 
         return true;
       } catch (error) {

@@ -276,7 +276,8 @@
               },
               "messages": {
                 "hostExist": "您已經新增過此主機",
-                "notFound": "找不到 ID 為 \"{id}\" 的託管工作流程"
+                "notFound": "找不到 ID 為 \"{id}\" 的託管工作流程",
+                "successAdded": "託管工作流程 \"{id}\" 已新增成功"
               }
             },
               "type": {
@@ -298,7 +299,8 @@
                 "edit": "編輯描述",
                 "fetchLocal": "提取本機工作流程",
                 "update": "更新",
-                "unpublish": "取消發布"
+                "unpublish": "取消發布",
+                "linkCopied": "連結已複製到剪貼簿"
               },
               "variables": {
                 "title": "變數 | 變數們",
@@ -514,4 +516,3 @@
                 }
               }
             }
-           

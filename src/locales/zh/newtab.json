@@ -276,7 +276,8 @@
       },
       "messages": {
         "hostExist": "您已添加此主机",
-        "notFound": "找不到托管工作流 \"{id}\" id"
+        "notFound": "找不到托管工作流 \"{id}\" id",
+        "successAdded": "托管工作流 \"{id}\" id 已添加成功"
       }
     },
     "type": {
@@ -298,7 +299,8 @@
       "edit": "编辑详细描述",
       "fetchLocal": "获取本地工作流",
       "update": "更新",
-      "unpublish": "取消发布"
+      "unpublish": "取消发布",
+      "linkCopied": "链接已复制到剪贴板"
     },
     "variables": {
       "title": "变量 | 变量",
