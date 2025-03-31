@@ -402,7 +402,7 @@ const teamWorkflowStore = useTeamWorkflowStore();
 const hostedWorkflowStore = useHostedWorkflowStore();
 
 const sorts = ['name', 'createdAt', 'updatedAt', 'mostUsed'];
-const { teamId, active } = router.currentRoute.value.query;
+const { teamId, active: routeActive } = router.currentRoute.value.query;
 const savedSorts = JSON.parse(localStorage.getItem('workflow-sorts') || '{}');
 const validTeamId = userStore.user?.teams?.some(
   ({ id }) => id === teamId || id === +teamId
@@ -412,7 +412,7 @@ const state = shallowReactive({
   teams: [],
   query: '',
   activeFolder: '',
-  activeTab: active || 'local',
+  activeTab: routeActive || 'local',
   teamId: validTeamId ? teamId : '',
   perPage: savedSorts.perPage || 18,
   sortBy: savedSorts.sortBy || 'createdAt',
@@ -451,10 +451,28 @@ function startRecordWorkflow() {
     router.push('/recording');
   });
 }
-function updateActiveTab(data = {}) {
-  if (data.activeTab !== 'team') data.teamId = '';
+async function updateActiveTab(data = {}) {
+  if (data.activeTab !== 'team') {
+    data.teamId = '';
+  }
 
-  Object.assign(state, data);
+  const query = {
+    ...router.currentRoute.value.query,
+    active: data.activeTab,
+  };
+
+  if (data.teamId) {
+    query.teamId = data.teamId;
+  } else {
+    delete query.teamId;
+  }
+
+  await router.replace({
+    ...router.currentRoute.value,
+    query,
+  });
+
+  Object.assign(state, { ...data });
 }
 function addWorkflow() {
   workflowStore
@@ -578,14 +596,23 @@ watch(
   }
 );
 watch(
-  () => [state.activeTab, state.teamId],
-  ([activeTab, teamIdQuery]) => {
-    const query = { active: activeTab };
+  () => router.currentRoute.value.query,
+  (query) => {
+    const newState = {};
 
-    if (teamIdQuery) query.teamId = teamIdQuery;
+    if (query.active && query.active !== state.activeTab) {
+      newState.activeTab = query.active;
+    }
 
-    router.replace({ ...router.currentRoute.value, query });
-  }
+    if (query.teamId !== undefined) {
+      newState.teamId = query.teamId || '';
+    }
+
+    if (Object.keys(newState).length > 0) {
+      Object.assign(state, newState);
+    }
+  },
+  { immediate: true }
 );
 
 onMounted(() => {
