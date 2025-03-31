@@ -35,7 +35,7 @@
           prepend-icon="riLinkM"
           :model-value="`https://automa.site/workflow/${workflow.id}`"
           readonly
-          @click="$event.target.select()"
+          @click="copyLink"
         />
       </ui-card>
       <div class="pointer-events-none grow" />
@@ -149,20 +149,20 @@
   </ui-modal>
 </template>
 <script setup>
-import { reactive, onMounted, watch, shallowRef, computed } from 'vue';
-import { useI18n } from 'vue-i18n';
+import WorkflowEditor from '@/components/newtab/workflow/WorkflowEditor.vue';
+import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
+import { useDialog } from '@/composable/dialog';
+import { useGroupTooltip } from '@/composable/groupTooltip';
+import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
+import { useWorkflowStore } from '@/stores/workflow';
+import { fetchApi } from '@/utils/api';
+import convertWorkflowData from '@/utils/convertWorkflowData';
 import { useHead } from '@vueuse/head';
+import { computed, onMounted, reactive, shallowRef, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import browser from 'webextension-polyfill';
-import { fetchApi } from '@/utils/api';
-import { useDialog } from '@/composable/dialog';
-import { useGroupTooltip } from '@/composable/groupTooltip';
-import { useWorkflowStore } from '@/stores/workflow';
-import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
-import convertWorkflowData from '@/utils/convertWorkflowData';
-import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
-import WorkflowEditor from '@/components/newtab/workflow/WorkflowEditor.vue';
 
 useGroupTooltip();
 
@@ -356,6 +356,14 @@ function insertToLocal() {
 function onEditorInit(instance) {
   instance.setInteractive(false);
   editor.value = instance;
+}
+
+function copyLink(e) {
+  e.target.select();
+  navigator.clipboard.writeText(
+    `https://automa.site/workflow/${workflow.value.id}`
+  );
+  toast.success(t('workflow.share.linkCopied'));
 }
 
 watch(workflow, () => {
