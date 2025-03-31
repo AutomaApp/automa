@@ -528,7 +528,9 @@ async function setAsHostWorkflow(isHost) {
 
   try {
     let url = '/me/workflows';
-    let payload = {};
+    let payload = {
+      auth: true,
+    };
 
     if (isHost) {
       const workflowPaylod = convertWorkflow(props.workflow, ['id']);
