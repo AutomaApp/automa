@@ -94,7 +94,7 @@
     }
   },
   "auth": {
-    "title": "作者",
+    "title": "授权验证",
     "signIn": "登录",
     "username": "您需要先设置您的用户名",
     "clickHere": "点击这里",
