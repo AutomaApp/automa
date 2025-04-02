@@ -520,7 +520,7 @@ function addHostedWorkflow() {
           throw error;
         }
 
-        result = result.data;
+        result = result.data[0].data;
 
         if (result === null) throw new Error('not-found');
 
