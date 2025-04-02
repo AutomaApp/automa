@@ -1,11 +1,7 @@
 {
-  "name": "automa",
-  "version": "1.29.9",
-  "description": "An extension for automating your browser by connecting blocks",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/AutomaApp/automa.git"
-  },
+  "name": "旋塔Automa",
+  "version": "1.0.0",
+  "description": "浏览器自动化工具, powered by automa 1.29.9",
   "scripts": {
     "build": "node utils/build.js",
     "build:firefox": "cross-env BROWSER=firefox npm run build",
