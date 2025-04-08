@@ -438,11 +438,13 @@
         },
         "spreadsheetId": {
           "label": "Spreadsheet Id",
-          "link": "See how to get spreadsheet Id"
+          "link": "See how to get spreadsheet Id",
+          "required": "Spreadsheet ID is required"
         },
         "range": {
           "label": "Range",
-          "link": "Click to see more examples"
+          "link": "Click to see more examples",
+          "required": "Range is required"
         },
         "select": {
           "get": "Get spreadsheet cell values",
