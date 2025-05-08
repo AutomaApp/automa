@@ -107,7 +107,7 @@ export async function cleanWorkflowTriggers(workflowId, triggers) {
     const startupTriggers = (onStartupTriggers || []).filter(
       (id) => !id.includes(workflowId)
     );
-    const filteredVisitWebTriggers = visitWebTriggers?.filter(
+    const filteredVisitWebTriggers = (visitWebTriggers || []).filter(
       (item) => !item.id.includes(workflowId)
     );
 
