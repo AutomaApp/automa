@@ -238,7 +238,8 @@
       },
       "messages": {
         "hostExist": "Hai già aggiunto questo host",
-        "notFound": "Impossibile trovare un workflow ospitato con l'ID \"{id}\""
+        "notFound": "Impossibile trovare un workflow ospitato con l'ID \"{id}\"",
+        "successAdded": "Workflow ospitato aggiunto con successo con l'ID \"{id}\""
       }
     },
     "type": {
@@ -260,7 +261,8 @@
       "edit": "Modifica descrizione",
       "fetchLocal": "Recupera workflow locale",
       "update": "Aggiorna",
-      "unpublish": "Annulla pubblicazione"
+      "unpublish": "Annulla pubblicazione",
+      "linkCopied": "Link copiato negli appunti"
     },
     "variables": {
       "title": "Variabile | Variabili",

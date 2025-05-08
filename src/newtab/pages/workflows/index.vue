@@ -256,7 +256,7 @@
               :sort="{ by: state.sortBy, order: state.sortOrder }"
             />
           </ui-tab-panel>
-          <ui-tab-panel value="shared" class="workflows-container">
+          <ui-tab-panel value="shared">
             <workflows-shared
               :search="state.query"
               :sort="{ by: state.sortBy, order: state.sortOrder }"
@@ -367,28 +367,28 @@
   </div>
 </template>
 <script setup>
-import { computed, shallowReactive, watch, onMounted } from 'vue';
+import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
+import WorkflowsFolder from '@/components/newtab/workflows/WorkflowsFolder.vue';
+import WorkflowsHosted from '@/components/newtab/workflows/WorkflowsHosted.vue';
+import WorkflowsLocal from '@/components/newtab/workflows/WorkflowsLocal.vue';
+import WorkflowsShared from '@/components/newtab/workflows/WorkflowsShared.vue';
+import WorkflowsUserTeam from '@/components/newtab/workflows/WorkflowsUserTeam.vue';
+import { useDialog } from '@/composable/dialog';
+import { useGroupTooltip } from '@/composable/groupTooltip';
+import { useShortcut } from '@/composable/shortcut';
+import recordWorkflow from '@/newtab/utils/startRecordWorkflow';
+import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
+import { useUserStore } from '@/stores/user';
+import { useWorkflowStore } from '@/stores/workflow';
+import { fetchApi } from '@/utils/api';
+import { findTriggerBlock, isWhitespace } from '@/utils/helper';
+import { getWorkflowPermissions, importWorkflow } from '@/utils/workflowData';
+import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
+import { computed, onMounted, shallowReactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
-import { useDialog } from '@/composable/dialog';
-import { useShortcut } from '@/composable/shortcut';
-import { useGroupTooltip } from '@/composable/groupTooltip';
-import { fetchApi } from '@/utils/api';
-import { useUserStore } from '@/stores/user';
-import { useWorkflowStore } from '@/stores/workflow';
-import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
-import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
-import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
-import { isWhitespace, findTriggerBlock } from '@/utils/helper';
-import { importWorkflow, getWorkflowPermissions } from '@/utils/workflowData';
-import recordWorkflow from '@/newtab/utils/startRecordWorkflow';
-import WorkflowsLocal from '@/components/newtab/workflows/WorkflowsLocal.vue';
-import WorkflowsShared from '@/components/newtab/workflows/WorkflowsShared.vue';
-import WorkflowsHosted from '@/components/newtab/workflows/WorkflowsHosted.vue';
-import WorkflowsFolder from '@/components/newtab/workflows/WorkflowsFolder.vue';
-import WorkflowsUserTeam from '@/components/newtab/workflows/WorkflowsUserTeam.vue';
-import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
 
 useGroupTooltip();
 
@@ -402,7 +402,7 @@ const teamWorkflowStore = useTeamWorkflowStore();
 const hostedWorkflowStore = useHostedWorkflowStore();
 
 const sorts = ['name', 'createdAt', 'updatedAt', 'mostUsed'];
-const { teamId, active } = router.currentRoute.value.query;
+const { teamId, active: routeActive } = router.currentRoute.value.query;
 const savedSorts = JSON.parse(localStorage.getItem('workflow-sorts') || '{}');
 const validTeamId = userStore.user?.teams?.some(
   ({ id }) => id === teamId || id === +teamId
@@ -412,7 +412,7 @@ const state = shallowReactive({
   teams: [],
   query: '',
   activeFolder: '',
-  activeTab: active || 'local',
+  activeTab: routeActive || 'local',
   teamId: validTeamId ? teamId : '',
   perPage: savedSorts.perPage || 18,
   sortBy: savedSorts.sortBy || 'createdAt',
@@ -451,10 +451,28 @@ function startRecordWorkflow() {
     router.push('/recording');
   });
 }
-function updateActiveTab(data = {}) {
-  if (data.activeTab !== 'team') data.teamId = '';
+async function updateActiveTab(data = {}) {
+  if (data.activeTab !== 'team') {
+    data.teamId = '';
+  }
 
-  Object.assign(state, data);
+  const query = {
+    ...router.currentRoute.value.query,
+    active: data.activeTab,
+  };
+
+  if (data.teamId) {
+    query.teamId = data.teamId;
+  } else {
+    delete query.teamId;
+  }
+
+  await router.replace({
+    ...router.currentRoute.value,
+    query,
+  });
+
+  Object.assign(state, { ...data });
 }
 function addWorkflow() {
   workflowStore
@@ -531,6 +549,8 @@ function addHostedWorkflow() {
         const triggerBlock = findTriggerBlock(result.drawflow);
         await registerWorkflowTrigger(hostId, triggerBlock);
 
+        toast.success(t('workflow.host.messages.successAdded', { id: hostId }));
+
         return true;
       } catch (error) {
         console.error(error);
@@ -576,14 +596,23 @@ watch(
   }
 );
 watch(
-  () => [state.activeTab, state.teamId],
-  ([activeTab, teamIdQuery]) => {
-    const query = { active: activeTab };
+  () => router.currentRoute.value.query,
+  (query) => {
+    const newState = {};
 
-    if (teamIdQuery) query.teamId = teamIdQuery;
+    if (query.active && query.active !== state.activeTab) {
+      newState.activeTab = query.active;
+    }
 
-    router.replace({ ...router.currentRoute.value, query });
-  }
+    if (query.teamId !== undefined) {
+      newState.teamId = query.teamId || '';
+    }
+
+    if (Object.keys(newState).length > 0) {
+      Object.assign(state, newState);
+    }
+  },
+  { immediate: true }
 );
 
 onMounted(() => {

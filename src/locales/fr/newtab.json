@@ -90,7 +90,8 @@
       },
       "messages": {
         "hostExist": "Vous avez déjà ajouté cet hôte",
-        "notFound": "Impossible de trouver le workflow hébergé avec l'identifiant \"{id}\""
+        "notFound": "Impossible de trouver le workflow hébergé avec l'identifiant \"{id}\"",
+        "successAdded": "Workflow hébergé ajouté avec succès avec l'identifiant \"{id}\""
       }
     },
     "type": {
@@ -112,7 +113,8 @@
       "edit": "Éditer la description",
       "fetchLocal": "Récupérer le workflow local",
       "update": "Mettre à jour",
-      "unpublish": "Annuler la publication"
+      "unpublish": "Annuler la publication",
+      "linkCopied": "Lien copié dans le presse-papiers"
     },
     "variables": {
       "title": "Variable | Variables",

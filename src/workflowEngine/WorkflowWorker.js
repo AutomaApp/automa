@@ -429,7 +429,8 @@ class WorkflowWorker {
 
       const { onError } = this.settings;
       const nodeConnections = this.getBlockConnections(block.id);
-
+      this.engine.restartWorkersCount = this.engine.restartWorkersCount || {};
+      
       if (onError === 'keep-running' && nodeConnections) {
         setTimeout(() => {
           executeBlocks(nodeConnections, error.data || '');

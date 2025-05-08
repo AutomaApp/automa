@@ -275,7 +275,8 @@
       },
       "messages": {
         "hostExist": "Bu ana bilgisayarı zaten eklediniz",
-        "notFound": "Kimliği \"{id}\" olan barındırılan bir iş akışı bulunamıyor"
+        "notFound": "Kimliği \"{id}\" olan barındırılan bir iş akışı bulunamıyor",
+        "successAdded": "Kimliği \"{id}\" olan barındırılan iş akışı başarıyla eklendi"
       }
     },
     "type": {
@@ -297,7 +298,8 @@
       "edit": "Açıklamayı düzenle",
       "fetchLocal": "Yerel iş akışını getir",
       "update": "Güncelle",
-      "unpublish": "Yayından kaldır"
+      "unpublish": "Yayından kaldır",
+      "linkCopied": "Bağlantı kopyalandı"
     },
     "variables": {
       "title": "Değişken | Değişkenler",
@@ -512,6 +514,6 @@
       "of": "toplam {page}"
     }
   }
-  
+
 
 }
