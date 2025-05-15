@@ -11,7 +11,7 @@ function getWorkflowDetail() {
   const variables = {};
   const { 1: workflowId } = pathname.split('/');
 
-  searchParams.forEach((key, value) => {
+  searchParams.forEach((value, key) => {
     const varValue = parseJSON(decodeURIComponent(value), '##_empty');
     if (varValue === '##_empty') return;
 
