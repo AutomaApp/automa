@@ -49,7 +49,7 @@
         </div>
       </div>
       <a
-        href="https://docs.automa.site/blocks/upload-file.html#requirements"
+        href="https://docs.extension.automa.site/blocks/upload-file.html#requirements"
         target="_blank"
         rel="noopener"
         class="mt-2 inline-block leading-tight text-primary"
