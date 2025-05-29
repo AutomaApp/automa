@@ -164,7 +164,7 @@
         If the workflow runs for less than 5 minutes, set it to run in the
         background in the
         <a
-          href="https://docs.automa.site/workflow/settings.html#workflow-execution"
+          href="https://docs.extension.automa.site/workflow/settings.html#workflow-execution"
           class="font-semibold underline"
           target="_blank"
         >
@@ -289,7 +289,7 @@ const showTab = computed(
 
 function openDocs() {
   window.open(
-    'https://docs.automa.site/guide/quick-start.html#recording-actions',
+    'https://docs.extension.automa.site/guide/quick-start.html#recording-actions',
     '_blank'
   );
 }

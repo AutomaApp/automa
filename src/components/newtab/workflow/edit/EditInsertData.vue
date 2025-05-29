@@ -239,7 +239,7 @@ function changeItemType(index, type) {
 }
 function setAsFile(item) {
   if (!hasFileAccess.value) {
-    window.open('https://docs.automa.site/blocks/insert-data.html#import-file');
+    window.open('https://docs.extension.automa.site/blocks/insert-data.html#import-file');
     return;
   }
 

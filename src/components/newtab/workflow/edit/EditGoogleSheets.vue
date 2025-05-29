@@ -31,7 +31,7 @@
         <template #label>
           {{ t('workflow.blocks.google-sheets.spreadsheetId.label') }}*
           <a
-            href="https://docs.automa.site/blocks/google-sheets.html#spreadsheet-id"
+            href="https://docs.extension.automa.site/blocks/google-sheets.html#spreadsheet-id"
             target="_blank"
             rel="noopener"
             :title="t('workflow.blocks.google-sheets.spreadsheetId.link')"
@@ -43,7 +43,7 @@
     </edit-autocomplete>
     <a
       v-if="!state.havePermission"
-      href="https://docs.automa.site/blocks/google-sheets.html#access-to-spreadsheet"
+      href="https://docs.extension.automa.site/blocks/google-sheets.html#access-to-spreadsheet"
       target="_blank"
       rel="noopener"
       class="ml-1 inline-block text-sm leading-tight"
@@ -61,7 +61,7 @@
         <template #label>
           {{ t('workflow.blocks.google-sheets.range.label') }}*
           <a
-            href="https://docs.automa.site/blocks/google-sheets.html#range"
+            href="https://docs.extension.automa.site/blocks/google-sheets.html#range"
             target="_blank"
             rel="noopener"
             :title="t('workflow.blocks.google-sheets.range.link')"

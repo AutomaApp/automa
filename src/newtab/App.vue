@@ -53,7 +53,7 @@
         <p>
           Export your Automa workflows as a standalone extension using
           <a
-            href="https://docs.automa.site/extension-builder/"
+            href="https://docs.extension.automa.site/extension-builder/"
             target="_blank"
             class="underline"
             >Automa Chrome Extension Builder</a

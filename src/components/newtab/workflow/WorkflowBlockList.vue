@@ -23,7 +23,7 @@
           class="invisible absolute right-2 top-2 flex items-center text-gray-600 group-hover:visible dark:text-gray-300"
         >
           <a
-            :href="`https://docs.automa.site/blocks/${block.id}.html`"
+            :href="`https://docs.extension.automa.site/blocks/${block.id}.html`"
             :title="t('common.docs')"
             target="_blank"
             rel="noopener"

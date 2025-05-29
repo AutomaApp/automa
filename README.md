@@ -36,7 +36,7 @@ Auto-fill forms, do a repetitive task, take a screenshot, or scrape website data
 Browse the Automa marketplace where you can share and download workflows with others. [Go to the marketplace &#187;](https://www.automa.site/marketplace)
 
 ## Automa Chrome Extension Builder
-Automa Chrome Extension Builder (Automa CEB for short) allows you to generate a standalone chrome extension based on Automa workflows. [Go to the documentation &#187;](https://docs.automa.site/extension-builder)
+Automa Chrome Extension Builder (Automa CEB for short) allows you to generate a standalone chrome extension based on Automa workflows. [Go to the documentation &#187;](https://docs.extension.automa.site/extension-builder)
 
 
 ## Project setup

@@ -4,7 +4,7 @@
       <p>
         You haven't
         <a
-          href="https://docs.automa.site/integrations/google-drive.html"
+          href="https://docs.extension.automa.site/integrations/google-drive.html"
           target="_blank"
           class="underline"
           >connected Automa to Google Drive</a
