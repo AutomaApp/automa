@@ -1,97 +1,64 @@
-import secrets from 'secrets';
 import browser from 'webextension-polyfill';
 
-function injectFilePicker() {
-  return new Promise((resolve, reject) => {
-    const scriptExist = document.querySelector('#google-api');
-    if (scriptExist) {
-      resolve();
-      return;
-    }
-
-    let gisLoaded = false;
-    let pickerLoaded = false;
-
-    // Create a blob URL for the Google API script
-    const scriptApi = document.createElement('script');
-    scriptApi.onload = () => {
-      window.gapi.load('picker', () => {
-        pickerLoaded = true;
-      });
-    };
-    scriptApi.id = 'google-api';
-    scriptApi.src = chrome.runtime.getURL('lib/google-apis.js');
-
-    // Create a blob URL for the GSI client script
-    const scriptGis = document.createElement('script');
-    scriptGis.onload = () => {
-      gisLoaded = true;
-    };
-    scriptGis.src = chrome.runtime.getURL('lib/google-accounts.gsi.client.js');
-
-    document.body.appendChild(scriptApi);
-    document.body.appendChild(scriptGis);
-
-    let count = 0;
-    const checkIfLoaded = () => {
-      if (count > 10) {
-        reject(new Error('Timeout'));
-        return;
-      }
-
-      if (gisLoaded && pickerLoaded) {
-        resolve();
-        return;
-      }
-
-      count += 1;
-      setTimeout(checkIfLoaded, 1500);
-    };
-
-    checkIfLoaded();
-  });
-}
-
-function selectFile(accessToken) {
-  return new Promise((resolve) => {
-    const callback = (event) => {
-      if (!event || event?.action !== 'picked') return;
-
-      const [doc] = event.docs;
-      resolve(doc);
-    };
-
-    const picker = new window.google.picker.PickerBuilder()
-      .addView(
-        new window.google.picker.DocsView(
-          window.google.picker.ViewId.SPREADSHEETS
-        ).setMode(window.google.picker.DocsViewMode.LIST)
-      )
-      .setAppId(secrets.googleProjectId)
-      .setOAuthToken(accessToken)
-      .setDeveloperKey(secrets.googleApiKey)
-      .setCallback(callback)
-      .build();
-    picker.setVisible(true);
-
-    window.gDrivePicker = picker;
-  });
-}
-
-export default async function () {
-  await injectFilePicker();
-
+/**
+ *
+ * get all google sheets files in current user's google drive
+ * @returns {Promise<Array>} file list [{ id, name, mimeType }]
+ */
+export default async function fetchGDriveSheets() {
   const { sessionToken, session } = await browser.storage.local.get([
     'sessionToken',
     'session',
   ]);
-  if (!sessionToken || !sessionToken.access) return null;
+  if (!sessionToken || !sessionToken.access) return [];
 
   const isGoogleProvider =
     session?.user?.user_metadata?.iss.includes('google.com');
-  if (!isGoogleProvider) return null;
+  if (!isGoogleProvider) return [];
 
-  const result = await selectFile(sessionToken.access);
+  const accessToken = sessionToken.access;
+  const endpoint =
+    'https://www.googleapis.com/drive/v3/files?fields=files(id%2Cname%2CmimeType)&q=mimeType%3D%27application%2Fvnd.google-apps.spreadsheet%27&spaces=drive&pageSize=1000';
 
-  return result;
+  try {
+    const res = await fetch(endpoint, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (!res.ok) throw new Error('Failed to fetch Google Sheets list');
+    const data = await res.json();
+    return data.files || [];
+  } catch (e) {
+    // handle token expired or other exceptions
+    return [];
+  }
+}
+
+/**
+ * open google picker popup to get user authorized file
+ * @param {string} accessToken
+ * @returns {Promise<{id, name, mimeType}>}
+ */
+export function openGDrivePickerPopup(accessToken) {
+  return new Promise((resolve, reject) => {
+    const pickerUrl = `https://extension.automa.site/picker?access_token=${accessToken}`;
+    const popup = window.open(pickerUrl, '_blank', 'width=600,height=600');
+    function handleMessage(event) {
+      if (!event.origin.startsWith('https://extension.automa.site')) return;
+      if (event.data && event.data.type === 'GDRIVE_PICKER_RESULT') {
+        window.removeEventListener('message', handleMessage);
+        popup.close();
+        resolve(event.data.file);
+      }
+    }
+    window.addEventListener('message', handleMessage);
+    const timer = setInterval(() => {
+      if (popup.closed) {
+        clearInterval(timer);
+        window.removeEventListener('message', handleMessage);
+        reject(new Error('Picker window closed'));
+      }
+    }, 500);
+  });
 }
