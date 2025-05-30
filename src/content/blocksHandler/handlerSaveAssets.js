@@ -9,7 +9,7 @@ async function saveAssets(block) {
 
   elements = block.data.multiple ? Array.from(elements) : [elements];
 
-  const srcs = elements.reduce((acc, element) => {
+  const srcList = elements.reduce((acc, element) => {
     const tag = element.tagName;
 
     if ((tag === 'AUDIO' || tag === 'VIDEO') && !tag.src) {
@@ -23,7 +23,7 @@ async function saveAssets(block) {
     return acc;
   }, []);
 
-  return srcs;
+  return srcList;
 }
 
 export default saveAssets;
