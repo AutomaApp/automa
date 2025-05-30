@@ -5,7 +5,7 @@
         {{ t('common.storage') }}
       </h1>
       <a
-        href="https://docs.automa.site/reference/storage.html"
+        href="https://docs.extension.automa.site/reference/storage.html"
         title="Docs"
         class="ml-2 text-gray-600 dark:text-gray-200"
         target="_blank"
@@ -38,12 +38,12 @@
   </div>
 </template>
 <script setup>
+import StorageCredentials from '@/components/newtab/storage/StorageCredentials.vue';
+import StorageTables from '@/components/newtab/storage/StorageTables.vue';
+import StorageVariables from '@/components/newtab/storage/StorageVariables.vue';
 import { reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
-import StorageTables from '@/components/newtab/storage/StorageTables.vue';
-import StorageVariables from '@/components/newtab/storage/StorageVariables.vue';
-import StorageCredentials from '@/components/newtab/storage/StorageCredentials.vue';
 
 const tabs = ['tables', 'variables', 'credentials'];
 

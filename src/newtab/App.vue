@@ -14,7 +14,7 @@
           </p>
           <ui-button
             tag="a"
-            href="https://www.automa.site/auth"
+            href="https://extension.automa.site/auth"
             class="mt-6 block w-full"
             variant="accent"
           >
@@ -53,7 +53,7 @@
         <p>
           Export your Automa workflows as a standalone extension using
           <a
-            href="https://docs.automa.site/extension-builder/"
+            href="https://docs.extension.automa.site/extension-builder/"
             target="_blank"
             class="underline"
             >Automa Chrome Extension Builder</a
@@ -71,35 +71,35 @@
   </div>
 </template>
 <script setup>
-import { ref, reactive, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useRouter, useRoute } from 'vue-router';
-import { compare } from 'compare-versions';
-import { useHead } from '@vueuse/head';
-import browser from 'webextension-polyfill';
-import { useStore } from '@/stores/main';
-import { useUserStore } from '@/stores/user';
-import { useFolderStore } from '@/stores/folder';
-import { usePackageStore } from '@/stores/package';
-import { useWorkflowStore } from '@/stores/workflow';
-import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
-import { useTheme } from '@/composable/theme';
-import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
-import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
-import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
-import { getUserWorkflows } from '@/utils/api';
-import { getWorkflowPermissions } from '@/utils/workflowData';
-import { MessageListener } from '@/utils/message';
-import emitter from '@/lib/mitt';
-import automa from '@business';
-import dbLogs from '@/db/logs';
-import dayjs from '@/lib/dayjs';
+import iconChrome from '@/assets/svg/logo.svg';
+import iconFirefox from '@/assets/svg/logoFirefox.svg';
 import AppLogs from '@/components/newtab/app/AppLogs.vue';
 import AppSidebar from '@/components/newtab/app/AppSidebar.vue';
-import dataMigration from '@/utils/dataMigration';
-import iconFirefox from '@/assets/svg/logoFirefox.svg';
-import iconChrome from '@/assets/svg/logo.svg';
 import SharedPermissionsModal from '@/components/newtab/shared/SharedPermissionsModal.vue';
+import { useTheme } from '@/composable/theme';
+import dbLogs from '@/db/logs';
+import dayjs from '@/lib/dayjs';
+import emitter from '@/lib/mitt';
+import { loadLocaleMessages, setI18nLanguage } from '@/lib/vueI18n';
+import { useFolderStore } from '@/stores/folder';
+import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
+import { useStore } from '@/stores/main';
+import { usePackageStore } from '@/stores/package';
+import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
+import { useUserStore } from '@/stores/user';
+import { useWorkflowStore } from '@/stores/workflow';
+import { getUserWorkflows } from '@/utils/api';
+import dataMigration from '@/utils/dataMigration';
+import { MessageListener } from '@/utils/message';
+import { getWorkflowPermissions } from '@/utils/workflowData';
+import automa from '@business';
+import { useHead } from '@vueuse/head';
+import { compare } from 'compare-versions';
+import { reactive, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRoute, useRouter } from 'vue-router';
+import browser from 'webextension-polyfill';
 
 const iconElement = document.createElement('link');
 iconElement.rel = 'icon';

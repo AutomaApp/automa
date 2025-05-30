@@ -3,7 +3,7 @@
     <ui-input
       v-tooltip="t('workflow.share.url')"
       prepend-icon="riLinkM"
-      :model-value="`https://automa.site/workflow/${workflow.id}`"
+      :model-value="`https://extension.automa.site/workflow/${workflow.id}`"
       readonly
       @click="$event.target.select()"
     />
@@ -92,10 +92,10 @@
   </ui-modal>
 </template>
 <script setup>
+import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
+import { useGroupTooltip } from '@/composable/groupTooltip';
 import { shallowReactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useGroupTooltip } from '@/composable/groupTooltip';
-import WorkflowShare from '@/components/newtab/workflow/WorkflowShare.vue';
 
 const props = defineProps({
   workflow: {

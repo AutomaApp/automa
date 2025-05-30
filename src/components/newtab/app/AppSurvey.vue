@@ -30,9 +30,9 @@
   </ui-card>
 </template>
 <script setup>
-import { shallowReactive, computed, onMounted } from 'vue';
-import browser from 'webextension-polyfill';
 import dayjs from '@/lib/dayjs';
+import { computed, onMounted, shallowReactive } from 'vue';
+import browser from 'webextension-polyfill';
 
 const modalTypes = {
   testimonial: {
@@ -45,7 +45,7 @@ const modalTypes = {
     title: "How do you think we're doing?",
     body: 'To help us make Automa as best it can be, we need a few minutes of your time to get your feedback.',
     button: 'Take Survey',
-    url: 'https://www.automa.site/survey',
+    url: 'https://extension.automa.site/survey',
   },
 };
 

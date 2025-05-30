@@ -72,7 +72,7 @@
             <div class="grow" />
             <a
               v-if="item.isExternal"
-              :href="`https://automa.site/packages/${item.id}`"
+              :href="`https://extension.automa.site/packages/${item.id}`"
               target="_blank"
               title="Open package page"
             >
@@ -118,10 +118,10 @@
   </div>
 </template>
 <script setup>
-import { computed, reactive, inject } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useDialog } from '@/composable/dialog';
 import { usePackageStore } from '@/stores/package';
+import { computed, inject, reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 defineEmits(['close']);
 

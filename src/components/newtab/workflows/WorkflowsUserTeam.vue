@@ -3,7 +3,10 @@
     <ui-spinner v-if="!userStore.retrieved" color="text-accent" />
     <template v-else>
       You must
-      <a href="https://www.automa.site/auth" class="underline" target="_blank"
+      <a
+        href="https://extension.automa.site/auth"
+        class="underline"
+        target="_blank"
         >login</a
       >
       to use these workflows
@@ -19,7 +22,7 @@
       Browse workflows that been shared by your team
     </p>
     <ui-button
-      :href="`http://www.automa.site/workflows?teamId=${teamId}&workflowsBy=team`"
+      :href="`http://extension.automa.site/workflows?teamId=${teamId}&workflowsBy=team`"
       tag="a"
       target="_blank"
       variant="accent"
@@ -51,18 +54,18 @@
   </div>
 </template>
 <script setup>
+import SharedCard from '@/components/newtab/shared/SharedCard.vue';
+import { useDialog } from '@/composable/dialog';
+import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
+import { useUserStore } from '@/stores/user';
+import { fetchApi } from '@/utils/api';
+import { arraySorter } from '@/utils/helper';
+import { tagColors } from '@/utils/shared';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
-import { fetchApi } from '@/utils/api';
-import { useUserStore } from '@/stores/user';
-import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
-import { arraySorter } from '@/utils/helper';
-import { useDialog } from '@/composable/dialog';
-import { tagColors } from '@/utils/shared';
-import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
-import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 
 const props = defineProps({
   active: Boolean,

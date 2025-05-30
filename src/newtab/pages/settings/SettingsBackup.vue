@@ -48,24 +48,24 @@
         </p>
         <ui-button
           tag="a"
-          href="https://automa.site/auth"
+          href="https://extension.automa.site/auth"
           target="_blank"
           class="mt-4 inline-block w-44"
         >
           {{ t('auth.signIn') }}
         </ui-button>
       </div>
-      <p v-if="false">
+      <!-- <p v-if="false">
         Upgrade to the
         <a
-          href="https://automa.site/pricing"
+          href="https://extension.automa.site/pricing"
           target="_blank"
           class="text-yellow-500 underline dark:text-yellow-300"
         >
           pro plan
         </a>
         to start back up your workflows to the cloud
-      </p>
+      </p> -->
     </ui-card>
     <h2 class="mb-2 font-semibold">
       {{ t('settings.backupWorkflows.title') }}
@@ -205,24 +205,24 @@
   </ui-modal>
 </template>
 <script setup>
-import { reactive, toRaw, onMounted } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useToast } from 'vue-toastification';
-import dayjs from 'dayjs';
-import AES from 'crypto-js/aes';
-import cronParser from 'cron-parser';
-import dbStorage from '@/db/storage';
-import encUtf8 from 'crypto-js/enc-utf8';
-import browser from 'webextension-polyfill';
-import hmacSHA256 from 'crypto-js/hmac-sha256';
+import SettingsCloudBackup from '@/components/newtab/settings/SettingsCloudBackup.vue';
 import { useDialog } from '@/composable/dialog';
+import { useHasPermissions } from '@/composable/hasPermissions';
+import dbStorage from '@/db/storage';
 import { readableCron } from '@/lib/cronstrue';
 import { useUserStore } from '@/stores/user';
-import { getUserWorkflows } from '@/utils/api';
 import { useWorkflowStore } from '@/stores/workflow';
-import { useHasPermissions } from '@/composable/hasPermissions';
+import { getUserWorkflows } from '@/utils/api';
 import { fileSaver, openFilePicker, parseJSON } from '@/utils/helper';
-import SettingsCloudBackup from '@/components/newtab/settings/SettingsCloudBackup.vue';
+import cronParser from 'cron-parser';
+import AES from 'crypto-js/aes';
+import encUtf8 from 'crypto-js/enc-utf8';
+import hmacSHA256 from 'crypto-js/hmac-sha256';
+import dayjs from 'dayjs';
+import { onMounted, reactive, toRaw } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useToast } from 'vue-toastification';
+import browser from 'webextension-polyfill';
 
 const BACKUP_SCHEDULES = {
   '0 8 * * *': 'Every day',

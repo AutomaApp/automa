@@ -48,7 +48,7 @@
         <ui-list class="mt-6 space-y-2">
           <ui-list-item
             tag="a"
-            href="https://www.automa.site/workflows"
+            href="https://extension.automa.site/workflows"
             target="_blank"
           >
             <v-remixicon name="riCompass3Line" />
@@ -309,7 +309,7 @@
           <p class="mt-4">
             Learn more about recording in
             <a
-              href="https://docs.automa.site/guide/quick-start.html#recording-actions"
+              href="https://docs.extension.automa.site/guide/quick-start.html#recording-actions"
               target="_blank"
               >the documentation</a
             >

@@ -69,12 +69,12 @@ const links = [
   {
     name: t('common.docs'),
     icon: 'riBook3Line',
-    url: 'https://docs.automa.site',
+    url: 'https://docs.extension.automa.site',
   },
   {
     name: t('welcome.marketplace'),
     icon: 'riCompass3Line',
-    url: 'https://www.automa.site/workflows',
+    url: 'https://extension.automa.site/workflows',
   },
   {
     name: 'YouTube',

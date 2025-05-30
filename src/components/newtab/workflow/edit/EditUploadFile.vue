@@ -49,7 +49,7 @@
         </div>
       </div>
       <a
-        href="https://docs.automa.site/blocks/upload-file.html#requirements"
+        href="https://docs.extension.automa.site/blocks/upload-file.html#requirements"
         target="_blank"
         rel="noopener"
         class="mt-2 inline-block leading-tight text-primary"
@@ -60,11 +60,11 @@
   </edit-interaction-base>
 </template>
 <script setup>
-import { useI18n } from 'vue-i18n';
 import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import browser from 'webextension-polyfill';
-import EditInteractionBase from './EditInteractionBase.vue';
 import EditAutocomplete from './EditAutocomplete.vue';
+import EditInteractionBase from './EditInteractionBase.vue';
 
 const props = defineProps({
   data: {

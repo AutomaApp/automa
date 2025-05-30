@@ -83,7 +83,7 @@
     >
       <p>By {{ data.author }}</p>
       <a
-        :href="`https://automa.site/packages/${data.id}`"
+        :href="`https://extension.automa.site/packages/${data.id}`"
         target="_blank"
         title="Open package page"
         class="ml-2"
@@ -94,12 +94,12 @@
   </block-base>
 </template>
 <script setup>
-import { onMounted, shallowReactive } from 'vue';
-import cloneDeep from 'lodash.clonedeep';
-import { Handle, Position } from '@vue-flow/core';
-import { usePackageStore } from '@/stores/package';
 import { useComponentId } from '@/composable/componentId';
 import { useEditorBlock } from '@/composable/editorBlock';
+import { usePackageStore } from '@/stores/package';
+import { Handle, Position } from '@vue-flow/core';
+import cloneDeep from 'lodash.clonedeep';
+import { onMounted, shallowReactive } from 'vue';
 import BlockBase from './BlockBase.vue';
 
 const props = defineProps({

@@ -33,7 +33,7 @@
         <transition-expand>
           <ui-input
             v-if="isPkgShared"
-            :model-value="`https://automa.site/packages/${data.id}`"
+            :model-value="`https://extension.automa.site/packages/${data.id}`"
             readonly
             title="URL"
             type="url"
@@ -96,16 +96,16 @@
   </ui-card>
 </template>
 <script setup>
-import { onMounted, computed, reactive } from 'vue';
+import { useDialog } from '@/composable/dialog';
+import { getShortcut, useShortcut } from '@/composable/shortcut';
+import { usePackageStore } from '@/stores/package';
+import { useUserStore } from '@/stores/user';
+import { fetchApi } from '@/utils/api';
+import { computed, onMounted, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import browser from 'webextension-polyfill';
-import { useUserStore } from '@/stores/user';
-import { usePackageStore } from '@/stores/package';
-import { getShortcut, useShortcut } from '@/composable/shortcut';
-import { useDialog } from '@/composable/dialog';
-import { fetchApi } from '@/utils/api';
 
 const props = defineProps({
   isDataChanged: {

@@ -61,11 +61,15 @@ const store = useStore();
 const extensionVersion = browser.runtime.getManifest().version;
 const links = [
   ...communities,
-  { name: 'Website', icon: 'riGlobalLine', url: 'https://www.automa.site' },
+  {
+    name: 'Website',
+    icon: 'riGlobalLine',
+    url: 'https://extension.automa.site',
+  },
   {
     name: 'Documentation',
     icon: 'riBook3Line',
-    url: 'https://docs.automa.site',
+    url: 'https://docs.extension.automa.site',
   },
   {
     name: 'Blog',

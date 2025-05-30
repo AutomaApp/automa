@@ -172,13 +172,13 @@
   </div>
 </template>
 <script setup>
-import { ref, watch, inject, shallowReactive, defineAsyncComponent } from 'vue';
+import getFile, { readFileAsBase64 } from '@/utils/getFile';
+import Papa from 'papaparse';
+import { defineAsyncComponent, inject, ref, shallowReactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
-import { read as readXlsx, utils as utilsXlsx } from 'xlsx';
-import Papa from 'papaparse';
 import browser from 'webextension-polyfill';
-import getFile, { readFileAsBase64 } from '@/utils/getFile';
+import { read as readXlsx, utils as utilsXlsx } from 'xlsx';
 import EditAutocomplete from './EditAutocomplete.vue';
 
 const SharedCodemirror = defineAsyncComponent(() =>
@@ -239,7 +239,9 @@ function changeItemType(index, type) {
 }
 function setAsFile(item) {
   if (!hasFileAccess.value) {
-    window.open('https://docs.automa.site/blocks/insert-data.html#import-file');
+    window.open(
+      'https://docs.extension.automa.site/blocks/insert-data.html#import-file'
+    );
     return;
   }
 
