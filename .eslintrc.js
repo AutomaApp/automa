@@ -3,8 +3,13 @@
 
 module.exports = {
   root: true,
+  parser: '@typescript-eslint/parser',
   parserOptions: {
-    parser: '@babel/eslint-parser',
+    ecmaVersion: 2020,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    },
   },
   env: {
     browser: true,
@@ -17,14 +22,23 @@ module.exports = {
     'plugin:vue/vue3-recommended',
     'airbnb-base',
     'plugin:prettier/recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
   ],
   // required to lint *.vue files
-  plugins: ['vue'],
+  plugins: ['vue', '@typescript-eslint', 'react'],
   // check if imports actually resolve
   settings: {
+    react: {
+      version: 'detect',
+    },
     'import/resolver': {
       webpack: {
         config: './webpack.config.js',
+      },
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx', '.vue'],
       },
     },
   },
@@ -55,6 +69,9 @@ module.exports = {
       'always',
       {
         js: 'never',
+        jsx: 'never',
+        ts: 'never',
+        tsx: 'never',
       },
     ],
     // disallow reassignment of function parameters
