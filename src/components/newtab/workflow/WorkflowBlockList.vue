@@ -52,6 +52,12 @@
         <p class="text-overflow capitalize leading-tight">
           {{ block.name }}
         </p>
+        <div
+          v-if="block.tag"
+          class="absolute top-0 right-0 py-1 px-6 group-hover:invisible rounded-tr-lg rounded-bl-2xl rounded-tl-0 rounded-br-0 bg-gradient-to-tr from-[#f4d9fa] to-[#dcdcf8] text-[#564cec] text-sm font-semibold"
+        >
+          {{ block.tag }}
+        </div>
       </div>
     </div>
   </ui-expand>

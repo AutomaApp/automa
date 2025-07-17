@@ -358,6 +358,10 @@
         "title": "Workflow public ID",
         "description": "Set a public ID to execute the workflow via a JavaScript custom event"
       },
+      "aipower": {
+        "title": "AI Power token",
+        "description": "Set a AI Power token to execute the workflow via a AI Power"
+      },
       "defaultColumn": {
         "title": "Insert into the default column",
         "description": "Insert data to the default column if there's no column selected in the block",

@@ -1,16 +1,16 @@
-import { defineStore } from 'pinia';
-import { nanoid } from 'nanoid';
-import defu from 'defu';
-import deepmerge from 'lodash.merge';
-import browser from 'webextension-polyfill';
-import dayjs from 'dayjs';
 import { fetchApi } from '@/utils/api';
-import { tasks } from '@/utils/shared';
 import firstWorkflows from '@/utils/firstWorkflows';
+import { tasks } from '@/utils/shared';
 import {
   cleanWorkflowTriggers,
   registerWorkflowTrigger,
 } from '@/utils/workflowTrigger';
+import dayjs from 'dayjs';
+import defu from 'defu';
+import deepmerge from 'lodash.merge';
+import { nanoid } from 'nanoid';
+import { defineStore } from 'pinia';
+import browser from 'webextension-polyfill';
 import { useUserStore } from './user';
 
 const defaultWorkflow = (data = null, options = {}) => {
@@ -46,6 +46,7 @@ const defaultWorkflow = (data = null, options = {}) => {
     isDisabled: false,
     settings: {
       publicId: '',
+      aipowerToken: '',
       blockDelay: 0,
       saveLog: true,
       debugMode: false,

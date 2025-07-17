@@ -491,6 +491,7 @@ export default [
     },
     settings: {
       publicId: '',
+      aipowerToken: '',
       blockDelay: 0,
       saveLog: true,
       debugMode: false,

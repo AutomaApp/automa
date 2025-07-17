@@ -358,6 +358,10 @@
         "title": "工作流公开 Id",
         "description": "用于JS自定义事件使用此公共ID执行工作流"
       },
+      "aipower": {
+        "title": "AI Power 令牌",
+        "description": "用于执行调用 AI Power 的工作流"
+      },
       "defaultColumn": {
         "title": "插入信息到默认列",
         "description": "如果模块中没有选择列，则将数据插入默认列",

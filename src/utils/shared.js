@@ -49,6 +49,22 @@ export const tasks = {
       },
     },
   },
+  'AI Workflow': {
+    name: 'AI Workflow',
+    description: 'A workflow that is created by AI-Power',
+    icon: 'riMindMap',
+    tag: 'AI',
+    component: 'BlockBasic',
+    editComponent: 'EditAiWorkflow',
+    category: 'general',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      disableBlock: false,
+    },
+  },
   'execute-workflow': {
     name: 'Execute workflow',
     description: '',
