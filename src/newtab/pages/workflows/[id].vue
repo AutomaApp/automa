@@ -1079,6 +1079,9 @@ function toggleSidebar() {
 }
 function initEditBlock(data) {
   const { editComponent, data: blockDefData, name } = blocks[data.id];
+
+  if (!editComponent) return;
+
   const blockData = defu(data.data, blockDefData);
   const blockEditComponent =
     typeof editComponent === 'string' ? editComponent : markRaw(editComponent);
