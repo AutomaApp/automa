@@ -80,12 +80,12 @@
 
     <ui-modal
       v-model="state.showAIPowerTokenModal"
-      title="How to get your AI Power Token"
+      title="Configure AI Power Token"
     >
       <div class="mb-6">
         <p>
           <span class="text-gray-500 text-[14px] leading-[24px]"
-            >Enter your AI Power token to enable workflow features</span
+            >Enter your AI Power token to enable AI Workflow features</span
           >
         </p>
       </div>
