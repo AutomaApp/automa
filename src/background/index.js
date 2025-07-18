@@ -247,9 +247,6 @@ message.on(
                       break;
                     } catch (e) {
                       // 该名称失败，继续尝试下一个
-                      console.debug(
-                        `Policy name ${policyName} failed, trying next one`
-                      );
                     }
                   }
 
@@ -258,13 +255,11 @@ message.on(
                     return escapeElPolicy.createScript(script);
                   }
                   // 如果所有策略名称都失败，返回原始脚本
-                  console.debug(
-                    'All trusted policy creation attempts failed, falling back to raw script'
-                  );
+
                   return script;
                 } catch (e) {
                   // 捕获任何其他错误并降级
-                  console.debug('Error creating trusted policy:', e);
+
                   return script;
                 }
               }
@@ -990,21 +985,22 @@ message.on('downloads:register-listeners', async () => {
 });
 
 message.on('downloads:watch-created', async (data) => {
-  console.log('👀 监听下载创建:', data);
   await registerBackgroundDownloadListeners();
 
-  // 保存等待下载的请求
+  // save pending download requests
   downloadListeners.pendingRequests = downloadListeners.pendingRequests || [];
 
-  // 安全地包装回调函数
+  // safe callback
   let safeCallback = null;
   if (typeof data.onComplete === 'function') {
     safeCallback = (response) => {
       try {
-        console.log('🔄 调用下载完成回调函数:', response);
         data.onComplete(response);
       } catch (callbackError) {
-        console.error('❌ 执行下载完成回调函数出错:', callbackError);
+        console.error(
+          '❌ failed to call download complete callback:',
+          callbackError
+        );
       }
     };
   }
@@ -1014,31 +1010,27 @@ message.on('downloads:watch-created', async (data) => {
     tabId: data.tabId,
     callback: safeCallback,
   });
-  console.log(
-    '📋 添加到待处理下载队列, 当前队列长度:',
-    downloadListeners.pendingRequests.length
-  );
 
   return true;
 });
 
 message.on('downloads:watch-changed', async ({ downloadId, onComplete }) => {
-  console.log('👀 监听下载状态变化:', downloadId);
   await registerBackgroundDownloadListeners();
 
   if (downloadId && typeof onComplete === 'function') {
     // 安全地包装回调函数
     const safeCallback = (response) => {
       try {
-        console.log('🔄 调用下载状态变更回调函数:', response);
         onComplete(response);
       } catch (callbackError) {
-        console.error('❌ 执行下载状态变更回调函数出错:', callbackError);
+        console.error(
+          '❌ failed to call download changed callback:',
+          callbackError
+        );
       }
     };
 
     downloadListeners.changedCallbacks.set(downloadId, safeCallback);
-    console.log('📌 已设置下载完成回调:', downloadId);
   }
 
   return true;

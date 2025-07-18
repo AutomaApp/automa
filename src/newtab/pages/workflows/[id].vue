@@ -589,6 +589,7 @@ const editorData = computed(() => {
 });
 
 const updateBlockData = debounce((data) => {
+  console.log('🚀 ~ updateBlockData ~ data:', data);
   if (!haveEditAccess.value) return;
   const node = editor.value.getNode.value(editState.blockData.blockId);
   const dataCopy = JSON.parse(JSON.stringify(data));
@@ -1279,11 +1280,6 @@ function onDragoverEditor({ target }) {
 }
 function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
   const savedBlocks = parseJSON(dataTransfer.getData('savedBlocks'), null);
-  console.log(
-    '🚀 ~ onDropInEditor ~ savedBlocks:',
-    dataTransfer.getData('savedBlocks'),
-    typeof dataTransfer.getData('savedBlocks')
-  );
 
   const editorRect = editor.value.viewportRef.value.getBoundingClientRect();
   const position = editor.value.project({
@@ -1316,7 +1312,6 @@ function onDropInEditor({ dataTransfer, clientX, clientY, target }) {
   }
 
   const block = parseJSON(dataTransfer.getData('block'), null);
-  console.log('🚀 ~ onDropInEditor ~ block:', block);
   if (!block || block.fromBlockBasic) return;
 
   if (block.id === 'trigger' && isPackage) return;

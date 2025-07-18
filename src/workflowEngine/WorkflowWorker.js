@@ -1,16 +1,16 @@
-import cloneDeep from 'lodash.clonedeep';
-import {
-  toCamelCase,
-  sleep,
-  objectHasKey,
-  parseJSON,
-  isObject,
-} from '@/utils/helper';
 import dbStorage from '@/db/storage';
 import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
+import {
+  isObject,
+  objectHasKey,
+  parseJSON,
+  sleep,
+  toCamelCase,
+} from '@/utils/helper';
+import cloneDeep from 'lodash.clonedeep';
+import { convertData, waitTabLoaded } from './helper';
 import templating from './templating';
 import renderString from './templating/renderString';
-import { convertData, waitTabLoaded } from './helper';
 
 function blockExecutionWrapper(blockHandler, blockData) {
   return new Promise((resolve, reject) => {

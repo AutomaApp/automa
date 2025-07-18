@@ -102,6 +102,10 @@
           }
         }
       },
+      "ai-workflow": {
+        "name": "AI Workflow",
+        "description": "A workflow that is created by AI-Power"
+      },
       "wait-connections": {
         "name": "Wait connections",
         "description": "Wait for all connections before continuing to the next block",

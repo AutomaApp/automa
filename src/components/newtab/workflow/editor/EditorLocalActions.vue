@@ -330,7 +330,6 @@ import WorkflowShareTeam from '@/components/newtab/workflow/WorkflowShareTeam.vu
 import { useDialog } from '@/composable/dialog';
 import { useGroupTooltip } from '@/composable/groupTooltip';
 import { getShortcut, useShortcut } from '@/composable/shortcut';
-import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
 import { useStore } from '@/stores/main';
 import { usePackageStore } from '@/stores/package';
@@ -505,11 +504,6 @@ async function executeCurrWorkflow() {
   if (mainStore.settings.editor.saveWhenExecute && props.isDataChanged) {
     saveWorkflow();
   }
-
-  console.log('准备执行了', props.workflow);
-
-  const result = await BrowserAPIService.windows.getCurrent();
-  console.log('通过调用windows.getCurrent的结果', result);
 
   RendererWorkflowService.executeWorkflow({
     ...props.workflow,

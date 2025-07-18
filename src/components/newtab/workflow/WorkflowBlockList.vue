@@ -43,7 +43,15 @@
             />
           </span>
         </div>
+        <img
+          v-if="block.icon.startsWith('http')"
+          :src="block.icon"
+          alt=""
+          width="24"
+          class="mb-2"
+        />
         <v-remixicon
+          v-else
           :path="getIconPath(block.icon)"
           :name="block.icon"
           size="24"
@@ -54,7 +62,7 @@
         </p>
         <div
           v-if="block.tag"
-          class="absolute top-0 right-0 py-1 px-6 group-hover:invisible rounded-tr-lg rounded-bl-2xl rounded-tl-0 rounded-br-0 bg-gradient-to-tr from-[#f4d9fa] to-[#dcdcf8] text-[#564cec] text-sm font-semibold"
+          class="flex items-center justify-center absolute top-0 right-0 min-w-[52px] h-[22px] group-hover:invisible rounded-tr-lg rounded-bl-[22px] rounded-tl-0 rounded-br-0 bg-[#79FFEB] text-sm font-semibold"
         >
           {{ block.tag }}
         </div>
