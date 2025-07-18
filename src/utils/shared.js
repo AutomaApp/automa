@@ -1613,6 +1613,7 @@ export const supportLocales = [
   { id: 'zh-TW', name: '繁體中文' },
   { id: 'tr', name: 'Türkçe' },
   { id: 'es', name: 'Spanish' },
+  { id: 'pt-BR', name: 'Portuguese' },
 ];
 
 export const communities = [
