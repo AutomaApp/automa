@@ -217,9 +217,18 @@ const updateAIPowerToken = (value) => {
 };
 
 const saveAIPowerToken = () => {
+  const oldToken = currentWorkflow.settings.aipowerToken;
+  const newToken = state.aipowerToken;
+
+  // Do nothing if token hasn't changed.
+  if (newToken === oldToken) {
+    state.showAIPowerTokenModal = false;
+    return;
+  }
+
   const newSettings = {
     ...currentWorkflow.settings,
-    aipowerToken: state.aipowerToken,
+    aipowerToken: newToken,
   };
 
   workflowStore.update({
@@ -231,9 +240,10 @@ const saveAIPowerToken = () => {
   });
   state.showAIPowerTokenModal = false;
 
-  if (!newSettings.aipowerToken) {
-    clearInputsAndOutputs();
-  }
+  // When token changes, the previous selection is no longer valid.
+  // Clearing it will also reset the inputs/outputs.
+  // The UiPaginatedSelect component will re-initialize because its `key` has changed.
+  clearInputsAndOutputs();
 };
 
 const onFlowChange = (value, label) => {
