@@ -1,4 +1,4 @@
-Source code in this repository is variously licensed under the GNU Affero General Public License (AGPL), or the Automa Commercial License (https://www.automa.site/license/commercial/).
+Source code in this repository is variously licensed under the GNU Affero General Public License (AGPL), or the Automa Commercial License (https://extension.automa.site/license/commercial/).
 
 * Outside of the top-level "business" directory, source code in a given file is licensed under the AGPL.
 

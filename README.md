@@ -33,10 +33,10 @@ Auto-fill forms, do a repetitive task, take a screenshot, or scrape website data
 </table>
 
 ## Marketplace
-Browse the Automa marketplace where you can share and download workflows with others. [Go to the marketplace &#187;](https://www.automa.site/marketplace)
+Browse the Automa marketplace where you can share and download workflows with others. [Go to the marketplace &#187;](https://extension.automa.site/marketplace)
 
 ## Automa Chrome Extension Builder
-Automa Chrome Extension Builder (Automa CEB for short) allows you to generate a standalone chrome extension based on Automa workflows. [Go to the documentation &#187;](https://docs.automa.site/extension-builder)
+Automa Chrome Extension Builder (Automa CEB for short) allows you to generate a standalone chrome extension based on Automa workflows. [Go to the documentation &#187;](https://docs.extension.automa.site/extension-builder)
 
 
 ## Project setup
@@ -94,6 +94,6 @@ Thanks to everyone who has submitted issues, made suggestions, and generally hel
 </a>
 
 ## License
-Source code in this repository is variously licensed under the GNU Affero General Public License (AGPL), or the [Automa Commercial License](https://www.automa.site/license/commercial/).
+Source code in this repository is variously licensed under the GNU Affero General Public License (AGPL), or the [Automa Commercial License](https://extension.automa.site/license/commercial/).
 
 See [LICENSE.txt](./LICENSE.txt) for details.
