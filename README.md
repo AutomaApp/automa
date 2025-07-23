@@ -71,6 +71,9 @@ pnpm build:firefox
 pnpm lint
 ```
 
+### Icon Preview
+v-remixicon/icons: https://preview-v-remixicon.vercel.app/
+
 ### Install Locally
 #### Chrome
 1. Open chrome and navigate to extensions page using this URL: chrome://extensions.
