@@ -582,7 +582,7 @@ export const tasks = {
       description: '',
       timeout: 20000,
       context: 'website',
-      code: 'console.log("Hello world!");\nautomaNextBlock()',
+      code: 'automaNextBlock()',
       preloadScripts: [],
       everyNewTab: false,
       runBeforeLoad: false,
