@@ -4,18 +4,19 @@
     :key="workflow.hostId"
     :data="workflow"
     :menu="menu"
-    @execute="executeWorkflow(workflow)"
+    @execute="RendererWorkflowService.executeWorkflow(workflow)"
     @click="$router.push(`/workflows/${$event.hostId}/host`)"
     @menuSelected="deleteWorkflow(workflow)"
   />
 </template>
 <script setup>
+import SharedCard from '@/components/newtab/shared/SharedCard.vue';
+import { useDialog } from '@/composable/dialog';
+import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
+import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
+import { arraySorter } from '@/utils/helper';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useDialog } from '@/composable/dialog';
-import { arraySorter } from '@/utils/helper';
-import { useHostedWorkflowStore } from '@/stores/hostedWorkflow';
-import SharedCard from '@/components/newtab/shared/SharedCard.vue';
 
 const props = defineProps({
   search: {

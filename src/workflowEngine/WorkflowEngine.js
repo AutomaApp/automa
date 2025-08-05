@@ -192,12 +192,19 @@ class WorkflowEngine {
             focused: true,
           });
         } else {
+          let workflowId = '';
+          if (this.workflow.hostId) {
+            workflowId = `hosted:${this.workflow.hostId}`;
+          } else {
+            workflowId = this.workflow.id;
+          }
+
           BrowserAPIService.windows.create({
             type: 'popup',
             width: 480,
             height: 700,
             url: BrowserAPIService.runtime.getURL(
-              `/params.html?workflowId=${this.workflow.id}`
+              `/params.html?workflowId=${workflowId}`
             ),
           });
         }
