@@ -62,7 +62,7 @@
         </p>
         <div
           v-if="block.tag"
-          class="flex items-center justify-center absolute top-0 right-0 min-w-[52px] h-[22px] group-hover:invisible rounded-tr-lg rounded-bl-[22px] rounded-tl-0 rounded-br-0 bg-[#79FFEB] text-sm font-semibold"
+          class="flex items-center justify-center absolute top-0 right-0 min-w-[52px] h-[22px] group-hover:invisible rounded-tr-lg rounded-bl-[22px] rounded-tl-0 rounded-br-0 bg-[#79FFEB] dark:bg-[#2DD4BF] text-sm font-semibold dark:text-gray-900"
         >
           {{ block.tag }}
         </div>
