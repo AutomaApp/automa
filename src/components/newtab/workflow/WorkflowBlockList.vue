@@ -48,7 +48,7 @@
           :src="block.icon"
           alt=""
           width="24"
-          class="mb-2"
+          class="mb-2 dark:invert"
         />
         <v-remixicon
           v-else
