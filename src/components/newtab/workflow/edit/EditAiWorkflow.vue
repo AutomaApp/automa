@@ -90,13 +90,19 @@
         </p>
       </div>
 
-      <div class="bg-[#f2f2f2] mb-6 p-6 rounded-lg w-full space-y-4">
-        <p class="font-semibold font-[16px] leading-[24px] flex items-center">
+      <div
+        class="bg-[#f2f2f2] dark:bg-gray-900 mb-6 p-6 rounded-lg w-full space-y-4"
+      >
+        <p
+          class="font-semibold text-[16px] dark:text-gray-300 leading-[24px] flex items-center"
+        >
           <v-remixicon name="riKey" size="16" class="mr-1"></v-remixicon>
           How to get your AI Power Token
         </p>
 
-        <ol class="space-y-2 list-decimal list-inside text-sm text-gray-600">
+        <ol
+          class="space-y-2 list-decimal list-inside text-sm text-gray-600 dark:text-gray-400"
+        >
           <li>Go to Settings → Authorizations in your AI Power dashboard</li>
           <li>Navigate to "AI Power Authorization" section</li>
           <li>Click "Generate New Token" to create a new token</li>
