@@ -35,19 +35,21 @@
       v-if="isOpen"
       class="absolute top-full z-50 mt-1 w-full rounded-lg bg-white shadow-xl dark:bg-gray-800"
     >
-      <div class="p-2">
+      <div class="px-2 my-2 w-full">
         <ui-input
           v-model="searchKeyword"
           :placeholder="searchPlaceholder"
           prepend-icon="riSearch2Line"
           autofocus
+          class="w-full"
         />
       </div>
       <ul
         ref="optionsListEl"
-        class="max-h-60 overflow-y-auto p-2"
+        class="max-h-60 overflow-y-auto p-2 space-y-2"
         @scroll="handleScroll"
       >
+        <slot name="prepend" />
         <li
           v-for="option in options"
           :key="option[optionValueKey]"
