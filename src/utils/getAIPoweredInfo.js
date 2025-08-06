@@ -222,3 +222,50 @@ export const postRunAPWorkflow = async ({ flowUuid, input }, token) => {
 
   return response.json();
 };
+
+/**
+ * @typedef {object} FileUploadResult
+ * @property {string} fileReadUrl - The URL of the uploaded file.
+ */
+
+/**
+ * @typedef {object} APIUploadResponse
+ * @property {number} code - Business status code (200 for success).
+ * @property {boolean} success - Indicates if the request was successful.
+ * @property {string} msg - Failure message.
+ * @property {FileUploadResult} data - The result of the file upload.
+ * @property {string} requestId - The request ID.
+ */
+
+/**
+ * Uploads a file to the AI Power server.
+ * The request is sent as `multipart/form-data`.
+ * @param {File} file - The file object to upload.
+ * @param {string} token - The authorization token.
+ * @returns {Promise<APIUploadResponse>} The API response containing the upload result.
+ */
+export const postUploadFile = async (file, token) => {
+  const url = `${BASE_URL}/oapi/power/v1/file/upload`;
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.text();
+    console.error('Failed to upload file:', {
+      status: response.status,
+      data: errorData,
+    });
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return response.json();
+};

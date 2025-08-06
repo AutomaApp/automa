@@ -12,33 +12,39 @@ async function aiWorkflow(block, { refData }) {
   } = block.data;
 
   const replacedValueList = {};
-
   const aipowerToken = this.engine.workflow.settings?.aipowerToken;
 
   if (!aipowerToken) {
-    throw Error('aipower Token is not set');
+    throw new Error('AI Power token is not set');
   }
 
-  const input = {};
+  const inputForAPI = {};
   for (const item of inputs) {
-    const renderedValue = await renderString(
-      item.value,
-      refData,
-      this.engine.isPopup
-    );
-    input[item.name] = renderedValue.value;
-    Object.assign(replacedValueList, renderedValue.list);
+    if (typeof item.value === 'object' && item.value !== null) {
+      // For file objects, we don't render them as strings.
+      // We assume they contain the necessary structure like { filename, url }.
+      inputForAPI[item.name] = item.value;
+    } else {
+      // For strings, we render them using the templating engine.
+      const renderedValue = await renderString(
+        item.value,
+        refData,
+        this.engine.isPopup
+      );
+      inputForAPI[item.name] = renderedValue.value;
+      Object.assign(replacedValueList, renderedValue.list);
+    }
   }
 
   try {
     const runResponse = await postRunAPWorkflow(
-      { flowUuid, input },
+      { flowUuid, input: inputForAPI },
       aipowerToken
     );
-    const { success } = runResponse;
+    const { success, msg } = runResponse;
 
     if (!success) {
-      throw Error('ai workflow run failed', runResponse.msg);
+      throw new Error(msg || 'AI workflow execution failed');
     }
 
     if (assignVariable) {
@@ -57,8 +63,8 @@ async function aiWorkflow(block, { refData }) {
       replacedValue: replacedValueList,
     };
   } catch (error) {
-    console.error('ai workflow run failed', error);
-    throw Error('ai workflow run failed', error.message);
+    console.error('AI workflow execution failed:', error);
+    throw new Error(error.message);
   }
 }
 

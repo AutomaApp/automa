@@ -36,15 +36,22 @@
       <div class="my-4">
         <p class="font-semibold">Workflow Inputs</p>
         <template v-if="data.inputs && data.inputs.length">
-          <ui-input
+          <div
             v-for="(item, index) in data.inputs"
-            :key="index"
-            :label="`${item.label} (${item.type})`"
-            :placeholder="item.name || null"
-            :model-value="item.value"
-            class="w-full my-2"
-            @change="onInputParamsChange(item, index, $event)"
-          />
+            :key="`${data.flowUuid}-${item.name}`"
+          >
+            <component
+              :is="getComponent(item.type)"
+              :label="`${item.label} (${item.type})`"
+              :placeholder="item.name || null"
+              :model-value="item.value"
+              :accept="item.accept"
+              :max-size="item.maxSize"
+              :on-upload="handleUploadFile"
+              class="w-full my-2"
+              @change="onInputParamsChange(item, index, $event)"
+            />
+          </div>
         </template>
         <template v-else>
           <p class="text-sm text-gray-500">No inputs</p>
@@ -55,8 +62,8 @@
         <p class="font-semibold">Workflow Outputs(view only)</p>
         <template v-if="data.outputs && data.outputs.length">
           <ui-input
-            v-for="(item, index) in data.outputs"
-            :key="index"
+            v-for="item in data.outputs"
+            :key="`${data.flowUuid}-${item.name}`"
             :label="`${item.label} (${item.type})`"
             :placeholder="item.name || null"
             readonly
@@ -138,9 +145,15 @@
 </template>
 
 <script setup>
+import UiFileInput from '@/components/ui/UiFileInput.vue';
+import UiInput from '@/components/ui/UiInput.vue';
 import UiPaginatedSelect from '@/components/ui/UiPaginatedSelect.vue';
 import { useWorkflowStore } from '@/stores/workflow';
-import { getAPFlowList, getAPWorkflowDetail } from '@/utils/getAIPoweredInfo';
+import {
+  getAPFlowList,
+  getAPWorkflowDetail,
+  postUploadFile,
+} from '@/utils/getAIPoweredInfo';
 import cloneDeep from 'lodash.clonedeep';
 import secrets from 'secrets';
 import {
@@ -169,6 +182,14 @@ function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }
 
+const getComponent = (type) => {
+  const uploadTypes = ['VIDEO', 'IMAGE', 'AUDIO', 'FILE'];
+  if (uploadTypes.includes(type)) {
+    return UiFileInput;
+  }
+  return UiInput;
+};
+
 const state = shallowReactive({
   showAIPowerTokenModal: false,
 });
@@ -180,6 +201,22 @@ const currentWorkflow = workflowStore.getById(workflowId);
 const aiPowerToken = computed(() => {
   return currentWorkflow?.settings?.aipowerToken;
 });
+
+const handleUploadFile = async (file) => {
+  try {
+    const res = await postUploadFile(file, aiPowerToken.value);
+    if (res.success) {
+      return {
+        url: res.data.fileReadUrl,
+        filename: file.name,
+      };
+    }
+    throw new Error(res.msg || 'File upload failed');
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
 
 const clearInputsAndOutputs = () => {
   updateData({
@@ -257,7 +294,9 @@ const onFlowChange = (value, label) => {
 };
 
 const onInputParamsChange = (item, index, value) => {
+  console.log('🚀 ~ onInputParamsChange ~ value:', item, index, value);
   const newInputs = cloneDeep(props.data.inputs);
+  console.log('🚀 ~ onInputParamsChange ~ newInputs:', newInputs);
   newInputs[index].value = value;
   updateData({ inputs: newInputs });
 };
