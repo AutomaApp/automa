@@ -27,7 +27,14 @@
         placeholder="Select a workflow"
         search-placeholder="Search workflows..."
         @change="onFlowChange"
-      />
+      >
+        <template #footer>
+          <ui-button class="w-full" @click="createNewWorkflow">
+            <v-remixicon name="riAddLine" class="mr-2" />
+            New AI Workflow
+          </ui-button>
+        </template>
+      </ui-paginated-select>
 
       <div
         class="w-full my-6 relative flex items-center justify-center bg-[#e4e4e7] h-[1px]"
@@ -37,7 +44,7 @@
         <p class="font-semibold">Workflow Inputs</p>
         <template v-if="data.inputs && data.inputs.length">
           <div
-            v-for="(item, index) in data.inputs"
+            v-for="item in data.inputs"
             :key="`${data.flowUuid}-${item.name}`"
           >
             <component
@@ -62,8 +69,8 @@
         <p class="font-semibold">Workflow Outputs(view only)</p>
         <template v-if="data.outputs && data.outputs.length">
           <ui-input
-            v-for="item in data.outputs"
-            :key="`${data.flowUuid}-${item.name}`"
+            v-for="(item, index) in data.outputs"
+            :key="index"
             :label="`${item.label} (${item.type})`"
             :placeholder="item.name || null"
             readonly
@@ -165,6 +172,7 @@ import {
 } from 'vue';
 import { useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
+import browser from 'webextension-polyfill';
 import InsertWorkflowData from './InsertWorkflowData.vue';
 
 const toast = useToast();
@@ -216,6 +224,12 @@ const handleUploadFile = async (file) => {
     console.error(error);
     throw error;
   }
+};
+
+const createNewWorkflow = () => {
+  browser.tabs.create({
+    url: secrets.apCreateWorkflowUrl,
+  });
 };
 
 const clearInputsAndOutputs = () => {
@@ -294,9 +308,7 @@ const onFlowChange = (value, label) => {
 };
 
 const onInputParamsChange = (item, index, value) => {
-  console.log('🚀 ~ onInputParamsChange ~ value:', item, index, value);
   const newInputs = cloneDeep(props.data.inputs);
-  console.log('🚀 ~ onInputParamsChange ~ newInputs:', newInputs);
   newInputs[index].value = value;
   updateData({ inputs: newInputs });
 };

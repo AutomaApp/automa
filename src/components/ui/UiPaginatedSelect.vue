@@ -49,7 +49,6 @@
         class="max-h-60 overflow-y-auto p-2 space-y-2"
         @scroll="handleScroll"
       >
-        <slot name="prepend" />
         <li
           v-for="option in options"
           :key="option[optionValueKey]"
@@ -79,10 +78,10 @@
         </li>
       </ul>
       <div
-        v-if="$slots.extra"
-        class="border-t border-gray-200 dark:border-gray-700"
+        v-if="$slots.footer"
+        class="border-t border-gray-200 p-2 dark:border-gray-700"
       >
-        <slot name="extra"></slot>
+        <slot name="footer"></slot>
       </div>
     </div>
   </div>

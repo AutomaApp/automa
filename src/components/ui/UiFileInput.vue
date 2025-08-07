@@ -47,6 +47,7 @@ import {
   onMounted,
   ref,
   shallowRef,
+  watch,
 } from 'vue';
 import { useToast } from 'vue-toastification';
 import UiButton from './UiButton.vue';
@@ -172,4 +173,15 @@ onMounted(() => {
     fileName.value = props.modelValue.filename;
   }
 });
+
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    if (typeof newValue === 'object' && newValue?.filename) {
+      fileName.value = newValue.filename;
+    } else if (!newValue) {
+      fileName.value = '';
+    }
+  }
+);
 </script>
