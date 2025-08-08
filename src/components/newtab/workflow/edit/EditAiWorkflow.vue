@@ -44,7 +44,7 @@
         <p class="font-semibold">Workflow Inputs</p>
         <template v-if="data.inputs && data.inputs.length">
           <div
-            v-for="item in data.inputs"
+            v-for="(item, index) in data.inputs"
             :key="`${data.flowUuid}-${item.name}`"
           >
             <component
