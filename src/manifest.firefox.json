@@ -63,7 +63,7 @@
     "/icon-128.png",
     "/Inter-roman-latin.var.woff2",
     "/locales/*",
-    "elementSelector.bundle.js"
+    "src/content/elementSelector/index.js"
   ],
   "content_security_policy": "script-src 'self' 'unsafe-inline' https:; object-src 'self'"
 }

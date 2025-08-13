@@ -3,35 +3,73 @@
 
 module.exports = {
   root: true,
-  parserOptions: {
-    parser: '@babel/eslint-parser',
-  },
   env: {
     browser: true,
     webextensions: true,
+    node: true,
   },
-  ignorePatterns: ['src/lib/google-*'],
-  // https://github.com/vuejs/eslint-plugin-vue#priority-a-essential-error-prevention
-  // consider switching to `plugin:vue/strongly-recommended` or `plugin:vue/recommended` for stricter rules.
-  extends: [
-    'plugin:vue/vue3-recommended',
-    'airbnb-base',
-    'plugin:prettier/recommended',
+  ignorePatterns: ['src/lib/google-*', 'dist', 'build', 'node_modules'],
+
+  overrides: [
+    // JS + Vue
+    {
+      files: ['**/*.{js,vue}'],
+      parser: 'vue-eslint-parser',
+      parserOptions: {
+        parser: '@babel/eslint-parser',
+        requireConfigFile: false,
+        ecmaVersion: 2022,
+        sourceType: 'module',
+      },
+      extends: [
+        'plugin:vue/vue3-recommended',
+        'airbnb-base',
+        'plugin:prettier/recommended',
+      ],
+    },
+
+    // TS + Vue(with TS)
+    {
+      files: ['**/*.{ts,tsx}', '**/*.vue'],
+      parser: 'vue-eslint-parser',
+      parserOptions: {
+        parser: '@typescript-eslint/parser',
+        ecmaVersion: 2022,
+        sourceType: 'module',
+        project: ['./tsconfig.json'],
+      },
+      extends: [
+        'plugin:vue/vue3-recommended',
+        'plugin:@typescript-eslint/recommended',
+        'airbnb-base',
+        'airbnb-typescript/base',
+        'plugin:prettier/recommended',
+      ],
+      plugins: ['@typescript-eslint'],
+    },
   ],
-  // required to lint *.vue files
+
   plugins: ['vue'],
-  // check if imports actually resolve
+
   settings: {
     'import/resolver': {
-      webpack: {
-        config: './webpack.config.js',
+      vite: { configPath: './vite.config.ts' },
+      alias: {
+        map: [
+          ['@', './src'],
+          ['secrets', './secrets.blank.js'],
+          ['@business', './business/dev'],
+        ],
+        extensions: ['.js', '.ts', '.vue', '.json'],
       },
     },
   },
-  // add your custom rules here
+
   globals: {
     BROWSER_TYPE: true,
+    __SECRETS__: 'readonly',
   },
+
   rules: {
     camelcase: 'off',
     'no-await-in-loop': 'off',
@@ -44,26 +82,24 @@ module.exports = {
     'import/no-named-default': 'off',
     'no-restricted-syntax': 'off',
     'vue/multi-word-component-names': 'off',
-    'prettier/prettier': [
-      'error',
-      {
-        endOfLine: 'auto',
-      },
-    ],
-    'import/extensions': [
-      'error',
-      'always',
-      {
-        js: 'never',
-      },
-    ],
-    // disallow reassignment of function parameters
-    // disallow parameter object manipulation except for specific exclusions
     'no-param-reassign': 'off',
     'import/no-extraneous-dependencies': 'off',
-    // disallow default export over named export
     'import/prefer-default-export': 'off',
-    // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      { js: 'never', ts: 'never', vue: 'always' },
+    ],
+
+    // TS rules
+    '@typescript-eslint/no-unused-vars': ['warn'],
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/no-explicit-any': 'warn',
+
+    // Prettier
+    'prettier/prettier': ['error', { endOfLine: 'auto' }],
   },
 };

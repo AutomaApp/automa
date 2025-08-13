@@ -74,7 +74,7 @@
         "/locales/*",
         "/icon-128.png",
         "/elementSelector.css",
-        "elementSelector.bundle.js",
+        "src/content/elementSelector/index.js",
         "/Inter-roman-latin.var.woff2"
       ],
       "matches": [
