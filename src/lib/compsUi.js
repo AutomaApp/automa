@@ -1,19 +1,19 @@
-import VTooltip from '../directives/VTooltip';
 import VAutofocus from '../directives/VAutofocus';
 import VClosePopover from '../directives/VClosePopover';
+import VTooltip from '../directives/VTooltip';
 
-const uiComponents = require.context('../components/ui', false, /\.vue$/);
-const transitionComponents = require.context(
-  '../components/transitions',
-  false,
-  /\.vue$/
-);
+const uiModules = import.meta.glob('../components/ui/*.vue', { eager: true });
+const transitionModules = import.meta.glob('../components/transitions/*.vue', {
+  eager: true,
+});
 
-function componentsExtractor(app, components) {
-  components.keys().forEach((key) => {
-    const componentName = key.replace(/(.\/)|\.vue$/g, '');
-    const component = components(key)?.default ?? {};
-
+function registerModules(app, modules) {
+  Object.entries(modules).forEach(([path, mod]) => {
+    const componentName = path
+      .split('/')
+      .pop()
+      .replace(/\.vue$/, '');
+    const component = mod?.default ?? {};
     app.component(componentName, component);
   });
 }
@@ -23,6 +23,6 @@ export default function (app) {
   app.directive('autofocus', VAutofocus);
   app.directive('close-popover', VClosePopover);
 
-  componentsExtractor(app, uiComponents);
-  componentsExtractor(app, transitionComponents);
+  registerModules(app, uiModules);
+  registerModules(app, transitionModules);
 }

@@ -40,18 +40,15 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 
-const editComponents = require.context(
-  './edit',
-  false,
-  /^(?:.*\/)?Edit[^/]*\.vue$/
-);
+const editModules = import.meta.glob('./edit/Edit*.vue', { eager: true });
 /* eslint-disable-next-line */
-const components = editComponents.keys().reduce((acc, key) => {
-  const name = key.replace(/(.\/)|\.vue$/g, '');
-  const componentObj = editComponents(key)?.default ?? {};
-
+const components = Object.entries(editModules).reduce((acc, [path, mod]) => {
+  const name = path
+    .split('/')
+    .pop()
+    .replace(/\.vue$/, '');
+  const componentObj = mod?.default ?? {};
   acc[name] = componentObj;
-
   return acc;
 }, {});
 

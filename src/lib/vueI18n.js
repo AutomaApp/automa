@@ -1,6 +1,6 @@
-import { nextTick } from 'vue';
-import { createI18n } from 'vue-i18n/dist/vue-i18n.esm-bundler';
 import { supportLocales } from '@/utils/shared';
+import { nextTick } from 'vue';
+import { createI18n } from 'vue-i18n';
 import dayjs from './dayjs';
 
 const i18n = createI18n({
@@ -23,16 +23,17 @@ export async function loadLocaleMessages(locale, location) {
     return null;
   }
 
+  const files = import.meta.glob('../locales/*/*.json', { eager: true });
   const importLocale = async (path, merge = false) => {
     try {
-      const messages = await import(
-        /* webpackChunkName: "locales/locale-[request]" */ `../locales/${locale}/${path}`
-      );
-
+      const key = `../locales/${locale}/${path}`;
+      const messages = files[key];
+      if (!messages) throw new Error(`Missing locale file: ${key}`);
+      const data = (messages && messages.default) || messages;
       if (merge) {
-        i18n.global.mergeLocaleMessage(locale, messages.default);
+        i18n.global.mergeLocaleMessage(locale, data);
       } else {
-        i18n.global.setLocaleMessage(locale, messages.default);
+        i18n.global.setLocaleMessage(locale, data);
       }
     } catch (error) {
       console.error(error);

@@ -78,24 +78,24 @@
   </vue-flow>
 </template>
 <script setup>
-import { onMounted, onBeforeUnmount, watch, computed, reactive } from 'vue';
-import { useI18n } from 'vue-i18n';
-import {
-  VueFlow,
-  useVueFlow,
-  MarkerType,
-  getConnectedEdges,
-} from '@vue-flow/core';
-import { Background } from '@vue-flow/background';
-import { MiniMap } from '@vue-flow/minimap';
-import cloneDeep from 'lodash.clonedeep';
 import { useStore } from '@/stores/main';
 import { getBlocks } from '@/utils/getSharedData';
 import { categories } from '@/utils/shared';
+import { Background } from '@vue-flow/background';
+import {
+  MarkerType,
+  VueFlow,
+  getConnectedEdges,
+  useVueFlow,
+} from '@vue-flow/core';
+import { MiniMap } from '@vue-flow/minimap';
+import '@vue-flow/minimap/dist/style.css';
+import cloneDeep from 'lodash.clonedeep';
+import { computed, onBeforeUnmount, onMounted, reactive, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import EditBlockSettings from './edit/EditBlockSettings.vue';
 import EditorCustomEdge from './editor/EditorCustomEdge.vue';
 import EditorSearchBlocks from './editor/EditorSearchBlocks.vue';
-import '@vue-flow/minimap/dist/style.css';
 
 const props = defineProps({
   id: {
@@ -140,10 +140,15 @@ const fallbackBlocks = {
 };
 
 const isMac = navigator.appVersion.indexOf('Mac') !== -1;
-const blockComponents = require.context('@/components/block', false, /\.vue$/);
-const nodeTypes = blockComponents.keys().reduce((acc, key) => {
-  const name = key.replace(/(.\/)|\.vue$/g, '');
-  const component = blockComponents(key).default;
+const blockModules = import.meta.glob('@/components/block/*.vue', {
+  eager: true,
+});
+const nodeTypes = Object.entries(blockModules).reduce((acc, [path, mod]) => {
+  const name = path
+    .split('/')
+    .pop()
+    .replace(/\.vue$/, '');
+  const component = mod.default;
 
   if (fallbackBlocks[name]) {
     fallbackBlocks[name].forEach((fallbackBlock) => {
@@ -176,9 +181,13 @@ const editor = useVueFlow({
   ...props.options,
 });
 editor.onConnect((params) => {
-  params.class = `source-${params.sourceHandle} target-${params.targetHandle}`;
-  params.updatable = true;
-  editor.addEdges([params]);
+  const newParams = {
+    ...params,
+    class: `source-${params.sourceHandle} target-${params.targetHandle}`,
+    updatable: true,
+  };
+
+  editor.addEdges([newParams]);
 });
 editor.onEdgeUpdate(({ edge, connection }) => {
   const isBothOutput =
@@ -312,12 +321,16 @@ watch(editor.getSelectedNodes, (nodes, _, cleanup) => {
   const connectedEdges = getConnectedEdges(nodes, editor.getEdges.value);
 
   connectedEdges.forEach((edge) => {
-    edge.class = 'connected-edges';
+    Object.assign(edge, {
+      class: 'connected-edges',
+    });
   });
 
   cleanup(() => {
     connectedEdges.forEach((edge) => {
-      edge.class = undefined;
+      Object.assign(edge, {
+        class: undefined,
+      });
     });
   });
 });
