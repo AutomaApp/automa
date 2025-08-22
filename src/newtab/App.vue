@@ -329,7 +329,7 @@ watch(
     workflowStore.states = Object.values(workflowStates || {});
 
     const tabs = await browser.tabs.query({
-      url: browser.runtime.getURL('/newtab.html'),
+      url: browser.runtime.getURL('/src/newtab/index.html'),
     });
 
     const currentWindow = await browser.windows.getCurrent();
