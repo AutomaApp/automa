@@ -1,6 +1,6 @@
-import { nanoid } from 'nanoid/non-secure';
-import { sleep } from '@/utils/helper';
 import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
+import { sleep } from '@/utils/helper';
+import { nanoid } from 'nanoid/non-secure';
 import renderString from '../templating/renderString';
 
 function getInputtedParams(promptId, ms = 10000) {
@@ -51,7 +51,7 @@ async function renderParamValue(param, refData, isPopup) {
 }
 
 export default async function ({ data, id }, { refData }) {
-  const paramURL = BrowserAPIService.runtime.getURL('/params.html');
+  const paramURL = BrowserAPIService.runtime.getURL('/src/params/index.html');
   let tab = (await BrowserAPIService.tabs.query({})).find((item) =>
     item.url.includes(paramURL)
   );
@@ -61,7 +61,7 @@ export default async function ({ data, id }, { refData }) {
       type: 'popup',
       width: 480,
       height: 600,
-      url: BrowserAPIService.runtime.getURL('/params.html'),
+      url: BrowserAPIService.runtime.getURL('/src/params/index.html'),
     });
     [tab] = tabs;
     await sleep(1000);

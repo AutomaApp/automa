@@ -1,8 +1,8 @@
-import browser from 'webextension-polyfill';
-import { initElementSelector } from '@/newtab/utils/elementSelector';
-import dayjs from 'dayjs';
 import dbStorage from '@/db/storage';
+import { initElementSelector } from '@/newtab/utils/elementSelector';
 import cronParser from 'cron-parser';
+import dayjs from 'dayjs';
+import browser from 'webextension-polyfill';
 import BackgroundUtils from './BackgroundUtils';
 import BackgroundWorkflowTriggers from './BackgroundWorkflowTriggers';
 
@@ -112,7 +112,7 @@ class BackgroundEventsListeners {
       const { 1: logId } = notificationId.split(':');
 
       const [tab] = await browser.tabs.query({
-        url: browser.runtime.getURL('/newtab.html'),
+        url: browser.runtime.getURL('/src/newtab/index.html'),
       });
       if (!tab) await BackgroundUtils.openDashboard('');
 
@@ -147,7 +147,7 @@ class BackgroundEventsListeners {
         await browser.windows.create({
           type: 'popup',
           state: 'maximized',
-          url: browser.runtime.getURL('newtab.html#/welcome'),
+          url: browser.runtime.getURL('src/newtab/index.html#/welcome'),
         });
 
         return;

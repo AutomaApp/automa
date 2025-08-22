@@ -128,7 +128,7 @@ message.on('get:tab-screenshot', (options, sender) =>
 
 message.on('dashboard:refresh-packages', async () => {
   const tabs = await browser.tabs.query({
-    url: browser.runtime.getURL('/newtab.html'),
+    url: browser.runtime.getURL('/src/newtab/index.html'),
   });
 
   tabs.forEach((tab) => {
@@ -163,7 +163,7 @@ message.on(
     }
 
     browser.tabs
-      .query({ url: browser.runtime.getURL('/newtab.html') })
+      .query({ url: browser.runtime.getURL('/src/newtab/index.html') })
       .then((tabs) => {
         if (tabs.length >= 1) {
           const lastTab = tabs.at(-1);
@@ -239,8 +239,8 @@ message.on(
                       escapeElPolicy = window.trustedTypes.createPolicy(
                         policyName,
                         {
-                          createHTML: (to_escape) => to_escape,
-                          createScript: (to_escape) => to_escape,
+                          createHTML: (toEscape) => toEscape,
+                          createScript: (toEscape) => toEscape,
                         }
                       );
                       // 如果成功创建，跳出循环

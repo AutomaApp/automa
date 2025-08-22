@@ -1,15 +1,15 @@
-import browser from 'webextension-polyfill';
 import { waitTabLoaded } from '@/workflowEngine/helper';
+import browser from 'webextension-polyfill';
 
 class BackgroundUtils {
   static async openDashboard(url, updateTab = true) {
     const tabUrl = browser.runtime.getURL(
-      `/newtab.html#${typeof url === 'string' ? url : ''}`
+      `/src/newtab/index.html#${typeof url === 'string' ? url : ''}`
     );
 
     try {
       const [tab] = await browser.tabs.query({
-        url: browser.runtime.getURL('/newtab.html'),
+        url: browser.runtime.getURL('/src/newtab/index.html'),
       });
 
       if (tab) {
@@ -49,7 +49,7 @@ class BackgroundUtils {
 
   static async sendMessageToDashboard(type, data) {
     const [tab] = await browser.tabs.query({
-      url: browser.runtime.getURL('/newtab.html'),
+      url: browser.runtime.getURL('/src/newtab/index.html'),
     });
 
     await waitTabLoaded({ tabId: tab.id });

@@ -1,5 +1,5 @@
-import { sleep } from '@/utils/helper';
 import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
+import { sleep } from '@/utils/helper';
 import { attachDebugger, injectPreloadScript } from '../helper';
 
 async function activeTab(block) {
@@ -45,7 +45,7 @@ async function activeTab(block) {
       else if (windows.length > 2) tabsQuery.lastFocusedWindow = true;
     } else {
       const dashboardTabs = await BrowserAPIService.tabs.query({
-        url: BrowserAPIService.runtime.getURL('/newtab.html'),
+        url: BrowserAPIService.runtime.getURL('/src/newtab/index.html'),
       });
       await Promise.all(
         dashboardTabs.map((item) =>

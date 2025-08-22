@@ -4,7 +4,7 @@ import { sleep } from '@/utils/helper';
 import { MessageListener } from '@/utils/message';
 import Browser from 'webextension-polyfill';
 
-const OFFSCREEN_URL = Browser.runtime.getURL('/offscreen.html');
+const OFFSCREEN_URL = Browser.runtime.getURL('/src/offscreen/index.html');
 
 class BackgroundOffscreen {
   /** @type {BackgroundOffscreen} */
