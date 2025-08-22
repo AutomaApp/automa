@@ -2,6 +2,10 @@ import { IS_FIREFOX } from '@/common/utils/constant';
 import BrowserAPIEventHandler from '@/service/browser-api/BrowserAPIEventHandler';
 import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import { useUserStore } from '@/stores/user';
+import {
+  executeCallbacksInData,
+  isCallbackBridge,
+} from '@/utils/callbackBridge';
 import getFile, { readFileAsBase64 } from '@/utils/getFile';
 import { sleep } from '@/utils/helper';
 import { MessageListener } from '@/utils/message';
@@ -990,19 +994,34 @@ message.on('downloads:watch-created', async (data) => {
   // save pending download requests
   downloadListeners.pendingRequests = downloadListeners.pendingRequests || [];
 
-  // safe callback
+  // Handle callback bridge or regular function
   let safeCallback = null;
-  if (typeof data.onComplete === 'function') {
-    safeCallback = (response) => {
-      try {
-        data.onComplete(response);
-      } catch (callbackError) {
-        console.error(
-          '❌ failed to call download complete callback:',
-          callbackError
-        );
-      }
-    };
+  if (data.onComplete) {
+    if (isCallbackBridge(data.onComplete)) {
+      // Use callback bridge for cross-context communication
+      safeCallback = async (response) => {
+        try {
+          await executeCallbacksInData(data.onComplete, response);
+        } catch (callbackError) {
+          console.error(
+            '❌ failed to call download complete callback:',
+            callbackError
+          );
+        }
+      };
+    } else if (typeof data.onComplete === 'function') {
+      // Fallback for regular functions (should not happen in fixed version)
+      safeCallback = (response) => {
+        try {
+          data.onComplete(response);
+        } catch (callbackError) {
+          console.error(
+            '❌ failed to call download complete callback:',
+            callbackError
+          );
+        }
+      };
+    }
   }
 
   downloadListeners.pendingRequests.push({
@@ -1017,20 +1036,38 @@ message.on('downloads:watch-created', async (data) => {
 message.on('downloads:watch-changed', async ({ downloadId, onComplete }) => {
   await registerBackgroundDownloadListeners();
 
-  if (downloadId && typeof onComplete === 'function') {
-    // 安全地包装回调函数
-    const safeCallback = (response) => {
-      try {
-        onComplete(response);
-      } catch (callbackError) {
-        console.error(
-          '❌ failed to call download changed callback:',
-          callbackError
-        );
-      }
-    };
+  if (downloadId && onComplete) {
+    let safeCallback = null;
 
-    downloadListeners.changedCallbacks.set(downloadId, safeCallback);
+    if (isCallbackBridge(onComplete)) {
+      // Use callback bridge for cross-context communication
+      safeCallback = async (response) => {
+        try {
+          await executeCallbacksInData(onComplete, response);
+        } catch (callbackError) {
+          console.error(
+            '❌ failed to call download changed callback:',
+            callbackError
+          );
+        }
+      };
+    } else if (typeof onComplete === 'function') {
+      // Fallback for regular functions (should not happen in fixed version)
+      safeCallback = (response) => {
+        try {
+          onComplete(response);
+        } catch (callbackError) {
+          console.error(
+            '❌ failed to call download changed callback:',
+            callbackError
+          );
+        }
+      };
+    }
+
+    if (safeCallback) {
+      downloadListeners.changedCallbacks.set(downloadId, safeCallback);
+    }
   }
 
   return true;

@@ -1,4 +1,5 @@
 import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
+import { sendMessageWithCallbacks } from '@/utils/callbackBridge';
 import { MessageListener } from '@/utils/message';
 import browser from 'webextension-polyfill';
 
@@ -140,7 +141,7 @@ async function handleDownload({ data, id: blockId }) {
         try {
           if (!downloadId) {
             const downloadCompletePromise = new Promise((completeResolve) => {
-              MessageListener.sendMessage(
+              sendMessageWithCallbacks(
                 'downloads:watch-created',
                 {
                   downloadData: processedData,
@@ -220,7 +221,7 @@ async function handleDownload({ data, id: blockId }) {
               });
             }, processedData.timeout);
 
-            await MessageListener.sendMessage(
+            await sendMessageWithCallbacks(
               'downloads:watch-changed',
               {
                 downloadId,
