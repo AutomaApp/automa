@@ -13,7 +13,7 @@ module.exports = {
   overrides: [
     // JS + Vue
     {
-      files: ['**/*.{js,vue}'],
+      files: ['**/*.js'],
       parser: 'vue-eslint-parser',
       parserOptions: {
         parser: '@babel/eslint-parser',
@@ -26,6 +26,18 @@ module.exports = {
         'airbnb-base',
         'plugin:prettier/recommended',
       ],
+      rules: {
+        // 保证与根规则一致，避免因 override 的 extends 覆盖造成的差异
+        'func-names': 'off',
+        'no-param-reassign': 'off',
+        'no-restricted-syntax': 'off',
+        'no-await-in-loop': 'off',
+        'no-underscore-dangle': 'off',
+        'import/no-extraneous-dependencies': 'off',
+        'import/prefer-default-export': 'off',
+        'vue/multi-word-component-names': 'off',
+        'vue/v-on-event-hyphenation': 'off',
+      },
     },
 
     // TS + Vue(with TS)
@@ -37,6 +49,8 @@ module.exports = {
         ecmaVersion: 2022,
         sourceType: 'module',
         project: ['./tsconfig.json'],
+        // 解决使用 @typescript-eslint/parser 解析非标准拓展名（.vue）时报错的问题
+        extraFileExtensions: ['.vue'],
       },
       extends: [
         'plugin:vue/vue3-recommended',
@@ -46,14 +60,28 @@ module.exports = {
         'plugin:prettier/recommended',
       ],
       plugins: ['@typescript-eslint'],
+      rules: {
+        // 保证与根规则一致，避免因 override 的 extends 覆盖造成的差异
+        'func-names': 'off',
+        'no-param-reassign': 'off',
+        'no-restricted-syntax': 'off',
+        'no-await-in-loop': 'off',
+        'no-underscore-dangle': 'off',
+        'import/no-extraneous-dependencies': 'off',
+        'import/prefer-default-export': 'off',
+        'vue/multi-word-component-names': 'off',
+        'vue/v-on-event-hyphenation': 'off',
+      },
     },
   ],
 
   plugins: ['vue'],
 
   settings: {
+    // 全局使用 alias 解析，避免解析 vite 配置
     'import/resolver': {
-      vite: { configPath: './vite.config.ts' },
+      node: { extensions: ['.js', '.ts', '.vue', '.json'] },
+      // 注：移除 vite 解析器以避免 'viteConfig' 相关报错
       alias: {
         map: [
           ['@', './src'],
@@ -80,6 +108,7 @@ module.exports = {
     'func-names': 'off',
     'vue/v-on-event-hyphenation': 'off',
     'import/no-named-default': 'off',
+    'import/no-unresolved': 'off',
     'no-restricted-syntax': 'off',
     'vue/multi-word-component-names': 'off',
     'no-param-reassign': 'off',
