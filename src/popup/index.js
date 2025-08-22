@@ -1,13 +1,13 @@
 import { createApp } from 'vue';
+import '../assets/css/flow.css';
+import '../assets/css/fonts.css';
+import '../assets/css/tailwind.css';
+import compsUi from '../lib/compsUi';
+import pinia from '../lib/pinia';
+import vRemixicon, { icons } from '../lib/vRemixicon';
+import vueI18n from '../lib/vueI18n';
 import App from './App.vue';
 import router from './router';
-import pinia from '../lib/pinia';
-import compsUi from '../lib/compsUi';
-import vueI18n from '../lib/vueI18n';
-import vRemixicon, { icons } from '../lib/vRemixicon';
-import '../assets/css/tailwind.css';
-import '../assets/css/fonts.css';
-import '../assets/css/flow.css';
 
 createApp(App)
   .use(router)
@@ -17,4 +17,4 @@ createApp(App)
   .use(vRemixicon, icons)
   .mount('#app');
 
-if (module.hot) module.hot.accept();
+// Vite handles HMR automatically; remove legacy webpack HMR code
