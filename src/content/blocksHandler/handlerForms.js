@@ -46,12 +46,12 @@ async function forms(block) {
           );
         }
 
-        const commands = renderString(data.value)
-          .split('')
-          .map((char) => ({
-            type: 'keyDown',
-            text: char === '\n' ? '\r' : char,
-          }));
+        const renderedResult = await renderString(data.value, block.refData);
+        const textValue = renderedResult.value || '';
+        const commands = textValue.split('').map((char) => ({
+          type: 'keyDown',
+          text: char === '\n' ? '\r' : char,
+        }));
         const typeDelay = +block.data.delay;
         await sendMessage(
           'debugger:type',
