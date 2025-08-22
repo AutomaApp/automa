@@ -1,12 +1,13 @@
-import customHandlers from '@business/blocks/contentHandler';
 import { toCamelCase } from '@/utils/helper';
+import customHandlers from '@business/blocks/contentHandler';
 
-const blocksHandler = require.context('./blocksHandler', false, /\.js$/);
-const handlers = blocksHandler.keys().reduce((acc, key) => {
-  const name = key.replace(/^\.\/handler|\.js/g, '');
-
-  acc[toCamelCase(name)] = blocksHandler(key).default;
-
+const blockModules = import.meta.glob('./blocksHandler/*.js', { eager: true });
+const handlers = Object.entries(blockModules).reduce((acc, [path, mod]) => {
+  const name = path
+    .split('/')
+    .pop()
+    .replace(/^handler|\.js$/g, '');
+  acc[toCamelCase(name)] = mod.default;
   return acc;
 }, {});
 
