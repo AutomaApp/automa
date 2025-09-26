@@ -49,8 +49,14 @@ export const browserAPIMap = [
   { api: () => Browser.storage.local.get, path: 'storage.local.get' },
   { api: () => Browser.storage.local.set, path: 'storage.local.set' },
   { api: () => Browser.storage.local.remove, path: 'storage.local.remove' },
-  { api: () => Browser.proxy.settings.clear, path: 'proxy.settings.clear' },
-  { api: () => Browser.proxy.settings.set, path: 'proxy.settings.set' },
+  {
+    api: () => Browser.proxy.settings.clear.bind(Browser.proxy.settings),
+    path: 'proxy.settings.clear',
+  },
+  {
+    api: () => Browser.proxy.settings.set.bind(Browser.proxy.settings),
+    path: 'proxy.settings.set',
+  },
   {
     isEvent: true,
     path: 'debugger.onEvent',

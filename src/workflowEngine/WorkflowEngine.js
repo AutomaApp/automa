@@ -452,7 +452,7 @@ class WorkflowEngine {
 
     try {
       if (this.isDestroyed) return;
-      if (this.isUsingProxy) BrowserAPIService.proxy.clearSettings({});
+      if (this.isUsingProxy) BrowserAPIService.proxy.settings.clear({});
       if (this.workflow.settings.debugMode && BROWSER_TYPE === 'chrome') {
         BrowserAPIService.debugger.onEvent.removeListener(this.onDebugEvent);
 
