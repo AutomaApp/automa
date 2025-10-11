@@ -66,7 +66,8 @@
     "offscreen",
     "webNavigation",
     "unlimitedStorage",
-    "scripting"
+    "scripting",
+    "background"
   ],
   "web_accessible_resources": [
     {
