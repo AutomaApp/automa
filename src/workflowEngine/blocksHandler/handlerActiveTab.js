@@ -16,7 +16,7 @@ async function activeTab(block) {
 
     const tabsQuery = {
       active: true,
-      url: '*://*/*',
+      url: ['*://*/*', 'file://*'],
     };
 
     if (BROWSER_TYPE === 'firefox') {
@@ -62,7 +62,9 @@ async function activeTab(block) {
     if (!tab) {
       throw new Error("Can't find active tab");
     }
-    if (!tab || !tab?.url.startsWith('http')) {
+    const isHttpUrl = tab?.url?.startsWith('http');
+    const isFileUrl = tab?.url?.startsWith('file://');
+    if (!isHttpUrl && !isFileUrl) {
       const error = new Error('invalid-active-tab');
       error.data = { url: tab?.url };
 
