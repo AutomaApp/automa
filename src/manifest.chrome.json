@@ -78,7 +78,8 @@
         "/Inter-roman-latin.var.woff2"
       ],
       "matches": [
-        "*://*/*"
+        "*://*/*",
+        "file://*/*"
       ]
     }
   ],

@@ -80,5 +80,26 @@ export const useUserStore = defineStore('user', {
         console.error(error);
       }
     },
+    async signOut() {
+      try {
+        await browser.storage.local.remove([
+          'session',
+          'sessionToken',
+          'user',
+          'backupIds',
+        ]);
+
+        localStorage.removeItem('username');
+
+        this.user = null;
+        this.backupIds = [];
+        this.hostedWorkflows = {};
+        this.sharedPackages = [];
+        this.retrieved = false;
+      } catch (error) {
+        console.error('Sign out error:', error);
+        throw error;
+      }
+    },
   },
 });

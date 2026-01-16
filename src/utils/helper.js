@@ -5,7 +5,7 @@ export async function getActiveTab() {
   try {
     const tabsQuery = {
       active: true,
-      url: '*://*/*',
+      url: ['*://*/*', 'file://*'],
     };
 
     const window = await browser.windows.getLastFocused({

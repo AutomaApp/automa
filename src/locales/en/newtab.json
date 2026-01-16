@@ -29,7 +29,7 @@
     "nextRun": "Next run",
     "active": "Active",
     "refresh": "Refresh",
-    "schedule":{
+    "schedule": {
       "title": "Schedule",
       "types": {
         "everyDay": "Every day",
@@ -144,9 +144,10 @@
       "reloadPage": "Reload the page for the change to take effect"
     },
     "menu": {
+      "general": "General",
+      "profile": "Profile",
       "backup": "Backup Workflows",
       "editor": "Editor",
-      "general": "General",
       "shortcuts": "Shortcuts",
       "about": "About"
     },
@@ -162,6 +163,51 @@
         "encrypt": "Encrypt with password",
         "schedule": "Schedule local backup"
       },
+      "restore": {
+        "title": "Restore workflows",
+        "button": "Restore",
+        "update": "Update if workflow exists"
+      },
+      "cloud": {
+        "buttons": {
+          "local": "Local",
+          "cloud": "Cloud"
+        },
+        "location": "Location",
+        "delete": "Delete backup",
+        "title": "Cloud Backup",
+        "sync": "Sync",
+        "lastSync": "Last sync",
+        "lastBackup": "Last backup",
+        "select": "Select workflows",
+        "storedWorkflows": "Workflows that are stored in the cloud",
+        "selected": "Selected",
+        "selectText": "Select workflows that you want to backup",
+        "selectAll": "Select all",
+        "deselectAll": "Deselect all",
+        "needSelectWorkflow": "You need to select workflows that you want to backup"
+      }
+    },
+    "profile": {
+      "title": "Profile",
+      "loading": "Loading profile...",
+      "signedInAs": "Signed in as",
+      "signIn": "Sign in",
+      "signInDesc": "Sign in to backup your workflows and access cloud features",
+      "signOut": "Sign out",
+      "signingOut": "Signing out...",
+      "signedOut": "You have been signed out",
+      "signOutConfirmTitle": "Are you sure?",
+      "signOutConfirmMessage": "Signing out will remove all your authentication data and local session. Your workflows will remain on your device.",
+      "warningMessage": "This action will sign you out from your account on this device only.",
+      "signOutNote": "You can sign back in anytime to restore access to cloud features.",
+      "notSignedIn": "You are not signed in",
+      "teamsCount": "{count} team(s)",
+      "avatar": "Profile picture",
+      "username": "Username",
+      "email": "Email"
+    }
+  },
       "restore": {
         "title": "Restore workflows",
         "button": "Restore",
