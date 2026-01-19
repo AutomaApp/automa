@@ -57,7 +57,10 @@ if (browser.notifications && browser.notifications.onClicked) {
 const message = new MessageListener('background');
 
 message.on('browser-api', (payload) => {
-  return BrowserAPIService.runtimeMessageHandler(payload);
+  return BrowserAPIService.runtimeMessageHandler.call(
+    BrowserAPIService,
+    payload
+  );
 });
 message.on(BrowserAPIEventHandler.RuntimeEvents.TOGGLE, (data) =>
   BrowserAPIEventHandler.instance.onToggleBrowserEventListener(data)
