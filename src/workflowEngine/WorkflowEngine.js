@@ -266,6 +266,8 @@ class WorkflowEngine {
           this.columns[columnId] = { index: 0, name, type };
       });
 
+      console.log('打点 2');
+
       if (BROWSER_TYPE !== 'chrome') {
         this.workflow.settings.debugMode = false;
       } else if (this.workflow.settings.debugMode) {
@@ -285,10 +287,11 @@ class WorkflowEngine {
         }
       }
 
+      console.log('打点 3');
       const { settings: userSettings = {} } =
         (await BrowserAPIService.storage.local.get('settings')) || {};
       this.logsLimit = userSettings?.logsLimit || 1001;
-
+      console.log('打点3.1');
       this.workflow.table = columns;
       this.startedTimestamp = Date.now();
 
@@ -300,12 +303,16 @@ class WorkflowEngine {
         this.referenceData.secrets[name] = value;
       });
 
+      console.log('打点 4');
+
       const variables = await dbStorage.variables.toArray();
       variables.forEach(({ name, value }) => {
         this.referenceData.variables[`$$${name}`] = value;
       });
 
       this.addRefDataSnapshot('variables');
+
+      console.log('打点 5');
 
       await this.states.add(this.id, {
         id: this.id,
@@ -315,7 +322,10 @@ class WorkflowEngine {
         parentState: this.parentWorkflow,
         teamId: this.workflow.teamId || null,
       });
+
+      console.log('打点 6');
       this.addWorker({ blockId: triggerBlock.id });
+      console.log('打点 7');
     } catch (error) {
       console.error('WorkflowEngine init error:', error);
     }
@@ -404,7 +414,7 @@ class WorkflowEngine {
 
     workflowQueue.splice(queueIndex, 1);
 
-    await BrowserAPIService.storage.localSet({ workflowQueue });
+    await BrowserAPIService.storage.local.set({ workflowQueue });
   }
 
   async destroyWorker(workerId) {
@@ -525,7 +535,7 @@ class WorkflowEngine {
           },
         };
 
-        BrowserAPIService.storage.localSet(workflowState);
+        BrowserAPIService.storage.local.set(workflowState);
       } else if (status === 'success') {
         clearCache(this.workflow);
       }
