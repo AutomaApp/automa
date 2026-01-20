@@ -7,26 +7,16 @@
 
     <ui-card v-else-if="!userStore.user" class="not-signed-in">
       <div class="text-center">
-        <v-remixicon
-          name="riUserLine"
-          size="64"
-          class="mb-4 text-gray-400 dark:text-gray-600"
-        />
         <h3 class="mb-2 text-xl font-semibold">
           {{ t('settings.profile.notSignedIn') }}
         </h3>
         <p class="mb-6 text-gray-600 dark:text-gray-300">
           {{ t('settings.profile.signInDesc') }}
         </p>
-        <ui-button
-          tag="a"
-          href="https://extension.automa.site/auth"
-          target="_blank"
-          variant="accent"
-          class="w-64"
-        >
-          <v-remixicon name="riLoginCircleLine" class="mr-2" />
-          {{ t('settings.profile.signIn') }}
+        <ui-button tag="button" variant="accent" class="w-64">
+          <a href="https://extension.automa.site/auth">
+            {{ t('settings.profile.signIn') }}
+          </a>
         </ui-button>
       </div>
     </ui-card>
@@ -76,7 +66,7 @@
           @click="handleSignOut"
         >
           <v-remixicon
-            :name="state.loading ? 'riLoader4Line' : 'riLogoutBoxLine'"
+            :name="state.loading ? 'riLoader4Line' : 'riLogoutCircleRLine'"
             class="mr-2"
             :class="{ 'animate-spin': state.loading }"
           />
@@ -96,10 +86,10 @@
 </template>
 
 <script setup>
+import { useDialog } from '@/composable/dialog';
+import { useUserStore } from '@/stores/user';
 import { computed, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useUserStore } from '@/stores/user';
-import { useDialog } from '@/composable/dialog';
 import { useToast } from 'vue-toastification';
 
 const { t } = useI18n();
