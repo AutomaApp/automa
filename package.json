@@ -11,7 +11,7 @@
     "build:firefox": "cross-env BROWSER=firefox npm run build",
     "build:zip": "node utils/build-zip.js",
     "build:prod": "npm run build:prod-chrome && npm run build:prod-firefox",
-    "build:prod-chrome": "npm run build && npm run build:zip",
+    "build:prod-chrome": "node utils/clean-build-cache.js && npm run build && npm run build:zip",
     "build:prod-firefox": "npm run build:firefox && cross-env BROWSER=firefox npm run build:zip",
     "dev": "node utils/webserver.js",
     "dev:firefox": "cross-env BROWSER=firefox npm run dev",
