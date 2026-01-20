@@ -34,10 +34,21 @@ function writeResult(text) {
     }
 
     const { workflows } = await Browser.storage.local.get('workflows');
+    let workflow  ;
+    for(var k in workflows){
+      if(workflows[k].name===workflowId){
+        workflow=workflows[k]
+        break;
+      }
+      
+    }
 
-    let workflow = workflows[workflowId];
+   
+
+    
     if (!workflow && Array.isArray(workflows)) {
-      workflow = workflows.find((item) => item.id === workflowId);
+      workflow = workflows.find(
+        (item) => item.id === workflowId);
     }
 
     if (!workflow) {
