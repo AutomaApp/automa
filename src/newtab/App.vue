@@ -48,7 +48,7 @@
           <v-remixicon size="20" name="riCloseLine" />
         </button>
       </div>
-      <div class="mt-4 flex items-center rounded-lg bg-accent p-4 shadow-2xl">
+      <!-- <div class="mt-4 flex items-center rounded-lg bg-accent p-4 shadow-2xl">
         <v-remixicon name="riInformationLine" class="mr-3 shrink-0" />
         <p>
           Export your Automa workflows as a standalone extension using
@@ -59,7 +59,7 @@
             >Automa Chrome Extension Builder</a
           >
         </p>
-      </div>
+      </div> -->
     </div>
     <shared-permissions-modal
       v-model="permissionState.showModal"
