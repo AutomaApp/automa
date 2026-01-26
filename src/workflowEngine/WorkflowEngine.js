@@ -1,8 +1,11 @@
 import dbStorage from '@/db/storage';
-import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
+import BrowserAPIService, {
+  IS_BROWSER_API_AVAILABLE,
+} from '@/service/browser-api/BrowserAPIService';
 import { fetchApi } from '@/utils/api';
 import { getBlocks } from '@/utils/getSharedData';
 import { clearCache, isObject, parseJSON, sleep } from '@/utils/helper';
+import { MessageListener } from '@/utils/message';
 import cloneDeep from 'lodash.clonedeep';
 import { nanoid } from 'nanoid';
 import WorkflowWorker from './WorkflowWorker';
@@ -127,8 +130,6 @@ class WorkflowEngine {
         return;
       }
 
-      console.log('before execute', this.state, '\n', this.workflow);
-
       const { nodes, edges } = this.workflow.drawflow;
       if (!nodes || nodes.length === 0) {
         console.error(`${this.workflow.name} doesn't have blocks`);
@@ -180,7 +181,29 @@ class WorkflowEngine {
         }
 
         const paramUrl = BrowserAPIService.runtime.getURL('params.html');
-        const tabs = await BrowserAPIService.tabs.query({});
+
+        let tabs;
+        if (!IS_BROWSER_API_AVAILABLE) {
+          tabs = await BrowserAPIService.tabs.query({});
+        } else {
+          try {
+            tabs = await BrowserAPIService.tabs.query({});
+            if (!tabs || !Array.isArray(tabs)) {
+              tabs = await MessageListener.sendMessage(
+                'browser-api',
+                { name: 'tabs.query', args: [{}] },
+                'background'
+              );
+            }
+          } catch (e) {
+            tabs = await MessageListener.sendMessage(
+              'browser-api',
+              { name: 'tabs.query', args: [{}] },
+              'background'
+            );
+          }
+        }
+
         const paramTab = tabs.find((tab) => tab.url?.includes(paramUrl));
 
         if (paramTab) {
@@ -266,8 +289,6 @@ class WorkflowEngine {
           this.columns[columnId] = { index: 0, name, type };
       });
 
-      console.log('打点 2');
-
       if (BROWSER_TYPE !== 'chrome') {
         this.workflow.settings.debugMode = false;
       } else if (this.workflow.settings.debugMode) {
@@ -287,11 +308,10 @@ class WorkflowEngine {
         }
       }
 
-      console.log('打点 3');
       const { settings: userSettings = {} } =
         (await BrowserAPIService.storage.local.get('settings')) || {};
       this.logsLimit = userSettings?.logsLimit || 1001;
-      console.log('打点3.1');
+
       this.workflow.table = columns;
       this.startedTimestamp = Date.now();
 
@@ -303,16 +323,12 @@ class WorkflowEngine {
         this.referenceData.secrets[name] = value;
       });
 
-      console.log('打点 4');
-
       const variables = await dbStorage.variables.toArray();
       variables.forEach(({ name, value }) => {
         this.referenceData.variables[`$$${name}`] = value;
       });
 
       this.addRefDataSnapshot('variables');
-
-      console.log('打点 5');
 
       await this.states.add(this.id, {
         id: this.id,
@@ -323,9 +339,7 @@ class WorkflowEngine {
         teamId: this.workflow.teamId || null,
       });
 
-      console.log('打点 6');
       this.addWorker({ blockId: triggerBlock.id });
-      console.log('打点 7');
     } catch (error) {
       console.error('WorkflowEngine init error:', error);
     }
