@@ -11,9 +11,9 @@ import selectorFrameContext from '../../elementSelector/selectorFrameContext';
 
     if (isMainFrame) {
       const element = document.querySelector('#automa-recording');
-      if (element) return;
-
-      elementSelectorInstance = await initElementSelector();
+      if (!element) {
+        elementSelectorInstance = await initElementSelector();
+      }
     } else {
       const style = document.createElement('style');
       style.textContent = '[automa-el-list] {outline: 2px dashed #6366f1;}';
