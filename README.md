@@ -18,7 +18,7 @@ Auto-fill forms, do a repetitive task, take a screenshot, or scrape website data
 <table cellspacing="0" cellpadding="0">
   <tr>
     <td valign="center">
-      <a align="center" href="https://chrome.google.com/webstore/detail/automa/infppggnoaenmfagbfknfkancpbljcca">
+      <a align="center" href="https://chromewebstore.google.com/detail/automa/infppggnoaenmfagbfknfkancpbljcca">
         <img src="https://user-images.githubusercontent.com/22908993/166417152-f870bfbd-1770-4c28-b69d-a7303aebc9a6.png" alt="Chrome web store" />
         <p align="center">Chrome Web Store</p>
       </a>
