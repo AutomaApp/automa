@@ -7,13 +7,18 @@
       <transition name="modal" mode="out-in">
         <div
           v-if="show"
+          ref="modalContent"
           :class="[positions[contentPosition]]"
           class="modal-ui__content-container z-50 flex justify-center overflow-y-auto"
           :style="{ 'backdrop-filter': blur && 'blur(2px)' }"
+          role="dialog"
+          aria-modal="true"
+          :aria-labelledby="title ? 'modal-title' : undefined"
         >
           <div
             class="absolute h-full w-full bg-black bg-opacity-20 dark:bg-opacity-60"
             style="z-index: -2"
+            aria-hidden="true"
             @click="closeModal"
           />
           <slot v-if="customContent"></slot>
@@ -25,7 +30,7 @@
           >
             <div class="modal-ui__content-header mb-4">
               <div class="flex items-center justify-between">
-                <span class="content-header">
+                <span class="content-header" id="modal-title">
                   <slot name="header">{{ title }}</slot>
                 </span>
                 <slot name="header-append" />
@@ -34,6 +39,7 @@
                   class="cursor-pointer text-gray-600 dark:text-gray-300"
                   name="riCloseLine"
                   size="20"
+                  aria-label="Close modal"
                   @click="closeModal"
                 ></v-remixicon>
               </div>
@@ -88,6 +94,7 @@ export default {
 
     const show = ref(false);
     const modalContent = ref(null);
+    const lastActiveElement = ref(null);
 
     function toggleBodyOverflow(value) {
       document.body.classList.toggle('overflow-hidden', value);
@@ -95,11 +102,36 @@ export default {
     function closeModal() {
       if (props.persist) return;
 
+      // Restore focus to the element that opened the modal
+      if (lastActiveElement.value) {
+        lastActiveElement.value.focus();
+        lastActiveElement.value = null;
+      }
+
       show.value = false;
       emit('close', false);
       emit('update:modelValue', false);
 
       toggleBodyOverflow(false);
+    }
+    function openModal() {
+      // Save the currently focused element to restore focus later
+      lastActiveElement.value = document.activeElement;
+      
+      show.value = true;
+      
+      // Focus the first focusable element in the modal
+      setTimeout(() => {
+        const modal = modalContent.value?.querySelector?.('.modal-ui__content');
+        if (modal) {
+          const focusable = modal.querySelector(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+          if (focusable) {
+            focusable.focus();
+          }
+        }
+      }, 100);
     }
     function keyupHandler({ code }) {
       if (code === 'Escape') closeModal();
@@ -108,7 +140,8 @@ export default {
     watch(
       () => props.modelValue,
       (value) => {
-        show.value = value;
+        if (value) openModal();
+        else show.value = false;
       },
       { immediate: true }
     );
@@ -125,6 +158,7 @@ export default {
       positions,
       closeModal,
       modalContent,
+      lastActiveElement,
     };
   },
 };

@@ -4,7 +4,7 @@
       tabTypes[type] || tabTypes['default'],
       { [color]: type === 'fill' },
     ]"
-    aria-role="tablist"
+    role="tablist"
     class="ui-tabs relative flex items-center space-x-1 text-gray-600 dark:text-gray-200"
     @mouseleave="showHoverIndicator = false"
   >

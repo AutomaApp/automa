@@ -10,8 +10,8 @@
         'is-active': uiTabs.modelValue.value === value,
       },
     ]"
-    :tabIndex="uiTabs.modelValue.value === value ? 0 : -1"
-    aria-role="tab"
+    :tabindex="uiTabs.modelValue.value === value ? 0 : -1"
+    role="tab"
     class="ui-tab z-[1] transition-colors focus:ring-0"
     @mouseenter="uiTabs.hoverHandler"
     @click="uiTabs.updateActive(value)"

@@ -4,9 +4,11 @@
       class="relative inline-block h-5 w-5 rounded-full focus-within:ring-2 focus-within:ring-accent"
     >
       <input
+        :id="inputId"
         type="radio"
         class="radio-ui__input opacity-0"
         :value="value"
+        :aria-label="ariaLabel"
         v-bind="{ checked: isChecked }"
         @change="changeHandler"
       />
@@ -24,6 +26,14 @@ import { computed } from 'vue';
 
 export default {
   props: {
+    inputId: {
+      type: String,
+      default: () => `radio-${Math.random().toString(36).substr(2, 9)}`,
+    },
+    ariaLabel: {
+      type: String,
+      default: '',
+    },
     modelValue: {
       type: String,
       default: '',

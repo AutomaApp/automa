@@ -2,6 +2,8 @@
   <component
     :is="tag"
     role="button"
+    :aria-label="ariaLabel"
+    :aria-labelledby="ariaLabelledby"
     class="ui-button relative h-10 transition"
     :class="[
       color ? color : variants[btnType][variant],
@@ -12,7 +14,11 @@
         'pointer-events-none': loading || disabled,
       },
     ]"
-    v-bind="{ disabled: loading || disabled, ...$attrs }"
+    :tabindex="tag !== 'button' ? (disabled ? -1 : 0) : undefined"
+    :disabled="tag === 'button' ? (loading || disabled) : undefined"
+    v-bind="$attrs"
+    @keydown.enter="$emit('click')"
+    @keydown.space.prevent="$emit('click')"
   >
     <span
       class="flex h-full items-center justify-center"
@@ -37,6 +43,14 @@ import UiSpinner from './UiSpinner.vue';
 export default {
   components: { UiSpinner },
   props: {
+    ariaLabel: {
+      type: String,
+      default: '',
+    },
+    ariaLabelledby: {
+      type: String,
+      default: '',
+    },
     icon: Boolean,
     disabled: Boolean,
     loading: Boolean,

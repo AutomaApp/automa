@@ -10,10 +10,12 @@
       class="relative inline-block h-5 w-5 rounded focus-within:ring-2 focus-within:ring-accent"
     >
       <input
+        :id="inputId"
         :class="{ indeterminate }"
         type="checkbox"
         class="checkbox-ui__input opacity-0"
         :value="modelValue"
+        :aria-label="ariaLabel"
         v-bind="{ checked: modelValue, disabled }"
         @change="changeHandler"
       />
@@ -35,6 +37,14 @@
 <script>
 export default {
   props: {
+    inputId: {
+      type: String,
+      default: () => `checkbox-${Math.random().toString(36).substr(2, 9)}`,
+    },
+    ariaLabel: {
+      type: String,
+      default: '',
+    },
     modelValue: {
       type: Boolean,
       default: false,

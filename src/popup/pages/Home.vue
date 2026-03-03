@@ -74,7 +74,7 @@
     class="relative z-20 space-y-2 px-5 pb-5"
   >
     <ui-card v-if="workflowStore.getWorkflows.length === 0" class="text-center">
-      <img src="@/assets/svg/alien.svg" />
+      <img src="@/assets/svg/alien.svg" alt="No workflows illustration" />
       <p class="font-semibold">{{ t('message.empty') }}</p>
       <ui-button
         variant="accent"
@@ -175,6 +175,7 @@
         name="riCloseLine"
         class="absolute top-2 right-2 cursor-pointer text-gray-300 dark:text-gray-600"
         size="20"
+        aria-label="Close settings popup"
         @click="closeSettingsPopup"
       />
     </div>
