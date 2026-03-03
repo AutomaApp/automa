@@ -1,5 +1,5 @@
 /* eslint-disable prefer-destructuring, no-useless-escape */
-import jsonpath from 'jsonpath';
+import jsonpath from 'jsonpath-plus';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
