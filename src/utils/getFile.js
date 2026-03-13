@@ -13,6 +13,7 @@ async function downloadFile(url, options) {
   if (!response.ok) throw new Error(response.statusText);
 
   const type = options.responseType || 'blob';
+  const pathWithoutParams = url.split('?')[0];
   const result = await response[type]();
 
   if (options.returnValue) {
@@ -21,10 +22,10 @@ async function downloadFile(url, options) {
 
   if (URL.createObjectURL) {
     const objUrl = URL.createObjectURL(result);
-    return { objUrl, path: url, type: result.type };
+    return { objUrl, path: pathWithoutParams, type: result.type };
   }
   const base64 = await readFileAsBase64(result);
-  return { path: url, objUrl: base64, type: result.type };
+  return { path: pathWithoutParams, objUrl: base64, type: result.type };
 }
 function getLocalFile(path, options) {
   return new Promise((resolve, reject) => {
