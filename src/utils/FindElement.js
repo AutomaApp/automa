@@ -18,22 +18,32 @@ Sizzle.selectors.pseudos.equal = Sizzle.selectors.createPseudo(function (text) {
 const specialSelectors = [':contains', ':header', ':parent', ':equal'];
 const specialSelectorsRegex = new RegExp(specialSelectors.join('|'));
 
+// Escape namespace attributes (e.g., xlink:href -> xlink\:href)
+// to make them valid for querySelectorAll
+function escapeNamespaceAttributes(selector) {
+  // Match attribute selectors like [xlink:href="value"] and escape the colon
+  return selector.replace(/\[([a-zA-Z-]+):([a-zA-Z-]+)/g, '[$1\\:$2');
+}
+
 class FindElement {
   static cssSelector(data, documentCtx = document) {
     const selector = data.markEl
       ? `${data.selector.trim()}:not([${data.blockIdAttr}])`
       : data.selector;
+    
+    // Escape namespace attributes to make selector valid
+    const escapedSelector = escapeNamespaceAttributes(selector);
 
-    if (specialSelectorsRegex.test(selector)) {
+    if (specialSelectorsRegex.test(escapedSelector)) {
       // Fix Sizzle incorrect context in iframe, passed as context of iframe
-      const elements = Sizzle(selector, documentCtx);
+      const elements = Sizzle(escapedSelector, documentCtx);
       if (!elements) return null;
 
       return data.multiple ? elements : elements[0];
     }
 
-    if (selector.includes('>>')) {
-      const newSelector = selector.replaceAll('>>', '');
+    if (escapedSelector.includes('>>')) {
+      const newSelector = escapedSelector.replaceAll('>>', '');
 
       return data.multiple
         ? querySelectorAllDeep(newSelector)
@@ -41,14 +51,14 @@ class FindElement {
     }
 
     if (data.multiple) {
-      const elements = documentCtx.querySelectorAll(selector);
+      const elements = documentCtx.querySelectorAll(escapedSelector);
 
       if (elements.length === 0) return null;
 
       return elements;
     }
 
-    return documentCtx.querySelector(selector);
+    return documentCtx.querySelector(escapedSelector);
   }
 
   static xpath(data, documentCtx = document) {
