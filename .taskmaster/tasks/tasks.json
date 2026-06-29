@@ -353,17 +353,18 @@
         "testStrategy": "Use node --test with mocked browser.storage.local, Dexie-like stores, and workflow manager calls for list/get/create/replace/delete, run/stop dispatch, run-state reads, log limit clamping, log detail lookup, and table pagination. Manual integration: install Chrome MV3 dev build, start trusted bridge, fetch workflows, commit a simple draft, run it, fetch latest logs, and confirm the workflow remains visible and editable in the Automa UI.",
         "priority": "medium",
         "dependencies": [],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
             "title": "Create workflow store abstraction over browser.storage.local",
             "description": "Implement the primary Extension Workflow Store API backed by browser.storage.local workflows, with a secondary test/offline backend hook.",
             "dependencies": [],
-            "details": "Add a small store module with list, get, create, replace, and delete operations that preserves Automa-compatible workflow objects and timestamps. Keep file/import/export support behind an injectable backend interface for tests or offline generation only.",
-            "status": "pending",
+            "details": "Add a small store module with list, get, create, replace, and delete operations that preserves Automa-compatible workflow objects and timestamps. Keep file/import/export support behind an injectable backend interface for tests or offline generation only.\n<info added on 2026-06-29T19:04:31.009Z>\nImplement the store as an injectable background module, e.g. createWorkflowStore({ storage, now, idGenerator }) under src/agentBridge/background, using browser.storage.local key workflows as the primary backend and the same array-or-object normalization already used in src/stores/workflow.js and src/agentBridge/workflowModel/draftManager.js. Avoid importing the Pinia workflow store because defaultWorkflow depends on window/runtime UI state; instead preserve incoming Automa workflow objects as-is, only ensuring id, createdAt, and updatedAt on create/replace. Expose list/get/create/replace/delete with shape-preserving cloning, stable missing-workflow errors via src/agentBridge/background/errors.js, and storage injection compatible with src/agentBridge/background/testUtils.js createMockStorage. This store should be the dependency used by later workflow.list/getRaw/getOutline/create/replace/delete handlers registered on the existing src/agentBridge/background/router.js command registry, with runtime/log/table handlers reusing BackgroundWorkflowUtils, browser.storage.local workflowStates, dbLogs from src/db/logs.js, and dbStorage tablesData/tablesItems from src/db/storage.js behind injectable seams for node --test coverage.\n</info added on 2026-06-29T19:04:31.009Z>",
+            "status": "done",
             "testStrategy": "Use node --test with mocked browser.storage.local to verify list/get/missing workflow behavior, backend injection, and preservation of raw workflow shape.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:20:17.058Z"
           },
           {
             "id": 2,
@@ -373,9 +374,10 @@
               "4.1"
             ],
             "details": "Register read handlers in the agent command router. workflow.list should return bounded metadata summaries; workflow.getRaw should return the stored Automa workflow object; workflow.getOutline should reuse the Task 3 outline converter without mutating stored drawflow data.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Use node --test to assert handler envelopes, missing-id errors, list metadata shape, raw workflow passthrough, and outline converter invocation.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:20:20.211Z"
           },
           {
             "id": 3,
@@ -385,9 +387,10 @@
               "4.1"
             ],
             "details": "Validate incoming workflows through the existing validation/conversion seams where available, persist through the workflow store, and update any trigger registration or cleanup paths needed by the background runtime. Delete must remove stored workflows and clean trigger-related state so stale triggers do not remain active.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Use node --test with mocked storage and trigger registration functions to cover create, replace, delete, duplicate ids, invalid payloads, timestamp updates, and cleanup calls.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:20:23.452Z"
           },
           {
             "id": 4,
@@ -398,9 +401,10 @@
               "4.3"
             ],
             "details": "Map read commands to read capabilities and mutation/runtime commands to stricter workflow run or write capabilities. Use the Task 1 bridge error utilities for not found, validation, capability denied, runtime unavailable, and internal failure cases, with audit-safe redaction.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Use node --test to verify denied commands, malformed payloads, stable error codes, redacted messages, and successful responses retaining the standard envelope shape.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:20:26.761Z"
           },
           {
             "id": 5,
@@ -411,9 +415,10 @@
               "4.4"
             ],
             "details": "workflow.run(id) should require workflow run capability, load the workflow from the store, call BackgroundWorkflowUtils.instance.executeWorkflow(workflow, {}), and return a run or state id when available. workflow.stop should dispatch the existing stop path. workflow.getRunState should read the current WorkflowManager workflowStates data without inventing a parallel runtime model.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Use node --test with mocked BackgroundWorkflowUtils and WorkflowManager state to cover successful run dispatch, missing workflow, stop dispatch, runtime errors, and run-state lookup.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:20:30.077Z"
           },
           {
             "id": 6,
@@ -423,9 +428,10 @@
               "4.4"
             ],
             "details": "Read from items, histories, ctxData, and logsData stores. workflow.getLogs should filter by workflowId, sort newest first by endedAt when available, and clamp limit to the PRD default/latest 20 behavior. workflow.getLogDetail(logId) should return one selected item plus associated history, context data, and log data records.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Use node --test with Dexie-like mocked stores to verify workflow filtering, reverse endedAt ordering, limit clamping, missing log errors, and detail aggregation across all four stores.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:20:33.260Z"
           },
           {
             "id": 7,
@@ -435,9 +441,10 @@
               "4.6"
             ],
             "details": "Derive table rows from the existing runtime/log data source agreed for Automa table inspection, clamp limit to 100 by default, accept a cursor offset or stable key, and return rows plus nextCursor when more data is available. Keep memory use bounded for large tables.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Use node --test with mocked table/log data to cover default 100-row slice, custom limit clamping, cursor continuation, empty tables, and stable nextCursor behavior.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:20:36.445Z"
           },
           {
             "id": 8,
@@ -452,14 +459,16 @@
               "4.7"
             ],
             "details": "Build test fixtures for browser.storage.local workflows, Dexie-like log stores, BackgroundWorkflowUtils, WorkflowManager, and the command router. Cover every command listed in the parent task through the routed command interface, not only direct module calls, so bridge integration regressions are caught.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run node --test for the new workflow command suite and include manual integration notes for a Chrome MV3 dev build with trusted bridge commands for list, run, logs, and table inspection.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:20:39.675Z"
           }
         ],
         "complexity": 8,
         "recommendedSubtasks": 8,
-        "expansionPrompt": "Break this into subtasks for workflow storage abstraction, list/getRaw/getOutline handlers, create/replace/delete with trigger registration cleanup, run/stop/run-state handlers using BackgroundWorkflowUtils, Dexie log summary/detail readers, table pagination, capability checks/error envelopes, and mocked node --test coverage."
+        "expansionPrompt": "Break this into subtasks for workflow storage abstraction, list/getRaw/getOutline handlers, create/replace/delete with trigger registration cleanup, run/stop/run-state handlers using BackgroundWorkflowUtils, Dexie log summary/detail readers, table pagination, capability checks/error envelopes, and mocked node --test coverage.",
+        "updatedAt": "2026-06-29T19:21:11.112Z"
       },
       {
         "id": "5",
@@ -580,7 +589,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-06-29T19:01:07.567Z",
+      "lastModified": "2026-06-29T19:21:11.113Z",
       "taskCount": 5,
       "completedCount": 3,
       "tags": [

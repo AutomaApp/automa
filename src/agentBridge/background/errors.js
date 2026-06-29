@@ -5,14 +5,18 @@ const ERROR_MESSAGES = {
   handler_error: 'Command handler failed',
   invalid_envelope: 'Command envelope must be a plain object',
   invalid_field: 'Command envelope field is invalid',
+  log_not_found: 'Workflow log not found',
   invalid_trusted_session: 'Trusted session is not active',
   missing_capability: 'Trusted session is missing a required capability',
   missing_field: 'Command envelope is missing a required field',
   missing_trusted_session: 'Command requires a trusted session',
+  runtime_unavailable: 'Workflow runtime is unavailable',
   setup_token_invalid: 'Setup token is invalid',
   setup_token_missing: 'Setup token is not configured',
   storage_error: 'Trusted configuration could not be read',
   unknown_command: 'Unknown agent command',
+  validation_error: 'Command payload is invalid',
+  workflow_not_found: 'Workflow not found',
 };
 
 class AgentBridgeError extends Error {
@@ -78,7 +82,15 @@ function makeError(code, details = {}) {
     message,
   };
 
-  ['capability', 'command', 'field', 'reason', 'sessionId'].forEach((key) => {
+  [
+    'capability',
+    'command',
+    'field',
+    'logId',
+    'reason',
+    'sessionId',
+    'workflowId',
+  ].forEach((key) => {
     if (safeDetails[key] !== undefined) error[key] = safeDetails[key];
   });
 

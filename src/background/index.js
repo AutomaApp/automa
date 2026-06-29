@@ -16,7 +16,12 @@ import { automaRefDataStr } from '@/workflowEngine/helper';
 import automa from '@business';
 import browser from 'webextension-polyfill';
 import * as agentBridgeRouter from '../agentBridge/background/router';
-import { registerWorkflowTrigger } from '../utils/workflowTrigger';
+import { drawflowToOutline } from '../agentBridge/workflowModel';
+import dbLogs from '../db/logs';
+import {
+  cleanWorkflowTriggers,
+  registerWorkflowTrigger,
+} from '../utils/workflowTrigger';
 import BackgroundEventsListeners from './BackgroundEventsListeners';
 import BackgroundOffscreen from './BackgroundOffscreen';
 import BackgroundUtils from './BackgroundUtils';
@@ -224,8 +229,15 @@ message.on('get:user-id', async () => {
 
 message.on('agent:command', (envelope, sender) =>
   handleAgentCommand(envelope, {
+    dbLogs,
+    drawflowToOutline,
     sender,
     storage: browser.storage.local,
+    triggerRegistry: {
+      cleanWorkflowTriggers,
+      registerWorkflowTrigger,
+    },
+    workflowRuntime: BackgroundWorkflowUtils.instance,
   })
 );
 

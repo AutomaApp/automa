@@ -2,6 +2,7 @@
 
 const audit = require('./audit');
 const capabilities = require('./capabilities');
+const { workflowCommands } = require('./workflowCommands');
 const {
   AgentBridgeError,
   isPlainObject,
@@ -340,6 +341,7 @@ const defaultCommands = {
     },
     public: true,
   },
+  ...workflowCommands,
 };
 
 function createAgentCommandRouter({ commands = defaultCommands } = {}) {
