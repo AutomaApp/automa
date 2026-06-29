@@ -107,17 +107,18 @@
         "testStrategy": "Add node --test coverage for schema generation of new-tab, trigger, conditions, and ai-workflow; default extraction; input/output connection shapes; unknown block rejection; unsafeRaw acceptance; duplicate/missing/invalid parameter error normalization; and preservation of warning versus blocking error semantics. Run npm run lint and npm run build after integration.",
         "priority": "medium",
         "dependencies": [],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
             "title": "Extract block catalog schemas from getBlocks and built-in tasks",
             "description": "Create the code-first schema generation entry points that read the same block catalog sources used by the UI.",
             "dependencies": [],
-            "details": "Add a pure module for listSchemas() and getSchema(type) that starts from src/utils/shared.js tasks and, where available, follows the existing getBlocks/getSharedData catalog path for custom or saved blocks. Map each task entry into a stable schema object containing type, alias/name, category, component, data defaults, inputs, outputs, maxConnection, and allowedInputs without mutating the source catalog.",
-            "status": "pending",
+            "details": "Add a pure module for listSchemas() and getSchema(type) that starts from src/utils/shared.js tasks and, where available, follows the existing getBlocks/getSharedData catalog path for custom or saved blocks. Map each task entry into a stable schema object containing type, alias/name, category, component, data defaults, inputs, outputs, maxConnection, and allowedInputs without mutating the source catalog.\n<info added on 2026-06-29T18:31:25.787Z>\nCodebase analysis confirms src/utils/shared.js is the built-in catalog source for trigger, ai-workflow, new-tab, and conditions, while src/utils/getSharedData.js:getBlocks() merges those tasks with @business/blocks via customBlocks(); the current business/dev/blocks/index.js implementation returns an empty custom catalog. Implement schema extraction with cloned data defaults and metadata so returned schemas cannot mutate tasks or custom block definitions. Add node:test coverage following the existing src/agentBridge/*.test.js pattern for representative schemas: trigger inputs 0 outputs 1, new-tab browser metadata and defaults, ai-workflow data inputs/outputs defaults, conditions category/component/default data, maxConnection/allowedInputs preservation, unknown type behavior, and immutability of returned schema objects.\n</info added on 2026-06-29T18:31:25.787Z>",
+            "status": "done",
             "testStrategy": "Add node --test fixtures asserting schemas exist for trigger, new-tab, conditions, and ai-workflow, including category/component metadata and input/output connection shapes.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T18:44:31.491Z"
           },
           {
             "id": 2,
@@ -126,10 +127,11 @@
             "dependencies": [
               "2.1"
             ],
-            "details": "Implement a toBlockSchema field mapper that converts task.data defaults into parameter descriptors with inferred primitive types such as string, number, boolean, array, object, null, and unknown. Preserve default values, required/optional hints where derivable, and avoid lossy coercion for nested objects or arrays. Treat ai-workflow like any other catalog entry and do not add AI workflow creation or management behavior.",
-            "status": "pending",
+            "details": "Implement a toBlockSchema field mapper that converts task.data defaults into parameter descriptors with inferred primitive types such as string, number, boolean, array, object, null, and unknown. Preserve default values, required/optional hints where derivable, and avoid lossy coercion for nested objects or arrays. Treat ai-workflow like any other catalog entry and do not add AI workflow creation or management behavior.\n<info added on 2026-06-29T18:32:20.807Z>\nUse getBlocks from src/utils/getSharedData.js as the catalog entry point rather than importing tasks alone, since it merges src/utils/shared.js tasks with @business/blocks. Implement the mapper as a pure helper that walks each block.data object and emits one descriptor per key with type inferred from the unmodified default value. Deep-clone defaults so nested defaults such as trigger.observeElement.targetOptions, empty arrays such as trigger.parameters and ai-workflow.inputs/outputs, null values such as while-loop.conditions, and empty objects such as block-package.data are preserved exactly. For arrays, keep the array default and mark item shape as unknown when empty instead of inventing element schemas. Include ai-workflow from src/utils/shared.js through the same path as other blocks, mapping flowUuid, flowLabel, description, inputs, outputs, assignVariable, variableName, saveData, and dataColumn without any special AI workflow creation behavior.\n</info added on 2026-06-29T18:32:20.807Z>",
+            "status": "done",
             "testStrategy": "Add node --test cases for default extraction and primitive inference across representative blocks, including nested objects, arrays, nulls, and ai-workflow fields.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T18:44:34.713Z"
           },
           {
             "id": 3,
@@ -139,10 +141,11 @@
               "2.1",
               "2.2"
             ],
-            "details": "Create validateBlock(type, data, options) that merges catalog defaults, invokes known validators from src/newtab/utils/blocksValidation.js, supports async validators, and normalizes returned strings or thrown errors into stable objects shaped like { code, path, message, severity, blockId, alias }. Keep warnings separate from blocking errors and return { errors, warnings, normalizedData }.",
-            "status": "pending",
+            "details": "Create validateBlock(type, data, options) that merges catalog defaults, invokes known validators from src/newtab/utils/blocksValidation.js, supports async validators, and normalizes returned strings or thrown errors into stable objects shaped like { code, path, message, severity, blockId, alias }. Keep warnings separate from blocking errors and return { errors, warnings, normalizedData }.\n<info added on 2026-06-29T18:33:11.513Z>\nAdd the wrapper as an additive agent-facing validation layer, leaving src/composable/blockValidation.js on the existing string-based UI path unless it is migrated separately. Reuse getBlocks() from src/utils/getSharedData.js for catalog defaults and mirror the existing defu(data, defaults) merge pattern used by workflow editing/recording code. Call blocksValidation[type]?.func from src/newtab/utils/blocksValidation.js with the merged normalizedData, await async validators, and convert legacy returned string arrays plus thrown errors into deterministic issues containing code, path, message, severity, blockId, and options.alias. Treat missing required values such as new-tab url, interaction selector, Google Sheets spreadsheetId/range, and trigger fields as blocking errors; treat browser permission checks from trigger context-menu, export/save downloads, clipboard, notifications, and cookies as warnings where the existing message indicates the user may already have granted permission. Add node:test coverage following the src/agentBridge/background/*.test.js style for default merging, async validator execution, string normalization, thrown-error normalization, alias/blockId propagation, and separation of warnings from blocking errors.\n</info added on 2026-06-29T18:33:11.513Z>",
+            "status": "done",
             "testStrategy": "Add node --test coverage for duplicate, missing, and invalid parameter errors, string error normalization, thrown validator errors, warning preservation, and normalizedData default merging.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T18:44:37.921Z"
           },
           {
             "id": 4,
@@ -151,10 +154,11 @@
             "dependencies": [
               "2.3"
             ],
-            "details": "Introduce a validator dependency context for browser.permissions, BROWSER_TYPE, and any other browser-only values currently read by blocksValidation.js. Provide safe defaults for Node tests and pass real dependencies from extension runtime call sites. Keep the structured validator pure enough to test without a browser while preserving current validation semantics in the UI/runtime.",
-            "status": "pending",
+            "details": "Introduce a validator dependency context for browser.permissions, BROWSER_TYPE, and any other browser-only values currently read by blocksValidation.js. Provide safe defaults for Node tests and pass real dependencies from extension runtime call sites. Keep the structured validator pure enough to test without a browser while preserving current validation semantics in the UI/runtime.\n<info added on 2026-06-29T18:34:09.728Z>\nRefactor src/newtab/utils/blocksValidation.js so browser-only state is read through an injectable validation context instead of top-level globals: replace the module-level browser.permissions.contains wrapper and isFirefox constant with a createValidationContext/createBlocksValidation style API that accepts browserType and permissionsContains. Cover all current permission-dependent validators: trigger context-menu should choose menus for Firefox and contextMenus otherwise, export-data and save-assets should check downloads, clipboard should check clipboardRead plus clipboardWrite on Firefox, notification should check notifications, and cookie should check cookies. Keep the existing default export compatible for src/composable/blockValidation.js, where useBlockValidation currently calls blocksValidation[blockId].func(newData), by wiring the runtime default context to webextension-polyfill and the webpack DefinePlugin BROWSER_TYPE value from webpack.config.js. For Node-safe tests, ensure the default context does not require browser globals when explicitly mocked, with a deterministic fallback browserType such as chrome and a mockable async permissionsContains function. Add node:test coverage in the existing src/**/*.test.js style with node:assert/strict for Chrome versus Firefox context-menu permission names, clipboard permission differences, missing-permission warning preservation, and granted-permission behavior for downloads/notifications/cookies without touching real browser.permissions.\n</info added on 2026-06-29T18:34:09.728Z>",
+            "status": "done",
             "testStrategy": "Add node --test cases using mocked permissions and browser type dependencies, including permission-present, permission-missing, and no-browser-context scenarios.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T18:44:41.167Z"
           },
           {
             "id": 5,
@@ -166,15 +170,17 @@
               "2.3",
               "2.4"
             ],
-            "details": "When a type is missing from the known catalog, return an unknown_block schema marker and reject validation in strict mode with a structured error unless unsafeRaw:true is supplied. For custom or saved blocks discovered through the UI catalog path, include their schema when enough metadata exists; otherwise mark unsafe or unknown fields explicitly. When unsafeRaw:true is supplied, accept raw data without applying unknown validators while still returning stable warnings where appropriate.",
-            "status": "pending",
+            "details": "When a type is missing from the known catalog, return an unknown_block schema marker and reject validation in strict mode with a structured error unless unsafeRaw:true is supplied. For custom or saved blocks discovered through the UI catalog path, include their schema when enough metadata exists; otherwise mark unsafe or unknown fields explicitly. When unsafeRaw:true is supplied, accept raw data without applying unknown validators while still returning stable warnings where appropriate.\n<info added on 2026-06-29T18:34:51.255Z>\nImplement the policy in the catalog-backed schema/validator layer using src/utils/getSharedData.js getBlocks as the lookup source, since it merges built-in src/utils/shared.js tasks with @business/blocks. If a workflow node label/type is absent from that map, emit a schema descriptor with kind/type unknown_block, preserve the original label for diagnostics, and make strict validation return a blocking structured error such as unknown_block_type unless options.unsafeRaw is true. Treat saved package nodes from src/newtab/pages/workflows/[id].vue, including label block-package and savedBlocks data where settings.asBlock controls package-as-block behavior, and custom blocks from business/dev/blocks/index.js as unsafe when they lack enough task metadata to derive data defaults, inputs, outputs, component, allowedInputs, or maxConnection. Strict mode should reject those cases with stable unsafe_custom_block or unsafe_saved_block errors. With unsafeRaw:true, bypass per-field unknown validators and accept raw node data while still attaching deterministic warnings for unknown_block, unsafe_custom_block, or unsafe_saved_block.\n</info added on 2026-06-29T18:34:51.255Z>",
+            "status": "done",
             "testStrategy": "Add node --test coverage for unknown block rejection, unsafeRaw acceptance, custom/saved block catalog inclusion, and strict-mode blocking of unsafe custom data.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T18:44:44.516Z"
           }
         ],
         "complexity": 6,
         "recommendedSubtasks": 5,
-        "expansionPrompt": "Break this into subtasks for schema extraction from getBlocks/tasks, primitive/default type inference, structured validator wrapping with dependency injection for browser permissions, custom/saved-block strict-mode behavior, and node --test fixtures for key block types and normalized errors."
+        "expansionPrompt": "Break this into subtasks for schema extraction from getBlocks/tasks, primitive/default type inference, structured validator wrapping with dependency injection for browser permissions, custom/saved-block strict-mode behavior, and node --test fixtures for key block types and normalized errors.",
+        "updatedAt": "2026-06-29T18:44:44.516Z"
       },
       {
         "id": "3",
@@ -563,9 +569,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-06-29T18:28:54.499Z",
+      "lastModified": "2026-06-29T18:44:44.516Z",
       "taskCount": 5,
-      "completedCount": 1,
+      "completedCount": 2,
       "tags": [
         "master"
       ]
