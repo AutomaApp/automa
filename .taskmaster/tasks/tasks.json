@@ -353,7 +353,7 @@
         "testStrategy": "Use node --test with mocked browser.storage.local, Dexie-like stores, and workflow manager calls for list/get/create/replace/delete, run/stop dispatch, run-state reads, log limit clamping, log detail lookup, and table pagination. Manual integration: install Chrome MV3 dev build, start trusted bridge, fetch workflows, commit a simple draft, run it, fetch latest logs, and confirm the workflow remains visible and editable in the Automa UI.",
         "priority": "medium",
         "dependencies": [],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -468,7 +468,7 @@
         "complexity": 8,
         "recommendedSubtasks": 8,
         "expansionPrompt": "Break this into subtasks for workflow storage abstraction, list/getRaw/getOutline handlers, create/replace/delete with trigger registration cleanup, run/stop/run-state handlers using BackgroundWorkflowUtils, Dexie log summary/detail readers, table pagination, capability checks/error envelopes, and mocked node --test coverage.",
-        "updatedAt": "2026-06-29T19:21:11.112Z"
+        "updatedAt": "2026-06-29T19:22:38.313Z"
       },
       {
         "id": "5",
@@ -589,9 +589,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-06-29T19:21:11.113Z",
+      "lastModified": "2026-06-29T19:22:38.314Z",
       "taskCount": 5,
-      "completedCount": 3,
+      "completedCount": 4,
       "tags": [
         "master"
       ]
