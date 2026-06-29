@@ -4,6 +4,10 @@ import { openDB } from 'idb';
 import deepmerge from 'lodash.merge';
 import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
+import * as agentBridgeForwarder from '../../agentBridge/content/webServiceForwarder';
+
+const { forwardAgentCommand } =
+  agentBridgeForwarder.default || agentBridgeForwarder;
 
 function initWebListener() {
   const listeners = {};
@@ -57,6 +61,12 @@ window.addEventListener('DOMContentLoaded', async () => {
 
       sendMessage('open:dashboard', `/workflows/${workflowId}`, 'background');
     });
+    webListener.on('agent-command', (data) =>
+      forwardAgentCommand(data, {
+        sendMessage,
+        sendMessageBack,
+      })
+    );
     webListener.on('add-workflow', async ({ workflow }) => {
       try {
         const { workflows: workflowsStorage } = await browser.storage.local.get(

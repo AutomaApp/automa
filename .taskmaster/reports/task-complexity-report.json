@@ -1,0 +1,53 @@
+{
+	"meta": {
+		"generatedAt": "2026-06-29T17:29:48.059Z",
+		"tasksAnalyzed": 5,
+		"totalTasks": 5,
+		"analysisCount": 5,
+		"thresholdScore": 5,
+		"projectName": "Task Master",
+		"usedResearch": false
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 1,
+			"taskTitle": "Implement MV3 agent command bridge, trusted sessions, and audit envelope",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break this into subtasks for the background router/envelope parser, capability and trusted-session storage, audit/redaction module, webService event forwarding, background MessageListener registration, and node --test plus manual MV3 bridge verification.",
+			"reasoning": "Existing MV3 surfaces lower the transport effort: src/manifest.chrome*.json already injects webService.bundle.js on localhost, src/content/services/webService.js already has a page-event listener pattern, and src/background/index.js already centralizes MessageListener handlers. Complexity remains high because there is no existing src/agentBridge implementation, the work introduces a security-sensitive command protocol, trusted in-memory sessions plus browser.storage.local config, redacted audit records, structured error envelopes, and Chrome MV3 service-worker messaging constraints. It is foundational for later command handlers and CLI work."
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "Add block catalog schema generation and structured validation",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break this into subtasks for schema extraction from getBlocks/tasks, primitive/default type inference, structured validator wrapping with dependency injection for browser permissions, custom/saved-block strict-mode behavior, and node --test fixtures for key block types and normalized errors.",
+			"reasoning": "The catalog source is clear: src/utils/shared.js contains the built-in tasks and src/utils/getSharedData.js merges business custom blocks, which are currently empty in business/dev/blocks/index.js. Existing src/newtab/utils/blocksValidation.js gives reusable validation logic, but it returns strings, depends on browser.permissions and BROWSER_TYPE globals, and only covers a subset of blocks. The task is mostly pure module work, but requires careful normalization, unknown/custom block policy, async validator support, and tests for representative built-ins like trigger, new-tab, conditions, and ai-workflow."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Implement Workflow Outline conversion, alias metadata, draft mutations, and concurrency checks",
+			"complexityScore": 9,
+			"recommendedSubtasks": 10,
+			"expansionPrompt": "Break this into subtasks for outline model design, drawflow-to-outline conversion, outline-to-drawflow preservation, alias metadata storage, draft manager lifecycle, block add/update/remove operations, connect/disconnect/append/insert helpers, deterministic layout, optimistic concurrency checks, and fixture-based tests against existing Automa workflows.",
+			"reasoning": "This is the broadest task. Existing code provides important clues: src/stores/workflow.js defines workflow/default storage shape, src/utils/convertWorkflowData.js converts legacy drawflow into VueFlow nodes and edges, and editor code shows sourceHandle/targetHandle and fallback/conditions conventions. There is no agent-facing outline model, reverse conversion layer, draft manager, alias metadata system, deterministic layout service, or concurrency guard. The implementation must preserve node ids and UI compatibility while supporting many mutation operations and complex edge handles, making the blast radius and test matrix large."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Implement workflow store, runtime read, and execution command handlers",
+			"complexityScore": 8,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Break this into subtasks for workflow storage abstraction, list/getRaw/getOutline handlers, create/replace/delete with trigger registration cleanup, run/stop/run-state handlers using BackgroundWorkflowUtils, Dexie log summary/detail readers, table pagination, capability checks/error envelopes, and mocked node --test coverage.",
+			"reasoning": "The runtime seams exist but are not exposed as agent commands. src/background/BackgroundWorkflowUtils.js already wraps workflow execution/stop/resume and handles Chrome offscreen versus Firefox behavior; src/workflowEngine/WorkflowManager.js stores workflowStates; src/db/logs.js defines Dexie stores for items, histories, ctxData, and logsData. Complexity is high because this task must bridge storage mutation, live execution, run-state reads, bounded log/table inspection, and standard command envelopes while preserving Automa UI-compatible browser.storage.local workflow data. It also depends conceptually on the command bridge and outline conversion tasks."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Add automa-agent CLI, bridge server lifecycle, and end-to-end verification",
+			"complexityScore": 8,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Break this into subtasks for package.json bin/test script changes, CLI argv parsing, command-to-envelope mapping, localhost bridge server/page, extension handshake and timeout handling, response/error output behavior, workflow/block subcommands, and automated plus manual end-to-end verification.",
+			"reasoning": "The repository has no current bin entry or generic node --test script; package.json only has relay:test. The CLI is intentionally thin, but the lifecycle is nontrivial: it must start a localhost server that matches the existing webService content-script injection surface, open Chrome, wait for an extension handshake, queue/send JSON envelopes, propagate trusted tokens/capabilities, and expose multiple workflow and blocks commands with stable JSON output and structured failure exits. It is also the end-to-end integration point for tasks 1-4, so testing includes both unit behavior and manual MV3 acceptance."
+		}
+	]
+}

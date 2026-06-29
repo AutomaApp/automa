@@ -1,0 +1,574 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": "1",
+        "title": "Implement MV3 agent command bridge, trusted sessions, and audit envelope",
+        "description": "Add the background-owned command bridge that accepts JSON command envelopes through the existing localhost webService transport, validates Trusted Agent Mode capabilities, executes routed commands, and returns the standard response envelope.",
+        "details": "Build on existing MV3 surfaces: src/manifest.chrome*.json already registers webService.bundle.js on localhost, src/content/services/webService.js already proxies localhost page events, and src/background/index.js already owns runtime message handling through MessageListener. Add bridge modules such as src/agentBridge/background/router.js, capabilities.js, audit.js, and errors.js, then register a background listener like message.on('agent:command', async envelope => handleAgentCommand(envelope)). Extend webService to listen for a dedicated bridge event from the CLI bridge page and forward it to background via sendMessage('agent:command', envelope, 'background'). Persist one-time setup token and capability config in browser.storage.local, but keep per-session state in memory. Pseudo-code: parse envelope -> require id/command/payload -> resolve required capabilities by command -> compare against trusted session capability set -> return { ok:false, errors:[{ code:'missing_capability', capability }] } on denial -> execute handler -> write audit event with redacted payload summary -> return { ok:true, data, warnings:[], errors:[], auditId }. Redact cookies, secrets, uploaded file contents, huge tables/logs, and raw page data by default; support verbose audit mode only through explicit trusted config. Follow Chrome MV3 JSON-serializable runtime messaging constraints and service worker ownership model documented at https://developer.chrome.com/docs/extensions/develop/concepts/messaging and https://developer.chrome.com/docs/extensions/develop/concepts/service-workers.",
+        "testStrategy": "Use node --test for pure router, capability, envelope, and audit-redaction modules with mocked storage and handlers. Add cases for malformed envelopes, missing capabilities, trusted no-prompt command execution, standard success/error envelopes, audit id generation, and redaction. Manually verify a localhost bridge page can send a command through webService.bundle.js and receive a background response in Chrome MV3.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create agent bridge envelope parser and response/error helpers",
+            "description": "Define the command envelope contract, validation flow, and standard JSON-serializable response envelopes.",
+            "dependencies": [],
+            "details": "Add src/agentBridge/background/router.js and errors.js foundations. Validate id, command, and payload shape; reject non-object or malformed envelopes; normalize thrown errors into { ok:false, warnings:[], errors:[] } responses; ensure all returned data is Chrome MV3 runtime-message serializable.\n<info added on 2026-06-29T18:09:42.206Z>\nImplement parseAgentEnvelope plus makeSuccessResponse and makeErrorResponse in src/agentBridge/background/router.js and src/agentBridge/background/errors.js as pure, browser-free helpers that can be imported by node --test. Parse only plain JSON-safe object envelopes shaped for the existing MessageListener path that will later be registered from src/background/index.js with message.on('agent:command', ...): require string id and command, default payload to {}, reject arrays/null/functions and non-serializable response values, and return deterministic error codes for malformed input, missing fields, unknown command, and handler exceptions. Add src/agentBridge/background/router.test.js covering malformed input, missing id/command, unknown command lookup, thrown async/sync handlers, successful dispatch, and stable { ok, id, data, warnings, errors } response shape. Run with node --test src/agentBridge/background/router.test.js.\n</info added on 2026-06-29T18:09:42.206Z>",
+            "status": "done",
+            "testStrategy": "Use node --test for malformed envelopes, missing fields, unknown commands, thrown handler errors, and stable success/error envelope shapes.",
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T18:25:32.354Z"
+          },
+          {
+            "id": 2,
+            "title": "Implement command router with capability lookup and handler dispatch",
+            "description": "Route validated command envelopes to registered handlers after resolving required capabilities.",
+            "dependencies": [
+              "1.1"
+            ],
+            "details": "Build a handler registry in router.js with command-to-capability metadata. Implement handleAgentCommand(envelope, context) as the single background entry point: parse envelope, resolve required capabilities, call capability checks, execute the handler, attach auditId, and return standard envelopes. Stub initial handlers or support injected handlers for tests until later tasks add real commands.\n<info added on 2026-06-29T18:10:35.504Z>\nAdd src/agentBridge/background/router.js as a pure module using the existing @ alias/ES module style. Model the registry as command metadata plus async handler functions, with a registerAgentCommand helper for test injection and a default registry that can start with no-op/placeholder handlers until Task 4 adds workflow.* implementations. Wire src/background/index.js to import handleAgentCommand and register message.on('agent:command', (envelope, sender) => handleAgentCommand(envelope, { sender, browser, now: Date.now })) alongside existing background-prefixed MessageListener handlers. The router should call the envelope parser/helpers from Subtask 1.1 first, derive required capabilities from the registry entry, delegate authorization to src/agentBridge/background/capabilities.js, create success/failure audit records through audit.js with command, capability list, session/trust metadata, and error code, then return the standard response envelope with auditId attached. Normalize handler output through a JSON-safe serializer such as JSON.parse(JSON.stringify(value ?? null)) before returning because responses cross browser.runtime messaging and the localhost webService bridge. Map unknown commands, malformed envelopes, denied capabilities, and handler exceptions through errors.js so callers receive consistent error envelopes and audit failures are still recorded. Include node --test coverage for registry lookup, injected handlers, async dispatch, capability denial short-circuiting, unknown command errors, auditId propagation, and non-serializable handler results.\n</info added on 2026-06-29T18:10:35.504Z>",
+            "status": "done",
+            "testStrategy": "Use node --test with mocked handlers for successful dispatch, unknown command rejection, capability denial propagation, async handler behavior, and JSON-safe response data.",
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T18:25:35.553Z"
+          },
+          {
+            "id": 3,
+            "title": "Add trusted session and capability storage module",
+            "description": "Persist trusted configuration in browser.storage.local while keeping active trusted sessions in memory.",
+            "dependencies": [
+              "1.1"
+            ],
+            "details": "Create src/agentBridge/background/capabilities.js to load and save one-time setup token plus trusted capability config from browser.storage.local. Maintain per-session trust and capability grants in service-worker memory. Expose helpers to create, validate, and clear trusted sessions, and to compare required command capabilities against the active session capability set.\n<info added on 2026-06-29T18:11:15.765Z>\nUse the project’s existing ES module and storage style: import browser from webextension-polyfill as in src/background/index.js and use browser.storage.local.get/set with explicit keys like src/stores/workflow.js and src/content/services/webService.js. Keep src/agentBridge/background/capabilities.js as a pure background-side module, independent of the localhost content webService script, so the future background MessageListener agent:command handler can call it. Persist one agentBridgeTrustedConfig object containing setupToken, trusted clients/origins, allowedCapabilities, updatedAt, and optional tokenConsumedAt, defaulting missing storage to a locked-down config. Track active trust in a module-scoped Map keyed by a generated sessionId with grantedCapabilities as a Set plus origin/client metadata, createdAt, expiresAt, and lastUsedAt so MV3 service-worker restarts drop trust. Export helpers for load/save/clear config, setup token set/consume, create/validate/clear sessions, clearing all sessions, normalizing capability lists, and checking required capabilities. Capability checks should accept router command requirements as a string or array, treat missing requirements as allowed only for explicitly public commands, and return structured allow/deny data for the router/errors modules rather than throwing storage-specific errors.\n</info added on 2026-06-29T18:11:15.765Z>",
+            "status": "done",
+            "testStrategy": "Use node --test with mocked browser.storage.local for token/config persistence, in-memory session grants, missing capability responses, session clearing, and no-prompt trusted command execution.",
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T18:25:38.856Z"
+          },
+          {
+            "id": 4,
+            "title": "Build audit envelope and payload redaction module",
+            "description": "Record audit events with safe payload summaries and strict default redaction rules.",
+            "dependencies": [
+              "1.1",
+              "1.2"
+            ],
+            "details": "Create src/agentBridge/background/audit.js to generate audit ids, summarize command payloads, redact cookies, secrets, uploaded file contents, huge tables or logs, and raw page data by default, and optionally allow verbose audit summaries only when trusted config explicitly enables it. Return auditId to the router without leaking sensitive payloads in errors.",
+            "status": "done",
+            "testStrategy": "Use node --test for audit id generation, payload summary stability, redaction of secret-like keys and large values, default raw-data suppression, and explicit verbose-mode behavior.",
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T18:25:42.199Z"
+          },
+          {
+            "id": 5,
+            "title": "Forward localhost webService bridge events to background commands",
+            "description": "Extend the existing localhost content transport to forward dedicated agent bridge events to the background service worker.",
+            "dependencies": [
+              "1.1",
+              "1.2",
+              "1.3"
+            ],
+            "details": "Update src/content/services/webService.js to listen for a dedicated page event from the CLI bridge page, extract the command envelope, and call sendMessage('agent:command', envelope, 'background'). Return the background response to the page using the existing page-event response pattern, preserving MV3 JSON messaging constraints.",
+            "status": "done",
+            "testStrategy": "Use node --test or existing content-service tests with mocked page events and sendMessage. Cover valid forwarding, background rejection responses, invalid event detail, and response correlation by envelope id.",
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T18:25:45.410Z"
+          },
+          {
+            "id": 6,
+            "title": "Register background MessageListener and verify MV3 bridge end to end",
+            "description": "Wire the agent command bridge into the background service worker and verify pure tests plus manual Chrome MV3 behavior.",
+            "dependencies": [
+              "1.2",
+              "1.3",
+              "1.4",
+              "1.5"
+            ],
+            "details": "Update src/background/index.js to import handleAgentCommand and register message.on('agent:command', async envelope => handleAgentCommand(envelope)). Ensure service-worker-owned state is initialized lazily and survives normal MV3 lifecycle expectations where possible. Add node --test coverage across router, capabilities, audit, and forwarding, then manually install the Chrome MV3 dev build and verify a localhost bridge page can send a trusted command and receive the standard envelope.",
+            "status": "done",
+            "testStrategy": "Run node --test for all new bridge modules, plus lint/build if available. Manually verify Chrome MV3 dev install, bridge page event forwarding, trusted-session capability denial/success, auditId presence, and service-worker console behavior.",
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T18:25:48.616Z"
+          }
+        ],
+        "complexity": 7,
+        "recommendedSubtasks": 6,
+        "expansionPrompt": "Break this into subtasks for the background router/envelope parser, capability and trusted-session storage, audit/redaction module, webService event forwarding, background MessageListener registration, and node --test plus manual MV3 bridge verification.",
+        "updatedAt": "2026-06-29T18:26:49.259Z"
+      },
+      {
+        "id": "2",
+        "title": "Add block catalog schema generation and structured validation",
+        "description": "Generate code-first block schemas from existing Automa block definitions and normalize validation errors for agent correction.",
+        "details": "Use src/utils/shared.js tasks as the primary block catalog source, including built-in entries such as trigger, new-tab, conditions, and ai-workflow. Include custom/saved blocks from the same getBlocks/catalog path used by the UI if present, and derive schema fields from task.data defaults, task.inputs, task.outputs, category, component, maxConnection, and allowedInputs. Adapt src/newtab/utils/blocksValidation.js validators into a structured validator layer that returns stable objects such as { code, path, message, severity, blockId, alias }. Infer primitive parameter types from defaults and keep unknown/custom block data blocked in strict mode unless unsafeRaw:true is supplied. Treat ai-workflow as a normal catalog entry only; do not add creation or management of AI Power workflows. Pseudo-code: listSchemas() => Object.entries(tasks).map(toBlockSchema); getSchema(type) => schema or unknown_block; validateBlock(type,data,{unsafeRaw}) => merge defaults -> run known validator -> normalize string errors -> return { errors,warnings,normalizedData }.",
+        "testStrategy": "Add node --test coverage for schema generation of new-tab, trigger, conditions, and ai-workflow; default extraction; input/output connection shapes; unknown block rejection; unsafeRaw acceptance; duplicate/missing/invalid parameter error normalization; and preservation of warning versus blocking error semantics. Run npm run lint and npm run build after integration.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Extract block catalog schemas from getBlocks and built-in tasks",
+            "description": "Create the code-first schema generation entry points that read the same block catalog sources used by the UI.",
+            "dependencies": [],
+            "details": "Add a pure module for listSchemas() and getSchema(type) that starts from src/utils/shared.js tasks and, where available, follows the existing getBlocks/getSharedData catalog path for custom or saved blocks. Map each task entry into a stable schema object containing type, alias/name, category, component, data defaults, inputs, outputs, maxConnection, and allowedInputs without mutating the source catalog.",
+            "status": "pending",
+            "testStrategy": "Add node --test fixtures asserting schemas exist for trigger, new-tab, conditions, and ai-workflow, including category/component metadata and input/output connection shapes.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Infer primitive parameter types and default metadata from task data",
+            "description": "Derive schema field definitions from block data defaults and preserve unknown shapes safely.",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "Implement a toBlockSchema field mapper that converts task.data defaults into parameter descriptors with inferred primitive types such as string, number, boolean, array, object, null, and unknown. Preserve default values, required/optional hints where derivable, and avoid lossy coercion for nested objects or arrays. Treat ai-workflow like any other catalog entry and do not add AI workflow creation or management behavior.",
+            "status": "pending",
+            "testStrategy": "Add node --test cases for default extraction and primitive inference across representative blocks, including nested objects, arrays, nulls, and ai-workflow fields.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Wrap existing block validators with structured normalized errors",
+            "description": "Adapt blocksValidation.js behavior into a structured validation layer for agent-readable correction.",
+            "dependencies": [
+              "2.1",
+              "2.2"
+            ],
+            "details": "Create validateBlock(type, data, options) that merges catalog defaults, invokes known validators from src/newtab/utils/blocksValidation.js, supports async validators, and normalizes returned strings or thrown errors into stable objects shaped like { code, path, message, severity, blockId, alias }. Keep warnings separate from blocking errors and return { errors, warnings, normalizedData }.",
+            "status": "pending",
+            "testStrategy": "Add node --test coverage for duplicate, missing, and invalid parameter errors, string error normalization, thrown validator errors, warning preservation, and normalizedData default merging.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Inject browser permission and environment dependencies into validators",
+            "description": "Remove direct validator dependence on browser globals so tests and agent validation can run in Node.",
+            "dependencies": [
+              "2.3"
+            ],
+            "details": "Introduce a validator dependency context for browser.permissions, BROWSER_TYPE, and any other browser-only values currently read by blocksValidation.js. Provide safe defaults for Node tests and pass real dependencies from extension runtime call sites. Keep the structured validator pure enough to test without a browser while preserving current validation semantics in the UI/runtime.",
+            "status": "pending",
+            "testStrategy": "Add node --test cases using mocked permissions and browser type dependencies, including permission-present, permission-missing, and no-browser-context scenarios.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "Implement strict-mode handling for unknown custom or saved blocks",
+            "description": "Define and test the policy for custom, saved, and unknown block data during validation.",
+            "dependencies": [
+              "2.1",
+              "2.2",
+              "2.3",
+              "2.4"
+            ],
+            "details": "When a type is missing from the known catalog, return an unknown_block schema marker and reject validation in strict mode with a structured error unless unsafeRaw:true is supplied. For custom or saved blocks discovered through the UI catalog path, include their schema when enough metadata exists; otherwise mark unsafe or unknown fields explicitly. When unsafeRaw:true is supplied, accept raw data without applying unknown validators while still returning stable warnings where appropriate.",
+            "status": "pending",
+            "testStrategy": "Add node --test coverage for unknown block rejection, unsafeRaw acceptance, custom/saved block catalog inclusion, and strict-mode blocking of unsafe custom data.",
+            "parentId": "undefined"
+          }
+        ],
+        "complexity": 6,
+        "recommendedSubtasks": 5,
+        "expansionPrompt": "Break this into subtasks for schema extraction from getBlocks/tasks, primitive/default type inference, structured validator wrapping with dependency injection for browser permissions, custom/saved-block strict-mode behavior, and node --test fixtures for key block types and normalized errors."
+      },
+      {
+        "id": "3",
+        "title": "Implement Workflow Outline conversion, alias metadata, draft mutations, and concurrency checks",
+        "description": "Create the agent-facing Workflow Outline model and in-memory draft authoring operations while preserving Automa drawflow storage and UI compatibility.",
+        "details": "Add pure workflow-model modules for converting Automa drawflow to outlines and back without replacing node ids. Reuse existing drawflow shape from src/stores/workflow.js and src/utils/convertWorkflowData.js: workflows store nodes/edges, trigger defaults, settings, updatedAt, and browser.storage.local persistence. Persist block aliases under workflow.settings metadata keyed by internal node id, for example settings.agentBridge.aliases[nodeId] = alias. Implement beginDraft, addBlock, updateBlock, removeBlock, connectBlocks, disconnectBlocks, appendBlock, insertBlock, validate, diffDraft, commitDraft, and discardDraft in an in-memory draft manager owned by background. beginDraft records baseRevision from updatedAt or a content hash; commitDraft refetches the live workflow from browser.storage.local and rejects with workflow_conflict if changed. Duplicate aliases are rejected in strict mode. Connection helpers must preserve explicit output handles, conditions branches, fallback outputs, and multi-output blocks. Layout should preserve existing positions and deterministically place new blocks near the logical source with collision avoidance. Pseudo-code: beginDraft(id) -> live=store.get(id), draft=clone(live), rev=revision(live); addBlock(draftId,type,{alias,params}) -> schema validate -> node={id:nanoid(),label:type,type:tasks[type].component,data:merge(defaults,params),position:layout(...)} -> aliases[id]=alias; connectBlocks(sourceAlias,targetAlias,handle='1') -> add vueflow edge; commitDraft -> if revision(live)!=baseRev return conflict -> write drawflow/settings/updatedAt -> register trigger when needed.",
+        "testStrategy": "Use node --test for drawflow-to-outline conversion, outline-to-drawflow preservation, alias persistence, duplicate alias rejection, add/update/remove/connect operations, append/insert helpers, linear and multi-output connection creation, deterministic non-overlapping layout, draft isolation from live workflow, diff summaries, and optimistic concurrency conflict. Add a fixture using workflows/chatgpt-deep-research.automa.json and a minimal generated workflow to confirm existing UI-compatible drawflow remains valid.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define the Workflow Outline domain model and revision helpers",
+            "description": "Design the agent-facing outline types, block references, connection records, alias metadata contract, and stable revision calculation used by drafts.",
+            "dependencies": [],
+            "details": "Create pure workflow-model modules with no UI or storage side effects. Represent outline blocks by internal node id, type, label, alias, params, position, and connection metadata. Add revision(liveWorkflow) that prefers updatedAt and falls back to a deterministic content hash for optimistic concurrency.",
+            "status": "pending",
+            "testStrategy": "Add node --test coverage for outline shape creation, revision fallback behavior, stable hashing, and empty or malformed workflow handling.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Implement drawflow-to-outline conversion preserving UI data",
+            "description": "Convert existing Automa workflow storage records into Workflow Outline objects without mutating the original drawflow node and edge data.",
+            "dependencies": [
+              "3.1"
+            ],
+            "details": "Read the workflow shape used by src/stores/workflow.js and src/utils/convertWorkflowData.js, including nodes, edges, trigger defaults, settings, updatedAt, sourceHandle, targetHandle, and block data. Extract aliases from settings.agentBridge.aliases by node id while retaining ids, positions, params, and connection handles.",
+            "status": "pending",
+            "testStrategy": "Use fixture workflows to assert conversion preserves node ids, positions, handles, trigger defaults, settings, and alias lookup.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Implement outline-to-drawflow conversion with id preservation",
+            "description": "Convert Workflow Outline edits back to Automa-compatible drawflow while preserving existing node ids, edge handles, settings, and runtime compatibility.",
+            "dependencies": [
+              "3.1",
+              "3.2"
+            ],
+            "details": "Build reverse conversion that updates only changed node data, edge lists, alias metadata, and updatedAt. Keep original node ids stable, preserve unknown fields, and retain VueFlow edge conventions for conditions branches, fallback outputs, explicit handles, and multi-output blocks.",
+            "status": "pending",
+            "testStrategy": "Round-trip existing workflow fixtures through drawflow-to-outline and outline-to-drawflow, then assert ids, unknown fields, edge handles, and settings metadata are preserved.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Add alias metadata storage and strict duplicate validation",
+            "description": "Persist and validate agent aliases under workflow settings metadata keyed by internal node id.",
+            "dependencies": [
+              "3.2",
+              "3.3"
+            ],
+            "details": "Implement helpers for reading, writing, renaming, and deleting aliases at settings.agentBridge.aliases[nodeId]. Ensure duplicate aliases are rejected in strict mode while allowing missing aliases where the workflow can still be addressed by internal id.",
+            "status": "pending",
+            "testStrategy": "Add tests for alias persistence, deletion cleanup, duplicate alias rejection, non-strict duplicate behavior if supported, and preservation of unrelated settings.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "Build background-owned draft manager lifecycle operations",
+            "description": "Implement in-memory draft lifecycle APIs for beginDraft, validate, diffDraft, discardDraft, and draft isolation.",
+            "dependencies": [
+              "3.1",
+              "3.2",
+              "3.3",
+              "3.4"
+            ],
+            "details": "Create a background-owned draft registry keyed by draft id. beginDraft must load the live workflow, deep-clone it, capture baseRevision, and store isolated draft state. validate should run schema and structural checks. diffDraft should report meaningful changes between base and draft. discardDraft should remove draft state without touching storage.",
+            "status": "pending",
+            "testStrategy": "Use mocked storage to verify beginDraft cloning, baseRevision capture, validate output, diff generation, discard cleanup, and no live workflow mutation before commit.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 6,
+            "title": "Implement block add, update, and remove draft mutations",
+            "description": "Add draft mutation APIs for creating, updating, and deleting workflow blocks while maintaining aliases and valid graph state.",
+            "dependencies": [
+              "3.4",
+              "3.5"
+            ],
+            "details": "Implement addBlock, updateBlock, and removeBlock. addBlock should schema-validate type and params, create a nanoid node, merge task defaults with params, assign deterministic layout, and save optional alias metadata. updateBlock should validate partial parameter changes. removeBlock should delete associated edges and alias metadata.",
+            "status": "pending",
+            "testStrategy": "Test unknown block rejection, default merging, param validation, alias assignment, update behavior, edge cleanup on remove, and draft-only mutation isolation.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 7,
+            "title": "Implement connection and structural insertion helpers",
+            "description": "Add connectBlocks, disconnectBlocks, appendBlock, and insertBlock helpers that operate by alias or internal id.",
+            "dependencies": [
+              "3.5",
+              "3.6"
+            ],
+            "details": "Resolve source and target references through aliases or node ids. connectBlocks must create VueFlow-compatible edges with explicit sourceHandle defaults and preserve target handles when supplied. Support conditions branches, fallback outputs, and multi-output block handles. appendBlock should add and connect after a logical source. insertBlock should splice a block between existing source and target connections.",
+            "status": "pending",
+            "testStrategy": "Cover linear connections, explicit output handles, conditions branches, fallback handles, multi-output blocks, disconnect cleanup, append behavior, and insert rewiring.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 8,
+            "title": "Create deterministic layout placement with collision avoidance",
+            "description": "Place newly created blocks near their logical source while preserving all existing node positions.",
+            "dependencies": [
+              "3.6",
+              "3.7"
+            ],
+            "details": "Implement a pure layout service that keeps existing positions unchanged and deterministically assigns positions for new nodes. Position appended or inserted blocks near the source node using consistent offsets, scan for occupied coordinates, and avoid collisions without relying on random ordering.",
+            "status": "pending",
+            "testStrategy": "Test stable placement across repeated runs, collision avoidance with crowded fixtures, source-relative placement, and preservation of existing node coordinates.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 9,
+            "title": "Implement commitDraft storage write and optimistic concurrency checks",
+            "description": "Commit draft changes back to browser.storage.local only when the live workflow revision still matches the draft base revision.",
+            "dependencies": [
+              "3.3",
+              "3.5",
+              "3.6",
+              "3.7",
+              "3.8"
+            ],
+            "details": "On commitDraft, refetch the live workflow from browser.storage.local, recompute revision, and reject with workflow_conflict if it differs from baseRevision. On success, convert the draft back to drawflow, update settings and updatedAt, persist the workflow, and register triggers when workflow changes require it.",
+            "status": "pending",
+            "testStrategy": "Mock concurrent live changes to assert workflow_conflict, successful writes with updatedAt changes, trigger registration calls, and no partial persistence on failure.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 10,
+            "title": "Add fixture-based regression tests for existing Automa workflows",
+            "description": "Create end-to-end fixture tests that exercise conversion, alias storage, draft mutations, layout, and concurrency against realistic workflow records.",
+            "dependencies": [
+              "3.2",
+              "3.3",
+              "3.4",
+              "3.5",
+              "3.6",
+              "3.7",
+              "3.8",
+              "3.9"
+            ],
+            "details": "Build a fixture suite from representative existing Automa workflows, including triggers, linear flows, conditions, fallback outputs, and multi-output blocks. Verify round-trips preserve UI compatibility and that draft operations produce expected drawflow records without replacing node ids.",
+            "status": "pending",
+            "testStrategy": "Run node --test across all workflow-model and draft-manager fixtures, including round-trip snapshots, mutation snapshots, conflict cases, and deterministic layout assertions.",
+            "parentId": "undefined"
+          }
+        ],
+        "complexity": 9,
+        "recommendedSubtasks": 10,
+        "expansionPrompt": "Break this into subtasks for outline model design, drawflow-to-outline conversion, outline-to-drawflow preservation, alias metadata storage, draft manager lifecycle, block add/update/remove operations, connect/disconnect/append/insert helpers, deterministic layout, optimistic concurrency checks, and fixture-based tests against existing Automa workflows."
+      },
+      {
+        "id": "4",
+        "title": "Implement workflow store, runtime read, and execution command handlers",
+        "description": "Wire command handlers for workflow read/write/storage operations and runtime execution/log inspection against the installed extension workflow store and existing Automa engine.",
+        "details": "Implement command handlers for workflow.list, workflow.getOutline, workflow.getRaw, workflow.create, workflow.replace, workflow.delete, workflow.run, workflow.stop, workflow.getRunState, workflow.getLogs, workflow.getLogDetail, and workflow.getTable. Use browser.storage.local workflows as the primary Extension Workflow Store and retain file/import/export support only as a secondary backend for tests or offline generation. Reuse BackgroundWorkflowUtils/WorkflowManager execution paths already exposed in src/background/index.js for workflow:execute, workflow:stop, workflow:resume, and workflow state storage. Read bounded runtime data from existing Dexie logs schema in src/db/logs.js: items, histories, ctxData, and logsData. Enforce defaults from the PRD: latest 20 log summaries, one selected log detail, first 100 table rows with cursor/pagination when practical. Pseudo-code: workflow.run(id) -> require workflow:run -> workflow=store.get(id) -> BackgroundWorkflowUtils.instance.executeWorkflow(workflow,{}) -> return run state id if available; getLogs(id,{limit=20}) -> clamp limit -> dbLogs.items.where('workflowId').equals(id).reverseBy('endedAt').limit(limit); getLogDetail(logId) -> fetch item/history/ctx/logsData; getTable(id,{limit=100,cursor}) -> return rows slice + nextCursor.",
+        "testStrategy": "Use node --test with mocked browser.storage.local, Dexie-like stores, and workflow manager calls for list/get/create/replace/delete, run/stop dispatch, run-state reads, log limit clamping, log detail lookup, and table pagination. Manual integration: install Chrome MV3 dev build, start trusted bridge, fetch workflows, commit a simple draft, run it, fetch latest logs, and confirm the workflow remains visible and editable in the Automa UI.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create workflow store abstraction over browser.storage.local",
+            "description": "Implement the primary Extension Workflow Store API backed by browser.storage.local workflows, with a secondary test/offline backend hook.",
+            "dependencies": [],
+            "details": "Add a small store module with list, get, create, replace, and delete operations that preserves Automa-compatible workflow objects and timestamps. Keep file/import/export support behind an injectable backend interface for tests or offline generation only.",
+            "status": "pending",
+            "testStrategy": "Use node --test with mocked browser.storage.local to verify list/get/missing workflow behavior, backend injection, and preservation of raw workflow shape.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Implement workflow list, raw, and outline read handlers",
+            "description": "Wire workflow.list, workflow.getRaw, and workflow.getOutline command handlers to the store and outline conversion layer.",
+            "dependencies": [
+              "4.1"
+            ],
+            "details": "Register read handlers in the agent command router. workflow.list should return bounded metadata summaries; workflow.getRaw should return the stored Automa workflow object; workflow.getOutline should reuse the Task 3 outline converter without mutating stored drawflow data.",
+            "status": "pending",
+            "testStrategy": "Use node --test to assert handler envelopes, missing-id errors, list metadata shape, raw workflow passthrough, and outline converter invocation.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Implement workflow create, replace, and delete handlers",
+            "description": "Add mutating command handlers for workflow.create, workflow.replace, and workflow.delete with trigger cleanup and registration consistency.",
+            "dependencies": [
+              "4.1"
+            ],
+            "details": "Validate incoming workflows through the existing validation/conversion seams where available, persist through the workflow store, and update any trigger registration or cleanup paths needed by the background runtime. Delete must remove stored workflows and clean trigger-related state so stale triggers do not remain active.",
+            "status": "pending",
+            "testStrategy": "Use node --test with mocked storage and trigger registration functions to cover create, replace, delete, duplicate ids, invalid payloads, timestamp updates, and cleanup calls.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Add capability checks and standard error envelopes for workflow commands",
+            "description": "Enforce required capabilities and normalize all workflow handler failures into the command bridge response envelope.",
+            "dependencies": [
+              "4.2",
+              "4.3"
+            ],
+            "details": "Map read commands to read capabilities and mutation/runtime commands to stricter workflow run or write capabilities. Use the Task 1 bridge error utilities for not found, validation, capability denied, runtime unavailable, and internal failure cases, with audit-safe redaction.",
+            "status": "pending",
+            "testStrategy": "Use node --test to verify denied commands, malformed payloads, stable error codes, redacted messages, and successful responses retaining the standard envelope shape.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "Implement workflow run, stop, and run-state handlers",
+            "description": "Wire workflow.run, workflow.stop, and workflow.getRunState to BackgroundWorkflowUtils and WorkflowManager state storage.",
+            "dependencies": [
+              "4.1",
+              "4.4"
+            ],
+            "details": "workflow.run(id) should require workflow run capability, load the workflow from the store, call BackgroundWorkflowUtils.instance.executeWorkflow(workflow, {}), and return a run or state id when available. workflow.stop should dispatch the existing stop path. workflow.getRunState should read the current WorkflowManager workflowStates data without inventing a parallel runtime model.",
+            "status": "pending",
+            "testStrategy": "Use node --test with mocked BackgroundWorkflowUtils and WorkflowManager state to cover successful run dispatch, missing workflow, stop dispatch, runtime errors, and run-state lookup.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 6,
+            "title": "Implement Dexie log summary and detail readers",
+            "description": "Add workflow.getLogs and workflow.getLogDetail handlers using the existing src/db/logs.js Dexie schema.",
+            "dependencies": [
+              "4.4"
+            ],
+            "details": "Read from items, histories, ctxData, and logsData stores. workflow.getLogs should filter by workflowId, sort newest first by endedAt when available, and clamp limit to the PRD default/latest 20 behavior. workflow.getLogDetail(logId) should return one selected item plus associated history, context data, and log data records.",
+            "status": "pending",
+            "testStrategy": "Use node --test with Dexie-like mocked stores to verify workflow filtering, reverse endedAt ordering, limit clamping, missing log errors, and detail aggregation across all four stores.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 7,
+            "title": "Implement workflow table reader with bounded pagination",
+            "description": "Add workflow.getTable support that returns the first 100 rows by default and exposes cursor-based pagination where practical.",
+            "dependencies": [
+              "4.6"
+            ],
+            "details": "Derive table rows from the existing runtime/log data source agreed for Automa table inspection, clamp limit to 100 by default, accept a cursor offset or stable key, and return rows plus nextCursor when more data is available. Keep memory use bounded for large tables.",
+            "status": "pending",
+            "testStrategy": "Use node --test with mocked table/log data to cover default 100-row slice, custom limit clamping, cursor continuation, empty tables, and stable nextCursor behavior.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 8,
+            "title": "Add end-to-end mocked command coverage for workflow operations",
+            "description": "Create consolidated node --test coverage across storage, read, mutation, runtime, logs, table, capability, and error-envelope behavior.",
+            "dependencies": [
+              "4.2",
+              "4.3",
+              "4.4",
+              "4.5",
+              "4.6",
+              "4.7"
+            ],
+            "details": "Build test fixtures for browser.storage.local workflows, Dexie-like log stores, BackgroundWorkflowUtils, WorkflowManager, and the command router. Cover every command listed in the parent task through the routed command interface, not only direct module calls, so bridge integration regressions are caught.",
+            "status": "pending",
+            "testStrategy": "Run node --test for the new workflow command suite and include manual integration notes for a Chrome MV3 dev build with trusted bridge commands for list, run, logs, and table inspection.",
+            "parentId": "undefined"
+          }
+        ],
+        "complexity": 8,
+        "recommendedSubtasks": 8,
+        "expansionPrompt": "Break this into subtasks for workflow storage abstraction, list/getRaw/getOutline handlers, create/replace/delete with trigger registration cleanup, run/stop/run-state handlers using BackgroundWorkflowUtils, Dexie log summary/detail readers, table pagination, capability checks/error envelopes, and mocked node --test coverage."
+      },
+      {
+        "id": "5",
+        "title": "Add automa-agent CLI, bridge server lifecycle, and end-to-end verification",
+        "description": "Provide the npm bin and shell-facing commands that start a local bridge server, open the bridge page, wait for extension handshake, send JSON commands, and expose workflow/block subcommands.",
+        "details": "Add package.json bin { \"automa-agent\": \"bin/automa-agent.mjs\" } and implement bin/automa-agent.mjs as a thin CLI over the JSON command protocol, not as the authoritative API. Use Node built-ins where possible for argument parsing, localhost HTTP server, and command dispatch; keep dependencies minimal because the project already uses Webpack and Node scripts. The CLI should implement the examples from the PRD: bridge start --trusted --token <token>, workflow list/get/begin-draft/add-block/connect/validate/commit/run/logs, and blocks list/schema/search. bridge start should launch a localhost server, serve a small bridge page, open it in Chrome, wait for the webService/extension handshake, then send queued JSON envelopes and print bounded JSON responses. Support --param key=value parsing, --format outline, --limit, trusted token injection, nonzero exit codes for structured errors, and redacted logs. Add a test script such as \"test\": \"node --test\" while preserving existing relay:test. Pseudo-code: parse argv -> commandSpec -> envelope={id,command,capabilities,payload} -> bridgeClient.send(envelope) -> if !ok print JSON to stderr and exit 1 else print data/envelope JSON. Current Node test runner reference: https://nodejs.org/api/test.html.",
+        "testStrategy": "Use node --test for CLI argv parsing, --param coercion, command-to-envelope mapping, response handling, structured error exit behavior, bridge handshake timeout, token/capability propagation, and JSON output stability. Run npm run lint, npm run build, and node --test. Complete the manual acceptance scenario: start Chrome MV3 dev extension, run automa-agent bridge start --trusted, fetch workflows, create a draft, add new-tab and get-text blocks, commit, run, fetch latest logs, and confirm Trusted Agent Mode never prompts between commands.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add package bin entry and preserve test scripts",
+            "description": "Update package metadata so automa-agent is executable and node tests can run without disrupting existing relay tests.",
+            "dependencies": [],
+            "details": "Add package.json bin mapping for automa-agent to bin/automa-agent.mjs. Add or update a generic test script such as node --test while preserving the existing relay:test script and any current build/lint scripts.",
+            "status": "pending",
+            "testStrategy": "Run npm script listing or npm run test -- --help if applicable, plus verify npm run relay:test remains available.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Create thin CLI entrypoint and argv parser",
+            "description": "Implement bin/automa-agent.mjs with minimal Node built-ins for parsing commands, flags, and parameters.",
+            "dependencies": [
+              "5.1"
+            ],
+            "details": "Create an executable ESM CLI that parses argv into command groups, subcommands, flags, positional arguments, --trusted, --token, --format, --limit, and repeated --param key=value values. Keep parsing logic separate enough for node --test coverage.",
+            "status": "pending",
+            "testStrategy": "Add node --test cases for supported command shapes, unknown flags, missing values, repeated --param, key=value parsing, and help/error behavior.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "Map CLI commands to JSON protocol envelopes",
+            "description": "Convert parsed CLI command specs into stable JSON command envelopes for the bridge protocol.",
+            "dependencies": [
+              "5.2"
+            ],
+            "details": "Implement commandSpec-to-envelope mapping with generated request ids, command names, capabilities, trusted token propagation, and payload construction. Ensure the CLI remains a protocol client and does not duplicate authoritative business logic.",
+            "status": "pending",
+            "testStrategy": "Add node --test coverage for envelope shape, id presence, capability propagation, token injection, payload normalization, and unsupported command errors.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Implement localhost bridge server and bridge page",
+            "description": "Start a local HTTP server that serves the browser bridge page and accepts bridge communication.",
+            "dependencies": [
+              "5.3"
+            ],
+            "details": "Use Node http and related built-ins to bind localhost, serve a small HTML bridge page compatible with the existing webService content-script injection surface, expose minimal endpoints/events for command exchange, and cleanly shut down after completion or failure.",
+            "status": "pending",
+            "testStrategy": "Add node --test coverage for server startup, bridge page response, endpoint behavior, shutdown behavior, and port binding failure handling.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "Open Chrome and handle extension handshake lifecycle",
+            "description": "Launch or open Chrome to the bridge page and wait for the extension handshake with timeouts.",
+            "dependencies": [
+              "5.4"
+            ],
+            "details": "Implement bridge start lifecycle: open the served bridge URL in Chrome, wait for webService or extension handshake, queue outbound envelopes until ready, enforce a bounded timeout, and return structured timeout errors when no extension connects.",
+            "status": "pending",
+            "testStrategy": "Add node --test coverage with mocked opener and handshake events for success, timeout, premature disconnect, and queued command flushing.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 6,
+            "title": "Implement bounded output, structured errors, and redacted logs",
+            "description": "Standardize stdout, stderr, exit codes, response limits, and sensitive-value redaction for CLI responses.",
+            "dependencies": [
+              "5.5"
+            ],
+            "details": "Print successful data or response envelopes as JSON to stdout, print structured errors as JSON to stderr, exit nonzero for protocol or validation failures, apply --limit to bounded output where relevant, support --format outline, and redact tokens or sensitive values in logs.",
+            "status": "pending",
+            "testStrategy": "Add node --test cases for success output, error output, exit code selection through injectable runners, --limit behavior, outline formatting, and token redaction.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 7,
+            "title": "Expose workflow and block subcommands",
+            "description": "Wire the required workflow and blocks commands through the shared parser and envelope dispatcher.",
+            "dependencies": [
+              "5.3",
+              "5.6"
+            ],
+            "details": "Implement workflow list, get, begin-draft, add-block, connect, validate, commit, run, and logs, plus blocks list, schema, and search. Normalize positional arguments and --param payloads for each command while delegating execution to the bridge protocol.",
+            "status": "pending",
+            "testStrategy": "Add node --test matrix coverage for every workflow and blocks subcommand, including required arguments, optional flags, payload shape, and representative invalid invocations.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 8,
+            "title": "Complete automated and manual end-to-end verification",
+            "description": "Verify the CLI lifecycle against unit tests, build/lint checks, and a manual MV3 bridge acceptance path.",
+            "dependencies": [
+              "5.1",
+              "5.2",
+              "5.3",
+              "5.4",
+              "5.5",
+              "5.6",
+              "5.7"
+            ],
+            "details": "Run node --test, npm run lint, and npm run build. Perform manual acceptance with the extension loaded: bridge start --trusted --token, confirm handshake, run workflow and blocks commands, inspect JSON responses, verify logs are redacted, and document remaining risks.",
+            "status": "pending",
+            "testStrategy": "Automated: node --test, npm run lint, npm run build. Manual: loaded extension handshake, trusted token propagation, workflow command smoke test, blocks command smoke test, timeout/error smoke test.",
+            "parentId": "undefined"
+          }
+        ],
+        "complexity": 8,
+        "recommendedSubtasks": 8,
+        "expansionPrompt": "Break this into subtasks for package.json bin/test script changes, CLI argv parsing, command-to-envelope mapping, localhost bridge server/page, extension handshake and timeout handling, response/error output behavior, workflow/block subcommands, and automated plus manual end-to-end verification."
+      }
+    ],
+    "metadata": {
+      "version": "1.0.0",
+      "lastModified": "2026-06-29T18:26:49.260Z",
+      "taskCount": 5,
+      "completedCount": 0,
+      "tags": [
+        "master"
+      ]
+    }
+  }
+}

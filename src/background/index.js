@@ -15,11 +15,14 @@ import { automaRefDataStr } from '@/workflowEngine/helper';
 
 import automa from '@business';
 import browser from 'webextension-polyfill';
+import * as agentBridgeRouter from '../agentBridge/background/router';
 import { registerWorkflowTrigger } from '../utils/workflowTrigger';
 import BackgroundEventsListeners from './BackgroundEventsListeners';
 import BackgroundOffscreen from './BackgroundOffscreen';
 import BackgroundUtils from './BackgroundUtils';
 import BackgroundWorkflowUtils from './BackgroundWorkflowUtils';
+
+const { handleAgentCommand } = agentBridgeRouter.default || agentBridgeRouter;
 
 BackgroundOffscreen.instance.sendMessage('halo');
 
@@ -218,6 +221,13 @@ message.on('get:user-id', async () => {
   const userStore = useUserStore();
   return { userId: userStore.user?.id };
 });
+
+message.on('agent:command', (envelope, sender) =>
+  handleAgentCommand(envelope, {
+    sender,
+    storage: browser.storage.local,
+  })
+);
 
 message.on(
   'check-csp-and-inject',
