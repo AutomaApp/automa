@@ -6,6 +6,9 @@
     "type": "git",
     "url": "https://github.com/AutomaApp/automa.git"
   },
+  "bin": {
+    "automa-agent": "bin/automa-agent.mjs"
+  },
   "scripts": {
     "build": "node utils/build.js",
     "build:firefox": "cross-env BROWSER=firefox npm run build",
@@ -16,7 +19,9 @@
     "dev": "node utils/webserver.js",
     "dev:firefox": "cross-env BROWSER=firefox npm run dev",
     "prettier": "prettier --write '**/*.{js,jsx,css,html}'",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "relay:test": "node --test src/agentBridge/background/*.test.js src/agentBridge/content/*.test.js src/agentBridge/workflowModel/*.test.js",
+    "test": "node --test"
   },
   "engines": {
     "node": ">=14.18.1"

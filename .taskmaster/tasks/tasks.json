@@ -478,7 +478,7 @@
         "testStrategy": "Use node --test for CLI argv parsing, --param coercion, command-to-envelope mapping, response handling, structured error exit behavior, bridge handshake timeout, token/capability propagation, and JSON output stability. Run npm run lint, npm run build, and node --test. Complete the manual acceptance scenario: start Chrome MV3 dev extension, run automa-agent bridge start --trusted, fetch workflows, create a draft, add new-tab and get-text blocks, commit, run, fetch latest logs, and confirm Trusted Agent Mode never prompts between commands.",
         "priority": "medium",
         "dependencies": [],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
@@ -486,9 +486,10 @@
             "description": "Update package metadata so automa-agent is executable and node tests can run without disrupting existing relay tests.",
             "dependencies": [],
             "details": "Add package.json bin mapping for automa-agent to bin/automa-agent.mjs. Add or update a generic test script such as node --test while preserving the existing relay:test script and any current build/lint scripts.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run npm script listing or npm run test -- --help if applicable, plus verify npm run relay:test remains available.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:55:21.460Z"
           },
           {
             "id": 2,
@@ -498,9 +499,10 @@
               "5.1"
             ],
             "details": "Create an executable ESM CLI that parses argv into command groups, subcommands, flags, positional arguments, --trusted, --token, --format, --limit, and repeated --param key=value values. Keep parsing logic separate enough for node --test coverage.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add node --test cases for supported command shapes, unknown flags, missing values, repeated --param, key=value parsing, and help/error behavior.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:55:24.667Z"
           },
           {
             "id": 3,
@@ -510,9 +512,10 @@
               "5.2"
             ],
             "details": "Implement commandSpec-to-envelope mapping with generated request ids, command names, capabilities, trusted token propagation, and payload construction. Ensure the CLI remains a protocol client and does not duplicate authoritative business logic.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add node --test coverage for envelope shape, id presence, capability propagation, token injection, payload normalization, and unsupported command errors.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:55:27.905Z"
           },
           {
             "id": 4,
@@ -522,9 +525,10 @@
               "5.3"
             ],
             "details": "Use Node http and related built-ins to bind localhost, serve a small HTML bridge page compatible with the existing webService content-script injection surface, expose minimal endpoints/events for command exchange, and cleanly shut down after completion or failure.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add node --test coverage for server startup, bridge page response, endpoint behavior, shutdown behavior, and port binding failure handling.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:55:31.120Z"
           },
           {
             "id": 5,
@@ -533,10 +537,11 @@
             "dependencies": [
               "5.4"
             ],
-            "details": "Implement bridge start lifecycle: open the served bridge URL in Chrome, wait for webService or extension handshake, queue outbound envelopes until ready, enforce a bounded timeout, and return structured timeout errors when no extension connects.",
-            "status": "pending",
+            "details": "Implement bridge start lifecycle: open the served bridge URL in Chrome, wait for webService or extension handshake, queue outbound envelopes until ready, enforce a bounded timeout, and return structured timeout errors when no extension connects.\n<info added on 2026-06-29T19:27:31.044Z>\nWire the Node CLI bridge lifecycle around the existing webService transport: after the localhost server starts, open Chrome to the bridge page whose origin matches the manifest content script coverage in src/manifest.chrome.dev.json, then have the page dispatch __automa-ext__ agent-command events and listen for __automa-ext__agent-command responses as implemented by src/content/services/webService.js and src/agentBridge/content/webServiceForwarder.js. Treat a successful public agent.ping response from src/agentBridge/background/router.js as the extension handshake, keep outbound command envelopes in an in-memory FIFO while the page is not ready, then send agent.session.trust with the setup token/capabilities and attach the returned sessionId to queued and future capability-gated commands. Add bounded timers for Chrome open, ping handshake, trust establishment, and command response waits; return JSON-safe error envelopes aligned with src/agentBridge/background/errors.js for bridge_handshake_timeout, bridge_trust_timeout, and bridge_disconnected, preserving request ids where available. Cover the lifecycle with node --test using mocked page/event channels: queued envelopes do not flush before ping plus trust, flush in order after session establishment, setup token failures stop the queue with a structured error, and page disconnect or response timeout rejects pending and future commands deterministically.\n</info added on 2026-06-29T19:27:31.044Z>",
+            "status": "done",
             "testStrategy": "Add node --test coverage with mocked opener and handshake events for success, timeout, premature disconnect, and queued command flushing.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:55:34.377Z"
           },
           {
             "id": 6,
@@ -545,10 +550,11 @@
             "dependencies": [
               "5.5"
             ],
-            "details": "Print successful data or response envelopes as JSON to stdout, print structured errors as JSON to stderr, exit nonzero for protocol or validation failures, apply --limit to bounded output where relevant, support --format outline, and redact tokens or sensitive values in logs.",
-            "status": "pending",
+            "details": "Print successful data or response envelopes as JSON to stdout, print structured errors as JSON to stderr, exit nonzero for protocol or validation failures, apply --limit to bounded output where relevant, support --format outline, and redact tokens or sensitive values in logs.\n<info added on 2026-06-29T19:28:31.983Z>\nImplement this as a shared CLI output/response formatter used by bin/automa-agent.mjs, aligned with the existing protocol envelope shape from src/agentBridge/background/errors.js and src/agentBridge/background/router.js. Keep successful ok:true envelopes on stdout as JSON, route ok:false envelopes and local CLI validation failures to stderr as the same JSON-safe error shape, and derive process.exitCode from envelope.ok or parser/protocol errors. Add a recursive redaction helper for stderr/log output that masks sensitive field names such as token, setupToken, sessionToken, authorization, password, secret, access_token, refresh_token, and bearer-like token strings before serialization. Thread the parsed --limit value into command payloads for bounded commands, matching the existing clampLimit behavior in src/agentBridge/background/workflowCommands.js for workflow.list, workflow.getLogs, and workflow.getTable. Treat --format outline as command selection for workflow.getOutline rather than raw workflow post-processing. Cover formatter behavior with node:test cases for stdout/stderr routing, nonzero exits, limit payload mapping, outline command mapping, JSON stability, and redaction of nested objects and error details.\n</info added on 2026-06-29T19:28:31.983Z>",
+            "status": "done",
             "testStrategy": "Add node --test cases for success output, error output, exit code selection through injectable runners, --limit behavior, outline formatting, and token redaction.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:55:37.633Z"
           },
           {
             "id": 7,
@@ -558,10 +564,11 @@
               "5.3",
               "5.6"
             ],
-            "details": "Implement workflow list, get, begin-draft, add-block, connect, validate, commit, run, and logs, plus blocks list, schema, and search. Normalize positional arguments and --param payloads for each command while delegating execution to the bridge protocol.",
-            "status": "pending",
+            "details": "Implement workflow list, get, begin-draft, add-block, connect, validate, commit, run, and logs, plus blocks list, schema, and search. Normalize positional arguments and --param payloads for each command while delegating execution to the bridge protocol.\n<info added on 2026-06-29T19:29:29.508Z>\nImplement the CLI command table as data-driven mappings in the shared argv parser/envelope mapper, not separate command-specific dispatch code. Map workflow list to workflow.list with --limit passed through the existing clampLimit behavior in src/agentBridge/background/workflowCommands.js; map workflow get <id> to workflow.getOutline by default and workflow.getRaw when --format raw is requested, with --format outline selecting the outline converter path. Map workflow run <id> and workflow logs <id> --limit to workflow.run and workflow.getLogs so execution stays in the existing workflowRuntime/BackgroundWorkflowUtils and Dexie log handlers. For draft-editing commands, normalize workflow begin-draft <workflowId>, add-block <draftId> <type>, connect <draftId> <source> <target>, validate <draftId>, and commit <draftId> into envelopes that mirror the workflowModel/draftManager.js API: workflowId/id, draftId, source/target references, sourceHandle/targetHandle/handle aliases, block alias/id/sourceRef, and merged params. Parse repeated --param key=value or JSON-object payloads into a params object before envelope creation. Add blocks list/schema/search mappings backed by the existing src/utils/blockCatalogSchemas.js listSchemas/getSchema catalog shape, keeping search as catalog filtering in the bridge command layer rather than duplicating block metadata in the CLI.\n</info added on 2026-06-29T19:29:29.508Z>",
+            "status": "done",
             "testStrategy": "Add node --test matrix coverage for every workflow and blocks subcommand, including required arguments, optional flags, payload shape, and representative invalid invocations.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:55:40.817Z"
           },
           {
             "id": 8,
@@ -576,20 +583,22 @@
               "5.6",
               "5.7"
             ],
-            "details": "Run node --test, npm run lint, and npm run build. Perform manual acceptance with the extension loaded: bridge start --trusted --token, confirm handshake, run workflow and blocks commands, inspect JSON responses, verify logs are redacted, and document remaining risks.",
-            "status": "pending",
+            "details": "Run node --test, npm run lint, and npm run build. Perform manual acceptance with the extension loaded: bridge start --trusted --token, confirm handshake, run workflow and blocks commands, inspect JSON responses, verify logs are redacted, and document remaining risks.\n<info added on 2026-06-29T19:31:05.761Z>\nUse package.json scripts as the required gates: node --test for the Node test suite, npm run lint for ESLint, and npm run build for the webpack production build into build/. For MV3 acceptance, load the built Chrome extension from build/ and exercise the localhost content-script path defined by src/manifest.chrome.dev.json and webpack.config.js: src/content/services/webService.js listens for __automa-ext__ agent-command events, src/agentBridge/content/webServiceForwarder.js forwards them to the background agent:command listener in src/background/index.js, and src/agentBridge/background/router.js plus workflowCommands.js produce JSON response envelopes. Capture evidence for workflow and block CLI commands, trusted-session handshake, audit redaction from src/agentBridge/background/audit.js, and smoke failures including invalid envelope, runtime send failure, unknown command, missing capability, handler error redaction, and handshake timeout. If local Chrome or extension state blocks full manual execution, record the exact environmental blocker and evidence, then still complete automated tests and the available timeout/error smoke coverage.\n</info added on 2026-06-29T19:31:05.761Z>",
+            "status": "done",
             "testStrategy": "Automated: node --test, npm run lint, npm run build. Manual: loaded extension handshake, trusted token propagation, workflow command smoke test, blocks command smoke test, timeout/error smoke test.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:55:44.112Z"
           }
         ],
         "complexity": 8,
         "recommendedSubtasks": 8,
-        "expansionPrompt": "Break this into subtasks for package.json bin/test script changes, CLI argv parsing, command-to-envelope mapping, localhost bridge server/page, extension handshake and timeout handling, response/error output behavior, workflow/block subcommands, and automated plus manual end-to-end verification."
+        "expansionPrompt": "Break this into subtasks for package.json bin/test script changes, CLI argv parsing, command-to-envelope mapping, localhost bridge server/page, extension handshake and timeout handling, response/error output behavior, workflow/block subcommands, and automated plus manual end-to-end verification.",
+        "updatedAt": "2026-06-29T19:56:20.871Z"
       }
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-06-29T19:22:38.314Z",
+      "lastModified": "2026-06-29T19:56:20.872Z",
       "taskCount": 5,
       "completedCount": 4,
       "tags": [

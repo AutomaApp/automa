@@ -599,7 +599,171 @@ async function handleGetTable({ context, envelope }) {
   };
 }
 
+function getDraftManager(context = {}) {
+  const draftManager = context.workflowDraftManager || context.draftManager;
+  if (!draftManager) {
+    throw new AgentBridgeError('runtime_unavailable', undefined, {
+      reason: 'workflow_draft_manager_unavailable',
+    });
+  }
+
+  return draftManager;
+}
+
+async function handleBeginDraft({ context, envelope }) {
+  const workflowId = requireString(getPayloadId(envelope.payload), 'id');
+  return getDraftManager(context).beginDraft(workflowId);
+}
+
+async function handleAddBlock({ context, envelope }) {
+  const { payload } = envelope;
+  const draftId = requireString(payload.draftId, 'draftId');
+  const type = requireString(payload.type, 'type');
+
+  return getDraftManager(context).addBlock(draftId, type, {
+    alias: payload.alias,
+    id: payload.id,
+    params: isPlainObject(payload.params) ? payload.params : {},
+    sourceRef: payload.sourceRef,
+  });
+}
+
+function getSourceReference(payload) {
+  return payload.source || payload.sourceReference || payload.sourceRef;
+}
+
+function getTargetReference(payload) {
+  return payload.target || payload.targetReference || payload.targetRef;
+}
+
+async function handleConnectBlocks({ context, envelope }) {
+  const { payload } = envelope;
+  const draftId = requireString(payload.draftId, 'draftId');
+  const source = requireString(getSourceReference(payload), 'source');
+  const target = requireString(getTargetReference(payload), 'target');
+
+  return getDraftManager(context).connectBlocks(draftId, source, target, {
+    handle: payload.handle,
+    sourceHandle: payload.sourceHandle,
+    targetHandle: payload.targetHandle,
+  });
+}
+
+async function handleValidateDraft({ context, envelope }) {
+  const draftId = requireString(envelope.payload.draftId, 'draftId');
+  return getDraftManager(context).validate(
+    draftId,
+    isPlainObject(envelope.payload.options) ? envelope.payload.options : {}
+  );
+}
+
+async function handleCommitDraft({ context, envelope }) {
+  const draftId = requireString(envelope.payload.draftId, 'draftId');
+  return getDraftManager(context).commitDraft(draftId);
+}
+
+function getBlockCatalog(context = {}) {
+  const blockCatalog = context.blockCatalog || context.blocksCatalog;
+  if (
+    !blockCatalog ||
+    typeof blockCatalog.listSchemas !== 'function' ||
+    typeof blockCatalog.getSchema !== 'function'
+  ) {
+    throw new AgentBridgeError('runtime_unavailable', undefined, {
+      reason: 'block_catalog_unavailable',
+    });
+  }
+
+  return blockCatalog;
+}
+
+async function listBlockSchemas(context) {
+  return cloneValue(await getBlockCatalog(context).listSchemas(), []);
+}
+
+async function handleBlocksList({ context, envelope }) {
+  const limit = clampLimit(
+    envelope.payload.limit,
+    DEFAULT_LIST_LIMIT,
+    MAX_LIST_LIMIT
+  );
+  const blocks = await listBlockSchemas(context);
+
+  return {
+    blocks: blocks.slice(0, limit),
+    count: blocks.length,
+    limit,
+  };
+}
+
+async function handleBlocksGetSchema({ context, envelope }) {
+  const type = requireString(envelope.payload.type, 'type');
+  return getBlockCatalog(context).getSchema(type);
+}
+
+function schemaMatchesQuery(schema, query) {
+  const haystack = [
+    schema.type,
+    schema.name,
+    schema.alias,
+    schema.category,
+    schema.description,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
+  return haystack.includes(query);
+}
+
+async function handleBlocksSearch({ context, envelope }) {
+  const query = requireString(envelope.payload.query, 'query').toLowerCase();
+  const limit = clampLimit(
+    envelope.payload.limit,
+    DEFAULT_LIST_LIMIT,
+    MAX_LIST_LIMIT
+  );
+  const matches = (await listBlockSchemas(context)).filter((schema) =>
+    schemaMatchesQuery(schema, query)
+  );
+
+  return {
+    blocks: matches.slice(0, limit),
+    count: matches.length,
+    limit,
+    query,
+  };
+}
+
 const workflowCommands = {
+  'blocks.getSchema': {
+    capabilities: ['extension:read'],
+    handler: handleBlocksGetSchema,
+  },
+  'blocks.list': {
+    capabilities: ['extension:read'],
+    handler: handleBlocksList,
+  },
+  'blocks.search': {
+    capabilities: ['extension:read'],
+    handler: handleBlocksSearch,
+  },
+  'workflow.addBlock': {
+    capabilities: ['extension:write'],
+    handler: handleAddBlock,
+  },
+  'workflow.beginDraft': {
+    capabilities: ['extension:write'],
+    handler: handleBeginDraft,
+  },
+  'workflow.commitDraft': {
+    capabilities: ['extension:write'],
+    handler: handleCommitDraft,
+  },
+  'workflow.connectBlocks': {
+    capabilities: ['extension:write'],
+    handler: handleConnectBlocks,
+  },
   'workflow.create': {
     capabilities: ['extension:write'],
     handler: handleCreate,
@@ -647,6 +811,10 @@ const workflowCommands = {
   'workflow.stop': {
     capabilities: ['workflow:run'],
     handler: handleStop,
+  },
+  'workflow.validate': {
+    capabilities: ['extension:write'],
+    handler: handleValidateDraft,
   },
 };
 

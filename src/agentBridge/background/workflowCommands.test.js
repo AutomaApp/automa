@@ -373,6 +373,209 @@ test('workflow mutation commands create, replace, delete, and manage trigger sid
   assert.equal(cleaned.length, 2);
 });
 
+test('workflow draft commands delegate to injected draft manager', async () => {
+  const calls = [];
+  const context = {
+    workflowDraftManager: {
+      addBlock: async (...args) => {
+        calls.push(['addBlock', ...args]);
+        return {
+          alias: args[2].alias,
+          id: 'node-1',
+          type: args[1],
+        };
+      },
+      beginDraft: async (...args) => {
+        calls.push(['beginDraft', ...args]);
+        return {
+          draftId: 'draft-1',
+          workflowId: args[0],
+        };
+      },
+      commitDraft: async (...args) => {
+        calls.push(['commitDraft', ...args]);
+        return {
+          draftId: args[0],
+          workflowId: 'workflow-1',
+        };
+      },
+      connectBlocks: async (...args) => {
+        calls.push(['connectBlocks', ...args]);
+        return {
+          source: args[1],
+          target: args[2],
+        };
+      },
+      validate: async (...args) => {
+        calls.push(['validate', ...args]);
+        return {
+          errors: [],
+          valid: true,
+          warnings: [],
+        };
+      },
+    },
+  };
+
+  const beginResponse = await runCommand(
+    'workflow.beginDraft',
+    {
+      workflowId: 'workflow-1',
+    },
+    context,
+    ['extension:write']
+  );
+  assert.equal(beginResponse.ok, true);
+  assert.deepEqual(beginResponse.data, {
+    draftId: 'draft-1',
+    workflowId: 'workflow-1',
+  });
+
+  const addResponse = await runCommand(
+    'workflow.addBlock',
+    {
+      alias: 'open_site',
+      draftId: 'draft-1',
+      params: {
+        url: 'https://example.com',
+      },
+      type: 'new-tab',
+    },
+    context,
+    ['extension:write']
+  );
+  assert.equal(addResponse.ok, true);
+
+  const connectResponse = await runCommand(
+    'workflow.connectBlocks',
+    {
+      draftId: 'draft-1',
+      handle: '2',
+      source: 'open_site',
+      target: 'extract_title',
+    },
+    context,
+    ['extension:write']
+  );
+  assert.equal(connectResponse.ok, true);
+
+  const validateResponse = await runCommand(
+    'workflow.validate',
+    {
+      draftId: 'draft-1',
+    },
+    context,
+    ['extension:write']
+  );
+  assert.equal(validateResponse.data.valid, true);
+
+  const commitResponse = await runCommand(
+    'workflow.commitDraft',
+    {
+      draftId: 'draft-1',
+    },
+    context,
+    ['extension:write']
+  );
+  assert.equal(commitResponse.ok, true);
+
+  assert.deepEqual(calls, [
+    ['beginDraft', 'workflow-1'],
+    [
+      'addBlock',
+      'draft-1',
+      'new-tab',
+      {
+        alias: 'open_site',
+        id: undefined,
+        params: {
+          url: 'https://example.com',
+        },
+        sourceRef: undefined,
+      },
+    ],
+    [
+      'connectBlocks',
+      'draft-1',
+      'open_site',
+      'extract_title',
+      {
+        handle: '2',
+        sourceHandle: undefined,
+        targetHandle: undefined,
+      },
+    ],
+    ['validate', 'draft-1', {}],
+    ['commitDraft', 'draft-1'],
+  ]);
+});
+
+test('block catalog commands delegate to injected catalog and bound search results', async () => {
+  const schemas = [
+    {
+      category: 'browser',
+      description: 'Open a tab',
+      name: 'New Tab',
+      type: 'new-tab',
+    },
+    {
+      category: 'web',
+      description: 'Extract text',
+      name: 'Get Text',
+      type: 'get-text',
+    },
+    {
+      category: 'data',
+      description: 'Log data',
+      name: 'Log Data',
+      type: 'log-data',
+    },
+  ];
+  const context = {
+    blockCatalog: {
+      getSchema: (type) => schemas.find((schema) => schema.type === type),
+      listSchemas: () => schemas,
+    },
+  };
+
+  const listResponse = await runCommand(
+    'blocks.list',
+    {
+      limit: 2,
+    },
+    context,
+    ['extension:read']
+  );
+  assert.equal(listResponse.ok, true);
+  assert.equal(listResponse.data.count, 3);
+  assert.deepEqual(
+    listResponse.data.blocks.map((schema) => schema.type),
+    ['new-tab', 'get-text']
+  );
+
+  const schemaResponse = await runCommand(
+    'blocks.getSchema',
+    {
+      type: 'new-tab',
+    },
+    context,
+    ['extension:read']
+  );
+  assert.deepEqual(schemaResponse.data, schemas[0]);
+
+  const searchResponse = await runCommand(
+    'blocks.search',
+    {
+      limit: 1,
+      query: 'text',
+    },
+    context,
+    ['extension:read']
+  );
+  assert.equal(searchResponse.data.count, 1);
+  assert.deepEqual(searchResponse.data.blocks, [schemas[1]]);
+});
+
 test('workflow commands enforce capabilities and standard redacted error envelopes', async () => {
   const storage = createMockStorage({
     workflows: {
