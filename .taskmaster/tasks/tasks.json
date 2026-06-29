@@ -190,17 +190,18 @@
         "testStrategy": "Use node --test for drawflow-to-outline conversion, outline-to-drawflow preservation, alias persistence, duplicate alias rejection, add/update/remove/connect operations, append/insert helpers, linear and multi-output connection creation, deterministic non-overlapping layout, draft isolation from live workflow, diff summaries, and optimistic concurrency conflict. Add a fixture using workflows/chatgpt-deep-research.automa.json and a minimal generated workflow to confirm existing UI-compatible drawflow remains valid.",
         "priority": "medium",
         "dependencies": [],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
             "title": "Define the Workflow Outline domain model and revision helpers",
             "description": "Design the agent-facing outline types, block references, connection records, alias metadata contract, and stable revision calculation used by drafts.",
             "dependencies": [],
-            "details": "Create pure workflow-model modules with no UI or storage side effects. Represent outline blocks by internal node id, type, label, alias, params, position, and connection metadata. Add revision(liveWorkflow) that prefers updatedAt and falls back to a deterministic content hash for optimistic concurrency.",
-            "status": "pending",
+            "details": "Create pure workflow-model modules with no UI or storage side effects. Represent outline blocks by internal node id, type, label, alias, params, position, and connection metadata. Add revision(liveWorkflow) that prefers updatedAt and falls back to a deterministic content hash for optimistic concurrency.\n<info added on 2026-06-29T18:48:38.124Z>\nCreate workflow-model modules under src/agentBridge/workflowModel that mirror existing pure utility/test patterns from src/utils/blockCatalogSchemas.js and src/utils/blockValidationStructured.js. Use the cloneValue deep-clone pattern instead of mutating workflow objects or relying on UI reactive state. Define helpers for stable JSON normalization and revision hashing that ignore object insertion order and preserve array order for drawflow.nodes and drawflow.edges, matching the VueFlow shape used by src/stores/workflow.js and src/utils/convertWorkflowData.js. Add outline block records from node fields id, label, type, data, position, plus connection records from edge fields id, source, target, sourceHandle, and targetHandle. Add alias metadata helpers for workflow.settings.agentBridge.aliases keyed by node id, including get/set/delete normalization without overwriting unrelated workflow.settings values. Add validation primitives shared by conversion and drafts: plain-object checks, required node/edge field checks, node id existence checks for edge endpoints, duplicate alias detection, missing trigger detection, and handle parsing for output names such as output-1, output-fallback, and condition ids.\n</info added on 2026-06-29T18:48:38.124Z>",
+            "status": "done",
             "testStrategy": "Add node --test coverage for outline shape creation, revision fallback behavior, stable hashing, and empty or malformed workflow handling.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T18:58:34.656Z"
           },
           {
             "id": 2,
@@ -210,9 +211,10 @@
               "3.1"
             ],
             "details": "Read the workflow shape used by src/stores/workflow.js and src/utils/convertWorkflowData.js, including nodes, edges, trigger defaults, settings, updatedAt, sourceHandle, targetHandle, and block data. Extract aliases from settings.agentBridge.aliases by node id while retaining ids, positions, params, and connection handles.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Use fixture workflows to assert conversion preserves node ids, positions, handles, trigger defaults, settings, and alias lookup.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T18:58:52.328Z"
           },
           {
             "id": 3,
@@ -223,9 +225,10 @@
               "3.2"
             ],
             "details": "Build reverse conversion that updates only changed node data, edge lists, alias metadata, and updatedAt. Keep original node ids stable, preserve unknown fields, and retain VueFlow edge conventions for conditions branches, fallback outputs, explicit handles, and multi-output blocks.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Round-trip existing workflow fixtures through drawflow-to-outline and outline-to-drawflow, then assert ids, unknown fields, edge handles, and settings metadata are preserved.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T18:59:09.605Z"
           },
           {
             "id": 4,
@@ -236,9 +239,10 @@
               "3.3"
             ],
             "details": "Implement helpers for reading, writing, renaming, and deleting aliases at settings.agentBridge.aliases[nodeId]. Ensure duplicate aliases are rejected in strict mode while allowing missing aliases where the workflow can still be addressed by internal id.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add tests for alias persistence, deletion cleanup, duplicate alias rejection, non-strict duplicate behavior if supported, and preservation of unrelated settings.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T18:59:30.218Z"
           },
           {
             "id": 5,
@@ -251,9 +255,10 @@
               "3.4"
             ],
             "details": "Create a background-owned draft registry keyed by draft id. beginDraft must load the live workflow, deep-clone it, capture baseRevision, and store isolated draft state. validate should run schema and structural checks. diffDraft should report meaningful changes between base and draft. discardDraft should remove draft state without touching storage.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Use mocked storage to verify beginDraft cloning, baseRevision capture, validate output, diff generation, discard cleanup, and no live workflow mutation before commit.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T18:59:50.765Z"
           },
           {
             "id": 6,
@@ -264,9 +269,10 @@
               "3.5"
             ],
             "details": "Implement addBlock, updateBlock, and removeBlock. addBlock should schema-validate type and params, create a nanoid node, merge task defaults with params, assign deterministic layout, and save optional alias metadata. updateBlock should validate partial parameter changes. removeBlock should delete associated edges and alias metadata.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test unknown block rejection, default merging, param validation, alias assignment, update behavior, edge cleanup on remove, and draft-only mutation isolation.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:00:06.519Z"
           },
           {
             "id": 7,
@@ -277,9 +283,10 @@
               "3.6"
             ],
             "details": "Resolve source and target references through aliases or node ids. connectBlocks must create VueFlow-compatible edges with explicit sourceHandle defaults and preserve target handles when supplied. Support conditions branches, fallback outputs, and multi-output block handles. appendBlock should add and connect after a logical source. insertBlock should splice a block between existing source and target connections.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Cover linear connections, explicit output handles, conditions branches, fallback handles, multi-output blocks, disconnect cleanup, append behavior, and insert rewiring.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:00:22.325Z"
           },
           {
             "id": 8,
@@ -290,9 +297,10 @@
               "3.7"
             ],
             "details": "Implement a pure layout service that keeps existing positions unchanged and deterministically assigns positions for new nodes. Position appended or inserted blocks near the source node using consistent offsets, scan for occupied coordinates, and avoid collisions without relying on random ordering.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test stable placement across repeated runs, collision avoidance with crowded fixtures, source-relative placement, and preservation of existing node coordinates.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:00:35.382Z"
           },
           {
             "id": 9,
@@ -306,9 +314,10 @@
               "3.8"
             ],
             "details": "On commitDraft, refetch the live workflow from browser.storage.local, recompute revision, and reject with workflow_conflict if it differs from baseRevision. On success, convert the draft back to drawflow, update settings and updatedAt, persist the workflow, and register triggers when workflow changes require it.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Mock concurrent live changes to assert workflow_conflict, successful writes with updatedAt changes, trigger registration calls, and no partial persistence on failure.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:00:55.101Z"
           },
           {
             "id": 10,
@@ -325,14 +334,16 @@
               "3.9"
             ],
             "details": "Build a fixture suite from representative existing Automa workflows, including triggers, linear flows, conditions, fallback outputs, and multi-output blocks. Verify round-trips preserve UI compatibility and that draft operations produce expected drawflow records without replacing node ids.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run node --test across all workflow-model and draft-manager fixtures, including round-trip snapshots, mutation snapshots, conflict cases, and deterministic layout assertions.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2026-06-29T19:01:07.566Z"
           }
         ],
         "complexity": 9,
         "recommendedSubtasks": 10,
-        "expansionPrompt": "Break this into subtasks for outline model design, drawflow-to-outline conversion, outline-to-drawflow preservation, alias metadata storage, draft manager lifecycle, block add/update/remove operations, connect/disconnect/append/insert helpers, deterministic layout, optimistic concurrency checks, and fixture-based tests against existing Automa workflows."
+        "expansionPrompt": "Break this into subtasks for outline model design, drawflow-to-outline conversion, outline-to-drawflow preservation, alias metadata storage, draft manager lifecycle, block add/update/remove operations, connect/disconnect/append/insert helpers, deterministic layout, optimistic concurrency checks, and fixture-based tests against existing Automa workflows.",
+        "updatedAt": "2026-06-29T19:01:07.566Z"
       },
       {
         "id": "4",
@@ -569,9 +580,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-06-29T18:44:44.516Z",
+      "lastModified": "2026-06-29T19:01:07.567Z",
       "taskCount": 5,
-      "completedCount": 2,
+      "completedCount": 3,
       "tags": [
         "master"
       ]

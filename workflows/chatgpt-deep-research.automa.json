@@ -1,0 +1,259 @@
+{
+  "id": "chatgpt-deep-research",
+  "name": "ChatGPT Deep Research",
+  "icon": "riRobotLine",
+  "description": "Fixture workflow with linear, branch, fallback, and multi-output connections.",
+  "createdAt": 1710000000000,
+  "updatedAt": 1710000005000,
+  "trigger": null,
+  "settings": {
+    "publicId": "",
+    "saveLog": true,
+    "agentBridge": {
+      "aliases": {
+        "node-trigger": "start",
+        "node-open": "open_chatgpt",
+        "node-condition": "decide",
+        "node-webhook": "save_result",
+        "node-repeat": "retry_loop"
+      },
+      "notes": "preserve unrelated bridge metadata"
+    },
+    "customSetting": {
+      "keep": true
+    }
+  },
+  "drawflow": {
+    "x": 11,
+    "y": -22,
+    "zoom": 0.85,
+    "nodes": [
+      {
+        "id": "node-trigger",
+        "label": "trigger",
+        "type": "BlockBasic",
+        "position": {
+          "x": 100,
+          "y": 200
+        },
+        "data": {
+          "disableBlock": false,
+          "description": "",
+          "type": "manual",
+          "interval": 60,
+          "delay": 5,
+          "date": "",
+          "time": "00:00",
+          "url": "",
+          "shortcut": "",
+          "activeInInput": false,
+          "isUrlRegex": false,
+          "days": [],
+          "contextMenuName": "",
+          "contextTypes": [],
+          "parameters": [],
+          "preferParamsInTab": false
+        },
+        "handleBounds": {
+          "source": [
+            {
+              "id": "node-trigger-output-1"
+            }
+          ],
+          "target": []
+        }
+      },
+      {
+        "id": "node-open",
+        "label": "new-tab",
+        "type": "BlockBasic",
+        "position": {
+          "x": 380,
+          "y": 200
+        },
+        "data": {
+          "disableBlock": false,
+          "description": "",
+          "url": "https://chatgpt.com/",
+          "userAgent": "",
+          "active": true,
+          "tabZoom": 1,
+          "inGroup": false,
+          "waitTabLoaded": true,
+          "updatePrevTab": false,
+          "customUserAgent": false
+        }
+      },
+      {
+        "id": "node-condition",
+        "label": "conditions",
+        "type": "BlockConditions",
+        "position": {
+          "x": 660,
+          "y": 200
+        },
+        "data": {
+          "description": "Route research result",
+          "disableBlock": false,
+          "conditions": [
+            {
+              "id": "has-answer",
+              "type": "contains",
+              "value": "Sources"
+            }
+          ],
+          "retryConditions": false,
+          "retryCount": 10,
+          "retryTimeout": 1000
+        }
+      },
+      {
+        "id": "node-webhook",
+        "label": "webhook",
+        "type": "BlockBasicWithFallback",
+        "position": {
+          "x": 940,
+          "y": 120
+        },
+        "data": {
+          "disableBlock": false,
+          "description": "",
+          "url": "https://example.com/store",
+          "body": "{}",
+          "headers": [],
+          "method": "POST",
+          "timeout": 10000,
+          "dataPath": "",
+          "contentType": "json",
+          "variableName": "",
+          "assignVariable": false,
+          "saveData": false,
+          "dataColumn": "",
+          "responseType": "json"
+        }
+      },
+      {
+        "id": "node-repeat",
+        "label": "repeat-task",
+        "type": "BlockRepeatTask",
+        "position": {
+          "x": 940,
+          "y": 360
+        },
+        "data": {
+          "disableBlock": false,
+          "repeatFor": "2"
+        }
+      },
+      {
+        "id": "node-delay",
+        "label": "delay",
+        "type": "BlockDelay",
+        "position": {
+          "x": 1220,
+          "y": 360
+        },
+        "data": {
+          "disableBlock": false,
+          "time": 500
+        }
+      },
+      {
+        "id": "node-export",
+        "label": "export-data",
+        "type": "BlockBasic",
+        "position": {
+          "x": 1220,
+          "y": 120
+        },
+        "data": {
+          "disableBlock": false,
+          "name": "research",
+          "refKey": "",
+          "type": "json",
+          "description": "",
+          "variableName": "",
+          "csvDelimiter": ",",
+          "addBOMHeader": true,
+          "onConflict": "uniquify",
+          "dataToExport": "data-columns"
+        },
+        "unknownUiField": {
+          "preserved": true
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "vueflow__edge-node-trigger-output-1-node-open-input-1",
+        "source": "node-trigger",
+        "target": "node-open",
+        "sourceHandle": "node-trigger-output-1",
+        "targetHandle": "node-open-input-1",
+        "updatable": true,
+        "selectable": true,
+        "class": "source-node-trigger-output-1 target-node-open-input-1"
+      },
+      {
+        "id": "vueflow__edge-node-open-output-1-node-condition-input-1",
+        "source": "node-open",
+        "target": "node-condition",
+        "sourceHandle": "node-open-output-1",
+        "targetHandle": "node-condition-input-1",
+        "updatable": true,
+        "selectable": true,
+        "class": "source-node-open-output-1 target-node-condition-input-1"
+      },
+      {
+        "id": "vueflow__edge-node-condition-output-has-answer-node-webhook-input-1",
+        "source": "node-condition",
+        "target": "node-webhook",
+        "sourceHandle": "node-condition-output-has-answer",
+        "targetHandle": "node-webhook-input-1",
+        "updatable": true,
+        "selectable": true,
+        "class": "source-node-condition-output-has-answer target-node-webhook-input-1"
+      },
+      {
+        "id": "vueflow__edge-node-condition-output-fallback-node-repeat-input-1",
+        "source": "node-condition",
+        "target": "node-repeat",
+        "sourceHandle": "node-condition-output-fallback",
+        "targetHandle": "node-repeat-input-1",
+        "updatable": true,
+        "selectable": true,
+        "class": "source-node-condition-output-fallback target-node-repeat-input-1"
+      },
+      {
+        "id": "vueflow__edge-node-webhook-output-1-node-export-input-1",
+        "source": "node-webhook",
+        "target": "node-export",
+        "sourceHandle": "node-webhook-output-1",
+        "targetHandle": "node-export-input-1",
+        "updatable": true,
+        "selectable": true,
+        "class": "source-node-webhook-output-1 target-node-export-input-1"
+      },
+      {
+        "id": "vueflow__edge-node-webhook-output-fallback-node-repeat-input-1",
+        "source": "node-webhook",
+        "target": "node-repeat",
+        "sourceHandle": "node-webhook-output-fallback",
+        "targetHandle": "node-repeat-input-1",
+        "updatable": true,
+        "selectable": true,
+        "class": "source-node-webhook-output-fallback target-node-repeat-input-1"
+      },
+      {
+        "id": "vueflow__edge-node-repeat-output-2-node-delay-input-1",
+        "source": "node-repeat",
+        "target": "node-delay",
+        "sourceHandle": "node-repeat-output-2",
+        "targetHandle": "node-delay-input-1",
+        "updatable": true,
+        "selectable": true,
+        "class": "source-node-repeat-output-2 target-node-delay-input-1"
+      }
+    ]
+  }
+}
