@@ -9,7 +9,7 @@
         "testStrategy": "Use node --test for pure router, capability, envelope, and audit-redaction modules with mocked storage and handlers. Add cases for malformed envelopes, missing capabilities, trusted no-prompt command execution, standard success/error envelopes, audit id generation, and redaction. Manually verify a localhost bridge page can send a command through webService.bundle.js and receive a background response in Chrome MV3.",
         "priority": "medium",
         "dependencies": [],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -97,7 +97,7 @@
         "complexity": 7,
         "recommendedSubtasks": 6,
         "expansionPrompt": "Break this into subtasks for the background router/envelope parser, capability and trusted-session storage, audit/redaction module, webService event forwarding, background MessageListener registration, and node --test plus manual MV3 bridge verification.",
-        "updatedAt": "2026-06-29T18:26:49.259Z"
+        "updatedAt": "2026-06-29T18:28:54.498Z"
       },
       {
         "id": "2",
@@ -563,9 +563,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-06-29T18:26:49.260Z",
+      "lastModified": "2026-06-29T18:28:54.499Z",
       "taskCount": 5,
-      "completedCount": 0,
+      "completedCount": 1,
       "tags": [
         "master"
       ]
