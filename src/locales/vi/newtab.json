@@ -233,7 +233,8 @@
       },
       "messages": {
         "hostExist": "Bạn đã thêm máy chủ này",
-        "notFound": "Không thể tìm thấy quy trình làm việc được lưu trữ với id \"{id} \""
+        "notFound": "Không thể tìm thấy quy trình làm việc được lưu trữ với id \"{id} \"",
+        "successAdded": "Quy trình làm việc được lưu trữ với id \"{id} \" đã được thêm thành công"
       }
     },
     "type": {
@@ -255,7 +256,8 @@
       "edit": "Chỉnh sửa Mô tả",
       "fetchLocal": "Tìm nạp quy trình làm việc cục bộ",
       "update": "Cập nhật",
-      "unpublish": "Hủy xuất bản"
+      "unpublish": "Hủy xuất bản",
+      "linkCopied": "Liên kết đã được sao chép vào bộ nhớ"
     },
     "variables": {
       "title": "Biến | Danh sách biến",

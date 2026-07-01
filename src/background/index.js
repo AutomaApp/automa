@@ -1,15 +1,27 @@
-import browser from 'webextension-polyfill';
-import { MessageListener } from '@/utils/message';
-import { sleep } from '@/utils/helper';
+import { IS_FIREFOX } from '@/common/utils/constant';
+import BrowserAPIEventHandler from '@/service/browser-api/BrowserAPIEventHandler';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
+import { useUserStore } from '@/stores/user';
+import {
+  executeCallbacksInData,
+  isCallbackBridge,
+} from '@/utils/callbackBridge';
 import getFile, { readFileAsBase64 } from '@/utils/getFile';
+import { sleep } from '@/utils/helper';
+import { MessageListener } from '@/utils/message';
+
+// import { getDocumentCtx } from '@/content/handleSelector';
+import { automaRefDataStr } from '@/workflowEngine/helper';
+
 import automa from '@business';
-import { workflowState } from '@/workflowEngine';
+import browser from 'webextension-polyfill';
 import { registerWorkflowTrigger } from '../utils/workflowTrigger';
+import BackgroundEventsListeners from './BackgroundEventsListeners';
+import BackgroundOffscreen from './BackgroundOffscreen';
 import BackgroundUtils from './BackgroundUtils';
 import BackgroundWorkflowUtils from './BackgroundWorkflowUtils';
-import BackgroundEventsListeners from './BackgroundEventsListeners';
 
-const isFirefox = BROWSER_TYPE === 'firefox';
+BackgroundOffscreen.instance.sendMessage('halo');
 
 browser.alarms.onAlarm.addListener(BackgroundEventsListeners.onAlarms);
 
@@ -33,7 +45,7 @@ browser.webNavigation.onHistoryStateUpdated.addListener(
   BackgroundEventsListeners.onHistoryStateUpdated
 );
 
-const contextMenu = isFirefox ? browser.menus : browser.contextMenus;
+const contextMenu = IS_FIREFOX ? browser.menus : browser.contextMenus;
 if (contextMenu && contextMenu.onClicked) {
   contextMenu.onClicked.addListener(
     BackgroundEventsListeners.onContextMenuClicked
@@ -47,6 +59,16 @@ if (browser.notifications && browser.notifications.onClicked) {
 }
 
 const message = new MessageListener('background');
+
+message.on('browser-api', (payload) => {
+  return BrowserAPIService.runtimeMessageHandler.call(
+    BrowserAPIService,
+    payload
+  );
+});
+message.on(BrowserAPIEventHandler.RuntimeEvents.TOGGLE, (data) =>
+  BrowserAPIEventHandler.instance.onToggleBrowserEventListener(data)
+);
 
 message.on('fetch', async ({ type, resource }) => {
   const response = await fetch(resource.url, resource);
@@ -123,26 +145,16 @@ message.on('dashboard:refresh-packages', async () => {
   });
 });
 
-message.on('workflow:stop', (stateId) => workflowState.stop(stateId));
+message.on('workflow:stop', (stateId) =>
+  BackgroundWorkflowUtils.instance.stopExecution(stateId)
+);
 message.on('workflow:execute', async (workflowData, sender) => {
-  const context = workflowData.settings.execContext;
-  const isMV2 = browser.runtime.getManifest().manifest_version === 2;
-  if (!isMV2 && (!context || context === 'popup')) {
-    await BackgroundUtils.openDashboard('?fromBackground=true', false);
-    await BackgroundUtils.sendMessageToDashboard('workflow:execute', {
-      data: workflowData,
-      options: workflowData.option,
-    });
-    return;
-  }
-
   if (workflowData.includeTabId) {
     if (!workflowData.options) workflowData.options = {};
-
     workflowData.options.tabId = sender.tab.id;
   }
 
-  BackgroundWorkflowUtils.executeWorkflow(
+  BackgroundWorkflowUtils.instance.executeWorkflow(
     workflowData,
     workflowData?.options || {}
   );
@@ -193,99 +205,896 @@ message.on('recording:stop', async () => {
 });
 message.on('workflow:resume', ({ id, nextBlock }) => {
   if (!id) return;
-  workflowState.resume(id, nextBlock);
+  BackgroundWorkflowUtils.instance.resumeExecution(id, nextBlock);
 });
 message.on('workflow:breakpoint', (id) => {
   if (!id) return;
-  workflowState.update(id, { status: 'breakpoint' });
+  BackgroundWorkflowUtils.instance.updateExecutionState(id, {
+    status: 'breakpoint',
+  });
+});
+
+message.on('get:user-id', async () => {
+  const userStore = useUserStore();
+  return { userId: userStore.user?.id };
+});
+
+message.on(
+  'check-csp-and-inject',
+  async ({ target, debugMode, callback, options, injectOptions }) => {
+    try {
+      const [isBlockedByCSP] = await browser.scripting.executeScript({
+        target,
+        // eslint-disable-next-line object-shorthand
+        func: function () {
+          return new Promise((resolve) => {
+            const escapePolicy = (script) => {
+              if (window?.trustedTypes?.createPolicy) {
+                try {
+                  // 生成基于白名单的唯一策略名称，避免与现有策略冲突
+                  const baseNames = [
+                    'default',
+                    'dompurify',
+                    'jSecure',
+                    'forceInner',
+                  ];
+                  let escapeElPolicy = null;
+
+                  // 为每个基础名称尝试添加唯一后缀
+                  for (const baseName of baseNames) {
+                    try {
+                      const uniqueName = `${baseName}-automa-${Date.now().toString(
+                        36
+                      )}`;
+                      escapeElPolicy = window.trustedTypes.createPolicy(
+                        uniqueName,
+                        {
+                          createHTML: (to_escape) => to_escape,
+                          createScript: (to_escape) => to_escape,
+                        }
+                      );
+                      // 如果成功创建，跳出循环
+                      break;
+                    } catch (e) {
+                      // 该名称失败（可能不在白名单中），继续尝试下一个
+                    }
+                  }
+
+                  // 如果基于白名单的策略都失败，尝试纯 automa 策略名
+                  if (!escapeElPolicy) {
+                    try {
+                      const automaName = `automa-policy-${Date.now().toString(
+                        36
+                      )}`;
+                      escapeElPolicy = window.trustedTypes.createPolicy(
+                        automaName,
+                        {
+                          createHTML: (to_escape) => to_escape,
+                          createScript: (to_escape) => to_escape,
+                        }
+                      );
+                    } catch (e) {
+                      // 最后的尝试也失败了
+                    }
+                  }
+
+                  // 如果成功创建了策略，使用它
+                  if (escapeElPolicy) {
+                    return escapeElPolicy.createScript(script);
+                  }
+                  // 如果所有策略名称都失败，返回原始脚本
+                  return script;
+                } catch (e) {
+                  // 捕获任何其他错误并降级
+                  return script;
+                }
+              }
+              return script;
+            };
+
+            const eventListener = ({ srcElement }) => {
+              if (!srcElement || srcElement.id !== 'automa-csp') return;
+              srcElement.remove();
+              resolve(true);
+            };
+
+            document.addEventListener('securitypolicyviolation', eventListener);
+            const script = document.createElement('script');
+            script.id = 'automa-csp';
+            script.innerText = escapePolicy('console.log("...")');
+
+            setTimeout(() => {
+              document.removeEventListener(
+                'securitypolicyviolation',
+                eventListener
+              );
+              resolve(false);
+            }, 500);
+
+            document.body.appendChild(script);
+          });
+        },
+        world: 'MAIN',
+        ...injectOptions,
+      });
+
+      // CSP blocked
+      if (isBlockedByCSP.result) {
+        await new Promise((resolve) => {
+          chrome.debugger.attach({ tabId: target.tabId }, '1.3', resolve);
+        });
+
+        // 首先执行回调函数以获取JS代码字符串
+        // 这里的关键是回调函数本身就是一个字符串，直接在debugger中执行
+        const callbackString =
+          typeof callback === 'function' ? callback.toString() : callback;
+
+        if (!callbackString) {
+          throw new Error('Callback is missing or invalid');
+        }
+
+        // 直接执行回调函数的字符串表示，不再通过额外的包装函数
+        const wrappedCallback = `
+          (function() {
+            try {
+              const fn = ${callbackString};
+              return fn();
+            } catch (err) {
+              console.error("Error in callback execution:", err);
+              return JSON.stringify({ error: err.message });
+            }
+          })()
+        `;
+
+        // 执行回调函数以获取JavaScript代码
+        const jsCodeResult = await chrome.debugger.sendCommand(
+          { tabId: target.tabId },
+          'Runtime.evaluate',
+          {
+            expression: wrappedCallback,
+            userGesture: true,
+            returnByValue: true,
+            ...options,
+          }
+        );
+
+        if (!jsCodeResult || !jsCodeResult.result) {
+          console.error('无法获取JavaScript代码，结果为空');
+          throw new Error('Unable to get JavaScript code');
+        }
+
+        if (
+          jsCodeResult.result.subtype === 'error' ||
+          jsCodeResult.exceptionDetails
+        ) {
+          console.error(
+            '执行回调函数时出错:',
+            jsCodeResult.result.description || jsCodeResult.exceptionDetails
+          );
+          throw new Error(
+            jsCodeResult.result.description || 'Error executing callback'
+          );
+        }
+
+        // 确保我们获取到的是字符串类型的JavaScript代码
+        if (typeof jsCodeResult.result.value !== 'string') {
+          console.error('回调函数返回的不是JavaScript代码字符串');
+          throw new Error('Callback did not return JavaScript code string');
+        }
+
+        const jsCode = jsCodeResult.result.value;
+
+        // 执行生成的JavaScript代码
+        const execResult = await chrome.debugger.sendCommand(
+          { tabId: target.tabId },
+          'Runtime.evaluate',
+          {
+            expression: jsCode,
+            userGesture: true,
+            awaitPromise: true,
+            returnByValue: true,
+            ...options,
+          }
+        );
+
+        if (!debugMode) {
+          await chrome.debugger.detach({ tabId: target.tabId });
+        }
+
+        if (!execResult || !execResult.result) {
+          console.error('无法执行代码，结果为空');
+          throw new Error('Unable execute code');
+        }
+
+        if (
+          execResult.result.subtype === 'error' ||
+          execResult.exceptionDetails
+        ) {
+          console.error(
+            '执行JavaScript代码时出错:',
+            execResult.result.description || execResult.exceptionDetails
+          );
+          throw new Error(
+            execResult.result.description || 'Error executing JavaScript code'
+          );
+        }
+
+        return {
+          isBlocked: true,
+          value: execResult.result.value || null,
+        };
+      }
+
+      return { isBlocked: false };
+    } catch (error) {
+      console.error(error);
+      return { isBlocked: false, error: error.message };
+    }
+  }
+);
+
+const getAutomaScript = ({ varName, refData, everyNewTab, isEval = false }) => {
+  let str = `
+const ${varName} = ${JSON.stringify(refData)};
+${automaRefDataStr(varName)}
+function automaSetVariable(name, value) {
+  const variables = ${varName}.variables;
+  if (!variables) ${varName}.variables = {}
+
+  ${varName}.variables[name] = value;
+}
+function automaNextBlock(data, insert = true) {
+  if (${isEval}) {
+    Promise.resolve({
+      columns: {
+        data,
+        insert,
+      },
+      variables: ${varName}.variables,
+    });
+  } else{
+    document.body.dispatchEvent(new CustomEvent('__automa-next-block__', { detail: { data, insert, refData: ${varName} } }));
+  }
+}
+function automaResetTimeout() {
+  if (${isEval}) {
+    clearTimeout($automaTimeout);
+    $automaTimeout = setTimeout(() => {
+      resolve();
+    }, $automaTimeoutMs);
+  } else {
+    document.body.dispatchEvent(new CustomEvent('__automa-reset-timeout__'));
+  }
+}
+
+function automaFetchClient(id, { type, resource }) {
+  return new Promise((resolve, reject) => {
+    const validType = ['text', 'json', 'base64'];
+    if (!type || !validType.includes(type)) {
+      reject(new Error('The "type" must be "text" or "json"'));
+      return;
+    }
+
+    const eventName = \`__automa-fetch-response-\${id}__\`;
+    const eventListener = ({ detail }) => {
+      if (detail.id !== id) return;
+
+      window.removeEventListener(eventName, eventListener);
+
+      if (detail.isError) {
+        reject(new Error(detail.result));
+      } else {
+        resolve(detail.result);
+      }
+    };
+
+    window.addEventListener(eventName, eventListener);
+    window.dispatchEvent(
+      new CustomEvent(\`__automa-fetch__\`, {
+        detail: {
+          id,
+          type,
+          resource,
+        },
+      })
+    );
+  });
+}
+
+function automaFetch(type, resource) {
+  return automaFetchClient('${varName}', { type, resource });
+}
+  `;
+
+  if (everyNewTab) str = automaRefDataStr(varName);
+
+  return str;
+};
+
+message.on(
+  'script:execute',
+  async ({ target, blockData, varName, preloadScripts }) => {
+    try {
+      const automaScript = getAutomaScript({
+        varName,
+        isEval: false,
+        refData: blockData.refData,
+        everyNewTab: blockData.data.everyNewTab,
+      });
+
+      const result = await browser.scripting.executeScript({
+        target,
+        func: ($blockData, $preloadScripts, $automaScript) => {
+          return new Promise((resolve, reject) => {
+            try {
+              const $documentCtx = document;
+
+              // fixme: 需要处理iframe的情况
+              // if ($blockData.frameSelector) {
+              //   const iframeCtx = getDocumentCtx($blockData.frameSelector);
+              //   if (!iframeCtx) {
+              //     reject(new Error('iframe-not-found'));
+              //     return;
+              //   }
+              //   $documentCtx = iframeCtx;
+              // }
+
+              const scriptAttr = `block--${$blockData.id}`;
+              const isScriptExists = $documentCtx.querySelector(
+                `.automa-custom-js[${scriptAttr}]`
+              );
+              if (isScriptExists) {
+                resolve('');
+                return;
+              }
+
+              const script = $documentCtx.createElement('script');
+              script.setAttribute(scriptAttr, '');
+              script.classList.add('automa-custom-js');
+              script.textContent = `
+                (() => {
+
+                  // Setup context
+                  ${$automaScript}
+
+                  // Execute user code
+                  try {
+                    ${$blockData.data.code}
+                    ${
+                      $blockData.data.everyNewTab ||
+                      $blockData.data.code.includes('automaNextBlock')
+                        ? ''
+                        : 'automaNextBlock()'
+                    }
+                  } catch (error) {
+                    console.error(error);
+                    ${
+                      $blockData.data.everyNewTab
+                        ? ''
+                        : 'automaNextBlock({ $error: true, message: error.message })'
+                    }
+                  }
+                })();
+              `;
+
+              const preloadScriptsEl = $preloadScripts.map((item) => {
+                const scriptEl = $documentCtx.createElement('script');
+                scriptEl.id = item.id;
+                scriptEl.textContent = item.script;
+                return {
+                  element: scriptEl,
+                  removeAfterExec: item.removeAfterExec,
+                };
+              });
+
+              if (!$blockData.data.everyNewTab) {
+                let timeout;
+                let onNextBlock;
+                let onResetTimeout;
+
+                const cleanUp = () => {
+                  script.remove();
+                  preloadScriptsEl.forEach((item) => {
+                    if (item.removeAfterExec) item.element.remove();
+                  });
+
+                  clearTimeout(timeout);
+
+                  $documentCtx.body.removeEventListener(
+                    '__automa-reset-timeout__',
+                    onResetTimeout
+                  );
+                  $documentCtx.body.removeEventListener(
+                    '__automa-next-block__',
+                    onNextBlock
+                  );
+                };
+
+                onNextBlock = ({ detail }) => {
+                  cleanUp();
+                  if (!detail) {
+                    resolve({ columns: {}, variables: {} });
+                    return;
+                  }
+
+                  const payload = {
+                    insert: detail.insert,
+                    data: detail.data?.$error
+                      ? detail.data
+                      : JSON.stringify(detail?.data ?? {}),
+                  };
+                  resolve({
+                    columns: payload,
+                    variables: detail.refData?.variables,
+                  });
+                };
+                onResetTimeout = () => {
+                  clearTimeout(timeout);
+                  timeout = setTimeout(cleanUp, $blockData.data.timeout);
+                };
+
+                $documentCtx.body.addEventListener(
+                  '__automa-next-block__',
+                  onNextBlock
+                );
+                $documentCtx.body.addEventListener(
+                  '__automa-reset-timeout__',
+                  onResetTimeout
+                );
+
+                timeout = setTimeout(cleanUp, $blockData.data.timeout);
+              } else {
+                resolve();
+              }
+
+              // Inject scripts in the correct order
+              preloadScriptsEl.forEach((item) => {
+                $documentCtx.head.appendChild(item.element);
+              });
+              $documentCtx.head.appendChild(script);
+            } catch (error) {
+              console.error('javascriptBlockUtil error', error);
+              reject(error);
+            }
+          });
+        },
+        world: 'MAIN',
+        args: [blockData, preloadScripts, automaScript],
+      });
+
+      return [{ result: result[0].result }];
+    } catch (err) {
+      return { result: null, msg: err.message, error: err };
+    }
+  }
+);
+
+message.on('script:execute-callback', async ({ target, callback }) => {
+  try {
+    // 首先尝试使用scripting API执行脚本
+    const result = await browser.scripting.executeScript({
+      target,
+      func: ($callbackFn) => {
+        try {
+          const script = document.createElement('script');
+          script.textContent = `
+          (() => {
+            ${$callbackFn}
+          })()
+          `;
+          document.body.appendChild(script);
+          return { success: true };
+        } catch (error) {
+          console.error('执行脚本时出错:', error);
+          return { success: false, error: error.message };
+        }
+      },
+      world: 'MAIN',
+      args: [callback],
+    });
+
+    // 检查执行结果
+    const executionResult = result[0]?.result;
+    if (executionResult && executionResult.success) {
+      return true;
+    }
+
+    // 如果常规方法失败，尝试使用debugger API
+    await new Promise((resolve) => {
+      chrome.debugger.attach({ tabId: target.tabId }, '1.3', resolve);
+    });
+
+    // 使用debugger API执行脚本
+    const execResult = await chrome.debugger.sendCommand(
+      { tabId: target.tabId },
+      'Runtime.evaluate',
+      {
+        expression: `(() => { ${callback} })()`,
+        userGesture: true,
+        awaitPromise: false,
+        returnByValue: true,
+      }
+    );
+
+    // 执行完成后分离debugger
+    await chrome.debugger.detach({ tabId: target.tabId });
+
+    if (!execResult || !execResult.result) {
+      console.error('使用debugger API执行脚本失败');
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('执行script:execute-callback时出错:', error);
+    return false;
+  }
+});
+
+const DOWNLOADS_STORAGE_KEY = 'automa-rename-downloaded-files';
+
+const getFileExtension = (str) => /(?:\.([^.]+))?$/.exec(str)[1];
+
+const downloadListeners = {
+  registered: false,
+  changedCallbacks: new Map(),
+  pendingRequests: [],
+  downloadDataCache: new Map(),
+  handledFilenameCallbacks: new Set(),
+  suggestCalled: new Set(),
+  downloadInfo: new Map(),
+};
+
+/**
+ * @param {Object} item
+ * @param {Function} suggest
+ * @returns {boolean}
+ */
+function determineFilenameListener(item, suggest) {
+  const downloadKey = `download-${item.id}`;
+
+  if (downloadListeners.suggestCalled.has(downloadKey)) {
+    return true;
+  }
+
+  downloadListeners.suggestCalled.add(downloadKey);
+
+  setTimeout(async () => {
+    try {
+      let suggestion = null;
+      if (downloadListeners.downloadDataCache.has(item.id)) {
+        suggestion = downloadListeners.downloadDataCache.get(item.id);
+      } else {
+        const result = await browser.storage.session.get(DOWNLOADS_STORAGE_KEY);
+        const filesData = result[DOWNLOADS_STORAGE_KEY] || {};
+
+        suggestion = filesData[item.id];
+      }
+
+      if (!suggestion) {
+        // we should not call suggest again, because Chrome expects us to handle it
+        return;
+      }
+
+      if (!suggestion.filename || suggestion.filename.trim() === '') {
+        return;
+      }
+
+      const hasFileExt = getFileExtension(suggestion.filename);
+
+      if (!hasFileExt) {
+        const fileExtension = getFileExtension(item.filename);
+        suggestion.filename += `.${fileExtension}`;
+      }
+
+      let conflictAction = 'uniquify';
+      const validActions = ['uniquify', 'overwrite', 'prompt'];
+
+      if (
+        suggestion.onConflict &&
+        validActions.includes(suggestion.onConflict)
+      ) {
+        conflictAction = suggestion.onConflict;
+      }
+
+      if (!suggestion.waitForDownload) {
+        downloadListeners.downloadDataCache.delete(item.id);
+
+        const result = await browser.storage.session.get(DOWNLOADS_STORAGE_KEY);
+        const filesData = result[DOWNLOADS_STORAGE_KEY] || {};
+        delete filesData[item.id];
+        await browser.storage.session.set({
+          [DOWNLOADS_STORAGE_KEY]: filesData,
+        });
+      }
+
+      downloadListeners.handledFilenameCallbacks.add(downloadKey);
+
+      try {
+        suggest({
+          filename: suggestion.filename,
+          conflictAction,
+        });
+      } catch (callbackError) {
+        console.error('❌ failed to call suggest callback:', callbackError);
+      }
+    } catch (error) {
+      console.error('❌ failed to handle download filename:', error);
+    }
+  }, 0);
+
+  // important: we use async processing, so we must return true
+  return true;
+}
+
+function handleDownloadChanged(downloadDelta) {
+  const { id, state, filename } = downloadDelta;
+
+  if (!id || !downloadListeners.changedCallbacks.has(id)) return;
+
+  if (!downloadListeners.downloadInfo.has(id)) {
+    downloadListeners.downloadInfo.set(id, {
+      downloadId: id,
+      state: null,
+      filename: null,
+    });
+  }
+
+  const downloadInfo = downloadListeners.downloadInfo.get(id);
+
+  if (state) {
+    downloadInfo.state = state.current;
+  }
+
+  if (filename) {
+    downloadInfo.filename = filename.current;
+  }
+
+  if (
+    downloadInfo.state &&
+    ['complete', 'interrupted'].includes(downloadInfo.state)
+  ) {
+    const callback = downloadListeners.changedCallbacks.get(id);
+
+    const completeInfo = {
+      ...downloadInfo,
+
+      filename:
+        downloadInfo.filename ||
+        (downloadListeners.downloadDataCache.has(id)
+          ? downloadListeners.downloadDataCache.get(id).filename
+          : null),
+    };
+
+    try {
+      callback(completeInfo);
+    } catch (callbackError) {
+      console.error(
+        '❌ failed to call download changed callback:',
+        callbackError
+      );
+    }
+
+    downloadListeners.changedCallbacks.delete(id);
+    downloadListeners.downloadDataCache.delete(id);
+    downloadListeners.downloadInfo.delete(id);
+
+    const downloadKey = `download-${id}`;
+    downloadListeners.handledFilenameCallbacks.delete(downloadKey);
+    downloadListeners.suggestCalled.delete(downloadKey);
+  }
+}
+
+async function handleDownloadCreated(downloadItem) {
+  try {
+    let isHandled = false;
+    const pendingDownloads = downloadListeners.pendingRequests || [];
+
+    if (pendingDownloads.length > 0) {
+      const pendingRequest = pendingDownloads.shift();
+      const { downloadData, callback } = pendingRequest;
+
+      // save to memory cache immediately to avoid race condition
+      downloadListeners.downloadDataCache.set(downloadItem.id, downloadData);
+
+      // save to storage
+      const result = await browser.storage.session.get(DOWNLOADS_STORAGE_KEY);
+      const filesData = result[DOWNLOADS_STORAGE_KEY] || {};
+      filesData[downloadItem.id] = downloadData;
+      await browser.storage.session.set({ [DOWNLOADS_STORAGE_KEY]: filesData });
+
+      if (downloadData.waitForDownload && callback) {
+        downloadListeners.changedCallbacks.set(downloadItem.id, callback);
+      }
+
+      isHandled = true;
+    }
+
+    if (!isHandled) {
+      const result = await browser.storage.session.get(DOWNLOADS_STORAGE_KEY);
+      const filesData = result[DOWNLOADS_STORAGE_KEY] || {};
+
+      if (filesData[downloadItem.id]) {
+        downloadListeners.downloadDataCache.set(
+          downloadItem.id,
+          filesData[downloadItem.id]
+        );
+      }
+    }
+  } catch (error) {
+    console.error('❌ failed to handle download created:', error);
+  }
+}
+
+function cleanupDownloadListeners() {
+  const MAX_AGE = 60 * 60 * 1000; // 1 hour
+  const now = Date.now();
+
+  if (downloadListeners.handledFilenameCallbacksTimestamp) {
+    if (now - downloadListeners.handledFilenameCallbacksTimestamp > MAX_AGE) {
+      downloadListeners.handledFilenameCallbacks.clear();
+    }
+  }
+
+  downloadListeners.handledFilenameCallbacksTimestamp = now;
+}
+
+setInterval(cleanupDownloadListeners, 60 * 60 * 1000);
+
+async function registerBackgroundDownloadListeners() {
+  try {
+    if (browser.downloads.onCreated.hasListener(handleDownloadCreated)) {
+      browser.downloads.onCreated.removeListener(handleDownloadCreated);
+    }
+
+    if (
+      !IS_FIREFOX &&
+      browser.downloads.onDeterminingFilename &&
+      browser.downloads.onDeterminingFilename.hasListener(
+        determineFilenameListener
+      )
+    ) {
+      browser.downloads.onDeterminingFilename.removeListener(
+        determineFilenameListener
+      );
+    }
+
+    if (browser.downloads.onChanged.hasListener(handleDownloadChanged)) {
+      browser.downloads.onChanged.removeListener(handleDownloadChanged);
+    }
+
+    downloadListeners.handledFilenameCallbacks.clear();
+    downloadListeners.suggestCalled.clear();
+    downloadListeners.downloadInfo.clear();
+
+    if (downloadListeners.registered) {
+      downloadListeners.registered = false;
+    }
+  } catch (cleanupError) {
+    console.warn('⚠️ failed to cleanup existing listeners:', cleanupError);
+  }
+
+  if (downloadListeners.registered) return;
+
+  try {
+    // 确保有下载权限
+    const hasPermission = await browser.permissions.contains({
+      permissions: ['downloads'],
+    });
+    if (!hasPermission) {
+      console.error('❌ no download permission, cannot register listeners');
+      return;
+    }
+
+    browser.downloads.onCreated.addListener(handleDownloadCreated);
+
+    if (!IS_FIREFOX && browser.downloads.onDeterminingFilename) {
+      browser.downloads.onDeterminingFilename.addListener(
+        determineFilenameListener
+      );
+    }
+
+    browser.downloads.onChanged.addListener(handleDownloadChanged);
+
+    downloadListeners.registered = true;
+    downloadListeners.pendingRequests = [];
+
+    downloadListeners.handledFilenameCallbacksTimestamp = Date.now();
+  } catch (error) {
+    console.error('❌ failed to register download listeners:', error);
+  }
+}
+
+message.on('downloads:register-listeners', async () => {
+  await registerBackgroundDownloadListeners();
+  return true;
+});
+
+message.on('downloads:watch-created', async (data) => {
+  await registerBackgroundDownloadListeners();
+
+  // save pending download requests
+  downloadListeners.pendingRequests = downloadListeners.pendingRequests || [];
+
+  // Handle callback bridge or regular function
+  let safeCallback = null;
+  if (data.onComplete) {
+    if (isCallbackBridge(data.onComplete)) {
+      // Use callback bridge for cross-context communication
+      safeCallback = async (response) => {
+        try {
+          await executeCallbacksInData(data.onComplete, response);
+        } catch (callbackError) {
+          console.error(
+            '❌ failed to call download complete callback:',
+            callbackError
+          );
+        }
+      };
+    } else if (typeof data.onComplete === 'function') {
+      // Fallback for regular functions (should not happen in fixed version)
+      safeCallback = (response) => {
+        try {
+          data.onComplete(response);
+        } catch (callbackError) {
+          console.error(
+            '❌ failed to call download complete callback:',
+            callbackError
+          );
+        }
+      };
+    }
+  }
+
+  downloadListeners.pendingRequests.push({
+    downloadData: data.downloadData,
+    tabId: data.tabId,
+    callback: safeCallback,
+  });
+
+  return true;
+});
+
+message.on('downloads:watch-changed', async ({ downloadId, onComplete }) => {
+  await registerBackgroundDownloadListeners();
+
+  if (downloadId && onComplete) {
+    let safeCallback = null;
+
+    if (isCallbackBridge(onComplete)) {
+      // Use callback bridge for cross-context communication
+      safeCallback = async (response) => {
+        try {
+          await executeCallbacksInData(onComplete, response);
+        } catch (callbackError) {
+          console.error(
+            '❌ failed to call download changed callback:',
+            callbackError
+          );
+        }
+      };
+    } else if (typeof onComplete === 'function') {
+      // Fallback for regular functions (should not happen in fixed version)
+      safeCallback = (response) => {
+        try {
+          onComplete(response);
+        } catch (callbackError) {
+          console.error(
+            '❌ failed to call download changed callback:',
+            callbackError
+          );
+        }
+      };
+    }
+
+    if (safeCallback) {
+      downloadListeners.changedCallbacks.set(downloadId, safeCallback);
+    }
+  }
+
+  return true;
 });
 
 automa('background', message);
 
-browser.runtime.onMessage.addListener(message.listener());
-
-/* eslint-disable no-use-before-define */
-
-const isMV2 = browser.runtime.getManifest().manifest_version === 2;
-let lifeline;
-async function keepAlive() {
-  if (lifeline) return;
-  for (const tab of await browser.tabs.query({ url: '*://*/*' })) {
-    try {
-      await browser.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: () => chrome.runtime.connect({ name: 'keepAlive' }),
-      });
-      browser.tabs.onUpdated.removeListener(retryOnTabUpdate);
-      return;
-    } catch (e) {
-      // Do nothing
-    }
-  }
-  browser.tabs.onUpdated.addListener(retryOnTabUpdate);
-}
-async function retryOnTabUpdate(tabId, info) {
-  if (info.url && /^(file|https?):/.test(info.url)) {
-    keepAlive();
-  }
-}
-function keepAliveForced() {
-  lifeline?.disconnect();
-  lifeline = null;
-  keepAlive();
-}
-
-if (!isMV2) {
-  browser.runtime.onConnect.addListener((port) => {
-    if (port.name === 'keepAlive') {
-      lifeline = port;
-      /* eslint-disable-next-line */
-      console.log('Stayin alive: ', new Date());
-      setTimeout(keepAliveForced, 295e3);
-      port.onDisconnect.addListener(keepAliveForced);
-    }
-  });
-
-  keepAlive();
-} else if (!isFirefox) {
-  const sandboxIframe = document.createElement('iframe');
-  sandboxIframe.src = '/sandbox.html';
-  sandboxIframe.id = 'sandbox';
-
-  document.body.appendChild(sandboxIframe);
-
-  window.addEventListener('message', async ({ data }) => {
-    if (data?.type !== 'automa-fetch') return;
-
-    const sendResponse = (result) => {
-      sandboxIframe.contentWindow.postMessage(
-        {
-          type: 'fetchResponse',
-          data: result,
-          id: data.data.id,
-        },
-        '*'
-      );
-    };
-
-    const { type, resource } = data.data;
-    try {
-      const response = await fetch(resource.url, resource);
-      if (!response.ok) throw new Error(response.statusText);
-
-      let result = null;
-
-      if (type === 'base64') {
-        const blob = await response.blob();
-        const base64 = await readFileAsBase64(blob);
-
-        result = base64;
-      } else {
-        result = await response[type]();
-      }
-      sendResponse({ isError: false, result });
-    } catch (error) {
-      sendResponse({ isError: true, result: error.message });
-    }
-  });
-}
+browser.runtime.onMessage.addListener(message.listener);

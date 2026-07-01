@@ -32,7 +32,7 @@
           <span v-else class="bg-box-transparent rounded-lg p-2">
             <v-remixicon :name="workflow.data.icon" />
           </span>
-          <div class="ml-4 ml-2 flex-1 overflow-hidden">
+          <div class="ml-4 flex-1 overflow-hidden">
             <p class="text-overflow mr-4 leading-tight">
               {{ workflow.data.name }}
             </p>
@@ -122,16 +122,16 @@
   </div>
 </template>
 <script setup>
-import { onMounted, ref, computed } from 'vue';
-import browser from 'webextension-polyfill';
-import workflowParameters from '@business/parameters';
-import automa from '@business';
+import ParameterCheckboxValue from '@/components/newtab/workflow/edit/Parameter/ParameterCheckboxValue.vue';
+import ParameterInputValue from '@/components/newtab/workflow/edit/Parameter/ParameterInputValue.vue';
+import ParameterJsonValue from '@/components/newtab/workflow/edit/Parameter/ParameterJsonValue.vue';
 import { useTheme } from '@/composable/theme';
 import dayjs from '@/lib/dayjs';
 import { parseJSON } from '@/utils/helper';
-import ParameterInputValue from '@/components/newtab/workflow/edit/Parameter/ParameterInputValue.vue';
-import ParameterJsonValue from '@/components/newtab/workflow/edit/Parameter/ParameterJsonValue.vue';
-import ParameterCheckboxValue from '@/components/newtab/workflow/edit/Parameter/ParameterCheckboxValue.vue';
+import automa from '@business';
+import workflowParameters from '@business/parameters';
+import { computed, onMounted, ref } from 'vue';
+import browser from 'webextension-polyfill';
 
 const paramsList = {
   string: {
@@ -169,6 +169,13 @@ const flattenTeamWorkflows = (items) => Object.values(Object.values(items)[0]);
 async function findWorkflow(workflowId) {
   if (!workflowId) return null;
 
+  if (workflowId.startsWith('hosted')) {
+    const { workflowHosts } = await browser.storage.local.get('workflowHosts');
+    if (!workflowHosts) return null;
+    const _hostId = workflowId.split(':')[1];
+    return workflowHosts[_hostId] || undefined;
+  }
+
   if (workflowId.startsWith('team')) {
     const { teamWorkflows } = await browser.storage.local.get('teamWorkflows');
     if (!teamWorkflows) return null;
@@ -202,11 +209,13 @@ function deleteWorkflow(index) {
   }
 }
 async function addWorkflow(workflowId) {
+  console.log('🚀 ~ addWorkflow ~ workflowId:', workflowId);
   try {
     const workflow =
       typeof workflowId === 'string'
         ? await findWorkflow(workflowId)
         : workflowId;
+    console.log('🚀 ~ addWorkflow ~ workflow:', workflow);
     const triggerBlock = workflow.drawflow.nodes.find(
       (node) => node.label === 'trigger'
     );
@@ -314,7 +323,9 @@ function isValidParams(params) {
 let checkTimeout = null;
 
 browser.runtime.onMessage.addListener(({ name, data }) => {
+  console.log('🚀 params html ~ name:', name, data);
   if (name === 'workflow:params') {
+    console.log('🚀 从popup的事件监听中触发', name, data);
     addWorkflow(data);
   } else if (name === 'workflow:params-block') {
     const params = [...data.params];
@@ -348,7 +359,6 @@ onMounted(async () => {
   try {
     const query = new URLSearchParams(window.location.search);
     const workflowId = query.get('workflowId');
-
     if (workflowId) addWorkflow(workflowId);
     await automa('content');
 

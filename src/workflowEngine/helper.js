@@ -1,14 +1,44 @@
-import browser from 'webextension-polyfill';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
+import { MessageListener } from '@/utils/message';
 import { customAlphabet } from 'nanoid/non-secure';
+import browser from 'webextension-polyfill';
 
 export function escapeElementPolicy(script) {
   if (window?.trustedTypes?.createPolicy) {
-    const escapePolicy = window.trustedTypes.createPolicy('forceInner', {
-      createHTML: (to_escape) => to_escape,
-      createScript: (to_escape) => to_escape,
-    });
+    try {
+      // 尝试使用可能在CSP白名单中的名称
+      const policyNames = ['default', 'dompurify', 'jSecure', 'forceInner'];
+      let escapePolicy = null;
 
-    return escapePolicy.createScript(script);
+      // 尝试创建策略，如果一个名称失败，尝试下一个
+      for (const policyName of policyNames) {
+        try {
+          escapePolicy = window.trustedTypes.createPolicy(policyName, {
+            createHTML: (to_escape) => to_escape,
+            createScript: (to_escape) => to_escape,
+          });
+          // 如果成功创建，跳出循环
+          break;
+        } catch (e) {
+          // 该名称失败，继续尝试下一个
+          console.debug(`Policy name ${policyName} failed, trying next one`);
+        }
+      }
+
+      // 如果成功创建了策略，使用它
+      if (escapePolicy) {
+        return escapePolicy.createScript(script);
+      }
+      // 如果所有策略名称都失败，返回原始脚本
+      console.debug(
+        'All trusted policy creation attempts failed, falling back to raw script'
+      );
+      return script;
+    } catch (e) {
+      // 捕获任何其他错误并降级
+      console.debug('Error creating trusted policy:', e);
+      return script;
+    }
   }
 
   return script;
@@ -38,7 +68,9 @@ export function messageSandbox(type, data = {}) {
 
 export async function getFrames(tabId) {
   try {
-    const frames = await browser.webNavigation.getAllFrames({ tabId });
+    const frames = await BrowserAPIService.webNavigation.getAllFrames({
+      tabId,
+    });
     const framesObj = frames.reduce((acc, { frameId, url }) => {
       const key = url === 'about:blank' ? '' : url;
 
@@ -56,19 +88,27 @@ export async function getFrames(tabId) {
 
 export function sendDebugCommand(tabId, method, params = {}) {
   return new Promise((resolve) => {
-    chrome.debugger.sendCommand({ tabId }, method, params, resolve);
+    BrowserAPIService.debugger.sendCommand({ tabId }, method, params, resolve);
   });
 }
 
-export function attachDebugger(tabId, prevTab) {
-  return new Promise((resolve) => {
-    if (prevTab && tabId !== prevTab)
-      chrome.debugger.detach({ tabId: prevTab });
+export async function attachDebugger(tabId, prevTab) {
+  try {
+    if (prevTab && tabId !== prevTab) {
+      await BrowserAPIService.debugger.detach({ tabId: prevTab });
+    }
 
-    chrome.debugger.attach({ tabId }, '1.3', () => {
-      chrome.debugger.sendCommand({ tabId }, 'Page.enable', resolve);
-    });
-  });
+    // first attach
+    await BrowserAPIService.debugger.attach({ tabId }, '1.3');
+
+    // and then Page.enable
+    await BrowserAPIService.debugger.sendCommand({ tabId }, 'Page.enable');
+
+    return true;
+  } catch (error) {
+    console.error('Failed to attach debugger:', error);
+    return false;
+  }
 }
 
 export function waitTabLoaded({ tabId, listenError = false, ms = 10000 }) {
@@ -85,21 +125,27 @@ export function waitTabLoaded({ tabId, listenError = false, ms = 10000 }) {
         return;
 
       clearTimeout(timeout);
-      browser.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
+      BrowserAPIService.webNavigation.onErrorOccurred.removeListener(
+        onErrorOccurred
+      );
       reject(new Error(details.error));
     };
 
     if (ms > 0) {
       timeout = setTimeout(() => {
-        browser.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
+        BrowserAPIService.webNavigation.onErrorOccurred.removeListener(
+          onErrorOccurred
+        );
         reject(new Error('Timeout'));
       }, ms);
     }
     if (listenError && BROWSER_TYPE === 'chrome')
-      browser.webNavigation.onErrorOccurred.addListener(onErrorOccurred);
+      BrowserAPIService.webNavigation.onErrorOccurred.addListener(
+        onErrorOccurred
+      );
 
     const activeTabStatus = () => {
-      browser.tabs.get(tabId).then((tab) => {
+      BrowserAPIService.tabs.get(tabId).then((tab) => {
         if (!tab) {
           reject(new Error('no-tab'));
           return;
@@ -114,7 +160,9 @@ export function waitTabLoaded({ tabId, listenError = false, ms = 10000 }) {
 
         clearTimeout(timeout);
 
-        browser.webNavigation.onErrorOccurred.removeListener(onErrorOccurred);
+        BrowserAPIService.webNavigation.onErrorOccurred.removeListener(
+          onErrorOccurred
+        );
         resolve();
       });
     };
@@ -222,86 +270,31 @@ export async function checkCSPAndInject(
   { target, debugMode, options = {}, injectOptions = {} },
   callback
 ) {
-  const [isBlockedByCSP] = await browser.scripting.executeScript({
-    target,
-    func: () => {
-      return new Promise((resolve) => {
-        const escapePolicy = (script) => {
-          if (window?.trustedTypes?.createPolicy) {
-            const escapeElPolicy = window.trustedTypes.createPolicy(
-              'forceInner',
-              {
-                createHTML: (to_escape) => to_escape,
-                createScript: (to_escape) => to_escape,
-              }
-            );
-
-            return escapeElPolicy.createScript(script);
-          }
-
-          return script;
-        };
-        const eventListener = ({ srcElement }) => {
-          if (!srcElement || srcElement.id !== 'automa-csp') return;
-          srcElement.remove();
-          resolve(true);
-        };
-        document.addEventListener('securitypolicyviolation', eventListener);
-        const script = document.createElement('script');
-        script.id = 'automa-csp';
-        script.innerText = escapePolicy('console.log("...")');
-
-        setTimeout(() => {
-          document.removeEventListener(
-            'securitypolicyviolation',
-            eventListener
-          );
-          script.remove();
-          resolve(false);
-        }, 500);
-
-        document.body.appendChild(script);
-      });
-    },
-    world: 'MAIN',
-    ...(injectOptions || {}),
-  });
-
-  if (isBlockedByCSP.result) {
-    await new Promise((resolve) => {
-      chrome.debugger.attach({ tabId: target.tabId }, '1.3', resolve);
-    });
-
-    const jsCode = await callback();
-    const execResult = await sendDebugCommand(
-      target.tabId,
-      'Runtime.evaluate',
-      {
-        expression: jsCode,
-        userGesture: true,
-        awaitPromise: true,
-        returnByValue: true,
-        ...(options || {}),
-      }
-    );
-
-    if (!debugMode) await chrome.debugger.detach({ tabId: target.tabId });
-
-    if (!execResult || !execResult.result) {
-      throw new Error('Unable execute code');
-    }
-
-    if (execResult.result.subtype === 'error') {
-      throw new Error(execResult.result.description);
-    }
-
-    return {
-      isBlocked: true,
-      value: execResult.result.value || null,
-    };
+  let _callback = '';
+  if (typeof callback === 'function') {
+    _callback = callback.toString();
+  } else if (typeof callback === 'string') {
+    _callback = callback;
   }
 
-  return { isBlocked: false, value: null };
+  try {
+    const result = await MessageListener.sendMessage(
+      'check-csp-and-inject',
+      {
+        target,
+        debugMode,
+        callback: _callback,
+        options,
+        injectOptions,
+      },
+      'background'
+    );
+
+    return result;
+  } catch (error) {
+    console.error('CSP check error:', error);
+    return { isBlocked: false, value: null };
+  }
 }
 
 function fallbackCopyTextToClipboard(text) {
@@ -325,6 +318,7 @@ function fallbackCopyTextToClipboard(text) {
 
   document.body.removeChild(textArea);
 }
+
 export function copyTextToClipboard(text) {
   return new Promise((resolve, reject) => {
     if (!navigator.clipboard) {

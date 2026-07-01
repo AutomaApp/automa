@@ -76,10 +76,10 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { countDuration } from '@/utils/helper';
 import { useWorkflowStore } from '@/stores/workflow';
-import { stopWorkflowExec } from '@/workflowEngine';
 import dbLogs from '@/db/logs';
 import dayjs from '@/lib/dayjs';
 import LogsHistory from '@/components/newtab/logs/LogsHistory.vue';
+import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
 
 const props = defineProps({
   logId: {
@@ -103,7 +103,7 @@ const running = computed(() =>
 );
 
 function stopWorkflow() {
-  stopWorkflowExec(running.value.id);
+  RendererWorkflowService.stopWorkflowExecution(running.value.id);
   emit('close');
 }
 

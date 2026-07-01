@@ -1,5 +1,5 @@
-import customHandlers from '@business/blocks/backgroundHandler';
 import { toCamelCase } from '@/utils/helper';
+import customHandlers from '@business/blocks/backgroundHandler';
 
 const blocksHandler = require.context('./blocksHandler', false, /\.js$/);
 const handlers = blocksHandler.keys().reduce((acc, key) => {

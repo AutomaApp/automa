@@ -1,10 +1,9 @@
-import browser from 'webextension-polyfill';
 import compareBlockValue from '@/utils/compareBlockValue';
 import testConditions from '../utils/testConditions';
 import renderString from '../templating/renderString';
 import checkCodeCondition from '../utils/conditionCode';
 
-const isMV2 = browser.runtime.getManifest().manifest_version === 2;
+const isMV2 = false;
 
 function checkConditions(data, conditionOptions) {
   return new Promise((resolve, reject) => {

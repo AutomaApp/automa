@@ -10,15 +10,25 @@
       <label for="new-tab-url" class="input-label">
         {{ t('workflow.blocks.new-tab.url') }}
       </label>
-      <ui-textarea
-        id="new-tab-url"
-        :model-value="data.url"
-        rows="1"
-        class="w-full"
-        autocomplete="off"
-        placeholder="http://example.com/"
-        @change="updateData({ url: $event })"
-      />
+      <div class="flex items-center gap-2 w-full">
+        <ui-select v-model="state.protocol" class="w-28">
+          <option
+            v-for="proto in PROTOCOLS"
+            :key="proto.value"
+            :value="proto.value"
+          >
+            {{ proto.label }}
+          </option>
+        </ui-select>
+        <ui-input
+          id="new-tab-url"
+          v-model="state.urlPath"
+          placeholder="example.com/"
+          class="flex-1"
+          autocomplete="off"
+          type="text"
+        />
+      </div>
     </edit-autocomplete>
     <ui-checkbox
       :model-value="data.updatePrevTab"
@@ -79,10 +89,13 @@
   </div>
 </template>
 <script setup>
+import UiInput from '@/components/ui/UiInput.vue';
+import UiSelect from '@/components/ui/UiSelect.vue';
+import { reactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import VueSlider from 'vue-slider-component';
-import EditAutocomplete from './EditAutocomplete.vue';
 import 'vue-slider-component/theme/default.css';
+import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({
   data: {
@@ -95,7 +108,75 @@ const emit = defineEmits(['update:data']);
 const { t } = useI18n();
 const browserType = BROWSER_TYPE;
 
+const PROTOCOLS = [
+  { value: 'https://', label: 'HTTPS' },
+  { value: 'http://', label: 'HTTP' },
+  { value: 'ftp://', label: 'FTP' },
+  { value: 'file://', label: 'FILE' },
+  { value: 'mailto:', label: 'MAILTO' },
+];
+
+function isTemplateVariable(str) {
+  if (!str || typeof str !== 'string') return false;
+  return str.includes('{{');
+}
+
+function parseUrl(url) {
+  if (!url || typeof url !== 'string') {
+    return { protocol: 'https://', path: '' };
+  }
+
+  if (isTemplateVariable(url)) {
+    return { protocol: 'https://', path: url };
+  }
+
+  const protocolMatch = url.match(/^(https?:|ftp:|file:|mailto:)(\/\/)?/i);
+  if (protocolMatch) {
+    const protocolBase = protocolMatch[1].toLowerCase();
+    const protocol = protocolBase + (protocolBase === 'mailto:' ? '' : '//');
+    const path = url.slice(protocolMatch[0].length);
+    return { protocol, path };
+  }
+
+  return { protocol: 'https://', path: url };
+}
+
+function cleanProtocol(path) {
+  if (!path || typeof path !== 'string') return path;
+  return path.replace(/^(https?:|ftp:|file:|mailto:)(\/\/)?/i, '');
+}
+
+const state = reactive({
+  protocol: 'https://',
+  urlPath: '',
+});
+
+const parsed = parseUrl(props.data.url || '');
+state.protocol = parsed.protocol;
+state.urlPath = parsed.path;
+
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }
+
+watch(
+  () => [state.protocol, state.urlPath],
+  ([newProtocol, newPath]) => {
+    const cleanPath = cleanProtocol(newPath || '');
+    const fullUrl = cleanPath ? newProtocol + cleanPath : newProtocol;
+    updateData({ url: fullUrl });
+  },
+  { deep: true }
+);
+
+watch(
+  () => props.data.url,
+  (newUrl) => {
+    const urlData = parseUrl(newUrl || '');
+    if (urlData.protocol !== state.protocol || urlData.path !== state.urlPath) {
+      state.protocol = urlData.protocol;
+      state.urlPath = urlData.path;
+    }
+  }
+);
 </script>

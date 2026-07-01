@@ -6,25 +6,7 @@ import {
   registerSpecificDay,
   registerWorkflowTrigger,
 } from '@/utils/workflowTrigger';
-import BackgroundUtils from './BackgroundUtils';
 import BackgroundWorkflowUtils from './BackgroundWorkflowUtils';
-
-async function executeWorkflow(workflowData, options) {
-  if (workflowData.isDisabled) return;
-
-  const isMV2 = browser.runtime.getManifest().manifest_version === 2;
-  const context = workflowData.settings.execContext;
-  if (isMV2 || context === 'background') {
-    BackgroundWorkflowUtils.executeWorkflow(workflowData, options);
-    return;
-  }
-
-  await BackgroundUtils.openDashboard('?fromBackground=true', false);
-  await BackgroundUtils.sendMessageToDashboard('workflow:execute', {
-    data: workflowData,
-    options,
-  });
-}
 
 class BackgroundWorkflowTriggers {
   static async visitWebTriggers(tabId, tabUrl, spa = false) {
@@ -51,7 +33,11 @@ class BackgroundWorkflowTriggers {
       const workflowData = await BackgroundWorkflowUtils.getWorkflow(
         workflowId
       );
-      if (workflowData) executeWorkflow(workflowData, { tabId });
+      if (workflowData) {
+        BackgroundWorkflowUtils.instance.executeWorkflow(workflowData, {
+          tabId,
+        });
+      }
     }
   }
 
@@ -118,7 +104,7 @@ class BackgroundWorkflowTriggers {
         if (isAfter) return;
       }
 
-      executeWorkflow(currentWorkflow);
+      BackgroundWorkflowUtils.instance.executeWorkflow(currentWorkflow);
 
       if (!data) return;
 
@@ -154,7 +140,7 @@ class BackgroundWorkflowTriggers {
       const workflowData = await BackgroundWorkflowUtils.getWorkflow(
         workflowId
       );
-      executeWorkflow(workflowData, {
+      BackgroundWorkflowUtils.instance.executeWorkflow(workflowData, {
         data: {
           variables: message,
         },
@@ -202,7 +188,7 @@ class BackgroundWorkflowTriggers {
 
       if (triggerBlock) {
         if (isStartup && triggerBlock.type === 'on-startup') {
-          executeWorkflow(currWorkflow);
+          BackgroundWorkflowUtils.instance.executeWorkflow(currWorkflow);
         } else {
           if (isStartup && triggerBlock.triggers) {
             for (const trigger of triggerBlock.triggers) {

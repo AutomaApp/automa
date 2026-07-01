@@ -1,5 +1,6 @@
 import handleFormElement from '@/utils/handleFormElement';
 import { sendMessage } from '@/utils/message';
+import renderString from '@/workflowEngine/templating/renderString';
 import handleSelector, { markElement } from '../handleSelector';
 import synchronizedLock from '../synchronizedLock';
 
@@ -45,7 +46,9 @@ async function forms(block) {
           );
         }
 
-        const commands = data.value.split('').map((char) => ({
+        const renderedResult = await renderString(data.value, block.refData);
+        const textValue = renderedResult.value || '';
+        const commands = textValue.split('').map((char) => ({
           type: 'keyDown',
           text: char === '\n' ? '\r' : char,
         }));

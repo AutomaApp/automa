@@ -14,6 +14,7 @@ import Recording from './pages/Recording.vue';
 import Settings from './pages/Settings.vue';
 import SettingsIndex from './pages/settings/SettingsIndex.vue';
 import SettingsAbout from './pages/settings/SettingsAbout.vue';
+import SettingsProfile from './pages/settings/SettingsProfile.vue';
 import SettingsShortcuts from './pages/settings/SettingsShortcuts.vue';
 import SettingsBackup from './pages/settings/SettingsBackup.vue';
 import SettingsEditor from './pages/settings/SettingsEditor.vue';
@@ -101,6 +102,7 @@ const routes = [
     component: Settings,
     children: [
       { path: '', component: SettingsIndex },
+      { path: '/profile', component: SettingsProfile },
       { path: '/about', component: SettingsAbout },
       { path: '/backup', component: SettingsBackup },
       { path: '/editor', component: SettingsEditor },

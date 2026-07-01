@@ -1,9 +1,13 @@
-import { nanoid } from 'nanoid';
-import browser from 'webextension-polyfill';
-import cloneDeep from 'lodash.clonedeep';
-import { getBlocks } from '@/utils/getSharedData';
-import { clearCache, sleep, parseJSON, isObject } from '@/utils/helper';
 import dbStorage from '@/db/storage';
+import BrowserAPIService, {
+  IS_BROWSER_API_AVAILABLE,
+} from '@/service/browser-api/BrowserAPIService';
+import { fetchApi } from '@/utils/api';
+import { getBlocks } from '@/utils/getSharedData';
+import { clearCache, isObject, parseJSON, sleep } from '@/utils/helper';
+import { MessageListener } from '@/utils/message';
+import cloneDeep from 'lodash.clonedeep';
+import { nanoid } from 'nanoid';
 import WorkflowWorker from './WorkflowWorker';
 
 let blocks = getBlocks();
@@ -15,11 +19,11 @@ class WorkflowEngine {
     this.logger = logger;
     this.workflow = workflow;
     this.isPopup = isPopup ?? true;
+    // this.isMV2 = IS_MV2;
     this.blocksHandler = blocksHandler;
     this.isTestingMode = workflow.testingMode;
     this.parentWorkflow = options?.parentWorkflow;
     this.saveLog = workflow.settings?.saveLog ?? true;
-    this.isMV2 = browser.runtime.getManifest().manifest_version === 2;
 
     this.workerId = 0;
     this.workers = new Map();
@@ -112,6 +116,8 @@ class WorkflowEngine {
         worker.resume(nextBlock);
       });
     };
+
+    // this.messageListener = new MessageListener('workflow-engine');
   }
 
   async init() {
@@ -153,42 +159,75 @@ class WorkflowEngine {
         this.eventListeners = {};
 
         if (triggerBlock.data.preferParamsInTab) {
-          const [activeTab] = await browser.tabs.query({
+          const [activeTab] = await BrowserAPIService.tabs.query({
             active: true,
             url: '*://*/*',
             lastFocusedWindow: true,
           });
           if (activeTab) {
-            const result = await browser.tabs.sendMessage(activeTab.id, {
-              type: 'input-workflow-params',
-              data: {
-                workflow: this.workflow,
-                params: triggerBlock.data.parameters,
-              },
-            });
+            const result = await BrowserAPIService.tabs.sendMessage(
+              activeTab.id,
+              {
+                type: 'input-workflow-params',
+                data: {
+                  workflow: this.workflow,
+                  params: triggerBlock.data.parameters,
+                },
+              }
+            );
 
             if (result) return;
           }
         }
 
-        const paramUrl = browser.runtime.getURL('params.html');
-        const tabs = await browser.tabs.query({});
+        const paramUrl = BrowserAPIService.runtime.getURL('params.html');
+
+        let tabs;
+        if (!IS_BROWSER_API_AVAILABLE) {
+          tabs = await BrowserAPIService.tabs.query({});
+        } else {
+          try {
+            tabs = await BrowserAPIService.tabs.query({});
+            if (!tabs || !Array.isArray(tabs)) {
+              tabs = await MessageListener.sendMessage(
+                'browser-api',
+                { name: 'tabs.query', args: [{}] },
+                'background'
+              );
+            }
+          } catch (e) {
+            tabs = await MessageListener.sendMessage(
+              'browser-api',
+              { name: 'tabs.query', args: [{}] },
+              'background'
+            );
+          }
+        }
+
         const paramTab = tabs.find((tab) => tab.url?.includes(paramUrl));
 
         if (paramTab) {
-          browser.tabs.sendMessage(paramTab.id, {
+          await BrowserAPIService.tabs.sendMessage(paramTab.id, {
             name: 'workflow:params',
             data: this.workflow,
           });
-
-          browser.windows.update(paramTab.windowId, { focused: true });
+          await BrowserAPIService.windows.update(paramTab.windowId, {
+            focused: true,
+          });
         } else {
-          browser.windows.create({
+          let workflowId = '';
+          if (this.workflow.hostId) {
+            workflowId = `hosted:${this.workflow.hostId}`;
+          } else {
+            workflowId = this.workflow.id;
+          }
+
+          BrowserAPIService.windows.create({
             type: 'popup',
             width: 480,
             height: 700,
-            url: browser.runtime.getURL(
-              `/params.html?workflowId=${this.workflow.id}`
+            url: BrowserAPIService.runtime.getURL(
+              `/params.html?workflowId=${workflowId}`
             ),
           });
         }
@@ -253,14 +292,14 @@ class WorkflowEngine {
       if (BROWSER_TYPE !== 'chrome') {
         this.workflow.settings.debugMode = false;
       } else if (this.workflow.settings.debugMode) {
-        chrome.debugger.onEvent.addListener(this.onDebugEvent);
+        BrowserAPIService.debugger.onEvent.addListener(this.onDebugEvent);
       }
       if (
         this.workflow.settings.reuseLastState &&
         !this.workflow.connectedTable
       ) {
         const lastStateKey = `state:${this.workflow.id}`;
-        const value = await browser.storage.local.get(lastStateKey);
+        const value = await BrowserAPIService.storage.local.get(lastStateKey);
         const lastState = value[lastStateKey];
 
         if (lastState) {
@@ -269,9 +308,8 @@ class WorkflowEngine {
         }
       }
 
-      const { settings: userSettings } = await browser.storage.local.get(
-        'settings'
-      );
+      const { settings: userSettings = {} } =
+        (await BrowserAPIService.storage.local.get('settings')) || {};
       this.logsLimit = userSettings?.logsLimit || 1001;
 
       this.workflow.table = columns;
@@ -300,9 +338,10 @@ class WorkflowEngine {
         parentState: this.parentWorkflow,
         teamId: this.workflow.teamId || null,
       });
+
       this.addWorker({ blockId: triggerBlock.id });
     } catch (error) {
-      console.error(error);
+      console.error('WorkflowEngine init error:', error);
     }
   }
 
@@ -373,7 +412,9 @@ class WorkflowEngine {
   }
 
   async executeQueue() {
-    const { workflowQueue } = await browser.storage.local.get('workflowQueue');
+    const { workflowQueue } = (await BrowserAPIService.storage.local.get(
+      'workflowQueue'
+    )) || { workflowQueue: [] };
     const queueIndex = (workflowQueue || []).indexOf(this.workflow?.id);
 
     if (!workflowQueue || queueIndex === -1) return;
@@ -387,7 +428,7 @@ class WorkflowEngine {
 
     workflowQueue.splice(queueIndex, 1);
 
-    await browser.storage.local.set({ workflowQueue });
+    await BrowserAPIService.storage.local.set({ workflowQueue });
   }
 
   async destroyWorker(workerId) {
@@ -402,6 +443,11 @@ class WorkflowEngine {
     }
     // wait detach debugger
     this.workers.delete(workerId);
+
+    // No active workers, destroying workflow
+    if (this.workers.size === 0) {
+      this.destroy('success');
+    }
   }
 
   async destroy(status, message, blockDetail) {
@@ -430,16 +476,16 @@ class WorkflowEngine {
 
     try {
       if (this.isDestroyed) return;
-      if (this.isUsingProxy) browser.proxy.settings.clear({});
+      if (this.isUsingProxy) BrowserAPIService.proxy.clearSettings({});
       if (this.workflow.settings.debugMode && BROWSER_TYPE === 'chrome') {
-        chrome.debugger.onEvent.removeListener(this.onDebugEvent);
+        BrowserAPIService.debugger.onEvent.removeListener(this.onDebugEvent);
 
         await sleep(1000);
 
         this.workers.forEach((worker) => {
           if (!worker.debugAttached) return;
 
-          chrome.debugger.detach({ tabId: worker.activeTab.id });
+          BrowserAPIService.debugger.detach({ tabId: worker.activeTab.id });
         });
       }
 
@@ -449,6 +495,38 @@ class WorkflowEngine {
 
       this.states.off('stop', this.onWorkflowStopped);
       await this.states.delete(this.id);
+
+      if (!this.workflow.settings?.debugMode) {
+        const { user } = (await BrowserAPIService.storage.local.get(
+          'user'
+        )) || { user: null };
+
+        const logDto = {
+          workflowId: this.workflow.id,
+          workflowName: this.workflow.name,
+          nodesCount: this.workflow.drawflow.nodes.length,
+          status,
+          message: message || '',
+          startedAt: new Date(this.startedTimestamp).toISOString(),
+          endedAt: new Date(endedTimestamp).toISOString(),
+          userId: user?.id,
+        };
+
+        try {
+          const response = await fetchApi('/workflows/logs/report', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(logDto),
+            auth: true,
+          });
+
+          if (!response.ok) {
+            throw new Error(`API request failed: ${response.status}`);
+          }
+        } catch (err) {
+          console.error('Failed to report workflow execution:', err);
+        }
+      }
 
       this.dispatchEvent('destroyed', {
         status,
@@ -471,7 +549,7 @@ class WorkflowEngine {
           },
         };
 
-        browser.storage.local.set(workflowState);
+        BrowserAPIService.storage.local.set(workflowState);
       } else if (status === 'success') {
         clearCache(this.workflow);
       }
@@ -542,7 +620,7 @@ class WorkflowEngine {
 
       cleanUp();
     } catch (error) {
-      console.error(error);
+      console.error('workflowEngine error', error);
       cleanUp();
     }
   }

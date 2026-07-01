@@ -1,10 +1,11 @@
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import browser from 'webextension-polyfill';
 
 export async function getActiveTab() {
   try {
     const tabsQuery = {
       active: true,
-      url: '*://*/*',
+      url: ['*://*/*', 'file://*'],
     };
 
     const window = await browser.windows.getLastFocused({
@@ -249,7 +250,7 @@ export function debounce(callback, time = 200) {
 
 export async function clearCache(workflow) {
   try {
-    await browser.storage.local.remove(`state:${workflow.id}`);
+    await BrowserAPIService.storage.local.remove(`state:${workflow.id}`);
 
     const flows = parseJSON(workflow.drawflow, null);
     const blocks = flows && flows.drawflow.Home.data;

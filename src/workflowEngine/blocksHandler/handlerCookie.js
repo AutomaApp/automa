@@ -1,4 +1,4 @@
-import browser from 'webextension-polyfill';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import { parseJSON } from '@/utils/helper';
 
 function getValues(data, keys) {
@@ -33,7 +33,7 @@ const keys = {
 };
 
 async function cookie({ data, id }) {
-  const hasPermission = await browser.permissions.contains({
+  const hasPermission = await BrowserAPIService.permissions.contains({
     permissions: ['cookies'],
   });
 
@@ -53,7 +53,7 @@ async function cookie({ data, id }) {
     const obj = parseJSON(data.jsonCode, null);
     if (!obj) throw new Error('Invalid JSON format');
 
-    result = await browser.cookies[key](obj);
+    result = await BrowserAPIService.cookies[key](obj);
   } else {
     const values = getValues(data, keys[key]);
     if (values.expirationDate) {
@@ -61,15 +61,15 @@ async function cookie({ data, id }) {
     }
 
     if (data.type === 'remove' && !data.name) {
-      const cookies = await browser.cookies.getAll({ url: data.url });
+      const cookies = await BrowserAPIService.cookies.getAll({ url: data.url });
       const removePromise = cookies.map(({ name }) =>
-        browser.cookies.remove({ name, url: data.url })
+        BrowserAPIService.cookies.remove({ name, url: data.url })
       );
       await Promise.allSettled(removePromise);
 
       result = cookies;
     } else {
-      result = await browser.cookies[key](values);
+      result = await BrowserAPIService.cookies[key](values);
     }
   }
 

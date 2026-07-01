@@ -1,9 +1,9 @@
-import browser from 'webextension-polyfill';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 
 export async function reloadTab({ id }) {
   if (!this.activeTab.id) throw new Error('no-tab');
 
-  await browser.tabs.reload(this.activeTab.id);
+  await BrowserAPIService.tabs.reload(this.activeTab.id);
 
   return {
     data: '',

@@ -49,6 +49,32 @@ export const tasks = {
       },
     },
   },
+  'ai-workflow': {
+    name: 'AI Workflow',
+    description: 'A workflow that is created by AI-Power',
+    icon: 'https://winrobot-pub-a-1302949341.cos.ap-shanghai.myqcloud.com/image/20250717194249/10e0c06a7b243d15ac9a9385b07ce4e2.svg',
+    tag: 'AI',
+    component: 'BlockBasic',
+    editComponent: 'EditAiWorkflow',
+    category: 'general',
+    inputs: 1,
+    outputs: 1,
+    allowedInputs: true,
+    maxConnection: 1,
+    data: {
+      disableBlock: false,
+      flowUuid: '',
+      flowLabel: '',
+      description: '',
+      inputs: [],
+      outputs: [],
+      assignVariable: false,
+      variableName: '',
+
+      saveData: false,
+      dataColumn: '',
+    },
+  },
   'execute-workflow': {
     name: 'Execute workflow',
     description: '',
@@ -1594,7 +1620,7 @@ export const communities = [
   {
     name: 'GitHub',
     icon: 'riGithubFill',
-    url: 'https://github.com/kholid060/automa',
+    url: 'https://github.com/AutomaApp/automa',
   },
   {
     name: 'Twitter',

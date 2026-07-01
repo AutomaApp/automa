@@ -1,8 +1,8 @@
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import { nanoid } from 'nanoid';
-import browser from 'webextension-polyfill';
 
 export default async function ({ data, id }) {
-  const hasPermission = await browser.permissions.contains({
+  const hasPermission = await BrowserAPIService.permissions.contains({
     permissions: ['notifications'],
   });
 
@@ -16,7 +16,7 @@ export default async function ({ data, id }) {
   const options = {
     title: data.title,
     message: data.message,
-    iconUrl: browser.runtime.getURL('icon-128.png'),
+    iconUrl: BrowserAPIService.runtime.getURL('icon-128.png'),
   };
 
   ['iconUrl', 'imageUrl'].forEach((key) => {
@@ -26,7 +26,7 @@ export default async function ({ data, id }) {
     options[key] = url;
   });
 
-  await browser.notifications.create(nanoid(), {
+  await BrowserAPIService.notifications.create(nanoid(), {
     ...options,
     type: options.imageUrl ? 'image' : 'basic',
   });

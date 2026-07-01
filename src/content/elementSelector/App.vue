@@ -45,8 +45,8 @@
       </div>
       <div class="p-4">
         <selector-query
-          v-model:selectorType="state.selectorType"
-          v-model:selectList="state.selectList"
+          v-model:selector-type="state.selectorType"
+          v-model:select-list="state.selectList"
           :selector="state.elSelector"
           :settings-active="state.showSettings"
           :selected-count="state.selectedElements.length"
@@ -151,24 +151,24 @@
   />
 </template>
 <script setup>
-import {
-  reactive,
-  ref,
-  watch,
-  inject,
-  onMounted,
-  onBeforeUnmount,
-  toRaw,
-} from 'vue';
-import browser from 'webextension-polyfill';
-import { debounce } from '@/utils/helper';
-import findSelector from '@/lib/findSelector';
-import FindElement from '@/utils/FindElement';
+import SelectorElementsDetail from '@/components/content/selector/SelectorElementsDetail.vue';
 import SelectorQuery from '@/components/content/selector/SelectorQuery.vue';
 import SharedElementSelector from '@/components/content/shared/SharedElementSelector.vue';
-import SelectorElementsDetail from '@/components/content/selector/SelectorElementsDetail.vue';
-import getSelectorOptions from './getSelectorOptions';
+import findSelector from '@/lib/findSelector';
+import FindElement from '@/utils/FindElement';
+import { debounce } from '@/utils/helper';
+import {
+  inject,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  ref,
+  toRaw,
+  watch,
+} from 'vue';
+import browser from 'webextension-polyfill';
 import { getElementRect } from '../utils';
+import getSelectorOptions from './getSelectorOptions';
 
 let connectedPort = null;
 const originalFontSize = document.documentElement.style.fontSize;
@@ -352,7 +352,7 @@ function clearConnectedPort() {
   connectedPort = null;
   state.isSelectBlockElement = false;
 }
-function onVisivilityChange() {
+function onVisibilityChange() {
   if (!connectedPort || document.visibilityState !== 'hidden') return;
 
   clearConnectedPort();
@@ -370,7 +370,7 @@ function attachListeners() {
   window.addEventListener('message', onMessage);
   window.addEventListener('mouseup', onMouseup);
   window.addEventListener('mousemove', onMousemove);
-  document.addEventListener('visibilitychange', onVisivilityChange);
+  document.addEventListener('visibilitychange', onVisibilityChange);
 }
 function detachListeners() {
   cardElementObserver.disconnect();
@@ -378,7 +378,7 @@ function detachListeners() {
   window.removeEventListener('message', onMessage);
   window.removeEventListener('mouseup', onMouseup);
   window.removeEventListener('mousemove', onMousemove);
-  document.removeEventListener('visibilitychange', onVisivilityChange);
+  document.removeEventListener('visibilitychange', onVisibilityChange);
 }
 
 watch(

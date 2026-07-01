@@ -1,11 +1,9 @@
-import browser from 'webextension-polyfill';
 import { messageSandbox } from '../helper';
 import mustacheReplacer from './mustacheReplacer';
 
 const isFirefox = BROWSER_TYPE === 'firefox';
-const isMV2 = browser.runtime.getManifest().manifest_version === 2;
 
-export default async function (str, data, isPopup = true, options = {}) {
+export default async function (str, data, options = {}) {
   if (!str || typeof str !== 'string') return '';
 
   const hasMustacheTag = /\{\{(.*?)\}\}/.test(str);
@@ -19,7 +17,7 @@ export default async function (str, data, isPopup = true, options = {}) {
   let renderedValue = {};
   const evaluateJS = str.startsWith('!!');
 
-  if (evaluateJS && !isFirefox && (isMV2 || isPopup)) {
+  if (evaluateJS && !isFirefox) {
     const refKeysRegex =
       /(variables|table|secrets|loopData|workflow|googleSheets|globalData)@/g;
     const strToRender = str.replace(refKeysRegex, '$1.');

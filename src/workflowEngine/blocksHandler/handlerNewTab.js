@@ -1,10 +1,11 @@
-import browser from 'webextension-polyfill';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import { isWhitespace, sleep } from '@/utils/helper';
+import Browser from 'webextension-polyfill';
 import {
-  waitTabLoaded,
   attachDebugger,
-  sendDebugCommand,
   injectPreloadScript,
+  sendDebugCommand,
+  waitTabLoaded,
 } from '../helper';
 
 function isValidURL(url) {
@@ -20,10 +21,23 @@ function isValidURL(url) {
 async function newTab({ id, data }) {
   if (this.windowId) {
     try {
-      await browser.windows.get(this.windowId);
+      // FIXME: ??? query info but do not use it
+      await BrowserAPIService.windows.get(this.windowId);
     } catch (error) {
       this.windowId = null;
     }
+  } else {
+    await Browser.runtime
+      .sendMessage({
+        name: 'background--browser-api',
+        data: {
+          name: 'windows.getCurrent',
+        },
+      })
+      .then((window) => {
+        this.windowId = window.id;
+        return Promise.resolve(window);
+      });
   }
 
   if (!isValidURL(data.url)) {
@@ -39,12 +53,12 @@ async function newTab({ id, data }) {
   const isChrome = BROWSER_TYPE === 'chrome';
 
   if (data.updatePrevTab && this.activeTab.id) {
-    tab = await browser.tabs.update(this.activeTab.id, {
+    tab = await BrowserAPIService.tabs.update(this.activeTab.id, {
       url: data.url,
       active: data.active,
     });
   } else {
-    tab = await browser.tabs.create({
+    tab = await BrowserAPIService.tabs.create({
       url: data.url,
       active: data.active,
       windowId: this.windowId,
@@ -61,14 +75,14 @@ async function newTab({ id, data }) {
         await sendDebugCommand(tab.id, 'Network.setUserAgentOverride', {
           userAgent: data.userAgent,
         });
-        await browser.tabs.reload(tab.id);
+        await BrowserAPIService.tabs.reload(tab.id);
         await sleep(1000);
       }
     }
 
     if (data.tabZoom && data.tabZoom !== 1) {
       await sleep(1000);
-      await browser.tabs.setZoom(tab.id, data.tabZoom);
+      await BrowserAPIService.tabs.setZoom(tab.id, data.tabZoom);
     }
 
     this.activeTab.id = tab.id;
@@ -88,7 +102,7 @@ async function newTab({ id, data }) {
     }
 
     if (isChrome) {
-      chrome.tabs.group(options, (tabGroupId) => {
+      BrowserAPIService.tabs.group(options, (tabGroupId) => {
         this.activeTab.groupId = tabGroupId;
       });
     }
@@ -97,7 +111,7 @@ async function newTab({ id, data }) {
   this.activeTab.frameId = 0;
 
   if (isChrome && !this.settings.debugMode && data.customUserAgent) {
-    chrome.debugger.detach({ tabId: tab.id });
+    BrowserAPIService.debugger.detach({ tabId: tab.id });
   }
 
   if (this.preloadScripts.length > 0) {
@@ -127,7 +141,7 @@ async function newTab({ id, data }) {
     });
   }
 
-  await browser.windows.update(tab.windowId, { focused: true });
+  await BrowserAPIService.windows.update(tab.windowId, { focused: true });
 
   return {
     data: data.url,

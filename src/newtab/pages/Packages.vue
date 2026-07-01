@@ -113,7 +113,7 @@
                   <ui-list-item
                     v-if="pkg.isExternal"
                     v-close-popover
-                    :href="`https://automa.site/packages/${pkg.id}`"
+                    :href="`https://extension.automa.site/packages/${pkg.id}`"
                     tag="a"
                     target="_blank"
                     class="cursor-pointer"
@@ -205,13 +205,13 @@
   </div>
 </template>
 <script setup>
-import { reactive, computed } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useDialog } from '@/composable/dialog';
-import { usePackageStore } from '@/stores/package';
-import { arraySorter, openFilePicker, parseJSON } from '@/utils/helper';
 import dayjs from '@/lib/dayjs';
+import { usePackageStore } from '@/stores/package';
 import dataExporter from '@/utils/dataExporter';
+import { arraySorter, openFilePicker, parseJSON } from '@/utils/helper';
+import { computed, reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 const dialog = useDialog();

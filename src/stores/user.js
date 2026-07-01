@@ -1,6 +1,6 @@
+import { cacheApi, fetchApi } from '@/utils/api';
 import { defineStore } from 'pinia';
 import browser from 'webextension-polyfill';
-import { fetchApi, cacheApi } from '@/utils/api';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -69,9 +69,36 @@ export const useUserStore = defineStore('user', {
 
         this.user = user;
         this.retrieved = true;
+
+        if (user) {
+          await browser.storage.local.set({ user });
+        } else {
+          await browser.storage.local.remove('user');
+        }
       } catch (error) {
         this.retrieved = true;
         console.error(error);
+      }
+    },
+    async signOut() {
+      try {
+        await browser.storage.local.remove([
+          'session',
+          'sessionToken',
+          'user',
+          'backupIds',
+        ]);
+
+        localStorage.removeItem('username');
+
+        this.user = null;
+        this.backupIds = [];
+        this.hostedWorkflows = {};
+        this.sharedPackages = [];
+        this.retrieved = false;
+      } catch (error) {
+        console.error('Sign out error:', error);
+        throw error;
       }
     },
   },

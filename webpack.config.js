@@ -47,6 +47,7 @@ const options = {
     params: path.join(__dirname, 'src', 'params', 'index.js'),
     background: path.join(__dirname, 'src', 'background', 'index.js'),
     contentScript: path.join(__dirname, 'src', 'content', 'index.js'),
+    offscreen: path.join(__dirname, 'src', 'offscreen', 'index.js'),
     recordWorkflow: path.join(
       __dirname,
       'src',
@@ -156,7 +157,10 @@ const options = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: `src/manifest.${env.BROWSER}.json`,
+          from:
+            env.NODE_ENV === 'development' && env.BROWSER === 'chrome'
+              ? `src/manifest.${env.BROWSER}.dev.json`
+              : `src/manifest.${env.BROWSER}.json`,
           to: path.join(__dirname, 'build', 'manifest.json'),
           force: true,
           toType: 'file',
@@ -184,6 +188,11 @@ const options = {
         },
         {
           from: 'src/assets/images/icon-128.png',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/images/icon-dev-128.png',
           to: path.join(__dirname, 'build'),
           force: true,
         },
@@ -217,6 +226,12 @@ const options = {
       template: path.join(__dirname, 'src', 'params', 'index.html'),
       filename: 'params.html',
       chunks: ['params'],
+      cache: false,
+    }),
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, 'src', 'offscreen', 'index.html'),
+      filename: 'offscreen.html',
+      chunks: ['offscreen'],
       cache: false,
     }),
     new webpack.DefinePlugin({

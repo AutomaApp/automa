@@ -54,15 +54,19 @@ export function jsContentHandlerEval({
 
       ${automaScript}
 
-      ${blockData.data.code}
+      try {
+        ${blockData.data.code}
 
-      ${
-        blockData.data.code.includes('automaNextBlock')
-          ? ''
-          : 'automaNextBlock()'
+        ${
+          blockData.data.code.includes('automaNextBlock')
+            ? ''
+            : 'automaNextBlock()'
+        }
+      } catch (error) {
+        return { columns: { data: { $error: true, message: error.message } } };
       }
     }).catch((error) => {
-      return { columns: { data: { $error: true, message: error.message } } }
+      return { columns: { data: { $error: true, message: error.message } } };
     });
   })();`;
 }

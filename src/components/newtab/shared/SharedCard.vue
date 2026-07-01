@@ -1,5 +1,6 @@
 <template>
   <ui-card
+    :data-workflow-id="data.hostId"
     class="group flex flex-col hover:ring-2 hover:ring-accent dark:hover:ring-gray-200"
   >
     <slot name="header">
@@ -68,8 +69,8 @@
   </ui-card>
 </template>
 <script setup>
-import { shallowReactive } from 'vue';
 import dayjs from '@/lib/dayjs';
+import { shallowReactive } from 'vue';
 
 const props = defineProps({
   disabled: Boolean,

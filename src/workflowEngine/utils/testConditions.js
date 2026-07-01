@@ -1,6 +1,6 @@
-import cloneDeep from 'lodash.clonedeep';
 import { parseJSON } from '@/utils/helper';
 import { conditionBuilder } from '@/utils/shared';
+import cloneDeep from 'lodash.clonedeep';
 import renderString from '../templating/renderString';
 
 const isBoolStr = (str) => {
@@ -139,6 +139,7 @@ export default async function (conditionsArr, workflowData) {
 
     return '';
   }
+
   async function checkConditions(items) {
     let conditionResult = true;
     const condition = {
@@ -150,9 +151,15 @@ export default async function (conditionsArr, workflowData) {
       if (!conditionResult) return conditionResult;
 
       if (category === 'compare') {
-        const { needValue } = conditionBuilder.compareTypes.find(
+        const typeConfig = conditionBuilder.compareTypes.find(
           ({ id }) => id === type
         );
+
+        if (!typeConfig) {
+          return conditionResult;
+        }
+
+        const { needValue } = typeConfig;
 
         if (!needValue) {
           conditionResult = comparisons[type](condition.value);
@@ -163,19 +170,24 @@ export default async function (conditionsArr, workflowData) {
         condition.operator = type;
       } else if (category === 'value') {
         const conditionValue = await getConditionItemValue({ data, type });
-        const { compareable } = conditionBuilder.valueTypes.find(
+        const valueConfig = conditionBuilder.valueTypes.find(
           ({ id }) => id === type
         );
 
-        if (!compareable) {
+        if (!valueConfig) {
           conditionResult = conditionValue;
-        } else if (condition.operator) {
-          conditionResult = comparisons[condition.operator](
-            condition.value,
-            conditionValue
-          );
+        } else {
+          const { compareable } = valueConfig;
+          if (!compareable) {
+            conditionResult = conditionValue;
+          } else if (condition.operator) {
+            conditionResult = comparisons[condition.operator](
+              condition.value,
+              conditionValue
+            );
 
-          condition.operator = '';
+            condition.operator = '';
+          }
         }
 
         condition.value = conditionValue;

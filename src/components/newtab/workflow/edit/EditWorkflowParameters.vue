@@ -9,7 +9,7 @@
     >
       No parameters
     </p>
-    <table v-else class="w-full">
+    <section v-else class="w-full">
       <div class="grid grid-cols-12 space-x-2 text-sm">
         <div class="col-span-3" style="padding-left: 28px">Name</div>
         <div class="col-span-2">Type</div>
@@ -120,7 +120,7 @@
           </div>
         </template>
       </draggable>
-    </table>
+    </section>
   </div>
   <div class="mt-4 flex items-center">
     <ui-button variant="accent" @click="addParameter">
@@ -137,15 +137,15 @@
   </div>
 </template>
 <script setup>
-import { reactive, watch } from 'vue';
-import { nanoid } from 'nanoid/non-secure';
-import cloneDeep from 'lodash.clonedeep';
 import workflowParameters from '@business/parameters';
+import cloneDeep from 'lodash.clonedeep';
+import { nanoid } from 'nanoid/non-secure';
+import { reactive, watch } from 'vue';
 import Draggable from 'vuedraggable';
+import ParameterCheckboxValue from './Parameter/ParameterCheckboxValue.vue';
+import ParameterInputOptions from './Parameter/ParameterInputOptions.vue';
 import ParameterInputValue from './Parameter/ParameterInputValue.vue';
 import ParameterJsonValue from './Parameter/ParameterJsonValue.vue';
-import ParameterInputOptions from './Parameter/ParameterInputOptions.vue';
-import ParameterCheckboxValue from './Parameter/ParameterCheckboxValue.vue';
 
 const props = defineProps({
   data: {

@@ -12,7 +12,7 @@
         {{ t('auth.username') }}.
         <a
           class="underline"
-          href="https://automa.site/profile?username=true"
+          href="https://extension.automa.site/profile?username=true"
           target="_blank"
         >
           {{ t('auth.clickHere') }}
@@ -87,17 +87,17 @@
   </ui-card>
 </template>
 <script setup>
-import { reactive, watch, onMounted } from 'vue';
+import SharedWysiwyg from '@/components/newtab/shared/SharedWysiwyg.vue';
+import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
+import { useUserStore } from '@/stores/user';
+import { fetchApi } from '@/utils/api';
+import { debounce, parseJSON } from '@/utils/helper';
+import { workflowCategories } from '@/utils/shared';
+import { convertWorkflow } from '@/utils/workflowData';
+import { onMounted, reactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 import browser from 'webextension-polyfill';
-import { fetchApi } from '@/utils/api';
-import { useUserStore } from '@/stores/user';
-import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
-import { workflowCategories } from '@/utils/shared';
-import { parseJSON, debounce } from '@/utils/helper';
-import { convertWorkflow } from '@/utils/workflowData';
-import SharedWysiwyg from '@/components/newtab/shared/SharedWysiwyg.vue';
 
 const props = defineProps({
   workflow: {

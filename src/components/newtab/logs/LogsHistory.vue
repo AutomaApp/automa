@@ -17,7 +17,7 @@
               {{ errorBlock.message }}
               <a
                 v-if="errorBlock.messageId"
-                :href="`https://docs.automa.site/reference/workflow-common-errors.html#${errorBlock.messageId}`"
+                :href="`https://docs.extension.automa.site/reference/workflow-common-errors.html#${errorBlock.messageId}`"
                 target="_blank"
                 title="About the error"
                 @click.stop
@@ -134,7 +134,7 @@
                 {{ item.message }}
                 <a
                   v-if="item.messageId"
-                  :href="`https://docs.automa.site/reference/workflow-common-errors.html#${item.messageId}`"
+                  :href="`https://docs.extension.automa.site/reference/workflow-common-errors.html#${item.messageId}`"
                   target="_blank"
                   title="About the error"
                   @click.stop
@@ -285,19 +285,19 @@
 </template>
 <script setup>
 /* eslint-disable no-use-before-define */
+import dayjs from '@/lib/dayjs';
+import { getBlocks } from '@/utils/getSharedData';
+import { countDuration, fileSaver } from '@/utils/helper';
+import { dataExportTypes, messageHasReferences } from '@/utils/shared';
+import objectPath from 'object-path';
+import Papa from 'papaparse';
 import {
   computed,
-  shallowReactive,
   defineAsyncComponent,
+  shallowReactive,
   shallowRef,
 } from 'vue';
 import { useI18n } from 'vue-i18n';
-import Papa from 'papaparse';
-import objectPath from 'object-path';
-import { countDuration, fileSaver } from '@/utils/helper';
-import { getBlocks } from '@/utils/getSharedData';
-import { dataExportTypes, messageHasReferences } from '@/utils/shared';
-import dayjs from '@/lib/dayjs';
 
 const SharedCodemirror = defineAsyncComponent(() =>
   import('@/components/newtab/shared/SharedCodemirror.vue')

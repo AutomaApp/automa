@@ -1,12 +1,12 @@
-import browser from 'webextension-polyfill';
 import { isWhitespace } from '@/utils/helper';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 
 function setProxy({ data, id }) {
   const nextBlockId = this.getBlockConnections(id);
 
   return new Promise((resolve, reject) => {
     if (data.clearProxy) {
-      browser.proxy.settings.clear({});
+      BrowserAPIService.proxy.settings.clear({});
     }
 
     const config = {
@@ -62,15 +62,16 @@ function setProxy({ data, id }) {
     if (proxyPort && !Number.isNaN(+proxyPort)) {
       config.rules.singleProxy.port = +proxyPort;
     }
+    BrowserAPIService.proxy.settings
+      .set({ value: config, scope: 'regular' })
+      .then(() => {
+        this.engine.isUsingProxy = true;
 
-    chrome.proxy.settings.set({ value: config, scope: 'regular' }, () => {
-      this.engine.isUsingProxy = true;
-
-      resolve({
-        data: data.host,
-        nextBlockId,
+        resolve({
+          data: data.host,
+          nextBlockId,
+        });
       });
-    });
   });
 }
 

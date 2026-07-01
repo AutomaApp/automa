@@ -57,36 +57,20 @@
       <v-remixicon name="riFocus3Line" />
     </button>
     <div class="grow"></div>
-    <ui-popover
+    <router-link
       v-if="userStore.user"
-      trigger="mouseenter click"
-      placement="right"
+      v-tooltip:right.group="t('settings.menu.profile')"
+      to="/profile"
+      class="bg-box-transparent inline-block rounded-full p-1 transition-transform hover:scale-110"
     >
-      <template #trigger>
-        <span class="bg-box-transparent inline-block rounded-full p-1">
-          <img
-            :src="userStore.user.avatar_url"
-            height="32"
-            width="32"
-            class="rounded-full"
-          />
-        </span>
-      </template>
-      <div class="w-44">
-        <div class="flex items-center">
-          <p class="text-overflow flex-1">
-            {{ userStore.user.username }}
-          </p>
-          <span
-            title="Subscription"
-            :class="subColors[userStore.user.subscription]"
-            class="rounded-md px-2 py-1 text-sm capitalize"
-          >
-            {{ userStore.user.subscription }}
-          </span>
-        </div>
-      </div>
-    </ui-popover>
+      <img
+        :src="userStore.user.avatar_url"
+        height="32"
+        width="32"
+        class="rounded-full"
+        alt="User avatar"
+      />
+    </router-link>
     <ui-popover trigger="mouseenter" placement="right" class="my-4">
       <template #trigger>
         <v-remixicon name="riGroupLine" />
@@ -135,11 +119,6 @@ const userStore = useUserStore();
 const workflowStore = useWorkflowStore();
 
 const extensionVersion = browser.runtime.getManifest().version;
-const subColors = {
-  free: 'bg-box-transparent',
-  pro: 'bg-accent text-white',
-  business: 'bg-accent text-white dark:text-black',
-};
 const tabs = [
   {
     id: 'workflow',

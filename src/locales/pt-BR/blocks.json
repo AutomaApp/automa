@@ -1,0 +1,810 @@
+{
+  "collection": {
+    "blocks": {
+      "export-result": {
+        "name": "Exportar resultado",
+        "description": "Exportar o resultado da coleta como JSON"
+      }
+    }
+  },
+  "workflow": {
+    "blocks": {
+      "base": {
+        "title": "Blocos",
+        "moveToGroup": "Mover bloco para o grupo de blocos",
+        "selector": "Seletor de elemento",
+        "selectorOptions": "Opções de seletor",
+        "timeout": "Timeout (milissegundos)",
+        "noPermission": "O Automa não tem permissões suficientes para realizar esta ação",
+        "grantPermission": "Conceder permissão",
+        "action": "Ação",
+        "element": {
+          "select": "Selecionar um elemento",
+          "verify": "Verificar seletor"
+        },
+        "settings": {
+          "title": "Configurações do bloco",
+          "blockTimeout": {
+            "title": "Tempo limite de execução do bloco (milissegundos)",
+            "description": "O tempo máximo de execução do bloco (0 para desabilitar)"
+          },
+          "line": {
+            "title": "Linhas",
+            "label": "Rótulo",
+            "animated": "Animado",
+            "select": "Selecionar linha",
+            "to": "Linha para o bloco {name}",
+            "lineColor": "Cor"
+          }
+        },
+        "toggle": {
+          "enable": "Habilitar bloco",
+          "disable": "Desabilitar bloco"
+        },
+        "onError": {
+          "info": "Estas regras serão aplicadas quando ocorrer um erro no bloco",
+          "button": "Em caso de erro",
+          "title": "Quando ocorrer um erro",
+          "retry": "Tentar novamente a ação",
+          "fallbackTitle": "Será executado quando ocorrer um erro no bloco",
+          "times": {
+            "name": "Vezes",
+            "description": "O número de vezes para tentar a ação novamente"
+          },
+          "interval": {
+            "name": "Intervalo",
+            "description": "O intervalo de tempo para aguardar entre cada tentativa",
+            "second": "segundo"
+          },
+          "toDo": {
+            "error": "Lançar erro",
+            "continue": "Continuar fluxo",
+            "fallback": "Executar fallback",
+            "restart": "Reiniciar fluxo"
+          },
+          "insertData": {
+            "name": "Inserir dados"
+          }
+        },
+        "table": {
+          "checkbox": "Inserir na tabela",
+          "select": "Selecionar coluna",
+          "extraRow": {
+            "checkbox": "Adicionar linha extra",
+            "placeholder": "Valor",
+            "title": "Valor da linha extra"
+          }
+        },
+        "findElement": {
+          "placeholder": "Encontrar elemento por",
+          "options": {
+            "cssSelector": "Seletor CSS",
+            "xpath": "XPath"
+          }
+        },
+        "markElement": {
+          "title": "Um elemento não será selecionado se já foi selecionado antes",
+          "text": "Marcar elemento"
+        },
+        "multiple": {
+          "title": "Selecionar múltiplos elementos",
+          "text": "Múltiplos"
+        },
+        "waitSelector": {
+          "title": "Aguardar seletor",
+          "timeout": "Tempo limite do seletor (ms)"
+        },
+        "downloads": {
+          "onConflict": {
+            "uniquify": "Tornar único",
+            "overwrite": "Sobrescrever",
+            "prompt": "Solicitar"
+          }
+        }
+      },
+  "wait-connections": {
+    "name": "Aguardar conexões",
+    "description": "Aguardar todas as conexões antes de continuar para o próximo bloco",
+    "specificFlow": "Continuar apenas um fluxo específico",
+    "selectFlow": "Selecionar fluxo"
+  },
+  "cookie": {
+    "name": "Cookie",
+    "description": "Obter, definir ou remover cookies",
+    "types": {
+      "get": "Obter cookies",
+      "set": "Definir cookie",
+      "remove": "Remover cookies",
+      "getAll": "Obter todos os cookies"
+    },
+    "useJson": "Usar formato JSON"
+  },
+  "note": {
+    "name": "Nota"
+  },
+  "slice-variable": {
+    "name": "Fatiar variável",
+    "description": "Extrai uma seção do valor de uma variável",
+    "start": "Índice inicial",
+    "end": "Índice final"
+  },
+  "workflow-state": {
+    "name": "Estado do Workflow",
+    "description": "Gerenciar estados dos workflows",
+    "actions": {
+      "stop": "Parar workflows"
+    },
+    "error": {
+      "throwError": "Lançar erro",
+      "message": "Mensagem de erro"
+    }
+  },
+  "regex-variable": {
+    "name": "Variável RegEx",
+    "description": "Comparar o valor de uma variável com uma expressão regular"
+  },
+  "data-mapping": {
+    "source": "Origem",
+    "destination": "Destino",
+    "name": "Mapeamento de dados",
+    "edit": "Editar mapa de dados",
+    "dataSource": "Fonte de dados",
+    "description": "Mapear os dados de uma variável ou tabela",
+    "addSource": "Adicionar origem",
+    "addDestination": "Adicionar destino"
+  },
+  "sort-data": {
+    "name": "Ordenar dados",
+    "description": "Ordenar os itens dos dados",
+    "property": "Ordenar pela propriedade do item",
+    "addProperty": "Adicionar propriedade"
+  },
+  "increase-variable": {
+    "name": "Aumentar variável",
+    "description": "Aumentar o valor de uma variável por um valor específico",
+    "increase": "Aumentar em"
+  },
+  "notification": {
+    "name": "notificação",
+    "description": "Exibir uma notificação",
+    "title": "Título",
+    "message": "Mensagem",
+    "imageUrl": "URL da imagem (opcional)",
+    "iconUrl": "URL do ícone (opcional)"
+  },
+  "delete-data": {
+    "name": "Excluir dados",
+    "description": "Excluir dados de tabela ou variável",
+    "from": "Dados de",
+    "allColumns": "[Todas as colunas]"
+  },
+  "log-data": {
+    "name": "Obter dados de registro",
+    "description": "Obter os dados de registro mais recentes de um workflow",
+    "data": "Dados de registro"
+  },
+  "tab-url": {
+    "name": "Obter URL da aba",
+    "description": "Obter a URL da aba",
+    "select": "Selecionar aba",
+    "types": {
+      "active-tab": "Aba ativa",
+      "all": "Todas as abas"
+    },
+    "query": {
+      "title": "Consulta",
+      "matchPatterns": "@:workflow.blocks.switch-tab.matchPattern (opcional)",
+      "tabTitle": "Título da aba (opcional)"
+    }
+  },
+  "reload-tab": {
+    "name": "Recarregar aba",
+    "description": "Recarregar a aba ativa"
+  },
+  "press-key": {
+    "name": "Pressionar tecla",
+    "description": "Pressionar uma tecla ou uma combinação",
+    "target": "Elemento alvo (opcional)",
+    "key": "Tecla",
+    "detect": "Detectar tecla",
+    "actions": {
+      "press-key": "Pressionar uma tecla",
+      "multiple-keys": "Pressionar múltiplas teclas"
+    },
+    "press-time": "Tempo de pressão (milissegundos)"
+  },
+  "save-assets": {
+    "name": "Salvar ativos",
+    "description": "Salvar ativos (imagem, vídeo, áudio ou arquivo) de um elemento ou URL",
+    "filename": "Nome do arquivo (opcional)",
+    "saveDownloadIds": "Salvar IDs de download dos itens",
+    "contentTypes": {
+      "title": "Tipo",
+      "element": "Elemento de mídia (imagem, áudio ou vídeo)",
+      "url": "URL"
+    }
+  },
+  "handle-dialog": {
+    "name": "Manipular diálogo",
+    "description": "Aceitar ou rejeitar um diálogo iniciado pelo JavaScript (alerta, confirmação, prompt ou onbeforeunload)",
+    "accept": "Aceitar diálogo",
+    "promptText": {
+      "label": "Texto do prompt (opcional)",
+      "description": "O texto a ser inserido no diálogo de prompt antes de aceitar"
+    }
+  },
+  "handle-download": {
+    "name": "Manipular download",
+    "description": "Tratar o arquivo baixado",
+    "timeout": "Tempo limite (milissegundos)",
+    "noPermission": "Não tem permissão para acessar os downloads",
+    "onConflict": "Em caso de conflito",
+    "waitFile": "Aguardar o download do arquivo",
+    "downloadId": "ID de download do arquivo (opcional)",
+    "filePath": "Caminho do arquivo"
+  },
+  "insert-data": {
+    "name": "Inserir dados",
+    "description": "Inserir dados em uma tabela ou variável"
+  },
+  "clipboard": {
+    "name": "Área de transferência",
+    "description": "Obter o texto copiado da área de transferência",
+    "data": "Dados da área de transferência",
+    "noPermission": "Não tem permissão para acessar a área de transferência",
+    "grantPermission": "Conceder permissão",
+    "copySelection": "Copiar o texto selecionado na página",
+    "types": {
+      "get": "Obter dados da área de transferência",
+      "insert": "Inserir texto na área de transferência"
+    }
+  },
+  "hover-element": {
+    "name": "Passar o mouse sobre o elemento",
+    "description": "Passar o mouse sobre um elemento"
+  },
+  "create-element": {
+    "name": "Criar elemento",
+    "description": "Criar um elemento e inseri-lo na página",
+    "edit": "Editar elemento",
+    "wrap": "Envolver o elemento dentro de",
+    "insertEl": {
+      "title": "Inserir elemento",
+      "items": {
+        "before": "Como primeiro filho",
+        "after": "Como último filho",
+        "next-sibling": "Como próximo irmão",
+        "prev-sibling": "Como irmão anterior",
+        "replace": "Substituir o elemento alvo"
+      }
+    }
+  },
+  "upload-file": {
+    "name": "Enviar arquivo",
+    "description": "Enviar arquivo para o elemento <input type=\"file\">",
+    "filePath": "URL ou caminho do arquivo",
+    "addFile": "Adicionar arquivo",
+    "onlyURL": "Somente o envio de arquivos a partir de uma URL é suportado no navegador Firefox",
+    "requirement": "Leia os requisitos antes de usar este bloco",
+    "noFileAccess": "O Automa não tem acesso a arquivos"
+  },
+  "browser-event": {
+    "name": "Evento do navegador",
+    "description": "Executa o próximo bloco quando o evento especificado é acionado",
+    "events": "Eventos",
+    "timeout": "Tempo limite (milissegundos)",
+    "activeTabLoaded": "Aba ativa",
+    "setAsActiveTab": "Definir como aba ativa"
+  },
+  "blocks-group-2": {
+    "name": "@:workflow.blocks.blocks-group.name 2",
+    "description": "@:workflow.blocks.blocks-group.description"
+  },
+  "blocks-group": {
+    "name": "Grupo de blocos",
+    "groupName": "Nome do grupo",
+    "description": "Agrupamento de blocos",
+    "dropText": "Arraste e solte um bloco aqui",
+    "cantAdd": "Não é possível adicionar o bloco \"{blockName}\" ao grupo"
+      },
+      "trigger": {
+    "name": "Gatilho",
+    "description": "Bloco onde o workflow começará a ser executado",
+    "addTime": "Adicionar horário",
+    "selectDay": "Selecionar dia",
+    "timeExist": "Você já adicionou um gatilho às {time} em {day}",
+    "fixedDelay": "Atraso fixo",
+    "contextMenus": {
+      "noPermission": "Este gatilho requer a permissão \"contextMenus\" para funcionar",
+      "grantPermission": "Conceder permissão",
+      "appearIn": "Aparecerá em",
+      "contextName": "Nome do workflow no menu de contexto"
+    },
+    "days": [
+      "Domingo",
+      "Segunda-feira",
+      "Terça-feira",
+      "Quarta-feira",
+      "Quinta-feira",
+      "Sexta-feira",
+      "Sábado"
+    ],
+    "useRegex": "Usar regex",
+    "shortcut": {
+      "tooltip": "Gravar atalho",
+      "stopRecord": "Parar gravação",
+      "checkboxTitle": "Executar atalho mesmo quando você estiver em um elemento de entrada",
+      "checkbox": "Ativo enquanto em entrada",
+      "note": "Nota: o atalho de teclado só funciona quando você está em uma página web"
+    },
+    "forms": {
+      "triggerWorkflow": "Acionar workflow",
+      "interval": "Intervalo (minutos)",
+      "delay": "Atraso (minutos)",
+      "date": "Data",
+      "time": "Hora",
+      "url": "URL ou Regex",
+      "shortcut": "Atalho",
+      "cron-expression": "Expressão cron"
+    },
+    "element-change": {
+      "target": "Elemento alvo a ser observado",
+      "optionsInfo": "Qual mutação do elemento acionará o workflow",
+      "targetWebsite": "O Padrão de Correspondência do site onde o elemento alvo está (clique para ver mais exemplos de Padrão de Correspondência)",
+      "baseEl": {
+        "title": "Elemento base (opcional)",
+        "description": "O Automa reiniciará a observação do elemento alvo quando este elemento mudar"
+      },
+      "subtree": {
+        "title": "Incluir subárvore",
+        "description": "Estender a monitoração para toda a subárvore do elemento alvo"
+      },
+      "childList": {
+        "title": "Lista de filhos",
+        "description": "Monitorar a adição de novos elementos filhos ou a remoção dos existentes"
+      },
+      "attributes": {
+        "title": "Atributos",
+        "description": "Observar mudanças nos valores dos atributos do elemento alvo"
+      },
+      "attributeFilter": {
+        "title": "Filtro de atributos",
+        "separate": "Use vírgulas (,) para separar os nomes dos atributos",
+        "description": "Monitorar apenas atributos específicos (deixe em branco para monitorar todos)"
+      },
+      "characterData": {
+        "title": "Dados de caracteres",
+        "description": "Monitorar mudanças nos dados de caracteres/texto dentro do elemento alvo"
+      }
+    },
+    "items": {
+      "manual": "Manualmente",
+      "interval": "Intervalo",
+      "cron-job": "Tarefa cron",
+      "date": "Em uma data específica",
+      "context-menu": "Menu de contexto",
+      "element-change": "Na mudança de elemento",
+      "specific-day": "Em um dia específico",
+      "visit-web": "Ao visitar um site",
+      "on-startup": "Na inicialização do navegador",
+      "keyboard-shortcut": "Atalho de teclado"
+    }
+  },
+  "execute-workflow": {
+    "name": "Executar workflow",
+    "overwriteNote": "Isso irá sobrescrever os dados globais do workflow selecionado",
+    "select": "Selecionar workflow",
+    "executeId": "ID de execução (opcional)",
+    "description": "",
+    "insertAllVars": "Usar todas as variáveis atuais do workflow",
+    "insertVars": "Inserir variáveis atuais do workflow",
+    "useCommas": "Use vírgulas para separar o nome da variável",
+    "insertAllGlobalData": "Usar todos os dados globais atuais do workflow"
+      },
+      "google-sheets-drive": {
+    "name": "@:workflow.blocks.google-sheets.name (GDrive)",
+    "description": "@:workflow.blocks.google-sheets.description",
+    "connected": "Planilhas conectadas",
+    "select": "Selecionar planilha",
+    "connect": "Conectar planilha"
+  },
+  "google-drive": {
+    "name": "Google Drive",
+    "description": "Enviar arquivos para o Google Drive",
+    "actions": {
+      "upload": "Enviar arquivos"
+    }
+  },
+  "google-sheets": {
+    "name": "Google Sheets",
+    "description": "Ler ou atualizar dados do Google Sheets",
+    "previewData": "Visualizar dados",
+    "firstRow": "Usar a primeira linha como chaves",
+    "keysAsFirstRow": "Usar chaves como a primeira linha",
+    "insertData": "Inserir dados",
+    "valueInputOption": "Opção de inserção de valor",
+    "insertDataOption": "Opção de inserção de dados",
+    "rangeToSearch": "Intervalo para iniciar a busca",
+    "dataFrom": {
+      "label": "Dados de",
+      "options": {
+        "data-columns": "Tabela",
+        "custom": "Personalizado"
+      }
+    },
+    "refKey": {
+      "label": "Chave de referência (opcional)",
+      "placeholder": "Nome da chave"
+    },
+    "spreadsheetId": {
+      "label": "ID da planilha",
+      "link": "Veja como obter o ID da planilha"
+    },
+    "range": {
+      "label": "Intervalo",
+      "link": "Clique para ver mais exemplos"
+    },
+    "select": {
+      "get": "Obter valores das células da planilha",
+      "getRange": "Obter intervalo da planilha",
+      "update": "Atualizar valores das células da planilha",
+      "append": "Adicionar valores às células da planilha",
+      "clear": "Limpar valores das células da planilha",
+      "create": "Criar uma planilha",
+      "add-sheet": "Adicionar planilha"
+    }
+  },
+  "active-tab": {
+    "name": "Aba ativa",
+    "description": "Definir a aba atual como a aba ativa"
+  },
+  "proxy": {
+    "name": "Proxy",
+    "description": "Definir o proxy do navegador",
+    "clear": "Limpar todos os proxies",
+    "bypass": {
+      "label": "Lista de exceções",
+      "note": "Use vírgulas (,) para separar URLs"
+    }
+  },
+  "new-window": {
+    "name": "Nova janela",
+    "description": "Criar uma nova janela",
+    "top": "Topo",
+    "left": "Esquerda",
+    "height": "Altura",
+    "width": "Largura",
+    "note": "Nota: use 0 para desativar",
+    "position": "Posição da janela",
+    "size": "Tamanho da janela",
+    "windowState": {
+      "placeholder": "Estado da janela",
+      "options": {
+        "normal": "Normal",
+        "minimized": "Minimizada",
+        "maximized": "Maximizada",
+        "fullscreen": "Tela cheia"
+      }
+    },
+    "incognito": {
+      "text": "Definir como janela anônima",
+      "note": "Você deve ativar 'Permitir no modo anônimo' para esta extensão primeiro"
+    }
+  },
+  "go-back": {
+    "name": "Voltar",
+    "description": "Voltar para a página anterior"
+  },
+  "forward-page": {
+    "name": "Avançar",
+    "description": "Avançar para a próxima página"
+  },
+  "close-tab": {
+    "name": "Fechar aba/janela",
+    "description": "",
+    "url": "Padrões de correspondência",
+    "activeTab": "Fechar aba ativa",
+    "allWindows": "Fechar todas as janelas"
+  },
+  "event-click": {
+    "name": "Clicar no elemento",
+    "description": ""
+      },
+      "delay": {
+        "name": "Atraso",
+        "description": "Adicionar um atraso antes de executar o próximo bloco",
+        "input": {
+          "title": "Atraso em milissegundos",
+          "placeholder": "(milissegundos)"
+        }
+      },
+      "parameter-prompt": {
+        "name": "Prompt de Parâmetro"
+      },
+      "get-text": {
+        "name": "Obter texto",
+        "description": "Obter texto de um elemento",
+        "checkbox": "Inserir na tabela",
+        "includeTags": "Incluir tags HTML",
+        "prefixText": {
+          "placeholder": "Prefixo de texto",
+          "title": "Adicionar prefixo ao texto"
+        },
+        "suffixText": {
+          "placeholder": "Sufixo de texto",
+          "title": "Adicionar sufixo ao texto"
+        }
+      },
+      "export-data": {
+        "name": "Exportar dados",
+        "description": "Exportar dados do workflow",
+        "exportAs": "Exportar como",
+        "refKey": "Chave de referência",
+        "bomHeader": "Adicionar BOM UTF-8",
+        "dataToExport": {
+          "placeholder": "Dados para exportar",
+          "options": {
+            "data-columns": "Tabela",
+            "google-sheets": "Google Sheets",
+            "variable": "Variável"
+          }
+        }
+      },
+      "element-scroll": {
+        "name": "Deslocar elemento",
+        "description": "",
+        "scrollY": "Rolagem vertical",
+        "scrollX": "Rolagem horizontal",
+        "intoView": "Rolar para visualização",
+        "smooth": "Rolagem suave",
+        "incScrollX": "Incrementar rolagem horizontal",
+        "incScrollY": "Incrementar rolagem vertical"
+      },
+      "switch-tab": {
+        "name": "Alternar aba",
+        "description": "Alternar entre abas",
+        "matchPattern": "Padrões de correspondência",
+        "url": "URL da nova aba",
+        "createIfNoMatch": "Criar se não houver correspondência"
+      },
+      "new-tab": {
+        "name": "Nova aba",
+        "description": "",
+        "url": "URL da nova aba",
+        "tab-zoom": "Zoom da aba",
+        "customUserAgent": "Usar User-Agent personalizado",
+        "activeTab": "Definir como aba ativa",
+        "tabToGroup": "Adicionar aba a um grupo",
+        "waitTabLoaded": "Aguardar até que a aba seja carregada",
+        "updatePrevTab": {
+          "title": "Usar a aba nova previamente aberta em vez de criar uma nova",
+          "text": "Atualizar aba previamente aberta"
+        }
+      },
+      "link": {
+        "name": "Link",
+        "description": "Abrir elemento de link",
+        "openInNewTab": "Abrir em nova aba"
+      },
+      "attribute-value": {
+        "name": "Valor do atributo",
+        "description": "Obter o valor de um atributo do elemento",
+        "forms": {
+          "name": "Nome do atributo",
+          "checkbox": "Inserir na tabela",
+          "column": "Selecionar coluna",
+          "value": "Valor do atributo",
+          "action": {
+            "get": "Obter valor do atributo",
+            "set": "Definir valor do atributo"
+          },
+          "extraRow": {
+            "checkbox": "Adicionar linha extra",
+            "placeholder": "Valor",
+            "title": "Valor da linha extra"
+          }
+        }
+      },
+      "forms": {
+        "name": "Formulários",
+        "description": "",
+        "selected": "Selecionado",
+        "type": "Tipo de formulário",
+        "getValue": "Obter valor do formulário",
+        "text-field": {
+          "name": "Campo de texto",
+          "value": "Valor",
+          "clearValue": "Limpar valor do formulário",
+          "delay": {
+            "placeholder": "Atraso",
+            "label": "Atraso de digitação (milissegundo)(0 para desativar)"
+          }
+        },
+        "select": {
+    "name": "Selecionar"
+  },
+  "radio": {
+    "name": "Botão de rádio"
+  },
+  "checkbox": {
+    "name": "Caixa de seleção"
+  },
+  "repeat-task": {
+    "name": "Repetir tarefa",
+    "description": "",
+    "times": "vezes",
+    "repeatFrom": "Repetir a partir de"
+  },
+  "javascript-code": {
+    "name": "Código JavaScript",
+    "description": "Execute seu código JavaScript na página web",
+    "availabeFuncs": "Funções disponíveis:",
+    "removeAfterExec": "Remover após a execução do bloco",
+    "everyNewTab": "Executar em cada nova aba",
+    "context": {
+      "name": "Contexto de execução",
+      "items": {
+        "website": "Aba ativa",
+        "background": "Segundo plano"
+      }
+    },
+    "modal": {
+      "tabs": {
+        "code": "Código JavaScript",
+        "preloadScript": "Script de pré-carregamento"
+      }
+    },
+    "timeout": {
+      "placeholder": "Tempo limite (milissegundos)",
+      "title": "Tempo limite de execução do código JavaScript"
+    }
+  },
+  "trigger-event": {
+    "name": "Acionar evento",
+    "description": "",
+    "selectEvent": "Selecionar evento"
+  },
+  "conditions": {
+    "name": "Condições",
+    "add": "Adicionar caminho",
+    "retryConditions": "Tentar novamente se nenhuma condição for atendida",
+    "description": "Bloco condicional",
+    "refresh": "Atualizar conexões de condição",
+    "fallbackTitle": "Executa quando todas as comparações não atendem ao requisito",
+    "equals": "Igual a",
+    "gt": "Maior que",
+    "gte": "Maior ou igual a",
+    "lt": "Menor que",
+    "lte": "Menor ou igual a",
+    "ne": "Diferente de",
+    "contains": "Contém"
+  }
+},
+  "element-exists": {
+    "name": "Elemento existe",
+    "description": "Verificar se um elemento existe",
+    "selector": "Seletor de elemento",
+    "fallbackTitle": "Executa quando o elemento não existe",
+    "throwError": "Lançar um erro se não existir",
+    "tryFor": {
+      "title": "Quantas vezes tentar verificar se o elemento existe",
+      "label": "Tentar por"
+    },
+    "timeout": {
+      "label": "Tempo limite (milissegundos)",
+      "title": "Tempo limite para cada tentativa"
+    }
+  },
+  "webhook": {
+    "name": "Requisição HTTP",
+    "description": "Fazer uma requisição HTTP",
+    "contentType": "Tipo de conteúdo",
+    "method": "Método da requisição",
+    "url": "URL da requisição",
+    "fallback": "Executa quando a requisição HTTP falha",
+    "buttons": {
+      "header": "Adicionar cabeçalho"
+    },
+    "timeout": {
+      "placeholder": "Tempo limite",
+      "title": "Tempo limite de execução da requisição HTTP (ms)"
+    },
+    "tabs": {
+      "headers": "Cabeçalhos",
+      "body": "Corpo",
+      "response": "Resposta"
+    }
+  },
+  "while-loop": {
+    "name": "Loop while",
+    "description": "Executa blocos enquanto a condição for atendida",
+    "editCondition": "Editar condição",
+    "fallback": "Executa quando a condição é falsa"
+      },
+      "loop-elements": {
+    "name": "Percorrer elementos",
+    "description": "Iterar pelos elementos",
+    "loadMore": "Carregar mais elementos",
+    "scrollToBottom": "Rolar para o final",
+    "scrollToTop": "Rolar para o topo",
+    "actions": {
+      "none": "Nenhum",
+      "click-element": "Clicar em um elemento",
+      "scroll": "Rolar para baixo",
+      "click-link": "Clicar em um link",
+      "scroll-up": "Rolar para cima"
+    }
+  },
+  "loop-data": {
+    "name": "Percorrer dados",
+    "description": "Iterar por uma tabela ou seus dados personalizados",
+    "loopId": "ID do loop",
+    "refKey": "Chave de referência",
+    "startIndex": "Iniciar a partir do índice",
+    "resumeLastWorkflow": "Retomar o último workflow",
+    "reverse": "Inverter a ordem do loop",
+    "modal": {
+      "fileTooLarge": "Arquivo muito grande para editar",
+      "maxFile": "Tamanho máximo do arquivo é 1MB",
+      "options": {
+        "firstRow": "Usar a primeira linha como chaves"
+      }
+    },
+    "buttons": {
+      "clear": "Limpar dados",
+      "insert": "Inserir dados",
+      "import": "Importar arquivo"
+    },
+    "maxLoop": {
+      "title": "Número máximo de dados para iterar",
+      "label": "Máximo de dados para iterar (0 para desativar)"
+    },
+    "loopThrough": {
+      "placeholder": "Percorrer",
+      "fromNumber": "De número",
+      "toNumber": "Até número",
+      "options": {
+        "numbers": "Números",
+        "variable": "Variável",
+        "data-columns": "Tabela",
+        "table": "Tabela",
+        "custom-data": "Dados personalizados",
+        "google-sheets": "Google Sheets",
+        "elements": "Elementos"
+      }
+    }
+  },
+  "loop-breakpoint": {
+    "name": "Ponto de interrupção do loop",
+    "description": "Para indicar onde o bloco de loop de dados deve parar"
+  },
+  "take-screenshot": {
+    "name": "Tirar captura de tela",
+    "fullPage": "Tirar captura de tela de página inteira",
+    "description": "Tirar uma captura de tela da aba ativa",
+    "imageQuality": "Qualidade da imagem",
+    "saveToColumn": "Inserir captura de tela na tabela",
+    "saveToComputer": "Salvar captura de tela no computador",
+    "types": {
+      "title": "Tirar uma captura de tela de",
+      "page": "Uma página",
+      "fullpage": "Página inteira",
+      "element": "Um elemento"
+    }
+  },
+  "switch-to": {
+    "name": "Alternar frame",
+    "description": "Alternar entre a janela principal e um iframe",
+    "iframeSelector": "Seletor de elemento",
+    "windowTypes": {
+      "main": "Janela principal",
+      "iframe": "Iframe"
+      }
+    },
+      "debugMode": {
+      "title": "Modo de depuração",
+      "description": "Executar o bloco usando o Chrome DevTools Protocol"
+      }
+    }
+  }
+}

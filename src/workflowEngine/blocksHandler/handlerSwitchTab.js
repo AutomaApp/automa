@@ -1,4 +1,4 @@
-import browser from 'webextension-polyfill';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import { attachDebugger, injectPreloadScript } from '../helper';
 
 export default async function ({ data, id }) {
@@ -24,7 +24,9 @@ export default async function ({ data, id }) {
 
   const isTabsQuery = ['match-patterns', 'tab-title'];
   const tabs =
-    findTabBy !== 'match-patterns' ? await browser.tabs.query({}) : [];
+    findTabBy !== 'match-patterns'
+      ? await BrowserAPIService.tabs.query({})
+      : [];
 
   if (isTabsQuery.includes(findTabBy)) {
     const query = {};
@@ -32,7 +34,7 @@ export default async function ({ data, id }) {
     if (data.findTabBy === 'match-patterns') query.url = data.matchPattern;
     else if (data.findTabBy === 'tab-title') query.title = data.tabTitle;
 
-    [tab] = await browser.tabs.query(query);
+    [tab] = await BrowserAPIService.tabs.query(query);
 
     if (!tab) {
       if (data.createIfNoMatch) {
@@ -40,9 +42,9 @@ export default async function ({ data, id }) {
           throw generateError('invalid-active-tab', { url: data.url });
         }
 
-        tab = await browser.tabs.create({
-          active: activeTab,
+        tab = await BrowserAPIService.tabs.create({
           url: data.url,
+          active: activeTab,
           windowId: this.windowId,
         });
       } else {
@@ -66,7 +68,7 @@ export default async function ({ data, id }) {
       throw generateError(`Can't find a tab with ${data.tabIndex} index`);
   }
 
-  await browser.tabs.update(tab.id, { active: activeTab });
+  await BrowserAPIService.tabs.update(tab.id, { active: activeTab });
 
   this.activeTab.id = tab.id;
   this.activeTab.frameId = 0;
@@ -98,7 +100,7 @@ export default async function ({ data, id }) {
   }
 
   if (activeTab) {
-    await browser.windows.update(tab.windowId, { focused: true });
+    await BrowserAPIService.windows.update(tab.windowId, { focused: true });
   }
 
   return {

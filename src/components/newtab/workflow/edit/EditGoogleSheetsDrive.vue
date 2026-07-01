@@ -68,10 +68,11 @@
   </edit-google-sheets>
 </template>
 <script setup>
+import { useStore } from '@/stores/main';
+import { openGDrivePickerPopup } from '@/utils/openGDriveFilePicker';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
-import { useStore } from '@/stores/main';
-import openGDriveFilePicker from '@/utils/openGDriveFilePicker';
+import browser from 'webextension-polyfill';
 import EditGoogleSheets from './EditGoogleSheets.vue';
 
 const props = defineProps({
@@ -90,21 +91,53 @@ store.getConnectedSheets();
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });
 }
-function connectSheet() {
-  openGDriveFilePicker().then((result) => {
-    if (!result) return;
 
-    const { name, id, mimeType } = result;
-
-    if (mimeType !== 'application/vnd.google-apps.spreadsheet') {
+async function connectSheet() {
+  // 1. 获取当前 access_token
+  const { sessionToken } = await browser.storage.local.get('sessionToken');
+  if (!sessionToken?.access) {
+    toast.error('未获取到 Google 授权');
+    return;
+  }
+  try {
+    // 2. 弹出 Picker 让用户选择文件
+    const file = await openGDrivePickerPopup(sessionToken.access);
+    if (!file) return;
+    if (file.mimeType !== 'application/vnd.google-apps.spreadsheet') {
       toast.error('File is not a google spreadsheet');
       return;
     }
-
-    const sheetExists = store.connectedSheets.some((sheet) => sheet.id === id);
+    const sheetExists = store.connectedSheets.some(
+      (sheet) => sheet.id === file.id
+    );
     if (sheetExists) return;
-
-    store.connectedSheets.push({ name, id });
-  });
+    // 3. 加入已连接列表
+    store.connectedSheets.push({ name: file.name, id: file.id });
+  } catch (e) {
+    toast.error('未选择文件或授权失败');
+  }
 }
+
+// function connectSheet() {
+//   openGDriveFilePicker().then((sheets) => {
+//     if (!Array.isArray(sheets) || sheets.length === 0) {
+//       toast.error('未获取到 Google Sheets 文件');
+//       return;
+//     }
+//     // 弹窗/下拉选择，用户选择后加入 store.connectedSheets
+//     // 这里用 window.prompt 简化，实际可用自定义弹窗组件
+//     const options = sheets.map((s, i) => `${i + 1}. ${s.name}`).join('\n');
+//     const idx = window.prompt(`请选择要连接的 Google Sheet:\n${options}`);
+//     const index = Number(idx) - 1;
+//     if (Number.isNaN(index) || !sheets[index]) return;
+//     const { name, id, mimeType } = sheets[index];
+//     if (mimeType !== 'application/vnd.google-apps.spreadsheet') {
+//       toast.error('File is not a google spreadsheet');
+//       return;
+//     }
+//     const sheetExists = store.connectedSheets.some((sheet) => sheet.id === id);
+//     if (sheetExists) return;
+//     store.connectedSheets.push({ name, id });
+//   });
+// }
 </script>

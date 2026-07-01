@@ -71,7 +71,7 @@
               <a
                 v-for="func in availableFuncs"
                 :key="func.id"
-                :href="`https://docs.automa.site/blocks/javascript-code.html#${func.id}`"
+                :href="`https://docs.extension.automa.site/blocks/javascript-code.html#${func.id}`"
                 target="_blank"
                 rel="noopener"
                 class="bg-box-transparent inline-block rounded-md p-1 text-sm"
@@ -124,14 +124,14 @@
   </edit-interaction-base>
 </template>
 <script setup>
-import { reactive, watch, defineAsyncComponent } from 'vue';
-import { autocompletion } from '@codemirror/autocomplete';
-import cloneDeep from 'lodash.clonedeep';
 import {
-  automaFuncsSnippets,
   automaFuncsCompletion,
+  automaFuncsSnippets,
   completeFromGlobalScope,
 } from '@/utils/codeEditorAutocomplete';
+import { autocompletion } from '@codemirror/autocomplete';
+import cloneDeep from 'lodash.clonedeep';
+import { defineAsyncComponent, reactive, watch } from 'vue';
 import EditInteractionBase from './EditInteractionBase.vue';
 
 const SharedCodemirror = defineAsyncComponent(() =>

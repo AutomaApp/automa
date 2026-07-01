@@ -1,6 +1,8 @@
 import { onMounted, shallowReactive } from 'vue';
 import browser from 'webextension-polyfill';
 
+const isMV2 = browser.runtime.getManifest().manifest_version === 2;
+
 export function useHasPermissions(permissions) {
   const hasPermissions = shallowReactive({});
 
@@ -23,9 +25,14 @@ export function useHasPermissions(permissions) {
 
         if (typeof needReload === 'boolean' && needReload) {
           alert('Automa needs to reload to make this feature work');
-          browser.runtime.getBackgroundPage().then((background) => {
-            background.location.reload();
-          });
+
+          if (isMV2) {
+            browser.runtime.getBackgroundPage().then((background) => {
+              background.location.reload();
+            });
+          } else {
+            browser.runtime.reload();
+          }
         }
       })
       .catch((error) => {

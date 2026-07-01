@@ -44,16 +44,15 @@
         />
       </a>
     </div>
-    <h3>Translators</h3>
   </div>
 </template>
 <script setup>
 /* eslint-disable camelcase */
+import { useGroupTooltip } from '@/composable/groupTooltip';
+import { useStore } from '@/stores/main';
+import { communities } from '@/utils/shared';
 import { onMounted } from 'vue';
 import browser from 'webextension-polyfill';
-import { useStore } from '@/stores/main';
-import { useGroupTooltip } from '@/composable/groupTooltip';
-import { communities } from '@/utils/shared';
 
 useGroupTooltip();
 const store = useStore();
@@ -61,21 +60,20 @@ const store = useStore();
 const extensionVersion = browser.runtime.getManifest().version;
 const links = [
   ...communities,
-  { name: 'Website', icon: 'riGlobalLine', url: 'https://www.automa.site' },
+  {
+    name: 'Website',
+    icon: 'riGlobalLine',
+    url: 'https://extension.automa.site',
+  },
   {
     name: 'Documentation',
     icon: 'riBook3Line',
-    url: 'https://docs.automa.site',
+    url: 'https://docs.extension.automa.site',
   },
   {
     name: 'Blog',
     icon: 'riArticleLine',
     url: 'https://blog.automa.site',
-  },
-  {
-    name: 'Donate',
-    icon: 'riHandHeartLine',
-    url: 'https://paypal.me/akholid060',
   },
 ];
 
@@ -84,7 +82,7 @@ onMounted(async () => {
 
   try {
     const response = await fetch(
-      'https://api.github.com/repos/Kholid060/automa/contributors'
+      'https://api.github.com/repositories/412741449/contributors'
     );
     const contributors = (await response.json()).reduce(
       (acc, { type, avatar_url, login, html_url }) => {

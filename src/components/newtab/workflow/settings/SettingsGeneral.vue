@@ -41,7 +41,7 @@
       </p>
     </div>
     <a
-      href="https://docs.automa.site/workflow/settings.html#workflow-execution"
+      href="https://docs.extension.automa.site/workflow/settings.html#workflow-execution"
       class="mr-2"
       target="_blank"
     >
@@ -104,6 +104,7 @@
     </div>
     <ui-switch
       v-if="!item.notSupport?.includes(browserType)"
+      :disabled="item.disabled"
       :model-value="settings[item.id]"
       @change="updateSetting(item.id, $event)"
     />
@@ -131,7 +132,7 @@
       </p>
     </div>
     <a
-      href="https://docs.automa.site/blocks/trigger.html#trigger-using-js-customevent"
+      href="https://docs.extension.automa.site/blocks/trigger.html#trigger-using-js-customevent"
       target="_blank"
       rel="noopener"
       class="mr-2 text-gray-600 dark:text-gray-200"
@@ -149,8 +150,8 @@
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'vue-toastification';
 // import browser from 'webextension-polyfill';
-import { clearCache } from '@/utils/helper';
 import { useHasPermissions } from '@/composable/hasPermissions';
+import { clearCache } from '@/utils/helper';
 
 const props = defineProps({
   settings: {

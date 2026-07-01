@@ -1,5 +1,5 @@
 /* eslint-disable  no-param-reassign */
-import browser from 'webextension-polyfill';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 
 class WorkflowState {
   constructor({ storage, key = 'workflowState' }) {
@@ -13,8 +13,9 @@ class WorkflowState {
   }
 
   _updateBadge() {
-    const browserAction = browser.action || browser.browserAction;
-    browserAction.setBadgeText({ text: (this.states.size || '').toString() });
+    BrowserAPIService.browserAction.setBadgeText({
+      text: (this.states.size || '').toString(),
+    });
   }
 
   _saveToStorage() {

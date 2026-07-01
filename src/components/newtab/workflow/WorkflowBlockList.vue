@@ -23,7 +23,7 @@
           class="invisible absolute right-2 top-2 flex items-center text-gray-600 group-hover:visible dark:text-gray-300"
         >
           <a
-            :href="`https://docs.automa.site/blocks/${block.id}.html`"
+            :href="`https://docs.extension.automa.site/blocks/${block.id}.html`"
             :title="t('common.docs')"
             target="_blank"
             rel="noopener"
@@ -43,7 +43,15 @@
             />
           </span>
         </div>
+        <img
+          v-if="block.icon.startsWith('http')"
+          :src="block.icon"
+          alt=""
+          width="24"
+          class="mb-2 dark:invert"
+        />
         <v-remixicon
+          v-else
           :path="getIconPath(block.icon)"
           :name="block.icon"
           size="24"
@@ -52,13 +60,19 @@
         <p class="text-overflow capitalize leading-tight">
           {{ block.name }}
         </p>
+        <div
+          v-if="block.tag"
+          class="flex items-center justify-center absolute top-0 right-0 min-w-[52px] h-[22px] group-hover:invisible rounded-tr-lg rounded-bl-[22px] rounded-tl-0 rounded-br-0 bg-[#79FFEB] dark:bg-[#2DD4BF] text-sm font-semibold dark:text-gray-900"
+        >
+          {{ block.tag }}
+        </div>
       </div>
     </div>
   </ui-expand>
 </template>
 <script setup>
-import { useI18n } from 'vue-i18n';
 import { getBlocks } from '@/utils/getSharedData';
+import { useI18n } from 'vue-i18n';
 
 defineProps({
   category: {

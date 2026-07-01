@@ -1,13 +1,32 @@
 {
+  "recording": {
+    "stop": "停止錄製",
+    "title": "錄製中"
+  },
   "home": {
+    "record": {
+      "title": "錄製工作流程",
+      "button": "錄製",
+      "name": "工作流程名稱",
+      "selectBlock": "選擇一個區塊開始",
+      "anotherBlock": "無法從此區塊開始",
+      "tabs": {
+        "new": "新增工作流程",
+        "existing": "現有工作流程"
+      }
+    },
     "elementSelector": {
       "name": "元素選擇器",
-      "noAccess": "無權訪問這個網站"
+      "noAccess": "無法存取此網站"
     },
     "workflow": {
-      "new": "新增工作流",
-      "rename": "重新命名工作流",
-      "delete": "刪除工作流"
+      "new": "新增工作流程",
+      "rename": "重新命名工作流程",
+      "delete": "刪除工作流程",
+      "type": {
+        "host": "主機",
+        "local": "本機"
+      }
     }
   }
 }

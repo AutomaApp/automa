@@ -85,11 +85,11 @@
   </div>
 </template>
 <script setup>
-import { ref, onBeforeUnmount } from 'vue';
-import { useI18n } from 'vue-i18n';
+import SharedElSelectorActions from '@/components/newtab/shared/SharedElSelectorActions.vue';
 import { keyDefinitions } from '@/utils/USKeyboardLayout';
 import { recordPressedKey } from '@/utils/recordKeys';
-import SharedElSelectorActions from '@/components/newtab/shared/SharedElSelectorActions.vue';
+import { onBeforeUnmount, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({
@@ -100,10 +100,12 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:data']);
 
+const spaceKeys = ['\r', '\n', ' ', '\u0000'];
+
 const includedKeys = ['Enter', 'Control', 'Meta', 'Shift', 'Alt', 'Space'];
-const filteredDefinitions = Object.keys(keyDefinitions).filter(
-  (key) => key.trim().length <= 1 || key.startsWith('Arrow')
-);
+const filteredDefinitions = Object.keys(keyDefinitions)
+  .filter((key) => key.trim().length <= 1 || key.startsWith('Arrow'))
+  .filter((key) => !spaceKeys.includes(key));
 const keysList = filteredDefinitions.concat(includedKeys);
 
 const { t } = useI18n();

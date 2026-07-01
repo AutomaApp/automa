@@ -1,5 +1,5 @@
-import browser from 'webextension-polyfill';
-import { sendDebugCommand, checkCSPAndInject } from '../helper';
+import { MessageListener } from '@/utils/message';
+import { checkCSPAndInject, sendDebugCommand } from '../helper';
 
 const overwriteDialog = (accept, promptText) => `
   const realConfirm = window.confirm;
@@ -41,36 +41,22 @@ async function handleDialog({ data, id: blockId }) {
       } else {
         const target = { tabId: this.activeTab.id, allFrames: true };
         const { debugMode } = this.engine.workflow.settings;
-        const cspResult = await checkCSPAndInject(
-          {
-            target,
-            debugMode,
-            injectOptions: {
-              injectImmediately: true,
-            },
-          },
-          () => jsCode
-        );
-        if (!cspResult.isBlocked) {
-          await browser.scripting.executeScript({
-            target,
-            args: [data],
-            world: 'MAIN',
+        const cspResult = await checkCSPAndInject({
+          target,
+          debugMode,
+          injectOptions: {
             injectImmediately: true,
-            func: (blockData) => {
-              window.confirm = function () {
-                return blockData.accept;
-              };
-
-              window.alert = function () {
-                return blockData.accept;
-              };
-
-              window.prompt = function () {
-                return blockData.accept ? blockData.promptText : null;
-              };
+          },
+        });
+        if (!cspResult.isBlocked) {
+          MessageListener.sendMessage(
+            'script:execute-callback',
+            {
+              target,
+              callback: jsCode,
             },
-          });
+            'background'
+          );
         }
       }
     }

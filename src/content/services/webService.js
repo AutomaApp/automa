@@ -1,9 +1,9 @@
+import { objectHasKey, parseJSON } from '@/utils/helper';
+import { sendMessage } from '@/utils/message';
 import { openDB } from 'idb';
+import deepmerge from 'lodash.merge';
 import { nanoid } from 'nanoid';
 import browser from 'webextension-polyfill';
-import deepmerge from 'lodash.merge';
-import { sendMessage } from '@/utils/message';
-import { objectHasKey, parseJSON } from '@/utils/helper';
 
 function initWebListener() {
   const listeners = {};
@@ -203,27 +203,31 @@ window.addEventListener('user-logout', () => {
 window.addEventListener('app-mounted', async () => {
   try {
     const STORAGE_KEY = 'supabase.auth.token';
-    const session = parseJSON(localStorage.getItem(STORAGE_KEY), null);
-    const storage = await browser.storage.local.get([
+    const webStorageAuthData = parseJSON(
+      localStorage.getItem(STORAGE_KEY),
+      null
+    );
+    const extensionStorage = await browser.storage.local.get([
       'session',
       'sessionToken',
     ]);
 
     const setUserSession = async () => {
-      const saveToStorage = { session };
+      const saveToStorage = { session: webStorageAuthData };
 
       const isGoogleProvider =
-        session?.user?.user_metadata?.iss.includes('google.com');
+        webStorageAuthData?.user?.user_metadata?.iss.includes('google.com');
       const { session: currSession, sessionToken: currSessionToken } =
         await browser.storage.local.get(['session', 'sessionToken']);
       if (
         isGoogleProvider &&
-        ((session && session.user.id === currSession?.user.id) ||
+        ((webStorageAuthData &&
+          webStorageAuthData.user.id === currSession?.user.id) ||
           !currSessionToken)
       ) {
         saveToStorage.sessionToken = {
-          access: session.provider_token,
-          refresh: session.provider_refresh_token,
+          access: webStorageAuthData.provider_token,
+          refresh: webStorageAuthData.provider_refresh_token,
         };
       }
       if (!isGoogleProvider) {
@@ -233,16 +237,17 @@ window.addEventListener('app-mounted', async () => {
       await browser.storage.local.set(saveToStorage);
     };
 
-    if (session && !storage.session) {
+    if (webStorageAuthData && !extensionStorage.session) {
       await setUserSession();
-    } else if (session && storage.session) {
-      if (session.user.id !== storage.session.id) {
+    } else if (webStorageAuthData && extensionStorage.session) {
+      if (webStorageAuthData.user.id !== extensionStorage.session.id) {
         await setUserSession();
       } else {
-        const currentSession = { ...storage.session };
-        if (storage.sessionToken) {
-          currentSession.provider_token = storage.sessionToken.access;
-          currentSession.provider_refresh_token = storage.sessionToken.refresh;
+        const currentSession = { ...extensionStorage.session };
+        if (extensionStorage.sessionToken) {
+          currentSession.provider_token = extensionStorage.sessionToken.access;
+          currentSession.provider_refresh_token =
+            extensionStorage.sessionToken.refresh;
         }
 
         localStorage.setItem(STORAGE_KEY, JSON.stringify(currentSession));

@@ -1,5 +1,5 @@
+import { MessageListener } from '@/utils/message';
 import { customAlphabet } from 'nanoid/non-secure';
-import browser from 'webextension-polyfill';
 import { automaRefDataStr, checkCSPAndInject } from '../helper';
 
 const nanoid = customAlphabet('1234567890abcdef', 5);
@@ -21,6 +21,32 @@ function automaExecWorkflow(options = {}) {
 }
   `;
 
+  return str;
+}
+
+function createElementScript(code, blockId, $automaScript, $preloadScripts) {
+  // fixme: 这里是有问题的，如果按现在方案会至少创建两个script标签，
+  // 一个是preloadScripts，一个是automaScript
+  // 那么在现在的方案中 VM 可能导致不共享 window 变量
+  const str = `
+    const baseId = 'automa-${blockId}';
+
+    ${JSON.stringify($preloadScripts)}.forEach((item) => {
+      if (item.type === 'style') return;
+
+      const script = document.createElement(item.type);
+      script.id = \`\${baseId}-script\`;
+      script.textContent = item.script;
+
+      document.body.appendChild(script);
+    });
+
+    const script = document.createElement('script');
+    script.id = \`\${baseId}-javascript\`;
+    script.textContent = \`(() => { ${$automaScript}\n${code} })()\`;
+
+    document.body.appendChild(script);
+  `;
   return str;
 }
 
@@ -48,8 +74,8 @@ async function handleCreateElement(block, { refData }) {
 
   data.preloadScripts = preloadScripts;
 
-  const isMV3 =
-    (data.javascript || data.preloadScripts.length > 0) && !this.engine.isMV2;
+  // (data.javascript || data.preloadScripts.length > 0) &&
+  const isMV3 = !this.engine.isMV2;
   const payload = {
     ...block,
     data: {
@@ -71,60 +97,73 @@ async function handleCreateElement(block, { refData }) {
       frameIds: [this.activeTab.frameId || 0],
     };
 
-    const { debugMode } = this.engine.workflow?.settings || {};
+    const { debugMode = false } = this.engine.workflow?.settings || {};
+
+    // 创建一个简单的回调函数，直接返回要执行的代码
+    const callbackFunction = `
+      function() {
+        // 创建一个包含所有预加载脚本的代码块
+        const preloadScripts = ${JSON.stringify(preloadScripts)};
+        const blockId = "${block.id}";
+        const automaScript = ${JSON.stringify(
+          payload.data?.automaScript || ''
+        )};
+        const javascript = ${JSON.stringify(data.javascript || '')};
+
+        // 返回一个完整的、可执行的JavaScript代码字符串
+        return \`
+          // 执行预加载脚本
+          \${preloadScripts.map(item => {
+            if (item.type === 'style') return '';
+            return \`try { eval(\${JSON.stringify(item.script)}); } catch(e) { console.error('预加载脚本执行错误:', e); }\`;
+          }).join('\\n')}
+
+          // 执行主要JavaScript代码
+          try {
+            (function() {
+              \${automaScript}
+              \${javascript}
+            })();
+          } catch(error) {
+            console.error('执行JavaScript代码时出错:', error);
+          }
+
+          // 返回一个值，确保不是undefined
+          true;
+        \`;
+      }
+    `;
+
+    // 使用checkCSPAndInject函数处理CSP限制
     const result = await checkCSPAndInject(
       {
         target,
         debugMode,
         options: {
           awaitPromise: false,
-          returnByValue: false,
+          returnByValue: true, // 确保返回值是JavaScript代码字符串
         },
       },
-      () => {
-        let jsPreload = '';
-        preloadScripts.forEach((item) => {
-          if (item.type === 'style') return;
-
-          jsPreload += `${item.script}\n`;
-        });
-
-        const automaScript = payload.data?.automaScript || '';
-
-        return `(() => { ${jsPreload} \n ${automaScript}\n${data.javascript} })()`;
-      }
+      callbackFunction
     );
 
     if (!result.isBlocked) {
-      await browser.scripting.executeScript({
-        world: 'MAIN',
-        target,
-        args: [
-          data.javascript,
-          block.id,
-          payload.data?.automaScript || '',
-          preloadScripts,
-        ],
-        func: (code, blockId, $automaScript, $preloadScripts) => {
-          const baseId = `automa-${blockId}`;
-
-          $preloadScripts.forEach((item) => {
-            if (item.type === 'style') return;
-
-            const script = document.createElement(item.type);
-            script.id = `${baseId}-script`;
-            script.textContent = item.script;
-
-            document.body.appendChild(script);
-          });
-
-          const script = document.createElement('script');
-          script.id = `${baseId}-javascript`;
-          script.textContent = `(() => { ${$automaScript}\n${code} })()`;
-
-          document.body.appendChild(script);
+      const jsCode = createElementScript(
+        data.javascript,
+        block.id,
+        payload.data?.automaScript || '',
+        preloadScripts || []
+      );
+      await MessageListener.sendMessage(
+        'script:execute-callback',
+        {
+          target,
+          callback: jsCode,
         },
-      });
+        'background'
+      );
+    } else {
+      console.log('CreateElement: 使用CSP绕过方法执行代码');
     }
   }
 

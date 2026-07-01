@@ -1,8 +1,8 @@
-import browser from 'webextension-polyfill';
 import { isWhitespace, parseJSON } from '@/utils/helper';
 import decryptFlow, { getWorkflowPass } from '@/utils/decryptFlow';
 import convertWorkflowData from '@/utils/convertWorkflowData';
 import { nanoid } from 'nanoid';
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import WorkflowEngine from '../WorkflowEngine';
 
 function workflowListener(workflow, options) {
@@ -48,10 +48,8 @@ function findWorkflow(workflows, workflowId) {
 async function executeWorkflow({ id: blockId, data }, { refData }) {
   if (data.workflowId === '') throw new Error('empty-workflow');
 
-  const { workflows, teamWorkflows } = await browser.storage.local.get([
-    'workflows',
-    'teamWorkflows',
-  ]);
+  const { workflows, teamWorkflows } =
+    await BrowserAPIService.storage.local.get(['workflows', 'teamWorkflows']);
   let workflow = null;
 
   if (data.workflowId.startsWith('team')) {

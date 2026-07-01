@@ -1,6 +1,6 @@
+import BrowserAPIService from '@/service/browser-api/BrowserAPIService';
 import secrets from 'secrets';
-import browser from 'webextension-polyfill';
-import { parseJSON, isObject } from './helper';
+import { isObject, parseJSON } from './helper';
 
 export async function fetchApi(path, options = {}) {
   const urlPath = path.startsWith('/') ? path : `/${path}`;
@@ -9,7 +9,9 @@ export async function fetchApi(path, options = {}) {
     ...(options?.headers || {}),
   };
 
-  const { session } = await browser.storage.local.get('session');
+  const { session } = (await BrowserAPIService.storage.local.get(
+    'session'
+  )) || { session: null };
   if (session && options?.auth) {
     delete options.auth;
 
@@ -24,14 +26,16 @@ export async function fetchApi(path, options = {}) {
         throw new Error(result.message);
       }
 
-      await browser.storage.local.set({ session: result });
+      await BrowserAPIService.storage.local.set({ session: result });
       token = result.access_token;
     }
 
     headers.Authorization = `Bearer ${token}`;
   }
 
-  return fetch(`${secrets.baseApiUrl}${urlPath}`, {
+  const url = `${secrets.baseApiUrl}${urlPath}`;
+
+  return fetch(url, {
     ...options,
     headers,
   });
@@ -108,7 +112,9 @@ export async function getUserWorkflows(useCache = true) {
     'user-workflows',
     async () => {
       try {
-        const { lastBackup } = await browser.storage.local.get('lastBackup');
+        const { lastBackup } = await BrowserAPIService.storage.local.get(
+          'lastBackup'
+        );
         const response = await fetchApi(
           `/me/workflows?lastBackup=${(useCache && lastBackup) || null}`,
           { auth: true }
@@ -154,7 +160,9 @@ export function validateOauthToken() {
 
   const startFetch = async () => {
     try {
-      const { sessionToken } = await browser.storage.local.get('sessionToken');
+      const { sessionToken } = await BrowserAPIService.storage.local.get(
+        'sessionToken'
+      );
       if (!sessionToken) return null;
 
       const response = await fetch(
@@ -189,7 +197,9 @@ export function validateOauthToken() {
 }
 
 export async function fetchGapi(url, resource = {}, options = {}) {
-  const { sessionToken } = await browser.storage.local.get('sessionToken');
+  const { sessionToken } = await BrowserAPIService.storage.local.get(
+    'sessionToken'
+  );
   if (!sessionToken) throw new Error('unauthorized');
 
   const { search, origin, pathname } = new URL(url);
@@ -226,7 +236,7 @@ export async function fetchGapi(url, resource = {}, options = {}) {
       searchParams.set('access_token', refreshResult.token);
       sessionToken.access = refreshResult.token;
 
-      await browser.storage.local.set({ sessionToken });
+      await BrowserAPIService.storage.local.set({ sessionToken });
 
       if (tryCount < maxTry) {
         tryCount += 1;

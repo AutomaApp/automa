@@ -30,7 +30,7 @@
           </p>
           <a
             :title="t('common.docs')"
-            href="https://docs.automa.site/workflow/sharing-workflow.html#host-workflow"
+            href="https://docs.extension.automa.site/workflow/sharing-workflow.html#host-workflow"
             target="_blank"
             class="ml-1"
           >
@@ -326,29 +326,29 @@
   </ui-modal>
 </template>
 <script setup>
-import { reactive, computed } from 'vue';
+import WorkflowShareTeam from '@/components/newtab/workflow/WorkflowShareTeam.vue';
+import { useDialog } from '@/composable/dialog';
+import { useGroupTooltip } from '@/composable/groupTooltip';
+import { getShortcut, useShortcut } from '@/composable/shortcut';
+import RendererWorkflowService from '@/service/renderer/RendererWorkflowService';
+import { useStore } from '@/stores/main';
+import { usePackageStore } from '@/stores/package';
+import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
+import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
+import { useUserStore } from '@/stores/user';
+import { useWorkflowStore } from '@/stores/workflow';
+import { fetchApi } from '@/utils/api';
+import convertWorkflowData from '@/utils/convertWorkflowData';
+import { findTriggerBlock, parseJSON } from '@/utils/helper';
+import { tagColors } from '@/utils/shared';
+import getTriggerText from '@/utils/triggerText';
+import { convertWorkflow, exportWorkflow } from '@/utils/workflowData';
+import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
+import { computed, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import browser from 'webextension-polyfill';
-import { fetchApi } from '@/utils/api';
-import { useUserStore } from '@/stores/user';
-import { useStore } from '@/stores/main';
-import { useWorkflowStore } from '@/stores/workflow';
-import { useTeamWorkflowStore } from '@/stores/teamWorkflow';
-import { useSharedWorkflowStore } from '@/stores/sharedWorkflow';
-import { usePackageStore } from '@/stores/package';
-import { useDialog } from '@/composable/dialog';
-import { useGroupTooltip } from '@/composable/groupTooltip';
-import { useShortcut, getShortcut } from '@/composable/shortcut';
-import { tagColors } from '@/utils/shared';
-import { parseJSON, findTriggerBlock } from '@/utils/helper';
-import { exportWorkflow, convertWorkflow } from '@/utils/workflowData';
-import { registerWorkflowTrigger } from '@/utils/workflowTrigger';
-import { executeWorkflow } from '@/workflowEngine';
-import getTriggerText from '@/utils/triggerText';
-import convertWorkflowData from '@/utils/convertWorkflowData';
-import WorkflowShareTeam from '@/components/newtab/workflow/WorkflowShareTeam.vue';
 
 const props = defineProps({
   isDataChanged: {
@@ -469,13 +469,43 @@ function updateWorkflowDescription(value) {
   updateWorkflow(payload);
   state.showEditDescription = false;
 }
-function executeCurrWorkflow() {
+async function saveWorkflow() {
+  try {
+    const flow = props.editor.toObject();
+    flow.edges = flow.edges.map((edge) => {
+      delete edge.sourceNode;
+      delete edge.targetNode;
+
+      return edge;
+    });
+
+    const triggerBlock = flow.nodes.find((node) => node.label === 'trigger');
+    if (!triggerBlock) {
+      toast.error(t('message.noTriggerBlock'));
+      return;
+    }
+
+    await updateWorkflow(
+      {
+        drawflow: flow,
+        trigger: triggerBlock.data,
+        version: browser.runtime.getManifest().version,
+      },
+      false
+    );
+    await registerWorkflowTrigger(props.workflow.id, triggerBlock);
+
+    emit('change', { drawflow: flow });
+  } catch (error) {
+    console.error(error);
+  }
+}
+async function executeCurrWorkflow() {
   if (mainStore.settings.editor.saveWhenExecute && props.isDataChanged) {
-    // eslint-disable-next-line no-use-before-define
     saveWorkflow();
   }
 
-  executeWorkflow({
+  RendererWorkflowService.executeWorkflow({
     ...props.workflow,
     isTesting: props.isDataChanged,
   });
@@ -492,7 +522,9 @@ async function setAsHostWorkflow(isHost) {
 
   try {
     let url = '/me/workflows';
-    let payload = {};
+    let payload = {
+      auth: true,
+    };
 
     if (isHost) {
       const workflowPaylod = convertWorkflow(props.workflow, ['id']);
@@ -684,37 +716,7 @@ function deleteWorkflow() {
     },
   });
 }
-async function saveWorkflow() {
-  try {
-    const flow = props.editor.toObject();
-    flow.edges = flow.edges.map((edge) => {
-      delete edge.sourceNode;
-      delete edge.targetNode;
 
-      return edge;
-    });
-
-    const triggerBlock = flow.nodes.find((node) => node.label === 'trigger');
-    if (!triggerBlock) {
-      toast.error(t('message.noTriggerBlock'));
-      return;
-    }
-
-    await updateWorkflow(
-      {
-        drawflow: flow,
-        trigger: triggerBlock.data,
-        version: browser.runtime.getManifest().version,
-      },
-      false
-    );
-    await registerWorkflowTrigger(props.workflow.id, triggerBlock);
-
-    emit('change', { drawflow: flow });
-  } catch (error) {
-    console.error(error);
-  }
-}
 async function retrieveTriggerText() {
   if (props.canEdit) return;
 

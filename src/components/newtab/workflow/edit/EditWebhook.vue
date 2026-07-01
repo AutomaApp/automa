@@ -141,7 +141,7 @@
       />
       <div class="mt-3">
         <a
-          href="https://docs.automa.site/workflow/expressions.html"
+          href="https://docs.extension.automa.site/workflow/expressions.html"
           rel="noopener"
           class="border-b text-primary"
           target="_blank"
@@ -153,11 +153,11 @@
   </div>
 </template>
 <script setup>
-import { ref, watch, defineAsyncComponent } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { contentTypes } from '@/utils/shared';
-import InsertWorkflowData from './InsertWorkflowData.vue';
+import { defineAsyncComponent, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import EditAutocomplete from './EditAutocomplete.vue';
+import InsertWorkflowData from './InsertWorkflowData.vue';
 
 const SharedCodemirror = defineAsyncComponent(() =>
   import('@/components/newtab/shared/SharedCodemirror.vue')

@@ -4,7 +4,7 @@
       <p>
         You haven't
         <a
-          href="https://docs.automa.site/integrations/google-drive.html"
+          href="https://docs.extension.automa.site/integrations/google-drive.html"
           target="_blank"
           class="underline"
           >connected Automa to Google Drive</a
@@ -80,13 +80,13 @@
   </div>
 </template>
 <script setup>
+import { useHasPermissions } from '@/composable/hasPermissions';
+import { useStore } from '@/stores/main';
+import cloneDeep from 'lodash.clonedeep';
+import { nanoid } from 'nanoid/non-secure';
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { nanoid } from 'nanoid/non-secure';
-import cloneDeep from 'lodash.clonedeep';
 import browser from 'webextension-polyfill';
-import { useStore } from '@/stores/main';
-import { useHasPermissions } from '@/composable/hasPermissions';
 import EditAutocomplete from './EditAutocomplete.vue';
 
 const props = defineProps({

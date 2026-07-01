@@ -276,7 +276,8 @@
       },
       "messages": {
         "hostExist": "Ya ha añadido este host",
-        "notFound": "No se puede encontrar un flujo de trabajo alojado con el ID \"{id}\""
+        "notFound": "No se puede encontrar un flujo de trabajo alojado con el ID \"{id}\"",
+        "successAdded": "Flujo de trabajo anfitrión añadido con éxito con el ID \"{id}\""
       }
     },
     "type": {
@@ -298,7 +299,8 @@
       "edit": "Editar descripción",
       "fetchLocal": "Obtener flujo de trabajo local",
       "update": "Actualización",
-      "unpublish": "Anule la publicación"
+      "unpublish": "Anule la publicación",
+      "linkCopied": "Enlace copiado al portapapeles"
     },
     "variables": {
       "title": "Variable | Variables",
