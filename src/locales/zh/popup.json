@@ -8,16 +8,16 @@
       "title": "录制工作流",
       "button": "录制",
       "name": "工作流名称",
-      "selectBlock": "选择一个启动模块",
-      "anotherBlock": "无法从此模块启动",
+      "selectBlock": "选择一个起始模块",
+      "anotherBlock": "无法从此模块开始",
       "tabs": {
-        "new": "新建模块",
-        "existing": "已存在工作流"
+        "new": "新建工作流",
+        "existing": "现有工作流"
       }
     },
     "elementSelector": {
       "name": "元素选择器",
-      "noAccess": "您没有权限访问此站点"
+      "noAccess": "无法访问此站点"
     },
     "workflow": {
       "new": "新建工作流",

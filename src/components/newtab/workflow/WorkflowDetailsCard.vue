@@ -30,7 +30,7 @@
           :model-value="workflow.icon.startsWith('http') ? workflow.icon : ''"
           type="url"
           placeholder="http://example.com/img.png"
-          label="Icon URL"
+          :label="t('common.iconUrl')"
           @change="updateWorkflowIcon"
         />
       </div>
@@ -71,7 +71,7 @@
       :key="catId"
       :model-value="true"
       :blocks="items"
-      :category="categories[catId]"
+      :category="getCategory(catId)"
       :pinned="pinnedBlocks"
       @pin="pinBlock"
     />
@@ -105,10 +105,10 @@ const shortcut = useShortcut('action:search', () => {
   searchInput?.focus();
 });
 
-const pinnedCategory = {
-  name: 'Pinned blocks',
+const pinnedCategory = computed(() => ({
+  name: t('shared.blockCategories.pinned'),
   color: 'bg-accent',
-};
+}));
 const icons = [
   'mdiPackageVariantClosed',
   'riGlobalLine',
@@ -170,6 +170,16 @@ const pinnedBlocksList = computed(() =>
     )
 );
 
+function getCategory(id) {
+  const category = categories[id];
+  if (!category) return {};
+
+  const localeKey = `shared.blockCategories.${id}`;
+  return {
+    ...category,
+    name: te(localeKey) ? t(localeKey) : category.name,
+  };
+}
 function updateWorkflowIcon(value) {
   if (!value.startsWith('http')) return;
 

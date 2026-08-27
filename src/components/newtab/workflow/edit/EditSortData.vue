@@ -49,14 +49,22 @@
             <ui-input
               v-model="property.name"
               autocomplete="off"
-              :placeholder="`Property ${index + 1}`"
+              :placeholder="
+                t('workflow.blocks.sort-data.propertyLabel', {
+                  index: index + 1,
+                })
+              "
               class="w-full"
             />
           </ui-autocomplete>
           <div class="mt-2 flex items-center">
             <ui-select v-model="property.order" class="flex-1">
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
+              <option value="asc">
+                {{ t('workflow.blocks.sort-data.ascending') }}
+              </option>
+              <option value="desc">
+                {{ t('workflow.blocks.sort-data.descending') }}
+              </option>
             </ui-select>
             <ui-button class="ml-2" icon @click="properties.splice(index, 1)">
               <v-remixicon name="riDeleteBin7Line" />

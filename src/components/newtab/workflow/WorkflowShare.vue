@@ -26,7 +26,9 @@
         <ui-button class="mr-2" @click="$emit('close')">
           {{ t('common.cancel') }}
         </ui-button>
-        <ui-button class="mr-2" @click="saveDraft"> Save draft </ui-button>
+        <ui-button class="mr-2" @click="saveDraft">
+          {{ t('common.saveDraft') }}
+        </ui-button>
         <ui-button
           :loading="state.isPublishing"
           variant="accent"
@@ -45,13 +47,15 @@
           class="mr-4 block w-full flex-1 bg-transparent text-2xl font-semibold leading-none focus:ring-0"
         />
         <ui-select v-model="state.workflow.category">
-          <option value="">{{ t('common.category') }} (none)</option>
+          <option value="">
+            {{ t('common.category') }} ({{ t('common.none') }})
+          </option>
           <option
             v-for="(category, id) in workflowCategories"
             :key="id"
             :value="id"
           >
-            {{ category }}
+            {{ getWorkflowCategory(id, category) }}
           </option>
         </ui-select>
       </div>
@@ -59,7 +63,7 @@
         <ui-textarea
           v-model="state.workflow.description"
           :max="300"
-          placeholder="Short description"
+          :placeholder="t('common.shortDescription')"
           class="scroll h-32 w-full resize-none"
         />
         <p
@@ -108,7 +112,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['close', 'publish', 'change']);
 
-const { t } = useI18n();
+const { t, te } = useI18n();
 const toast = useToast();
 const userStore = useUserStore();
 const sharedWorkflowStore = useSharedWorkflowStore();
@@ -119,6 +123,10 @@ const state = reactive({
   workflow: JSON.parse(JSON.stringify(props.workflow)),
 });
 
+function getWorkflowCategory(id, fallback) {
+  const localeKey = `shared.workflowCategories.${id}`;
+  return te(localeKey) ? t(localeKey) : fallback;
+}
 async function publishWorkflow() {
   try {
     state.isPublishing = true;

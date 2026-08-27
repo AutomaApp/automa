@@ -2,18 +2,18 @@
   <div class="w-full max-w-2xl pb-8">
     <ui-input
       :model-value="data.name"
-      label="Package name"
+      :label="$t('packages.details.packageName')"
       class="w-full"
-      placeholder="My package"
+      :placeholder="$t('packages.details.myPackage')"
       @change="updatePackage({ name: $event })"
     />
     <label class="mt-4 block w-full">
       <span class="ml-1 text-sm text-gray-600 dark:text-gray-200">
-        Short description
+        {{ $t('common.shortDescription') }}
       </span>
       <ui-textarea
         :model-value="data.description"
-        placeholder="Short description"
+        :placeholder="$t('common.shortDescription')"
         @change="updatePackage({ description: $event })"
       />
     </label>

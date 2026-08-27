@@ -11,8 +11,8 @@
         :model-value="data.selector"
         class="mr-2 flex-1"
         autocomplete="off"
-        label="Target element (Optional)"
-        placeholder="CSS Selector or XPath"
+        :label="t('workflow.blocks.press-key.targetElementOptional')"
+        :placeholder="t('workflow.conditionBuilder.inputTypes.selector')"
         @change="updateData({ selector: $event })"
       />
       <shared-el-selector-actions
@@ -72,7 +72,7 @@
       v-else
       :model-value="data.keysToPress"
       class="mt-2 w-full"
-      placeholder="keys"
+      :placeholder="t('workflow.blocks.press-key.keysPlaceholder')"
       @change="updateData({ keysToPress: $event })"
     />
     <ui-input

@@ -55,13 +55,13 @@
           :placeholder="t('common.fileName')"
           autocomplete="off"
           class="mr-2 flex-1"
-          title="File name"
+          :title="t('common.fileName')"
           @change="updateData({ fileName: $event })"
         />
       </edit-autocomplete>
       <ui-select
         :model-value="data.ext || 'png'"
-        placeholder="Type"
+        :placeholder="t('workflow.blocks.take-screenshot.fileType')"
         @change="updateData({ ext: $event })"
       >
         <option value="png">PNG</option>
@@ -78,7 +78,7 @@
     <ui-select
       v-if="data.saveToColumn"
       :model-value="data.dataColumn"
-      placeholder="Select column"
+      :placeholder="t('workflow.table.select')"
       class="mt-1 w-full"
       @change="updateData({ dataColumn: $event })"
     >

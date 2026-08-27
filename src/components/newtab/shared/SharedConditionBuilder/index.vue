@@ -121,7 +121,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:modelValue', 'change']);
 
-const { t } = useI18n();
+const { t, te } = useI18n();
 
 const conditions = ref(cloneDeep(props.modelValue));
 
@@ -146,25 +146,37 @@ function getDefaultValues(items = ['value', 'compare', 'value']) {
 
   return items.map((item) => selectValue(item));
 }
+function getValueTypeName(type) {
+  const localeKey = `workflow.conditionBuilder.valueTypes.${type}`;
+  if (te(localeKey)) return t(localeKey);
+
+  return conditionBuilder.valueTypes.find(({ id }) => id === type)?.name || type;
+}
+function getCompareTypeName(type) {
+  const localeKey = `workflow.conditionBuilder.compareTypes.${type}`;
+  if (te(localeKey)) return t(localeKey);
+
+  return conditionBuilder.compareTypes.find(({ id }) => id === type)?.name || type;
+}
 function getConditionText({ category, type, data }) {
   if (category === 'compare') {
-    return conditionBuilder.compareTypes.find(({ id }) => id === type).name;
+    return getCompareTypeName(type);
   }
 
   let text = '';
 
   if (type === 'value') {
-    text = data.value || 'Empty';
+    text = data.value || t('workflow.conditionBuilder.empty');
   } else if (type.startsWith('code')) {
-    text = 'JS Code';
+    text = t('workflow.conditionBuilder.jsCode');
   } else if (type.startsWith('element')) {
-    text = type;
+    text = getValueTypeName(type);
 
     const textDetail = data.attrName || data.selector;
 
-    if (textDetail) text += `(${textDetail})`;
+    if (textDetail) text += ` (${textDetail})`;
   } else if (type.startsWith('data')) {
-    text = `Data exists (${data.dataPath})`;
+    text = `${getValueTypeName(type)} (${data.dataPath})`;
   }
 
   return text;

@@ -19,7 +19,7 @@
       class="mt-2"
       @change="updateData({ runBeforeLoad: $event })"
     >
-      Run before page loaded
+      {{ $t('workflow.blocks.create-element.runBeforeLoad') }}
     </ui-checkbox>
     <ui-button
       variant="accent"
@@ -65,7 +65,7 @@
         <ui-tab-panel value="javascript" class="h-full">
           <div class="mb-4">
             <span class="text-sm text-gray-500 dark:text-gray-300">
-              Available functions
+              {{ $t('workflow.blocks.create-element.availableFunctions') }}
             </span>
             <div class="flex items-center space-x-2">
               <a
@@ -96,9 +96,16 @@
               :key="index"
               class="flex items-center space-x-2"
             >
-              <ui-select v-model="item.type" placeholder="Type">
-                <option value="style">Style</option>
-                <option value="script">Script</option>
+              <ui-select
+                v-model="item.type"
+                :placeholder="$t('workflow.blocks.create-element.preloadType')"
+              >
+                <option value="style">
+                  {{ $t('workflow.blocks.create-element.style') }}
+                </option>
+                <option value="script">
+                  {{ $t('workflow.blocks.create-element.script') }}
+                </option>
               </ui-select>
               <ui-input
                 v-model="item.src"
@@ -116,7 +123,7 @@
             </li>
           </ul>
           <ui-button class="mt-4" @click="addPreloadScript">
-            Add script
+            {{ $t('workflow.blocks.create-element.addScript') }}
           </ui-button>
         </ui-tab-panel>
       </ui-tab-panels>

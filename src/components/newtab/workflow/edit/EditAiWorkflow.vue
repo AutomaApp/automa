@@ -8,7 +8,7 @@
       <span class="flex justify-between items-center w-full">
         <span class="flex items-center space-x-1">
           <v-remixicon name="riKey" size="16"></v-remixicon>
-          <span>Configure AI Power Token</span>
+          <span>{{ t('workflow.blocks.ai-workflow.configureToken') }}</span>
         </span>
         <v-remixicon name="riArrowRightLine" size="16"></v-remixicon>
       </span>
@@ -23,15 +23,15 @@
         option-value-key="flowUuid"
         option-label-key="name"
         class="mt-4 w-full"
-        label="Select Workflows"
-        placeholder="Select a workflow"
-        search-placeholder="Search workflows..."
+        :label="t('workflow.blocks.ai-workflow.selectWorkflows')"
+        :placeholder="t('workflow.blocks.ai-workflow.selectWorkflow')"
+        :search-placeholder="t('workflow.blocks.ai-workflow.searchWorkflows')"
         @change="onFlowChange"
       >
         <template #footer>
           <ui-button class="w-full" @click="createNewWorkflow">
             <v-remixicon name="riAddLine" class="mr-2" />
-            New AI Workflow
+            {{ t('workflow.blocks.ai-workflow.newWorkflow') }}
           </ui-button>
         </template>
       </ui-paginated-select>
@@ -41,7 +41,7 @@
       ></div>
 
       <div class="my-4">
-        <p class="font-semibold">Workflow Inputs</p>
+        <p class="font-semibold">{{ t('workflow.blocks.ai-workflow.inputs') }}</p>
         <template v-if="data.inputs && data.inputs.length">
           <div
             v-for="(item, index) in data.inputs"
@@ -61,12 +61,16 @@
           </div>
         </template>
         <template v-else>
-          <p class="text-sm text-gray-500">No inputs</p>
+          <p class="text-sm text-gray-500">
+            {{ t('workflow.blocks.ai-workflow.noInputs') }}
+          </p>
         </template>
       </div>
 
       <div class="my-4">
-        <p class="font-semibold">Workflow Outputs(view only)</p>
+        <p class="font-semibold">
+          {{ t('workflow.blocks.ai-workflow.outputsReadonly') }}
+        </p>
         <template v-if="data.outputs && data.outputs.length">
           <ui-input
             v-for="(item, index) in data.outputs"
@@ -78,7 +82,9 @@
           />
         </template>
         <template v-else>
-          <p class="text-sm text-gray-500">No outputs</p>
+          <p class="text-sm text-gray-500">
+            {{ t('workflow.blocks.ai-workflow.noOutputs') }}
+          </p>
         </template>
       </div>
 
@@ -94,13 +100,13 @@
 
     <ui-modal
       v-model="state.showAIPowerTokenModal"
-      title="Configure AI Power Token"
+      :title="t('workflow.blocks.ai-workflow.configureToken')"
     >
       <div class="mb-6">
         <p>
-          <span class="text-gray-500 text-[14px] leading-[24px]"
-            >Enter your AI Power token to enable AI Workflow features</span
-          >
+          <span class="text-gray-500 text-[14px] leading-[24px]">
+            {{ t('workflow.blocks.ai-workflow.tokenIntro') }}
+          </span>
         </p>
       </div>
 
@@ -111,30 +117,34 @@
           class="font-semibold text-[16px] dark:text-gray-300 leading-[24px] flex items-center"
         >
           <v-remixicon name="riKey" size="16" class="mr-1"></v-remixicon>
-          How to get your AI Power Token
+          {{ t('workflow.blocks.ai-workflow.howToGetToken') }}
         </p>
 
         <ol
           class="space-y-2 list-decimal list-inside text-sm text-gray-600 dark:text-gray-400"
         >
-          <li>Go to Settings → Authorizations in your AI Power dashboard</li>
-          <li>Navigate to "AI Power Authorization" section</li>
-          <li>Click "Generate New Token" to create a new token</li>
-          <li>Copy the generated token and paste it below</li>
+          <li>{{ t('workflow.blocks.ai-workflow.tokenStep1') }}</li>
+          <li>{{ t('workflow.blocks.ai-workflow.tokenStep2') }}</li>
+          <li>{{ t('workflow.blocks.ai-workflow.tokenStep3') }}</li>
+          <li>{{ t('workflow.blocks.ai-workflow.tokenStep4') }}</li>
         </ol>
 
         <ui-button variant="default" @click="goToAIPowerSettings">
-          <span class="text-[14px] leading-[24px]">Open AI Power Settings</span>
+          <span class="text-[14px] leading-[24px]">
+            {{ t('workflow.blocks.ai-workflow.openSettings') }}
+          </span>
           <v-remixicon name="riArrowRightUpLine" size="16"></v-remixicon>
         </ui-button>
       </div>
 
       <div class="flex flex-col space-y-4 mb-4">
-        <span class="text-sm text-gray-500 font-semibold">AI Power Token</span>
+        <span class="text-sm text-gray-500 font-semibold">
+          {{ t('workflow.blocks.ai-workflow.tokenLabel') }}
+        </span>
         <ui-input
           :model-value="aiPowerToken"
           class="w-full"
-          placeholder="Enter your AI Power Token..."
+          :placeholder="t('workflow.blocks.ai-workflow.tokenPlaceholder')"
           @change="updateAIPowerToken"
         />
       </div>
@@ -143,9 +153,12 @@
         <ui-button
           variant="default"
           @click="state.showAIPowerTokenModal = false"
-          >Cancel</ui-button
         >
-        <ui-button variant="accent" @click="saveAIPowerToken">Save</ui-button>
+          {{ t('common.cancel') }}
+        </ui-button>
+        <ui-button variant="accent" @click="saveAIPowerToken">
+          {{ t('common.save') }}
+        </ui-button>
       </div>
     </ui-modal>
   </div>
@@ -170,11 +183,13 @@ import {
   shallowReactive,
   watch,
 } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import browser from 'webextension-polyfill';
 import InsertWorkflowData from './InsertWorkflowData.vue';
 
+const { t } = useI18n();
 const toast = useToast();
 
 const props = defineProps({
@@ -219,7 +234,7 @@ const handleUploadFile = async (file) => {
         filename: file.name,
       };
     }
-    throw new Error(res.msg || 'File upload failed');
+    throw new Error(res.msg || t('workflow.blocks.ai-workflow.uploadFailed'));
   } catch (error) {
     console.error(error);
     throw error;
@@ -255,7 +270,11 @@ const loadWorkflows = async ({ query, page }) => {
         hasMore: res.page.pages > res.page.page,
       };
     }
-    toast.error(`Failed to fetch AI Power workflows: ${res.msg}`);
+    toast.error(
+      t('workflow.blocks.ai-workflow.fetchWorkflowsFailed', {
+        message: res.msg,
+      })
+    );
     return { data: [], hasMore: false };
   } catch (err) {
     console.error(err);
@@ -334,7 +353,11 @@ watch(
         });
       } else {
         clearInputsAndOutputs();
-        toast.error(`Failed to fetch AI Power workflow detail: ${res.msg}`);
+        toast.error(
+          t('workflow.blocks.ai-workflow.fetchDetailFailed', {
+            message: res.msg,
+          })
+        );
       }
     });
   }

@@ -74,14 +74,14 @@
           <ui-input
             v-model="items.name"
             :title="items.name"
-            :placeholder="`Header ${index + 1}`"
+            :placeholder="t('workflow.blocks.webhook.header', { index: index + 1 })"
             type="text"
             class="col-span-3"
           />
           <ui-input
             v-model="items.value"
             :title="items.value"
-            placeholder="Value"
+            :placeholder="t('common.value')"
             type="text"
             class="col-span-3"
           />
@@ -104,7 +104,7 @@
       <ui-tab-panel value="response" class="mt-2">
         <ui-select
           :model-value="data.responseType"
-          label="Response type"
+          :label="t('workflow.blocks.webhook.responseType')"
           class="w-full"
           @change="updateData({ responseType: $event })"
         >
@@ -116,13 +116,18 @@
           v-if="data.responseType === 'json'"
           :model-value="data.dataPath"
           placeholder="path.to.data"
-          label="Data path"
+          :label="t('workflow.blocks.webhook.dataPath')"
           class="mt-2 w-full"
           @change="updateData({ dataPath: $event })"
         />
         <insert-workflow-data
           :data="data"
-          :columns="[{ name: '[Assign columns]', id: '$assignColumns' }]"
+          :columns="[
+            {
+              name: t('workflow.blocks.webhook.assignColumns'),
+              id: '$assignColumns',
+            },
+          ]"
           variables
           @update="updateData"
         />

@@ -22,10 +22,10 @@
       <optgroup
         v-for="(events, label) in browserEvents"
         :key="label"
-        :label="label"
+        :label="t(`workflow.blocks.browser-event.groups.${label}`)"
       >
         <option v-for="event in events" :key="event.id" :value="event.id">
-          {{ event.name }}
+          {{ t(`workflow.blocks.browser-event.eventNames.${event.id}`) }}
         </option>
       </optgroup>
     </ui-select>
@@ -39,12 +39,12 @@
         @change="updateData({ tabLoadedUrl: $event })"
       >
         <template #label>
-          <span>Match pattern</span>
+          <span>{{ t('workflow.blocks.browser-event.matchPattern') }}</span>
           <a
             href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns#examples"
             target="_blank"
             rel="noopener"
-            title="Examples"
+            :title="t('common.example', 2)"
           >
             <v-remixicon
               class="ml-1 inline-block"
@@ -66,9 +66,9 @@
       <ui-input
         :model-value="data.tabUrl"
         type="url"
-        label="Filter"
+        :label="t('workflow.blocks.browser-event.filter')"
         class="mt-1 w-full"
-        placeholder="URL or Regex"
+        :placeholder="t('workflow.blocks.browser-event.urlOrRegex')"
         @change="updateData({ tabUrl: $event })"
       />
       <ui-checkbox
@@ -95,15 +95,8 @@ const emit = defineEmits(['update:data']);
 const { t } = useI18n();
 
 const browserEvents = {
-  Tab: [
-    { id: 'tab:close', name: 'Tab closed' },
-    { id: 'tab:loaded', name: 'Tab loaded' },
-    { id: 'tab:create', name: 'Tab created' },
-  ],
-  Window: [
-    { id: 'window:create', name: 'Window created' },
-    { id: 'window:close', name: 'Window closed' },
-  ],
+  Tab: [{ id: 'tab:close' }, { id: 'tab:loaded' }, { id: 'tab:create' }],
+  Window: [{ id: 'window:create' }, { id: 'window:close' }],
 };
 
 function updateData(value) {

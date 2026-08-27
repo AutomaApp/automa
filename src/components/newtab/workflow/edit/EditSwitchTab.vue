@@ -8,12 +8,12 @@
     />
     <ui-select
       :model-value="data.findTabBy"
-      label="Find tab by"
+      :label="t('workflow.blocks.switch-tab.findBy')"
       class="mb-2 mt-3 w-full"
       @change="updateData({ findTabBy: $event })"
     >
       <option v-for="type in types" :key="type.id" :value="type.id">
-        {{ type.name }}
+        {{ t(`workflow.blocks.switch-tab.findByTypes.${type.id}`) }}
       </option>
     </ui-select>
     <template v-if="['match-patterns', 'tab-title'].includes(data.findTabBy)">
@@ -45,7 +45,7 @@
       <edit-autocomplete v-else-if="data.findTabBy === 'tab-title'">
         <ui-input
           :model-value="data.tabTitle"
-          label="Tab title"
+          :label="t('workflow.blocks.switch-tab.tabTitle')"
           class="w-full"
           @change="updateData({ tabTitle: $event })"
         />
@@ -70,7 +70,7 @@
     <ui-input
       v-else-if="data.findTabBy === 'tab-index'"
       :model-value="data.tabIndex"
-      label="Index"
+      :label="t('workflow.blocks.switch-tab.index')"
       type="number"
       class="w-full"
       min="0"

@@ -2,7 +2,7 @@
   <div class="space-y-2">
     <ui-input
       :model-value="data.time"
-      label="Delay time (millisecond)"
+      :label="t('workflow.blocks.delay.timeLabel')"
       class="w-full"
       type="text"
       @change="updateData({ time: $event })"
@@ -10,6 +10,8 @@
   </div>
 </template>
 <script setup>
+import { useI18n } from 'vue-i18n';
+
 const props = defineProps({
   data: {
     type: Object,
@@ -17,6 +19,7 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(['update:data']);
+const { t } = useI18n();
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });

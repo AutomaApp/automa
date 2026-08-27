@@ -1,10 +1,10 @@
 {
   "common": {
-    "dashboard": "主面板",
+    "dashboard": "仪表盘",
     "workflow": "工作流 | 工作流",
     "collection": "集合 | 集合",
     "log": "日志 | 日志",
-    "block": "单元 | 单元",
+    "block": "模块 | 模块",
     "schedule": "计划",
     "folder": "文件夹 | 文件夹",
     "new": "新建",
@@ -26,41 +26,375 @@
     "save": "保存",
     "data": "数据",
     "stop": "停止",
-    "sheet": "工作簿",
+    "sheet": "工作表",
     "pause": "暂停",
-    "resume": "恢复",
+    "resume": "继续",
     "action": "操作 | 操作",
     "packages": "包",
     "storage": "存储",
     "editor": "编辑器",
-    "running": "运行",
+    "running": "运行中",
     "globalData": "全局数据",
     "fileName": "文件名",
     "description": "描述",
     "disable": "禁用",
     "disabled": "已禁用",
     "enable": "启用",
-    "fallback": "反馈",
+    "fallback": "回退",
     "update": "更新",
-    "feature": "特点",
-    "duplicate": "副本",
+    "feature": "功能",
+    "duplicate": "创建副本",
     "password": "密码",
     "category": "分类",
     "optional": "可选",
-    "0disable": "0 到禁用",
+    "value": "值",
+    "text": "文本",
+    "column": "列",
+    "emptyValue": "空",
+    "none": "无",
+    "shortDescription": "简短描述",
+    "writeHere": "在此输入...",
+    "environment": "环境",
+    "stage": "预发布",
+    "production": "生产",
+    "delimiter": "分隔符",
+    "parameters": "参数",
+    "iconUrl": "图标 URL",
+    "raw": "原始数据",
+    "unnamed": "未命名",
+    "selectTeam": "选择团队",
+    "saveDraft": "保存草稿",
+    "0disable": "0 表示禁用",
     "millisecond": "毫秒 | 毫秒"
+  },
+  "settings": {
+    "menu": {
+      "profile": "个人资料"
+    },
+    "profile": {
+      "title": "个人资料",
+      "loading": "正在加载个人资料...",
+      "signedInAs": "已登录为",
+      "signIn": "登录",
+      "signInDesc": "登录以备份工作流并使用云端功能",
+      "signOut": "退出登录",
+      "signingOut": "正在退出登录...",
+      "signedOut": "已退出登录",
+      "signOutConfirmTitle": "确定退出登录吗？",
+      "signOutConfirmMessage": "退出登录将移除此设备上的身份验证数据和本地会话。你的工作流仍会保留在设备上。",
+      "warningMessage": "此操作只会让你退出当前设备上的账户。",
+      "signOutNote": "你可以随时重新登录以恢复云端功能。",
+      "notSignedIn": "尚未登录",
+      "teamsCount": "{count} 个团队",
+      "avatar": "头像",
+      "username": "用户名",
+      "email": "邮箱"
+    },
+    "deleteLog": {
+      "sectionTitle": "工作流日志",
+      "logsLimit": "日志数量上限"
+    },
+    "editor": {
+      "zoom": "缩放",
+      "minZoom": "最小缩放",
+      "maxZoom": "最大缩放",
+      "xAxis": "X 轴",
+      "yAxis": "Y 轴"
+    }
+  },
+  "credential": {
+    "duplicate": "凭据“{name}”已存在"
+  },
+  "packages": {
+    "details": {
+      "packageName": "包名称",
+      "myPackage": "我的包"
+    },
+    "openPage": "打开包页面",
+    "imageUnavailable": "图片无法显示",
+    "byAuthor": "作者：{author}",
+    "copySuffix": "副本",
+    "deleteTitle": "删除包",
+    "deleteConfirm": "确定要删除“{name}”包吗？"
+  },
+  "shared": {
+    "blockCategories": {
+      "pinned": "已固定模块",
+      "interaction": "网页交互",
+      "browser": "浏览器",
+      "general": "常规",
+      "onlineServices": "在线服务",
+      "data": "数据",
+      "conditions": "流程控制",
+      "package": "包"
+    },
+    "blockActions": {
+      "pin": "固定模块",
+      "unpin": "取消固定模块"
+    },
+    "events": {
+      "click": "点击",
+      "dblclick": "双击",
+      "mouseup": "鼠标抬起",
+      "mousedown": "鼠标按下",
+      "mouseenter": "鼠标进入",
+      "mouseleave": "鼠标离开",
+      "mouseover": "鼠标移入",
+      "mouseout": "鼠标移出",
+      "mousemove": "鼠标移动",
+      "focus": "获得焦点",
+      "blur": "失去焦点",
+      "input": "输入",
+      "change": "更改",
+      "touchstart": "触摸开始",
+      "touchend": "触摸结束",
+      "touchmove": "触摸移动",
+      "touchcancel": "触摸取消",
+      "keydown": "按键按下",
+      "keyup": "按键抬起",
+      "submit": "提交",
+      "wheel": "滚轮"
+    },
+    "exportTypes": {
+      "json": "JSON",
+      "csv": "CSV",
+      "plain-text": "纯文本"
+    },
+    "workflowCategories": {
+      "scrape": "数据抓取",
+      "automation": "自动化",
+      "productivity": "效率工具"
+    }
+  },
+  "workflow": {
+    "parameterPrompt": {
+      "timeout": "超时时间（毫秒，0 表示禁用）",
+      "insertParameters": "插入参数"
+    },
+    "triggerEvent": {
+      "bubbles": "冒泡",
+      "cancelable": "可取消"
+    },
+    "teamShare": {
+      "title": "与团队共享工作流",
+      "description": "此工作流将共享给你的团队",
+      "update": "更新工作流",
+      "success": "工作流已成功共享给团队。"
+    },
+    "blocks": {
+      "ai-workflow": {
+        "name": "AI 工作流",
+        "description": "由 AI Power 创建的工作流",
+        "configureToken": "配置 AI Power Token",
+        "selectWorkflows": "选择工作流",
+        "selectWorkflow": "选择一个工作流",
+        "searchWorkflows": "搜索工作流...",
+        "newWorkflow": "新建 AI 工作流",
+        "inputs": "工作流输入",
+        "noInputs": "无输入",
+        "outputsReadonly": "工作流输出（仅查看）",
+        "noOutputs": "无输出",
+        "tokenIntro": "输入 AI Power Token 以启用 AI 工作流功能",
+        "howToGetToken": "如何获取 AI Power Token",
+        "tokenStep1": "在 AI Power 控制台中打开“设置 → 授权”",
+        "tokenStep2": "进入“AI Power Authorization”区域",
+        "tokenStep3": "点击“Generate New Token”创建新 Token",
+        "tokenStep4": "复制生成的 Token 并粘贴到下方",
+        "openSettings": "打开 AI Power 设置",
+        "tokenLabel": "AI Power Token",
+        "tokenPlaceholder": "输入 AI Power Token...",
+        "uploadFailed": "文件上传失败",
+        "fetchWorkflowsFailed": "获取 AI Power 工作流失败：{message}",
+        "fetchDetailFailed": "获取 AI Power 工作流详情失败：{message}"
+      },
+      "cookie": {
+        "seeProperties": "查看所有可用属性",
+        "nameOptional": "名称（可选）",
+        "valueOptional": "值（可选）",
+        "pathOptional": "路径（可选）",
+        "domainOptional": "域名（可选）",
+        "sameSiteOptional": "sameSite（可选）",
+        "expirationDateOptional": "expirationDate（秒，可选）",
+        "noPermissionDetailed": "此模块需要“Cookies”权限才能正常工作"
+      },
+      "webhook": {
+        "header": "请求头 {index}",
+        "responseType": "响应类型",
+        "dataPath": "数据路径",
+        "assignColumns": "[分配列]"
+      },
+      "new-window": {
+        "typeLabel": "类型",
+        "urlOptional": "URL（可选）",
+        "types": {
+          "normal": "普通窗口",
+          "popup": "弹出窗口",
+          "panel": "面板"
+        }
+      },
+      "forms": {
+        "selectOptionBy": "选择选项的方式",
+        "selectByValue": "按值",
+        "positionGroup": "按位置",
+        "firstOption": "第一个选项",
+        "lastOption": "最后一个选项",
+        "customPosition": "自定义",
+        "optionPosition": "选项位置"
+      },
+      "proxy": {
+        "hostLabel": "主机",
+        "portLabel": "端口",
+        "supportedProtocols": "支持的协议：http、https、socks4 和 socks5"
+      },
+      "delay": {
+        "timeLabel": "延迟时间（毫秒）"
+      },
+      "switch-tab": {
+        "findBy": "查找标签页方式",
+        "tabTitle": "标签页标题",
+        "index": "索引",
+        "findByTypes": {
+          "match-patterns": "匹配模式",
+          "tab-title": "标签页标题",
+          "next-tab": "下一个标签页",
+          "prev-tab": "上一个标签页",
+          "tab-index": "标签页索引"
+        }
+      },
+      "press-key": {
+        "targetElementOptional": "目标元素（可选）",
+        "keysPlaceholder": "按键"
+      },
+      "create-element": {
+        "runBeforeLoad": "页面加载前运行",
+        "availableFunctions": "可用函数",
+        "preloadType": "类型",
+        "style": "样式",
+        "script": "脚本",
+        "addScript": "添加脚本"
+      },
+      "get-text": {
+        "regex": "正则表达式",
+        "flags": "标志",
+        "expressionFlags": "表达式标志",
+        "textPlaceholder": "文本",
+        "useTextContent": "使用 textContent",
+        "flagNames": {
+          "g": "全局",
+          "i": "忽略大小写",
+          "m": "多行"
+        }
+      },
+      "sort-data": {
+        "propertyLabel": "属性 {index}",
+        "ascending": "升序",
+        "descending": "降序"
+      },
+      "insert-data": {
+        "button": "插入数据（{count}）",
+        "title": "插入数据",
+        "fileUrl": "文件 URL",
+        "filePathOrUrl": "文件绝对路径 / 文件 URL",
+        "sheetOptional": "工作表（可选）",
+        "rangeOptional": "范围（可选）",
+        "importFile": "导入文件",
+        "fileAccessHelp": "没有文件访问权限，点击了解详情",
+        "previewData": "预览数据",
+        "clearPreview": "清除预览",
+        "fileAction": "文件操作",
+        "defaultAction": "默认",
+        "readBase64": "读取为 Base64",
+        "csvExcelFile": "CSV/Excel 文件",
+        "readJson": "读取为 JSON",
+        "readJsonHeaders": "读取为带表头的 JSON"
+      },
+      "browser-event": {
+        "groups": {
+          "Tab": "标签页",
+          "Window": "窗口"
+        },
+        "eventNames": {
+          "tab:close": "标签页关闭",
+          "tab:loaded": "标签页加载完成",
+          "tab:create": "标签页创建",
+          "window:create": "窗口创建",
+          "window:close": "窗口关闭"
+        },
+        "matchPattern": "匹配模式",
+        "filter": "筛选",
+        "urlOrRegex": "URL 或正则表达式"
+      },
+      "execute-workflow": {
+        "localGroup": "本地",
+        "teamGroup": "团队"
+      },
+      "notification": {
+        "messagePlaceholder": "通知消息"
+      },
+      "take-screenshot": {
+        "fileType": "类型"
+      }
+    },
+    "conditionBuilder": {
+      "valueTypes": {
+        "value": "值",
+        "code": "代码",
+        "data#exists": "数据存在",
+        "element#text": "元素文本",
+        "element#exists": "元素存在",
+        "element#notExists": "元素不存在",
+        "element#visible": "元素可见",
+        "element#visibleScreen": "元素在屏幕内可见",
+        "element#invisible": "元素在屏幕内隐藏",
+        "element#attribute": "元素属性值"
+      },
+      "compareTypes": {
+        "eq": "等于",
+        "eqi": "等于（忽略大小写）",
+        "nq": "不等于",
+        "gt": "大于",
+        "gte": "大于或等于",
+        "lt": "小于",
+        "lte": "小于或等于",
+        "cnt": "包含",
+        "cni": "包含（忽略大小写）",
+        "nct": "不包含",
+        "nci": "不包含（忽略大小写）",
+        "stw": "开头为",
+        "enw": "结尾为",
+        "rgx": "匹配正则表达式",
+        "itr": "为真值",
+        "ifl": "为假值"
+      },
+      "inputTypes": {
+        "selector": "CSS 选择器或 XPath",
+        "value": "值",
+        "attrName": "属性名称",
+        "dataPath": "variables@variableName"
+      },
+      "groups": {
+        "value": "值",
+        "element": "元素",
+        "basic": "基础",
+        "number": "数值",
+        "text": "文本",
+        "boolean": "布尔值"
+      },
+      "empty": "空",
+      "jsCode": "JS 代码"
+    }
   },
   "message": {
     "noBlock": "没有模块",
-    "noData": "没有数据可以展示",
-    "noTriggerBlock": "没有找到触发器模块",
+    "noData": "没有可显示的数据",
+    "noTriggerBlock": "找不到触发器模块",
     "useDynamicData": "了解如何添加动态数据",
-    "delete": "确定要删除\"{name}\"?",
-    "empty": "哎呀……你好像没有任何项目",
-    "maxSizeExceeded": "文件大小超出了允许的最大值",
-    "notSaved": "你真的要退出吗？ 你有未保存的更改！",
+    "delete": "确定要删除“{name}”吗？",
+    "empty": "暂无项目",
+    "maxSizeExceeded": "文件大小已超过允许的最大值",
+    "notSaved": "确定要离开吗？你有未保存的更改。",
     "somethingWrong": "出现错误",
-    "limitExceeded": "您已超出限制"
+    "limitExceeded": "已超出限制"
   },
   "sort": {
     "sortBy": "排序方式",
@@ -70,7 +404,7 @@
     "mostUsed": "最常用"
   },
   "logStatus": {
-    "stopped": "停止",
+    "stopped": "已停止",
     "error": "错误",
     "success": "成功"
   }

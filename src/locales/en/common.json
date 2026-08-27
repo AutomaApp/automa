@@ -47,8 +47,318 @@
     "password": "Password",
     "category": "Category",
     "optional": "Optional",
+    "value": "Value",
+    "text": "Text",
+    "column": "Column",
+    "emptyValue": "EMPTY",
+    "none": "None",
+    "shortDescription": "Short description",
+    "writeHere": "Write here...",
+    "environment": "Environment",
+    "stage": "Staging",
+    "production": "Production",
+    "delimiter": "Delimiter",
+    "parameters": "Parameters",
+    "iconUrl": "Icon URL",
+    "raw": "Raw",
+    "unnamed": "unnamed",
+    "selectTeam": "Select team",
+    "saveDraft": "Save draft",
     "0disable": "0 to disable",
     "millisecond": "millisecond | milliseconds"
+  },
+  "settings": {
+    "deleteLog": {
+      "sectionTitle": "Workflow logs",
+      "logsLimit": "Logs limit"
+    },
+    "editor": {
+      "zoom": "Zoom",
+      "minZoom": "Min zoom",
+      "maxZoom": "Max zoom",
+      "xAxis": "X axis",
+      "yAxis": "Y axis"
+    }
+  },
+  "credential": {
+    "duplicate": "Credential \"{name}\" already exists"
+  },
+  "packages": {
+    "details": {
+      "packageName": "Package name",
+      "myPackage": "My package"
+    },
+    "openPage": "Open package page",
+    "imageUnavailable": "Image unavailable",
+    "byAuthor": "By {author}",
+    "copySuffix": "copy",
+    "deleteTitle": "Delete package",
+    "deleteConfirm": "Are you sure you want to delete \"{name}\" package?"
+  },
+  "shared": {
+    "blockCategories": {
+      "pinned": "Pinned blocks",
+      "interaction": "Web interaction",
+      "browser": "Browser",
+      "general": "General",
+      "onlineServices": "Online services",
+      "data": "Data",
+      "conditions": "Control flow",
+      "package": "Packages"
+    },
+    "blockActions": {
+      "pin": "Pin block",
+      "unpin": "Unpin block"
+    },
+    "events": {
+      "click": "Click",
+      "dblclick": "Double click",
+      "mouseup": "Mouse up",
+      "mousedown": "Mouse down",
+      "mouseenter": "Mouse enter",
+      "mouseleave": "Mouse leave",
+      "mouseover": "Mouse over",
+      "mouseout": "Mouse out",
+      "mousemove": "Mouse move",
+      "focus": "Focus",
+      "blur": "Blur",
+      "input": "Input",
+      "change": "Change",
+      "touchstart": "Touch start",
+      "touchend": "Touch end",
+      "touchmove": "Touch move",
+      "touchcancel": "Touch cancel",
+      "keydown": "Key down",
+      "keyup": "Key up",
+      "submit": "Submit",
+      "wheel": "Wheel"
+    },
+    "exportTypes": {
+      "json": "JSON",
+      "csv": "CSV",
+      "plain-text": "Plain text"
+    },
+    "workflowCategories": {
+      "scrape": "Scraping",
+      "automation": "Automation",
+      "productivity": "Productivity"
+    }
+  },
+  "workflow": {
+    "parameterPrompt": {
+      "timeout": "Timeout (milliseconds) (0 to disable)",
+      "insertParameters": "Insert parameters"
+    },
+    "triggerEvent": {
+      "bubbles": "Bubbles",
+      "cancelable": "Cancelable"
+    },
+    "teamShare": {
+      "title": "Share workflow with team",
+      "description": "This workflow will be shared with your team",
+      "update": "Update workflow",
+      "success": "Workflow shared with your team successfully."
+    },
+    "blocks": {
+      "ai-workflow": {
+        "configureToken": "Configure AI Power Token",
+        "selectWorkflows": "Select workflows",
+        "selectWorkflow": "Select a workflow",
+        "searchWorkflows": "Search workflows...",
+        "newWorkflow": "New AI Workflow",
+        "inputs": "Workflow inputs",
+        "noInputs": "No inputs",
+        "outputsReadonly": "Workflow outputs (view only)",
+        "noOutputs": "No outputs",
+        "tokenIntro": "Enter your AI Power token to enable AI Workflow features",
+        "howToGetToken": "How to get your AI Power Token",
+        "tokenStep1": "Go to Settings → Authorizations in your AI Power dashboard",
+        "tokenStep2": "Navigate to the \"AI Power Authorization\" section",
+        "tokenStep3": "Click \"Generate New Token\" to create a new token",
+        "tokenStep4": "Copy the generated token and paste it below",
+        "openSettings": "Open AI Power Settings",
+        "tokenLabel": "AI Power Token",
+        "tokenPlaceholder": "Enter your AI Power Token...",
+        "uploadFailed": "File upload failed",
+        "fetchWorkflowsFailed": "Failed to fetch AI Power workflows: {message}",
+        "fetchDetailFailed": "Failed to fetch AI Power workflow detail: {message}"
+      },
+      "cookie": {
+        "seeProperties": "See all available properties",
+        "nameOptional": "Name (optional)",
+        "valueOptional": "Value (optional)",
+        "pathOptional": "Path (optional)",
+        "domainOptional": "Domain (optional)",
+        "sameSiteOptional": "sameSite (optional)",
+        "expirationDateOptional": "expirationDate (seconds) (optional)",
+        "noPermissionDetailed": "This block requires \"Cookies\" permission to work properly"
+      },
+      "webhook": {
+        "header": "Header {index}",
+        "responseType": "Response type",
+        "dataPath": "Data path",
+        "assignColumns": "[Assign columns]"
+      },
+      "new-window": {
+        "typeLabel": "Type",
+        "urlOptional": "URL (optional)",
+        "types": {
+          "normal": "Normal window",
+          "popup": "Popup",
+          "panel": "Panel"
+        }
+      },
+      "forms": {
+        "selectOptionBy": "Select an option by",
+        "selectByValue": "The value",
+        "positionGroup": "The position",
+        "firstOption": "First option",
+        "lastOption": "Last option",
+        "customPosition": "Custom",
+        "optionPosition": "Option position"
+      },
+      "proxy": {
+        "hostLabel": "Host",
+        "portLabel": "Port",
+        "supportedProtocols": "Supported protocols: http, https, socks4, and socks5"
+      },
+      "delay": {
+        "timeLabel": "Delay time (milliseconds)"
+      },
+      "switch-tab": {
+        "findBy": "Find tab by",
+        "tabTitle": "Tab title",
+        "index": "Index",
+        "findByTypes": {
+          "match-patterns": "Match patterns",
+          "tab-title": "Tab title",
+          "next-tab": "Next tab",
+          "prev-tab": "Previous tab",
+          "tab-index": "Tab index"
+        }
+      },
+      "press-key": {
+        "targetElementOptional": "Target element (optional)",
+        "keysPlaceholder": "keys"
+      },
+      "create-element": {
+        "runBeforeLoad": "Run before page loaded",
+        "availableFunctions": "Available functions",
+        "preloadType": "Type",
+        "style": "Style",
+        "script": "Script",
+        "addScript": "Add script"
+      },
+      "get-text": {
+        "regex": "Regex",
+        "flags": "flags",
+        "expressionFlags": "Expression flags",
+        "textPlaceholder": "Text",
+        "useTextContent": "Use textContent",
+        "flagNames": {
+          "g": "global",
+          "i": "ignore case",
+          "m": "multiline"
+        }
+      },
+      "sort-data": {
+        "propertyLabel": "Property {index}",
+        "ascending": "Ascending",
+        "descending": "Descending"
+      },
+      "insert-data": {
+        "button": "Insert data ({count})",
+        "title": "Insert data",
+        "fileUrl": "File URL",
+        "filePathOrUrl": "File absolute path/File URL",
+        "sheetOptional": "Sheet (optional)",
+        "rangeOptional": "Range (optional)",
+        "importFile": "Import file",
+        "fileAccessHelp": "Don't have access, click to learn more",
+        "previewData": "Preview data",
+        "clearPreview": "Clear preview",
+        "fileAction": "File action",
+        "defaultAction": "Default",
+        "readBase64": "Read as base64",
+        "csvExcelFile": "CSV/Excel file",
+        "readJson": "Read as JSON",
+        "readJsonHeaders": "Read as JSON with headers"
+      },
+      "browser-event": {
+        "groups": {
+          "Tab": "Tab",
+          "Window": "Window"
+        },
+        "eventNames": {
+          "tab:close": "Tab closed",
+          "tab:loaded": "Tab loaded",
+          "tab:create": "Tab created",
+          "window:create": "Window created",
+          "window:close": "Window closed"
+        },
+        "matchPattern": "Match pattern",
+        "filter": "Filter",
+        "urlOrRegex": "URL or Regex"
+      },
+      "execute-workflow": {
+        "localGroup": "Local",
+        "teamGroup": "Team"
+      },
+      "notification": {
+        "messagePlaceholder": "Notification message"
+      },
+      "take-screenshot": {
+        "fileType": "Type"
+      }
+    },
+    "conditionBuilder": {
+      "valueTypes": {
+        "value": "Value",
+        "code": "Code",
+        "data#exists": "Data exists",
+        "element#text": "Element text",
+        "element#exists": "Element exists",
+        "element#notExists": "Element does not exist",
+        "element#visible": "Element visible",
+        "element#visibleScreen": "Element visible on screen",
+        "element#invisible": "Element hidden on screen",
+        "element#attribute": "Element attribute value"
+      },
+      "compareTypes": {
+        "eq": "Equals",
+        "eqi": "Equals (case insensitive)",
+        "nq": "Not equals",
+        "gt": "Greater than",
+        "gte": "Greater than or equal",
+        "lt": "Less than",
+        "lte": "Less than or equal",
+        "cnt": "Contains",
+        "cni": "Contains (case insensitive)",
+        "nct": "Does not contain",
+        "nci": "Does not contain (case insensitive)",
+        "stw": "Starts with",
+        "enw": "Ends with",
+        "rgx": "Matches RegEx",
+        "itr": "Is truthy",
+        "ifl": "Is falsy"
+      },
+      "inputTypes": {
+        "selector": "CSS selector or XPath",
+        "value": "Value",
+        "attrName": "Attribute name",
+        "dataPath": "variables@variableName"
+      },
+      "groups": {
+        "value": "Value",
+        "element": "Element",
+        "basic": "Basic",
+        "number": "Number",
+        "text": "Text",
+        "boolean": "Boolean"
+      },
+      "empty": "Empty",
+      "jsCode": "JS code"
+    }
   },
   "message": {
     "noBlock": "No block",

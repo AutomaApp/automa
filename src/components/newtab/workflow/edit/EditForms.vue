@@ -50,15 +50,23 @@
       <template v-if="data.type === 'select'">
         <ui-select
           :model-value="data.selectOptionBy"
-          label="Select an option by"
+          :label="t('workflow.blocks.forms.selectOptionBy')"
           class="w-full"
           @change="updateData({ selectOptionBy: $event })"
         >
-          <option value="value">The value</option>
-          <optgroup label="The position">
-            <option value="first-option">First option</option>
-            <option value="last-option">Last option</option>
-            <option value="custom-position">Custom</option>
+          <option value="value">
+            {{ t('workflow.blocks.forms.selectByValue') }}
+          </option>
+          <optgroup :label="t('workflow.blocks.forms.positionGroup')">
+            <option value="first-option">
+              {{ t('workflow.blocks.forms.firstOption') }}
+            </option>
+            <option value="last-option">
+              {{ t('workflow.blocks.forms.lastOption') }}
+            </option>
+            <option value="custom-position">
+              {{ t('workflow.blocks.forms.customPosition') }}
+            </option>
           </optgroup>
         </ui-select>
         <div v-if="data.selectOptionBy === 'value'" class="mt-2">
@@ -80,7 +88,7 @@
         <ui-input
           v-else-if="data.selectOptionBy === 'custom-position'"
           :model-value="data.optionPosition"
-          label="Option position"
+          :label="t('workflow.blocks.forms.optionPosition')"
           placeholder="0"
           class="mt-2 w-full"
           @change="updateData({ optionPosition: $event })"

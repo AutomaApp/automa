@@ -5,22 +5,24 @@
       <span>/</span>
       <input
         :value="data.regex"
-        placeholder="Regex"
+        :placeholder="t('workflow.blocks.get-text.regex')"
         class="w-11/12 bg-transparent p-2 focus:ring-0"
         @input="updateData({ regex: $event.target.value })"
       />
       <ui-popover>
         <template #trigger>
-          <button>/{{ regexExp.join('') || 'flags' }}</button>
+          <button>/{{ regexExp.join('') || t('workflow.blocks.get-text.flags') }}</button>
         </template>
-        <p class="mb-2 text-gray-600 dark:text-gray-200">Expression flags</p>
+        <p class="mb-2 text-gray-600 dark:text-gray-200">
+          {{ t('workflow.blocks.get-text.expressionFlags') }}
+        </p>
         <div class="space-y-1">
           <div v-for="item in exps" :key="item.id">
             <ui-checkbox
               :model-value="regexExp.includes(item.id)"
               @change="handleExpCheckbox(item.id, $event)"
             >
-              {{ item.name }}
+              {{ t(`workflow.blocks.get-text.flagNames.${item.id}`) }}
             </ui-checkbox>
           </div>
         </div>
@@ -33,7 +35,7 @@
           :title="t('workflow.blocks.get-text.prefixText.title')"
           :label="t('workflow.blocks.get-text.prefixText.placeholder')"
           autocomplete="off"
-          placeholder="Text"
+          :placeholder="t('workflow.blocks.get-text.textPlaceholder')"
           class="w-full"
           @change="updateData({ prefixText: $event })"
         />
@@ -44,7 +46,7 @@
           :title="t('workflow.blocks.get-text.suffixText.title')"
           :label="t('workflow.blocks.get-text.suffixText.placeholder')"
           autocomplete="off"
-          placeholder="Text"
+          :placeholder="t('workflow.blocks.get-text.textPlaceholder')"
           class="w-full"
           @change="updateData({ suffixText: $event })"
         />
@@ -62,7 +64,7 @@
       class="mt-2"
       @change="updateData({ useTextContent: $event })"
     >
-      Use <code>textContent</code>
+      {{ t('workflow.blocks.get-text.useTextContent') }}
     </ui-checkbox>
     <hr />
     <insert-workflow-data
@@ -95,11 +97,7 @@ const regexData = Array.isArray(props.data.regexExp)
   : Object.values(props.data.regexExp);
 const regexExp = ref([...new Set(regexData)]);
 
-const exps = [
-  { id: 'g', name: 'global' },
-  { id: 'i', name: 'ignore case' },
-  { id: 'm', name: 'multiline' },
-];
+const exps = [{ id: 'g' }, { id: 'i' }, { id: 'm' }];
 
 function updateData(value) {
   emit('update:data', { ...props.data, ...value });

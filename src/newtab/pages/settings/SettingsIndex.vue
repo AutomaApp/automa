@@ -55,12 +55,12 @@
     </p>
   </div>
   <div id="delete-logs" class="mt-12">
-    <p class="mb-1 font-semibold">Workflow Logs</p>
+    <p class="mb-1 font-semibold">{{ t('settings.deleteLog.sectionTitle') }}</p>
     <div class="flex items-center">
       <ui-select
         :model-value="settings.deleteLogAfter"
         :label="t('settings.deleteLog.title')"
-        placeholder="Delete after"
+        :placeholder="t('settings.deleteLog.after')"
         class="w-80"
         @change="
           updateSetting(
@@ -82,7 +82,7 @@
         :model-value="settings.logsLimit"
         class="ml-4"
         type="number"
-        label="Logs limit"
+        :label="t('settings.deleteLog.logsLimit')"
         min="10"
         @change="updateSetting('logsLimit', +$event <= 0 ? 1000 : +$event)"
       />

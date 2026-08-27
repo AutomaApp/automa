@@ -16,10 +16,10 @@
         <optgroup
           v-for="(types, label) in filterValueTypes(index)"
           :key="label"
-          :label="label"
+          :label="getGroupName(label)"
         >
           <option v-for="type in types" :key="type.id" :value="type.id">
-            {{ type.name }}
+            {{ getValueTypeName(type) }}
           </option>
         </optgroup>
       </ui-select>
@@ -69,8 +69,8 @@
           <ui-input
             v-else
             v-model="inputsData[index].data[name]"
-            :title="conditionBuilder.inputTypes[name].label"
-            :placeholder="conditionBuilder.inputTypes[name].label"
+            :title="getInputLabel(name)"
+            :placeholder="getInputLabel(name)"
             autocomplete="off"
             class="w-full"
           />
@@ -89,10 +89,10 @@
       <optgroup
         v-for="(types, category) in conditionOperators"
         :key="category"
-        :label="category"
+        :label="getGroupName(category)"
       >
         <option v-for="type in types" :key="type.id" :value="type.id">
-          {{ type.name }}
+          {{ getCompareTypeName(type) }}
         </option>
       </optgroup>
     </ui-select>
@@ -150,9 +150,36 @@ const conditionOperators = conditionBuilder.compareTypes.reduce((acc, type) => {
 const excludeData = ['context'];
 const workflow = inject('workflow');
 
-const { t } = useI18n();
+const { t, te } = useI18n();
 const inputsData = ref(cloneDeep(props.data));
 
+function getLocalizedText(key, fallback) {
+  return te(key) ? t(key) : fallback;
+}
+function getValueTypeName(type) {
+  return getLocalizedText(
+    `workflow.conditionBuilder.valueTypes.${type.id}`,
+    type.name
+  );
+}
+function getCompareTypeName(type) {
+  return getLocalizedText(
+    `workflow.conditionBuilder.compareTypes.${type.id}`,
+    type.name
+  );
+}
+function getGroupName(category) {
+  return getLocalizedText(
+    `workflow.conditionBuilder.groups.${category}`,
+    category
+  );
+}
+function getInputLabel(name) {
+  return getLocalizedText(
+    `workflow.conditionBuilder.inputTypes.${name}`,
+    conditionBuilder.inputTypes[name]?.label || name
+  );
+}
 function getConditionDataList(inputData) {
   const keys = Object.keys(inputData.data);
   const filteredKeys = keys.filter((item) => !excludeData.includes(item));

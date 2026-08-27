@@ -9,7 +9,7 @@
     <ui-input
       :model-value="data.timeout"
       type="number"
-      label="Timeout (millisecond) (0 to disable)"
+      :label="t('workflow.parameterPrompt.timeout')"
       class="mt-2 w-full"
       @change="updateData({ timeout: +$event })"
     />
@@ -18,9 +18,13 @@
       variant="accent"
       @click="showModal = !showModal"
     >
-      Insert Parameters
+      {{ t('workflow.parameterPrompt.insertParameters') }}
     </ui-button>
-    <ui-modal v-model="showModal" title="Parameters" content-class="max-w-4xl">
+    <ui-modal
+      v-model="showModal"
+      :title="t('common.parameters')"
+      content-class="max-w-4xl"
+    >
       <edit-workflow-parameters
         :data="data.parameters"
         hide-prefer-tab

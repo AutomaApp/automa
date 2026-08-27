@@ -13,7 +13,7 @@
       class="mb-2 w-full"
       @change="updateData({ workflowId: $event })"
     >
-      <optgroup label="Local">
+      <optgroup :label="t('workflow.blocks.execute-workflow.localGroup')">
         <option
           v-for="workflow in workflows"
           :key="workflow.id"
@@ -22,7 +22,10 @@
           {{ workflow.name }}
         </option>
       </optgroup>
-      <optgroup v-if="route.params.teamId" label="Team">
+      <optgroup
+        v-if="route.params.teamId"
+        :label="t('workflow.blocks.execute-workflow.teamGroup')"
+      >
         <option
           v-for="workflow in teamWorkflows"
           :key="workflow.id"
@@ -82,7 +85,7 @@
     </template>
     <ui-modal
       v-model="state.showGlobalData"
-      title="Global data"
+      :title="t('common.globalData')"
       content-class="max-w-xl"
     >
       <p>{{ t('workflow.blocks.execute-workflow.overwriteNote') }}</p>
