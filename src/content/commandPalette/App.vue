@@ -324,7 +324,7 @@ function getParamsValues(params) {
       getParamVal[param.type] ||
       paramsList[param.type]?.getValue ||
       getParamVal.default;
-    const value = valueFunc(param.value || param.defaultValue);
+    const value = valueFunc(param.value ?? param.defaultValue);
     acc[param.name] = value;
 
     return acc;
